@@ -242,7 +242,8 @@ def cyllat(r, longc, z):
         lattitude = numpy.arctan2(z, r)
     return tuple((longc, rho, lattitude))
 
-def cylrec(r, longi, z, rectan):
+
+def cylrec(r, longi, z):
     x = r * numpy.cos(longi)
     y = r * numpy.sin(longi)
     z = z
@@ -789,7 +790,12 @@ def kxtrct(keywd, terms, nterms, string, found, substr):
 
 
 def lastnb(string):
-    pass
+    #Return the zero based index of the last non-blank character in
+    #a character string.
+    if string is None or len(string) is 0:
+        return -1
+    else:
+        return len(string.strip()) - 1
 
 
 def latcyl(radius, longi, lat):
@@ -815,8 +821,9 @@ def latsph(radius, longi, lat):
     return tuple((rho, colat, longs))
 
 
-def lcase(inV, out):
-    pass
+def lcase(inV):
+    #Convert the characters in a string to lowercase.
+    return inV.lower()
 
 
 def ldpool(kernel):
@@ -915,7 +922,7 @@ def mtxm(matrix1, matrix2):
     return numpy.dot(matrix1, matrix2)
 
 
-def mtxmg(matrix1, matrix2, nc1, nr1r2, nc2):
+def mtxmg(matrix1, matrix2):
     return numpy.dot(matrix1.T, matrix2)
 
 
@@ -923,7 +930,7 @@ def mtxv(matrix, vin):
     return numpy.dot(matrix.T, vin)
 
 
-def mtxvg(matrix1, v2, nc1, nr1r2):
+def mtxvg(matrix1, v2):
     return numpy.dot(matrix1.T, v2)
 
 
@@ -931,7 +938,7 @@ def mxm(matrix1, matrix2):
     return numpy.dot(matrix1, matrix2)
 
 
-def mxmg(matrix1, matrix2, row1, col1, col2):
+def mxmg(matrix1, matrix2):
     return numpy.dot(matrix1, matrix2)
 
 
@@ -939,7 +946,7 @@ def mxmt(matrix1, matrix2):
     return numpy.dot(matrix1, matrix2.T)
 
 
-def mxmtg(matrix1, matrix2, nr1, nc1c2, nr2):
+def mxmtg(matrix1, matrix2):
     return numpy.dot(matrix1, matrix2.T)
 
 
@@ -947,7 +954,7 @@ def mxv(matrix, vin):
     return numpy.dot(matrix, vin)
 
 
-def mxvg(matrix1, v2, nr1, nc1r2):
+def mxvg(matrix1, v2):
     return numpy.dot(matrix1, v2)
 
 
@@ -1063,8 +1070,9 @@ def posr(string, substr, start):
     return string.rfind(substr, start)
 
 
-def prompt(prmpt, string):
-    pass
+def prompt(prmpt):
+    #This function prompts a user for keyboard input.
+    return input(prmpt)
 
 
 def prop2b(gm, pvinit, dt, pvprop):
