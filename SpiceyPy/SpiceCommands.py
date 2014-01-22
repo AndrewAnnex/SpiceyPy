@@ -217,11 +217,27 @@ def copyc(cell, copy):
 
 
 def cpos(string, chars, start):
-    pass
+    assert(isinstance(chars, list))
+    assert(isinstance(string, str))
+    assert(isinstance(start, int))
+    for char in chars:
+        index = string.find(char, start)
+        if index != -1:
+            return index
+    #else
+    return 0
 
 
 def cposr(string, chars, start):
-    pass
+    assert(isinstance(chars, list))
+    assert(isinstance(string, str))
+    assert(isinstance(start, int))
+    for char in chars:
+        index = string.rfind(char, start)
+        if index != -1:
+            return index
+    #else
+    return 0
 
 
 def cvpool(agent, update):
@@ -1520,6 +1536,18 @@ def subsol(method, target, et, abcorr, obsrvr, spoint):
     pass
 
 
+def suffix(suff, spaces, string):
+    assert(isinstance(suff, str))
+    assert(isinstance(spaces, int))
+    assert(isinstance(string, str))
+    slen = len(string)
+    loc = lastnb(string)
+    end = loc + max(spaces, 0)
+    if end < slen:
+        string = string[end+1:]+suff
+    return string[:slen]
+
+
 def sumad(array, n):
     pass
 
@@ -1731,8 +1759,9 @@ def vperp(a, b):
     return vscl(biga, p)
 
 
-def vprjp(vin, plane, vout):
-    pass
+def vprjp(vin, plane):
+    normal, const = pl2nvc(plane)
+    return vlcom(1.0, vin, const - vdot(vin, normal), normal)
 
 
 def vprjpi(vin, projpl, invpl, vout, found):
