@@ -2,6 +2,7 @@ import numpy
 from SpiceyPy.SpiceCell import SpiceCell
 from SpiceyPy.SpiceHelpers import MaxAbs
 from SpiceyPy.SpiceEllipse import Ellipse
+from SpiceyPy.SpicePool import SpicePool
 
 
 def appndc(item, cell):
@@ -63,8 +64,17 @@ def bodn2c(name, code, found):
 
 
 def bodvar(body, item, dim, values):
+    pool = SpicePool()
     #Return the values of some item for any body in the kernel pool.
-    pass
+    code = pool.intstr(body)
+    varname = 'BODY'
+    varname = suffix(code, 0, varname)
+    varname = suffix('_', 0, varname)
+    varname = suffix(item, 0, varname)
+
+    #Grab the items. Complain if they aren't there.
+    values, found = pool.rtpool(varname, dim)
+    return values
 
 
 def bodvrd(bodynm, item, maxn, dim, values):
@@ -762,7 +772,13 @@ def isrot(m, ntol, dtol):
 
 
 def j1900():
-    #Return the Julian Date of 1899 DEC 31 12:00:00 (1900 JAN 0.5)
+    """
+
+
+
+    :rtype : float
+    :return: the Julian Date of 1899 DEC 31 12:00:00 (1900 JAN 0.5)
+    """
     return 2415020.0
 
 
@@ -915,6 +931,8 @@ def m2eul(r, axis3, axis2, axis1, angle3, angle2, angle1):
 
 
 def m2q(r, q):
+    #check if r is a rotation matrix
+
     pass
 
 
@@ -986,7 +1004,11 @@ def ncposr(string, chars, start):
     pass
 
 
-def nearpt(positn, a, b, c, npoint, alt):
+def nearpt(positn, a, b, c):
+    #This routine locates the point on the surface of an ellipsoid
+    #that is nearest to a specified position. It also returns the
+    #altitude of the position above the ellipsoid.
+    #return npoint, alt
     pass
 
 
@@ -1177,8 +1199,19 @@ def reccyl(rectan):
     return tuple((r, lon, z))
 
 
-def recgeo(rectan, re, f, longi, lat, alt):
-    pass
+def recgeo(rectan, re, f):
+    #Convert from rectangular coordinates to geodetic coordinates.
+    if re <= 0:
+        raise Exception
+    if f >= 1:
+        raise Exception
+    tempA = re
+    tempB = re
+    tempC = re - f*re
+    base, alt = nearpt(rectan, tempA, tempB, tempC)
+    normal = surfnm(tempA,tempB,tempC, base)
+    long, lat = reclat(normal)
+    return long, lat, alt
 
 
 def reclat(rectan):
@@ -1630,8 +1663,10 @@ def ucase(inParam, out):
     pass
 
 
-def ucrss(v1, v2, vout):
-    pass
+def ucrss(v1, v2):
+    assert(isinstance(v1, numpy.ndarray))
+    assert(isinstance(v2, numpy.ndarray))
+    return numpy.cross(v1, v2)/numpy.dot(v1, v2)
 
 
 def unitim(epoch, insys, outsys):
@@ -1813,7 +1848,6 @@ def vsclg(s, v1):
     return vscl(s, v1)
 
 
-#TODO: make unorm work
 def vsep(v1, v2):
     u1 = unorm(v1)
     u2 = unorm(v2)
