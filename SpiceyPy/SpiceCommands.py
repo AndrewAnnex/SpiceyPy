@@ -17,12 +17,6 @@ def appndd(item, cell):
     pass
 
 
-def appndd(item, cell):
-    #Append an item to a int precision cell.
-    appndc(item, cell)
-    pass
-
-
 def axisar(axis, angle, r):
     #Construct a rotation matrix that rotates vectors by a specified angle about a specified axis.
     pass
@@ -857,9 +851,9 @@ def latsph(radius, longi, lat):
     return tuple((rho, colat, longs))
 
 
-def lcase(inV):
+def lcase(inv):
     #Convert the characters in a string to lowercase.
-    return inV.lower()
+    return inv.lower()
 
 
 def ldpool(kernel):
@@ -934,10 +928,62 @@ def m2eul(r, axis3, axis2, axis1, angle3, angle2, angle1):
     pass
 
 
-def m2q(r, q):
+def m2q(r):
     #check if r is a rotation matrix
-
-    pass
+    assert isinstance(r, numpy.array)
+    if not isrot(r, 0.1, 0.1):
+        raise Exception
+    r = r.flatten()
+    tra = r[0] + r[4] + r[8]
+    mtrace = 1 - tra
+    cc4 = tra + 1
+    s11 = mtrace + r[0] * 2
+    s22 = mtrace + r[1] * 2
+    s33 = mtrace + r[8] * 2
+    if cc4 >= 1.0:
+        c = numpy.sqrt(cc4 * 0.25)
+        factor = 1.0 // (c * 4)
+        s = numpy.array([r[5] - r[7], r[6] - r[2], r[1] - r[3]]) * factor
+    elif s11 >= 1.0:
+        s = numpy.zeros(3)
+        s[0] = numpy.sqrt(s11 * 0.25)
+        factor = 1.0 // (s[0] * 4)
+        c = (r[5] - r[7]) * factor
+        s[1] = (r[3] + r[1]) * factor
+        s[2] = (r[6] + r[2]) * factor
+    elif s22 >= 1.0:
+        s = numpy.zeros(3)
+        s[1] = numpy.sqrt(s22 * 0.25)
+        factor = 1.0 // (s[1] * 4)
+        c = (r[6] - r[2]) * factor
+        s[0] = (r[3] + r[1]) * factor
+        s[2] = (r[7] + r[5]) * factor
+    else:
+        s = numpy.zeros(3)
+        s[2] = numpy.sqrt(s33 * 0.25)
+        factor = 1.0 // (s[2] * 4)
+        c = (r[1] - r[3]) * factor
+        s[0] = (r[6] + r[2]) * factor
+        s[1] = (r[7] + r[5]) * factor
+    #cleanup
+    l = c ^ 2 * s[0] ^ 2 + s[1] ^ 2 + s[2] ^ 2
+    q = numpy.zeros(4)
+    if l != 1.0:
+        polish = 1 / numpy.sqrt(l)
+        c *= polish
+        s *= polish
+    if c > 0:
+        q[0] = c
+        q[1] = s[0]
+        q[2] = s[1]
+        q[3] = s[3]
+    else:
+        q[0] = c
+        q[1] = s[0]
+        q[2] = s[1]
+        q[3] = s[3]
+        q *= -1.0
+    return q
 
 
 def matchi(string, templ, wstr, wchr):
@@ -1168,16 +1214,41 @@ def q2m(q):
                            [(q13 + q02) * 2., (q23 - q01) * 2., 1. - (q1s + q2s) * 2.]]).T
 
 
-def radrec(rangeParam, ra, dec):
-    return latrec(rangeParam, ra, dec)
+def radrec(rangeparam, ra, dec):
+    return latrec(rangeparam, ra, dec)
 
 
-def rav2xf(rot, av, xform):
-    pass
+def rav2xf(rot, av):
+    xform = numpy.zeros((6, 6))
+    for i in range(3):
+        for j in range(3):
+            xform[i, j] = rot[i, j]
+            xform[i+3, j+3] = rot[i, j]
+            xform[i, j+3] = 0.0
+
+    omega = numpy.array([[0, -av[3], av[2]], [av[3], 0, -av[1]], [-av[2], av[1], 0]])
+    drotd = mxm(rot, omega)
+    for i in range(3):
+        for j in range(3):
+            xform[i+3, j] = drotd[i, j]
+
+    return xform
 
 
-def raxisa(matrix, axis, angle):
-    pass
+def raxisa(matrix):
+    #Compute the axis of the rotation given by an input matrix
+    #and the angle of the rotation about that axis.
+    quat = m2q(matrix)
+    if vzero(quat[1]):
+        angle = 0
+        axis = numpy.array([0.0, 0.0, 1.0])
+    elif quat[0] == 0:
+        angle = pi()
+        axis = quat[0:3]
+    else:
+        axis = vhat(quat[1])
+        angle = 2.0 * numpy.arctan2()
+    return axis, angle
 
 
 def rdtext(file, line, eof):
@@ -1332,8 +1403,12 @@ def rpd():
     return numpy.pi / 180.0
 
 
-def rquad(a, b, c, root1, root2):
-    pass
+def rquad(a, b, c):
+    #Find the roots of a quadratic equation.
+    roots = numpy.roots([a, b, c])
+    real = numpy.real(roots)
+    imag = numpy.imag(roots)
+    return numpy.array([[real[0], imag[0]], [real[1], imag[1]]])
 
 
 def saelgv(vec1, vec2, smajor, sminor):
