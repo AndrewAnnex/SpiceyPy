@@ -222,8 +222,8 @@ def convrt(x, inParam, out, y):
     pass
 
 
-def copyc(cell, copy):
-    pass
+def copyc(cell):
+    return cell
 
 
 def cpos(string, chars, start):
@@ -627,10 +627,14 @@ def eul2xf(eulang, axisa, axisb, axisc, xform):
 
 
 def exists(file):
-    pass
+    try:
+        with open(file):
+            return True
+    except IOError:
+        return False
 
 
-def expool(name, found):
+def expool(name):
     pass
 
 
@@ -1205,11 +1209,11 @@ def recgeo(rectan, re, f):
         raise Exception
     if f >= 1:
         raise Exception
-    tempA = re
-    tempB = re
-    tempC = re - f*re
-    base, alt = nearpt(rectan, tempA, tempB, tempC)
-    normal = surfnm(tempA,tempB,tempC, base)
+    temp_a = re
+    temp_b = re
+    temp_c = re - f*re
+    base, alt = nearpt(rectan, temp_a, temp_b, temp_c)
+    normal = surfnm(temp_a,temp_b,temp_c, base)
     long, lat = reclat(normal)
     return long, lat, alt
 
@@ -1231,10 +1235,10 @@ def reclat(rectan):
 
 
 def recrad(rectan):
-    tempRet = reclat(rectan)
-    if tempRet[1] < 0:
-        return tuple((tempRet[0], tempRet[1]+twopi(), tempRet[2]))
-    return tempRet
+    tempreturn = reclat(rectan)
+    if tempreturn[1] < 0:
+        return tuple((tempreturn[0], tempreturn[1]+twopi(), tempreturn[2]))
+    return tempreturn
 
 
 def recsph(rectan):
@@ -1409,16 +1413,21 @@ def spd():
     return 86400.0
 
 
-def sphcyl(radius, colat, slongi, r, longi, z):
-    pass
+def sphcyl(radius, colat, slongi):
+    # This returns the cylindrical coordinates of a point whose
+    # position is input through spherical coordinates
+    #TODO: replace numpy math with python math
+    return radius*numpy.sin(colat), slongi, radius*numpy.cos(colat)
 
 
-def sphlat(r, colat, longs, radius, longi, lat):
-    pass
+def sphlat(r, colat, longs):
+    #Convert from spherical coordinates to latitudinal coordinates.
+    return r, longs, colat-halfpi()
 
 
-def sphrec(r, colat, longi, rectan):
-    pass
+def sphrec(r, colat, longi):
+    #Convert from spherical coordinates to rectangular coordinates.
+    return r*numpy.cos(longi)*numpy.sin(colat), r*numpy.sin(longi)*numpy.sin(colat), r*numpy.cos(colat)
 
 
 def spk14a(handle, ncsetParams, coeffs, epochs):
@@ -1659,8 +1668,9 @@ def tyear():
     return 31556925.9747
 
 
-def ucase(inParam, out):
-    pass
+def ucase(inparam):
+    assert isinstance(inparam, str)
+    return inparam.upper()
 
 
 def ucrss(v1, v2):
@@ -1705,7 +1715,7 @@ def vaddg(v1, v2):
     return vadd(v1, v2)
 
 
-def validc(size, n, a):
+def validc(size, n, a=None):
     pass
 
 
