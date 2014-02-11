@@ -8,6 +8,49 @@ class SpiceDAF(object):
     def __init__(self):
         super().__init__()
 
+    def dafbbs(self, handle):
+        pass
+
+
+    def dafbfs(self, handle):
+        pass
+
+
+    def dafcls(self, handle):
+        pass
+
+
+    def dafcs(self, handle):
+        pass
+
+
+    def daffna(self, found):
+        pass
+
+
+    def daffpa(self, found):
+        pass
+
+
+    def dafgn(self, name):
+        pass
+
+
+    def dafgs(self, sum):
+        pass
+
+
+    def dafopr(self, fname, handle):
+        pass
+
+
+    def dafrda(self, handle, begin, end, data):
+        pass
+
+
+    def dafus(self, sum, nd, ni, dc, ic):
+        pass
+
 
 
 #    ADA      Add data to array

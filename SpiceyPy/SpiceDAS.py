@@ -8,6 +8,12 @@ class SpiceDAS(object):
     def __init__(self):
         super().__init__()
 
+    def dasac(self, handle, n, buffer):
+        pass
+
+    def dasec(self, handle, bufsiz, n, buffer, done):
+        pass
+
 
 #    A2L  Map logical address to physical location
 #    AC   Add comments from buffer to file

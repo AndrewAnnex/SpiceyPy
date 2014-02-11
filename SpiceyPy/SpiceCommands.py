@@ -3,6 +3,7 @@ from SpiceyPy.SpiceCell import SpiceCell
 from SpiceyPy.SpiceHelpers import MaxAbs
 from SpiceyPy.SpiceEllipse import Ellipse
 from SpiceyPy.SpicePool import SpicePool
+import SpiceyPy.SpiceConst as SpiceConst
 
 
 def appndc(item, cell):
@@ -20,16 +21,6 @@ def appndd(item, cell):
 def axisar(axis, angle, r):
     #Construct a rotation matrix that rotates vectors by a specified angle about a specified axis.
     pass
-
-
-def b1900():
-    #Return the Julian Date corresponding to Besselian Date 1900.0.
-    return 2415020.31352
-
-
-def b1950():
-    #Return the Julian Date corresponding to Besselian Date 1950.0.
-    return 2433282.42345905
 
 
 def badkpv(caller, name, comp, size, divby, typeParam):
@@ -189,11 +180,6 @@ def ckw05(handle, subtyp, degree, begtim, endtim, inst, ref, avflag, segid, n, s
     pass
 
 
-def clight():
-    #Return the speed of light in a vacuum (IAU official value, in km/sec)
-    return 299792.458
-
-
 def cmprss(delim, n, input, output):
     #Compress a character string by removing occurrences of more than N consecutive occurrences of a specified character.
     pass
@@ -274,58 +260,6 @@ def cylsph(r, longc, z):
     return tuple((rh, th, longc))
 
 
-def dafbbs(handle):
-    pass
-
-
-def dafbfs(handle):
-    pass
-
-
-def dafcls(handle):
-    pass
-
-
-def dafcs(handle):
-    pass
-
-
-def daffna(found):
-    pass
-
-
-def daffpa(found):
-    pass
-
-
-def dafgn(name):
-    pass
-
-
-def dafgs(sum):
-    pass
-
-
-def dafopr(fname, handle):
-    pass
-
-
-def dafrda(handle, begin, end, data):
-    pass
-
-
-def dafus(sum, nd, ni, dc, ic):
-    pass
-
-
-def dasac(handle, n, buffer):
-    pass
-
-
-def dasec(handle, bufsiz, n, buffer, done):
-    pass
-
-
 def dcyldr(x, y, z, jacobi):
     pass
 
@@ -348,10 +282,6 @@ def diags2(symmat, diag, rotate):
 
 def dlatdr(x, y, z, jacobi):
     pass
-
-
-def dpr():
-    return 180.0 / numpy.pi
 
 
 def drdcyl(r, longi):
@@ -643,10 +573,6 @@ def getmsg(option, msg):
     pass
 
 
-def halfpi():
-    return numpy.pi / 2
-
-
 def ident(matrix):
     return numpy.identity(matrix)
 
@@ -723,34 +649,6 @@ def isrot(m, ntol, dtol):
     return detOK & normOK
 
 
-def j1900():
-    """
-    :rtype : float
-    :return: the Julian Date of 1899 DEC 31 12:00:00 (1900 JAN 0.5)
-    """
-    return 2415020.0
-
-
-def j1950():
-    #Return the Julian Date of 1950 JAN 01 00:00:00 (1950 JAN 1.0)
-    return 2433282.5
-
-
-def j2000():
-    #Return the Julian Date of 2000 JAN 01 12:00:00 (2000 JAN 1.5)
-    return 2451545.0
-
-
-def j2100():
-    #Return the Julian Date of 2100 JAN 01 12:00:00 (2100 JAN 1.5)
-    return 2488070.0
-
-
-def jyear():
-    #Return the number of seconds in a julian year.
-    return 31557600.0
-
-
 def kxtrct(keywd, terms, nterms, string, found, substr):
     pass
 
@@ -781,7 +679,7 @@ def latrec(radius, longi, lat):
 
 def latsph(radius, longi, lat):
     #, rho, colat, longs
-    colat = halfpi() - lat
+    colat = SpiceConst.halfpi() - lat
     longs = longi
     rho = radius
     return tuple((rho, colat, longs))
@@ -1046,10 +944,6 @@ def pckuof(handle):
     pass
 
 
-def pi():
-    return numpy.pi
-
-
 def pjelpl(elin, plane, elout):
     pass
 
@@ -1159,7 +1053,7 @@ def raxisa(matrix):
         angle = 0
         axis = numpy.array([0.0, 0.0, 1.0])
     elif quat[0] == 0:
-        angle = pi()
+        angle = SpiceConst.pi()
         axis = quat[0:3]
     else:
         axis = vhat(quat[1])
@@ -1186,7 +1080,7 @@ def reccyl(rectan):
         r = big * numpy.sqrt(x * x + y * y)
         lon = numpy.arctan2(y, x)
         if lon < 0.0:
-            lon += twopi()
+            lon += SpiceConst.twopi()
     return tuple((r, lon, z))
 
 
@@ -1224,7 +1118,7 @@ def reclat(rectan):
 def recrad(rectan):
     tempreturn = reclat(rectan)
     if tempreturn[1] < 0:
-        return tuple((tempreturn[0], tempreturn[1]+twopi(), tempreturn[2]))
+        return tuple((tempreturn[0], tempreturn[1]+SpiceConst.twopi(), tempreturn[2]))
     return tempreturn
 
 
@@ -1314,11 +1208,6 @@ def rotvec(v1, angle, iaxis, vout):
     pass
 
 
-def rpd():
-    #Return the number of radians per degree.
-    return numpy.pi / 180.0
-
-
 def rquad(a, b, c):
     #Find the roots of a quadratic equation.
     roots = numpy.roots([a, b, c])
@@ -1399,11 +1288,6 @@ def sizec(cell):
     pass
 
 
-def spd():
-    #Return the number of seconds in a day.
-    return 86400.0
-
-
 def sphcyl(radius, colat, slongi):
     # This returns the cylindrical coordinates of a point whose
     # position is input through spherical coordinates
@@ -1413,7 +1297,7 @@ def sphcyl(radius, colat, slongi):
 
 def sphlat(r, colat, longs):
     #Convert from spherical coordinates to latitudinal coordinates.
-    return r, longs, colat-halfpi()
+    return r, longs, colat-SpiceConst.halfpi()
 
 
 def sphrec(r, colat, longi):
@@ -1633,18 +1517,8 @@ def tsetParamyr(year):
     pass
 
 
-def twopi():
-    #Return twice the value of pi (the ratio of the circumference of a circle to its diameter)
-    return numpy.pi * 2
-
-
 def twovec(axdef, indexa, plndef, indexp, mout):
     pass
-
-
-def tyear():
-    #Return the number of seconds in a tropical year.
-    return 31556925.9747
 
 
 def ucase(inparam):
@@ -1844,9 +1718,9 @@ def vsep(v1, v2):
         return 2.0 * numpy.arcsin(0.50 * vnorm(vtemp))
     elif vdot(u1[0], u2[0]) < 0:
         vtemp = u1[0] + u2[0]
-        return pi() - 2.0 * numpy.arcsin(0.50 * vnorm(vtemp))
+        return SpiceConst.pi() - 2.0 * numpy.arcsin(0.50 * vnorm(vtemp))
     else:
-        return halfpi()
+        return SpiceConst.halfpi()
     pass
 
 
