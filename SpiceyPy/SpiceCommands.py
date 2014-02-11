@@ -194,11 +194,6 @@ def clight():
     return 299792.458
 
 
-def clpool():
-    #Remove all variables from the kernel pool
-    pass
-
-
 def cmprss(delim, n, input, output):
     #Compress a character string by removing occurrences of more than N consecutive occurrences of a specified character.
     pass
@@ -242,10 +237,6 @@ def cposr(string, chars, start):
             return index
     #else
     return 0
-
-
-def cvpool(agent, update):
-    pass
 
 
 def cyllat(r, longc, z):
@@ -383,20 +374,12 @@ def dsphdr(x, y, z, jacobi):
     pass
 
 
-def dtpool(name, found, n, typeParam):
-    pass
-
-
 def dvdot(s1, s2):
     #(x, y, z, dx/dt, dy/dt, dz/dt )
     return s1[0] * s2[3] + s1[1] * s2[4] + s1[2] * s2[5] + s1[3] * s2[0] + s1[4] * s2[1] + s1[5] * s2[2]
 
 
 def dvhat(s1, sout):
-    pass
-
-
-def dvpool(name):
     pass
 
 
@@ -628,10 +611,6 @@ def exists(file):
         return False
 
 
-def expool(name):
-    pass
-
-
 def failed():
     pass
 
@@ -648,19 +627,6 @@ def frmnam(frcode, frname):
     pass
 
 
-def furnsh(file):
-    #Load one or more SPICE kernels into a program.
-    pass
-
-
-def gcpool(name, start, room, n, cvals, found):
-    pass
-
-
-def gdpool(name, start, room, n, values, found):
-    pass
-
-
 def georec(longi, lat, alt, re, f, rectan):
     pass
 
@@ -673,19 +639,7 @@ def getfat(file, arch, kertyp):
     pass
 
 
-def getfov(instid, room, shape, frame, bsight, n, bounds):
-    pass
-
-
 def getmsg(option, msg):
-    pass
-
-
-def gipool(name, start, room, n, ivals, found):
-    pass
-
-
-def gnpool(name, start, room, n, cvals, found):
     pass
 
 
@@ -771,9 +725,6 @@ def isrot(m, ntol, dtol):
 
 def j1900():
     """
-
-
-
     :rtype : float
     :return: the Julian Date of 1899 DEC 31 12:00:00 (1900 JAN 0.5)
     """
@@ -798,21 +749,6 @@ def j2100():
 def jyear():
     #Return the number of seconds in a julian year.
     return 31557600.0
-
-
-def kdata(which, kind, file, filtyp, source, handle, found):
-    #Determine if a kernel pool variable is present and if so that it has the correct size and type.
-    pass
-
-
-def kinfo(file, filtyp, source, handle, found):
-    #Return information about a loaded kernel specified by name.
-    pass
-
-
-def ktotal(kind, count):
-    #Return the current number of kernels that have been loaded via the KEEPER interface that are of a specified type.
-    pass
 
 
 def kxtrct(keywd, terms, nterms, string, found, substr):
@@ -854,14 +790,6 @@ def latsph(radius, longi, lat):
 def lcase(inv):
     #Convert the characters in a string to lowercase.
     return inv.lower()
-
-
-def ldpool(kernel):
-    pass
-
-
-def lmpool(cvals, n):
-    pass
 
 
 def lparse(listParam, delim, nmax, n, items):
@@ -1118,20 +1046,8 @@ def pckuof(handle):
     pass
 
 
-def pcpool(name, n, cvals):
-    pass
-
-
-def pdpool(name, n, values):
-    pass
-
-
 def pi():
     return numpy.pi
-
-
-def pipool(name, n, ivals):
-    pass
 
 
 def pjelpl(elin, plane, elout):
@@ -1637,10 +1553,6 @@ def stelab(pobj, vobs, appobj):
     pass
 
 
-def stpool(item, nth, contin, string, size, found):
-    pass
-
-
 def str2et(string, et):
     pass
 
@@ -1678,14 +1590,6 @@ def surfnm(a, b, c, point, normal):
 
 
 def surfpt(positn, u, a, b, c, point, found):
-    pass
-
-
-def swpool(agent, nnames, names):
-    pass
-
-
-def szpool(name, n, found):
     pass
 
 
@@ -1755,11 +1659,6 @@ def ucrss(v1, v2):
 
 
 def unitim(epoch, insys, outsys):
-    pass
-
-
-def unload(file):
-    #Unload a SPICE kernel.
     pass
 
 
