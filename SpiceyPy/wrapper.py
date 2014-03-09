@@ -6,17 +6,8 @@ import ctypes
 import SpiceyPy.SupportTypes as stypes
 from SpiceyPy.libspice import libspice
 
-
-def b1900():
-    return libspice.b1900_c()
-
-
-def b1950():
-    return libspice.b1950_c()
-
-
-def dpr():
-    return libspice.dpr_c()
+########################################################################################################################
+# A
 
 
 def axisar(axis, angle):
@@ -26,6 +17,9 @@ def axisar(axis, angle):
     r = stypes.doubleMatrix()
     libspice.axisar_c(axis, angle, r)
     return stypes.matrixtolist(r)
+
+########################################################################################################################
+# B
 
 
 def bodc2n(code, lenout):
@@ -76,12 +70,28 @@ def bodn2c(name):
         return None
 
 
-def mtxm(m1, m2):
-    m1 = stypes.listtodoublematrix(m1)
-    m2 = stypes.listtodoublematrix(m2)
-    mout = stypes.doubleMatrix()
-    libspice.mtxm_c(m1, m2, mout)
-    return stypes.matrixtolist(mout)
+def b1900():
+    return libspice.b1900_c()
+
+
+def b1950():
+    return libspice.b1950_c()
+
+########################################################################################################################
+# C
+
+########################################################################################################################
+# D
+
+
+def dpr():
+    return libspice.dpr_c()
+
+########################################################################################################################
+# E
+
+########################################################################################################################
+# F
 
 
 def furnsh(path):
@@ -89,12 +99,8 @@ def furnsh(path):
     libspice.furnsh_c(path)
     pass
 
-
-def str2et(time):
-    time = stypes.strtocharpoint(time)
-    et = ctypes.c_double(0)
-    libspice.str2et_c(time, ctypes.byref(et))
-    return et.value
+########################################################################################################################
+# G
 
 
 def getfov(instid, room, shapelen, framelen):
@@ -111,23 +117,72 @@ def getfov(instid, room, shapelen, framelen):
     return {'shape': shape.value, 'frame': frame.value, 'bsight': stypes.vectortolist(bsight), 'bounds': stypes.matrixtolist(bounds)}
 
 
-def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
+
+########################################################################################################################
+# H
+
+########################################################################################################################
+# I
+
+
+def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
     method = stypes.strtocharpoint(method)
     target = stypes.strtocharpoint(target)
     et = ctypes.c_double(et)
     fixref = stypes.strtocharpoint(fixref)
     abcorr = stypes.strtocharpoint(abcorr)
     obsrvr = stypes.strtocharpoint(obsrvr)
-    dref = stypes.strtocharpoint(dref)
-    dvec = stypes.listtodoublevector(dvec)
-    spoint = stypes.doubleVector(3)
+    spoint = stypes.listtodoublevector(spoint)
     trgepc = ctypes.c_double(0)
     srfvec = stypes.doubleVector(3)
-    found = ctypes.c_bool(0)
-    libspice.sincpt_c(method, target, et, fixref, abcorr, obsrvr, dref, dvec,
-              spoint, ctypes.byref(trgepc), srfvec, ctypes.byref(found))
-    return {'spoint': stypes.vectortolist(spoint), 'trgepc': trgepc.value, 'srfvec': stypes.vectortolist(srfvec), 'found': found.value}
+    phase = ctypes.c_double(0)
+    solar = ctypes.c_double(0)
+    emissn = ctypes.c_double(0)
+    libspice.ilumin_c(method, target, et, fixref, abcorr, obsrvr, spoint, ctypes.byref(trgepc),
+              srfvec, ctypes.byref(phase), ctypes.byref(solar), ctypes.byref(emissn))
+    return {'trgepc': trgepc.value, 'srfvec': stypes.vectortolist(srfvec), 'phase': phase.value, 'solar': solar.value, 'emissn': emissn.value}
 
+
+
+########################################################################################################################
+# J
+
+
+########################################################################################################################
+# K
+
+
+########################################################################################################################
+# L
+
+
+########################################################################################################################
+# M
+
+
+def mtxm(m1, m2):
+    m1 = stypes.listtodoublematrix(m1)
+    m2 = stypes.listtodoublematrix(m2)
+    mout = stypes.doubleMatrix()
+    libspice.mtxm_c(m1, m2, mout)
+    return stypes.matrixtolist(mout)
+
+########################################################################################################################
+# N
+
+
+########################################################################################################################
+# O
+
+
+########################################################################################################################
+# P
+
+########################################################################################################################
+# Q
+
+########################################################################################################################
+# R
 
 def reclat(rectan):
     rectan = stypes.listtodoublevector(rectan)
@@ -149,23 +204,46 @@ def recgeo(rectan, re, f):
     return longitude.value, latitude.value, alt.value
 
 
-def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
+########################################################################################################################
+# S
+
+def str2et(time):
+    time = stypes.strtocharpoint(time)
+    et = ctypes.c_double(0)
+    libspice.str2et_c(time, ctypes.byref(et))
+    return et.value
+
+
+def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
     method = stypes.strtocharpoint(method)
     target = stypes.strtocharpoint(target)
     et = ctypes.c_double(et)
     fixref = stypes.strtocharpoint(fixref)
     abcorr = stypes.strtocharpoint(abcorr)
     obsrvr = stypes.strtocharpoint(obsrvr)
-    spoint = stypes.listtodoublevector(spoint)
+    dref = stypes.strtocharpoint(dref)
+    dvec = stypes.listtodoublevector(dvec)
+    spoint = stypes.doubleVector(3)
     trgepc = ctypes.c_double(0)
     srfvec = stypes.doubleVector(3)
-    phase = ctypes.c_double(0)
-    solar = ctypes.c_double(0)
-    emissn = ctypes.c_double(0)
-    libspice.ilumin_c(method, target, et, fixref, abcorr, obsrvr, spoint, ctypes.byref(trgepc),
-              srfvec, ctypes.byref(phase), ctypes.byref(solar), ctypes.byref(emissn))
-    return {'trgepc': trgepc.value, 'srfvec': stypes.vectortolist(srfvec), 'phase': phase.value, 'solar': solar.value, 'emissn': emissn.value}
+    found = ctypes.c_bool(0)
+    libspice.sincpt_c(method, target, et, fixref, abcorr, obsrvr, dref, dvec,
+              spoint, ctypes.byref(trgepc), srfvec, ctypes.byref(found))
+    return {'spoint': stypes.vectortolist(spoint), 'trgepc': trgepc.value, 'srfvec': stypes.vectortolist(srfvec), 'found': found.value}
 
+
+
+
+########################################################################################################################
+# T
+
+
+########################################################################################################################
+# U
+
+
+########################################################################################################################
+# V
 
 def vadd(v1, v2):
     v1 = stypes.listtodoublevector(v1)
@@ -178,3 +256,18 @@ def vadd(v1, v2):
 def vnorm(v):
     v = stypes.listtodoublevector(v)
     return libspice.vnorm_c(v)
+
+########################################################################################################################
+# W
+
+
+########################################################################################################################
+# X
+
+
+########################################################################################################################
+# Y
+
+
+########################################################################################################################
+# Z

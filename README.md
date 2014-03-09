@@ -1,6 +1,6 @@
 # SpiceyPy
 
-The NAIF C SPICE Toolkit Wrapper, written using ctypes.
+The NAIF C SPICE Toolkit Wrapper for Python 3, written using ctypes.
 
 *IMPORTANT* I have no current affiliation with NASA, NAIF, JPL. The code is provided as is, you shouldn't even think to use this for anything important until I get some fancy legal stuff written here. I think you get the gist.
 
@@ -13,6 +13,7 @@ The [SPICE Toolkit](http://naif.jpl.nasa.gov/naif/). In short it is an essential
 - [ ] Complete working coverage of all existing SPICE commands (No additional functionality or commands)
 - [ ] Useful, but abbreviated commenting on functions.
 - [ ] Python 2 and 3 support.
+- [ ] Numpy integration?
 
 ### Important User Information
 First the user must generate their own shared library of CSPICE. In the Lib subdirectory in CSPICE run the following commands:
