@@ -1,3 +1,4 @@
+__author__ = 'Apollo117'
 import ctypes
 libspice = ctypes.CDLL('./spice.so')
 

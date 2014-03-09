@@ -1,6 +1,4 @@
-__author__ = 'ama6fy'
-
-
+__author__ = 'Apollo117'
 import SpiceyPy as spice
 
 print(spice.b1900())

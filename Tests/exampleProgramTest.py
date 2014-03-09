@@ -1,6 +1,5 @@
-__author__ = 'ama6fy'
 # IMPORTANT, as of now the spice.so file needs to also be in the tests directory
-
+__author__ = 'Apollo117'
 import SpiceyPy as spice
 satnm = 'PHOEBE'
 fixref = 'IAU_PHOEBE'
