@@ -14,6 +14,11 @@ def listtointvector(x):
     return (ctypes.c_int * len(x))(*x)
 
 
+def listtocharvector(x):
+    assert (isinstance(x, list))
+    return (ctypes.c_char_p * len(x))(*[strtocharpoint(y) for y in x])
+
+
 def listtodoublematrix(data, x=3, y=3):
     matrix = ((ctypes.c_double * x) * y)()
     for i, row in enumerate(data):

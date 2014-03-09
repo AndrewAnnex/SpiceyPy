@@ -22,6 +22,25 @@ def axisar(axis, angle):
 # B
 
 
+def b1900():
+    return libspice.b1900_c()
+
+
+def b1950():
+    return libspice.b1950_c()
+
+
+def badkpv(caller, name, comp, size, divby, intype):
+    #todo: test
+    caller = stypes.strtocharpoint(caller)
+    name = stypes.strtocharpoint(name)
+    comp = stypes.strtocharpoint(comp)
+    size = ctypes.c_int(size)
+    divby = ctypes.c_int(divby)
+    intype = stypes.strtocharpoint(intype)
+    return libspice.badkpv(caller, name, comp, size, divby, intype)
+
+
 def bodc2n(code, lenout):
     #todo: test
     code = ctypes.c_int(code)
@@ -49,14 +68,10 @@ def boddef(name, code):
     pass
 
 
-def bodvrd(bodynm, item, maxn):
-    bodynm = stypes.strtocharpoint(bodynm)
+def bodfnd(body, item):
+    body = ctypes.c_int(body)
     item = stypes.strtocharpoint(item)
-    maxn = ctypes.c_int(maxn)
-    dim = ctypes.c_int(0)
-    values = stypes.doubleVector(3)
-    libspice.bodvrd_c(bodynm, item, maxn, ctypes.byref(dim), values)
-    return stypes.vectortolist(values)
+    return libspice.bodfnd(body, item)
 
 
 def bodn2c(name):
@@ -70,12 +85,104 @@ def bodn2c(name):
         return None
 
 
-def b1900():
-    return libspice.b1900_c()
+def bods2c(name):
+    #Todo: test
+    name = stypes.strtocharpoint(name)
+    code = ctypes.c_int(0)
+    found = ctypes.c_bool(0)
+    libspice.bods2c_c(name, ctypes.byref(code), ctypes.byref(found))
+    if found.value:
+        return code.value
+    else:
+        return None
 
 
-def b1950():
-    return libspice.b1950_c()
+def bodvar(body, item, dim):
+    #Todo: test
+    body = ctypes.c_int(body)
+    dim = ctypes.c_int(dim)
+    item = stypes.strtocharpoint(item)
+    values = stypes.doubleVector(dim.value)
+    libspice.bodvar(body, item, ctypes.byref(dim), values)
+    return stypes.vectortolist(values)
+
+
+def bodvcd(bodyid, item, maxn):
+    #todo: test
+    bodyid = ctypes.c_int(bodyid)
+    item = stypes.strtocharpoint(item)
+    maxn = ctypes.c_int(maxn)
+    dim = ctypes.c_int(0)
+    values = stypes.doubleVector(maxn)
+    libspice.bodvcd_c(bodyid, item, maxn, ctypes.byref(dim), values)
+    return stypes.vectortolist(values)
+
+
+def bodvrd(bodynm, item, maxn):
+    bodynm = stypes.strtocharpoint(bodynm)
+    item = stypes.strtocharpoint(item)
+    maxn = ctypes.c_int(maxn)
+    dim = ctypes.c_int(0)
+    values = stypes.doubleVector(3)
+    libspice.bodvrd_c(bodynm, item, maxn, ctypes.byref(dim), values)
+    return stypes.vectortolist(values)
+
+
+def brcktd(number, end1, end2):
+    number = ctypes.c_double(number)
+    end1 = ctypes.c_double(end1)
+    end2 = ctypes.c_double(end2)
+    return libspice.brcktd_c(number, end1, end2)
+
+
+def brckti(number, end1, end2):
+    number = ctypes.c_int(number)
+    end1 = ctypes.c_int(end1)
+    end2 = ctypes.c_int(end2)
+    return libspice.brckti_c(number, end1, end2)
+
+
+def bschoc(value, ndim, lenvals, array, order):
+    #todo: Fix, probably not working
+    value = stypes.strtocharpoint(value)
+    ndim = ctypes.c_int(ndim)
+    lenvals = ctypes.c_int(lenvals)
+    array = stypes.listtocharvector(array)
+    order = stypes.listtointvector(order)
+    return libspice.bschoc(value, ndim, lenvals, array, order)
+
+
+def bschoi(value, ndim, array, order):
+    #todo: Fix, this is not working
+    value = ctypes.c_int(value)
+    ndim = ctypes.c_int(ndim)
+    order = stypes.listtointvector(order)
+    array = stypes.listtointvector(array)
+    return libspice.bschoi_c(value, ndim, order, array)
+
+
+def bsrchc(value, ndim, lenvals, array):
+    #todo: Fix, this is not working
+    value = stypes.strtocharpoint(value)
+    ndim = ctypes.c_int(ndim)
+    lenvals = ctypes.c_int(lenvals)
+    array = stypes.listtocharvector(array)
+    return libspice.bsrchc_c(value, ndim, lenvals, array)
+
+
+def bsrchd(value, ndim, array):
+    value = ctypes.c_double(value)
+    ndim = ctypes.c_int(ndim)
+    array = stypes.listtodoublevector(array)
+    return libspice.bsrchd_c(value, ndim, array)
+
+
+def bsrchi(value, ndim, array):
+    value = ctypes.c_int(value)
+    ndim = ctypes.c_int(ndim)
+    array = stypes.listtointvector(array)
+    return libspice.bsrchi_c(value, ndim, array)
+
 
 ########################################################################################################################
 # C
