@@ -352,6 +352,7 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
 ########################################################################################################################
 # V
 
+
 def vadd(v1, v2):
     v1 = stypes.listtodoublevector(v1)
     v2 = stypes.listtodoublevector(v2)
@@ -371,6 +372,12 @@ def vnorm(v):
 ########################################################################################################################
 # X
 
+def xpose(m):
+    #Todo: Fix, something is not right, something is not right with the types
+    m = stypes.listtodoublematrix(m)
+    mout = stypes.doubleMatrix()
+    libspice.xpose_c(m, mout)
+    return stypes.matrixtolist(m)
 
 ########################################################################################################################
 # Y

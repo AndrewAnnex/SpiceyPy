@@ -516,7 +516,9 @@ libspice.vupack_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double]
 #libspice.wnunid_c.argtypes = [None, None, None]
 #libspice.wnvald_c.argtypes = [ctypes.c_int, ctypes.c_int, None]
 ##########################################################################################################################################################
-# Y
+# X
+
+libspice.xpose_c.argtypes = [(ctypes.c_double * 3)*3, (ctypes.c_double * 3)*3]
 
 ##########################################################################################################################################################
 # Z
