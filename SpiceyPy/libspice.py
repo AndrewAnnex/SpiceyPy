@@ -459,12 +459,18 @@ libspice.timdef_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ct
 libspice.timout_c.argtypes = [ctypes.c_double, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
 libspice.tipbod_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double, ctypes.c_double]
 libspice.tisbod_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double, ctypes.c_double]
+libspice.tkvrsn_c.argtypes = [ctypes.c_char_p]
+libspice.tkvrsn_c.restype = ctypes.c_char_p
+
 libspice.tparse_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double, ctypes.c_char_p]
 libspice.tpictr_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_bool, ctypes.c_char_p]
-#libspice.trcoff_c.argtypes = []
+libspice.trace_c.argtypes = [ctypes.c_double * 3]
+libspice.trace_c.restype = ctypes.c_double
+libspice.trcoff_c.argtypes = None
 libspice.tsetyr_c.argtypes = [ctypes.c_int]
 libspice.twopi_c.restype = ctypes.c_double
-libspice.twovec_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_double]
+libspice.twovec_c.argtypes = [(ctypes.c_double * 3), ctypes.c_int, (ctypes.c_double * 3), ctypes.c_int, (ctypes.c_double * 3)*3]
+libspice.tyear_c.restype = ctypes.c_double
 
 ##########################################################################################################################################################
 # U
@@ -555,16 +561,14 @@ libspice.vzerog_c.restype = ctypes.c_bool
 ##########################################################################################################################################################
 # X
 
+libspice.xf2eul_c.argtypes = [(ctypes.c_double * 6)*6, ctypes.c_int, ctypes.c_int, ctypes.c_int, (ctypes.c_double * 6), ctypes.POINTER(ctypes.c_bool)]
+libspice.xf2rav_c.argtypes = [(ctypes.c_double * 6)*6, (ctypes.c_double * 3)*3, (ctypes.c_double * 3)]
 libspice.xpose_c.argtypes = [(ctypes.c_double * 3)*3, (ctypes.c_double * 3)*3]
-
+libspice.xpose6_c.argtypes = [(ctypes.c_double * 6)*6, (ctypes.c_double * 6)*6]
+libspice.xposeg_c.argtypes = [ctypes.c_int, ctypes.c_int]
 ##########################################################################################################################################################
 # Z
 
-libspice.xf2eul_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_double, ctypes.c_bool]
-libspice.xf2rav_c.argtypes = [ctypes.c_double, ctypes.c_double]
-libspice.xpose_c.argtypes = [ctypes.c_double]
-libspice.xpose6_c.argtypes = [ctypes.c_double]
-libspice.xposeg_c.argtypes = [ctypes.c_int, ctypes.c_int]
 libspice.zzgetcml_c.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_bool]
 libspice.zzgfsavh_c.argtypes = [ctypes.c_bool]
 #libspice.zzsynccl_c.argtypes = [None]

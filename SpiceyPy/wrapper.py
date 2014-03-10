@@ -221,9 +221,8 @@ def getfov(instid, room, shapelen, framelen):
     n = ctypes.c_int(0)
     bounds = stypes.doubleMatrix(x=3, y=4)
     libspice.getfov_c(instid, room, shapelen, framelen, shape, frame, bsight, ctypes.byref(n), bounds)
-    return {'shape': shape.value, 'frame': frame.value, 'bsight': stypes.vectortolist(bsight), 'bounds': stypes.matrixtolist(bounds)}
-
-
+    return {'shape': shape.value, 'frame': frame.value, 'bsight': stypes.vectortolist(bsight),
+            'bounds': stypes.matrixtolist(bounds)}
 
 ########################################################################################################################
 # H
@@ -254,10 +253,9 @@ def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
               srfvec, ctypes.byref(phase), ctypes.byref(solar), ctypes.byref(emissn))
     return {'trgepc': trgepc.value, 'srfvec': stypes.vectortolist(srfvec), 'phase': phase.value, 'solar': solar.value, 'emissn': emissn.value}
 
-
-
 ########################################################################################################################
 # J
+
 
 def j1900():
     return libspice.j1900_c()
@@ -324,6 +322,7 @@ def pi():
 ########################################################################################################################
 # Q
 
+
 def q2m(q):
     q = stypes.listtodoublevector(q)
     mout = stypes.doubleMatrix()
@@ -351,6 +350,7 @@ def qxq(q1, q2):
 ########################################################################################################################
 # R
 
+
 def reclat(rectan):
     rectan = stypes.listtodoublevector(rectan)
     radius = ctypes.c_double(0)
@@ -370,9 +370,9 @@ def recgeo(rectan, re, f):
     libspice.recgeo_c(rectan, re, f, ctypes.byref(longitude), ctypes.byref(latitude), ctypes.byref(alt))
     return longitude.value, latitude.value, alt.value
 
-
 ########################################################################################################################
 # S
+
 
 def str2et(time):
     time = stypes.strtocharpoint(time)
@@ -396,16 +396,56 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
     found = ctypes.c_bool(0)
     libspice.sincpt_c(method, target, et, fixref, abcorr, obsrvr, dref, dvec,
               spoint, ctypes.byref(trgepc), srfvec, ctypes.byref(found))
-    return {'spoint': stypes.vectortolist(spoint), 'trgepc': trgepc.value, 'srfvec': stypes.vectortolist(srfvec), 'found': found.value}
-
-
-
+    return {'spoint': stypes.vectortolist(spoint), 'trgepc': trgepc.value,
+            'srfvec': stypes.vectortolist(srfvec), 'found': found.value}
 
 ########################################################################################################################
 # T
 
+
+def tkvrsn(item):
+    item = stypes.strtocharpoint(item)
+    return libspice.tkvrsn_c(item)
+
+
+def trace(matrix):
+    #Todo: test
+    matrix = stypes.listtodoublematrix(matrix)
+    return libspice.trace_c(matrix)
+
+
+def trcoff():
+    #Todo: test
+    libspice.trcoff_c()
+    pass
+
+
+def tsetyr(year):
+    #Todo: test
+    year = ctypes.c_int(year)
+    libspice.tsetyr(year)
+    pass
+
+
 def twopi():
     return libspice.twopi_c()
+
+
+def twovec(axdef, indexa, plndef, indexp):
+    #Todo: Test
+    axdef = stypes.listtodoublevector(axdef)
+    indexa = ctypes.c_int(indexa)
+    plndef = stypes.listtodoublevector(plndef)
+    indexp = ctypes.c_int(indexp)
+    mout = stypes.doubleMatrix()
+    libspice.twovec_c(axdef, indexa, plndef, indexp, mout)
+    return stypes.matrixtolist(mout)
+
+
+def tyear():
+    #Todo: Test
+    return libspice.tyear_c()
+
 
 ########################################################################################################################
 # U
@@ -777,12 +817,42 @@ def vzerog(v, ndim):
 ########################################################################################################################
 # X
 
+def xf2eul(xform, axisa, axisb, axisc):
+    #Todo: tes
+    xform = stypes.listtodoublematrix(xform, x=6, y=6)
+    axisa = ctypes.c_int(axisa)
+    axisb = ctypes.c_int(axisb)
+    axisc = ctypes.c_int(axisc)
+    eulang = stypes.doubleVector(6)
+    unique = ctypes.c_bool()
+    libspice.xf2eul_c(xform, axisa, axisb, axisc, eulang, unique)
+    return eulang, unique
+
+
+def xf2rav(xform):
+    #Todo: test
+    xform = stypes.listtodoublematrix(xform, x=6, y=6)
+    rot = stypes.doubleMatrix()
+    av = stypes.doubleVector(3)
+    libspice.xf2rav_c(xform, rot, av)
+    return rot, av
+
+
 def xpose(m):
-    #Todo: Fix, something is not right, something is not right with the types
     m = stypes.listtodoublematrix(m)
     mout = stypes.doubleMatrix()
     libspice.xpose_c(m, mout)
     return stypes.matrixtolist(m)
+
+
+def xpose6(m):
+    #Todo: test
+    m = stypes.listtodoublematrix(m, x=6, y=6)
+    mout = stypes.doubleMatrix(x=6, y=6)
+    libspice.xpose6_c(m, mout)
+    return stypes.matrixtolist(m)
+
+# xposeg using void pointers, haven't attempted this yet
 
 ########################################################################################################################
 # Y
