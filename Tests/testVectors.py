@@ -25,3 +25,16 @@ print(spice.vhatg(v1,4))
 print(spice.vpack(1.0,2,3))
 print(spice.vperp([6.0,6.0,6.0], [2.0, 0.0, 0.0]))
 print(spice.vproj([6.0,6.0,6.0], [2.0, 0.0, 0.0]))
+
+
+print("test rot vectors")
+print(spice.vrotv([1.0,2.0,3.0], [0.0,0.0,1.0], spice.halfpi()))
+print(spice.vrotv([1.0,0.0,0.0], [0.0,0.0,1.0], spice.halfpi()))
+print(spice.vrotv([0.0,1.0,0.0], [0.0,0.0,1.0], spice.halfpi()))
+
+print("Vupack test")
+print(spice.vupack([1.0,2.0,3.0]))
+
+print("Zeros test")
+print(spice.vzero([0.0,0.0,1.0]))
+print(spice.vzero([0.0,0.0,0.0]))

@@ -228,6 +228,11 @@ def getfov(instid, room, shapelen, framelen):
 ########################################################################################################################
 # H
 
+
+def halfpi():
+    return libspice.halfpi_c()
+
+
 ########################################################################################################################
 # I
 
@@ -254,7 +259,24 @@ def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
 ########################################################################################################################
 # J
 
+def j1900():
+    return libspice.j1900_c()
 
+
+def j1950():
+    return libspice.j1950_c()
+
+
+def j2000():
+    return libspice.j2000_c()
+
+
+def j2100():
+    return libspice.j2100_c()
+
+
+def jyear():
+    return libspice.jyear_c()
 ########################################################################################################################
 # K
 
@@ -284,6 +306,9 @@ def mtxm(m1, m2):
 
 ########################################################################################################################
 # P
+
+def pi():
+    return libspice.pi_c()
 
 ########################################################################################################################
 # Q
@@ -344,6 +369,8 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
 ########################################################################################################################
 # T
 
+def twopi():
+    return libspice.twopi_c()
 
 ########################################################################################################################
 # U
@@ -382,6 +409,14 @@ def vdist(v1, v2):
     v1 = stypes.listtodoublevector(v1)
     v2 = stypes.listtodoublevector(v2)
     return libspice.vdist_c(v1, v2)
+
+
+def vdistg(v1, v2, ndim):
+    #Todo: test
+    v1 = stypes.listtodoublevector(v1)
+    v2 = stypes.listtodoublevector(v2)
+    ndim = ctypes.c_int(ndim)
+    return libspice.vdist_c(v1, v2, ndim)
 
 
 def vdot(v1, v2):
@@ -521,6 +556,122 @@ def vproj(a, b):
     vout = stypes.doubleVector(3)
     libspice.vproj_c(a, b, vout)
     return stypes.vectortolist(vout)
+
+
+def vrel(v1, v2):
+    v1 = stypes.listtodoublevector(v1)
+    v2 = stypes.listtodoublevector(v2)
+    return libspice.vrel_c(v1, v2)
+
+
+def vrelg(v1, v2, ndim):
+    #Todo: test
+    v1 = stypes.listtodoublevector(v1)
+    v2 = stypes.listtodoublevector(v2)
+    ndim = ctypes.c_int(ndim)
+    return libspice.vrelg_c(v1, v2, ndim)
+
+
+def vrotv(v, axis, theta):
+    #Tested, but clarly some rounding issues exist (0 as 6.123*10^-17, etc)
+    # halfpi is not exactly reprentable in IEEE 754 notation,
+    v = stypes.listtodoublevector(v)
+    axis = stypes.listtodoublevector(axis)
+    theta = ctypes.c_double(theta)
+    r = stypes.doubleVector(3)
+    libspice.vrotv_c(v, axis, theta, r)
+    return stypes.vectortolist(r)
+
+
+def vscl(s, v1):
+    #Todo: test
+    s = ctypes.c_double(s)
+    v1 = stypes.listtodoublevector(v1)
+    vout = stypes.doubleVector(3)
+    libspice.vscl_c(s, v1, vout)
+    return stypes.vectortolist(vout)
+
+
+def vsclg(s, v1, ndim):
+    #Todo: test
+    s = ctypes.c_double(s)
+    v1 = stypes.listtodoublevector(v1)
+    vout = stypes.doubleVector(ndim)
+    ndim = ctypes.c_int(ndim)
+    libspice.vsclg_c(s, v1, ndim, vout)
+    return stypes.vectortolist(vout)
+
+
+def vsep(v1, v2):
+    #Todo: test
+    v1 = stypes.listtodoublevector(v1)
+    v2 = stypes.listtodoublevector(v2)
+    return libspice.vsep_c(v1, v2)
+
+
+def vsepg(v1, v2, ndim):
+    #Todo: test
+    v1 = stypes.listtodoublevector(v1)
+    v2 = stypes.listtodoublevector(v2)
+    ndim = ctypes.c_int(ndim)
+    return libspice.vsepg_c(v1, v2, ndim)
+
+
+def vsub(v1, v2):
+    #Todo: test
+    v1 = stypes.listtodoublevector(v1)
+    v2 = stypes.listtodoublevector(v2)
+    vout = stypes.doubleVector(3)
+    libspice.vsub_c(v1, v2, vout)
+    return stypes.vectortolist(vout)
+
+
+def vsubg(v1, v2, ndim):
+    #Todo: test
+    v1 = stypes.listtodoublevector(v1)
+    v2 = stypes.listtodoublevector(v2)
+    vout = stypes.doubleVector(ndim)
+    ndim = stypes.ctypes.c_int(ndim)
+    libspice.vsubg_c(v1, v2, ndim, vout)
+    return stypes.vectortolist(vout)
+
+
+def vtmv(v1, matrix, v2):
+    #Todo: test
+    v1 = stypes.listtodoublevector(v1)
+    matrix = stypes.listtodoublematrix(matrix)
+    v2 = stypes.listtodoublevector(v2)
+    return libspice.vtmv_c(v1, matrix, v2)
+
+
+def vtmvg(v1, matrix, v2, nrow, ncol):
+    #Todo: test
+    v1 = stypes.listtodoublevector(v1)
+    matrix = stypes.listtodoublematrix(matrix, x=ncol, y=nrow)
+    v2 = stypes.listtodoublevector(v2)
+    nrow = ctypes.c_int(nrow)
+    ncol = ctypes.c_int(ncol)
+    return libspice.vtmvg_c(v1, matrix, v2, nrow, ncol)
+
+
+def vupack(v):
+    v1 = stypes.listtodoublevector(v)
+    x = ctypes.c_double()
+    y = ctypes.c_double()
+    z = ctypes.c_double()
+    libspice.vupack_c(v1, ctypes.byref(x), ctypes.byref(y), ctypes.byref(z))
+    return x.value, y.value, z.value
+
+
+def vzero(v):
+    v = stypes.listtodoublevector(v)
+    return libspice.vzero_c(v)
+
+
+def vzerog(v, ndim):
+    v = stypes.listtodoublevector(v)
+    ndim = stypes.ctypes.c_int(ndim)
+    return libspice.vzerog_c(v, ndim)
 
 ########################################################################################################################
 # W

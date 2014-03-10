@@ -222,6 +222,7 @@ libspice.gnpool_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctype
 ##########################################################################################################################################################
 # H
 
+libspice.halfpi_c.restype = ctypes.c_double
 libspice.hx2dp_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double, ctypes.c_bool, ctypes.c_char_p]
 
 ##########################################################################################################################################################
@@ -243,6 +244,11 @@ libspice.invort_c.argtypes = [ctypes.c_double]
 ##########################################################################################################################################################
 # J
 
+libspice.j1900_c.restype = ctypes.c_double
+libspice.j1950_c.restype = ctypes.c_double
+libspice.j2000_c.restype = ctypes.c_double
+libspice.j2100_c.restype = ctypes.c_double
+libspice.jyear_c.restype = ctypes.c_double
 
 ##########################################################################################################################################################
 # K
@@ -316,6 +322,7 @@ libspice.pckuof_c.argtypes = [ctypes.c_int]
 libspice.pcpool_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int]
 libspice.pdpool_c.argtypes = [ctypes.c_char_p, ctypes.c_int]
 libspice.pgrrec_c.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
+libspice.pi_c.restype = ctypes.c_double
 libspice.pipool_c.argtypes = [ctypes.c_char_p, ctypes.c_int]
 #libspice.pjelpl_c.argtypes = []
 libspice.pl2nvc_c.argtypes = [ctypes.c_double, ctypes.c_double]
@@ -456,6 +463,7 @@ libspice.tparse_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double, ct
 libspice.tpictr_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_bool, ctypes.c_char_p]
 #libspice.trcoff_c.argtypes = []
 libspice.tsetyr_c.argtypes = [ctypes.c_int]
+libspice.twopi_c.restype = ctypes.c_double
 libspice.twovec_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_double]
 
 ##########################################################################################################################################################
@@ -479,6 +487,8 @@ libspice.vaddg_c.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.POINTER(cty
 libspice.vcrss_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3), (ctypes.c_double * 3)]
 libspice.vdist_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3)]
 libspice.vdist_c.restype = ctypes.c_double
+libspice.vdistg_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3), ctypes.c_int]
+libspice.vdistg_c.restype = ctypes.c_double
 libspice.vdot_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3)]
 libspice.vdot_c.restype = ctypes.c_double
 libspice.vdotg_c.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.c_int]
@@ -501,12 +511,29 @@ libspice.vperp_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3), (ctyp
 libspice.vprjp_c.argtypes = [ctypes.c_double]
 libspice.vprjpi_c.argtypes = [ctypes.c_double, ctypes.c_bool]
 libspice.vproj_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3), (ctypes.c_double * 3)]
-libspice.vrotv_c.argtypes = [ctypes.c_double, ctypes.c_double]
-libspice.vscl_c.argtypes = [ctypes.c_double, ctypes.c_double]
-libspice.vsclg_c.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.c_double]
-libspice.vsub_c.argtypes = [ctypes.c_double]
-libspice.vsubg_c.argtypes = [ctypes.c_int, ctypes.c_double]
-libspice.vupack_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double]
+libspice.vrelg_c.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.c_int]
+libspice.vrelg_c.restype = ctypes.c_double
+libspice.vrel_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3)]
+libspice.vrel_c.restype = ctypes.c_double
+libspice.vrotv_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3), ctypes.c_double, (ctypes.c_double * 3)]
+libspice.vscl_c.argtypes = [ctypes.c_double, (ctypes.c_double * 3), (ctypes.c_double * 3)]
+libspice.vsclg_c.argtypes = [ctypes.c_double, ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.POINTER(ctypes.c_double)]
+libspice.vsep_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3)]
+libspice.vsep_c.restype = ctypes.c_double
+libspice.vsepg_c.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.c_int]
+libspice.vsepg_c.restype = ctypes.c_double
+libspice.vsub_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3), (ctypes.c_double * 3)]
+libspice.vsubg_c.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.POINTER(ctypes.c_double)]
+libspice.vtmv_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3)*3, (ctypes.c_double * 3)]
+libspice.vtmv_c.restype = ctypes.c_double
+libspice.vtmvg_c.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_int]
+libspice.vtmvg_c.restype = ctypes.c_double
+libspice.vupack_c.argtypes = [(ctypes.c_double * 3), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
+libspice.vzero_c.argtypes = [(ctypes.c_double * 3)]
+libspice.vzero_c.restype = ctypes.c_bool
+libspice.vzerog_c.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.c_int]
+libspice.vzerog_c.restype = ctypes.c_bool
+
 ##########################################################################################################################################################
 # W
 
