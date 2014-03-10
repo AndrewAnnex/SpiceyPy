@@ -429,9 +429,98 @@ def vhatg(v1, ndim):
     return stypes.vectortolist(vout)
 
 
+def vlcom(a, v1, b, v2):
+    #Todo: test
+    v1 = stypes.listtodoublevector(v1)
+    v2 = stypes.listtodoublevector(v2)
+    sumv = stypes.doubleVector(3)
+    a = ctypes.c_double(a)
+    b = ctypes.c_double(b)
+    libspice.vlcom_c(a, v1, b, v2, sumv)
+    return stypes.vectortolist(sumv)
+
+
+def vlcom3(a, v1, b, v2, c, v3):
+    #Todo: test
+    v1 = stypes.listtodoublevector(v1)
+    v2 = stypes.listtodoublevector(v2)
+    v3 = stypes.listtodoublevector(v3)
+    sumv = stypes.doubleVector(3)
+    a = ctypes.c_double(a)
+    b = ctypes.c_double(b)
+    c = ctypes.c_double(c)
+    libspice.vlcom3_c(a, v1, b, v2, c, v3, sumv)
+    return stypes.vectortolist(sumv)
+
+
+def vlcomg(n, a, v1, b, v2):
+    #Todo: test
+    v1 = stypes.listtodoublevector(v1)
+    v2 = stypes.listtodoublevector(v2)
+    sumv = stypes.doubleVector(n)
+    a = ctypes.c_double(a)
+    b = ctypes.c_double(b)
+    n = ctypes.c_int(n)
+    libspice.vlcomg_c(n, a, v1, b, v2, sumv)
+    return stypes.vectortolist(sumv)
+
+
+def vminug(vin, ndim):
+    #todo: test
+    vin = stypes.listtodoublevector(vin)
+    vout = stypes.doubleVector(ndim)
+    ndim = ctypes.c_int(ndim)
+    libspice.vminug_c(vin, ndim, vout)
+    return stypes.vectortolist(vout)
+
+
+def vminus(vin):
+    #todo: test
+    vin = stypes.listtodoublevector(vin)
+    vout = stypes.doubleVector(3)
+    libspice.vminus_c(vin, vout)
+    return stypes.vectortolist(vout)
+
+
 def vnorm(v):
     v = stypes.listtodoublevector(v)
     return libspice.vnorm_c(v)
+
+
+def vnormg(v, ndim):
+    #todo: test
+    v = stypes.listtodoublevector(v)
+    ndim = ctypes.c_int(ndim)
+    return libspice.vnormg_c(v, ndim)
+
+
+def vpack(x, y, z):
+    x = ctypes.c_double(x)
+    y = ctypes.c_double(y)
+    z = ctypes.c_double(z)
+    vout = stypes.doubleVector(3)
+    libspice.vpack_c(x, y, z, vout)
+    return stypes.vectortolist(vout)
+
+
+def vperp(a, b):
+    a = stypes.listtodoublevector(a)
+    b = stypes.listtodoublevector(b)
+    vout = stypes.doubleVector(3)
+    libspice.vperp_c(a, b, vout)
+    return stypes.vectortolist(vout)
+
+#vprjp
+
+#vprjpi
+
+
+def vproj(a, b):
+    a = stypes.listtodoublevector(a)
+    b = stypes.listtodoublevector(b)
+    vout = stypes.doubleVector(3)
+    libspice.vproj_c(a, b, vout)
+    return stypes.vectortolist(vout)
 
 ########################################################################################################################
 # W

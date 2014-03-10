@@ -22,3 +22,6 @@ print(spice.vequg(v1,3))
 v1 = [5.0,12.0,0.0,1.0]
 print(spice.vhat(v1[0:3]))
 print(spice.vhatg(v1,4))
+print(spice.vpack(1.0,2,3))
+print(spice.vperp([6.0,6.0,6.0], [2.0, 0.0, 0.0]))
+print(spice.vproj([6.0,6.0,6.0], [2.0, 0.0, 0.0]))
