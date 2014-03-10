@@ -42,3 +42,7 @@ print(spice.vzero([0.0,0.0,0.0]))
 print("unorm test")
 print(spice.unorm([5.0, 7.0, 12.0]))
 print(spice.unormg([5.0, 7.0, 12.0, 2.0], 4))
+
+
+print("order tests: ")
+print(spice.orderi([3,1,4,2], 4))

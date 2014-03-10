@@ -307,34 +307,41 @@ libspice.nvc2pl_c.argtypes = [ctypes.c_double]
 
 ##########################################################################################################################################################
 # O
-libspice.orderc_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int]
-libspice.orderd_c.argtypes = [ctypes.c_int, ctypes.c_int]
-libspice.orderi_c.argtypes = [ctypes.c_int, ctypes.c_int]
-libspice.oscelt_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double]
+#ordc_c
+#ordd_c
+#ordi_c
+libspice.orderc_c.argtypes = [ctypes.c_int, ctypes.c_void_p, ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
+libspice.orderd_c.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_int]
+libspice.orderi_c.argtypes = [ctypes.POINTER(ctypes.c_int), ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
+libspice.oscelt_c.argtypes = [ctypes.c_double*6, ctypes.c_double, ctypes.c_double, ctypes.c_double*8]
 
 ##########################################################################################################################################################
 # P
 
 #libspice.pckcov_c.argtypes = [ctypes.c_char_p, ctypes.c_int, None]
 #libspice.pckfrm_c.argtypes = [ctypes.c_char_p, None]
-libspice.pcklof_c.argtypes = [ctypes.c_char_p, ctypes.c_int]
+libspice.pcklof_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
 libspice.pckuof_c.argtypes = [ctypes.c_int]
-libspice.pcpool_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int]
-libspice.pdpool_c.argtypes = [ctypes.c_char_p, ctypes.c_int]
-libspice.pgrrec_c.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
+libspice.pcpool_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]
+libspice.pdpool_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_double)]
+libspice.pipool_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
+libspice.pgrrec_c.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3)]
 libspice.pi_c.restype = ctypes.c_double
-libspice.pipool_c.argtypes = [ctypes.c_char_p, ctypes.c_int]
 #libspice.pjelpl_c.argtypes = []
 libspice.pl2nvc_c.argtypes = [ctypes.c_double, ctypes.c_double]
 libspice.pl2nvp_c.argtypes = [ctypes.c_double, ctypes.c_double]
 libspice.pl2psv_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double]
+libspice.pos_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
+libspice.pos_c.restype = ctypes.c_int
+libspice.posr_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
+libspice.posr_c.restype = ctypes.c_int
 #libspice.prefix_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_char_p]
-libspice.prop2b_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double]
-libspice.prsdp_c.argtypes = [ctypes.c_char_p, ctypes.c_double]
-libspice.prsint_c.argtypes = [ctypes.c_char_p, ctypes.c_int]
+libspice.prop2b_c.argtypes = [ctypes.c_double, (ctypes.c_double*6), ctypes.c_double, (ctypes.c_double*6)]
+libspice.prsdp_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
+libspice.prsint_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
 #libspice.psv2pl_c.argtypes = []
 libspice.putcml_c.argtypes = [ctypes.c_int, ctypes.c_char_p]
-libspice.pxform_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double]
+libspice.pxform_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, (ctypes.c_double*3)*3]
 
 ##########################################################################################################################################################
 # Q

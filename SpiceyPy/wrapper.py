@@ -312,12 +312,178 @@ def mtxm(m1, m2):
 ########################################################################################################################
 # O
 
+#ordc
+
+
+#ordd
+
+
+#ordi
+
+
+def orderc(lenvals, array, ndim):
+    #Todo: test, works but I am not convinced yet
+    iorder = stypes.listtointvector([0] * ndim)
+    ndim = ctypes.c_int(ndim)
+    array = stypes.listtocharvector(array)
+    lenvals = ctypes.c_int(lenvals)
+    libspice.orderc_c(lenvals, array, ndim, iorder)
+    return stypes.vectortolist(iorder)
+
+
+def orderd(array, ndim):
+    #Todo: test
+    array = stypes.listtodoublevector(array)
+    iorder = stypes.listtointvector([0] * ndim)
+    ndim = ctypes.c_int(ndim)
+    libspice.orderd_c(array, ndim, iorder)
+    return stypes.vectortolist(iorder)
+
+
+def orderi(array, ndim):
+    array = stypes.listtointvector(array)
+    iorder = stypes.listtointvector([0] * ndim)
+    ndim = ctypes.c_int(ndim)
+    libspice.orderi_c(array, ndim, iorder)
+    return stypes.vectortolist(iorder)
+
+
+def oscelt(stat, et, mu):
+    #Todo: Test
+    stat = stypes.listtodoublevector(stat)
+    et = ctypes.c_double(et)
+    mu = ctypes.c_double(mu)
+    elts = stypes.doubleVector(8)
+    libspice.oscelt_c(stat, et, mu, elts)
+    return stypes.vectortolist(elts)
 
 ########################################################################################################################
 # P
 
+
+def pcklof(filename):
+    #Todo: test
+    filename = stypes.strtocharpoint(filename)
+    handle = ctypes.c_int()
+    libspice.pcklof_c(filename, ctypes.byref(handle))
+    return handle.value
+
+
+def pckuof(handle):
+    #Todo: test
+    handle = ctypes.c_int(handle)
+    libspice.pckuof_c(handle)
+    pass
+
+
+def pcpool(name, n, lenvals, cvals):
+    #Todo: test
+    name = stypes.strtocharpoint(name)
+    cvals = stypes.listtocharvector(cvals)
+    n = ctypes.c_int(n)
+    lenvals = ctypes.c_int(lenvals)
+    libspice.pcpool_c(name, n, lenvals, cvals)
+
+
+def pdpool(name, n, dvals):
+    #Todo: test
+    name = stypes.strtocharpoint(name)
+    dvals = stypes.listtodoublevector(dvals)
+    n = ctypes.c_int(n)
+    libspice.pdpool_c(name, n, dvals)
+
+
+def pipool(name, n, ivals):
+    #Todo: test
+    name = stypes.strtocharpoint(name)
+    ivals = stypes.listtointvector(ivals)
+    n = ctypes.c_int(n)
+    libspice.pipool_c(name, n, ivals)
+
+
+def pgrrec(body, lon, lat, alt, re, f):
+    #Todo: test
+    body = stypes.strtocharpoint(body)
+    lon = ctypes.c_double(lon)
+    lat = ctypes.c_double(lat)
+    alt = ctypes.c_double(alt)
+    re = ctypes.c_double(re)
+    f = ctypes.c_double(f)
+    rectan = stypes.doubleVector(3)
+    libspice.pgrrec(body, lon, lat, alt, re, f, rectan)
+    return stypes.vectortolist(rectan)
+
+
 def pi():
     return libspice.pi_c()
+
+#pjelpl
+
+#pl2ncv
+
+#pl2nvp
+
+#pl2psv
+
+
+def pos(string, substr, start):
+    string = stypes.strtocharpoint(string)
+    substr = stypes.strtocharpoint(substr)
+    start = ctypes.c_int(start)
+    return libspice.pos_c(string, substr, start)
+
+
+def posr(string, substr, start):
+    string = stypes.strtocharpoint(string)
+    substr = stypes.strtocharpoint(substr)
+    start = ctypes.c_int(start)
+    return libspice.posr_c(string, substr, start)
+
+
+#prompt, skip for no as this is not really an important function for python users
+
+
+def prop2b(gm, pvinit, dt):
+    #todo: test
+    gm = ctypes.c_double(gm)
+    pvinit = stypes.listtodoublevector(pvinit)
+    dt = ctypes.c_double(dt)
+    pvprop = stypes.doubleVector(6)
+    libspice.prop2b_c(gm, pvinit, dt, pvprop)
+    return stypes.vectortolist(pvprop)
+
+
+def prsdp(string):
+    #Todo: test
+    string = stypes.strtocharpoint(string)
+    dpval = ctypes.c_double()
+    libspice.prsdp_c(string, ctypes.POINTER(dpval))
+    return dpval.value
+
+
+def prsint(string):
+    #Todo: test
+    string = stypes.strtocharpoint(string)
+    intval = ctypes.c_int()
+    libspice.prsint_c(string, ctypes.POINTER(intval))
+    return intval.value
+
+
+# psv2pl
+
+
+# skip putcml, is this really needed for python users?
+
+
+def pxform(fromstr, tostr, et):
+    #Todo: test
+    et = ctypes.c_double(et)
+    tostr = stypes.strtocharpoint(tostr)
+    fromstr = stypes.strtocharpoint(fromstr)
+    rotate = stypes.doubleMatrix()
+    libspice.pxform_c(fromstr, tostr, et, rotate)
+    return stypes.matrixtolist(rotate)
+
 
 ########################################################################################################################
 # Q
