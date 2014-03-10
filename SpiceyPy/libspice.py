@@ -458,12 +458,11 @@ libspice.szpool_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_bool]
 libspice.timdef_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
 libspice.timout_c.argtypes = [ctypes.c_double, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
 libspice.tipbod_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double, ctypes.c_double]
-libspice.tisbod_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double, ctypes.c_double]
+libspice.tisbod_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double, (ctypes.c_double * 6)*6]
 libspice.tkvrsn_c.argtypes = [ctypes.c_char_p]
 libspice.tkvrsn_c.restype = ctypes.c_char_p
-
-libspice.tparse_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double, ctypes.c_char_p]
-libspice.tpictr_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_bool, ctypes.c_char_p]
+libspice.tparse_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_double), ctypes.c_char_p]
+libspice.tpictr_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool), ctypes.c_char_p]
 libspice.trace_c.argtypes = [ctypes.c_double * 3]
 libspice.trace_c.restype = ctypes.c_double
 libspice.trcoff_c.argtypes = None

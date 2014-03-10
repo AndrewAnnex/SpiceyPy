@@ -403,9 +403,74 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
 # T
 
 
+def timdef(action, item, lenout, value=None):
+    #todo: test
+    action = stypes.strtocharpoint(action)
+    item = stypes.strtocharpoint(item)
+    lenout = ctypes.c_int(lenout)
+    if value is None:
+        value = stypes.strtocharpoint(" "*lenout.value)
+    else:
+        value = stypes.strtocharpoint(value)
+    libspice.timdef_c(action, item, lenout, value)
+    return value
+
+
+def timout(et, pictur, lenout):
+    #todo: test
+    pictur = stypes.strtocharpoint(pictur)
+    output = stypes.strtocharpoint(" " * lenout)
+    et = ctypes.c_double(et)
+    lenout = ctypes.c_int(lenout)
+    libspice.timout_c(et, pictur, lenout, output)
+    return output
+
+
+def tipbod(ref, body, et):
+    #Todo: test
+    ref = stypes.strtocharpoint(ref)
+    body = ctypes.c_int(body)
+    et = ctypes.c_int(et)
+    retmatrix = stypes.doubleMatrix()
+    libspice.tipbod_c(ref, body, et, retmatrix)
+    return stypes.matrixtolist(retmatrix)
+
+
+def tisbod(ref, body, et):
+    #Todo: test
+    ref = stypes.strtocharpoint(ref)
+    body = ctypes.c_int(body)
+    et = ctypes.c_int(et)
+    retmatrix = stypes.doubleMatrix(x=6, y=6)
+    libspice.tisbod_c(ref, body, et, retmatrix)
+    return stypes.matrixtolist(retmatrix)
+
+
 def tkvrsn(item):
     item = stypes.strtocharpoint(item)
     return libspice.tkvrsn_c(item)
+
+
+def tparse(instring, lenout):
+    #Todo: test
+    errmsg = stypes.strtocharpoint(" " * lenout)
+    lenout = ctypes.c_int(lenout)
+    instring = stypes.strtocharpoint(instring)
+    sp2000 = ctypes.c_double()
+    libspice.tparse_c(instring, lenout, ctypes.POINTER(sp2000), errmsg)
+    return sp2000.value, errmsg
+
+
+def tpictr(sample, lenout, lenerr):
+    #Todo: test
+    sample = stypes.strtocharpoint(sample)
+    pictur = stypes.strtocharpoint(" " * lenout)
+    errmsg = stypes.strtocharpoint(" " * lenerr)
+    lenout = ctypes.c_int(lenout)
+    lenerr = ctypes.c_int(lenerr)
+    ok = ctypes.c_bool()
+    libspice.tpictr_c(sample, lenout, lenerr, pictur, ctypes.POINTER(ok), errmsg)
+    return pictur, ok.value, errmsg
 
 
 def trace(matrix):
