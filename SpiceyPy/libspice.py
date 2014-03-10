@@ -352,15 +352,16 @@ libspice.qxq_c.argtypes = [ctypes.c_double]
 
 ##########################################################################################################################################################
 # R
-libspice.radrec_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
-libspice.rav2xf_c.argtypes = [ctypes.c_double]
-libspice.raxisa_c.argtypes = [ctypes.c_double, ctypes.c_double]
-libspice.rdtext_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_bool]
-libspice.reccyl_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double]
+libspice.radrec_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3)]
+libspice.rav2xf_c.argtypes = [(ctypes.c_double * 3)*3, (ctypes.c_double * 3), (ctypes.c_double * 6)*6]
+libspice.raxisa_c.argtypes = [(ctypes.c_double * 3)*3, (ctypes.c_double * 3), ctypes.POINTER(ctypes.c_double)]
+libspice.rdtext_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
+libspice.reccyl_c.argtypes = [(ctypes.c_double * 3), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
 libspice.recgeo_c.argtypes = [(ctypes.c_double * 3), ctypes.c_double, ctypes.c_double, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
 libspice.reclat_c.argtypes = [(ctypes.c_double * 3), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
-libspice.recpgr_c.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
-libspice.recrad_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double]
+libspice.recpgr_c.argtypes = [ctypes.c_char_p, (ctypes.c_double * 3), ctypes.c_double, ctypes.c_double, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
+libspice.recrad_c.argtypes = [(ctypes.c_double*3), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
+libspice.recsph_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double]
 libspice.reordc_c.argtypes = [ctypes.c_int, ctypes.c_int]
 libspice.reordd_c.argtypes = [ctypes.c_int, ctypes.c_double]
 libspice.reordi_c.argtypes = [ctypes.c_int, ctypes.c_int]
@@ -374,12 +375,13 @@ libspice.repmd_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, 
 libspice.repmf_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
 libspice.repmi_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_char_p]
 libspice.repmot_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
-#libspice.reset_c.argtypes = []
-libspice.recsph_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double]
-libspice.rotate_c.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.c_double]
-libspice.rotmat_c.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.c_double]
-libspice.rotvec_c.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.c_double]
-libspice.rquad_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
+libspice.reset_c.argtypes = None
+#skipping return_c
+libspice.rotate_c.argtypes = [ctypes.c_double, ctypes.c_int, (ctypes.c_double*3)*3]
+libspice.rotmat_c.argtypes = [(ctypes.c_double*3)*3, ctypes.c_double, ctypes.c_int, (ctypes.c_double*3)*3]
+libspice.rotvec_c.argtypes = [(ctypes.c_double*3), ctypes.c_double, ctypes.c_int, (ctypes.c_double*3)]
+libspice.rpd_c.restype = ctypes.c_double
+libspice.rquad_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*2), (ctypes.c_double*2)]
 
 ##########################################################################################################################################################
 # S

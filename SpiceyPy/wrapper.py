@@ -517,6 +517,53 @@ def qxq(q1, q2):
 # R
 
 
+def radrec(inrange, re, dec):
+    #Todo: test
+    inrange = ctypes.c_double(inrange)
+    re = ctypes.c_double(re)
+    dec = ctypes.c_double(dec)
+    rectan = stypes.doubleVector(3)
+    libspice.radrec_c(inrange, re, dec, rectan)
+    return stypes.vectortolist(rectan)
+
+
+def rav2xf(rot, av):
+    #Todo: test
+    rot = stypes.listtodoublematrix(rot)
+    av = stypes.listtodoublevector(av)
+    xform = stypes.doubleMatrix(x=6, y=6)
+    libspice.rav2xf_c(rot, av, xform)
+    return stypes.matrixtolist(xform)
+
+
+def raxisa(matrix):
+    #Todo: test
+    matrix = stypes.listtodoublematrix(matrix)
+    axis = stypes.doubleVector(3)
+    angle = ctypes.c_double()
+    libspice.raxisa_c(matrix, axis, ctypes.byref(angle))
+    return stypes.vectortolist(axis), angle.value
+
+
+def rdtext(file, lenout):
+    #Todo: test
+    file = stypes.strtocharpoint(file)
+    line = stypes.strtocharpoint(" "*lenout)
+    lenout = ctypes.c_int(lenout)
+    eof = ctypes.c_bool()
+    libspice.rdtext_c(file, lenout, line, ctypes.byref(eof))
+    return line, eof.value
+
+
+def reccyl(rectan):
+    rectan = stypes.listtodoublevector(rectan)
+    radius = ctypes.c_double(0)
+    lon = ctypes.c_double(0)
+    z = ctypes.c_double(0)
+    libspice.reccyl_c(rectan, ctypes.byref(radius), ctypes.byref(lon), ctypes.byref(z))
+    return radius.value, lon.value, z.value
+
+
 def reclat(rectan):
     rectan = stypes.listtodoublevector(rectan)
     radius = ctypes.c_double(0)
@@ -535,6 +582,104 @@ def recgeo(rectan, re, f):
     alt = ctypes.c_double(0)
     libspice.recgeo_c(rectan, re, f, ctypes.byref(longitude), ctypes.byref(latitude), ctypes.byref(alt))
     return longitude.value, latitude.value, alt.value
+
+
+def recpgr(body, rectan, re, f):
+    #Todo: Test
+    body = stypes.strtocharpoint(body)
+    rectan = stypes.listtodoublevector(rectan)
+    re = ctypes.c_double(re)
+    f = ctypes.c_double(f)
+    lon = ctypes.c_double()
+    lat = ctypes.c_double()
+    alt = ctypes.c_double()
+    libspice.recpgr_c(body, rectan, re, f, ctypes.byref(lon), ctypes.byref(lat), ctypes.byref(alt))
+    return lon.value, lat.value, alt.value
+
+
+def recrad(rectan):
+    #Todo: Test
+    rectan = stypes.listtodoublevector(rectan)
+    outrange = ctypes.c_double()
+    ra = ctypes.c_double()
+    dec = ctypes.c_double()
+    libspice.recrad_c(rectan, ctypes.byref(outrange), ctypes.byref(ra), ctypes.byref(dec))
+    return outrange.value, ra.value, dec.value
+
+
+def recsph(rectan):
+    #Todo: Test
+    rectan = stypes.listtodoublevector(rectan)
+    r = ctypes.c_double()
+    colat = ctypes.c_double()
+    lon = ctypes.c_double()
+    libspice.rectan_c(rectan, ctypes.byref(r), ctypes.byref(colat), ctypes.byref(lon))
+    return r.value, colat.value, lon.value
+
+#removc
+#removd
+#removi
+#reordc
+#reordi
+#reordi
+#reordl
+#repmc
+#repmct
+#repmd
+#repmf
+#repmi
+#repmot
+
+
+def reset():
+    libspice.reset_c()
+    pass
+
+
+#skipping return_c
+
+
+def rotate(angle, iaxis):
+    #Todo: test
+    angle = ctypes.c_double(angle)
+    iaxis = ctypes.c_int(iaxis)
+    mout = stypes.doubleMatrix()
+    libspice.rotate_c(angle, iaxis, mout)
+    return stypes.matrixtolist(mout)
+
+
+def rotmat(m1, angle, iaxis):
+    #Todo: test
+    m1 = stypes.listtodoublematrix(m1)
+    angle = ctypes.c_double(angle)
+    iaxis = ctypes.c_int(iaxis)
+    mout = stypes.doubleMatrix()
+    libspice.rotmat_c(m1, angle, iaxis, mout)
+    return stypes.matrixtolist(mout)
+
+
+def rotvec(v1, angle, iaxis):
+    #Todo: test
+    v1 = stypes.listtodoublevector(v1)
+    angle = ctypes.c_double(angle)
+    iaxis = ctypes.c_int(iaxis)
+    vout = stypes.doubleVector(3)
+    libspice.rotvec_c(v1, angle, iaxis, vout)
+    return stypes.vectortolist(vout)
+
+
+def rpd():
+    return libspice.rpd_c()
+
+
+def rquad(a, b, c):
+    a = ctypes.c_double(a)
+    b = ctypes.c_double(b)
+    c = ctypes.c_double(c)
+    root1 = stypes.doubleVector(2)
+    root2 = stypes.doubleVector(2)
+    libspice.rquad(a, b, c, root1, root2)
+    return root1, root2
 
 ########################################################################################################################
 # S
