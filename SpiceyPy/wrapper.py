@@ -324,6 +324,30 @@ def pi():
 ########################################################################################################################
 # Q
 
+def q2m(q):
+    q = stypes.listtodoublevector(q)
+    mout = stypes.doubleMatrix()
+    libspice.q2m_c(q, mout)
+    return stypes.matrixtolist(mout)
+
+
+def qdq2av(q, dq):
+    #Todo: test
+    q = stypes.listtodoublevector(q)
+    dq = stypes.listtodoublevector(dq)
+    vout = stypes.doubleVector(3)
+    libspice.qdq2av(q, dq, vout)
+    return stypes.vectortolist(vout)
+
+
+def qxq(q1, q2):
+    #Todo: test
+    q1 = stypes.listtodoublevector(q1)
+    q2 = stypes.listtodoublevector(q2)
+    vout = stypes.doubleVector(4)
+    libspice.qxq_c(q1, q2, vout)
+    return stypes.vectortolist(vout)
+
 ########################################################################################################################
 # R
 
@@ -385,6 +409,13 @@ def twopi():
 
 ########################################################################################################################
 # U
+
+def ucase(inchar, lenout):
+    inchar = stypes.strtocharpoint(inchar)
+    outchar = stypes.strtocharpoint(" "*lenout)
+    lenout = ctypes.c_int(lenout)
+    libspice.ucase_c(inchar, lenout, outchar)
+    return outchar.value
 
 
 ########################################################################################################################

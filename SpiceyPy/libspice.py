@@ -339,8 +339,8 @@ libspice.pxform_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double,
 ##########################################################################################################################################################
 # Q
 
-libspice.q2m_c.argtypes = [ctypes.c_double]
-libspice.qdq2av_c.argtypes = [ctypes.c_double]
+libspice.q2m_c.argtypes = [ctypes.c_double * 4, (ctypes.c_double * 3)*3]
+libspice.qdq2av_c.argtypes = [ctypes.c_double * 4, ctypes.c_double * 4, ctypes.c_double * 3]
 libspice.qxq_c.argtypes = [ctypes.c_double]
 
 ##########################################################################################################################################################
