@@ -281,6 +281,17 @@ def jyear():
 # K
 
 
+def kclear():
+    libspice.kclear_c()
+    pass
+
+
+def ktotal(kind):
+    kind = stypes.strtocharpoint(kind)
+    count = ctypes.c_int(0)
+    libspice.ktotal_c(kind, ctypes.byref(count))
+    return count.value
+
 ########################################################################################################################
 # L
 

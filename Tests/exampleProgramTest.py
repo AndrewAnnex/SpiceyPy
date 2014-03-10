@@ -11,6 +11,8 @@ time = '2004 jun 11 19:32:00'
 # http://naif.jpl.nasa.gov/naif/tutorials.html
 spice.furnsh('./Kernels/testmetak.txt')
 
+print(spice.ktotal("ALL"))
+
 et = spice.str2et(time)
 print("Spicetypes Epoch: ", et)
 
@@ -65,3 +67,5 @@ print("Range from spacecraft to intercept point (km): ", spice.vnorm(iluminRes['
 print("Intercept phase angle (deg): ", spice.dpr()*iluminRes['phase'])
 print("Intercept solar incidence angle (deg): ", spice.dpr()*iluminRes['solar'])
 print("Intercept emission angle (deg): ", spice.dpr()*iluminRes['emissn'])
+
+spice.kclear()

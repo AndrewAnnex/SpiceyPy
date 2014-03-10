@@ -252,10 +252,10 @@ libspice.jyear_c.restype = ctypes.c_double
 
 ##########################################################################################################################################################
 # K
-#libspice.kclear_c.argtypes = []
+libspice.kclear_c.restype = None
 libspice.kdata_c.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_bool]
 libspice.kinfo_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_bool]
-libspice.ktotal_c.argtypes = [ctypes.c_char_p, ctypes.c_int]
+libspice.ktotal_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
 libspice.kxtrct_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_bool, ctypes.c_char_p]
 
 ##########################################################################################################################################################
