@@ -361,6 +361,74 @@ def vadd(v1, v2):
     return stypes.vectortolist(vout)
 
 
+def vaddg(v1, v2, ndim):
+    v1 = stypes.listtodoublevector(v1)
+    v2 = stypes.listtodoublevector(v2)
+    vout = stypes.doubleVector(ndim)
+    ndim = ctypes.c_int(ndim)
+    libspice.vaddg_c(v1, v2, ndim, vout)
+    return stypes.vectortolist(vout)
+
+
+def vcrss(v1, v2):
+    v1 = stypes.listtodoublevector(v1)
+    v2 = stypes.listtodoublevector(v2)
+    vout = stypes.doubleVector(3)
+    libspice.vcrss_c(v1, v2, vout)
+    return stypes.vectortolist(vout)
+
+
+def vdist(v1, v2):
+    v1 = stypes.listtodoublevector(v1)
+    v2 = stypes.listtodoublevector(v2)
+    return libspice.vdist_c(v1, v2)
+
+
+def vdot(v1, v2):
+    #Works but not verified, this would take all of 2 seconds to do however
+    v1 = stypes.listtodoublevector(v1)
+    v2 = stypes.listtodoublevector(v2)
+    return libspice.vdot_c(v1, v2)
+
+
+def vdotg(v1, v2, ndim):
+    #Works but not verified, this would take all of 2 seconds to do however
+    v1 = stypes.listtodoublevector(v1)
+    v2 = stypes.listtodoublevector(v2)
+    ndim = ctypes.c_int(ndim)
+    return libspice.vdot_c(v1, v2, ndim)
+
+
+def vequ(v1):
+    v1 = stypes.listtodoublevector(v1)
+    vout = stypes.doubleVector(3)
+    libspice.vequ_c(v1, vout)
+    return stypes.vectortolist(vout)
+
+
+def vequg(v1, ndim):
+    v1 = stypes.listtodoublevector(v1)
+    vout = stypes.doubleVector(ndim)
+    ndim = ctypes.c_int(ndim)
+    libspice.vequg_c(v1, ndim, vout)
+    return stypes.vectortolist(vout)
+
+
+def vhat(v1):
+    v1 = stypes.listtodoublevector(v1)
+    vout = stypes.doubleVector(3)
+    libspice.vhat_c(v1, vout)
+    return stypes.vectortolist(vout)
+
+
+def vhatg(v1, ndim):
+    v1 = stypes.listtodoublevector(v1)
+    vout = stypes.doubleVector(ndim)
+    ndim = ctypes.c_int(ndim)
+    libspice.vhatg_c(v1, ndim, vout)
+    return stypes.vectortolist(vout)
+
+
 def vnorm(v):
     v = stypes.listtodoublevector(v)
     return libspice.vnorm_c(v)

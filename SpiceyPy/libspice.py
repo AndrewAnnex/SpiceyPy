@@ -474,13 +474,19 @@ libspice.utc2et_c.argtypes = [ctypes.c_char_p, ctypes.c_double]
 # V
 
 libspice.vadd_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3), (ctypes.c_double * 3)]
-libspice.vaddg_c.argtypes = [ctypes.c_int, ctypes.c_double]
+libspice.vaddg_c.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.POINTER(ctypes.c_double)]
 #libspice.valid_c.argtypes = [ctypes.c_int, ctypes.c_int, None]
-libspice.vcrss_c.argtypes = [ctypes.c_double]
-libspice.vequ_c.argtypes = [ctypes.c_double]
-libspice.vequg_c.argtypes = [ctypes.c_int, ctypes.c_double]
-libspice.vhat_c.argtypes = [ctypes.c_double]
-libspice.vhatg_c.argtypes = [ctypes.c_int, ctypes.c_double]
+libspice.vcrss_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3), (ctypes.c_double * 3)]
+libspice.vdist_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3)]
+libspice.vdist_c.restype = ctypes.c_double
+libspice.vdot_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3)]
+libspice.vdot_c.restype = ctypes.c_double
+libspice.vdotg_c.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.c_int]
+libspice.vdotg_c.restype = ctypes.c_double
+libspice.vequ_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3)]
+libspice.vequg_c.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.POINTER(ctypes.c_double)]
+libspice.vhat_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3)]
+libspice.vhatg_c.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.POINTER(ctypes.c_double)]
 libspice.vlcom_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double]
 libspice.vlcom3_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
 libspice.vlcomg_c.argtypes = [ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double]
