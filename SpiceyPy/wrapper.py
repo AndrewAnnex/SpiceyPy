@@ -418,6 +418,61 @@ def ucase(inchar, lenout):
     return outchar.value
 
 
+def ucrss(v1, v2):
+    #Todo: test
+    v1 = stypes.listtodoublevector(v1)
+    v2 = stypes.listtodoublevector(v2)
+    vout = stypes.doubleVector(3)
+    libspice.ucrss_c(v1, v2, vout)
+    return stypes.vectortolist(vout)
+
+
+#UDDC # callback?
+
+
+#UDDF # callback?
+
+
+#UNION # cells
+
+
+def unitim(epoch, insys, outsys):
+    #Todo: test
+    epoch = ctypes.c_double(epoch)
+    insys = stypes.strtocharpoint(insys)
+    outsys = stypes.strtocharpoint(outsys)
+    return libspice.unitim_c(epoch, insys, outsys)
+
+
+def unload(filename):
+    filename = stypes.strtocharpoint(filename)
+    libspice.unload_c(filename)
+    pass
+
+
+def unorm(v1):
+    v1 = stypes.listtodoublevector(v1)
+    vout = stypes.doubleVector(3)
+    vmag = ctypes.c_double(0)
+    libspice.unorm_c(v1, vout, ctypes.byref(vmag))
+    return stypes.vectortolist(vout), vmag.value
+
+
+def unormg(v1, ndim):
+    v1 = stypes.listtodoublevector(v1)
+    vout = stypes.doubleVector(ndim)
+    vmag = ctypes.c_double(0)
+    ndim = ctypes.c_int(ndim)
+    libspice.unormg_c(v1, ndim, vout, ctypes.byref(vmag))
+    return stypes.vectortolist(vout), vmag.value
+
+
+def utc2et(utcstr):
+    #Todo: test
+    utcstr = stypes.strtocharpoint(utcstr)
+    et = ctypes.c_double(0)
+    libspice.utc2et_c(utcstr, ctypes.byref(et))
+    return et.value
 ########################################################################################################################
 # V
 

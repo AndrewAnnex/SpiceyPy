@@ -470,14 +470,16 @@ libspice.twovec_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_double]
 # U
 
 libspice.ucase_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
-libspice.ucrss_c.argtypes = [ctypes.c_double]
+libspice.ucrss_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3), (ctypes.c_double * 3)]
 libspice.uddc_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_bool]
 libspice.uddf_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
 #libspice.union_c.argtypes = [None, None, None]
+libspice.unitim_c.argtypes = [ctypes.c_double, ctypes.c_char_p, ctypes.c_char_p]
+libspice.unitim_c.restype = ctypes.c_double
 libspice.unload_c.argtypes = [ctypes.c_char_p]
-libspice.unorm_c.argtypes = [ctypes.c_double, ctypes.c_double]
-libspice.unormg_c.argtypes = [ctypes.c_int, ctypes.c_double, ctypes.c_double]
-libspice.utc2et_c.argtypes = [ctypes.c_char_p, ctypes.c_double]
+libspice.unorm_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3), ctypes.POINTER(ctypes.c_double)]
+libspice.unormg_c.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
+libspice.utc2et_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
 ##########################################################################################################################################################
 # V
 

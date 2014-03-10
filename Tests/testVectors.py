@@ -38,3 +38,7 @@ print(spice.vupack([1.0,2.0,3.0]))
 print("Zeros test")
 print(spice.vzero([0.0,0.0,1.0]))
 print(spice.vzero([0.0,0.0,0.0]))
+
+print("unorm test")
+print(spice.unorm([5.0, 7.0, 12.0]))
+print(spice.unormg([5.0, 7.0, 12.0, 2.0], 4))
