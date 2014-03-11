@@ -685,6 +685,57 @@ def rquad(a, b, c):
 # S
 
 
+def saelgv(vec1, vec2):
+    #Todo: test saelgv
+    vec1 = stypes.listtodoublevector(vec1)
+    vec2 = stypes.listtodoublevector(vec2)
+    smajor = stypes.doubleVector(3)
+    sminor = stypes.doubleVector(3)
+    libspice.saelgv_c(vec1, vec2, smajor, sminor)
+    return stypes.vectortolist(smajor), stypes.vectortolist(sminor)
+
+
+#skipping scard for now
+
+
+def scdecd(sc, sclkdp, lenout, MXPART=None):
+    #todo: figure out how to use mxpart, and text
+    sc = ctypes.c_int(sc)
+    sclkdp = ctypes.c_double(sclkdp)
+    sclkch = stypes.strtocharpoint(" "*lenout)
+    lenout = ctypes.c_int(lenout)
+    libspice.scdecd(sc, sclkdp, lenout, sclkch)
+    return sclkch
+
+
+def sce2c(sc, et):
+    #todo: test sce2c
+    sc = ctypes.c_int(sc)
+    et = ctypes.c_double(et)
+    sclkdp = ctypes.c_double()
+    libspice.sce2c_c(sc, et, ctypes.byref(sclkdp))
+    return sclkdp.value
+
+
+def sce2s(sc, et, lenout):
+    #todo: test sce2s
+    sc = ctypes.c_int(sc)
+    et = ctypes.c_double(et)
+    sclkch = stypes.strtocharpoint(" " * lenout)
+    lenout = ctypes.c_int(lenout)
+    libspice.sce2s_c(sc, et, lenout, sclkch)
+    return sclkch
+
+
+def sce2t(sc, et):
+    #todo; test sce2t
+    sc = ctypes.c_int(sc)
+    et = ctypes.c_double(et)
+    sclkdp = ctypes.c_double()
+    libspice.sce2t_c(sc, et, ctypes.byref(sclkdp))
+    return sclkdp.value
+
+
 def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
     method = stypes.strtocharpoint(method)
     target = stypes.strtocharpoint(target)
@@ -703,6 +754,43 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
     return {'spoint': stypes.vectortolist(spoint), 'trgepc': trgepc.value,
             'srfvec': stypes.vectortolist(srfvec), 'found': found.value}
 
+
+def spd():
+    return libspice.spd_c()
+
+
+def sphcyl(radius, colat, slon):
+    radius = ctypes.c_double(radius)
+    colat = ctypes.c_double(colat)
+    slon = ctypes.c_double(slon)
+    r = ctypes.c_double()
+    lon = ctypes.c_double()
+    z = ctypes.c_double()
+    libspice.sphcyl_c(radius, colat, slon, ctypes.byref(r), ctypes.byref(lon), ctypes.byref(z))
+    return r.value, lon.value, z.value
+
+
+def sphlat(r, colat, lons):
+    r = ctypes.c_double(r)
+    colat = ctypes.c_double(colat)
+    lons = ctypes.c_double(lons)
+    radius = ctypes.c_double()
+    lon = ctypes.c_double()
+    lat = ctypes.c_double()
+    libspice.sphcyl_c(r, colat, lons, ctypes.byref(radius), ctypes.byref(lon), ctypes.byref(lat))
+    return radius.value, lon.value, lat.value
+
+
+def sphrec(r, colat, lon):
+    r = ctypes.c_double(r)
+    colat = ctypes.c_double(colat)
+    lon = ctypes.c_double(lon)
+    rectan = stypes.doubleVector(3)
+    libspice.sphrec_c(r, colat, lon, rectan)
+    return stypes.vectortolist(rectan)
+
+
+#skipped all of the functions starting with SPK for now
 
 def srfrec(body, longitude, latitude):
     #Todo: test srfrec

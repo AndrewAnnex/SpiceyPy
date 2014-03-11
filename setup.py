@@ -6,12 +6,9 @@ from subprocess import PIPE, Popen
 
 module_name = os.path.basename(os.getcwd())
 root_dir = os.path.dirname(__file__)
-cspice_dir =  os.path.join(root_dir, 'cspice')
+cspice_dir = os.path.join(root_dir, 'cspice')
 lib_dir = os.path.join(cspice_dir, 'lib')
-print(module_name)
-print(root_dir)
-print(cspice_dir)
-print(lib_dir)
+data_files = []
 
 if not os.path.exists(cspice_dir):
     message = 'Unable to find cspice toolkit at %s. Please untar the source there' % cspice_dir
@@ -36,6 +33,7 @@ def unpack_cspicelib():
             sys.stderr.write('warning: cspice build exit status: %d' % status)
 
     finally:
+
         os.chdir(currentDir)
 
 
@@ -59,6 +57,7 @@ def unpack_csupportlib():
     finally:
         os.chdir(currentDir)
 
+
 def buildLib():
 
     currentDir = os.getcwd()
@@ -75,8 +74,9 @@ def buildLib():
 
 
 def cleanup():
-    os.chdir(lib_dir)
-    os.listdir(lib_dir)
+    pass
+    #os.chdir(lib_dir)
+    #os.listdir(lib_dir)
 
 
 try:
@@ -89,8 +89,9 @@ try:
      version='0.3',
      description='A Python Wrapper for the NAIF CSPICE Toolkit using ctypes',
      author='Apollo117',
-     packages = ['SpiceyPy'],
-     package_data = {'': ['/cspice/lib/spice.so']},
+     packages = ['SpiceyPy','SpiceyPy'],
+     package_data = {'SpiceyPy': ['cspice/lib/spice.so']},
+
 
     )
 finally:
