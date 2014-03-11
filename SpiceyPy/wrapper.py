@@ -309,6 +309,73 @@ def mtxm(m1, m2):
 # N
 
 
+def namfrm(frname):
+    #todo: test namfrm
+    frname = stypes.strtocharpoint(frname)
+    frcode = ctypes.c_int()
+    libspice.namfrm_c(frname, ctypes.byref(frcode))
+    return frcode.value
+
+
+def ncpos(string, chars, start):
+    #todo: test
+    string = stypes.strtocharpoint(string)
+    chars = stypes.strtocharpoint(chars)
+    start = ctypes.c_int(start)
+    return libspice.ncpos_c(string, chars, start)
+
+
+def ncposr(string, chars, start):
+    #todo: test
+    string = stypes.strtocharpoint(string)
+    chars = stypes.strtocharpoint(chars)
+    start = ctypes.c_int(start)
+    return libspice.ncposr_c(string, chars, start)
+
+
+def nearpt(positn, a, b, c):
+    #Todo: test
+    positn = stypes.listtodoublevector(positn)
+    a = ctypes.c_double(a)
+    b = ctypes.c_double(b)
+    c = ctypes.c_double(c)
+    npoint = stypes.doubleVector(3)
+    alt = ctypes.c_double()
+    libspice.nearpt_c(positn, a, b, c, npoint, ctypes.byref(alt))
+    return stypes.vectortolist(npoint), alt.value
+
+
+def npedln(a, b, c, linept, linedr):
+    a = ctypes.c_double(a)
+    b = ctypes.c_double(b)
+    c = ctypes.c_double(c)
+    linept = stypes.listtodoublevector(linept)
+    linedr = stypes.listtodoublevector(linedr)
+    pnear = stypes.doubleVector(3)
+    dist = ctypes.c_double()
+    libspice.npedln_c(a, b, c, linept, linedr, pnear, ctypes.byref(dist))
+    return pnear, dist
+
+
+# skip npelpt, no ellipse type yet
+
+
+def nplnpt(linpt, lindir, point):
+    linpt = stypes.listtodoublevector(linpt)
+    lindir = stypes.listtodoublevector(lindir)
+    point = stypes.listtodoublevector(point)
+    pnear = stypes.doubleVector(3)
+    dist = ctypes.c_double()
+    libspice.nplnpt_c(linpt, lindir, point, pnear, ctypes.byref(dist))
+    return stypes.listtodoublevector(pnear), dist.value
+
+
+# skip nvc2pl, no plane object yet
+
+
+# skip nvp2pl_c
+
+
 ########################################################################################################################
 # O
 

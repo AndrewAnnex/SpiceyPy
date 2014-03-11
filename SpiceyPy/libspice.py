@@ -297,11 +297,15 @@ libspice.mxvg_c.argtypes = [ctypes.c_int, ctypes.c_int]
 ##########################################################################################################################################################
 # N
 
-libspice.namfrm_c.argtypes = [ctypes.c_char_p, ctypes.c_int]
-libspice.nearpt_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
-libspice.npedln_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
+libspice.namfrm_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
+libspice.ncpos_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
+libspice.ncpos_c.restype = ctypes.c_int
+libspice.ncposr_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
+libspice.ncposr_c.restype = ctypes.c_int
+libspice.nearpt_c.argtypes = [(ctypes.c_double*3), ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3), ctypes.POINTER(ctypes.c_double)]
+libspice.npedln_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3), (ctypes.c_double*3), (ctypes.c_double*3), ctypes.POINTER(ctypes.c_double)]
 libspice.npelpt_c.argtypes = [ctypes.c_double, ctypes.c_double]
-libspice.nplnpt_c.argtypes = [ctypes.c_double, ctypes.c_double]
+libspice.nplnpt_c.argtypes = [(ctypes.c_double*3), (ctypes.c_double*3), (ctypes.c_double*3), (ctypes.c_double*3), ctypes.POINTER(ctypes.c_double)]
 libspice.nvc2pl_c.argtypes = [ctypes.c_double]
 #libspice.nvp2pl_c.argtypes = []
 
