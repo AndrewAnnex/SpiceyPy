@@ -1,6 +1,6 @@
 __author__ = 'Apollo117'
 import ctypes
-libspice = ctypes.CDLL('./spice.so')
+libspice = ctypes.CDLL('spice.so')
 
 import SpiceyPy.SupportTypes as stypes
 
