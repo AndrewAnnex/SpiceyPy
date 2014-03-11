@@ -49,3 +49,7 @@ print(spice.orderi([3,1,4,2], 4))
 
 print("Test sums: ")
 print(spice.sumai([5, 7, 12], 3))
+
+print("Test shell sort:")
+print(spice.shelli(6, [99,33,55,44,-77,66]))
+print(spice.shelld(6, [99.0,33,55,44,-77,66]))

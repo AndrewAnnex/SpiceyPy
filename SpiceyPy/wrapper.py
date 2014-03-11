@@ -699,12 +699,12 @@ def saelgv(vec1, vec2):
 
 
 def scdecd(sc, sclkdp, lenout, MXPART=None):
-    #todo: figure out how to use mxpart, and text
+    #todo: figure out how to use mxpart, and test scdecd
     sc = ctypes.c_int(sc)
     sclkdp = ctypes.c_double(sclkdp)
     sclkch = stypes.strtocharpoint(" "*lenout)
     lenout = ctypes.c_int(lenout)
-    libspice.scdecd(sc, sclkdp, lenout, sclkch)
+    libspice.scdecd_c(sc, sclkdp, lenout, sclkch)
     return sclkch
 
 
@@ -736,6 +736,104 @@ def sce2t(sc, et):
     return sclkdp.value
 
 
+def scencd(sc, sclkch, MXPART=None):
+    #todo: figure out how to use mxpart, and test scencd
+    sc = ctypes.c_int(sc)
+    sclkch = stypes.strtocharpoint(sclkch)
+    sclkdp = ctypes.c_double()
+    libspice.scencd_c(sc, sclkch, ctypes.byref(sclkdp))
+    return sclkdp.value
+
+
+def scfmt(sc, ticks, lenout):
+    #Todo: test
+    sc = ctypes.c_int(sc)
+    ticks = ctypes.c_double(ticks)
+    clkstr = stypes.strtocharpoint(lenout)
+    lenout = ctypes.c_int(lenout)
+    libspice.scfmt_c(sc, ticks, lenout, clkstr)
+    return clkstr
+
+
+def scpart(sc, nparts, pstart, MXPART=None):
+    #todo: figure out how to use mxpart, and test scpart
+    sc = ctypes.c_int(sc)
+    nparts = ctypes.c_int(nparts)
+    pstart = ctypes.c_double(pstart)
+    pstop = ctypes.c_double()
+    libspice.scpart_c(sc, nparts, pstart, ctypes.byref(pstop))
+    return pstop.value
+
+
+def scs2e(sc, sclkch):
+    #todo: test scs2e
+    sc = ctypes.c_int(sc)
+    sclkch = stypes.strtocharpoint(sclkch)
+    et = ctypes.c_double()
+    libspice.scs2e_c(sc, sclkch, ctypes.byref(et))
+    return et.value
+
+
+def sct2e(sc, sclkdp):
+    #todo: test scs2e
+    sc = ctypes.c_int(sc)
+    sclkdp = ctypes.c_double(sclkdp)
+    et = ctypes.c_double()
+    libspice.sct2e_c(sc, sclkdp, ctypes.byref(et))
+    return et.value
+
+
+def sctiks(sc, clkstr):
+    #todo: test sctiks
+    sc = ctypes.c_int(sc)
+    clkstr = stypes.strtocharpoint(clkstr)
+    ticks = ctypes.c_double()
+    libspice.sctiks_c(sc, clkstr, ctypes.byref(ticks))
+    return ticks.value
+
+#sdiff
+#set
+
+
+def setmsg(message):
+    #todo: test
+    message = stypes.strtocharpoint(message)
+    libspice.setmsg_c(message)
+    pass
+
+
+def shellc(ndim, lenvals, array):
+    #Todo: fix, this does not work!
+    array = stypes.listtocharvector(array)
+    ndim = ctypes.c_int(ndim)
+    lenvals = ctypes.c_int(lenvals)
+    #libspice.shellc_c(ndim, lenvals, ctypes.cast(array, ctypes.c_void_p))
+    pass
+
+
+def shelld(ndim, array):
+    #Todo: Works!, use this as example for "I/O" parameters
+    array = stypes.listtodoublevector(array)
+    ndim = ctypes.c_int(ndim)
+    libspice.shelld_c(ndim, ctypes.cast(array, ctypes.POINTER(ctypes.c_double)))
+    return stypes.vectortolist(array)
+
+
+def shelli(ndim, array):
+    #Todo: Works!, use this as example for "I/O" parameters
+    array = stypes.listtointvector(array)
+    ndim = ctypes.c_int(ndim)
+    libspice.shelli_c(ndim, ctypes.cast(array, ctypes.POINTER(ctypes.c_int)))
+    return stypes.vectortolist(array)
+
+
+def sigerr(message):
+    #todo: test
+    message = stypes.strtocharpoint(message)
+    libspice.sigerr_c(message)
+    pass
+
+
 def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
     method = stypes.strtocharpoint(method)
     target = stypes.strtocharpoint(target)
@@ -753,6 +851,9 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
               spoint, ctypes.byref(trgepc), srfvec, ctypes.byref(found))
     return {'spoint': stypes.vectortolist(spoint), 'trgepc': trgepc.value,
             'srfvec': stypes.vectortolist(srfvec), 'found': found.value}
+
+
+#size
 
 
 def spd():
@@ -1031,7 +1132,7 @@ def tkvrsn(item):
 
 def tparse(instring, lenout):
     #Todo: test
-    errmsg = stypes.strtocharpoint(" " * lenout)
+    errmsg = stypes.strtocharpoint(lenout)
     lenout = ctypes.c_int(lenout)
     instring = stypes.strtocharpoint(instring)
     sp2000 = ctypes.c_double()
@@ -1042,8 +1143,8 @@ def tparse(instring, lenout):
 def tpictr(sample, lenout, lenerr):
     #Todo: test
     sample = stypes.strtocharpoint(sample)
-    pictur = stypes.strtocharpoint(" " * lenout)
-    errmsg = stypes.strtocharpoint(" " * lenerr)
+    pictur = stypes.strtocharpoint(lenout)
+    errmsg = stypes.strtocharpoint(lenerr)
     lenout = ctypes.c_int(lenout)
     lenerr = ctypes.c_int(lenerr)
     ok = ctypes.c_bool()
@@ -1095,7 +1196,7 @@ def tyear():
 
 def ucase(inchar, lenout):
     inchar = stypes.strtocharpoint(inchar)
-    outchar = stypes.strtocharpoint(" "*lenout)
+    outchar = stypes.strtocharpoint(lenout)
     lenout = ctypes.c_int(lenout)
     libspice.ucase_c(inchar, lenout, outchar)
     return outchar.value

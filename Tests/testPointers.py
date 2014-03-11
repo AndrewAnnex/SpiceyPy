@@ -20,9 +20,11 @@ print(spice.bsrchd(750.0, 4, testArray))
 
 print("Test BSRCHC")
 testCharArray = ["BOHR", "EINSTEIN", "FEYNMAN", "GALILEO", "NEWTON"]
-print(spice.stypes.listtocharvector(testCharArray))
 print([x for x in testCharArray])
 print(spice.bsrchc("BOHR", 5, 10, testCharArray))
+
+print("Test shellc")
+print(spice.shellc(6, 8, testCharArray))
 
 print("test bschoi")
 testArray = [100,1,10,10000,1000]

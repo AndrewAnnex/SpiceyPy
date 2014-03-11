@@ -19,6 +19,10 @@ def listtocharvector(x):
     return (ctypes.c_char_p * len(x))(*[strtocharpoint(y) for y in x])
 
 
+def charvector(ndim=1, lenvals=10):
+    return ((ctypes.c_char * lenvals)*ndim)()
+
+
 def listtodoublematrix(data, x=3, y=3):
     matrix = ((ctypes.c_double * x) * y)()
     for i, row in enumerate(data):
@@ -51,6 +55,10 @@ def matrixtolist(x):
 def strtocharpoint(x):
     if isinstance(x, bytes):
         return x
+    if isinstance(x, ctypes.c_int):
+        return strtocharpoint(" " * x.value)
+    if isinstance(x, int):
+        return strtocharpoint(" " * x)
     return ctypes.c_char_p(x.encode(encoding='UTF-8'))
 
 
