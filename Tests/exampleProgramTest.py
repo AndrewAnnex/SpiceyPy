@@ -12,6 +12,7 @@ time = '2004 jun 11 19:32:00'
 spice.furnsh('./Kernels/testmetak.txt')
 
 print(spice.ktotal("ALL"))
+print(spice.szpool("MAXVAR"))
 
 et = spice.str2et(time)
 print("Spicetypes Epoch: ", et)

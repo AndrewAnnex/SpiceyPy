@@ -685,13 +685,6 @@ def rquad(a, b, c):
 # S
 
 
-def str2et(time):
-    time = stypes.strtocharpoint(time)
-    et = ctypes.c_double(0)
-    libspice.str2et_c(time, ctypes.byref(et))
-    return et.value
-
-
 def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
     method = stypes.strtocharpoint(method)
     target = stypes.strtocharpoint(target)
@@ -709,6 +702,192 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
               spoint, ctypes.byref(trgepc), srfvec, ctypes.byref(found))
     return {'spoint': stypes.vectortolist(spoint), 'trgepc': trgepc.value,
             'srfvec': stypes.vectortolist(srfvec), 'found': found.value}
+
+
+def srfrec(body, longitude, latitude):
+    #Todo: test srfrec
+    body = ctypes.c_int(body)
+    longitude = ctypes.c_double(longitude)
+    latitude = ctypes.c_double(latitude)
+    rectan = stypes.doubleVector(3)
+    libspice.srfrec_c(body, longitude, latitude, rectan)
+    return stypes.vectortolist(rectan)
+
+
+def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
+    #Todo: test srfxpt, but it is depricated
+    method = stypes.strtocharpoint(method)
+    target = stypes.strtocharpoint(target)
+    et = ctypes.c_double(et)
+    abcorr = stypes.strtocharpoint(abcorr)
+    obsrvr = stypes.strtocharpoint(obsrvr)
+    dref = stypes.strtocharpoint(dref)
+    dvec = stypes.listtodoublevector(dvec)
+    spoint = stypes.doubleVector(3)
+    trgepc = ctypes.c_double()
+    dist = ctypes.c_double()
+    obspos = stypes.doubleVector(3)
+    found = ctypes.c_bool()
+    libspice.srfxpt_c(method, target, et, abcorr, obsrvr, dref, dvec,
+                      spoint, ctypes.byref(dist), ctypes.byref(trgepc), obspos, ctypes.byref(found))
+    return stypes.vectortolist(spoint), dist.value, trgepc.value, stypes.vectortolist(obspos), found.value
+
+
+#ssize
+
+
+def stelab(pobj, vobs):
+    #Todo: test stelab
+    pobj = stypes.listtodoublevector(pobj)
+    vobs = stypes.listtodoublevector(vobs)
+    appobj = stypes.doubleVector(3)
+    libspice.stelab_c(pobj, vobs, appobj)
+    return stypes.vectortolist(appobj)
+
+
+def stpool(item, nth, contin, lenout):
+    #Todo: test stpool
+    item = stypes.strtocharpoint(item)
+    contin = stypes.strtocharpoint(contin)
+    nth = ctypes.c_int(nth)
+    lenout = ctypes.c_int(lenout)
+    strout = stypes.strtocharpoint(" "*lenout.value)
+    found = ctypes.c_bool()
+    size = ctypes.c_int()
+    libspice.stpool_c(item, nth, contin, lenout, strout, ctypes.byref(size), ctypes.byref(found))
+    return strout, size.value, found.value
+
+
+def str2et(time):
+    time = stypes.strtocharpoint(time)
+    et = ctypes.c_double(0)
+    libspice.str2et_c(time, ctypes.byref(et))
+    return et.value
+
+
+def subpnt(method, target, et, fixref, abcorr, obsrvr):
+    #Todo: test subpnt
+    method = stypes.strtocharpoint(method)
+    target = stypes.strtocharpoint(target)
+    et = ctypes.c_double(et)
+    fixref = stypes.strtocharpoint(fixref)
+    abcorr = stypes.strtocharpoint(abcorr)
+    obsrvr = stypes.strtocharpoint(obsrvr)
+    spoint = stypes.doubleVector(3)
+    trgepc = ctypes.c_double(0)
+    srfvec = stypes.doubleVector(3)
+    libspice.subpnt_c(method, target, et, fixref, abcorr, obsrvr, spoint, ctypes.byref(trgepc), srfvec)
+    return stypes.vectortolist(spoint), trgepc.value, stypes.vectortolist(srfvec)
+
+
+def subpt(method, target, et, abcorr, obsrvr):
+    #Todo: test subpt
+    method = stypes.strtocharpoint(method)
+    target = stypes.strtocharpoint(target)
+    et = ctypes.c_double(et)
+    abcorr = stypes.strtocharpoint(abcorr)
+    obsrvr = stypes.strtocharpoint(obsrvr)
+    spoint = stypes.doubleVector(3)
+    alt = ctypes.c_double()
+    libspice.subpt_c(method, target, et, abcorr, obsrvr, spoint, ctypes.byref(alt))
+    return stypes.vectortolist(spoint), alt.value
+
+
+def subslr(method, target, et, fixref, abcorr, obsrvr):
+    #Todo: test subslr
+    method = stypes.strtocharpoint(method)
+    target = stypes.strtocharpoint(target)
+    et = ctypes.c_double(et)
+    fixref = stypes.strtocharpoint(fixref)
+    abcorr = stypes.strtocharpoint(abcorr)
+    obsrvr = stypes.strtocharpoint(obsrvr)
+    spoint = stypes.doubleVector(3)
+    trgepc = ctypes.c_double(0)
+    srfvec = stypes.doubleVector(3)
+    libspice.subslr_c(method, target, et, fixref, abcorr, obsrvr, spoint, ctypes.byref(trgepc), srfvec)
+    return stypes.vectortolist(spoint), trgepc.value, stypes.vectortolist(srfvec)
+
+
+def subsol(method, target, et, abcorr, obsrvr):
+    #Todo: test subsol
+    method = stypes.strtocharpoint(method)
+    target = stypes.strtocharpoint(target)
+    et = ctypes.c_double(et)
+    abcorr = stypes.strtocharpoint(abcorr)
+    obsrvr = stypes.strtocharpoint(obsrvr)
+    spoint = stypes.doubleVector(3)
+    libspice.subsol_c(method, target, et, abcorr, obsrvr, spoint)
+    return stypes.vectortolist(spoint)
+
+
+def sumad(array, n):
+    array = stypes.listtodoublevector(array)
+    n = ctypes.c_int(n)
+    return libspice.sumad_c(array, n)
+
+
+def sumai(array, n):
+    array = stypes.listtointvector(array)
+    n = ctypes.c_int(n)
+    return libspice.sumai_c(array, n)
+
+
+def surfnm(a, b, c, point):
+    #Todo: test surfnm
+    a = ctypes.c_double(a)
+    b = ctypes.c_double(b)
+    c = ctypes.c_double(c)
+    point = stypes.listtodoublevector(point)
+    normal = stypes.doubleVector(3)
+    libspice.surfnm_c(a, b, c, point, normal)
+    return stypes.vectortolist(normal)
+
+
+def surfpt(positn, u, a, b, c):
+    #Todo: test surfpt
+    a = ctypes.c_double(a)
+    b = ctypes.c_double(b)
+    c = ctypes.c_double(c)
+    positn = stypes.listtodoublevector(positn)
+    u = stypes.listtodoublevector(u)
+    point = stypes.doubleVector(3)
+    found = ctypes.c_bool()
+    libspice.surfpt_c(positn, u, a, b, c, point, ctypes.byref(found))
+    return stypes.vectortolist(point), found.value
+
+
+def surfpv(stvrtx, stdir, a, b, c):
+    #Todo: test surfpv
+    a = ctypes.c_double(a)
+    b = ctypes.c_double(b)
+    c = ctypes.c_double(c)
+    stvrtx = stypes.listtodoublevector(stvrtx)
+    stdir = stypes.listtodoublevector(stdir)
+    stx = stypes.doubleVector(6)
+    found = ctypes.c_bool()
+    libspice.surfpv_c(stvrtx, stdir, a, b, c, stx, ctypes.byref(found))
+    return stypes.vectortolist(stx), found.value
+
+#swpool
+
+
+def sxfrom(instring, tostring, et):
+    #Todo: test sxform
+    instring = stypes.strtocharpoint(instring)
+    tostring = stypes.strtocharpoint(tostring)
+    et = ctypes.c_double(et)
+    xform = stypes.doubleMatrix(x=6, y=6)
+    libspice.sxform_c(instring, tostring, et, xform)
+    return stypes.matrixtolist(xform)
+
+
+def szpool(name):
+    name = stypes.strtocharpoint(name)
+    n = ctypes.c_int()
+    found = ctypes.c_bool(0)
+    libspice.szpool_c(name, ctypes.byref(n), ctypes.byref(found))
+    return n, found.value
+
 
 ########################################################################################################################
 # T
