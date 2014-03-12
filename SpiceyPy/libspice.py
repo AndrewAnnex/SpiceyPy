@@ -260,22 +260,25 @@ libspice.kxtrct_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctype
 
 ##########################################################################################################################################################
 # L
-
-libspice.latcyl_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double,  ctypes.c_double]
+libspice.lastnb_c.argtypes = [ctypes.c_char_p]
+libspice.lastnb_c.restype = ctypes.c_int
+libspice.latcyl_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
 libspice.latrec_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
-libspice.latsph_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
+libspice.latsph_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
 libspice.lcase_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
 libspice.ldpool_c.argtypes = [ctypes.c_char_p]
-libspice.lmpool_c.argtypes = [ctypes.c_int, ctypes.c_int]
+libspice.lmpool_c.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_int]
 libspice.lparse_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int]
 libspice.lparsm_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int]
 #libspice.lparss_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, None]
-libspice.ltime_c.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_double, ctypes.c_double]
-libspice.lx4dec_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int]
-libspice.lx4num_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int]
-libspice.lx4sgn_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int]
-libspice.lx4uns_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int]
-libspice.lxqstr_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int]
+libspice.lspcn_c.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_char_p]
+libspice.lspcn_c.restype = ctypes.c_double
+libspice.ltime_c.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
+libspice.lx4dec_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
+libspice.lx4num_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
+libspice.lx4sgn_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
+libspice.lx4uns_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
+libspice.lxqstr_c.argtypes = [ctypes.c_char_p, ctypes.c_char, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
 ##########################################################################################################################################################
 # M
 
@@ -293,7 +296,7 @@ libspice.mtxv_c.argtypes = [(ctypes.c_double*3)*3, (ctypes.c_double * 3), (ctype
 libspice.mtxvg_c.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]
 libspice.mxm_c.argtypes = [(ctypes.c_double*3)*3, (ctypes.c_double*3)*3, (ctypes.c_double*3)*3]
 libspice.mxmg_c.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]
-libspice.mxmt_c.argtypes = [ctypes.c_double]
+libspice.mxmt_c.argtypes = [(ctypes.c_double*3)*3, (ctypes.c_double*3)*3, (ctypes.c_double*3)*3]
 libspice.mxmtg_c.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]
 libspice.mxv_c.argtypes = [(ctypes.c_double*3)*3, (ctypes.c_double*3), (ctypes.c_double*3)]
 libspice.mxvg_c.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]

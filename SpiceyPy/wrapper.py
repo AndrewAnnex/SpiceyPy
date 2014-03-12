@@ -294,6 +294,137 @@ def ktotal(kind):
 # L
 
 
+def lastnb(string):
+    #Todo: test lastnb
+    string = stypes.strtocharpoint(string)
+    return libspice.lastnb_c(string)
+
+
+def latcyl(radius, lon, lat):
+    #Todo: test latcyl
+    radius = ctypes.c_double(radius)
+    lon = ctypes.c_double(lon)
+    lat = ctypes.c_double(lat)
+    r = ctypes.c_double()
+    lonc = ctypes.c_double()
+    z = ctypes.c_double()
+    libspice.latcyl_c(radius, lon, lat, ctypes.byref(r), ctypes.byref(lonc), ctypes.byref(z))
+    return r.value, lonc.value, z.value
+
+
+def latrec(radius, longitude, latitude):
+    #Todo: test latrec
+    radius = ctypes.c_double(radius)
+    longitude = ctypes.c_double(longitude)
+    latitude = ctypes.c_double(latitude)
+    rectan = stypes.doubleVector(3)
+    libspice.latrec_c(radius, longitude, latitude, rectan)
+    return stypes.vectortolist(rectan)
+
+
+def latsph(radius, lon, lat):
+    #Todo: test latsph
+    radius = ctypes.c_double(radius)
+    lon = ctypes.c_double(lon)
+    lat = ctypes.c_double(lat)
+    rho = ctypes.c_double()
+    colat = ctypes.c_double()
+    lons = ctypes.c_double()
+    libspice.latsph_c(radius, lon, lat, ctypes.byref(rho), ctypes.byref(colat), ctypes.byref(lons))
+    return rho.value, colat.value, lons.value
+
+
+def lcase(instr, lenout):
+    #Todo: test lcase
+    instr = stypes.strtocharpoint(instr)
+    lenout = ctypes.c_int(lenout)
+    outstr = stypes.strtocharpoint(lenout)
+    libspice.lcase_c(instr, lenout, outstr)
+    return outstr.value
+
+
+def ldpool(filename):
+    filename = stypes.strtocharpoint(filename)
+    libspice.ldpool_c(filename)
+    pass
+
+
+def lmpool(cvals, lenvals, n):
+    #how to do 2d char arrays intelegently, likely why some related functions fail
+    pass
+
+
+def lspcn(body, et, abcorr):
+    #Todo: test lspcn
+    body = stypes.strtocharpoint(body)
+    et = ctypes.c_double(et)
+    abcorr = stypes.strtocharpoint(abcorr)
+    return libspice.lspcn_c(body, et, abcorr)
+
+
+def ltime(etobs, obs, direct, targ):
+    #Todo: test ltime
+    etobs = ctypes.c_double(etobs)
+    obs = ctypes.c_int(obs)
+    direct = stypes.strtocharpoint(direct)
+    targ = ctypes.c_int(targ)
+    ettarg = ctypes.c_double()
+    elapsd = ctypes.c_double()
+    libspice.ltime_c(etobs, obs, direct, targ, ctypes.byref(ettarg), ctypes.byref(elapsd))
+    return ettarg, elapsd
+
+
+def lx4dec(string, first):
+    #Todo: test lx4dec
+    string = stypes.strtocharpoint(string)
+    first = ctypes.c_int(first)
+    last = ctypes.c_int()
+    nchar = ctypes.c_int()
+    libspice.lx4dec_c(string, first, ctypes.byref(last), ctypes.byref(nchar))
+    return last.value, nchar.value
+
+
+def lx4num(string, first):
+    #Todo: test lx4num
+    string = stypes.strtocharpoint(string)
+    first = ctypes.c_int(first)
+    last = ctypes.c_int()
+    nchar = ctypes.c_int()
+    libspice.lx4num_c(string, first, ctypes.byref(last), ctypes.byref(nchar))
+    return last.value, nchar.value
+
+
+def lx4sgn(string, first):
+    #Todo: test lx4sgn
+    string = stypes.strtocharpoint(string)
+    first = ctypes.c_int(first)
+    last = ctypes.c_int()
+    nchar = ctypes.c_int()
+    libspice.lx4sgn_c(string, first, ctypes.byref(last), ctypes.byref(nchar))
+    return last.value, nchar.value
+
+
+def lx4uns(string, first):
+    #Todo: test lx4uns
+    string = stypes.strtocharpoint(string)
+    first = ctypes.c_int(first)
+    last = ctypes.c_int()
+    nchar = ctypes.c_int()
+    libspice.lx4uns_c(string, first, ctypes.byref(last), ctypes.byref(nchar))
+    return last.value, nchar.value
+
+
+def lxqstr(string, qchar, first):
+    #Todo: test lxqstr
+    string = stypes.strtocharpoint(string)
+    qchar = ctypes.c_char(qchar)
+    first = ctypes.c_int(first)
+    last = ctypes.c_int()
+    nchar = ctypes.c_int()
+    libspice.lxqstr_c(string, qchar, first, ctypes.byref(last), ctypes.byref(nchar))
+    return last.value, nchar.value
+
+
 ########################################################################################################################
 # M
 
@@ -424,11 +555,11 @@ def mxmg(m1, m2, nrow1, ncol1, ncol2):
     return stypes.matrixtolist(mout)
 
 
-def mtxm(m1, m2):
+def mxmt(m1, m2):
     m1 = stypes.listtodoublematrix(m1)
     m2 = stypes.listtodoublematrix(m2)
     mout = stypes.doubleMatrix()
-    libspice.mtxm_c(m1, m2, mout)
+    libspice.mxmt_c(m1, m2, mout)
     return stypes.matrixtolist(mout)
 
 

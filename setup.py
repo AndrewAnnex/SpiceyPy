@@ -90,7 +90,7 @@ try:
      description='A Python Wrapper for the NAIF CSPICE Toolkit using ctypes',
      author='Apollo117',
      packages = ['SpiceyPy','SpiceyPy'],
-     package_data = {'SpiceyPy': ['cspice/lib/spice.so']},
+     package_data = {'SpiceyPy': ['/cspice/lib/spice.so']},
 
 
     )
