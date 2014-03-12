@@ -48,6 +48,10 @@ def vectortolist(x):
     return [y for y in x]
 
 
+def vectortotuple(x):
+    return tuple(vectortolist(x))
+
+
 def matrixtolist(x):
     return [vectortolist(y) for y in x]
 

@@ -937,9 +937,24 @@ def pl2nvc(plane):
     libspice.pl2nvc_c(ctypes.byref(plane), normal, ctypes.byref(constant))
     return stypes.vectortolist(normal), constant.value
 
-#pl2nvp
 
-#pl2psv
+def pl2nvp(plane):
+    #Todo: test pl2nvp
+    assert(isinstance(plane, stypes.Plane))
+    normal = stypes.doubleVector(3)
+    point = stypes.doubleVector(3)
+    libspice.pl2nvp_c(ctypes.byref(plane), normal, point)
+    return stypes.vectortolist(normal), stypes.vectortolist(point)
+
+
+def pl2psv(plane):
+    #Todo: test pl2psv
+    assert (isinstance(plane, stypes.Plane))
+    point = stypes.doubleVector(3)
+    span1 = stypes.doubleVector(3)
+    span2 = stypes.doubleVector(3)
+    libspice.pl2psv_c(ctypes.byref(plane), point, span1, span2)
+    return stypes.vectortolist(point), stypes.vectortolist(span1), stypes.vectortolist(span2)
 
 
 def pos(string, substr, start):
@@ -985,7 +1000,14 @@ def prsint(string):
     return intval.value
 
 
-# psv2pl
+def psv2pl(point, span1, span2):
+    #Todo: test psv2pl
+    point = stypes.listtodoublevector(point)
+    span1 = stypes.listtodoublevector(span1)
+    span2 = stypes.listtodoublevector(span2)
+    plane = stypes.Plane()
+    libspice.psv2pl_c(point, span1, span2, ctypes.byref(plane))
+    return plane
 
 
 # skip putcml, is this really needed for python users?
