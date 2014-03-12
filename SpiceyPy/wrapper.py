@@ -253,6 +253,37 @@ def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
               srfvec, ctypes.byref(phase), ctypes.byref(solar), ctypes.byref(emissn))
     return {'trgepc': trgepc.value, 'srfvec': stypes.vectortolist(srfvec), 'phase': phase.value, 'solar': solar.value, 'emissn': emissn.value}
 
+
+def isrchd(value, ndim, array):
+    #todo: test isrchd
+    value = ctypes.c_int(value)
+    ndim = ctypes.c_int(ndim)
+    array = stypes.listtodoublevector(array)
+    return libspice.isrchd_c(value, ndim, array)
+
+
+def isrchi(value, ndim, array):
+    #todo: test isrchi
+    value = ctypes.c_int(value)
+    ndim = ctypes.c_int(ndim)
+    array = stypes.listtointvector(array)
+    return libspice.isrchi_c(value, ndim, array)
+
+
+def isrot(m, ntol, dtol):
+    #todo: test isrot
+    m = stypes.listtodoublematrix(m)
+    ntol = ctypes.c_double(ntol)
+    dtol = ctypes.c_double(dtol)
+    return libspice.isrot_c(m, ntol, dtol)
+
+
+def iswhsp(string):
+    #todo: test iswhsp
+    string = stypes.strtocharpoint(string)
+    return libspice.iswhsp_c(string)
+
+
 ########################################################################################################################
 # J
 
@@ -284,11 +315,44 @@ def kclear():
     pass
 
 
+def kdata(which, kind, fillen, typlen, srclen):
+    #Todo: test kdata
+    which = ctypes.c_int(which)
+    kind = stypes.strtocharpoint(kind)
+    fillen = ctypes.c_int(fillen)
+    typlen = ctypes.c_int(typlen)
+    srclen = ctypes.c_int(srclen)
+    file = stypes.strtocharpoint(" " * fillen.value)
+    filtyp = stypes.strtocharpoint(" " * typlen.value)
+    source = stypes.strtocharpoint(" " * srclen.value)
+    handle = ctypes.c_int()
+    found = ctypes.c_bool()
+    libspice.kdata_c(which, kind, fillen, typlen, srclen, file, filtyp, source, ctypes.byref(handle), ctypes.byref(found))
+    return file.value, filtyp.value, source.value, handle.value, found.value
+
+
+def kinfo(file, typlen, srclen):
+    #todo: test kinfo
+    typlen = ctypes.c_int(typlen)
+    srclen = ctypes.c_int(srclen)
+    file = stypes.strtocharpoint(file)
+    filtyp = stypes.strtocharpoint(" " * typlen.value)
+    source = stypes.strtocharpoint(" " * srclen.value)
+    handle = ctypes.c_int()
+    found = ctypes.c_bool()
+    libspice.kinfo_c(file, typlen, srclen, filtyp, source, ctypes.byref(handle), ctypes.byref(found))
+    return filtyp.value, source.value, handle.value, found.value
+
+
 def ktotal(kind):
     kind = stypes.strtocharpoint(kind)
     count = ctypes.c_int(0)
     libspice.ktotal_c(kind, ctypes.byref(count))
     return count.value
+
+
+#skip kxtrct, not really needed in python, also it looks complicated
+
 
 ########################################################################################################################
 # L
@@ -372,6 +436,13 @@ def ltime(etobs, obs, direct, targ):
     elapsd = ctypes.c_double()
     libspice.ltime_c(etobs, obs, direct, targ, ctypes.byref(ettarg), ctypes.byref(elapsd))
     return ettarg, elapsd
+
+
+def lstlec(string, n, lenvals, array):
+    #Todo: test lstlec
+    string = stypes.strtocharpoint(string)
+    n = ctypes.c_int(n)
+    lenvals = ctypes.c_int(lenvals)
 
 
 def lx4dec(string, first):

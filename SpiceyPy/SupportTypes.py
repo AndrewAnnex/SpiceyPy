@@ -62,6 +62,11 @@ def strtocharpoint(x):
     return ctypes.c_char_p(x.encode(encoding='UTF-8'))
 
 
+def listtosmartstrarray(inlist):
+    lenvals = max([len(x) for x in inlist])
+    n = len(inlist)
+    print(lenvals, n)
+
 #def doublePtr():
 #    return ctypes.POINTER(ctypes.c_double)
 

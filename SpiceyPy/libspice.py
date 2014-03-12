@@ -240,7 +240,15 @@ libspice.inelpl_c.argtypes = [ctypes.c_int, ctypes.c_double, ctypes.c_double]
 libspice.inrypl_c.argtypes = [ctypes.c_int, ctypes.c_double]
 libspice.invert_c.argtypes = [ctypes.c_double]
 libspice.invort_c.argtypes = [ctypes.c_double]
+libspice.isrchd_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_double)]
+libspice.isrchd_c.restype = ctypes.c_int
+libspice.isrchi_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
+libspice.isrchi_c.restype = ctypes.c_int
 
+libspice.isrot_c.argtypes = [(ctypes.c_double*3)*3, ctypes.c_double, ctypes.c_double]
+libspice.isrot_c.restype = ctypes.c_bool
+libspice.iswhsp_c.argtypes = [ctypes.c_char_p]
+libspice.iswhsp_c.restype = ctypes.c_bool
 ##########################################################################################################################################################
 # J
 
@@ -253,8 +261,8 @@ libspice.jyear_c.restype = ctypes.c_double
 ##########################################################################################################################################################
 # K
 libspice.kclear_c.restype = None
-libspice.kdata_c.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_bool]
-libspice.kinfo_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_bool]
+libspice.kdata_c.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_bool)]
+libspice.kinfo_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_bool)]
 libspice.ktotal_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
 libspice.kxtrct_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_bool, ctypes.c_char_p]
 
@@ -274,6 +282,11 @@ libspice.lparsm_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ct
 libspice.lspcn_c.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_char_p]
 libspice.lspcn_c.restype = ctypes.c_double
 libspice.ltime_c.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
+
+libspice.lstlec_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]
+libspice.lstlec_c.restype = ctypes.c_int
+
+
 libspice.lx4dec_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
 libspice.lx4num_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
 libspice.lx4sgn_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
