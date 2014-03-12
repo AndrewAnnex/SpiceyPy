@@ -285,14 +285,38 @@ def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
     return {'trgepc': trgepc.value, 'srfvec': stypes.vectortolist(srfvec), 'phase': phase.value, 'solar': solar.value, 'emissn': emissn.value}
 
 
-#skipping inedpl, no plance or ellipse yet
+def inedpl(a, b, c, plane):
+    #Todo: test inedpl
+    assert (isinstance(plane, stypes.Plane))
+    ellipse = stypes.Ellipse()
+    a = ctypes.c_double(a)
+    b = ctypes.c_double(b)
+    c = ctypes.c_double(c)
+    found = ctypes.c_bool()
+    libspice.inedpl_c(a, b, c, ctypes.byref(plane), ctypes.byref(ellipse), ctypes.byref(found))
+    return ellipse, found.value
 
 
-#skipping inelpl, no plane or ellipse yet
+def inelpl(ellips, plane):
+    #Todo: test inelpl
+    assert(isinstance(plane, stypes.Plane))
+    assert(isinstance(ellips, stypes.Ellipse))
+    nxpts = ctypes.c_int()
+    xpt1 = stypes.doubleVector(3)
+    xpt2 = stypes.doubleVector(3)
+    libspice.inelpl_c(ctypes.byref(ellips), ctypes.byref(plane), ctypes.byref(nxpts), xpt1, xpt2)
+    return nxpts.value, stypes.vectortolist(xpt1), stypes.vectortolist(xpt2)
 
 
-#skipping inrypl, no planes yet
-
+def inrypl(vertex, direct, plane):
+    #Todo: test inrypl
+    assert(isinstance(plane, stypes.Plane))
+    vertex = stypes.listtodoublevector(vertex)
+    direct = stypes.listtodoublevector(direct)
+    nxpts = ctypes.c_int()
+    xpt = stypes.doubleVector(3)
+    libspice.inrypl_c(vertex, direct, ctypes.byref(plane), ctypes.byref(nxpts), xpt)
+    return nxpts.value, stypes.vectortolist(xpt)
 
 #skipping insrtc, no cells yet
 
@@ -522,10 +546,11 @@ def ltime(etobs, obs, direct, targ):
 
 
 def lstlec(string, n, lenvals, array):
-    #Todo: test lstlec
+    #Todo: Complete lstlec
     string = stypes.strtocharpoint(string)
     n = ctypes.c_int(n)
     lenvals = ctypes.c_int(lenvals)
+    pass #gave up here
 
 
 def lx4dec(string, first):
@@ -799,7 +824,13 @@ def npedln(a, b, c, linept, linedr):
     return pnear, dist
 
 
-# skip npelpt, no ellipse type yet
+def npelpt(point, ellips):
+    #Todo: test npelpt
+    assert(isinstance(ellips, stypes.Ellipse))
+    point = stypes.listtodoublevector(point)
+    pnear = stypes.doubleVector(3)
+    dist = ctypes.c_double()
+    libspice.npelpt_c(point, ctypes.byref(ellips), pnear, ctypes.byref(dist))
 
 
 def nplnpt(linpt, lindir, point):
@@ -812,10 +843,20 @@ def nplnpt(linpt, lindir, point):
     return stypes.listtodoublevector(pnear), dist.value
 
 
-# skip nvc2pl, no plane object yet
+def nvc2pl(normal, constant):
+    plane = stypes.Plane()
+    normal = stypes.listtodoublevector(normal)
+    constant = ctypes.c_double(constant)
+    libspice.nvc2pl_c(normal, constant, ctypes.byref(plane))
+    return plane
 
 
-# skip nvp2pl_c
+def nvp2pl(normal, point):
+    #todo: test nvp2pl
+    normal = stypes.listtodoublevector(normal)
+    point = stypes.listtodoublevector(point)
+    plane = stypes.Plane()
+    libspice.nvp2pl_c(normal, point, ctypes.byref(plane))
 
 
 ########################################################################################################################
@@ -870,6 +911,12 @@ def oscelt(stat, et, mu):
 # P
 
 
+# skipping pckcov, no cells yet
+
+
+# skipping pckfrm, no cells yet
+
+
 def pcklof(filename):
     #Todo: test
     filename = stypes.strtocharpoint(filename)
@@ -902,14 +949,6 @@ def pdpool(name, n, dvals):
     libspice.pdpool_c(name, n, dvals)
 
 
-def pipool(name, n, ivals):
-    #Todo: test
-    name = stypes.strtocharpoint(name)
-    ivals = stypes.listtointvector(ivals)
-    n = ctypes.c_int(n)
-    libspice.pipool_c(name, n, ivals)
-
-
 def pgrrec(body, lon, lat, alt, re, f):
     #Todo: test
     body = stypes.strtocharpoint(body)
@@ -926,7 +965,21 @@ def pgrrec(body, lon, lat, alt, re, f):
 def pi():
     return libspice.pi_c()
 
-#pjelpl
+
+def pipool(name, n, ivals):
+    #Todo: test
+    name = stypes.strtocharpoint(name)
+    ivals = stypes.listtointvector(ivals)
+    n = ctypes.c_int(n)
+    libspice.pipool_c(name, n, ivals)
+
+
+def pjelpl(elin, plane):
+    #Todo: test pjelpl, figure out if we want asserts to help users
+    assert(isinstance(elin, stypes.Ellipse))
+    assert(isinstance(plane, stypes.Plane))
+    elout = stypes.Ellipse()
+    libspice.pjelpl_c(ctypes.byref(elin), ctypes.byref(plane), ctypes.byref(elout))
 
 
 def pl2nvc(plane):
@@ -1595,7 +1648,15 @@ def surfpv(stvrtx, stdir, a, b, c):
     libspice.surfpv_c(stvrtx, stdir, a, b, c, stx, ctypes.byref(found))
     return stypes.vectortolist(stx), found.value
 
-#swpool
+
+def swpool(agent, nnames, lenvals, names):
+    #Todo: test swpool
+    agent = stypes.strtocharpoint(agent)
+    nnames = ctypes.c_int(nnames)
+    lenvals = ctypes.c_int(lenvals)
+    names = stypes.listtocharvector(names)
+    libspice.swpool_c(agent, nnames, lenvals, names)
+    pass
 
 
 def sxfrom(instring, tostring, et):
@@ -1964,9 +2025,20 @@ def vperp(a, b):
     libspice.vperp_c(a, b, vout)
     return stypes.vectortolist(vout)
 
-#vprjp
 
-#vprjpi
+def vprjp(vin, plane):
+    vin = stypes.listtodoublevector(vin)
+    vout = stypes.doubleVector(3)
+    libspice.vprjp_c(vin, ctypes.byref(plane), vout)
+    return stypes.vectortolist(vout)
+
+
+def vprjpi(vin, projpl, invpl):
+    vin = stypes.listtodoublevector(vin)
+    vout = stypes.doubleVector(3)
+    found = ctypes.c_bool()
+    libspice.vprjpi_c(vin, ctypes.byref(projpl), ctypes.byref(invpl), vout, ctypes.byref(found))
+    return stypes.vectortolist(vout), found.value
 
 
 def vproj(a, b):
@@ -2134,7 +2206,15 @@ def xpose6(m):
     libspice.xpose6_c(m, mout)
     return stypes.matrixtolist(m)
 
-# xposeg using void pointers, haven't attempted this yet
+
+def xposeg(matrix, nrow, ncol):
+    #Todo: test xposeg, not sure if this will work as is..
+    matrix = stypes.listtodoublematrix(matrix, x=ncol, y=nrow)
+    mout = stypes.doubleMatrix(x=ncol, y=nrow)
+    ncol = ctypes.c_int(ncol)
+    nrow = ctypes.c_int(nrow)
+    libspice.xposeg_c(matrix, nrow, ncol, mout)
+    return stypes.matrixtolist(mout)
 
 ########################################################################################################################
 # Y

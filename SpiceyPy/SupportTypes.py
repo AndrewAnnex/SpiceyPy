@@ -86,3 +86,15 @@ class Plane(ctypes.Structure):
 
     def __str__(self):
         return '<Plane: normal=%s; constant=%s>' % (', '.join([str(x) for x in self.normal]), self.constant)
+
+
+class Ellipse(object):
+    _fields_ = [
+        ('center', ctypes.c_double*3),
+        ('semi_major', ctypes.c_double*3),
+        ('semi_minor', ctypes.c_double*3)
+    ]
+
+    def __str__(self):
+        return '<SpiceEllipse: center = %s, semi_major = %s, semi_minor = %s>' % \
+            (self.center, self.semi_major, self.semi_minor)

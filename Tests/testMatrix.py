@@ -2,7 +2,13 @@ __author__ = 'Apollo117'
 import SpiceyPy as spice
 m1 =[[1.0,2.0,3.0],[0.0,4.0,5.0],[0.0,6.0,0.0]]
 
-print(spice.xpose(m1))
+print("xpose: ", spice.xpose(m1))
+print("xposeg: ", spice.xposeg(m1, 3, 3))
+
+
+m1 = [[0.0,0.0],[0.0,1.0],[0.0,2.0]]
+print("xposeg: ", spice.xposeg(m1, 3, 2))
+
 
 m1 = [[1.0,1.0,1.0],[2.0,3.0,4.0]]
 v2 = [1.0,2.0,3.0]
