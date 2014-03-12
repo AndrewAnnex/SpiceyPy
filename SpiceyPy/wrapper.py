@@ -232,8 +232,39 @@ def halfpi():
     return libspice.halfpi_c()
 
 
+def hx2dp(string, lenout):
+    #Todo: test hx2dp
+    string = stypes.strtocharpoint(string)
+    lenout = ctypes.c_int(lenout)
+    errmsg = stypes.strtocharpoint(lenout)
+    number = ctypes.c_int()
+    error = ctypes.c_bool()
+    libspice.hx2dp_c(string, lenout, ctypes.byref(number), ctypes.byref(error), errmsg)
+    return number.value, error.value, errmsg
+
+
 ########################################################################################################################
 # I
+
+
+def ident():
+    matrix = stypes.doubleMatrix()
+    libspice.ident_c(matrix)
+    return stypes.matrixtolist(matrix)
+
+
+def illum(target, et, abcorr, obsrvr, spoint):
+    #Todo: test illum
+    target = stypes.strtocharpoint(target)
+    et = ctypes.c_double(et)
+    abcorr = stypes.strtocharpoint(abcorr)
+    obsrvr = stypes.strtocharpoint(obsrvr)
+    spoint = stypes.listtodoublevector(spoint)
+    phase = ctypes.c_double(0)
+    solar = ctypes.c_double(0)
+    emissn = ctypes.c_double(0)
+    libspice.illum_c(target, et, abcorr, obsrvr, spoint, ctypes.byref(phase), ctypes.byref(solar), ctypes.byref(emissn))
+    return phase.value, solar.value, emissn.value
 
 
 def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
@@ -252,6 +283,58 @@ def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
     libspice.ilumin_c(method, target, et, fixref, abcorr, obsrvr, spoint, ctypes.byref(trgepc),
               srfvec, ctypes.byref(phase), ctypes.byref(solar), ctypes.byref(emissn))
     return {'trgepc': trgepc.value, 'srfvec': stypes.vectortolist(srfvec), 'phase': phase.value, 'solar': solar.value, 'emissn': emissn.value}
+
+
+#skipping inedpl, no plance or ellipse yet
+
+
+#skipping inelpl, no plane or ellipse yet
+
+
+#skipping inrypl, no planes yet
+
+
+#skipping insrtc, no cells yet
+
+
+#skipping insrtd, no cells yet
+
+
+#skipping insrti, no cells yet
+
+
+#skipping inter_c, no cells yet
+
+
+def intmax():
+    return libspice.intmax_c()
+
+
+def intmin():
+    return libspice.intmin_c()
+
+
+def invert(m):
+    #Todo: test invert
+    m = stypes.listtodoublematrix(m)
+    mout = stypes.doubleMatrix()
+    libspice.invert_c(m, mout)
+    return stypes.matrixtolist(mout)
+
+
+def invort(m):
+    #Todo: test invort
+    m = stypes.listtodoublematrix(m)
+    mout = stypes.doubleMatrix()
+    libspice.invort_c(m, mout)
+    return stypes.matrixtolist(mout)
+
+
+def isordv(array, n):
+    #todo: test isordv
+    array = stypes.listtointvector(array)
+    n = ctypes.c_int(n)
+    return libspice.isordv_c(array, n)
 
 
 def isrchd(value, ndim, array):

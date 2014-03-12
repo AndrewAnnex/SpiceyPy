@@ -223,14 +223,14 @@ libspice.gnpool_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctype
 # H
 
 libspice.halfpi_c.restype = ctypes.c_double
-libspice.hx2dp_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double, ctypes.c_bool, ctypes.c_char_p]
+libspice.hx2dp_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_bool), ctypes.c_char_p]
 
 ##########################################################################################################################################################
 # I
 
-libspice.ident_c.argtypes = [ctypes.c_double]
+libspice.ident_c.argtypes = [(ctypes.c_double*3)*3]
+libspice.illum_c.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_char_p, ctypes.c_char_p, (ctypes.c_double*3), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
 libspice.ilumin_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, (ctypes.c_double * 3), ctypes.POINTER(ctypes.c_double), (ctypes.c_double * 3), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
-libspice.illum_c.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double]
 libspice.inedpl_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_bool]
 libspice.inelpl_c.argtypes = [ctypes.c_int, ctypes.c_double, ctypes.c_double]
 # libspice.insrtc_c.argtypes = [ctypes.c_char_p, None]
@@ -238,13 +238,16 @@ libspice.inelpl_c.argtypes = [ctypes.c_int, ctypes.c_double, ctypes.c_double]
 # libspice.insrti_c.argtypes = [ctypes.c_int, None]
 # libspice.inter_c.argtypes = [None, None, None]
 libspice.inrypl_c.argtypes = [ctypes.c_int, ctypes.c_double]
-libspice.invert_c.argtypes = [ctypes.c_double]
-libspice.invort_c.argtypes = [ctypes.c_double]
+libspice.intmax_c.restype = ctypes.c_int
+libspice.intmin_c.restype = ctypes.c_int
+libspice.invert_c.argtypes = [(ctypes.c_double*3)*3, (ctypes.c_double*3)*3]
+libspice.invort_c.argtypes = [(ctypes.c_double*3)*3, (ctypes.c_double*3)*3]
+libspice.isordv_c.argtypes = [ctypes.POINTER(ctypes.c_int), ctypes.c_int]
+libspice.isordv_c.restype = ctypes.c_bool
 libspice.isrchd_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_double)]
 libspice.isrchd_c.restype = ctypes.c_int
 libspice.isrchi_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
 libspice.isrchi_c.restype = ctypes.c_int
-
 libspice.isrot_c.argtypes = [(ctypes.c_double*3)*3, ctypes.c_double, ctypes.c_double]
 libspice.isrot_c.restype = ctypes.c_bool
 libspice.iswhsp_c.argtypes = [ctypes.c_char_p]
