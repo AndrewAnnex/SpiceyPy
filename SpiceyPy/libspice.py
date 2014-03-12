@@ -279,20 +279,24 @@ libspice.lxqstr_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ct
 ##########################################################################################################################################################
 # M
 
-libspice.m2eul_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double]
-libspice.m2q_c.argtypes = [ctypes.c_double]
-libspice.mequ_c.argtypes = [ctypes.c_double]
-libspice.mequg_c.argtypes = [ctypes.c_int, ctypes.c_int]
+libspice.m2eul_c.argtypes = [(ctypes.c_double * 3)*3, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
+libspice.m2q_c.argtypes = [(ctypes.c_double * 3)*3, (ctypes.c_double*4)]
+libspice.matchi_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char, ctypes.c_char]
+libspice.matchi_c.restype = ctypes.c_bool
+libspice.matchw_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char, ctypes.c_char]
+libspice.matchw_c.restype = ctypes.c_bool
+libspice.mequ_c.argtypes = [(ctypes.c_double * 3)*3,(ctypes.c_double * 3)*3,]
+libspice.mequg_c.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]
 libspice.mtxm_c.argtypes = [(ctypes.c_double * 3)*3, (ctypes.c_double * 3)*3, (ctypes.c_double * 3)*3]
-libspice.mtxmg_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int]
-libspice.mtxv_c.argtypes = [ctypes.c_double]
-libspice.mtxvg_c.argtypes = [ctypes.c_int, ctypes.c_int]
-libspice.mxm_c.argtypes = [ctypes.c_double]
-libspice.mxmg_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int]
+libspice.mtxmg_c.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]
+libspice.mtxv_c.argtypes = [(ctypes.c_double*3)*3, (ctypes.c_double * 3), (ctypes.c_double * 3)]
+libspice.mtxvg_c.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]
+libspice.mxm_c.argtypes = [(ctypes.c_double*3)*3, (ctypes.c_double*3)*3, (ctypes.c_double*3)*3]
+libspice.mxmg_c.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]
 libspice.mxmt_c.argtypes = [ctypes.c_double]
-libspice.mxmtg_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int]
-libspice.mxv_c.argtypes = [ctypes.c_double]
-libspice.mxvg_c.argtypes = [ctypes.c_int, ctypes.c_int]
+libspice.mxmtg_c.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]
+libspice.mxv_c.argtypes = [(ctypes.c_double*3)*3, (ctypes.c_double*3), (ctypes.c_double*3)]
+libspice.mxvg_c.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]
 
 ##########################################################################################################################################################
 # N

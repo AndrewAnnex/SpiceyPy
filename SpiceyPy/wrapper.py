@@ -298,12 +298,169 @@ def ktotal(kind):
 # M
 
 
+def m2eul(r, axis3, axis2, axis1):
+    #todo: test m2eul
+    r = stypes.listtodoublematrix(r)
+    axis3 = ctypes.c_int(axis3)
+    axis2 = ctypes.c_int(axis2)
+    axis1 = ctypes.c_int(axis1)
+    angle3 = ctypes.c_double()
+    angle2 = ctypes.c_double()
+    angle1 = ctypes.c_double()
+    libspice.m2eul_c(r, axis3, axis2, axis1, ctypes.byref(angle3), ctypes.byref(angle2), ctypes.byref(angle1))
+    return angle3.value, angle2.value, angle1.value
+
+
+def m2q(r):
+    #Todo: test
+    r = stypes.listtodoublematrix(r)
+    q = stypes.doubleVector(4)
+    libspice.m2q_c(r, q)
+    return stypes.vectortolist(q)
+
+
+def matchi(string, templ, wstr, wchr):
+    #Todo: test matchi
+    string = stypes.strtocharpoint(string)
+    templ = stypes.strtocharpoint(templ)
+    wstr = ctypes.c_char(wstr.encode(encoding='UTF-8'))
+    wchr = ctypes.c_char(wchr.encode(encoding='UTF-8'))
+    return libspice.matchi_c(string, templ, wstr, wchr)
+
+
+def matchw(string, templ, wstr, wchr):
+    #Todo: test matchw
+    string = stypes.strtocharpoint(string)
+    templ = stypes.strtocharpoint(templ)
+    wstr = ctypes.c_char(wstr.encode(encoding='UTF-8'))
+    wchr = ctypes.c_char(wchr.encode(encoding='UTF-8'))
+    return libspice.matchw_c(string, templ, wstr, wchr)
+
+
+#skiping for now maxd_c, odd as arguments must be parsed and not really important
+
+
+#skiping for now maxi_c, odd as arguments must be parsed and not really important
+
+
+def mequ(m1):
+    m1 = stypes.listtodoublematrix(m1)
+    mout = stypes.doubleMatrix()
+    libspice.mequ_c(m1, mout)
+    return stypes.matrixtolist(mout)
+
+
+def mequg(m1, nr, nc):
+    m1 = stypes.listtodoublematrix(m1, x=nc, y=nr)
+    nc = ctypes.c_int(nc)
+    nr = ctypes.c_int(nr)
+    mout = stypes.doubleMatrix(x=nc, y=nr)
+    libspice.mequg_c(m1, nc, nr, mout)
+    return stypes.matrixtolist(mout)
+
+
+#skiping for now mind_c, odd as arguments must be parsed and not really important
+
+
+#skiping for now mini_c, odd as arguments must be parsed and not really important
+
+
 def mtxm(m1, m2):
     m1 = stypes.listtodoublematrix(m1)
     m2 = stypes.listtodoublematrix(m2)
     mout = stypes.doubleMatrix()
     libspice.mtxm_c(m1, m2, mout)
     return stypes.matrixtolist(mout)
+
+
+def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
+    #Todo: test mtxmg
+    m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nr1r2)
+    m2 = stypes.listtodoublematrix(m2, x=ncol2, y=nr1r2)
+    mout = stypes.doubleMatrix(x=ncol2, y=nr1r2)
+    ncol1 = ctypes.c_int(ncol1)
+    nr1r2 = ctypes.c_int(nr1r2)
+    ncol2 = ctypes.c_int(ncol2)
+    libspice.mtxmg_c(m1, m2, ncol1, nr1r2, ncol2, mout)
+    return stypes.matrixtolist(mout)
+
+
+def mtxv(m1, vin):
+    #Todo: test
+    m1 = stypes.listtodoublematrix(m1)
+    vin = stypes.listtodoublevector(vin)
+    vout = stypes.doubleVector(3)
+    libspice.mtxv_c(m1, vin, vout)
+    return stypes.vectortolist(vout)
+
+
+def mtxvg(m1, v2, ncol1, nr1r2):
+    #Works!
+    m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nr1r2)
+    v2 = stypes.listtodoublevector(v2)
+    ncol1 = ctypes.c_int(ncol1)
+    nr1r2 = ctypes.c_int(nr1r2)
+    vout = stypes.doubleVector(ncol1.value)
+    libspice.mtxvg_c(m1, v2, ncol1, nr1r2, vout)
+    return stypes.vectortolist(vout)
+
+
+def mxm(m1, m2):
+    m1 = stypes.listtodoublematrix(m1)
+    m2 = stypes.listtodoublematrix(m2)
+    mout = stypes.doubleMatrix()
+    libspice.mxm_c(m1, m2, mout)
+    return stypes.matrixtolist(mout)
+
+
+def mxmg(m1, m2, nrow1, ncol1, ncol2):
+    m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nrow1)
+    m2 = stypes.listtodoublematrix(m2, x=ncol2, y=ncol1)
+    mout = stypes.doubleMatrix(x=ncol2, y=nrow1)
+    nrow1 = ctypes.c_int(nrow1)
+    ncol1 = ctypes.c_int(ncol1)
+    ncol2 = ctypes.c_int(ncol2)
+    libspice.mxmg_c(m1, m2, nrow1, ncol1, ncol2, mout)
+    return stypes.matrixtolist(mout)
+
+
+def mtxm(m1, m2):
+    m1 = stypes.listtodoublematrix(m1)
+    m2 = stypes.listtodoublematrix(m2)
+    mout = stypes.doubleMatrix()
+    libspice.mtxm_c(m1, m2, mout)
+    return stypes.matrixtolist(mout)
+
+
+def mxmtg(m1, m2, nrow1, nc1c2, nrow2):
+    m1 = stypes.listtodoublematrix(m1, x=nc1c2, y=nrow1)
+    m2 = stypes.listtodoublematrix(m2, x=nc1c2, y=nrow2)
+    mout = stypes.doubleMatrix(x=nrow2, y=nrow1)
+    nrow1 = ctypes.c_int(nrow1)
+    nc1c2 = ctypes.c_int(nc1c2)
+    nrow2 = ctypes.c_int(nrow2)
+    libspice.mxmtg_c(m1, m2, nrow1, nc1c2, nrow2, mout)
+    return stypes.matrixtolist(mout)
+
+
+def mxv(m1, vin):
+    #Todo: test
+    m1 = stypes.listtodoublematrix(m1)
+    vin = stypes.listtodoublevector(vin)
+    vout = stypes.doubleVector(3)
+    libspice.mxv_c(m1, vin, vout)
+    return stypes.vectortolist(vout)
+
+
+def mxvg(m1, v2, nrow1, nc1r2):
+    #Works!
+    m1 = stypes.listtodoublematrix(m1, x=nc1r2, y=nrow1)
+    v2 = stypes.listtodoublevector(v2)
+    nrow1 = ctypes.c_int(nrow1)
+    nc1r2 = ctypes.c_int(nc1r2)
+    vout = stypes.doubleVector(nrow1.value)
+    libspice.mxvg_c(m1, v2, nrow1, nc1r2, vout)
+    return stypes.vectortolist(vout)
 
 ########################################################################################################################
 # N
