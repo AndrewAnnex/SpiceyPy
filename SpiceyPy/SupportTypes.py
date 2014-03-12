@@ -73,3 +73,12 @@ def listtosmartstrarray(inlist):
 
 #def intPrt():
 #    return ctypes.POINTER(ctypes.c_int)
+
+class Plane(ctypes.Structure):
+    _fields_ = [
+        ('normal', ctypes.c_double*3),
+        ('constant', ctypes.c_double)
+    ]
+
+    def __str__(self):
+        return '<Plane: normal=%s; constant=%s>' % (', '.join([str(x) for x in self.normal]), self.constant)

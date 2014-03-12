@@ -928,7 +928,14 @@ def pi():
 
 #pjelpl
 
-#pl2ncv
+
+def pl2nvc(plane):
+    #Works! we have working planes!
+    assert(isinstance(plane, stypes.Plane))
+    normal = stypes.doubleVector(3)
+    constant = ctypes.c_double()
+    libspice.pl2nvc_c(ctypes.byref(plane), normal, ctypes.byref(constant))
+    return stypes.vectortolist(normal), constant.value
 
 #pl2nvp
 
