@@ -187,6 +187,230 @@ def bsrchi(value, ndim, array):
 ########################################################################################################################
 # C
 
+
+def cgv2el(center, vec1, vec2):
+    #Todo: test cgv2el
+    center = stypes.listtodoublevector(center)
+    vec1 = stypes.listtodoublevector(vec1)
+    vec2 = stypes.listtodoublevector(vec2)
+    ellipse = stypes.Ellipse()
+    libspice.cgv2el_c(center, vec1, vec2, ctypes.byref(ellipse))
+    return ellipse
+
+
+def chkin(module):
+    #Todo: test chkin
+    module = stypes.strtocharpoint(module)
+    libspice.chkin_c(module)
+    pass
+
+
+def chkout(module):
+    #Todo: test chkout
+    module = stypes.strtocharpoint(module)
+    libspice.chkout_c(module)
+    pass
+
+
+def cidfrm(cent, lenout):
+    #Todo: test cidfrm
+    cent = ctypes.c_int(cent)
+    lenout = ctypes.c_int(lenout)
+    frcode = ctypes.c_int()
+    frname = stypes.strtocharpoint(lenout)
+    found = ctypes.c_bool()
+    libspice.cidfrm_c(cent, lenout, ctypes.byref(frcode), frname, ctypes.byref(found))
+    return frcode.value, frname.value, found.value
+
+
+def ckcls(handle):
+    #Todo: test ckcls
+    handle = ctypes.c_int(handle)
+    libspice.ckcls_c(handle)
+    pass
+
+
+#ckcov has cells
+
+
+def ckgp(inst, sclkdp, tol, ref):
+    #Todo: test ckgp
+    inst = ctypes.c_int(inst)
+    sclkdp = ctypes.c_double(sclkdp)
+    tol = ctypes.c_double(tol)
+    ref = stypes.strtocharpoint(ref)
+    cmat = stypes.doubleMatrix()
+    clkout = ctypes.c_double()
+    found = ctypes.c_bool()
+    libspice.ckgp_c(inst, sclkdp, tol, ref, cmat, ctypes.byref(clkout), ctypes.byref(found))
+    return stypes.matrixtolist(cmat), clkout.value, found.value
+
+
+def ckgpav(inst, sclkdp, tol, ref):
+    #Todo: test ckgpav
+    inst = ctypes.c_int(inst)
+    sclkdp = ctypes.c_double(sclkdp)
+    tol = ctypes.c_double(tol)
+    ref = stypes.strtocharpoint(ref)
+    cmat = stypes.doubleMatrix()
+    av = stypes.doubleVector(3)
+    clkout = ctypes.c_double()
+    found = ctypes.c_bool()
+    libspice.ckgpav_c(inst, sclkdp, tol, ref, cmat, av, ctypes.byref(clkout), ctypes.byref(found))
+    return stypes.matrixtolist(cmat),stypes.vectortolist(av), clkout.value, found.value
+
+
+def cklpf(filename):
+    #Todo: test cklpf
+    filename = stypes.strtocharpoint(filename)
+    handle = ctypes.c_int()
+    libspice.cklpf_c(filename, ctypes.byref(handle))
+    return handle.value
+
+
+#ckobj cells
+
+
+def ckopn(filename, ifname, ncomch):
+    #Todo: test ckopn
+    filename = stypes.strtocharpoint(filename)
+    ifname = stypes.strtocharpoint(ifname)
+    ncomch = ctypes.c_int(ncomch)
+    handle = ctypes.c_int()
+    libspice.ckopn_c(filename, ifname, ncomch, ctypes.byref(handle))
+    return handle.value
+
+
+def ckupf(handle):
+    handle = ctypes.c_int(handle)
+    libspice.ckupf_c(handle)
+    pass
+
+
+# ckw01, skipping for now but it looks doo-able
+
+
+# ckw02, skipping for now but it looks doo-able
+
+
+# ckw03, skipping for now but it looks doo-able
+
+
+# ckw05, skipping, ck05subtype?
+
+
+def clight():
+    #Todo: test clight
+    return libspice.clight_c()
+
+
+def clpool():
+    #Todo: test clpool
+    libspice.clpool_c()
+    pass
+
+
+def cmprss(delim, n, instr, lenout):
+    #Todo: test cmprss
+    delim = ctypes.c_char(delim)  # may have to decode/encode...
+    n = ctypes.c_int(n)
+    instr = stypes.strtocharpoint(instr)
+    lenout = ctypes.c_int(lenout)
+    output = stypes.strtocharpoint(lenout)
+    libspice.cmprss_c(delim, n, instr, lenout, output)
+    return output.value
+
+
+def cnmfrm(cname, lenout):
+    #Todo: test cnmfrm
+    lenout = ctypes.c_int(lenout)
+    frname = stypes.strtocharpoint(lenout)
+    cname = stypes.strtocharpoint(cname)
+    found = ctypes.c_bool()
+    frcode = ctypes.c_int()
+    libspice.cnmfrm_c(cname, lenout, ctypes.byref(frcode), frname, ctypes.byref(found))
+    return frcode.value, frname.value, found.value
+
+
+def conics(elts, et):
+    #Todo: test conics
+    elts = stypes.listtodoublevector(elts)
+    et = ctypes.c_double(et)
+    state = stypes.doubleVector(6)
+    libspice.conics_c(elts, et, state)
+    return stypes.vectortolist(state)
+
+
+def convrt(x, inunit, outunit):
+    x = ctypes.c_double(x)
+    inunit = stypes.strtocharpoint(inunit)
+    outunit = stypes.strtocharpoint(outunit)
+    y = ctypes.c_double()
+    libspice.convrt_c(x, inunit, outunit, ctypes.byref(y))
+    return y.value
+
+
+# copy, cells
+
+
+def cpos(string, chars, start):
+    #Todo: test cpos
+    string = stypes.strtocharpoint(string)
+    chars = stypes.strtocharpoint(chars)
+    start = ctypes.c_int(start)
+    return libspice.cpos_c(string, chars, start)
+
+
+def cposr(string, chars, start):
+    #Todo: test cposr
+    string = stypes.strtocharpoint(string)
+    chars = stypes.strtocharpoint(chars)
+    start = ctypes.c_int(start)
+    return libspice.cposr_c(string, chars, start)
+
+
+def cvpool(agent):
+    #Todo: test cvpool
+    agent = stypes.strtocharpoint(agent)
+    update = ctypes.c_bool()
+    libspice.cvpool_c(agent, ctypes.byref(update))
+    return update.value
+
+
+def cyllat(r, lonc, z):
+    #Todo: test cyllat
+    r = ctypes.c_double(r)
+    lonc = ctypes.c_double(lonc)
+    z = ctypes.c_double(z)
+    radius = ctypes.c_double()
+    lon = ctypes.c_double()
+    lat = ctypes.c_double()
+    libspice.cyllat_c(r, lonc, z, ctypes.byref(radius), ctypes.byref(lon), ctypes.byref(lat))
+    return radius.value, lon.value, lat.value
+
+
+def cylrec(r, lon, z):
+    #Todo: test cylrec
+    r = ctypes.c_double(r)
+    lon = ctypes.c_double(lon)
+    z = ctypes.c_double(z)
+    rectan = stypes.doubleVector(3)
+    libspice.cylrec_c(r, lon, z, rectan)
+    return stypes.vectortolist(rectan)
+
+
+def cylsph(r, lonc, z):
+    #Todo: test cylsph
+    r = ctypes.c_double(r)
+    lonc = ctypes.c_double(lonc)
+    z = ctypes.c_double(z)
+    radius = ctypes.c_double()
+    colat = ctypes.c_double()
+    lon = ctypes.c_double()
+    libspice.cyllat_c(r, lonc, z, ctypes.byref(radius), ctypes.byref(colat), ctypes.byref(lon))
+    return radius.value, colat.value, lon.value
+
+
 ########################################################################################################################
 # D
 
