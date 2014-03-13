@@ -187,8 +187,8 @@ libspice.furnsh_c.argtypes = [ctypes.c_char_p]
 ##########################################################################################################################################################
 # G
 
-libspice.gcpool_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_bool]
-libspice.gdpool_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_double, ctypes.c_bool]
+libspice.gcpool_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.c_void_p, ctypes.POINTER(ctypes.c_bool)]
+libspice.gdpool_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_bool)]
 libspice.georec_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3)]
 libspice.getcml_c.argtypes = [ctypes.c_int, ctypes.c_char_p]
 libspice.getelm_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_double, ctypes.c_double]
@@ -196,16 +196,16 @@ libspice.getfat_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctype
 libspice.getfov_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p, (ctypes.c_double * 3), ctypes.POINTER(ctypes.c_int), (ctypes.c_double * 3) * 4]
 libspice.getmsg_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
 libspice.gfbail_c.restype = ctypes.c_bool
-#libspice.gfclrh_c.argtypes = []
+libspice.gfclrh_c.argtypes = None
 #libspice.gfdist_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_int, None, None]
 #libspice.gfevnt_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_bool, ctypes.c_bool, ctypes.c_double, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_bool, None, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_int, ctypes.c_bool, ctypes.c_bool, None, None]
 #libspice.gffove_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double,  ctypes.c_double, ctypes.c_bool, ctypes.c_bool, ctypes.c_double, ctypes.c_bool, None,  ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double,  ctypes.c_bool, ctypes.c_bool, None, None]
-#libspice.gfinth_c.argtypes = []
+libspice.gfinth_c.argtypes = [ctypes.c_int]
 #libspice.gfocce_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_bool, ctypes.c_bool, ctypes.c_double, ctypes.c_bool, None, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_bool, ctypes.c_bool, None, None]
 #libspice.gfoclt_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, None,None]
 #libspice.gfposc_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double,  ctypes.c_int, None, None]
-libspice.gfrefn_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_bool, ctypes.c_bool, ctypes.c_double]
-#libspice.gfrepf_c.argtypes = []
+libspice.gfrefn_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_bool, ctypes.c_bool, ctypes.POINTER(ctypes.c_double)]
+libspice.gfrepf_c.argtypes = None
 #libspice.gfrepi_c.argtypes = [None, ctypes.c_char_p, ctypes.c_char_p]
 libspice.gfrepu_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double]
 # libspice.gfrfov_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, None,  None]

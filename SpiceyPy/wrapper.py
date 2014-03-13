@@ -210,6 +210,31 @@ def furnsh(path):
 # G
 
 
+def gcpool(name, start, room, lenout):
+    #Todo: test gcpool
+    name = stypes.strtocharpoint(name)
+    start = ctypes.c_int(start)
+    room = ctypes.c_int(room)
+    lenout = ctypes.c_int(lenout)
+    n = ctypes.c_int()
+    cvals = ctypes.c_void_p()  # not sure if this will work...
+    found = ctypes.c_bool()
+    libspice.gcpool_c(name, start, room, lenout, ctypes.byref(n), ctypes.byref(cvals), ctypes.byref(found))
+    return n.value, cvals.value, found.value
+
+
+def gdpool(name, start, room):
+    #Todo: test gdpool
+    name = stypes.strtocharpoint(name)
+    start = ctypes.c_int(start)
+    room = ctypes.c_int(room)
+    n = ctypes.c_int()
+    values = ctypes.c_double()*room.value  # not sure if this would work...
+    found = ctypes.c_bool()
+    libspice.gdpool_c(name, start, room, ctypes.byref(n), ctypes.byref(values), ctypes.byref(found))
+    return n.value, stypes.vectortolist(values), found.value
+
+
 def georec(lon, lat, alt, re, f):
     #Todo: test georec
     lon = ctypes.c_double(lon)
@@ -222,9 +247,21 @@ def georec(lon, lat, alt, re, f):
     return stypes.vectortolist(rectan)
 
 
-def gfbail():
-    #todo: test gfbail. funny name
-    return libspice.gfbail_c()
+# getcml not really needed
+
+
+# getelm cells?
+
+
+def getfat(file, arclen, typlen):
+    #Todo: test getfat, or is this really needed at all?
+    file = stypes.strtocharpoint(file)
+    arclen = ctypes.c_int(arclen)
+    typlen = ctypes.c_int(typlen)
+    arch = stypes.strtocharpoint(arclen)
+    rettype = stypes.strtocharpoint(typlen)
+    libspice.getfat_c(file, arclen, typlen, arch, rettype)
+    return arch.value, rettype.value
 
 
 def getfov(instid, room, shapelen, framelen):
@@ -240,6 +277,92 @@ def getfov(instid, room, shapelen, framelen):
     libspice.getfov_c(instid, room, shapelen, framelen, shape, frame, bsight, ctypes.byref(n), bounds)
     return {'shape': shape.value, 'frame': frame.value, 'bsight': stypes.vectortolist(bsight),
             'bounds': stypes.matrixtolist(bounds)}
+
+
+def getmsg(option, lenout):
+    #todo: test getmsg
+    option = stypes.strtocharpoint(option)
+    lenout = ctypes.c_int(lenout)
+    msg = stypes.strtocharpoint(lenout)
+    libspice.getmsg_c(option, lenout, msg)
+    return msg.value
+
+
+def gfbail():
+    #todo: test gfbail. funny name
+    return libspice.gfbail_c()
+
+
+def gfclrh():
+    #Todo: test gfclrh
+    libspice.gfclrh_c()
+    pass
+
+
+#gfdist  cells
+
+
+#gdevnt  callbacks? cells
+
+
+#gffove  callbacks? cells
+
+
+def gfinth(sigcode):
+    #Todo: test gfinth
+    sigcode = ctypes.c_int(sigcode)
+    libspice.gfinth_c(sigcode)
+    pass
+
+
+#gfocce  callbacks? cells
+
+
+#gfoclt cells
+
+
+#gfposc cells
+
+
+def gfrefn(t1, t2, s1, s2):
+    #Todo: test gfrefn
+    t1 = ctypes.c_double(t1)
+    t2 = ctypes.c_double(t2)
+    s1 = ctypes.c_bool(s1)
+    s2 = ctypes.c_bool(s2)
+    t = ctypes.c_bool()
+    libspice.gfrefn_c(t1, t2, s1, s2, ctypes.byref(t))
+    return t.value
+
+
+def gfrepf():
+    #Todo: test gfrepf
+    libspice.gfrepf_c()
+    pass
+
+
+#gfrepi   cells
+
+
+def gfrepu(ivbeg, ivend, time):
+    #Todo: test gfrepu
+    ivbeg = ctypes.c_double(ivbeg)
+    ivend = ctypes.c_double(ivend)
+    time = ctypes.c_double(time)
+    libspice.gfrepu_c(ivbeg, ivend, time)
+    pass
+
+
+# gfrfov  cells
+
+
+# gfrr  cells
+
+
+# gfspe  cells
+
+
+# gfsntc cells
 
 
 def gfsstp(step):
