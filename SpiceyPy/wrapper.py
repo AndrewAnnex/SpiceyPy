@@ -214,6 +214,33 @@ def frame(x):
     return stypes.vectortolist(x), stypes.vectortolist(y), stypes.vectortolist(z)
 
 
+def frinfo(frcode):
+    #Todo: test frinfo
+    frcode = ctypes.c_int(frcode)
+    cent = ctypes.c_int()
+    frclss = ctypes.c_int()
+    clssid = ctypes.c_int()
+    found = ctypes.c_bool()
+    libspice.frinfo_c(frcode, ctypes.byref(cent), ctypes.byref(frclss), ctypes.byref(clssid), ctypes.byref(found))
+    return cent.value, frclss.value, clssid.value, found.value
+
+
+def frmnam(frcode, lenout):
+    #Todo: test frmnam
+    frcode = ctypes.c_int(frcode)
+    lenout = ctypes.c_int(lenout)
+    frname = stypes.strtocharpoint(lenout)
+    libspice.frmnam_c(frcode, lenout, frname)
+    return frname.value
+
+
+def ftncls(unit):
+    #Todo: close ftncls
+    unit = ctypes.c_int(unit)
+    libspice.ftncls_c(unit)
+    pass
+
+
 def furnsh(path):
     path = stypes.strtocharpoint(path)
     libspice.furnsh_c(path)
