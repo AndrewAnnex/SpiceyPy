@@ -178,7 +178,9 @@ libspice.expool_c.argtypes = [ctypes.c_char_p, ctypes.c_bool]
 ##########################################################################################################################################################
 # F
 
-libspice.frame_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double]
+libspice.failed_c.argtypes = None
+libspice.failed_c.restype = ctypes.c_bool
+libspice.frame_c.argtypes = [(ctypes.c_double*3), (ctypes.c_double*3), (ctypes.c_double*3)]
 libspice.frinfo_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_bool]
 libspice.frmnam_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_char_p]
 libspice.ftncls_c.argtypes = [ctypes.c_int]
@@ -234,6 +236,7 @@ libspice.illum_c.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_char_p, 
 libspice.ilumin_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, (ctypes.c_double * 3), ctypes.POINTER(ctypes.c_double), (ctypes.c_double * 3), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
 libspice.inedpl_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.POINTER(stypes.Plane), ctypes.POINTER(stypes.Ellipse), ctypes.POINTER(ctypes.c_bool)]
 libspice.inelpl_c.argtypes = [ctypes.POINTER(stypes.Ellipse), ctypes.POINTER(stypes.Plane), ctypes.POINTER(ctypes.c_int), (ctypes.c_double*3), (ctypes.c_double*3)]
+
 # libspice.insrtc_c.argtypes = [ctypes.c_char_p, None]
 # libspice.insrtd_c.argtypes = [ctypes.c_double, None]
 # libspice.insrti_c.argtypes = [ctypes.c_int, None]
@@ -329,6 +332,7 @@ libspice.ncposr_c.restype = ctypes.c_int
 libspice.nearpt_c.argtypes = [(ctypes.c_double*3), ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3), ctypes.POINTER(ctypes.c_double)]
 libspice.npedln_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3), (ctypes.c_double*3), (ctypes.c_double*3), ctypes.POINTER(ctypes.c_double)]
 libspice.npelpt_c.argtypes = [(ctypes.c_double*3), ctypes.POINTER(stypes.Ellipse), (ctypes.c_double*3), ctypes.POINTER(ctypes.c_double)]
+
 libspice.nplnpt_c.argtypes = [(ctypes.c_double*3), (ctypes.c_double*3), (ctypes.c_double*3), (ctypes.c_double*3), ctypes.POINTER(ctypes.c_double)]
 libspice.nvc2pl_c.argtypes = [(ctypes.c_double*3), ctypes.c_double, ctypes.POINTER(stypes.Plane)]
 libspice.nvp2pl_c.argtypes = [(ctypes.c_double*3), (ctypes.c_double*3), ctypes.POINTER(stypes.Plane)]

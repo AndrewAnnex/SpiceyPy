@@ -201,6 +201,19 @@ def dpr():
 # F
 
 
+def failed():
+    #todo: test failed
+    return libspice.failed_c()
+
+
+def frame(x):
+    x = stypes.listtodoublevector(x)
+    y = stypes.doubleVector(3)
+    z = stypes.doubleVector(3)
+    libspice.frame_c(x, y, z)
+    return stypes.vectortolist(x), stypes.vectortolist(y), stypes.vectortolist(z)
+
+
 def furnsh(path):
     path = stypes.strtocharpoint(path)
     libspice.furnsh_c(path)

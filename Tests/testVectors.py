@@ -53,3 +53,7 @@ print(spice.sumai([5, 7, 12], 3))
 print("Test shell sort:")
 print(spice.shelli(6, [99,33,55,44,-77,66]))
 print(spice.shelld(6, [99.0,33,55,44,-77,66]))
+
+print("Frame test: ")
+print(spice.frame([1.0,2.0,1.0]))
+print(spice.frame([0.0,0.0,0.0]))
