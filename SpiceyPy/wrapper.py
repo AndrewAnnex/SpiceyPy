@@ -210,6 +210,23 @@ def furnsh(path):
 # G
 
 
+def georec(lon, lat, alt, re, f):
+    #Todo: test georec
+    lon = ctypes.c_double(lon)
+    lat = ctypes.c_double(lat)
+    alt = ctypes.c_double(alt)
+    re = ctypes.c_double(re)
+    f = ctypes.c_double(f)
+    rectan = stypes.doubleVector(3)
+    libspice.georec_c(lon, lat, alt, re, f, rectan)
+    return stypes.vectortolist(rectan)
+
+
+def gfbail():
+    #todo: test gfbail. funny name
+    return libspice.gfbail_c()
+
+
 def getfov(instid, room, shapelen, framelen):
     instid = ctypes.c_int(instid)
     room = ctypes.c_int(room)
@@ -223,6 +240,45 @@ def getfov(instid, room, shapelen, framelen):
     libspice.getfov_c(instid, room, shapelen, framelen, shape, frame, bsight, ctypes.byref(n), bounds)
     return {'shape': shape.value, 'frame': frame.value, 'bsight': stypes.vectortolist(bsight),
             'bounds': stypes.matrixtolist(bounds)}
+
+
+def gfsstp(step):
+    #Todo: test gfsstp
+    step = ctypes.c_double(step)
+    libspice.gfsstp_c(step)
+    pass
+
+
+def gfstep(time):
+    #Todo: test gfstep
+    time = ctypes.c_double(time)
+    step = ctypes.c_double()
+    libspice.gfstep_c(time, ctypes.byref(step))
+    return step.value
+
+
+#gfsubc  has cell types
+
+
+#gftfov  has cell types
+
+
+#gfuds has cell types and more
+
+
+def gipool(name, start, room):
+    name = stypes.strtocharpoint(name)
+    start = ctypes.c_int(start)
+    room = ctypes.c_int(room)
+    n = ctypes.c_int()
+    ivals = ctypes.c_int()
+    found = ctypes.c_bool()
+    libspice.gipool_c(name, start, room, ctypes.byref(n), ctypes.byref(ivals), ctypes.byref(found))
+    return n.value, ivals.value, found.value
+
+
+#gnpool, not yet confident with getting back string arrays.
+
 
 ########################################################################################################################
 # H
