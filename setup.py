@@ -75,6 +75,9 @@ def buildLib():
 
 def movetoLib():
     try:
+        target_lib_folder = os.path.join(root_dir, 'SpiceyPy', 'lib')
+        if not os.path.exists(target_lib_folder):
+            os.mkdir(target_lib_folder)
         os.rename(cspice_dir+'/lib/spice.so', os.path.join(root_dir,'SpiceyPy','lib','spice.so'))
 
     finally:
