@@ -75,7 +75,7 @@ def buildLib():
 
 def movetoLib():
     try:
-        os.rename(cspice_dir+'/lib/spice.so', os.path.join(root_dir,'SpiceyPy','lib','spice.so'))
+        os.rename(cspice_dir+'/lib/spice.so', os.path.join(root_dir, 'lib', 'spice.so'))
 
     finally:
         pass
