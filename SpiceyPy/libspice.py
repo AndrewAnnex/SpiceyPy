@@ -1,6 +1,10 @@
 __author__ = 'Apollo117'
 import ctypes
-libspice = ctypes.CDLL('spice.so')
+import os
+sitePath = os.path.dirname(__file__)
+sitePath = os.path.join(sitePath, 'lib', 'spice.so')
+libspice = ctypes.CDLL(sitePath)
+#libspice = ctypes.CDLL('./spice.so')
 
 import SpiceyPy.SupportTypes as stypes
 
@@ -130,7 +134,7 @@ libspice.dvpool_c.argtypes = [ctypes.c_char_p]
 ##########################################################################################################################################################
 # E
 
-libspice.edlimb_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double]
+libspice.edlimb_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3), ctypes.POINTER(stypes.Ellipse)]
 libspice.ekacec_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_bool]
 libspice.ekaced_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_bool]
 libspice.ekacei_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_bool]
@@ -166,7 +170,7 @@ libspice.ekucec_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c
 libspice.ekuced_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_bool]
 libspice.ekucei_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_bool]
 libspice.ekuef_c.argtypes = [ctypes.c_int]
-libspice.el2cgv_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double]
+libspice.el2cgv_c.argtypes = [ctypes.POINTER(stypes.Ellipse), (ctypes.c_double*3), (ctypes.c_double*3), (ctypes.c_double*3)]
 libspice.erract_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
 libspice.errch_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
 libspice.errdev_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]

@@ -1,7 +1,6 @@
 # Collection of supporting functions for wrapper functions
 __author__ = 'Apollo117'
 import ctypes
-import numpy.ctypeslib as npc
 
 
 def listtodoublevector(x):

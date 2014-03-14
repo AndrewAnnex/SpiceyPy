@@ -67,10 +67,18 @@ def buildLib():
         status = os.waitpid(build_lib.pid, 0)[1]
 
         if status != 0:
-            sys.stderr.write('warning: csupport build exit status: %d' % status)
+            sys.stderr.write('warning: compile shared spice.so build exit status: %d' % status)
 
     finally:
         os.chdir(currentDir)
+
+
+def movetoLib():
+    try:
+        os.rename(cspice_dir+'/lib/spice.so', os.path.join(root_dir,'SpiceyPy','lib','spice.so'))
+
+    finally:
+        pass
 
 
 def cleanup():
@@ -83,16 +91,16 @@ try:
     unpack_cspicelib()
     unpack_csupportlib()
     buildLib()
+    movetoLib()
     setup(
-
      name='SpiceyPy',
-     version='0.3',
+     version='0.4.2',
      description='A Python Wrapper for the NAIF CSPICE Toolkit using ctypes',
      author='Apollo117',
-     packages = ['SpiceyPy','SpiceyPy'],
-     package_data = {'SpiceyPy': ['/cspice/lib/spice.so']},
-
-
+     packages=['SpiceyPy'],
+     package_data = {'SpiceyPy': ['lib/*.so']},
+     include_package_data=True,
+     zip_safe=False
     )
 finally:
     cleanup()

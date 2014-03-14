@@ -421,6 +421,38 @@ def dpr():
 ########################################################################################################################
 # E
 
+
+def edlimb(a, b, c, viewpt):
+    #Todo: test edlimb
+    limb = stypes.Ellipse()
+    a = ctypes.c_double(a)
+    b = ctypes.c_double(b)
+    c = ctypes.c_double(c)
+    viewpt = stypes.vectortolist(viewpt)
+    libspice.edlimb_c(a, b, c, viewpt, ctypes.byref(limb))
+    return limb
+
+
+def el2cgv(ellipse):
+    #Todo: test el2cgv
+    assert(isinstance(ellipse, stypes.Ellipse))
+    center = stypes.doubleVector(3)
+    smajor = stypes.doubleVector(3)
+    sminor = stypes.doubleVector(3)
+    libspice.el2cgv_c(ctypes.byref(ellipse), center, smajor, sminor)
+    return stypes.vectortolist(center), stypes.vectortolist(smajor), stypes.vectortolist(sminor)
+
+
+def erract(op, lenout, action):
+    #erract works, new method for dealing with returned strings/buffers, but action must be a binary string!
+    lenout = ctypes.c_int(lenout)
+    op = stypes.strtocharpoint(op)
+    action = ctypes.create_string_buffer(action, lenout.value)
+    actionptr = ctypes.c_char_p(ctypes.addressof(action))
+    libspice.erract_c(op, lenout, actionptr)
+    return actionptr.value
+
+
 ########################################################################################################################
 # F
 
