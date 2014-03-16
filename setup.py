@@ -2,7 +2,7 @@ __author__ = 'Apollo117'
 from setuptools import setup
 import sys
 import os
-from subprocess import PIPE, Popen
+from subprocess import Popen
 
 module_name = os.path.basename(os.getcwd())
 root_dir = os.path.dirname(__file__)
@@ -30,10 +30,13 @@ def unpack_cspicelib():
         status = os.waitpid(unpackCspice.pid, 0)[1]
 
         if status != 0:
-            sys.stderr.write('warning: cspice build exit status: %d' % status)
+            raise BaseException('%d' % status)
+
+    except BaseException as errorInst:
+        status = errorInst.args
+        sys.exit('Error: cspice .o file extraction failed with exit status: %d' % status)
 
     finally:
-
         os.chdir(currentDir)
 
 
@@ -52,7 +55,11 @@ def unpack_csupportlib():
         status = os.waitpid(unpackCsupport.pid, 0)[1]
 
         if status != 0:
-            sys.stderr.write('warning: csupport build exit status: %d' % status)
+            raise BaseException('%d' % status)
+
+    except BaseException as errorInst:
+        status = errorInst.args
+        sys.exit('Error: csupport .o file extraction failed with exit status: %d' % status)
 
     finally:
         os.chdir(currentDir)
@@ -65,24 +72,26 @@ def buildLib():
         os.chdir(lib_dir)
         build_lib = Popen('gcc -shared -fPIC -lm *.o -o spice.so', shell=True)
         status = os.waitpid(build_lib.pid, 0)[1]
-
         if status != 0:
-            sys.stderr.write('warning: compile shared spice.so build exit status: %d' % status)
+            raise BaseException('%d' % status)
 
+    except BaseException as errorInst:
+        status = errorInst.args
+        sys.exit('Error: compilation of shared spice.so build exit status: %d' % status)
     finally:
         os.chdir(currentDir)
 
 
 def movetoLib():
     try:
-        os.rename(cspice_dir+'/lib/spice.so', os.path.join(root_dir,'SpiceyPy','lib','spice.so'))
+        os.rename(cspice_dir+'/lib/spice.so', os.path.join(root_dir, 'SpiceyPy', 'spice.so'))
 
-    finally:
-        pass
+    except FileNotFoundError:
+        sys.exit('spice.so file not found, what happend?')
 
 
 def cleanup():
-    pass
+    pass  # not written yet, this should basically just deleted all of those .o files we made and whatever else
     #os.chdir(lib_dir)
     #os.listdir(lib_dir)
 
@@ -94,13 +103,14 @@ try:
     movetoLib()
     setup(
      name='SpiceyPy',
-     version='0.4.2',
+     version='0.4.3',
      description='A Python Wrapper for the NAIF CSPICE Toolkit using ctypes',
      author='Apollo117',
      packages=['SpiceyPy'],
-     package_data = {'SpiceyPy': ['lib/*.so']},
+     package_data = {'SpiceyPy': ['*.so']},
      include_package_data=True,
      zip_safe=False
     )
+
 finally:
     cleanup()

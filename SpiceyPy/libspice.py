@@ -2,7 +2,7 @@ __author__ = 'Apollo117'
 import ctypes
 import os
 sitePath = os.path.dirname(__file__)
-sitePath = os.path.join(sitePath, 'lib', 'spice.so')
+sitePath = os.path.join(sitePath, 'spice.so')
 libspice = ctypes.CDLL(sitePath)
 #libspice = ctypes.CDLL('./spice.so')
 
