@@ -433,6 +433,168 @@ def edlimb(a, b, c, viewpt):
     return limb
 
 
+def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
+    handle = ctypes.c_int(handle)
+    segno = ctypes.c_int(segno)
+    recno = ctypes.c_int(recno)
+    column = stypes.strtocharpoint(column)
+    nvals = ctypes.c_int(nvals)
+    vallen = ctypes.c_int(vallen)
+    cvals = ctypes.cast(stypes.listtocharvector(cvals), ctypes.c_void_p())  #this may not work
+    isnull = ctypes.c_bool(isnull)
+    libspice.ekacec_c(handle, segno, recno, column, nvals, vallen, cvals, isnull)
+    pass
+
+
+def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
+    #Todo: test ekaced
+    handle = ctypes.c_int(handle)
+    segno = ctypes.c_int(segno)
+    recno = ctypes.c_int(recno)
+    column = stypes.strtocharpoint(column)
+    nvals = ctypes.c_int(nvals)
+    dvals = stypes.listtodoublevector(dvals)
+    isnull = ctypes.c_bool(isnull)
+    libspice.ekaced_c(handle, segno, recno, column, nvals, ctypes.byref(dvals), isnull)  # not sure
+    pass
+
+
+def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
+    #Todo: test ekacei
+    handle = ctypes.c_int(handle)
+    segno = ctypes.c_int(segno)
+    recno = ctypes.c_int(recno)
+    column = stypes.strtocharpoint(column)
+    nvals = ctypes.c_int(nvals)
+    ivals = stypes.listtointvector(ivals)
+    isnull = ctypes.c_bool(isnull)
+    libspice.ekacei_c(handle, segno, recno, column, nvals, ctypes.byref(ivals), isnull)  # not sure
+    pass
+
+
+def ekaclc(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs, wkindx):
+    #Todo: test ekaclc
+    handle = ctypes.c_int(handle)
+    segno = ctypes.c_int(segno)
+    column = stypes.strtocharpoint(column)
+    vallen = ctypes.c_int(vallen)
+    cvals = ctypes.cast(stypes.listtocharvector(cvals), ctypes.c_void_p())  # this may not work
+    entszs = stypes.listtointvector(entszs)
+    nlflgs = ctypes.c_bool(nlflgs)
+    rcptrs = ctypes.c_int(rcptrs)
+    wkindx = ctypes.c_int(wkindx)
+    libspice.ekaclc_c(handle, segno, column, vallen, ctypes.byref(cvals), ctypes.byref(entszs), ctypes.byref(nlflgs), ctypes.byref(rcptrs), ctypes.cast(wkindx, ctypes.POINTER(ctypes.c_int)))
+    return wkindx.value
+
+
+def ekacld(handle, segno, column, dvals, entszs, nlflgs, rcptrs, wkindx):
+    #Todo: test ekacld
+    handle = ctypes.c_int(handle)
+    segno = ctypes.c_int(segno)
+    column = stypes.strtocharpoint(column)
+    dvals = stypes.listtointvector(dvals)
+    entszs = stypes.listtointvector(entszs)
+    nlflgs = ctypes.c_bool(nlflgs)
+    rcptrs = ctypes.c_int(rcptrs)
+    wkindx = ctypes.c_int(wkindx)
+    libspice.ekacld_c(handle, segno, column, ctypes.byref(dvals), ctypes.byref(entszs), ctypes.byref(nlflgs),
+                      ctypes.byref(rcptrs), ctypes.cast(wkindx, ctypes.POINTER(ctypes.c_int)))
+    return wkindx.value
+
+
+def ekacli(handle, segno, column, ivals, entszs, nlflgs, rcptrs, wkindx):
+    #Todo: test ekacli
+    handle = ctypes.c_int(handle)
+    segno = ctypes.c_int(segno)
+    column = stypes.strtocharpoint(column)
+    ivals = stypes.listtodoublevector(ivals)
+    entszs = stypes.listtointvector(entszs)
+    nlflgs = ctypes.c_bool(nlflgs)
+    rcptrs = ctypes.c_int(rcptrs)
+    wkindx = ctypes.c_int(wkindx)
+    libspice.ekacli_c(handle, segno, column, ctypes.byref(ivals), ctypes.byref(entszs), ctypes.byref(nlflgs),
+                      ctypes.byref(rcptrs), ctypes.cast(wkindx, ctypes.POINTER(ctypes.c_int)))
+    return wkindx.value
+
+
+def ekappr(handle, segno):
+    #Todo: test ekappr
+    handle = ctypes.c_int(handle)
+    segno = ctypes.c_int(segno)
+    recno = ctypes.c_int()
+    libspice.ekappr_c(handle, segno, ctypes.byref(recno))
+    return recno.value
+
+
+def ekbseg(handle, tabnam, ncols, cnmlen, cnames, declen, decls):
+    #Todo: test ekbseg
+    handle = ctypes.c_int(handle)
+    tabnam = stypes.strtocharpoint(tabnam)
+    ncols = ctypes.c_int(ncols)
+    cnmlen = ctypes.c_int(cnmlen)
+    cnames = stypes.listtocharvector(cnames)  # not sure if this works
+    declen = ctypes.c_int(declen)
+    decls = stypes.listtocharvector(decls)
+    segno = ctypes.c_int()
+    libspice.ekbseg_c(handle, tabnam, ncols, cnmlen, cnames, declen, decls, ctypes.byref(segno))
+    return segno.value
+
+
+def ekccnt(table):
+    #Todo: test ekccnt
+    table = stypes.listtocharvector(table)
+    ccount = ctypes.c_int()
+    libspice.ekccnt_c(table, ctypes.byref(ccount))
+    return ccount.value
+
+
+#ekcii   SpiceEKAttDsc data type
+
+
+def ekcls(handle):
+    #Todo: test ekcls
+    handle = ctypes.c_int(handle)
+    libspice.ekcls_c(handle)
+    pass
+
+
+def ekdelr(handle, segno, recno):
+    #Todo: test ekdelr
+    handle = ctypes.c_int(handle)
+    segno = ctypes.c_int(segno)
+    recno = ctypes.c_int(recno)
+    libspice.ekdelr_c(handle, segno, recno)
+    pass
+
+
+def ekffld(handle, segno, rcptrs):
+    #Todo: test ekffld
+    handle = ctypes.c_int(handle)
+    segno = ctypes.c_int(segno)
+    rcptrs = stypes.listtointvector(rcptrs)
+    libspice.ekffld_c(handle, segno, ctypes.byref(rcptrs))
+    pass
+
+
+def ekfind(query, lenout):
+    query = stypes.strtocharpoint(query)
+    lenout = ctypes.c_int(lenout)
+    nmrows = ctypes.c_int()
+    error = ctypes.c_bool()
+    errmsg = stypes.strtocharpoint(lenout)
+    libspice.ekfind(query, lenout, ctypes.byref(nmrows), ctypes.byref(error), errmsg)
+    return nmrows.value, error.value, errmsg
+
+
+#ekgc
+
+
+#ekgd
+
+
+#ekgi
+
+
 def el2cgv(ellipse):
     #Todo: test el2cgv
     assert(isinstance(ellipse, stypes.Ellipse))
