@@ -162,11 +162,10 @@ def bschoi(value, ndim, array, order):
 
 
 def bsrchc(value, ndim, lenvals, array):
-    #todo: Fix, this is not working
     value = stypes.strtocharpoint(value)
     ndim = ctypes.c_int(ndim)
     lenvals = ctypes.c_int(lenvals)
-    array = stypes.listtocharvector(array)
+    array = stypes.listToCharArrayPtr(array,xLen=lenvals, yLen=ndim)
     return libspice.bsrchc_c(value, ndim, lenvals, array)
 
 

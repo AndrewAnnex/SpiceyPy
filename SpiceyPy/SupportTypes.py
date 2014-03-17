@@ -55,20 +55,49 @@ def matrixtolist(x):
     return [vectortolist(y) for y in x]
 
 
-def strtocharpoint(x):
-    if isinstance(x, bytes):
-        return x
-    if isinstance(x, ctypes.c_int):
-        return strtocharpoint(" " * x.value)
-    if isinstance(x, int):
-        return strtocharpoint(" " * x)
-    return ctypes.c_char_p(x.encode(encoding='UTF-8'))
+def strtocharpoint(inobject, inlen=None):
+
+    """
+    :param inobject: input string, int for getting null string of length of int
+    :param inlen: optional parameter, length of a given string can be specified
+    :return:
+    """
+    if inlen and isinstance(inobject, str):
+        return ctypes.create_string_buffer(inobject.encode(encoding='UTF-8'), inlen)
+    if isinstance(inobject, bytes):
+        return inobject
+    if isinstance(inobject, ctypes.c_int):
+        return strtocharpoint(" " * inobject.value)
+    if isinstance(inobject, int):
+        return strtocharpoint(" " * inobject)
+    return ctypes.c_char_p(inobject.encode(encoding='UTF-8'))
 
 
-def listtosmartstrarray(inlist):
-    lenvals = max([len(x) for x in inlist])
-    n = len(inlist)
-    print(lenvals, n)
+def listToCharArray(inList, xLen=None, yLen=None):
+    assert (isinstance(inList, list))
+    if not yLen:
+        yLen = len(inList)
+    if not xLen:
+        xLen = max(len(s) for s in inList)
+    if isinstance(xLen, ctypes.c_int):
+        xLen = xLen.value
+    if isinstance(yLen, ctypes.c_int):
+        yLen = yLen.value
+    return ((ctypes.c_char*xLen)*yLen)(*[strtocharpoint(l, inlen=xLen) for l in inList])
+
+
+def listToCharArrayPtr(inList, xLen=None, yLen=None):
+    assert (isinstance(inList, list))
+    if not yLen:
+        yLen = len(inList)
+    if not xLen:
+        xLen = max(len(s) for s in inList)
+    if isinstance(xLen, ctypes.c_int):
+        xLen = xLen.value
+    if isinstance(yLen, ctypes.c_int):
+        yLen = yLen.value
+    return ctypes.cast(((ctypes.c_char*xLen)*yLen)(*[strtocharpoint(l, inlen=xLen) for l in inList]), ctypes.c_char_p)
+
 
 #def doublePtr():
 #    return ctypes.POINTER(ctypes.c_double)
