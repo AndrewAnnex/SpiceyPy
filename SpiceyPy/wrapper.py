@@ -165,7 +165,7 @@ def bsrchc(value, ndim, lenvals, array):
     value = stypes.strtocharpoint(value)
     ndim = ctypes.c_int(ndim)
     lenvals = ctypes.c_int(lenvals)
-    array = stypes.listToCharArrayPtr(array,xLen=lenvals, yLen=ndim)
+    array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=ndim)
     return libspice.bsrchc_c(value, ndim, lenvals, array)
 
 
@@ -256,7 +256,7 @@ def ckgpav(inst, sclkdp, tol, ref):
     clkout = ctypes.c_double()
     found = ctypes.c_bool()
     libspice.ckgpav_c(inst, sclkdp, tol, ref, cmat, av, ctypes.byref(clkout), ctypes.byref(found))
-    return stypes.matrixtolist(cmat),stypes.vectortolist(av), clkout.value, found.value
+    return stypes.matrixtolist(cmat), stypes.vectortolist(av), clkout.value, found.value
 
 
 def cklpf(filename):
@@ -508,13 +508,32 @@ def dafopw(fname):
     return handle.value
 
 
-# def dafps
+def dafps(nd, ni, dc, ic):
+    #Todo: test dafps
+    dc = stypes.listtodoublevector(dc)
+    ic = stypes.listtointvector(ic)
+    outsum = stypes.doubleVector(nd+ni)
+    nd = ctypes.c_int(nd)
+    ni = ctypes.c_int(ni)
+    libspice.dafps_c(nd, ni, ctypes.byref(dc), ctypes.byref(ic), ctypes.byref(outsum))
+    return stypes.vectortolist(outsum)
 
 
-# def dafrda
+# dafrda is deprecated
 
 
-# def dafrfr
+def dafrfr(handle, lenout):
+    #Todo: test dafrfr
+    handle = ctypes.c_int(handle)
+    lenout = ctypes.c_int(lenout)
+    nd = ctypes.c_int()
+    ni = ctypes.c_int()
+    ifname = stypes.strtocharpoint(lenout)
+    fward = ctypes.c_int()
+    bward = ctypes.c_int()
+    free = ctypes.c_int()
+    libspice.dafrfr_c(handle, lenout, ctypes.byref(nd), ctypes.byref(ni), ifname, ctypes.byref(fward), ctypes.byref(bward), ctypes.byref(free))
+    return nd.value, ni.value, ifname.value, fward.value, bward.value, free.value
 
 
 def dafrs(insum):
@@ -1701,7 +1720,7 @@ def ldpool(filename):
 
 
 def lmpool(cvals, lenvals, n):
-    #how to do 2d char arrays intelegently, likely why some related functions fail
+    #how to do 2d char arrays intelegently?, likely why some related functions fail
     pass
 
 

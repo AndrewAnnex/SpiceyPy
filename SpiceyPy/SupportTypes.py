@@ -125,3 +125,47 @@ class Ellipse(ctypes.Structure):
 
     def __str__(self):
         return '<SpiceEllipse: center = %s, semi_major = %s, semi_minor = %s>' % (self.center, self.semi_major, self.semi_minor)
+
+
+class DataType(object):
+    SPICE_CHR = 0
+    SPICE_DP = 1
+    SPICE_INT = 2
+    SPICE_TIME = 3
+    SPICE_BOOL = 4
+    CHR = 0
+    DP = 1
+    INT = 2
+    TIME = 3
+    BOOL = 4
+
+    def __init__(self):
+        pass
+
+
+class SpiceEKDataType(ctypes.py_object):
+    #No clue whatsoever if py_object works here
+    SPICE_CHR = ctypes.c_int(0)
+    SPICE_DP = ctypes.c_int(1)
+    SPICE_INT = ctypes.c_int(2)
+    SPICE_TIME = ctypes.c_int(3)
+    SPICE_BOOL = ctypes.c_int(4)
+
+    def __init__(self):
+        pass
+
+
+class SpiceEKAttDsc(ctypes.Structure):
+    _fields_ = [
+        ('cclass', ctypes.c_int),
+        ('dtype', SpiceEKDataType),
+        ('strlen', ctypes.c_int),
+        ('size', ctypes.c_int),
+        ('indexd', ctypes.c_bool),
+        ('nullok', ctypes.c_bool)
+    ]
+
+    def __str__(self):
+        return '<SpiceEKAttDsc cclass = %s, dtype = %s, strlen = %s, size = %s, indexd = %s, nullok = %s >' % \
+               (self.cclass, self.dtype, self.strlen, self.size, self.indexd, self.nullok)
+
