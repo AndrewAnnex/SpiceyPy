@@ -11,7 +11,7 @@ from SpiceyPy.libspice import libspice
 
 
 def axisar(axis, angle):
-    #todo: test
+    #todo: test axisar
     axis = stypes.listtodoublevector(axis)
     angle = ctypes.c_double(angle)
     r = stypes.doubleMatrix()
@@ -31,7 +31,7 @@ def b1950():
 
 
 def badkpv(caller, name, comp, size, divby, intype):
-    #todo: test
+    #todo: test badkpv
     caller = stypes.strtocharpoint(caller)
     name = stypes.strtocharpoint(name)
     comp = stypes.strtocharpoint(comp)
@@ -42,7 +42,7 @@ def badkpv(caller, name, comp, size, divby, intype):
 
 
 def bodc2n(code, lenout):
-    #todo: test
+    #todo: test bodc2n
     code = ctypes.c_int(code)
     name = stypes.strtocharpoint(" "*lenout)
     lenout = ctypes.c_int(lenout)
@@ -52,7 +52,7 @@ def bodc2n(code, lenout):
 
 
 def bodc2s(code, lenout):
-    #todo: test
+    #todo: test bodc2s
     code = ctypes.c_int(code)
     name = stypes.strtocharpoint(" "*lenout)
     lenout = ctypes.c_int(lenout)
@@ -61,7 +61,7 @@ def bodc2s(code, lenout):
 
 
 def boddef(name, code):
-    #todo: test
+    #todo: test boddef
     name = stypes.strtocharpoint(name)
     code = ctypes.c_int(code)
     libspice.boddef_c(name, code)
@@ -86,7 +86,7 @@ def bodn2c(name):
 
 
 def bods2c(name):
-    #Todo: test
+    #Todo: test bods2c
     name = stypes.strtocharpoint(name)
     code = ctypes.c_int(0)
     found = ctypes.c_bool(0)
@@ -98,7 +98,7 @@ def bods2c(name):
 
 
 def bodvar(body, item, dim):
-    #Todo: test
+    #Todo: test bodvar
     body = ctypes.c_int(body)
     dim = ctypes.c_int(dim)
     item = stypes.strtocharpoint(item)
@@ -108,7 +108,7 @@ def bodvar(body, item, dim):
 
 
 def bodvcd(bodyid, item, maxn):
-    #todo: test
+    #todo: test bodvcd
     bodyid = ctypes.c_int(bodyid)
     item = stypes.strtocharpoint(item)
     maxn = ctypes.c_int(maxn)
@@ -149,7 +149,7 @@ def bschoc(value, ndim, lenvals, array, order):
     lenvals = ctypes.c_int(lenvals)
     array = stypes.listtocharvector(array)
     order = stypes.listtointvector(order)
-    return libspice.bschoc(value, ndim, lenvals, array, order)
+    return libspice.bschoc(value, ndim, lenvals, ctypes.byref(array), ctypes.byref(order))
 
 
 def bschoi(value, ndim, array, order):
@@ -158,7 +158,7 @@ def bschoi(value, ndim, array, order):
     ndim = ctypes.c_int(ndim)
     order = stypes.listtointvector(order)
     array = stypes.listtointvector(array)
-    return libspice.bschoi_c(value, ndim, order, array)
+    return libspice.bschoi_c(value, ndim, ctypes.byref(order), ctypes.byref(array))
 
 
 def bsrchc(value, ndim, lenvals, array):
@@ -594,6 +594,69 @@ def ekfind(query, lenout):
 #ekgi
 
 
+#ekifld
+
+
+#ekinsr
+
+
+#eklef
+
+
+#eknelt
+
+
+#eknseg
+
+
+#ekntab
+
+
+#ekopn
+
+
+#ekopr
+
+
+#ekpos
+
+
+#ekopw
+
+
+#ekpsel
+
+
+#ekpsel
+
+
+#ekrcec
+
+
+#ekrced
+
+
+#ekrcei
+
+
+#ekssum
+
+
+#ektnam
+
+
+#ekucec
+
+
+#ekucec
+
+
+#ekucei
+
+
+#ekuef
+
+
 def el2cgv(ellipse):
     #Todo: test el2cgv
     assert(isinstance(ellipse, stypes.Ellipse))
@@ -604,6 +667,19 @@ def el2cgv(ellipse):
     return stypes.vectortolist(center), stypes.vectortolist(smajor), stypes.vectortolist(sminor)
 
 
+#elemc
+
+
+#elemd
+
+
+#elemi
+
+
+#eqstr
+
+
+
 def erract(op, lenout, action):
     #erract works, new method for dealing with returned strings/buffers, but action must be a binary string!
     lenout = ctypes.c_int(lenout)
@@ -612,6 +688,113 @@ def erract(op, lenout, action):
     actionptr = ctypes.c_char_p(ctypes.addressof(action))
     libspice.erract_c(op, lenout, actionptr)
     return actionptr.value
+
+
+def errch(marker, string):
+    marker = stypes.strtocharpoint(marker)
+    string = stypes.strtocharpoint(string)
+    libspice.errch_c(marker, string)
+    pass
+
+#errdev is this needed? also mutable string issues
+
+
+def errdp(marker, number):
+    #Todo: test errdb
+    marker = stypes.strtocharpoint(marker)
+    number = ctypes.c_double(number)
+    libspice.errdb_c(marker, number)
+    pass
+
+
+def errint(marker, number):
+    #Todo: test errint
+    marker = stypes.strtocharpoint(marker)
+    number = ctypes.c_int(number)
+    libspice.errint_c(marker, number)
+    pass
+
+
+#errprt is this needed?
+
+
+#esrchc
+
+
+def et2lst(et, body, lon, typein, timlen, ampmlen):
+    #Todo: test et2lst
+    et = ctypes.c_double(et)
+    body = ctypes.c_int(body)
+    lon = ctypes.c_double(lon)
+    typein = stypes.strtocharpoint(typein)
+    timlen = ctypes.c_int(timlen)
+    ampmlen = ctypes.c_int(ampmlen)
+    hr = ctypes.c_int()
+    mn = ctypes.c_int()
+    sc = ctypes.c_int()
+    time = stypes.strtocharpoint(timlen)
+    ampm = stypes.strtocharpoint(ampmlen)
+    libspice.et2lst(et, body, lon, typein, timlen, ampmlen, ctypes.byref(hr), ctypes.byref(mn), ctypes.byref(sc), time, ampm)
+    return hr.value, mn.value, sc.value, time.value, ampm.value
+
+
+def et2utc(et, formatStr, prec, lenout):
+    #Todo: test et2utc
+    et = ctypes.c_double(et)
+    prec = ctypes.c_int(prec)
+    lenout = ctypes.c_int(lenout)
+    formatStr = stypes.strtocharpoint(formatStr)
+    utcstr = stypes.strtocharpoint(lenout)
+    libspice.et2utc_c(et, formatStr, prec, lenout, utcstr)
+    return utcstr.value
+
+
+def etcal(et, lenout):
+    #Todo: test etcal
+    et = ctypes.c_double(et)
+    lenout = ctypes.c_int(lenout)
+    string = stypes.strtocharpoint(lenout)
+    libspice.etcal_c(et, lenout, string)
+    return string.value
+
+
+def eul2m(angle3, angle2, angle1, axis3, axis2, axis1):
+    #Todo: test eul2m
+    angle3 = ctypes.c_double(angle3)
+    angle2 = ctypes.c_double(angle2)
+    angle1 = ctypes.c_double(angle1)
+    axis3 = ctypes.c_int(axis3)
+    axis2 = ctypes.c_int(axis2)
+    axis1 = ctypes.c_int(axis1)
+    r = stypes.doubleMatrix()
+    libspice.eul2m_c(angle3, angle2, angle1, axis3, axis2, axis1, r)
+    return stypes.matrixtolist(r)
+
+
+def eul2xf(eulang, axisa, axisb, axisc):
+    #Todo: eul2xf
+    assert len(eulang) is 6
+    eulang = stypes.listtodoublevector(eulang)
+    axisa = ctypes.c_int(axisa)
+    axisb = ctypes.c_int(axisb)
+    axisc = ctypes.c_int(axisc)
+    xform = stypes.doubleMatrix(x=6, y=6)
+    libspice.eul2xf_c(eulang, axisa, axisb, axisc, xform)
+    return stypes.matrixtolist(xform)
+
+
+def exists(fname):
+    #Todo: test exists
+    fname = stypes.strtocharpoint(fname)
+    return libspice.exists_c(fname)
+
+
+def expool(name):
+    #Todo: test expool
+    name = stypes.strtocharpoint(name)
+    found = ctypes.c_bool()
+    libspice.expool_c(name, found)
+    return found.value
 
 
 ########################################################################################################################
@@ -1867,7 +2050,7 @@ def reset():
 
 
 def rotate(angle, iaxis):
-    #Todo: test
+    #Todo: test rotate
     angle = ctypes.c_double(angle)
     iaxis = ctypes.c_int(iaxis)
     mout = stypes.doubleMatrix()
@@ -1876,7 +2059,7 @@ def rotate(angle, iaxis):
 
 
 def rotmat(m1, angle, iaxis):
-    #Todo: test
+    #Todo: test rotmat
     m1 = stypes.listtodoublematrix(m1)
     angle = ctypes.c_double(angle)
     iaxis = ctypes.c_int(iaxis)
@@ -1886,7 +2069,7 @@ def rotmat(m1, angle, iaxis):
 
 
 def rotvec(v1, angle, iaxis):
-    #Todo: test
+    #Todo: test rotvec
     v1 = stypes.listtodoublevector(v1)
     angle = ctypes.c_double(angle)
     iaxis = ctypes.c_int(iaxis)
@@ -1973,7 +2156,7 @@ def scencd(sc, sclkch, MXPART=None):
 
 
 def scfmt(sc, ticks, lenout):
-    #Todo: test
+    #Todo: test scfmt
     sc = ctypes.c_int(sc)
     ticks = ctypes.c_double(ticks)
     clkstr = stypes.strtocharpoint(lenout)
@@ -2023,7 +2206,7 @@ def sctiks(sc, clkstr):
 
 
 def setmsg(message):
-    #todo: test
+    #todo: test setmsg
     message = stypes.strtocharpoint(message)
     libspice.setmsg_c(message)
     pass
@@ -2031,10 +2214,11 @@ def setmsg(message):
 
 def shellc(ndim, lenvals, array):
     #Todo: fix, this does not work!
+    #How do we make a mutable char vector?
     array = stypes.listtocharvector(array)
     ndim = ctypes.c_int(ndim)
     lenvals = ctypes.c_int(lenvals)
-    #libspice.shellc_c(ndim, lenvals, ctypes.cast(array, ctypes.c_void_p))
+    libspice.shellc_c(ndim, lenvals, ctypes.byref(array))
     pass
 
 
@@ -2351,7 +2535,7 @@ def tipbod(ref, body, et):
 
 
 def tisbod(ref, body, et):
-    #Todo: test
+    #Todo: test tisbod
     ref = stypes.strtocharpoint(ref)
     body = ctypes.c_int(body)
     et = ctypes.c_int(et)
@@ -2366,7 +2550,7 @@ def tkvrsn(item):
 
 
 def tparse(instring, lenout):
-    #Todo: test
+    #Todo: test tparse
     errmsg = stypes.strtocharpoint(lenout)
     lenout = ctypes.c_int(lenout)
     instring = stypes.strtocharpoint(instring)
@@ -2376,7 +2560,7 @@ def tparse(instring, lenout):
 
 
 def tpictr(sample, lenout, lenerr):
-    #Todo: test
+    #Todo: test tpictr
     sample = stypes.strtocharpoint(sample)
     pictur = stypes.strtocharpoint(lenout)
     errmsg = stypes.strtocharpoint(lenerr)
@@ -2388,19 +2572,19 @@ def tpictr(sample, lenout, lenerr):
 
 
 def trace(matrix):
-    #Todo: test
+    #Todo: test trace
     matrix = stypes.listtodoublematrix(matrix)
     return libspice.trace_c(matrix)
 
 
 def trcoff():
-    #Todo: test
+    #Todo: test trcoff
     libspice.trcoff_c()
     pass
 
 
 def tsetyr(year):
-    #Todo: test
+    #Todo: test tsetyr
     year = ctypes.c_int(year)
     libspice.tsetyr(year)
     pass
@@ -2411,7 +2595,7 @@ def twopi():
 
 
 def twovec(axdef, indexa, plndef, indexp):
-    #Todo: Test
+    #Todo: Test twovec
     axdef = stypes.listtodoublevector(axdef)
     indexa = ctypes.c_int(indexa)
     plndef = stypes.listtodoublevector(plndef)
@@ -2422,7 +2606,7 @@ def twovec(axdef, indexa, plndef, indexp):
 
 
 def tyear():
-    #Todo: Test
+    #Todo: Test tyear
     return libspice.tyear_c()
 
 
@@ -2438,7 +2622,7 @@ def ucase(inchar, lenout):
 
 
 def ucrss(v1, v2):
-    #Todo: test
+    #Todo: test ucrss
     v1 = stypes.listtodoublevector(v1)
     v2 = stypes.listtodoublevector(v2)
     vout = stypes.doubleVector(3)
@@ -2456,7 +2640,7 @@ def ucrss(v1, v2):
 
 
 def unitim(epoch, insys, outsys):
-    #Todo: test
+    #Todo: test unitim
     epoch = ctypes.c_double(epoch)
     insys = stypes.strtocharpoint(insys)
     outsys = stypes.strtocharpoint(outsys)
@@ -2487,7 +2671,7 @@ def unormg(v1, ndim):
 
 
 def utc2et(utcstr):
-    #Todo: test
+    #Todo: test utc2et
     utcstr = stypes.strtocharpoint(utcstr)
     et = ctypes.c_double(0)
     libspice.utc2et_c(utcstr, ctypes.byref(et))
@@ -2528,7 +2712,7 @@ def vdist(v1, v2):
 
 
 def vdistg(v1, v2, ndim):
-    #Todo: test
+    #Todo: test vdistg
     v1 = stypes.listtodoublevector(v1)
     v2 = stypes.listtodoublevector(v2)
     ndim = ctypes.c_int(ndim)

@@ -177,12 +177,14 @@ libspice.errdev_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
 libspice.errdp_c.argtypes = [ctypes.c_char_p, ctypes.c_double]
 libspice.errint_c.argtypes = [ctypes.c_char_p, ctypes.c_int]
 libspice.errprt_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
-libspice.etcal_c.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.c_char_p]
-libspice.et2lst_c.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.c_double, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p]
+libspice.et2lst_c.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.c_double, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.c_char_p, ctypes.c_char_p]
 libspice.et2utc_c.argtypes = [ctypes.c_double, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_char_p]
-libspice.eul2m_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_double]
-libspice.eul2xf_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_double]
-libspice.expool_c.argtypes = [ctypes.c_char_p, ctypes.c_bool]
+libspice.etcal_c.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.c_char_p]
+libspice.eul2m_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_int, ctypes.c_int, ctypes.c_int, (ctypes.c_double*3)*3]
+libspice.eul2xf_c.argtypes = [(ctypes.c_double*6), ctypes.c_int, ctypes.c_int, ctypes.c_int, (ctypes.c_double*6)*6]
+libspice.exists_c.argtypes = [ctypes.c_char_p]
+libspice.exists_c.restype = ctypes.c_bool
+libspice.expool_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
 
 ##########################################################################################################################################################
 # F

@@ -25,9 +25,9 @@ print([x for x in testCharArray])
 print(spice.bsrchc("GALILEO", 5, 10, testCharArray))
 
 print("Test shellc")
-print(spice.shellc(6, 8, testCharArray))
-
-
+shellCtest = spice.shellc(6, 8, testCharArray)
+print(shellCtest)
+print((ctypes.c_char * 16).from_buffer(shellCtest).value)
 
 
 
