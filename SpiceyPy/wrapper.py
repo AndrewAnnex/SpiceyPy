@@ -413,23 +413,209 @@ def cylsph(r, lonc, z):
 ########################################################################################################################
 # D
 
-
-#det
-
-
-#dgeodr
+# def dafac
 
 
-#diags2
+def dafbbs(handle):
+    #Todo: test dafbbs
+    handle = ctypes.c_int(handle)
+    libspice.dafbbs_c(handle)
+    pass
 
 
-#diff
+def dafbfs(handle):
+    #Todo: test dafbfs
+    handle = ctypes.c_int(handle)
+    libspice.dafbfs_c(handle)
+    pass
 
 
-#dlatdr
+def dafcls(handle):
+    #Todo: test dafcls
+    handle = ctypes.c_int(handle)
+    libspice.dafcls_c(handle)
+    pass
 
 
-#dp2hx
+def dafcs(handle):
+    #Todo: test dafcs
+    handle = ctypes.c_int(handle)
+    libspice.dafcs_c(handle)
+    pass
+
+
+def dafdc(handle):
+    #Todo: test dafdc
+    handle = ctypes.c_int(handle)
+    libspice.dafcc_c(handle)
+    pass
+
+
+# def dafec
+
+
+def daffna():
+    #Todo: test daffna
+    found = ctypes.c_bool()
+    libspice.daffna_c(ctypes.byref(found))
+    return found.value
+
+
+def daffpa():
+    #Todo: todo daffpa
+    found = ctypes.c_bool()
+    libspice.daffpa_c(ctypes.byref(found))
+    return found.value
+
+
+def dafgda(handle, begin, end):
+    #Todo: test dafgda , is it returning an array?
+    handle = ctypes.c_int(handle)
+    begin = ctypes.c_int(begin)
+    end = ctypes.c_int(end)
+    data = ctypes.c_double()
+    libspice.dafgda_c(handle, begin, end, ctypes.byref(data))
+    return data.value
+
+
+def dafgn(lenout):
+    #Todo: test dafgn
+    lenout = ctypes.c_int(lenout)
+    name = stypes.strtocharpoint(lenout)
+    libspice.dafgn_c(lenout, name)
+    return name.value
+
+
+# def dafgs
+
+
+# def dafgsr
+
+
+def dafopr(fname):
+    #Todo: test dafopr
+    fname = stypes.strtocharpoint(fname)
+    handle = ctypes.c_int()
+    libspice.dafopr_c(fname, ctypes.byref(handle))
+    return handle.value
+
+
+def dafopw(fname):
+    #Todo: test dafopw
+    fname = stypes.strtocharpoint(fname)
+    handle = ctypes.c_int()
+    libspice.dafopw_c(fname, ctypes.byref(handle))
+    return handle.value
+
+
+# def dafps
+
+
+# def dafrda
+
+
+# def dafrfr
+
+
+def dafrs(insum):
+    #Todo: test dafrs
+    insum = stypes.listtodoublevector(insum)
+    libspice.dafrs_c(ctypes.byref(insum))
+    pass
+
+
+# def dafus is this real?
+
+
+# def dasac
+
+
+def dascls(handle):
+    #Todo: test dafdc
+    handle = ctypes.c_int(handle)
+    libspice.dascls_c(handle)
+    pass
+
+
+# def dasec
+
+
+def dasopr(fname):
+    #Todo: test dasopr
+    fname = stypes.strtocharpoint(fname)
+    handle = ctypes.c_int()
+    libspice.dasopr_c(fname, ctypes.byref(handle))
+
+
+def dcyldr(x, y, z):
+    #Todo: test dlatdr
+    x = ctypes.c_double(x)
+    y = ctypes.c_double(y)
+    z = ctypes.c_double(z)
+    jacobi = stypes.doubleMatrix()
+    libspice.dcyldr_c(x, y, z, jacobi)
+
+
+def deltet(epoch, eptype):
+    #Todo: test deltet
+    epoch = ctypes.c_double(epoch)
+    eptype = stypes.strtocharpoint(eptype)
+    delta = ctypes.c_double()
+    libspice.deltet_c(epoch, eptype, ctypes.byref(delta))
+    return delta.value
+
+
+def det(m1):
+    #Todo: test det
+    m1 = stypes.listtodoublematrix(m1)
+    return libspice.det_c(m1)
+
+
+def dgeodr(x, y, z, re, f):
+    #Todo: test dgeodr
+    x = ctypes.c_double(x)
+    y = ctypes.c_double(y)
+    z = ctypes.c_double(z)
+    re = ctypes.c_double(re)
+    f = ctypes.c_double(f)
+    jacobi = stypes.doubleMatrix()
+    libspice.dgeodr_c(x, y, z, re, f, jacobi)
+    return stypes.matrixtolist(jacobi)
+
+
+def diags2(symmat):
+    #Todo: test diags2
+    symmat = stypes.listtodoublematrix(symmat, x=2, y=2)
+    diag = stypes.doubleMatrix(x=2, y=2)
+    rotateout = stypes.doubleMatrix(x=2, y=2)
+    libspice.diags2_c(symmat, diag, rotateout)
+    return stypes.matrixtolist(diag), stypes.matrixtolist(rotateout)
+
+
+#diff  cell data type
+
+
+def dlatdr(x, y, z):
+    #Todo: test dlatdr
+    x = ctypes.c_double(x)
+    y = ctypes.c_double(y)
+    z = ctypes.c_double(z)
+    jacobi = stypes.doubleMatrix()
+    libspice.dlatdr_c(x, y, z, jacobi)
+
+
+def dp2hx(number, lenout):
+    #Works, but interesting results, you must add 1 to lenout
+    #for it to work properly, so string length may need to be
+    #handled with some process that adds one to the length
+    #or removes the user from making the decision entirely
+    #may be what causes certin strings to fail
+    number = ctypes.c_double(number)
+    lenout = ctypes.c_int(lenout)
+    string = stypes.strtocharpoint(lenout)
+    length = ctypes.c_int()
+    libspice.dp2hx_c(number, lenout, string, ctypes.byref(length))
+    return string.value, length.value
 
 
 def dpgrdr(body, x, y, z, re, f):
