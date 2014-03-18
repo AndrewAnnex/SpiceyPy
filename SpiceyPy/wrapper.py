@@ -414,8 +414,183 @@ def cylsph(r, lonc, z):
 # D
 
 
+#det
+
+
+#dgeodr
+
+
+#diags2
+
+
+#diff
+
+
+#dlatdr
+
+
+#dp2hx
+
+
+def dpgrdr(body, x, y, z, re, f):
+    #Todo: test dpgrdr
+    body = stypes.strtocharpoint(body)
+    x = ctypes.c_double(x)
+    y = ctypes.c_double(y)
+    z = ctypes.c_double(z)
+    re = ctypes.c_double(re)
+    f = ctypes.c_double(f)
+    jacobi = stypes.doubleMatrix()
+    libspice.dpgrdr_c(body, x, y, z, re, f, jacobi)
+    return stypes.matrixtolist(jacobi)
+
+
+def dpmax():
+    #Todo: test dpmax
+    return libspice.dpmax_c()
+
+
+def dpmin():
+    #Todo: test dpmin
+    return libspice.dpmin_c()
+
+
 def dpr():
     return libspice.dpr_c()
+
+
+def drdcyl(r, lon, z):
+    #Todo: drdcyl
+    r = ctypes.c_double(r)
+    lon = ctypes.c_double(lon)
+    z = ctypes.c_double(z)
+    jacobi = stypes.doubleMatrix()
+    libspice.drdcyl_c(r, lon, z, jacobi)
+    return stypes.matrixtolist(jacobi)
+
+
+def drdgeo(lon, lat, alt, re, f):
+    #Todo: test drdgeo
+    lon = ctypes.c_double(lon)
+    lat = ctypes.c_double(lat)
+    alt = ctypes.c_double(alt)
+    re = ctypes.c_double(re)
+    f = ctypes.c_double(f)
+    jacobi = stypes.doubleMatrix()
+    libspice.drdgeo_c(lon, lat, alt, re, f, jacobi)
+    return stypes.matrixtolist(jacobi)
+
+
+def drdlat(r, lon, lat):
+    #Todo: test drdsph
+    r = ctypes.c_double(r)
+    lon = ctypes.c_double(lon)
+    lat = ctypes.c_double(lat)
+    jacobi = stypes.doubleMatrix()
+    libspice.drdsph_c(r, lon, lat, jacobi)
+    return stypes.matrixtolist(jacobi)
+
+
+def drdpgr(body, lon, lat, alt, re, f):
+    #Todo: test drdpgr
+    body = stypes.strtocharpoint(body)
+    lon = ctypes.c_double(lon)
+    lat = ctypes.c_double(lat)
+    alt = ctypes.c_double(alt)
+    re = ctypes.c_double(re)
+    f = ctypes.c_double(f)
+    jacobi = stypes.doubleMatrix()
+    libspice.drdpgr_c(body, lon, lat, alt, re, f, jacobi)
+    return stypes.matrixtolist(jacobi)
+
+
+def drdsph(r, colat, lon):
+    #Todo: test drdsph
+    r = ctypes.c_double(r)
+    colat = ctypes.c_double(colat)
+    lon = ctypes.c_double(lon)
+    jacobi = stypes.doubleMatrix()
+    libspice.drdsph_c(r, colat, lon, jacobi)
+    return stypes.matrixtolist(jacobi)
+
+
+def dsphdr(x, y, z):
+    #Todo: test dsphdr
+    x = ctypes.c_double(x)
+    y = ctypes.c_double(y)
+    z = ctypes.c_double(z)
+    jacobi = stypes.doubleMatrix()
+    libspice.dsphdr_c(x, y, z, jacobi)
+    return stypes.matrixtolist(jacobi)
+
+
+def dtpool(name):
+    #Todo: test dtpool
+    name = stypes.strtocharpoint(name)
+    found = ctypes.c_bool()
+    n = ctypes.c_int()
+    typeout = ctypes.c_char()
+    libspice.dtpool_c(name, ctypes.byref(found), ctypes.byref(n), typeout)
+    return found.value, n.value, typeout.value
+
+
+def ducrss(s1, s2):
+    #Todo: test dvcrss
+    assert len(s1) is 6 and len(s2) is 6
+    s1 = stypes.listtodoublevector(s1)
+    s2 = stypes.listtodoublevector(s2)
+    sout = stypes.doubleVector(6)
+    libspice.ducrss_c(s1, s2, sout)
+    return stypes.vectortolist(sout)
+
+
+def dvcrss(s1, s2):
+    #Todo: test dvcrss
+    assert len(s1) is 6 and len(s2) is 6
+    s1 = stypes.listtodoublevector(s1)
+    s2 = stypes.listtodoublevector(s2)
+    sout = stypes.doubleVector(6)
+    libspice.dvcrss_c(s1, s2, sout)
+    return stypes.vectortolist(sout)
+
+
+def dvdot(s1, s2):
+    #Todo: test dvdot
+    assert len(s1) is 6 and len(s2) is 6
+    s1 = stypes.listtodoublevector(s1)
+    s2 = stypes.listtodoublevector(s2)
+    return libspice.dvdot_c(s1, s2)
+
+
+def dvhat(s1):
+    #Todo: test dvhat
+    assert len(s1) is 6
+    s1 = stypes.listtodoublevector(s1)
+    sout = stypes.doubleVector(6)
+    libspice.dvhat_c(s1, sout)
+    return stypes.vectortolist(sout)
+
+
+def dvnorm(state):
+    #Todo: test dvnorm
+    assert len(state) is 6
+    state = stypes.listtodoublevector(state)
+    return libspice.dvnorm_c(state)
+
+
+def dvpool(name):
+    #Todo: test dvpool
+    name = stypes.strtocharpoint(name)
+    libspice.dvpool_c(name)
+    pass
+
+
+def dvsep(s1, s2):
+    #Todo: test dvsep
+    assert len(s1) is 6 and len(s2) is 6
+    s1 = stypes.listtodoublevector(s1)
+    s2 = stypes.listtodoublevector(s2)
+    return libspice.dvsep_c(s1, s2)
 
 ########################################################################################################################
 # E

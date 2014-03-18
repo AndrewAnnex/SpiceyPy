@@ -4,7 +4,6 @@ import os
 sitePath = os.path.dirname(__file__)
 sitePath = os.path.join(sitePath, 'spice.so')
 libspice = ctypes.CDLL(sitePath)
-#libspice = ctypes.CDLL('./spice.so')
 
 import SpiceyPy.SupportTypes as stypes
 
@@ -118,19 +117,29 @@ libspice.diags2_c.argtypes = [ctypes.c_double, ctypes.c_double]
 libspice.dgeodr_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
 libspice.dlatdr_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
 libspice.dp2hx_c.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.c_char_p, ctypes.c_int]
-libspice.dpgrdr_c.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
+libspice.dpgrdr_c.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3)*3]
+libspice.dpmax_c.argtypes = None
+libspice.dpmax_c.restype = ctypes.c_double
+libspice.dpmin_c.argtypes = None
+libspice.dpmin_c.restype = ctypes.c_double
 libspice.dpr_c.restype = ctypes.c_double
-libspice.drdcyl_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
-libspice.drdgeo_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
-libspice.drdlat_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
-libspice.drdpgr_c.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
-libspice.drdsph_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
-libspice.dsphdr_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
-libspice.dtpool_c.argtypes = [ctypes.c_char_p, ctypes.c_bool, ctypes.c_int, ctypes.c_char_p]
-libspice.ducrss_c.argtypes = [ctypes.c_double]
-libspice.dvcrss_c.argtypes = [ctypes.c_double]
-libspice.dvhat_c.argtypes = [ctypes.c_double]
+libspice.drdcyl_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3)*3]
+libspice.drdgeo_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3)*3]
+libspice.drdlat_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3)*3]
+libspice.drdpgr_c.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3)*3]
+libspice.drdsph_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3)*3]
+libspice.dsphdr_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3)*3]
+libspice.dtpool_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool), ctypes.POINTER(ctypes.c_int), ctypes.c_char]
+libspice.ducrss_c.argtypes = [ctypes.c_double * 6, ctypes.c_double * 6, ctypes.c_double * 6]
+libspice.dvcrss_c.argtypes = [ctypes.c_double * 6, ctypes.c_double * 6, ctypes.c_double * 6]
+libspice.dvdot_c.argtypes = [ctypes.c_double * 6, ctypes.c_double * 6]
+libspice.dvdot_c.restype = ctypes.c_double
+libspice.dvhat_c.argtypes = [ctypes.c_double*6, ctypes.c_double*6]
+libspice.dvnorm_c.argtypes = [ctypes.c_double*6]
+libspice.dvnorm_c.restype = ctypes.c_double
 libspice.dvpool_c.argtypes = [ctypes.c_char_p]
+libspice.dvsep_c.argtypes = [ctypes.c_double*6, ctypes.c_double*6]
+libspice.dvsep_c.restype = ctypes.c_double
 ##########################################################################################################################################################
 # E
 
