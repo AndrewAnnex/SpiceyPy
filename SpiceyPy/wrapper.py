@@ -1018,13 +1018,41 @@ def ekfind(query, lenout):
     return nmrows.value, error.value, errmsg
 
 
-#ekgc
+def ekgc(selidx, row, element, lenout):
+    #Todo: test ekgc
+    selidx = ctypes.c_int(selidx)
+    row = ctypes.c_int(row)
+    element = ctypes.c_int(element)
+    lenout = ctypes.c_int(lenout)
+    null = ctypes.c_bool()
+    found = ctypes.c_bool()
+    cdata = stypes.strtocharpoint(lenout)
+    libspice.ekgc_c(selidx, row, element, lenout, cdata, null, found)
+    return cdata.value, null.value, found.value
 
 
-#ekgd
+def ekgd(selidx, row, element):
+    #Todo: test ekgd
+    selidx = ctypes.c_int(selidx)
+    row = ctypes.c_int(row)
+    element = ctypes.c_int(element)
+    ddata = ctypes.c_double()
+    null = ctypes.c_bool()
+    found = ctypes.c_bool()
+    libspice.ekgd_c(selidx, row, element, ctypes.byref(ddata), ctypes.byref(null), ctypes.byref(found))
+    return ddata.value, null.value, found.value
 
 
-#ekgi
+def ekgi(selidx, row, element):
+    #Todo: test ekgi
+    selidx = ctypes.c_int(selidx)
+    row = ctypes.c_int(row)
+    element = ctypes.c_int(element)
+    idata = ctypes.c_double()
+    null = ctypes.c_bool()
+    found = ctypes.c_bool()
+    libspice.ekgi_c(selidx, row, element, ctypes.byref(idata), ctypes.byref(null), ctypes.byref(found))
+    return idata.value, null.value, found.value
 
 
 #ekifld
@@ -3566,6 +3594,57 @@ def vzerog(v, ndim):
 
 ########################################################################################################################
 # W
+
+
+#wncard
+
+
+#wncomd
+
+
+#wncond
+
+
+#wndifd
+
+
+#wnelmd
+
+
+#wnexpd
+
+
+#wnextd
+
+
+#wnfetd
+
+
+#wnfild
+
+
+#wnfltd
+
+
+#wnincd
+
+
+#wninsd
+
+
+#wnintd
+
+
+#wnreld
+
+
+#wnsumd
+
+
+#wnunid
+
+
+#wnvald
 
 
 ########################################################################################################################
