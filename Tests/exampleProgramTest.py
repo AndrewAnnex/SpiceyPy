@@ -23,17 +23,16 @@ print("Spicetypes Radii: ", radii)
 instid = spice.bodn2c(instnm)
 print("Spicetypes Instrument ID: ", instid)
 print("")
-fovRes = spice.getfov(instid, 10, 41, 41)
+fovRes = list(spice.getfov(instid, 10, 41, 41))
 print("Fov results: ", fovRes)
 print("")
-print(fovRes['bounds'])
+print(fovRes[3])
 print("")
-sincptRes = spice.sincpt("Ellipsoid", satnm, et, fixref, "CN+S", scnm, fovRes['frame'], fovRes['bsight'])
+sincptRes = list(spice.sincpt("Ellipsoid", satnm, et, fixref, "CN+S", scnm, fovRes[1], fovRes[2]))
 print("Sincpt results: ", sincptRes)
-backupSrfVec = sincptRes['srfvec']
+backupSrfVec = sincptRes[2]
 print("")
-
-reclatRes = spice.reclat(sincptRes['spoint'])
+reclatRes = spice.reclat(sincptRes[0])
 print("")
 print("Reclat results: ", reclatRes)
 re = radii[0]
@@ -42,7 +41,7 @@ f = (re - rp)/re
 print("")
 print(re)
 print(f)
-recgeoRes = spice.recgeo(sincptRes['spoint'], re, f)
+recgeoRes = spice.recgeo(sincptRes[0], re, f)
 
 print("Recgeo results: ", recgeoRes)
 
@@ -51,9 +50,10 @@ print("satnm: ", satnm)
 print("et: ", et)
 print("fixref: ", fixref)
 print("scnm: ", scnm)
-print("point: ", sincptRes['spoint'])
 
-iluminRes = spice.ilumin("Ellipsoid", satnm, et, fixref, "CN+S", scnm, sincptRes['spoint'])
+print("point: ", sincptRes[1])
+
+iluminRes = list(spice.ilumin("Ellipsoid", satnm, et, fixref, "CN+S", scnm, sincptRes[0]))
 
 print("")
 print(iluminRes)
@@ -64,9 +64,9 @@ print("Intercept planetocentric longitude (deg): ", spice.dpr()*reclatRes[1])
 print("Intercept planetocentric latitude (deg): ", spice.dpr()*reclatRes[2])
 print("Intercept planetodetic longitude (deg): ", spice.dpr()*recgeoRes[0])
 print("Intercept planetodetic latitude (deg): ", spice.dpr()*recgeoRes[1])
-print("Range from spacecraft to intercept point (km): ", spice.vnorm(iluminRes['srfvec']))
-print("Intercept phase angle (deg): ", spice.dpr()*iluminRes['phase'])
-print("Intercept solar incidence angle (deg): ", spice.dpr()*iluminRes['solar'])
-print("Intercept emission angle (deg): ", spice.dpr()*iluminRes['emissn'])
+print("Range from spacecraft to intercept point (km): ", spice.vnorm(iluminRes[1]))
+print("Intercept phase angle (deg): ", spice.dpr()*iluminRes[2])
+print("Intercept solar incidence angle (deg): ", spice.dpr()*iluminRes[3])
+print("Intercept emission angle (deg): ", spice.dpr()*iluminRes[4])
 
 spice.kclear()

@@ -187,6 +187,11 @@ def bsrchi(value, ndim, array):
 # C
 
 
+def card(cell):
+    #Todo: Not Working!
+    return libspice.card_c(ctypes.byref(cell))
+
+
 def cgv2el(center, vec1, vec2):
     #Todo: test cgv2el
     center = stypes.listtodoublevector(center)
@@ -286,13 +291,61 @@ def ckupf(handle):
     pass
 
 
-# ckw01, skipping for now but it looks doo-able
+def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats, avvs):
+    #Todo: test ckw01
+    handle = ctypes.c_int(handle)
+    begtim = ctypes.c_double(begtim)
+    endtim = ctypes.c_double(endtim)
+    inst = ctypes.c_int(inst)
+    ref = stypes.strtocharpoint(ref)
+    avflag = ctypes.c_bool(avflag)
+    segid = stypes.strtocharpoint(segid)
+    sclkdp = stypes.listtodoublevector(sclkdp)
+    quats = stypes.listtodoublematrix(quats, x=4, y=nrec) # may need to swap x and y values here
+    avvs = stypes.listtodoublematrix(avvs, x=3, y=nrec) # may need to swap x and y values here
+    nrec = ctypes.c_int(nrec)  # looks like this defines the dimensions for quats and avvs
+    libspice.ckw01_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec,
+                     ctypes.byref(sclkdp), ctypes.byref(quats), ctypes.byref(avvs))
+    pass
 
 
 # ckw02, skipping for now but it looks doo-able
+def ckw02(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats, avvs, rates):
+    #Todo: test ckw02
+    handle = ctypes.c_int(handle)
+    begtim = ctypes.c_double(begtim)
+    endtim = ctypes.c_double(endtim)
+    inst = ctypes.c_int(inst)
+    ref = stypes.strtocharpoint(ref)
+    segid = stypes.strtocharpoint(segid)
+    start = stypes.listtodoublevector(start)
+    stop = stypes.listtodoublevector(stop)
+    rates = stypes.listtodoublevector(rates)
+    quats = stypes.listtodoublematrix(quats, x=4, y=nrec)  # may need to swap x and y values here
+    avvs = stypes.listtodoublematrix(avvs, x=3, y=nrec)  # may need to swap x and y values here
+    nrec = ctypes.c_int(nrec)  # looks like this defines the dimensions for quats and avvs
+    libspice.ckw02_c(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats, avvs, rates)
+    pass
 
 
-# ckw03, skipping for now but it looks doo-able
+def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats, avvs, nints, starts):
+    #Todo: test ckw03
+    handle = ctypes.c_int(handle)
+    begtim = ctypes.c_double(begtim)
+    endtim = ctypes.c_double(endtim)
+    inst = ctypes.c_int(inst)
+    ref = stypes.strtocharpoint(ref)
+    avflag = ctypes.c_bool(avflag)
+    segid = stypes.strtocharpoint(segid)
+    sclkdp = stypes.listtodoublevector(sclkdp)
+    quats = stypes.listtodoublematrix(quats, x=4, y=nrec)  # may need to swap x and y values here
+    avvs = stypes.listtodoublematrix(avvs, x=3, y=nrec)  # may need to swap x and y values here
+    nrec = ctypes.c_int(nrec)  # looks like this defines the dimensions for quats and avvs
+    starts = stypes.listtodoublevector(starts)
+    nints = ctypes.c_int(nints)
+    libspice.ckw03_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec,
+                     ctypes.byref(sclkdp), ctypes.byref(quats), ctypes.byref(avvs), nints, ctypes.byref(starts))
+    pass
 
 
 # ckw05, skipping, ck05subtype?
@@ -977,34 +1030,74 @@ def ekfind(query, lenout):
 #ekifld
 
 
-#ekinsr
+def ekinsr(handle, segno, recno):
+    #Todo: test ekinsr
+    handle = ctypes.c_int(handle)
+    segno = ctypes.c_int(segno)
+    recno = ctypes.c_int(recno)
+    libspice.ekinsr_c(handle, segno, recno)
+    pass
 
 
-#eklef
+def eklef(fname):
+    #Todo: test eklef
+    fname = stypes.strtocharpoint(fname)
+    handle = ctypes.c_int()
+    libspice.eklef_c(fname, handle)
+    pass
 
 
-#eknelt
+def eknelt(selidx, row):
+    #Todo: test eknelt
+    selidx = ctypes.c_int(selidx)
+    row = ctypes.c_int(row)
+    return libspice.eknelt_c(selidx, row)
 
 
-#eknseg
+def eknseg(handle):
+    #todo: test eknseg
+    handle = ctypes.c_int(handle)
+    return libspice.eknseg_c(handle)
 
 
-#ekntab
+def ekntab():
+    #Todo: test ekntab
+    n = ctypes.c_int()
+    libspice.ekntab_c(ctypes.byref(n))
+    return n.value
 
 
-#ekopn
+def ekopn(fname, ifname, ncomch):
+    #Todo: test ekopn
+    fname = stypes.strtocharpoint(fname)
+    ifname = stypes.strtocharpoint(ifname)
+    ncomch = ctypes.c_int(ncomch)
+    handle = ctypes.c_int()
+    libspice.ekopn_c(fname, ifname, ncomch, handle)
+    return handle.value
 
 
-#ekopr
+def ekopr(fname):
+    #Todo: test ekopr
+    fname = stypes.strtocharpoint(fname)
+    handle = ctypes.c_int()
+    libspice.ekopr_c(fname, ctypes.byref(handle))
+    return handle.value
 
 
-#ekpos
+def ekpos():
+    #Todo: test ekpos
+    handle = ctypes.c_int()
+    libspice.ekpos_c(ctypes.byref(handle))
+    return handle.value
 
 
-#ekopw
-
-
-#ekpsel
+def ekopw(fname):
+    #Todo: test ekopw
+    fname = stypes.strtocharpoint(fname)
+    handle = ctypes.c_int()
+    libspice.ekopw_c(fname, ctypes.byref(handle))
+    return handle.value
 
 
 #ekpsel
@@ -1034,7 +1127,11 @@ def ekfind(query, lenout):
 #ekucei
 
 
-#ekuef
+def ekuef(handle):
+    #Todo: test ekuef
+    handle = ctypes.c_int(handle)
+    libspice.ekuef_c(handle)
+    pass
 
 
 def el2cgv(ellipse):
@@ -1056,8 +1153,9 @@ def el2cgv(ellipse):
 #elemi
 
 
-#eqstr
-
+def eqstr(a, b):
+    #Todo: test eqstr
+    return libspice.eqstr_c(stypes.strtocharpoint(a), stypes.strtocharpoint(b))
 
 
 def erract(op, lenout, action):
@@ -1288,15 +1386,14 @@ def getfov(instid, room, shapelen, framelen):
     instid = ctypes.c_int(instid)
     room = ctypes.c_int(room)
     shape = stypes.strtocharpoint(" "*shapelen)
-    frame = stypes.strtocharpoint(" "*framelen)
+    framen = stypes.strtocharpoint(" "*framelen)
     shapelen = ctypes.c_int(shapelen)
     framelen = ctypes.c_int(framelen)
     bsight = stypes.doubleVector(3)
     n = ctypes.c_int(0)
     bounds = stypes.doubleMatrix(x=3, y=4)
-    libspice.getfov_c(instid, room, shapelen, framelen, shape, frame, bsight, ctypes.byref(n), bounds)
-    return {'shape': shape.value, 'frame': frame.value, 'bsight': stypes.vectortolist(bsight),
-            'bounds': stypes.matrixtolist(bounds)}
+    libspice.getfov_c(instid, room, shapelen, framelen, shape, framen, bsight, ctypes.byref(n), bounds)
+    return shape.value, framen.value, stypes.vectortolist(bsight), stypes.matrixtolist(bounds)
 
 
 def getmsg(option, lenout):
@@ -1481,7 +1578,7 @@ def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
     emissn = ctypes.c_double(0)
     libspice.ilumin_c(method, target, et, fixref, abcorr, obsrvr, spoint, ctypes.byref(trgepc),
               srfvec, ctypes.byref(phase), ctypes.byref(solar), ctypes.byref(emissn))
-    return {'trgepc': trgepc.value, 'srfvec': stypes.vectortolist(srfvec), 'phase': phase.value, 'solar': solar.value, 'emissn': emissn.value}
+    return trgepc.value, stypes.vectortolist(srfvec), phase.value, solar.value, emissn.value
 
 
 def inedpl(a, b, c, plane):
@@ -2638,10 +2735,8 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
     trgepc = ctypes.c_double(0)
     srfvec = stypes.doubleVector(3)
     found = ctypes.c_bool(0)
-    libspice.sincpt_c(method, target, et, fixref, abcorr, obsrvr, dref, dvec,
-              spoint, ctypes.byref(trgepc), srfvec, ctypes.byref(found))
-    return {'spoint': stypes.vectortolist(spoint), 'trgepc': trgepc.value,
-            'srfvec': stypes.vectortolist(srfvec), 'found': found.value}
+    libspice.sincpt_c(method, target, et, fixref, abcorr, obsrvr, dref, dvec, spoint, ctypes.byref(trgepc), srfvec, ctypes.byref(found))
+    return stypes.vectortolist(spoint), trgepc.value, stypes.vectortolist(srfvec), found.value
 
 
 #size
@@ -2683,6 +2778,111 @@ def sphrec(r, colat, lon):
 
 
 #skipped all of the functions starting with SPK for now
+
+#spk14a
+
+
+#spk14b
+
+
+#spk14e
+
+
+#spkacs
+
+
+#spkapo
+
+
+#spkapp
+
+
+#spkaps
+
+
+#spkcls
+
+
+#spkcov
+
+
+#spkez
+
+
+#spkezr
+
+
+#spkgeo
+
+
+#spkgps
+
+
+#spklef
+
+
+#spkltc
+
+
+#spkobj
+
+
+#spkopa
+
+
+#spkopn
+
+
+#spkpds
+
+
+#spkpos
+
+
+#spkssb
+
+
+#spksub
+
+
+#spkuds
+
+
+#spkuef
+
+
+#spkw02
+
+
+#spkw03
+
+
+#spkw05
+
+
+#spkw08
+
+
+#spkw09
+
+
+#spkw10
+
+
+#spkw12
+
+
+#spkw13
+
+
+#spkw15
+
+
+#spkw17
+
+
+#spkw18
+
 
 def srfrec(body, longitude, latitude):
     #Todo: test srfrec
