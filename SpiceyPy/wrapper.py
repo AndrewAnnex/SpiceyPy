@@ -286,6 +286,7 @@ def ckopn(filename, ifname, ncomch):
 
 
 def ckupf(handle):
+    #Todo: test ckupf
     handle = ctypes.c_int(handle)
     libspice.ckupf_c(handle)
     pass
@@ -866,6 +867,7 @@ def edlimb(a, b, c, viewpt):
 
 
 def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
+    #Todo: test ekacec
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
@@ -1009,6 +1011,7 @@ def ekffld(handle, segno, rcptrs):
 
 
 def ekfind(query, lenout):
+    #Todo: test ekfind
     query = stypes.strtocharpoint(query)
     lenout = ctypes.c_int(lenout)
     nmrows = ctypes.c_int()
@@ -1504,7 +1507,7 @@ def gfrepu(ivbeg, ivend, time):
 # gfrr  cells
 
 
-# gfspe  cells
+# gfsep  cells
 
 
 # gfsntc cells
@@ -1685,6 +1688,9 @@ def isordv(array, n):
     return libspice.isordv_c(array, n)
 
 
+#isrchc
+
+
 def isrchd(value, ndim, array):
     #todo: test isrchd
     value = ctypes.c_int(value)
@@ -1849,6 +1855,15 @@ def lmpool(cvals, lenvals, n):
     pass
 
 
+#lparse
+
+
+#lparsm
+
+
+#lparss
+
+
 def lspcn(body, et, abcorr):
     #Todo: test lspcn
     body = stypes.strtocharpoint(body)
@@ -1868,6 +1883,20 @@ def ltime(etobs, obs, direct, targ):
     libspice.ltime_c(etobs, obs, direct, targ, ctypes.byref(ettarg), ctypes.byref(elapsd))
     return ettarg, elapsd
 
+
+#lstled
+
+
+#lstlei
+
+
+#lstltc
+
+
+#lstltd
+
+
+#lstlti
 
 def lstlec(string, n, lenvals, array):
     #Todo: Complete lstlec
@@ -1946,7 +1975,7 @@ def m2eul(r, axis3, axis2, axis1):
 
 
 def m2q(r):
-    #Todo: test
+    #Todo: test m2q
     r = stypes.listtodoublematrix(r)
     q = stypes.doubleVector(4)
     libspice.m2q_c(r, q)
@@ -2020,7 +2049,7 @@ def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
 
 
 def mtxv(m1, vin):
-    #Todo: test
+    #Todo: test mtxv
     m1 = stypes.listtodoublematrix(m1)
     vin = stypes.listtodoublevector(vin)
     vout = stypes.doubleVector(3)
@@ -2029,7 +2058,6 @@ def mtxv(m1, vin):
 
 
 def mtxvg(m1, v2, ncol1, nr1r2):
-    #Works!
     m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nr1r2)
     v2 = stypes.listtodoublevector(v2)
     ncol1 = ctypes.c_int(ncol1)
@@ -2078,7 +2106,7 @@ def mxmtg(m1, m2, nrow1, nc1c2, nrow2):
 
 
 def mxv(m1, vin):
-    #Todo: test
+    #Todo: test mxv
     m1 = stypes.listtodoublematrix(m1)
     vin = stypes.listtodoublevector(vin)
     vout = stypes.doubleVector(3)
@@ -2087,7 +2115,6 @@ def mxv(m1, vin):
 
 
 def mxvg(m1, v2, nrow1, nc1r2):
-    #Works!
     m1 = stypes.listtodoublematrix(m1, x=nc1r2, y=nrow1)
     v2 = stypes.listtodoublevector(v2)
     nrow1 = ctypes.c_int(nrow1)
@@ -2109,7 +2136,7 @@ def namfrm(frname):
 
 
 def ncpos(string, chars, start):
-    #todo: test
+    #todo: test ncpos
     string = stypes.strtocharpoint(string)
     chars = stypes.strtocharpoint(chars)
     start = ctypes.c_int(start)
@@ -2117,7 +2144,7 @@ def ncpos(string, chars, start):
 
 
 def ncposr(string, chars, start):
-    #todo: test
+    #todo: test ncposr
     string = stypes.strtocharpoint(string)
     chars = stypes.strtocharpoint(chars)
     start = ctypes.c_int(start)
@@ -2125,7 +2152,7 @@ def ncposr(string, chars, start):
 
 
 def nearpt(positn, a, b, c):
-    #Todo: test
+    #Todo: test nearpt
     positn = stypes.listtodoublevector(positn)
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
@@ -2206,7 +2233,7 @@ def orderc(lenvals, array, ndim):
 
 
 def orderd(array, ndim):
-    #Todo: test
+    #Todo: test orderd
     array = stypes.listtodoublevector(array)
     iorder = stypes.listtointvector([0] * ndim)
     ndim = ctypes.c_int(ndim)
@@ -2223,7 +2250,7 @@ def orderi(array, ndim):
 
 
 def oscelt(stat, et, mu):
-    #Todo: Test
+    #Todo: Test oscelt
     stat = stypes.listtodoublevector(stat)
     et = ctypes.c_double(et)
     mu = ctypes.c_double(mu)
@@ -2242,7 +2269,7 @@ def oscelt(stat, et, mu):
 
 
 def pcklof(filename):
-    #Todo: test
+    #Todo: test pcklof
     filename = stypes.strtocharpoint(filename)
     handle = ctypes.c_int()
     libspice.pcklof_c(filename, ctypes.byref(handle))
@@ -2250,14 +2277,14 @@ def pcklof(filename):
 
 
 def pckuof(handle):
-    #Todo: test
+    #Todo: test pckuof
     handle = ctypes.c_int(handle)
     libspice.pckuof_c(handle)
     pass
 
 
 def pcpool(name, n, lenvals, cvals):
-    #Todo: test
+    #Todo: test pcpool
     name = stypes.strtocharpoint(name)
     cvals = stypes.listtocharvector(cvals)
     n = ctypes.c_int(n)
@@ -2266,7 +2293,7 @@ def pcpool(name, n, lenvals, cvals):
 
 
 def pdpool(name, n, dvals):
-    #Todo: test
+    #Todo: test pdpool
     name = stypes.strtocharpoint(name)
     dvals = stypes.listtodoublevector(dvals)
     n = ctypes.c_int(n)
@@ -2274,7 +2301,7 @@ def pdpool(name, n, dvals):
 
 
 def pgrrec(body, lon, lat, alt, re, f):
-    #Todo: test
+    #Todo: test pgrrec
     body = stypes.strtocharpoint(body)
     lon = ctypes.c_double(lon)
     lat = ctypes.c_double(lat)
@@ -2291,7 +2318,7 @@ def pi():
 
 
 def pipool(name, n, ivals):
-    #Todo: test
+    #Todo: test pipool
     name = stypes.strtocharpoint(name)
     ivals = stypes.listtointvector(ivals)
     n = ctypes.c_int(n)
@@ -2352,7 +2379,7 @@ def posr(string, substr, start):
 
 
 def prop2b(gm, pvinit, dt):
-    #todo: test
+    #todo: test prob2b
     gm = ctypes.c_double(gm)
     pvinit = stypes.listtodoublevector(pvinit)
     dt = ctypes.c_double(dt)
@@ -2362,7 +2389,7 @@ def prop2b(gm, pvinit, dt):
 
 
 def prsdp(string):
-    #Todo: test
+    #Todo: test prsdp
     string = stypes.strtocharpoint(string)
     dpval = ctypes.c_double()
     libspice.prsdp_c(string, ctypes.POINTER(dpval))
@@ -2370,7 +2397,7 @@ def prsdp(string):
 
 
 def prsint(string):
-    #Todo: test
+    #Todo: test prsint
     string = stypes.strtocharpoint(string)
     intval = ctypes.c_int()
     libspice.prsint_c(string, ctypes.POINTER(intval))
@@ -2391,7 +2418,7 @@ def psv2pl(point, span1, span2):
 
 
 def pxform(fromstr, tostr, et):
-    #Todo: test
+    #Todo: test pxform
     et = ctypes.c_double(et)
     tostr = stypes.strtocharpoint(tostr)
     fromstr = stypes.strtocharpoint(fromstr)
@@ -2412,7 +2439,7 @@ def q2m(q):
 
 
 def qdq2av(q, dq):
-    #Todo: test
+    #Todo: test qdq2av
     q = stypes.listtodoublevector(q)
     dq = stypes.listtodoublevector(dq)
     vout = stypes.doubleVector(3)
@@ -2421,7 +2448,7 @@ def qdq2av(q, dq):
 
 
 def qxq(q1, q2):
-    #Todo: test
+    #Todo: test qxq
     q1 = stypes.listtodoublevector(q1)
     q2 = stypes.listtodoublevector(q2)
     vout = stypes.doubleVector(4)
@@ -2433,7 +2460,7 @@ def qxq(q1, q2):
 
 
 def radrec(inrange, re, dec):
-    #Todo: test
+    #Todo: test radrec
     inrange = ctypes.c_double(inrange)
     re = ctypes.c_double(re)
     dec = ctypes.c_double(dec)
@@ -2443,7 +2470,7 @@ def radrec(inrange, re, dec):
 
 
 def rav2xf(rot, av):
-    #Todo: test
+    #Todo: test rav2xf
     rot = stypes.listtodoublematrix(rot)
     av = stypes.listtodoublevector(av)
     xform = stypes.doubleMatrix(x=6, y=6)
@@ -2452,7 +2479,7 @@ def rav2xf(rot, av):
 
 
 def raxisa(matrix):
-    #Todo: test
+    #Todo: test raxisa
     matrix = stypes.listtodoublematrix(matrix)
     axis = stypes.doubleVector(3)
     angle = ctypes.c_double()
@@ -2461,7 +2488,7 @@ def raxisa(matrix):
 
 
 def rdtext(file, lenout):
-    #Todo: test
+    #Todo: test rdtext
     file = stypes.strtocharpoint(file)
     line = stypes.strtocharpoint(" "*lenout)
     lenout = ctypes.c_int(lenout)
@@ -2500,7 +2527,7 @@ def recgeo(rectan, re, f):
 
 
 def recpgr(body, rectan, re, f):
-    #Todo: Test
+    #Todo: Test recpgr
     body = stypes.strtocharpoint(body)
     rectan = stypes.listtodoublevector(rectan)
     re = ctypes.c_double(re)
@@ -2513,7 +2540,7 @@ def recpgr(body, rectan, re, f):
 
 
 def recrad(rectan):
-    #Todo: Test
+    #Todo: Test recrad
     rectan = stypes.listtodoublevector(rectan)
     outrange = ctypes.c_double()
     ra = ctypes.c_double()
@@ -2523,7 +2550,7 @@ def recrad(rectan):
 
 
 def recsph(rectan):
-    #Todo: Test
+    #Todo: Test recsph
     rectan = stypes.listtodoublevector(rectan)
     r = ctypes.c_double()
     colat = ctypes.c_double()
@@ -2535,7 +2562,7 @@ def recsph(rectan):
 #removd
 #removi
 #reordc
-#reordi
+#reordd
 #reordi
 #reordl
 #repmc
@@ -2828,28 +2855,100 @@ def sphrec(r, colat, lon):
 #spkaps
 
 
-#spkcls
+def spkcls(handle):
+    #Todo: test spkcls
+    handle = ctypes.c_int(handle)
+    libspice.spkcls_c(handle)
+    pass
 
 
 #spkcov
 
 
-#spkez
+def spkez(targ, et, ref, abcorr, obs):
+    #Todo: test spkez
+    targ = ctypes.c_int(targ)
+    et = ctypes.c_int(et)
+    ref = stypes.strtocharpoint(ref)
+    abcorr = stypes.strtocharpoint(abcorr)
+    obs = ctypes.c_int(obs)
+    starg = stypes.doubleVector(6)
+    lt = ctypes.c_double()
+    libspice.spkez_c(targ, et, ref, abcorr, obs, starg, ctypes.byref(lt))
+    return stypes.vectortolist(starg), lt.value
 
 
-#spkezr
+def spkezp(targ, et, ref, abcorr, obs):
+    #Todo: test spkezp
+    targ = ctypes.c_int(targ)
+    et = ctypes.c_int(et)
+    ref = stypes.strtocharpoint(ref)
+    abcorr = stypes.strtocharpoint(abcorr)
+    obs = ctypes.c_int(obs)
+    ptarg = stypes.doubleVector(3)
+    lt = ctypes.c_double()
+    libspice.spkezp_c(targ, et, ref, abcorr, obs, ptarg, ctypes.byref(lt))
+    return stypes.vectortolist(ptarg), lt.value
 
 
-#spkgeo
+def spkezr(targ, et, ref, abcorr, obs):
+    #Todo: test spkezr
+    targ = stypes.strtocharpoint(targ)
+    et = ctypes.c_int(et)
+    ref = stypes.strtocharpoint(ref)
+    abcorr = stypes.strtocharpoint(abcorr)
+    obs = ctypes.c_int(obs)
+    starg = stypes.doubleVector(6)
+    lt = ctypes.c_double()
+    libspice.spkezr_c(targ, et, ref, abcorr, obs, starg, ctypes.byref(lt))
+    return stypes.vectortolist(starg), lt.value
 
 
-#spkgps
+def spkgeo(targ, et, ref, obs):
+    #Todo: test spkgeo
+    targ = ctypes.c_int(targ)
+    et = ctypes.c_int(et)
+    ref = stypes.strtocharpoint(ref)
+    obs = ctypes.c_int(obs)
+    state = stypes.doubleVector(6)
+    lt = ctypes.c_double()
+    libspice.spkgeo_c(targ, et, ref, obs, state, ctypes.byref(lt))
+    return stypes.vectortolist(state), lt.value
 
 
-#spklef
+def spkgps(targ, et, ref, obs):
+    #Todo: test spkgps
+    targ = ctypes.c_int(targ)
+    et = ctypes.c_int(et)
+    ref = stypes.strtocharpoint(ref)
+    obs = ctypes.c_int(obs)
+    position = stypes.doubleVector(3)
+    lt = ctypes.c_double()
+    libspice.spkgeo_c(targ, et, ref, obs, position, ctypes.byref(lt))
+    return stypes.vectortolist(position), lt.value
 
 
-#spkltc
+def spklef(filename):
+    #Todo: test spklef
+    filename = stypes.strtocharpoint(filename)
+    handle = ctypes.c_int()
+    libspice.spklef_c(filename, ctypes.byref(handle))
+    return handle.value
+
+
+def spkltc(targ, et, ref, abcorr, stobs):
+    #Todo: test spkltc
+    assert len(stobs) == 6
+    targ = stypes.strtocharpoint(targ)
+    et = ctypes.c_int(et)
+    ref = stypes.strtocharpoint(ref)
+    abcorr = stypes.strtocharpoint(abcorr)
+    stobs = stypes.listtodoublevector(stobs)
+    starg = stypes.doubleVector(6)
+    lt = ctypes.c_double()
+    dlt = ctypes.c_double()
+    libspice.spkltc_c(targ, et, ref, abcorr, stobs, starg, ctypes.byref(lt), ctypes.byref(dlt))
+    return stypes.vectortolist(starg), lt.value, dlt.value
 
 
 #spkobj
@@ -3303,6 +3402,9 @@ def vaddg(v1, v2, ndim):
     ndim = ctypes.c_int(ndim)
     libspice.vaddg_c(v1, v2, ndim, vout)
     return stypes.vectortolist(vout)
+
+
+#validc
 
 
 def vcrss(v1, v2):
