@@ -302,8 +302,8 @@ def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
     avflag = ctypes.c_bool(avflag)
     segid = stypes.strtocharpoint(segid)
     sclkdp = stypes.listtodoublevector(sclkdp)
-    quats = stypes.listtodoublematrix(quats, x=4, y=nrec) # may need to swap x and y values here
-    avvs = stypes.listtodoublematrix(avvs, x=3, y=nrec) # may need to swap x and y values here
+    quats = stypes.listtodoublematrix(quats, x=4, y=nrec)  # may need to swap x and y values here
+    avvs = stypes.listtodoublematrix(avvs, x=3, y=nrec)  # may need to swap x and y values here
     nrec = ctypes.c_int(nrec)  # looks like this defines the dimensions for quats and avvs
     libspice.ckw01_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec,
                      ctypes.byref(sclkdp), ctypes.byref(quats), ctypes.byref(avvs))
