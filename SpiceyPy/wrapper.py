@@ -540,10 +540,23 @@ def dafgn(lenout):
     return name.value
 
 
-# def dafgs
+def dafgs():
+    #todo test dafgs, is this a valid way of getting a double array back?
+    retarray = ctypes.c_double()
+    libspice.dafgs_c(ctypes.byref(retarray))
+    return stypes.vectortolist(retarray)
 
 
-# def dafgsr
+def dafgsr(handle, recno, begin, end):
+    #Todo test dafgsr
+    handle = ctypes.c_int(handle)
+    recno = ctypes.c_int(recno)
+    begin = ctypes.c_int(begin)
+    end = ctypes.c_int(end)
+    data = ctypes.c_double()
+    found = ctypes.c_bool()
+    libspice.dafgsr_c(handle, recno, begin, end, ctypes.byref(data), ctypes.byref(found))
+    return data.value, found.value
 
 
 def dafopr(fname):

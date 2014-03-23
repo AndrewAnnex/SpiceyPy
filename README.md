@@ -10,7 +10,7 @@ The [SPICE Toolkit](http://naif.jpl.nasa.gov/naif/). In short it is an essential
 
 ### Completion
 
-A growing list of completed functions can be found [here](https://github.com/Apollo117/SpiceyPy/wiki/Wrapper-Completion)
+A growing list of completed functions can be found [here](https://github.com/Apollo117/SpiceyPy/wiki/Wrapper-Completion).
 Functions that have written functions that have not been tested do generally work, but tests have not been written yet.
 
 ### Design Goals
