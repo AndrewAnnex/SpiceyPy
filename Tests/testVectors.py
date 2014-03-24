@@ -57,3 +57,8 @@ print(spice.shelld(6, [99.0,33,55,44,-77,66]))
 print("Frame test: ")
 print(spice.frame([1.0,2.0,1.0]))
 print(spice.frame([0.0,0.0,0.0]))
+
+print("Lstlti test: ")
+print(spice.lstlti(1, 6, [-2,-2,0,1,1,11]))
+print(spice.lstlti(-2, 6, [-2,-2,0,1,1,11]))
+print(spice.lstlti(12, 6, [-2,-2,0,1,1,11]))

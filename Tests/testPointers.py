@@ -24,22 +24,8 @@ testCharArray = ["BOHR", "EINSTEIN", "FEYNMAN", "GALILEO", "NEWTON"]
 print([x for x in testCharArray])
 print(spice.bsrchc("GALILEO", 5, 10, testCharArray))
 
-print("Test shellc")
-shellCtest = spice.shellc(6, 8, testCharArray)
-print(shellCtest)
-print((ctypes.c_char * 16).from_buffer(shellCtest).value)
 
-
-
-
-
-#
-# print("test bschoi")
-# testArray = [100,1,10,10000,1000]
-# order =[1,2,0,4,3]
-# print(spice.bschoi(1000, 5, testArray, order))
-# print("")
-# print(spice.brckti(-1,1,10))
-# print(spice.brckti(29,1,10))
-# print(spice.brckti(3,-10,10))
-# print(spice.brckti(3,-10,-1))
+print("Test lstltc: ")
+print(spice.lstltc("NEWTON", 5, 10, testCharArray))
+print(spice.lstltc("Galileo", 5, 10, testCharArray))
+print(spice.lstltc("EINSTEIN", 5, 10, testCharArray))

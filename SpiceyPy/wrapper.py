@@ -1071,7 +1071,20 @@ def ekgi(selidx, row, element):
     return idata.value, null.value, found.value
 
 
-#ekifld
+def ekifld(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls):
+    #Todo: test ekifld
+    handle = ctypes.c_int(handle)
+    recptrs = stypes.intvector(nrows)
+    tabnam = stypes.strtocharpoint(tabnam)
+    cnames = stypes.listToCharArrayPtr(cnames, xLen=ncols, yLen=cnmlen)
+    decls = stypes.listToCharArrayPtr(decls, xLen=ncols, yLen=declen)
+    ncols = ctypes.c_int(ncols)
+    nrows = ctypes.c_int(nrows)
+    cnmlen = ctypes.c_int(cnmlen)
+    declen = ctypes.c_int(declen)
+    segno = ctypes.c_int()
+    libspice.ekifld_c(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls, ctypes.byref(segno), ctypes.byref(recptrs))
+    return segno.value, stypes.vectortolist(recptrs)
 
 
 def ekinsr(handle, segno, recno):
@@ -1156,10 +1169,17 @@ def ekopw(fname):
 #ekrcei
 
 
-#ekssum
+#ekssum Spice EKSegSum type
 
 
-#ektnam
+def ektnam(n, lenout):
+    #Todo: test ektnam
+    n = ctypes.c_int(n)
+    lenout = ctypes.c_int(lenout)
+    table = stypes.strtocharpoint(lenout)
+    libspice.ektnam_c(n, lenout, table)
+    return table.value
+
 
 
 #ekucec
@@ -1897,26 +1917,54 @@ def ltime(etobs, obs, direct, targ):
     return ettarg, elapsd
 
 
-#lstled
-
-
-#lstlei
-
-
-#lstltc
-
-
-#lstltd
-
-
-#lstlti
-
 def lstlec(string, n, lenvals, array):
-    #Todo: Complete lstlec
+    #Todo: Test lstlec
     string = stypes.strtocharpoint(string)
+    array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=n)
     n = ctypes.c_int(n)
     lenvals = ctypes.c_int(lenvals)
-    pass #gave up here
+    return libspice.lstlec_c(string, n, lenvals, array)
+
+
+def lstled(x, n, array):
+    #Todo: test lstlei
+    array = stypes.listtodoublevector(array)
+    x = ctypes.c_double(x)
+    n = ctypes.c_int(n)
+    return libspice.lstled_c(x, n, array)
+
+
+def lstlei(x, n, array):
+    #Todo: test lstlei
+    array = stypes.listtointvector(array)
+    x = ctypes.c_int(x)
+    n = ctypes.c_int(n)
+    return libspice.lstlei_c(x, n, array)
+
+
+def lstltc(string, n, lenvals, array):
+    #WORKS!
+    string = stypes.strtocharpoint(string)
+    array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=n)
+    n = ctypes.c_int(n)
+    lenvals = ctypes.c_int(lenvals)
+    return libspice.lstltc_c(string, n, lenvals, array)
+
+
+def lstltd(x, n, array):
+    #Todo: test lstlti
+    array = stypes.listtodoublevector(array)
+    x = ctypes.c_double(x)
+    n = ctypes.c_int(n)
+    return libspice.lstltd_c(x, n, array)
+
+
+def lstlti(x, n, array):
+    #Todo: test lstlti
+    array = stypes.listtointvector(array)
+    x = ctypes.c_int(x)
+    n = ctypes.c_int(n)
+    return libspice.lstlti_c(x, n, array)
 
 
 def lx4dec(string, first):
