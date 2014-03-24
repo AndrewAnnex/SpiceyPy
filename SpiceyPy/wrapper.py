@@ -995,7 +995,15 @@ def ekccnt(table):
     return ccount.value
 
 
-#ekcii   SpiceEKAttDsc data type
+def ekcii(table, cindex, lenout):
+    #Todo: test ekcii SpiceEKAttDsc data type
+    table = stypes.strtocharpoint(table)
+    cindex = ctypes.c_int(cindex)
+    lenout = cindex.c_int(lenout)
+    column = stypes.strtocharpoint(lenout)
+    attdsc = stypes.SpiceEKAttDsc()
+    libspice.ekcii_c(table, cindex, lenout, column, ctypes.byref(attdsc))
+    return column.value, attdsc
 
 
 def ekcls(handle):
@@ -1260,7 +1268,13 @@ def errint(marker, number):
 #errprt is this needed?
 
 
-#esrchc
+def esrchc(value, ndim, lenvals, array):
+    #Todo: test esrchc
+    value = stypes.strtocharpoint(value)
+    array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=ndim)
+    ndim = ctypes.c_int(ndim)
+    lenvals = ctypes.c_int(lenvals)
+    return libspice.esrchc_c(value, ndim, lenvals, array)
 
 
 def et2lst(et, body, lon, typein, timlen, ampmlen):
@@ -1721,7 +1735,13 @@ def isordv(array, n):
     return libspice.isordv_c(array, n)
 
 
-#isrchc
+def isrchc(value, ndim, lenvals, array):
+    #Todo: test isrchc
+    value = stypes.strtocharpoint(value)
+    array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=ndim)
+    ndim = ctypes.c_int(ndim)
+    lenvals = ctypes.c_int(lenvals)
+    return libspice.isrchc_c(value, ndim, lenvals, array)
 
 
 def isrchd(value, ndim, array):
@@ -1894,7 +1914,7 @@ def lmpool(cvals, lenvals, n):
 #lparsm
 
 
-#lparss
+#lparss cells
 
 
 def lspcn(body, et, abcorr):
