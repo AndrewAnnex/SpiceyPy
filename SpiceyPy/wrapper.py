@@ -2503,9 +2503,9 @@ def pxform(fromstr, tostr, et):
     et = ctypes.c_double(et)
     tostr = stypes.strtocharpoint(tostr)
     fromstr = stypes.strtocharpoint(fromstr)
-    rotate = stypes.doubleMatrix()
-    libspice.pxform_c(fromstr, tostr, et, rotate)
-    return stypes.matrixtolist(rotate)
+    rotatematrix = stypes.doubleMatrix()
+    libspice.pxform_c(fromstr, tostr, et, rotatematrix)
+    return stypes.matrixtolist(rotatematrix)
 
 
 ########################################################################################################################
@@ -2913,8 +2913,6 @@ def sphrec(r, colat, lon):
     return stypes.vectortolist(rectan)
 
 
-#skipped all of the functions starting with SPK for now
-
 #spk14a
 
 
@@ -3035,28 +3033,102 @@ def spkltc(targ, et, ref, abcorr, stobs):
 #spkobj
 
 
-#spkopa
+def spkopa(filename):
+    #Todo: test spkopa
+    filename = stypes.strtocharpoint(filename)
+    handle = ctypes.c_int()
+    libspice.spkopa_c(filename, ctypes.byref(handle))
+    return handle.value
 
 
-#spkopn
+def spkopn(filename, ifname, ncomch):
+    #Todo: test spkopn
+    filename = stypes.strtocharpoint(filename)
+    ifname = stypes.strtocharpoint(ifname)
+    ncomch = ctypes.c_int(ncomch)
+    handle = ctypes.c_int()
+    libspice.spkopn_c(filename, ifname, ncomch, ctypes.byref(handle))
+    return handle.value
 
 
-#spkpds
+def spkpds(body, center, framestr, typenum, first, last):
+    #Todo: test spkpds
+    body = ctypes.c_int(body)
+    center = ctypes.c_int(center)
+    framestr = stypes.strtocharpoint(framestr)
+    typenum = ctypes.c_int(typenum)
+    first = ctypes.c_double(first)
+    last = ctypes.c_double(last)
+    descr = stypes.doubleVector(5)
+    libspice.spkpds_c(body, center, framestr, typenum, first, last, descr)
+    return stypes.vectortolist(descr)
 
 
-#spkpos
+def spkpos(targ, et, ref, abcorr, obs):
+    #Todo: test spkpos both vectorized and not, see how fast this is...
+    if isinstance(et, list):
+        #  we assume we have some sort of list
+        ptarg = []
+        ltimes = []
+        for time in et:
+            temp_ptarg, temp_ltime = spkpos(targ, time, ref, abcorr, obs)
+            ptarg.append(temp_ptarg)
+            ltimes.append(temp_ltime)
+        return ptarg, ltimes
+    targ = stypes.strtocharpoint(targ)
+    ref = stypes.strtocharpoint(ref)
+    abcorr = stypes.strtocharpoint(abcorr)
+    obs = stypes.strtocharpoint(obs)
+    ptarg = stypes.doubleVector(3)
+    lt = ctypes.c_double()
+    libspice.spkpos_c(targ, et, ref, abcorr, obs, ptarg, ctypes.byref(lt))
+    return stypes.vectortolist(ptarg), lt.value
 
 
-#spkssb
+def spkssb(targ, et, ref):
+    #Todo: test spkssb
+    targ = ctypes.c_int(targ)
+    et = ctypes.c_double(et)
+    ref = stypes.strtocharpoint(ref)
+    starg = stypes.doubleVector(6)
+    libspice.spkssb_c(targ, et, ref, starg)
+    pass
 
 
-#spksub
+def spksub(handle, descr, identin, begin, end, newh):
+    #Todo: test spksub
+    assert len(descr) is 5
+    handle = ctypes.c_int(handle)
+    descr = stypes.listtodoublevector(descr)
+    identin = stypes.strtocharpoint(identin)
+    begin = ctypes.c_int(begin)
+    end = ctypes.c_int(end)
+    newh = ctypes.c_int(newh)
+    libspice.spksub_c(handle, descr, identin, begin, end, newh)
+    pass
 
 
-#spkuds
+def spkuds(descr):
+    #Todo: test spkuds
+    assert len(descr) is 5
+    descr = stypes.listtodoublevector(descr)
+    body = ctypes.c_int()
+    center = ctypes.c_int()
+    framenum = ctypes.c_int()
+    typenum = ctypes.c_int()
+    first = ctypes.c_double()
+    last = ctypes.c_double()
+    begin = ctypes.c_int()
+    end = ctypes.c_int()
+    libspice.spkuds_c(descr, ctypes.byref(body), ctypes.byref(center), ctypes.byref(framenum), ctypes.byref(typenum), ctypes.byref(first), ctypes.byref(last), ctypes.byref(begin), ctypes.byref(end))
+    return body.value, center.value, framenum.value, typenum.value, first.value, last.value, begin.value, end.value
 
 
-#spkuef
+def spkuef(handle):
+    #Todo: test spkuef
+    handle = ctypes.c_int(handle)
+    libspice.spkuef_c(handle)
+    pass
 
 
 #spkw02
