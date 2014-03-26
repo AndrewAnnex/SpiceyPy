@@ -2913,25 +2913,83 @@ def sphrec(r, colat, lon):
     return stypes.vectortolist(rectan)
 
 
+def spkacs(targ, et, ref, abcorr, obs):
+    #Todo: test spkacs
+    targ = ctypes.c_int(targ)
+    et = ctypes.c_int(et)
+    ref = stypes.strtocharpoint(ref)
+    abcorr = stypes.strtocharpoint(abcorr)
+    obs = ctypes.c_int(obs)
+    starg = stypes.doubleVector(6)
+    lt = ctypes.c_double()
+    dlt = ctypes.c_double()
+    libspice.spkacs_c(targ, et, ref, abcorr, obs, starg, ctypes.byref(lt), ctypes.byref(dlt))
+    return stypes.vectortolist(starg), lt.value, dlt.value
+
+
+def spkapo(targ, et, ref, sobs, abcorr):
+    #Todo: test spkacs
+    targ = ctypes.c_int(targ)
+    et = ctypes.c_int(et)
+    ref = stypes.strtocharpoint(ref)
+    abcorr = stypes.strtocharpoint(abcorr)
+    sobs = stypes.listtodoublevector(sobs)
+    ptarg = stypes.doubleVector(3)
+    lt = ctypes.c_double()
+    libspice.spkapo_c(targ, et, ref, sobs, abcorr, ptarg, ctypes.byref(lt))
+    return stypes.vectortolist(ptarg), lt.value
+
+
+def spkapp(targ, et, ref, sobs, abcorr):
+    #Todo: test spkapp (depricated)
+    targ = ctypes.c_int(targ)
+    et = ctypes.c_int(et)
+    ref = stypes.strtocharpoint(ref)
+    abcorr = stypes.strtocharpoint(abcorr)
+    sobs = stypes.listtodoublevector(sobs)
+    starg = stypes.doubleVector(6)
+    lt = ctypes.c_double()
+    libspice.spkapp_c(targ, et, ref, sobs, abcorr, starg, ctypes.byref(lt))
+    return stypes.vectortolist(starg), lt.value
+
+
+def spkaps(targ, et, ref, abcorr, stobs, accobs):
+    #Todo: test spkaps
+    targ = ctypes.c_int(targ)
+    et = ctypes.c_int(et)
+    ref = stypes.strtocharpoint(ref)
+    abcorr = stypes.strtocharpoint(abcorr)
+    stobs = stypes.listtodoublevector(stobs)
+    accobs = stypes.listtodoublevector(accobs)
+    starg = stypes.doubleVector(6)
+    lt = ctypes.c_double()
+    dlt = ctypes.c_double()
+    libspice.spkaps_c(targ, et, ref, abcorr, stobs, accobs, starg, ctypes.byref(lt), ctypes.byref(dlt))
+    return stypes.vectortolist(starg), lt.value, dlt.value
+
+
 #spk14a
 
 
-#spk14b
+def spk14b(handle, segid, body, center, framename, first, last, chbdeg):
+    #Todo: test spk14b
+    handle = ctypes.c_int(handle)
+    segid = stypes.strtocharpoint(segid)
+    body = ctypes.c_int(body)
+    center = ctypes.c_int(center)
+    framename = stypes.strtocharpoint(framename)
+    first = ctypes.c_double(first)
+    last = ctypes.c_double(last)
+    chbdeg = ctypes.c_int(chbdeg)
+    libspice.spk14b_c(handle, segid, body, center, framename, first, last, chbdeg)
+    pass
 
 
-#spk14e
-
-
-#spkacs
-
-
-#spkapo
-
-
-#spkapp
-
-
-#spkaps
+def spk14e(handle):
+    #Todo: test spk14e
+    handle = ctypes.c_int(handle)
+    libspice.spk14e_c(handle)
+    pass
 
 
 def spkcls(handle):
