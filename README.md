@@ -2,11 +2,10 @@
 
 The NAIF C SPICE Toolkit Wrapper for Python 3, written using ctypes.
 
-*IMPORTANT*: I have no current affiliation with NASA, NAIF, or JPL. The code is provided as is, you shouldn't even think to use this for any production code until I get some fancy legal stuff written here. I think you get the gist.
-
+*IMPORTANT*: I have no current affiliation with NASA, NAIF, or JPL. The code is provided "as is", use at your own risk.
 ### Introduction
 
-The [SPICE Toolkit](http://naif.jpl.nasa.gov/naif/). In short it is an essential tool for scientists and engineers alike in the planetary science field.
+The [SPICE Toolkit](http://naif.jpl.nasa.gov/naif/). In short it is an essential tool for scientists and engineers alike in the planetary science field for Solar System Geometry. Please visit the NAIF website listed earlier for more details.
 
 ### Completion
 
@@ -14,18 +13,26 @@ A growing list of completed functions can be found [here](https://github.com/Apo
 Functions that have written functions that have not been tested do generally work, but tests have not been written yet.
 
 ### Design Goals
-- [ ] Complete working coverage of all existing CSPICE commands (No additional functionality or commands)
+- [ ] Complete working coverage of all existing CSPICE commands, within reason.
 - [ ] Useful, but abbreviated commenting on functions.
 - [ ] Make vectorized versions of certain functions to be more like ICY.
 - [ ] Python 2 and 3 support.
 - [ ] Numpy integration?
 
 ### Important User Information
-*UPDATE* A very primative setup.py file exists and should get the shared library generated for you and placed in your site-packages directory. Be sure to completely delete the resulting folder in your site-packages folder if you are uninstalling the library or upgrading to a new version
+A very primative setup.py file exists now and should work, **You Must Download the CSPICE library for your system and extract it into the directory setup.py is located in.**
+Be sure to completely delete the resulting folder in your site-packages folder if you are uninstalling the library or upgrading to a new version.
 
-*This is only known to work on OS X 10.9.2 with Python 3.3. Making the library work with Python 2.7 should be rather trivial and will happen eventually.*
+### Known Working Environments:
+These are the following OS environments I have been able to run the exampleProgramTest.py program on. SpiceyPy is being developed
+in the Python 3.3.3 64-bit Mac OS X 10.9.2 environment. Not much else to say until comprehensive tests are made.
+* Python 3.3.3 64-bit Mac OS X 10.9.2
+* Python 2.7.5 64-bit Mac OS X 10.9.2
+* Python 3.2.3 64-bit Ubuntu 12.04 LTS (VM)
 
-*Unknown if this works at all in linux environments (Ubuntu, etc).*
+
+### Steps for making shared library
+The below steps are now integrated into the setup.py file included, but for those who want to try for themselves I left the following sequences for you.
 
 First the user must generate their own shared library of CSPICE. In the Lib subdirectory in CSPICE run the following commands:
 ```
