@@ -10,9 +10,9 @@ import SpiceyPy.SupportTypes as stypes
 ##########################################################################################################################################################
 # A
 
-#libspice.appndc_c.argtypes = [ctypes.c_char_p, None]
-#libspice.appndd_c.argtypes = [ctypes.c_double, None]
-#libspice.appndi_c.argtypes = [ctypes.c_int, None]
+libspice.appndc_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(stypes.SpiceCell)]
+libspice.appndd_c.argtypes = [ctypes.c_double, ctypes.POINTER(stypes.SpiceCell)]
+libspice.appndi_c.argtypes = [ctypes.c_int, ctypes.POINTER(stypes.SpiceCell)]
 libspice.axisar_c.argtypes = [(ctypes.c_double * 3), ctypes.c_double, (ctypes.c_double * 3)*3]
 
 ##########################################################################################################################################################
@@ -72,7 +72,7 @@ libspice.cmprss_c.argtypes = [ctypes.c_char, ctypes.c_int, ctypes.c_char_p, ctyp
 libspice.cnmfrm_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
 libspice.conics_c.argtypes = [(ctypes.c_double*8), ctypes.c_double, (ctypes.c_double*6)]
 libspice.convrt_c.argtypes = [ctypes.c_double, ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
-#libspice.copy_c.argtypes = [None, None]
+libspice.copy_c.argtypes = [ctypes.POINTER(stypes.SpiceCell), ctypes.POINTER(stypes.SpiceCell)]
 libspice.cpos_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
 libspice.cpos_c.restype = ctypes.c_int
 libspice.cposr_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
@@ -116,7 +116,7 @@ libspice.det_c.argtypes = [(ctypes.c_double*3)*3]
 libspice.det_c.restype = ctypes.c_double
 libspice.dgeodr_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3)*3]
 libspice.diags2_c.argtypes = [(ctypes.c_double*2)*2, (ctypes.c_double*2)*2, (ctypes.c_double*2)*2]
-#libspice.diff_c.argtypes = [None, None, None]
+libspice.diff_c.argtypes = [ctypes.POINTER(stypes.SpiceCell), ctypes.POINTER(stypes.SpiceCell), ctypes.POINTER(stypes.SpiceCell)]
 libspice.dlatdr_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3)*3]
 libspice.dp2hx_c.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
 libspice.dpgrdr_c.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3)*3]
@@ -186,6 +186,12 @@ libspice.ekuced_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c
 libspice.ekucei_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_bool]
 libspice.ekuef_c.argtypes = [ctypes.c_int]
 libspice.el2cgv_c.argtypes = [ctypes.POINTER(stypes.Ellipse), (ctypes.c_double*3), (ctypes.c_double*3), (ctypes.c_double*3)]
+libspice.elemc_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(stypes.SpiceCell)]
+libspice.elemc_c.restype = ctypes.c_bool
+libspice.elemd_c.argtypes = [ctypes.c_double, ctypes.POINTER(stypes.SpiceCell)]
+libspice.elemd_c.restype = ctypes.c_bool
+libspice.elemi_c.argtypes = [ctypes.c_int, ctypes.POINTER(stypes.SpiceCell)]
+libspice.elemi_c.restype = ctypes.c_bool
 libspice.eqstr_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
 libspice.eqstr_c.restype = ctypes.c_bool
 libspice.erract_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
@@ -267,10 +273,10 @@ libspice.ilumin_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double,
 libspice.inedpl_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.POINTER(stypes.Plane), ctypes.POINTER(stypes.Ellipse), ctypes.POINTER(ctypes.c_bool)]
 libspice.inelpl_c.argtypes = [ctypes.POINTER(stypes.Ellipse), ctypes.POINTER(stypes.Plane), ctypes.POINTER(ctypes.c_int), (ctypes.c_double*3), (ctypes.c_double*3)]
 
-# libspice.insrtc_c.argtypes = [ctypes.c_char_p, None]
-# libspice.insrtd_c.argtypes = [ctypes.c_double, None]
-# libspice.insrti_c.argtypes = [ctypes.c_int, None]
-# libspice.inter_c.argtypes = [None, None, None]
+libspice.insrtc_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(stypes.SpiceCell)]
+libspice.insrtd_c.argtypes = [ctypes.c_double, ctypes.POINTER(stypes.SpiceCell)]
+libspice.insrti_c.argtypes = [ctypes.c_int, ctypes.POINTER(stypes.SpiceCell)]
+libspice.inter_c.argtypes = [ctypes.POINTER(stypes.SpiceCell), ctypes.POINTER(stypes.SpiceCell), ctypes.POINTER(stypes.SpiceCell)]
 libspice.inrypl_c.argtypes = [(ctypes.c_double*3), (ctypes.c_double*3), ctypes.POINTER(stypes.Plane), ctypes.POINTER(ctypes.c_int), (ctypes.c_double*3)]
 libspice.intmax_c.restype = ctypes.c_int
 libspice.intmin_c.restype = ctypes.c_int
@@ -437,9 +443,9 @@ libspice.reordc_c.argtypes = [ctypes.c_int, ctypes.c_int]
 libspice.reordd_c.argtypes = [ctypes.c_int, ctypes.c_double]
 libspice.reordi_c.argtypes = [ctypes.c_int, ctypes.c_int]
 libspice.reordl_c.argtypes = [ctypes.c_int, ctypes.c_bool]
-#libspice.removc_c.argtypes = [ctypes.c_char_p, None]
-#libspice.removd_c.argtypes = [ctypes.c_double, None]
-#libspice.removi_c.argtypes = [ctypes.c_int, None]
+libspice.removc_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(stypes.SpiceCell)]
+libspice.removd_c.argtypes = [ctypes.c_double, ctypes.POINTER(stypes.SpiceCell)]
+libspice.removi_c.argtypes = [ctypes.c_int, ctypes.POINTER(stypes.SpiceCell)]
 libspice.repmc_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
 libspice.repmct_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
 libspice.repmd_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_int, ctypes.c_int, ctypes.c_char_p]
@@ -458,7 +464,7 @@ libspice.rquad_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, 
 # S
 
 libspice.saelgv_c.argtypes = [(ctypes.c_double*3), (ctypes.c_double*3), (ctypes.c_double*3), (ctypes.c_double*3)]
-#libspice.scard_c.argtypes = [ctypes.c_int, None]
+libspice.scard_c.argtypes = [ctypes.c_int, ctypes.POINTER(stypes.SpiceCell)]
 libspice.scdecd_c.argtypes = [ctypes.c_int, ctypes.c_double, ctypes.c_int, ctypes.c_char_p]
 libspice.sce2c_c.argtypes = [ctypes.c_int, ctypes.c_double, ctypes.POINTER(ctypes.c_double)]
 libspice.sce2s_c.argtypes = [ctypes.c_int, ctypes.c_double, ctypes.c_int, ctypes.c_char_p]
@@ -518,9 +524,10 @@ libspice.spkw15_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c
 libspice.spkw17_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double]
 libspice.spkw18_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_char_p, ctypes.c_int, ctypes.c_int]
 libspice.srfrec_c.argtypes = [ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double]
-
+libspice.size_c.argtypes = [ctypes.POINTER(stypes.SpiceCell)]
+libspice.size_c.restype = ctypes.c_int
 libspice.srfxpt_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, (ctypes.c_double*3), (ctypes.c_double*3), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), (ctypes.c_double*3), ctypes.POINTER(ctypes.c_bool)]
-#libspice.ssize_c.argtypes = [ctypes.c_int, None]
+libspice.ssize_c.argtypes = [ctypes.c_int, ctypes.POINTER(stypes.SpiceCell)]
 libspice.stelab_c.argtypes = [(ctypes.c_double*3), (ctypes.c_double*3)]
 libspice.stpool_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_bool)]
 libspice.str2et_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
@@ -630,7 +637,8 @@ libspice.vzerog_c.restype = ctypes.c_bool
 
 ##########################################################################################################################################################
 # W
-
+libspice.wncard_c.argtypes = [ctypes.POINTER(stypes.SpiceCell)]
+libspice.wncard_c.restype = ctypes.c_int
 #libspice.wncomd_c.argtypes = [ctypes.c_double, ctypes.c_double, None, None]
 #libspice.wncond_c.argtypes = [ctypes.c_double, ctypes.c_double, None]
 #libspice.wndifd_c.argtypes = [None, None, None]

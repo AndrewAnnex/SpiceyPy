@@ -99,13 +99,6 @@ def listToCharArrayPtr(inList, xLen=None, yLen=None):
     return ctypes.cast(((ctypes.c_char*xLen)*yLen)(*[strtocharpoint(l, inlen=xLen) for l in inList]), ctypes.c_char_p)
 
 
-#def doublePtr():
-#    return ctypes.POINTER(ctypes.c_double)
-
-
-#def intPrt():
-#    return ctypes.POINTER(ctypes.c_int)
-
 class Plane(ctypes.Structure):
     _fields_ = [
         ('normal', ctypes.c_double*3),
@@ -188,6 +181,18 @@ def _int_getter(data_p, index, length):
     return ctypes.c_int.from_address(data_p + index * BITSIZE['int']).value
 
 
+def SPICEDOUBLE_CELL(size):
+    return SpiceCell.double(size)
+
+
+def SPICEINT_CELL(size):
+    return SpiceCell.integer(size)
+
+
+def SPICECHAR_CELL(size, length):
+    return SpiceCell.character(size, length)
+
+
 class SpiceCell(ctypes.Structure):
     DATATYPES_ENUM = {'char': 0, 'double': 1, 'int': 2, 'time': 3, 'bool': 4}
     DATATYPES_GET = [_char_getter, _double_getter] + [_int_getter] * 3
@@ -206,7 +211,7 @@ class SpiceCell(ctypes.Structure):
         ('data', ctypes.c_void_p)
     ]
 
-    def __init__(self, dtype, length, size, card, isSet, base, data):
+    def __init__(self, dtype=None, length=None, size=None, card=None, isSet=None, base=None, data=None):
         super(SpiceCell, self).__init__()
         self.dtype = dtype
         self.length = length
@@ -215,11 +220,11 @@ class SpiceCell(ctypes.Structure):
         self.isSet = isSet
         self.adjust = 0  # Always False, because not implemented
         self.init = 0  # Always False, because this is the constructor
-        self.base = base
+        self.base = base  # void pointer
         self.data = data
 
     def __str__(self):
-        return '<SpiceCell dtype = %s, length = %s,' % (self.dtype, self.length)
+        return '<SpiceCell dtype = %s, length = %s, size = %s, card = %s, isSet = %s, adjust = %s, init = %s, base = %s, data = %s>' % (self.dtype, self.length, self.size, self.card, self.isSet, self.adjust, self.init, self.base, self.data)
 
     @classmethod
     def character(cls, size, length):

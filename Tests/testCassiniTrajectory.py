@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 #First make sure we don't stop if an error occurs
 spice.erract("set", 10, b"report")
 
-#load the test kernels
-spice.furnsh('./Kernels/testmetak.txt')
+# You must download the needed kernels, please read testMetaK.txt for links
+spice.furnsh('./testMetaK.txt')
 
 step = 10000
 utc = ['Jun 20, 2004', 'Dec 1, 2005']

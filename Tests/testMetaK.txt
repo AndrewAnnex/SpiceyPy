@@ -1,0 +1,24 @@
+\begindata
+KERNELS_TO_LOAD = (
+    'naif0009.tls',
+ 	'cas00084.tsc',
+ 	'cpck05Mar2004.tpc',
+ 	'020514_SE_SAT105.bsp',
+ 	'981005_PLTEPH-DE405S.bsp',
+ 	'030201AP_SK_SM546_T45.bsp',
+ 	'04135_04171pc_psiv2.bc',
+ 	'cas_v37.tf',
+ 	'cas_iss_v09.ti'
+	)
+\begintext
+
+make sure you download all of the kernels you need into this directory
+http://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/a_old_versions/naif0009.tls
+http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/sclk/cas00084.tsc
+http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/pck/cpck05Mar2004.tpc
+http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/fk/release.11/cas_v37.tf
+http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/ck/04135_04171pc_psiv2.bc
+http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/030201AP_SK_SM546_T45.bsp
+http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/ik/release.11/cas_iss_v09.ti
+http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/020514_SE_SAT105.bsp
+http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/981005_PLTEPH-DE405S.bsp

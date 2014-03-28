@@ -10,6 +10,29 @@ from SpiceyPy.libspice import libspice
 # A
 
 
+def appndc(item, cell):
+    assert isinstance(cell, stypes.SpiceCell)
+    item = stypes.strtocharpoint(item)
+    libspice.appndc_c(item, cell)
+    pass
+
+
+def appndd(item, cell):
+    #Todo: Test appndd
+    assert isinstance(cell, stypes.SpiceCell)
+    item = ctypes.c_double(item)
+    libspice.appndd_c(item, cell)
+    pass
+
+
+def appndi(item, cell):
+    #Todo: Test appndi
+    assert isinstance(cell, stypes.SpiceCell)
+    item = ctypes.c_int(item)
+    libspice.appndi_c(item, cell)
+    pass
+
+
 def axisar(axis, angle):
     #todo: test axisar
     axis = stypes.listtodoublevector(axis)
@@ -188,7 +211,7 @@ def bsrchi(value, ndim, array):
 
 
 def card(cell):
-    #Todo: Not Working!
+    #Todo: Test card
     return libspice.card_c(ctypes.byref(cell))
 
 
@@ -403,7 +426,12 @@ def convrt(x, inunit, outunit):
     return y.value
 
 
-# copy, cells
+def copy(cell):
+    #Todo: test copy, possible necessitates changes to SpiceCell as new object has the name base and data pointers
+    assert isinstance(cell, stypes.SpiceCell)
+    newcopy = stypes.SpiceCell(dtype=cell.dtype, length=cell.length, size=cell.size, card=cell.card, isSet=cell.isSet, base=cell.base, data=cell.data)
+    libspice.copy_c(ctypes.byref(cell), ctypes.byref(newcopy))
+    return newcopy
 
 
 def cpos(string, chars, start):
@@ -678,7 +706,22 @@ def diags2(symmat):
     return stypes.matrixtolist(diag), stypes.matrixtolist(rotateout)
 
 
-#diff  cell data type
+def diff(a, b):
+    #Todo: test diff, this cell handleing may work for copy.
+    assert isinstance(a, stypes.SpiceCell)
+    assert isinstance(b, stypes.SpiceCell)
+    assert a.dtype == b.dtype
+    assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
+    if a.dtype is 0:
+        c = stypes.SPICECHAR_CELL(a.size, a.length)
+    if a.dtype is 1:
+        c = stypes.SPICEDOUBLE_CELL(a.size)
+    elif a.dtype is 2:
+        c = stypes.SPICEINT_CELL(a.size)
+    else:
+        raise NotImplementedError
+    libspice.diff_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
+    return c
 
 
 def dlatdr(x, y, z):
@@ -1216,13 +1259,25 @@ def el2cgv(ellipse):
     return stypes.vectortolist(center), stypes.vectortolist(smajor), stypes.vectortolist(sminor)
 
 
-#elemc
+def elemc(item, inset):
+    #Todo: test elemc
+    assert isinstance(inset, stypes.SpiceCell)
+    item = stypes.strtocharpoint(item)
+    return libspice.elemc_c(item, ctypes.byref(inset))
 
 
-#elemd
+def elemd(item, inset):
+    #Todo: test elemd
+    assert isinstance(inset, stypes.SpiceCell)
+    item = ctypes.c_double(item)
+    return libspice.elemd_c(item, ctypes.byref(inset))
 
 
-#elemi
+def elemi(item, inset):
+    #Todo: test elemi
+    assert isinstance(inset, stypes.SpiceCell)
+    item = ctypes.c_int(item)
+    return libspice.elemi_c(item, ctypes.byref(inset))
 
 
 def eqstr(a, b):
@@ -1692,16 +1747,47 @@ def inrypl(vertex, direct, plane):
     libspice.inrypl_c(vertex, direct, ctypes.byref(plane), ctypes.byref(nxpts), xpt)
     return nxpts.value, stypes.vectortolist(xpt)
 
-#skipping insrtc, no cells yet
+
+def insrtc(item, inset):
+    #Todo: test instrc
+    assert isinstance(inset, stypes.SpiceCell)
+    item = stypes.strtocharpoint(item)
+    libspice.instri_c(item, ctypes.byref(inset))
+    pass
 
 
-#skipping insrtd, no cells yet
+def insrtd(item, inset):
+    #Todo: test instrd
+    assert isinstance(inset, stypes.SpiceCell)
+    item = ctypes.c_double(item)
+    libspice.instrd_c(item, ctypes.byref(inset))
+    pass
 
 
-#skipping insrti, no cells yet
+def insrti(item, inset):
+    #Todo: test instri
+    assert isinstance(inset, stypes.SpiceCell)
+    item = ctypes.c_int(item)
+    libspice.instri_c(item, ctypes.byref(inset))
+    pass
 
 
-#skipping inter_c, no cells yet
+def inter(a, b):
+    #Todo: test inter, this cell handleing may work for copy.
+    assert isinstance(a, stypes.SpiceCell)
+    assert isinstance(b, stypes.SpiceCell)
+    assert a.dtype == b.dtype
+    assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
+    if a.dtype is 0:
+        c = stypes.SPICECHAR_CELL(a.size, a.length)
+    if a.dtype is 1:
+        c = stypes.SPICEDOUBLE_CELL(a.size)
+    elif a.dtype is 2:
+        c = stypes.SPICEINT_CELL(a.size)
+    else:
+        raise NotImplementedError
+    libspice.inter_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
+    return c
 
 
 def intmax():
@@ -2639,9 +2725,31 @@ def recsph(rectan):
     libspice.rectan_c(rectan, ctypes.byref(r), ctypes.byref(colat), ctypes.byref(lon))
     return r.value, colat.value, lon.value
 
-#removc
-#removd
-#removi
+
+def removc(item, inset):
+    #Todo: test removc
+    assert isinstance(inset, stypes.SpiceCell)
+    item = stypes.strtocharpoint(item)
+    libspice.removc_c(item, ctypes.byref(inset))
+    pass
+
+
+def removd(item, inset):
+    #Todo: test removd
+    assert isinstance(inset, stypes.SpiceCell)
+    item = ctypes.c_double(item)
+    libspice.removd_c(item, ctypes.byref(inset))
+    pass
+
+
+def removi(item, inset):
+    #Todo: test removi
+    assert isinstance(inset, stypes.SpiceCell)
+    item = ctypes.c_int(item)
+    libspice.removi(item, ctypes.byref(inset))
+    pass
+
+
 #reordc
 #reordd
 #reordi
@@ -2718,7 +2826,12 @@ def saelgv(vec1, vec2):
     return stypes.vectortolist(smajor), stypes.vectortolist(sminor)
 
 
-#skipping scard for now
+def scard(incard, cell):
+    #Todo: test scard
+    assert isinstance(cell, stypes.SpiceCell)
+    incard = ctypes.c_int(incard)
+    libspice.scard_c(incard, ctypes.byref(cell))
+    return cell
 
 
 def scdecd(sc, sclkdp, lenout, MXPART=None):
@@ -2875,7 +2988,10 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
     return stypes.vectortolist(spoint), trgepc.value, stypes.vectortolist(srfvec), found.value
 
 
-#size
+def size(cell):
+    #Todo: test size
+    assert isinstance(cell, stypes.SpiceCell)
+    return libspice.size_c(ctypes.byref(cell))
 
 
 def spd():
@@ -3251,7 +3367,11 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
     return stypes.vectortolist(spoint), dist.value, trgepc.value, stypes.vectortolist(obspos), found.value
 
 
-#ssize
+def ssize(newsize, cell):
+    assert isinstance(cell, stypes.SpiceCell)
+    newsize = ctypes.c_int(newsize)
+    libspice.ssize_c(newsize, ctypes.byref(cell))
+    return cell
 
 
 def stelab(pobj, vobs):
@@ -3909,7 +4029,9 @@ def vzerog(v, ndim):
 # W
 
 
-#wncard
+def wncard(window):
+    assert isinstance(window, stypes.SpiceCell)
+    return libspice.wncard_c(window)
 
 
 #wncomd
