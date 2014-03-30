@@ -4142,19 +4142,60 @@ def wninsd(left, right, window):
     return window
 
 
-#wnintd
+def wnintd(a, b):
+    #Todo: test wnintd
+    assert isinstance(a, stypes.SpiceCell)
+    assert b.dtype == 1
+    assert isinstance(b, stypes.SpiceCell)
+    assert a.dtype == 1
+    c = stypes.SpiceCell.double(b.size+a.size)
+    libspice.wnintd_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
+    return c
 
 
-#wnreld
+def wnreld(a, op, b):
+    #Todo: test wnreld
+    assert isinstance(a, stypes.SpiceCell)
+    assert b.dtype == 1
+    assert isinstance(b, stypes.SpiceCell)
+    assert a.dtype == 1
+    assert isinstance(op, str)
+    op = stypes.strtocharpoint(op)
+    return libspice.wnreld_c(ctypes.byref(a), op, ctypes.byref(b))
 
 
-#wnsumd
+def wnsumd(window):
+    #Todo: test wnsumd
+    assert isinstance(window, stypes.SpiceCell)
+    assert window.dtype == 1
+    meas = ctypes.c_double()
+    avg = ctypes.c_double()
+    stddev = ctypes.c_double()
+    shortest = ctypes.c_int()
+    longest = ctypes.c_int()
+    libspice.wnsumd_c(ctypes.byref(window), ctypes.byref(meas), ctypes.byref(avg), ctypes.byref(stddev), ctypes.byref(shortest), ctypes.byref(longest))
+    return meas.value, avg.value, stddev.value, shortest.value, longest.value
 
 
-#wnunid
+def wnunid(a, b):
+    #Todo: test wnunid
+    assert isinstance(a, stypes.SpiceCell)
+    assert b.dtype == 1
+    assert isinstance(b, stypes.SpiceCell)
+    assert a.dtype == 1
+    c = stypes.SpiceCell.double(b.size+a.size)
+    libspice.wnunid_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
+    return c
 
 
-#wnvald
+def wnvald(insize, n, window):
+    #Todo: test wnvalid
+    assert isinstance(window, stypes.SpiceCell)
+    assert window.dtype == 1
+    insize = ctypes.c_int(insize)
+    n = ctypes.c_int(n)
+    libspice.wnvald_c(insize, n, ctypes.byref(window))
+    return window
 
 
 ########################################################################################################################
