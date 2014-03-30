@@ -31,7 +31,7 @@ in the Python 3.3.3 64-bit Mac OS X 10.9.2 environment. Not much else to say unt
 * Python 3.2.3 64-bit Ubuntu 12.04 LTS (VM)
 
 
-### Steps for making shared library
+### Steps for making the shared library
 The below steps are now integrated into the setup.py file included, but for those who want to try for themselves I left the following sequences for you.
 
 First the user must generate their own shared library of CSPICE. In the Lib subdirectory in CSPICE run the following commands:

@@ -53,15 +53,15 @@ def b1950():
     return libspice.b1950_c()
 
 
-def badkpv(caller, name, comp, size, divby, intype):
+def badkpv(caller, name, comp, insize, divby, intype):
     #todo: test badkpv
     caller = stypes.strtocharpoint(caller)
     name = stypes.strtocharpoint(name)
     comp = stypes.strtocharpoint(comp)
-    size = ctypes.c_int(size)
+    insize = ctypes.c_int(insize)
     divby = ctypes.c_int(divby)
     intype = stypes.strtocharpoint(intype)
-    return libspice.badkpv(caller, name, comp, size, divby, intype)
+    return libspice.badkpv(caller, name, comp, insize, divby, intype)
 
 
 def bodc2n(code, lenout):
@@ -4034,37 +4034,112 @@ def wncard(window):
     return libspice.wncard_c(window)
 
 
-#wncomd
+def wncomd(left, right, window):
+    #Todo: test wncomd
+    assert isinstance(window, stypes.SpiceCell)
+    assert window.dtype == 1
+    left = ctypes.c_double(left)
+    right = ctypes.c_double(right)
+    result = stypes.SpiceCell.double(window.size)
+    libspice.wncomd_c(left, right, ctypes.byref(window), result)
+    return result
 
 
-#wncond
+def wncond(left, right, window):
+    #Todo: test wncond
+    assert isinstance(window, stypes.SpiceCell)
+    assert window.dtype == 1
+    left = ctypes.c_double(left)
+    right = ctypes.c_double(right)
+    libspice.wncond_c(left, right, ctypes.byref(window))
+    return window
 
 
-#wndifd
+def wndifd(a, b):
+    #Todo: test wndifd
+    assert isinstance(a, stypes.SpiceCell)
+    assert isinstance(b, stypes.SpiceCell)
+    assert a.dtype == 1
+    assert b.dtype == 1
+    c = stypes.SpiceCell.double(a.size+b.size)
+    libspice.wndifd_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
+    return c
 
 
-#wnelmd
+def wnelmd(point, window):
+    #Todo: test wnelmd
+    assert isinstance(window, stypes.SpiceCell)
+    assert window.dtype == 1
+    point = ctypes.c_double(point)
+    return libspice.wnelmd_c(point, ctypes.byref(window))
 
 
-#wnexpd
+def wnexpd(left, right, window):
+    #Todo: test wnexpd
+    assert isinstance(window, stypes.SpiceCell)
+    assert window.dtype == 1
+    left = ctypes.c_double(left)
+    right = ctypes.c_double(right)
+    libspice.wnexpd_c(left, right, ctypes.byref(window))
+    return window
 
 
-#wnextd
+def wnextd(side, window):
+    #Todo: test wnextd
+    assert isinstance(window, stypes.SpiceCell)
+    assert window.dtype == 1
+    assert side == 'L' or side == 'R'
+    side = ctypes.c_char(side)
+    libspice.wnextd_c(side, ctypes.byref(window))
+    return window
 
 
-#wnfetd
+def wnfetd(window, n):
+    #Todo: test wnfetd
+    assert isinstance(window, stypes.SpiceCell)
+    assert window.dtype == 1
+    n = ctypes.c_int(n)
+    left = ctypes.c_double()
+    right = ctypes.c_double()
+    libspice.wnfetd_c(ctypes.byref(window), n, ctypes.byref(left), ctypes.byref(right))
+    return left.value, right.value
 
 
-#wnfild
+def wnfild(small, window):
+    #Todo: test wnfild
+    assert isinstance(window, stypes.SpiceCell)
+    assert window.dtype == 1
+    small = ctypes.c_double(small)
+    libspice.wnfild_c(small, ctypes.byref(window))
+    return window
 
 
-#wnfltd
+def wnfltd(small, window):
+    #Todo: test wnfltd
+    assert isinstance(window, stypes.SpiceCell)
+    assert window.dtype == 1
+    small = ctypes.c_double(small)
+    libspice.wnfltd_c(small, ctypes.byref(window))
+    return window
 
 
-#wnincd
+def wnincd(left, right, window):
+    #Todo: test wnincd
+    assert isinstance(window, stypes.SpiceCell)
+    assert window.dtype == 1
+    left = ctypes.c_double(left)
+    right = ctypes.c_double(right)
+    return libspice.wnincd_c(left, right, ctypes.byref(window))
 
 
-#wninsd
+def wninsd(left, right, window):
+    #Todo: test wninsd
+    assert isinstance(window, stypes.SpiceCell)
+    assert window.dtype == 1
+    left = ctypes.c_double(left)
+    right = ctypes.c_double(right)
+    libspice.wninsd_c(left, right, ctypes.byref(window))
+    return window
 
 
 #wnintd
