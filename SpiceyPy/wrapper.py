@@ -2401,13 +2401,30 @@ def nvp2pl(normal, point):
 ########################################################################################################################
 # O
 
-#ordc
+def ordc(item, inset):
+    #Todo: test ordc
+    assert isinstance(inset, stypes.SpiceCell)
+    assert inset.is_char()
+    assert isinstance(item, str)
+    item = stypes.strtocharpoint(item)
+    return libspice.ordc_c(item, ctypes.byref(inset))
 
 
-#ordd
+def ordd(item, inset):
+    #Todo: test ordd
+    assert isinstance(inset, stypes.SpiceCell)
+    assert inset.is_double()
+    item = ctypes.c_double(item)
+    return libspice.ordd_c(item, ctypes.byref(inset))
 
 
-#ordi
+def ordi(item, inset):
+    #Todo: test ordi
+    assert isinstance(inset, stypes.SpiceCell)
+    assert inset.is_int()
+    assert isinstance(item, int)
+    item = ctypes.c_int(item)
+    return libspice.ordi_c(item, ctypes.byref(inset))
 
 
 def orderc(lenvals, array, ndim):
@@ -2788,14 +2805,32 @@ def removi(item, inset):
 
 
 #reordc
+
+
 #reordd
+
+
 #reordi
+
+
 #reordl
+
+
 #repmc
+
+
 #repmct
+
+
 #repmd
+
+
 #repmf
+
+
 #repmi
+
+
 #repmot
 
 
@@ -2804,7 +2839,9 @@ def reset():
     pass
 
 
-#skipping return_c
+def return_c():
+    #Todo: test return_c
+    return libspice.return_c()
 
 
 def rotate(angle, iaxis):
@@ -3384,10 +3421,44 @@ def spkuef(handle):
     pass
 
 
-#spkw02
+def spkw02(handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, btime):
+    #Todo: test spkw02
+    # array[] can be treated as array *,
+    # http://stackoverflow.com/questions/5573310/difference-between-passing-array-and-array-pointer-into-function-in-c
+    handle = ctypes.c_int(handle)
+    body = ctypes.c_int(body)
+    center = ctypes.c_int(center)
+    inframe = stypes.strtocharpoint(inframe)
+    first = ctypes.c_double(first)
+    last = ctypes.c_double(last)
+    segid = stypes.strtocharpoint(segid)
+    intlen = ctypes.c_double(intlen)
+    n = ctypes.c_int(n)
+    polydg = ctypes.c_int(polydg)
+    cdata = stypes.listtodoublevector(cdata)
+    btime = ctypes.c_double(btime)
+    libspice.spkw02_c(handle, body, center, inframe, first, last, segid, intlen, n, polydg, ctypes.byref(cdata), btime)
+    pass
 
 
-#spkw03
+def spkw03(handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, btime):
+    #Todo: test spkw03
+    # array[] can be treated as array *,
+    # http://stackoverflow.com/questions/5573310/difference-between-passing-array-and-array-pointer-into-function-in-c
+    handle = ctypes.c_int(handle)
+    body = ctypes.c_int(body)
+    center = ctypes.c_int(center)
+    inframe = stypes.strtocharpoint(inframe)
+    first = ctypes.c_double(first)
+    last = ctypes.c_double(last)
+    segid = stypes.strtocharpoint(segid)
+    intlen = ctypes.c_double(intlen)
+    n = ctypes.c_int(n)
+    polydg = ctypes.c_int(polydg)
+    cdata = stypes.listtodoublevector(cdata)
+    btime = ctypes.c_double(btime)
+    libspice.spkw03_c(handle, body, center, inframe, first, last, segid, intlen, n, polydg, ctypes.byref(cdata), btime)
+    pass
 
 
 #spkw05
@@ -3399,7 +3470,21 @@ def spkuef(handle):
 #spkw09
 
 
-#spkw10
+def spkw10(handle, body, center, inframe, first, last, segid, consts, n, elems, epochs):
+    #Todo: test spkw10
+    handle = ctypes.c_int(handle)
+    body = ctypes.c_int(body)
+    center = ctypes.c_int(center)
+    inframe = stypes.strtocharpoint(inframe)
+    first = ctypes.c_double(first)
+    last = ctypes.c_double(last)
+    segid = stypes.strtocharpoint(segid)
+    consts = stypes.listtodoublevector(consts)
+    n = ctypes.c_int(n)
+    elems = stypes.listtodoublevector(elems)
+    epochs = stypes.listtodoublevector(epochs)
+    libspice.spkw10_c(handle, body, center, inframe, first, last, segid, consts, n, ctypes.byref(elems), ctypes.byref(epochs))
+    pass
 
 
 #spkw12
@@ -3408,10 +3493,44 @@ def spkuef(handle):
 #spkw13
 
 
-#spkw15
+def spkw15(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p, ecc, j2flg, pv, gm, j2, radius):
+    #Todo: test spkw15
+    handle = ctypes.c_int(handle)
+    body = ctypes.c_int(body)
+    center = ctypes.c_int(center)
+    inframe = stypes.strtocharpoint(inframe)
+    first = ctypes.c_double(first)
+    last = ctypes.c_double(last)
+    segid = stypes.strtocharpoint(segid)
+    epoch = ctypes.c_double(epoch)
+    tp = stypes.listtodoublevector(tp)
+    pa = stypes.listtodoublevector(pa)
+    p = ctypes.c_double(p)
+    ecc = ctypes.c_double(ecc)
+    j2flg = ctypes.c_double(j2flg)
+    pv = ctypes.c_double(pv)
+    gm = ctypes.c_double(gm)
+    j2 = ctypes.c_double(j2)
+    radius = ctypes.c_double(radius)
+    libspice.spkw15_c(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p, ecc, j2flg, pv, gm, j2, radius)
+    pass
 
 
-#spkw17
+def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel, rapol, decpol):
+    #Todo: test spkw17
+    handle = ctypes.c_int(handle)
+    body = ctypes.c_int(body)
+    center = ctypes.c_int(center)
+    inframe = stypes.strtocharpoint(inframe)
+    first = ctypes.c_double(first)
+    last = ctypes.c_double(last)
+    segid = stypes.strtocharpoint(segid)
+    epoch = ctypes.c_double(epoch)
+    eqel = stypes.listtodoublevector(eqel)
+    rapol = ctypes.c_double(rapol)
+    decpol = ctypes.c_double(decpol)
+    libspice.spkw17_c(handle, body, center, inframe, first, last, segid, epoch, eqel, rapol, decpol)
+    pass
 
 
 #spkw18

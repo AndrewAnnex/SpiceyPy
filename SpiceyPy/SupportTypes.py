@@ -194,6 +194,7 @@ def SPICECHAR_CELL(size, length):
 
 
 class SpiceCell(ctypes.Structure):
+    #Most written by DaRasch
     DATATYPES_ENUM = {'char': 0, 'double': 1, 'int': 2, 'time': 3, 'bool': 4}
     DATATYPES_GET = [_char_getter, _double_getter] + [_int_getter] * 3
     baseSize = 6
@@ -225,6 +226,24 @@ class SpiceCell(ctypes.Structure):
 
     def __str__(self):
         return '<SpiceCell dtype = %s, length = %s, size = %s, card = %s, isSet = %s, adjust = %s, init = %s, base = %s, data = %s>' % (self.dtype, self.length, self.size, self.card, self.isSet, self.adjust, self.init, self.base, self.data)
+
+    def is_int(self):
+        return self.dtype == 2
+
+    def is_double(self):
+        return self.dtype == 1
+
+    def is_char(self):
+        return self.dtype == 0
+
+    def is_time(self):
+        return self.dtype == 3
+
+    def is_bool(self):
+        return self.dtype == 4
+
+    def is_set(self):
+        return self.isSet is True
 
     @classmethod
     def character(cls, size, length):
