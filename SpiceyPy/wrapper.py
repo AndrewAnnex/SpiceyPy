@@ -257,7 +257,20 @@ def ckcls(handle):
     pass
 
 
-#ckcov has cells
+def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
+    #Todo: test ckcov
+    ck = stypes.strtocharpoint(ck)
+    idcode = ctypes.c_int(idcode)
+    needav = ctypes.c_bool(needav)
+    level = stypes.strtocharpoint(level)
+    tol = ctypes.c_double(tol)
+    timsys = stypes.strtocharpoint(timsys)
+    if not cover:
+        cover = stypes.SPICEDOUBLE_CELL(2000)
+    assert isinstance(cover, stypes.SpiceCell)
+    assert cover.dtype == 1
+    libspice.ckcov_c(ck, idcode, needav, level, tol, timsys, ctypes.byref(cover))
+    return cover
 
 
 def ckgp(inst, sclkdp, tol, ref):
@@ -295,7 +308,16 @@ def cklpf(filename):
     return handle.value
 
 
-#ckobj cells
+def ckobj(ck, ids):
+    #Todo: test ckobj
+    assert isinstance(ck, str)
+    ck = stypes.strtocharpoint(ck)
+    if not ids:
+        ids = stypes.SPICEINT_CELL(1000)
+    assert isinstance(ids, stypes.SpiceCell)
+    assert ids.dtype == 2
+    libspice.ckobj_c(ck, ctypes.byref(ids))
+    return ids
 
 
 def ckopn(filename, ifname, ncomch):
@@ -333,7 +355,6 @@ def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
     pass
 
 
-# ckw02, skipping for now but it looks doo-able
 def ckw02(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats, avvs, rates):
     #Todo: test ckw02
     handle = ctypes.c_int(handle)
@@ -2429,10 +2450,26 @@ def oscelt(stat, et, mu):
 # P
 
 
-# skipping pckcov, no cells yet
+def pckcov(pck, idcode, cover):
+    pck = stypes.strtocharpoint(pck)
+    idcode = ctypes.c_int(idcode)
+    if not cover:
+        cover = stypes.SPICEDOUBLE_CELL(2000)  # random size really
+    assert isinstance(cover, stypes.SpiceCell)
+    assert cover.dtype == 1
+    libspice.pckcov_c(pck, idcode, ctypes.byref(cover))
+    return cover
 
 
-# skipping pckfrm, no cells yet
+def pckfrm(pck, ids=None):
+    #Todo: test pckfrm
+    pck = stypes.strtocharpoint(pck)
+    if not ids:
+        ids = stypes.SPICEINT_CELL(1000)  # just picked 1000 for no reason
+    assert isinstance(ids, stypes.SpiceCell)
+    assert ids.dtype == 2
+    libspice.pckfrm_c(pck, ctypes.byref(ids))
+    return ids
 
 
 def pcklof(filename):
@@ -2927,8 +2964,33 @@ def sctiks(sc, clkstr):
     libspice.sctiks_c(sc, clkstr, ctypes.byref(ticks))
     return ticks.value
 
-#sdiff
-#set
+
+def sdiff(a, b):
+    #Todo: test sdiff
+    assert isinstance(a, stypes.SpiceCell)
+    assert isinstance(b, stypes.SpiceCell)
+    assert a.dtype == b.dtype
+    assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
+    if a.dtype is 0:
+        c = stypes.SPICECHAR_CELL(a.size, a.length)
+    if a.dtype is 1:
+        c = stypes.SPICEDOUBLE_CELL(a.size)
+    elif a.dtype is 2:
+        c = stypes.SPICEINT_CELL(a.size)
+    else:
+        raise NotImplementedError
+    libspice.sdiff_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
+    return c
+
+
+def set(a, op, b):
+    #Todo: test set
+    assert isinstance(a, stypes.SpiceCell)
+    assert isinstance(b, stypes.SpiceCell)
+    assert a.dtype == b.dtype
+    assert isinstance(op, str)
+    op = stypes.strtocharpoint(op)
+    return libspice.set_c(ctypes.byref(a), op, ctypes.byref(b))
 
 
 def setmsg(message):
@@ -3115,7 +3177,16 @@ def spkcls(handle):
     pass
 
 
-#spkcov
+def spkcov(spk, idcode, cover=None):
+    #Todo: test spkcov
+    spk = stypes.strtocharpoint(spk)
+    idcode = ctypes.c_int(idcode)
+    if not cover:
+        cover = stypes.SPICEDOUBLE_CELL(2000)  #random size really
+    assert isinstance(cover, stypes.SpiceCell)
+    assert cover.dtype == 1
+    libspice.spkcov_c(spk, idcode, ctypes.byref(cover))
+    return cover
 
 
 def spkez(targ, et, ref, abcorr, obs):
@@ -3204,7 +3275,15 @@ def spkltc(targ, et, ref, abcorr, stobs):
     return stypes.vectortolist(starg), lt.value, dlt.value
 
 
-#spkobj
+def spkobj(spk, ids=None):
+    #Todo: test spkobj
+    spk = stypes.strtocharpoint(spk)
+    if not ids:
+        ids = stypes.SPICEINT_CELL(1000)  # just picked 1000 for no reason
+    assert isinstance(ids, stypes.SpiceCell)
+    assert ids.dtype == 2
+    libspice.spkobj_c(spk, ctypes.byref(ids))
+    return ids
 
 
 def spkopa(filename):
@@ -3674,7 +3753,22 @@ def ucrss(v1, v2):
 #UDDF # callback?
 
 
-#UNION # cells
+def union(a, b):
+    #Todo: test union
+    assert isinstance(a, stypes.SpiceCell)
+    assert isinstance(b, stypes.SpiceCell)
+    assert a.dtype == b.dtype
+    assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
+    if a.dtype is 0:
+        c = stypes.SPICECHAR_CELL(a.size+b.size, a.length+b.length)
+    if a.dtype is 1:
+        c = stypes.SPICEDOUBLE_CELL(a.size+b.size)
+    elif a.dtype is 2:
+        c = stypes.SPICEINT_CELL(a.size+b.size)
+    else:
+        raise NotImplementedError
+    libspice.union_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
+    return c
 
 
 def unitim(epoch, insys, outsys):
@@ -3735,7 +3829,13 @@ def vaddg(v1, v2, ndim):
     return stypes.vectortolist(vout)
 
 
-#validc
+def valid(insize, n, inset):
+    #Todo: test valid
+    assert isinstance(inset, stypes.SpiceCell)
+    insize = ctypes.c_int(insize)
+    n = ctypes.c_int(n)
+    libspice.valid_c(insize, n, ctypes.byref(inset))
+    return inset
 
 
 def vcrss(v1, v2):
