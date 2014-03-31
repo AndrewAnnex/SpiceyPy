@@ -8,8 +8,8 @@ time = '2004 jun 11 19:32:00'
 
 
 #test changing the error reaction
-print(spice.erract("get", 10, b"none"))
-print(spice.erract("set", 10, b"report"))
+print(spice.erract("get", 10, "none"))
+print(spice.erract("set", 10, "report"))
 et = spice.str2et(time)
 print("should still be going")
 print(et)

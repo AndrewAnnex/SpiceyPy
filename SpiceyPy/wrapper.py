@@ -866,7 +866,7 @@ def dtpool(name):
     found = ctypes.c_bool()
     n = ctypes.c_int()
     typeout = ctypes.c_char()
-    libspice.dtpool_c(name, ctypes.byref(found), ctypes.byref(n), typeout)
+    libspice.dtpool_c(name, ctypes.byref(found), ctypes.byref(n), ctypes.byref(typeout))
     return found.value, n.value, typeout.value
 
 
@@ -1253,14 +1253,44 @@ def ektnam(n, lenout):
     return table.value
 
 
+def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
+    #Todo: test ekucec
+    handle = ctypes.c_int(handle)
+    segno = ctypes.c_int(segno)
+    recno = ctypes.c_int(recno)
+    column = stypes.strtocharpoint(column)
+    nvals = ctypes.c_int(nvals)
+    vallen = ctypes.c_int(vallen)
+    isnull = ctypes.c_bool(isnull)
+    cvals = stypes.listToCharArrayPtr(cvals, xLen=vallen, yLen=nvals)
+    libspice.ekucec_c(handle, segno, recno, column, nvals, vallen, cvals, isnull)
+    pass
 
-#ekucec
+
+def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
+    #Todo: test ekucei
+    handle = ctypes.c_int(handle)
+    segno = ctypes.c_int(segno)
+    recno = ctypes.c_int(recno)
+    column = stypes.strtocharpoint(column)
+    nvals = ctypes.c_int(nvals)
+    isnull = ctypes.c_bool(isnull)
+    dvals = stypes.listtodoublevector(dvals)
+    libspice.ekuced_c(handle, segno, recno, column, nvals, ctypes.byref(dvals), isnull)
+    pass
 
 
-#ekucec
-
-
-#ekucei
+def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
+    #Todo: test ekucei
+    handle = ctypes.c_int(handle)
+    segno = ctypes.c_int(segno)
+    recno = ctypes.c_int(recno)
+    column = stypes.strtocharpoint(column)
+    nvals = ctypes.c_int(nvals)
+    isnull = ctypes.c_bool(isnull)
+    ivals = stypes.listtointvector(ivals)
+    libspice.ekucei_c(handle, segno, recno, column, nvals, ctypes.byref(ivals), isnull)
+    pass
 
 
 def ekuef(handle):
@@ -1307,13 +1337,13 @@ def eqstr(a, b):
 
 
 def erract(op, lenout, action):
-    #erract works, new method for dealing with returned strings/buffers, but action must be a binary string!
+    #erract works, new method for dealing with returned strings/buffers
     lenout = ctypes.c_int(lenout)
     op = stypes.strtocharpoint(op)
-    action = ctypes.create_string_buffer(action, lenout.value)
+    action = ctypes.create_string_buffer(str.encode(action), lenout.value)
     actionptr = ctypes.c_char_p(ctypes.addressof(action))
     libspice.erract_c(op, lenout, actionptr)
-    return actionptr.value
+    return bytes.decode(actionptr.value)
 
 
 def errch(marker, string):
@@ -1322,7 +1352,15 @@ def errch(marker, string):
     libspice.errch_c(marker, string)
     pass
 
-#errdev is this needed? also mutable string issues
+
+def errdev(op, lenout, device):
+    #Todo: test errdev
+    lenout = ctypes.c_int(lenout)
+    op = stypes.strtocharpoint(op)
+    device = ctypes.create_string_buffer(str.encode(device), lenout.value)
+    deviceptr = ctypes.c_char_p(ctypes.addressof(device))
+    libspice.errdev_c(op, lenout, deviceptr)
+    return bytes.decode(deviceptr.value)
 
 
 def errdp(marker, number):
@@ -1341,7 +1379,14 @@ def errint(marker, number):
     pass
 
 
-#errprt is this needed?
+def errprt(op, lenout, inlist):
+    #Todo: test errprt
+    lenout = ctypes.c_int(lenout)
+    op = stypes.strtocharpoint(op)
+    inlist = ctypes.create_string_buffer(str.encode(inlist), lenout.value)
+    inlistptr = ctypes.c_char_p(ctypes.addressof(inlist))
+    libspice.errdev_c(op, lenout, inlistptr)
+    return bytes.decode(inlistptr.value)
 
 
 def esrchc(value, ndim, lenvals, array):
@@ -1496,14 +1541,14 @@ def gcpool(name, start, room, lenout):
 
 
 def gdpool(name, start, room):
-    #Todo: test gdpool
+    #Todo: test gdpool works!
     name = stypes.strtocharpoint(name)
     start = ctypes.c_int(start)
     room = ctypes.c_int(room)
     n = ctypes.c_int()
-    values = ctypes.c_double()*room.value  # not sure if this would work...
+    values = stypes.doubleVector(room.value)
     found = ctypes.c_bool()
-    libspice.gdpool_c(name, start, room, ctypes.byref(n), ctypes.byref(values), ctypes.byref(found))
+    libspice.gdpool_c(name, start, room, ctypes.byref(n), ctypes.cast(values, ctypes.POINTER(ctypes.c_double)), ctypes.byref(found))
     return n.value, stypes.vectortolist(values), found.value
 
 
@@ -2011,7 +2056,11 @@ def ldpool(filename):
 
 
 def lmpool(cvals, lenvals, n):
-    #how to do 2d char arrays intelegently?, likely why some related functions fail
+    #Todo: test lmpool
+    lenvals = ctypes.c_int(lenvals)
+    n = ctypes.c_int(n)
+    cvals = stypes.listToCharArrayPtr(cvals, xLen=lenvals, yLen=n)
+    libspice.lmpool_c(cvals, lenvals, n)
     pass
 
 
