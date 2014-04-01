@@ -640,7 +640,7 @@ libspice.vzero_c.restype = ctypes.c_bool
 libspice.vzerog_c.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.c_int]
 libspice.vzerog_c.restype = ctypes.c_bool
 
-##########################################################################################################################################################
+########################################################################################################################
 # W
 libspice.wncard_c.argtypes = [ctypes.POINTER(stypes.SpiceCell)]
 libspice.wncard_c.restype = ctypes.c_int
@@ -663,7 +663,7 @@ libspice.wnreld_c.restype = ctypes.c_bool
 libspice.wnsumd_c.argtypes = [ctypes.POINTER(stypes.SpiceCell), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
 libspice.wnunid_c.argtypes = [ctypes.POINTER(stypes.SpiceCell), ctypes.POINTER(stypes.SpiceCell), ctypes.POINTER(stypes.SpiceCell)]
 libspice.wnvald_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(stypes.SpiceCell)]
-##########################################################################################################################################################
+########################################################################################################################
 # X
 
 libspice.xf2eul_c.argtypes = [(ctypes.c_double * 6)*6, ctypes.c_int, ctypes.c_int, ctypes.c_int, (ctypes.c_double * 6), ctypes.POINTER(ctypes.c_bool)]
@@ -671,7 +671,7 @@ libspice.xf2rav_c.argtypes = [(ctypes.c_double * 6)*6, (ctypes.c_double * 3)*3, 
 libspice.xpose_c.argtypes = [(ctypes.c_double * 3)*3, (ctypes.c_double * 3)*3]
 libspice.xpose6_c.argtypes = [(ctypes.c_double * 6)*6, (ctypes.c_double * 6)*6]
 libspice.xposeg_c.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]
-##########################################################################################################################################################
+########################################################################################################################
 # Z
 
 libspice.zzgetcml_c.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_bool]

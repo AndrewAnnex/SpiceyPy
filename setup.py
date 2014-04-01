@@ -103,10 +103,11 @@ try:
     movetoLib()
     setup(
      name='SpiceyPy',
-     version='0.4.5',
+     version='0.4.6',
      description='A Python Wrapper for the NAIF CSPICE Toolkit using ctypes',
      author='Apollo117',
      packages=['SpiceyPy'],
+     requires=['numpy'],
      package_data = {'SpiceyPy': ['*.so']},
      include_package_data=True,
      zip_safe=False

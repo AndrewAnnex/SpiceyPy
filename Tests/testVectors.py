@@ -1,6 +1,6 @@
 __author__ = 'Apollo117'
 import SpiceyPy as spice
-
+import numpy as np
 v1=[1.0, 2.0, 3.0]
 v2=[4.0, 5.0, 6.0]
 
@@ -40,6 +40,8 @@ print(spice.vzero([0.0,0.0,1.0]))
 print(spice.vzero([0.0,0.0,0.0]))
 
 print("unorm test")
+print(spice.unorm(np.array([5.0, 7.0, 12.0])))
+print(spice.unormg(np.array([5.0, 7.0, 12.0, 2.0]), 4))
 print(spice.unorm([5.0, 7.0, 12.0]))
 print(spice.unormg([5.0, 7.0, 12.0, 2.0], 4))
 

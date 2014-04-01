@@ -1,6 +1,19 @@
 # Collection of supporting functions for wrapper functions
 __author__ = 'Apollo117'
 import ctypes
+import numpy
+
+
+def toDoubleVector(x):
+    return DoubleArray.from_param(param=x)
+
+
+def toDoubleMatrix(x):
+    return DoubleMatrix.from_param(param=x)
+
+
+def toIntVector(x):
+    return IntArray.from_param(param=x)
 
 
 def listtodoublevector(x):
@@ -97,6 +110,113 @@ def listToCharArrayPtr(inList, xLen=None, yLen=None):
     if isinstance(yLen, ctypes.c_int):
         yLen = yLen.value
     return ctypes.cast(((ctypes.c_char*xLen)*yLen)(*[strtocharpoint(l, inlen=xLen) for l in inList]), ctypes.c_char_p)
+
+
+class DoubleArrayType:
+    # Class type that will handle all double vectors, inspiration from python cookbook 3rd edition
+    def from_param(self, param):
+        typename = type(param).__name__
+        if hasattr(self, 'from_' + typename):
+            return getattr(self, 'from_' + typename)(param)
+        elif isinstance(param, ctypes.Array):
+            return param
+        else:
+            raise TypeError("Can't convert %s" % typename)
+
+    # Cast from lists/tuples
+    def from_list(self, param):
+        val = ((ctypes.c_double)*len(param))(*param)
+        return val
+
+    # Cast from Tuple
+    def from_tuple(self, param):
+        val = ((ctypes.c_double) * len(param))(*param)
+        return val
+
+    # Cast from a numpy array,
+    def from_ndarray(self, param):
+        #return param.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        # the above older method does not work with functions which take vectors of known size
+        return numpy.ctypeslib.as_ctypes(param)
+
+    # Cast from array.array objects
+    def from_array(self, param):
+        if param.typecode != 'd':
+            raise TypeError('must be an array of doubles')
+        ptr, _ = param.buffer_info()
+        return ctypes.cast(ptr, ctypes.POINTER(ctypes.c_double))
+
+
+class DoubleMatrixType:
+    # Class type that will handle all double matricies, inspiration from python cookbook 3rd edition
+    def from_param(self, param):
+        typename = type(param).__name__
+        if hasattr(self, 'from_' + typename):
+            return getattr(self, 'from_' + typename)(param)
+        elif isinstance(param, ctypes.Array):
+            return param
+        else:
+            raise TypeError("Can't convert %s" % typename)
+
+    # Cast from lists/tuples
+    def from_list(self, param):
+        val = ((ctypes.c_double*len(param[0]))*len(param))(*[DoubleArray.from_param(x) for x in param])
+        return val
+
+    # Cast from Tuple
+    def from_tuple(self, param):
+        val = ((ctypes.c_double*len(param[0]))*len(param))(*[DoubleArray.from_param(x) for x in param])
+        return val
+
+    # Cast from a numpy array
+    def from_ndarray(self, param):
+        #return param.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        return numpy.ctypeslib.as_ctypes(param)
+
+    # Cast from a numpy matrix
+    def from_matrix(self, param):
+        #return param.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        return numpy.ctypeslib.as_ctypes(param)
+
+
+class IntArrayType:
+    # Class type that will handle all int vectors, inspiration from python cookbook 3rd edition
+    def from_param(self, param):
+        typename = type(param).__name__
+        if hasattr(self, 'from_' + typename):
+            return getattr(self, 'from_' + typename)(param)
+        elif isinstance(param, ctypes.Array):
+            return param
+        else:
+            raise TypeError("Can't convert %s" % typename)
+
+    # Cast from lists/tuples
+    def from_list(self, param):
+        val = ((ctypes.c_int)*len(param))(*param)
+        return val
+
+    # Cast from Tuple
+    def from_tuple(self, param):
+        val = ((ctypes.c_int) * len(param))(*param)
+        return val
+
+    # Cast from a numpy array
+    def from_ndarray(self, param):
+        #return param.ctypes.data_as(ctypes.POINTER(ctypes.c_int)) # not sure if long is same as int, it should be..
+        return numpy.ctypeslib.as_ctypes(param)
+
+    # Cast from array.array objects
+    def from_array(self, param):
+        if param.typecode != 'i':
+            raise TypeError('must be an array of ints')
+        ptr, _ = param.buffer_info()
+        return ctypes.cast(ptr, ctypes.POINTER(ctypes.c_int))
+
+DoubleArray = DoubleArrayType()
+
+IntArray = IntArrayType()
+
+DoubleMatrix = DoubleMatrixType()
 
 
 class Plane(ctypes.Structure):

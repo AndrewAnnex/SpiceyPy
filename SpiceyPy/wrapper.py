@@ -1484,7 +1484,7 @@ def failed():
 
 
 def frame(x):
-    x = stypes.listtodoublevector(x)
+    x = stypes.toDoubleVector(x)
     y = stypes.doubleVector(3)
     z = stypes.doubleVector(3)
     libspice.frame_c(x, y, z)
@@ -1544,9 +1544,9 @@ def gdpool(name, start, room):
     #Todo: test gdpool works!
     name = stypes.strtocharpoint(name)
     start = ctypes.c_int(start)
+    values = stypes.doubleVector(room)
     room = ctypes.c_int(room)
     n = ctypes.c_int()
-    values = stypes.doubleVector(room.value)
     found = ctypes.c_bool()
     libspice.gdpool_c(name, start, room, ctypes.byref(n), ctypes.cast(values, ctypes.POINTER(ctypes.c_double)), ctypes.byref(found))
     return n.value, stypes.vectortolist(values), found.value
@@ -1582,6 +1582,7 @@ def getfat(file, arclen, typlen):
 
 
 def getfov(instid, room, shapelen, framelen):
+    #This is technically a hack, please fix so that room does something!
     instid = ctypes.c_int(instid)
     room = ctypes.c_int(room)
     shape = stypes.strtocharpoint(" "*shapelen)
@@ -1706,6 +1707,7 @@ def gfstep(time):
 
 
 def gipool(name, start, room):
+    #Todo: fix gipool room isn't doing anything
     name = stypes.strtocharpoint(name)
     start = ctypes.c_int(start)
     room = ctypes.c_int(room)
@@ -3954,17 +3956,17 @@ def unload(filename):
 
 
 def unorm(v1):
-    v1 = stypes.listtodoublevector(v1)
+    v1 = stypes.toDoubleVector(v1)
     vout = stypes.doubleVector(3)
-    vmag = ctypes.c_double(0)
+    vmag = ctypes.c_double()
     libspice.unorm_c(v1, vout, ctypes.byref(vmag))
     return stypes.vectortolist(vout), vmag.value
 
 
 def unormg(v1, ndim):
-    v1 = stypes.listtodoublevector(v1)
+    v1 = stypes.toDoubleVector(v1)
     vout = stypes.doubleVector(ndim)
-    vmag = ctypes.c_double(0)
+    vmag = ctypes.c_double()
     ndim = ctypes.c_int(ndim)
     libspice.unormg_c(v1, ndim, vout, ctypes.byref(vmag))
     return stypes.vectortolist(vout), vmag.value
@@ -3973,7 +3975,7 @@ def unormg(v1, ndim):
 def utc2et(utcstr):
     #Todo: test utc2et
     utcstr = stypes.strtocharpoint(utcstr)
-    et = ctypes.c_double(0)
+    et = ctypes.c_double()
     libspice.utc2et_c(utcstr, ctypes.byref(et))
     return et.value
 ########################################################################################################################
@@ -4284,7 +4286,7 @@ def vupack(v):
 
 
 def vzero(v):
-    v = stypes.listtodoublevector(v)
+    v = stypes.toDoubleVector(v)
     return libspice.vzero_c(v)
 
 

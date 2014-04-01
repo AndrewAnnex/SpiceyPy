@@ -7,7 +7,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
 #First make sure we don't stop if an error occurs
-spice.erract("set", 10, b"report")
+spice.erract("set", 10, "report")
 
 # You must download the needed kernels, please read testMetaK.txt for links
 spice.furnsh('./testMetaK.txt')
