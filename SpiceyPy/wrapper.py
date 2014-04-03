@@ -2855,34 +2855,111 @@ def removi(item, inset):
     pass
 
 
-#reordc
+def reordc(iorder, ndim, lenvals, array):
+    #Todo: test reordc, no idea if this will work, I/O on 2d char array
+    iorder = stypes.toIntVector(iorder)
+    array = stypes.listToCharArray(array, xLen=lenvals, yLen=ndim)
+    ndim = ctypes.c_int(ndim)
+    lenvals = ctypes.c_int(lenvals)
+    libspice.reordc_c(iorder, ndim, lenvals, array)
+    return stypes.vectorToList(array)
 
 
-#reordd
+def reordd(iorder, ndim, array):
+    #todo: test reordd
+    iorder = stypes.toIntVector(iorder)
+    ndim = ctypes.c_int(ndim)
+    array = stypes.toDoubleVector(array)
+    libspice.reordd_c(iorder, ndim, array)
+    return stypes.vectortolist(array)
 
 
-#reordi
+def reordi(iorder, ndim, array):
+    #Todo: test reordi
+    iorder = stypes.toIntVector(iorder)
+    ndim = ctypes.c_int(ndim)
+    array = stypes.toIntVector(array)
+    libspice.reordi_c(iorder, ndim, array)
+    return stypes.vectortolist(array)
 
 
-#reordl
+def reordl(iorder, ndim, array):
+    #Todo: test reordl
+    iorder = stypes.toIntVector(iorder)
+    ndim = ctypes.c_int(ndim)
+    #boolean array
+    pass
 
 
-#repmc
+def repmc(instr, marker, value, lenout):
+    #Todo: test repmc
+    instr = stypes.strtocharpoint(instr)
+    marker = stypes.strtocharpoint(marker)
+    value = stypes.strtocharpoint(value)
+    lenout = ctypes.c_int(lenout)
+    out = stypes.strtocharpoint(lenout)
+    libspice.repmc_c(instr, marker, value, lenout, out)
+    return out.value
 
 
-#repmct
+def repmct(instr, marker, value, repcase, lenout):
+    #Todo: test repmct
+    instr = stypes.strtocharpoint(instr)
+    marker = stypes.strtocharpoint(marker)
+    value = ctypes.c_double(value)
+    repcase = ctypes.c_char(repcase)
+    lenout = ctypes.c_int(lenout)
+    out = stypes.strtocharpoint(lenout)
+    libspice.repmct_c(instr, marker, value, repcase, lenout, out)
+    return out.value
 
 
-#repmd
+def repmd(instr, marker, value, sigdig, lenout):
+    #Todo: test repmd
+    instr = stypes.strtocharpoint(instr)
+    marker = stypes.strtocharpoint(marker)
+    value = ctypes.c_double(value)
+    sigdig = ctypes.c_int(sigdig)
+    lenout = ctypes.c_int(lenout)
+    out = stypes.strtocharpoint(lenout)
+    libspice.repmd_c(instr, marker, value, sigdig, lenout, out)
+    return out.value
 
 
-#repmf
+def repmf(instr, marker, value, sigdig, informat, lenout):
+    #Todo: test repmf
+    instr = stypes.strtocharpoint(instr)
+    marker = stypes.strtocharpoint(marker)
+    value = ctypes.c_double(value)
+    sigdig = ctypes.c_int(sigdig)
+    lenout = ctypes.c_int(lenout)
+    informat = ctypes.c_char(informat)
+    out = stypes.strtocharpoint(lenout)
+    libspice.repmf(instr, marker, value, sigdig, informat, lenout, out)
+    return out.value
 
 
-#repmi
+def repmi(instr, marker, value, lenout):
+    #Todo: test repmi
+    instr = stypes.strtocharpoint(instr)
+    marker = stypes.strtocharpoint(marker)
+    value = ctypes.c_int(value)
+    lenout = ctypes.c_int(lenout)
+    out = stypes.strtocharpoint(lenout)
+    libspice.repmi_c(instr, marker, value, lenout, out)
+    return out.value
 
 
-#repmot
+def repmot(instr, marker, value, repcase, lenout):
+    #Todo: test repmot
+    instr = stypes.strtocharpoint(instr)
+    marker = stypes.strtocharpoint(marker)
+    value = ctypes.c_int(value)
+    repcase = ctypes.c_char(repcase)
+    lenout = ctypes.c_int(lenout)
+    out = stypes.strtocharpoint(lenout)
+    libspice.repmot_c(instr, marker, value, repcase, lenout, out)
+    return out.value
 
 
 def reset():

@@ -60,6 +60,10 @@ def vectortolist(x):
     return [y for y in x]
 
 
+def vectorToList(x):
+    return [y.value for y in x]
+
+
 def vectortotuple(x):
     return tuple(vectortolist(x))
 
@@ -203,7 +207,8 @@ class IntArrayType:
     # Cast from a numpy array
     def from_ndarray(self, param):
         #return param.ctypes.data_as(ctypes.POINTER(ctypes.c_int)) # not sure if long is same as int, it should be..
-        return numpy.ctypeslib.as_ctypes(param)
+        #return numpy.ctypeslib.as_ctypes(param)
+        return self.from_param(param.tolist())
 
     # Cast from array.array objects
     def from_array(self, param):
