@@ -1616,7 +1616,21 @@ def gfclrh():
     pass
 
 
-#gfdist  cells
+def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls, cnfine):
+    #Todo: test gfdist
+    assert isinstance(cnfine, stypes.SpiceCell)
+    assert cnfine.is_double()
+    target = stypes.strtocharpoint(target)
+    abcorr = stypes.strtocharpoint(abcorr)
+    obsrvr = stypes.strtocharpoint(obsrvr)
+    relate = stypes.strtocharpoint(relate)
+    refval = ctypes.c_double(refval)
+    adjust = ctypes.c_double(adjust)
+    step = ctypes.c_double(step)
+    nintvls = ctypes.c_int(nintvls)
+    result = stypes.SPICEDOUBLE_CELL(cnfine.size)
+    libspice.gfdist_c(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls, ctypes.byref(cnfine), ctypes.byref(result))
+    return cnfine, result
 
 
 #gdevnt  callbacks? cells
@@ -1635,10 +1649,43 @@ def gfinth(sigcode):
 #gfocce  callbacks? cells
 
 
-#gfoclt cells
+def gfoclt_c(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr, step, cnfine):
+    #Todo: test gfoclt
+    assert isinstance(cnfine, stypes.SpiceCell)
+    assert cnfine.is_double()
+    occtyp = stypes.strtocharpoint(occtyp)
+    front = stypes.strtocharpoint(front)
+    fshape = stypes.strtocharpoint(fshape)
+    fframe = stypes.strtocharpoint(fframe)
+    back = stypes.strtocharpoint(back)
+    bshape = stypes.strtocharpoint(bshape)
+    bframe = stypes.strtocharpoint(bframe)
+    abcorr = stypes.strtocharpoint(abcorr)
+    obsrvr = stypes.strtocharpoint(obsrvr)
+    step = ctypes.c_double(step)
+    result = stypes.SPICEDOUBLE_CELL(cnfine.size)
+    libspice.gfoclt_c(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr, step, ctypes.byref(cnfine), ctypes.byref(result))
+    return cnfine, result
 
 
-#gfposc cells
+def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval, adjust, step, nintvals, cnfine):
+    #Todo: test gfposc
+    assert isinstance(cnfine, stypes.SpiceCell)
+    assert cnfine.is_double()
+    target = stypes.strtocharpoint(target)
+    inframe = stypes.strtocharpoint(inframe)
+    abcorr = stypes.strtocharpoint(abcorr)
+    obsrvr = stypes.strtocharpoint(obsrvr)
+    crdsys = stypes.strtocharpoint(crdsys)
+    coord = stypes.strtocharpoint(coord)
+    relate = stypes.strtocharpoint(relate)
+    refval = ctypes.c_double(refval)
+    adjust = ctypes.c_double(adjust)
+    step = ctypes.c_double(step)
+    nintvals = ctypes.c_int(nintvals)
+    result = stypes.SPICEDOUBLE_CELL(cnfine.size)
+    libspice.gfposc_c(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval, adjust, step, nintvals, ctypes.byref(cnfine), ctypes.byref(result))
+    return cnfine, result
 
 
 def gfrefn(t1, t2, s1, s2):
@@ -1658,7 +1705,14 @@ def gfrepf():
     pass
 
 
-#gfrepi   cells
+def gfrepi(window, begmss, endmss):
+    #Todo: test gfrepi
+    assert isinstance(window, stypes.SpiceCell)
+    assert window.is_double()
+    begmss = stypes.strtocharpoint(begmss)
+    endmss = stypes.strtocharpoint(endmss)
+    libspice.gfrepi_c(ctypes.byref(window), begmss, endmss)
+    pass
 
 
 def gfrepu(ivbeg, ivend, time):
@@ -1670,10 +1724,36 @@ def gfrepu(ivbeg, ivend, time):
     pass
 
 
-# gfrfov  cells
+def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine):
+    #Todo: test gfrfov
+    assert isinstance(cnfine, stypes.SpiceCell)
+    assert cnfine.is_double()
+    inst = stypes.strtocharpoint(inst)
+    raydir = stypes.toDoubleVector(raydir)
+    rframe = stypes.strtocharpoint(rframe)
+    abcorr = stypes.strtocharpoint(abcorr)
+    obsrvr = stypes.strtocharpoint(obsrvr)
+    step = ctypes.c_double(step)
+    result = stypes.SPICEDOUBLE_CELL(cnfine.size)
+    libspice.gfrfov_c(inst, raydir, rframe, abcorr, obsrvr, step, ctypes.byref(cnfine), ctypes.byref(result))
+    return cnfine, result
 
 
-# gfrr  cells
+def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine):
+    #Todo: test gfrr
+    assert isinstance(cnfine, stypes.SpiceCell)
+    assert cnfine.is_double()
+    target = stypes.strtocharpoint(target)
+    abcorr = stypes.strtocharpoint(abcorr)
+    obsrvr = stypes.strtocharpoint(obsrvr)
+    relate = stypes.strtocharpoint(relate)
+    refval = ctypes.c_double(refval)
+    adjust = ctypes.c_double(adjust)
+    step = ctypes.c_double(step)
+    nintvals = ctypes.c_int(nintvals)
+    result = stypes.SPICEDOUBLE_CELL(cnfine.size)
+    libspice.gfrr_c(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, ctypes.byref(cnfine), ctypes.byref(result))
+    return cnfine, result
 
 
 # gfsep  cells
