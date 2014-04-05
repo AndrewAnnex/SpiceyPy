@@ -16,11 +16,6 @@ def toIntVector(x):
     return IntArray.from_param(param=x)
 
 
-def listtodoublevector(x):
-    assert(isinstance(x, list))
-    return (ctypes.c_double * len(x))(*x)
-
-
 def listtointvector(x):
     assert(isinstance(x, list))
     return (ctypes.c_int * len(x))(*x)
@@ -56,20 +51,21 @@ def intvector(n):
     return (ctypes.c_int*n)()
 
 
-def vectortolist(x):
-    return [y for y in x]
-
-
 def vectorToList(x):
-    return [y.value for y in x]
+    if isinstance(x[0], int):
+        return [y for y in x]
+    elif isinstance(x[0], float):
+        return [y for y in x]
+    elif isinstance(x[0].value, bytes):
+        return [bytes.decode(y.value) for y in x]
 
 
-def vectortotuple(x):
-    return tuple(vectortolist(x))
+def vectorToTuple(x):
+    return tuple(vectorToList(x))
 
 
-def matrixtolist(x):
-    return [vectortolist(y) for y in x]
+def matrixToList(x):
+    return [vectorToList(y) for y in x]
 
 
 def strtocharpoint(inobject, inlen=None):

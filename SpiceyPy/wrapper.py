@@ -39,7 +39,7 @@ def axisar(axis, angle):
     angle = ctypes.c_double(angle)
     r = stypes.doubleMatrix()
     libspice.axisar_c(axis, angle, r)
-    return stypes.matrixtolist(r)
+    return stypes.matrixToList(r)
 
 ########################################################################################################################
 # B
@@ -127,7 +127,7 @@ def bodvar(body, item, dim):
     item = stypes.strtocharpoint(item)
     values = stypes.doubleVector(dim.value)
     libspice.bodvar(body, item, ctypes.byref(dim), values)
-    return stypes.vectortolist(values)
+    return stypes.vectorToList(values)
 
 
 def bodvcd(bodyid, item, maxn):
@@ -138,7 +138,7 @@ def bodvcd(bodyid, item, maxn):
     dim = ctypes.c_int(0)
     values = stypes.doubleVector(maxn)
     libspice.bodvcd_c(bodyid, item, maxn, ctypes.byref(dim), values)
-    return stypes.vectortolist(values)
+    return stypes.vectorToList(values)
 
 
 def bodvrd(bodynm, item, maxn):
@@ -148,7 +148,7 @@ def bodvrd(bodynm, item, maxn):
     dim = ctypes.c_int(0)
     values = stypes.doubleVector(3)
     libspice.bodvrd_c(bodynm, item, maxn, ctypes.byref(dim), values)
-    return stypes.vectortolist(values)
+    return stypes.vectorToList(values)
 
 
 def brcktd(number, end1, end2):
@@ -283,7 +283,7 @@ def ckgp(inst, sclkdp, tol, ref):
     clkout = ctypes.c_double()
     found = ctypes.c_bool()
     libspice.ckgp_c(inst, sclkdp, tol, ref, cmat, ctypes.byref(clkout), ctypes.byref(found))
-    return stypes.matrixtolist(cmat), clkout.value, found.value
+    return stypes.matrixToList(cmat), clkout.value, found.value
 
 
 def ckgpav(inst, sclkdp, tol, ref):
@@ -297,7 +297,7 @@ def ckgpav(inst, sclkdp, tol, ref):
     clkout = ctypes.c_double()
     found = ctypes.c_bool()
     libspice.ckgpav_c(inst, sclkdp, tol, ref, cmat, av, ctypes.byref(clkout), ctypes.byref(found))
-    return stypes.matrixtolist(cmat), stypes.vectortolist(av), clkout.value, found.value
+    return stypes.matrixToList(cmat), stypes.vectorToList(av), clkout.value, found.value
 
 
 def cklpf(filename):
@@ -435,7 +435,7 @@ def conics(elts, et):
     et = ctypes.c_double(et)
     state = stypes.doubleVector(6)
     libspice.conics_c(elts, et, state)
-    return stypes.vectortolist(state)
+    return stypes.vectorToList(state)
 
 
 def convrt(x, inunit, outunit):
@@ -498,7 +498,7 @@ def cylrec(r, lon, z):
     z = ctypes.c_double(z)
     rectan = stypes.doubleVector(3)
     libspice.cylrec_c(r, lon, z, rectan)
-    return stypes.vectortolist(rectan)
+    return stypes.vectorToList(rectan)
 
 
 def cylsph(r, lonc, z):
@@ -593,7 +593,7 @@ def dafgs():
     #todo test dafgs, is this a valid way of getting a double array back?
     retarray = ctypes.c_double()
     libspice.dafgs_c(ctypes.byref(retarray))
-    return stypes.vectortolist(retarray)
+    return stypes.vectorToList(retarray)
 
 
 def dafgsr(handle, recno, begin, end):
@@ -632,7 +632,7 @@ def dafps(nd, ni, dc, ic):
     nd = ctypes.c_int(nd)
     ni = ctypes.c_int(ni)
     libspice.dafps_c(nd, ni, ctypes.byref(dc), ctypes.byref(ic), ctypes.byref(outsum))
-    return stypes.vectortolist(outsum)
+    return stypes.vectorToList(outsum)
 
 
 # dafrda is deprecated
@@ -715,7 +715,7 @@ def dgeodr(x, y, z, re, f):
     f = ctypes.c_double(f)
     jacobi = stypes.doubleMatrix()
     libspice.dgeodr_c(x, y, z, re, f, jacobi)
-    return stypes.matrixtolist(jacobi)
+    return stypes.matrixToList(jacobi)
 
 
 def diags2(symmat):
@@ -724,7 +724,7 @@ def diags2(symmat):
     diag = stypes.doubleMatrix(x=2, y=2)
     rotateout = stypes.doubleMatrix(x=2, y=2)
     libspice.diags2_c(symmat, diag, rotateout)
-    return stypes.matrixtolist(diag), stypes.matrixtolist(rotateout)
+    return stypes.matrixToList(diag), stypes.matrixToList(rotateout)
 
 
 def diff(a, b):
@@ -778,7 +778,7 @@ def dpgrdr(body, x, y, z, re, f):
     f = ctypes.c_double(f)
     jacobi = stypes.doubleMatrix()
     libspice.dpgrdr_c(body, x, y, z, re, f, jacobi)
-    return stypes.matrixtolist(jacobi)
+    return stypes.matrixToList(jacobi)
 
 
 def dpmax():
@@ -802,7 +802,7 @@ def drdcyl(r, lon, z):
     z = ctypes.c_double(z)
     jacobi = stypes.doubleMatrix()
     libspice.drdcyl_c(r, lon, z, jacobi)
-    return stypes.matrixtolist(jacobi)
+    return stypes.matrixToList(jacobi)
 
 
 def drdgeo(lon, lat, alt, re, f):
@@ -814,7 +814,7 @@ def drdgeo(lon, lat, alt, re, f):
     f = ctypes.c_double(f)
     jacobi = stypes.doubleMatrix()
     libspice.drdgeo_c(lon, lat, alt, re, f, jacobi)
-    return stypes.matrixtolist(jacobi)
+    return stypes.matrixToList(jacobi)
 
 
 def drdlat(r, lon, lat):
@@ -824,7 +824,7 @@ def drdlat(r, lon, lat):
     lat = ctypes.c_double(lat)
     jacobi = stypes.doubleMatrix()
     libspice.drdsph_c(r, lon, lat, jacobi)
-    return stypes.matrixtolist(jacobi)
+    return stypes.matrixToList(jacobi)
 
 
 def drdpgr(body, lon, lat, alt, re, f):
@@ -837,7 +837,7 @@ def drdpgr(body, lon, lat, alt, re, f):
     f = ctypes.c_double(f)
     jacobi = stypes.doubleMatrix()
     libspice.drdpgr_c(body, lon, lat, alt, re, f, jacobi)
-    return stypes.matrixtolist(jacobi)
+    return stypes.matrixToList(jacobi)
 
 
 def drdsph(r, colat, lon):
@@ -847,7 +847,7 @@ def drdsph(r, colat, lon):
     lon = ctypes.c_double(lon)
     jacobi = stypes.doubleMatrix()
     libspice.drdsph_c(r, colat, lon, jacobi)
-    return stypes.matrixtolist(jacobi)
+    return stypes.matrixToList(jacobi)
 
 
 def dsphdr(x, y, z):
@@ -857,7 +857,7 @@ def dsphdr(x, y, z):
     z = ctypes.c_double(z)
     jacobi = stypes.doubleMatrix()
     libspice.dsphdr_c(x, y, z, jacobi)
-    return stypes.matrixtolist(jacobi)
+    return stypes.matrixToList(jacobi)
 
 
 def dtpool(name):
@@ -877,7 +877,7 @@ def ducrss(s1, s2):
     s2 = stypes.toDoubleVector(s2)
     sout = stypes.doubleVector(6)
     libspice.ducrss_c(s1, s2, sout)
-    return stypes.vectortolist(sout)
+    return stypes.vectorToList(sout)
 
 
 def dvcrss(s1, s2):
@@ -887,7 +887,7 @@ def dvcrss(s1, s2):
     s2 = stypes.toDoubleVector(s2)
     sout = stypes.doubleVector(6)
     libspice.dvcrss_c(s1, s2, sout)
-    return stypes.vectortolist(sout)
+    return stypes.vectorToList(sout)
 
 
 def dvdot(s1, s2):
@@ -904,7 +904,7 @@ def dvhat(s1):
     s1 = stypes.toDoubleVector(s1)
     sout = stypes.doubleVector(6)
     libspice.dvhat_c(s1, sout)
-    return stypes.vectortolist(sout)
+    return stypes.vectorToList(sout)
 
 
 def dvnorm(state):
@@ -938,7 +938,7 @@ def edlimb(a, b, c, viewpt):
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
     c = ctypes.c_double(c)
-    viewpt = stypes.vectortolist(viewpt)
+    viewpt = stypes.toDoubleVector(viewpt)
     libspice.edlimb_c(a, b, c, viewpt, ctypes.byref(limb))
     return limb
 
@@ -1156,7 +1156,7 @@ def ekifld(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls):
     declen = ctypes.c_int(declen)
     segno = ctypes.c_int()
     libspice.ekifld_c(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls, ctypes.byref(segno), ctypes.byref(recptrs))
-    return segno.value, stypes.vectortolist(recptrs)
+    return segno.value, stypes.vectorToList(recptrs)
 
 
 def ekinsr(handle, segno, recno):
@@ -1232,13 +1232,44 @@ def ekopw(fname):
 #ekpsel
 
 
-#ekrcec
+def ekrcec(handle, segno, recno, column, lenout, nelts=3):
+    #Todo: test ekrcec , possible new way to get back 2d char arrays
+    handle = ctypes.c_int(handle)
+    segno = ctypes.c_int(segno)
+    recno = ctypes.c_int(recno)
+    column = stypes.strtocharpoint(column)
+    lenout = ctypes.c_int(lenout)
+    nvals = ctypes.c_int()
+    cvals = stypes.charvector(ndim=nelts, lenvals=lenout)
+    isnull = ctypes.c_bool()
+    libspice.ekrcec_c(handle, segno, recno, column, lenout, ctypes.byref(nvals), ctypes.byref(cvals), ctypes.byref(isnull))
+    return nvals.value, stypes.vectorToList(cvals), isnull.value
 
 
-#ekrced
+def ekrced(handle, segno, recno, column):
+    #Todo: test ekrced
+    handle = ctypes.c_int(handle)
+    segno = ctypes.c_int(segno)
+    recno = ctypes.c_int(recno)
+    column = stypes.strtocharpoint(column)
+    nvals = ctypes.c_int()
+    dvals = ctypes.POINTER(ctypes.c_double)  # array of length nvals
+    isnull = ctypes.c_bool()
+    libspice.ekrced_c(handle, segno, recno, column, ctypes.byref(nvals), ctypes.byref(dvals), ctypes.byref(isnull))
+    return nvals.value, stypes.vectorToList(dvals), isnull.value
 
 
-#ekrcei
+def ekrcei(handle, segno, recno, column):
+    #Todo: test ekrcei
+    handle = ctypes.c_int(handle)
+    segno = ctypes.c_int(segno)
+    recno = ctypes.c_int(recno)
+    column = stypes.strtocharpoint(column)
+    nvals = ctypes.c_int()
+    ivals = ctypes.POINTER(ctypes.c_int)  # array of length nvals
+    isnull = ctypes.c_bool()
+    libspice.ekrcei_c(handle, segno, recno, column, ctypes.byref(nvals), ctypes.byref(ivals), ctypes.byref(isnull))
+    return nvals.value, stypes.vectorToList(ivals), isnull.value
 
 
 #ekssum Spice EKSegSum type
@@ -1307,7 +1338,7 @@ def el2cgv(ellipse):
     smajor = stypes.doubleVector(3)
     sminor = stypes.doubleVector(3)
     libspice.el2cgv_c(ctypes.byref(ellipse), center, smajor, sminor)
-    return stypes.vectortolist(center), stypes.vectortolist(smajor), stypes.vectortolist(sminor)
+    return stypes.vectorToList(center), stypes.vectorToList(smajor), stypes.vectorToList(sminor)
 
 
 def elemc(item, inset):
@@ -1445,7 +1476,7 @@ def eul2m(angle3, angle2, angle1, axis3, axis2, axis1):
     axis1 = ctypes.c_int(axis1)
     r = stypes.doubleMatrix()
     libspice.eul2m_c(angle3, angle2, angle1, axis3, axis2, axis1, r)
-    return stypes.matrixtolist(r)
+    return stypes.matrixToList(r)
 
 
 def eul2xf(eulang, axisa, axisb, axisc):
@@ -1457,7 +1488,7 @@ def eul2xf(eulang, axisa, axisb, axisc):
     axisc = ctypes.c_int(axisc)
     xform = stypes.doubleMatrix(x=6, y=6)
     libspice.eul2xf_c(eulang, axisa, axisb, axisc, xform)
-    return stypes.matrixtolist(xform)
+    return stypes.matrixToList(xform)
 
 
 def exists(fname):
@@ -1488,7 +1519,7 @@ def frame(x):
     y = stypes.doubleVector(3)
     z = stypes.doubleVector(3)
     libspice.frame_c(x, y, z)
-    return stypes.vectortolist(x), stypes.vectortolist(y), stypes.vectortolist(z)
+    return stypes.vectorToList(x), stypes.vectorToList(y), stypes.vectorToList(z)
 
 
 def frinfo(frcode):
@@ -1549,7 +1580,7 @@ def gdpool(name, start, room):
     n = ctypes.c_int()
     found = ctypes.c_bool()
     libspice.gdpool_c(name, start, room, ctypes.byref(n), ctypes.cast(values, ctypes.POINTER(ctypes.c_double)), ctypes.byref(found))
-    return n.value, stypes.vectortolist(values), found.value
+    return n.value, stypes.vectorToList(values), found.value
 
 
 def georec(lon, lat, alt, re, f):
@@ -1561,7 +1592,7 @@ def georec(lon, lat, alt, re, f):
     f = ctypes.c_double(f)
     rectan = stypes.doubleVector(3)
     libspice.georec_c(lon, lat, alt, re, f, rectan)
-    return stypes.vectortolist(rectan)
+    return stypes.vectorToList(rectan)
 
 
 # getcml not really needed
@@ -1593,7 +1624,7 @@ def getfov(instid, room, shapelen, framelen):
     n = ctypes.c_int(0)
     bounds = stypes.doubleMatrix(x=3, y=4)
     libspice.getfov_c(instid, room, shapelen, framelen, shape, framen, bsight, ctypes.byref(n), bounds)
-    return shape.value, framen.value, stypes.vectortolist(bsight), stypes.matrixtolist(bounds)
+    return shape.value, framen.value, stypes.vectorToList(bsight), stypes.matrixToList(bounds)
 
 
 def getmsg(option, lenout):
@@ -1894,7 +1925,7 @@ def hx2dp(string, lenout):
 def ident():
     matrix = stypes.doubleMatrix()
     libspice.ident_c(matrix)
-    return stypes.matrixtolist(matrix)
+    return stypes.matrixToList(matrix)
 
 
 def illum(target, et, abcorr, obsrvr, spoint):
@@ -1926,7 +1957,7 @@ def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
     emissn = ctypes.c_double(0)
     libspice.ilumin_c(method, target, et, fixref, abcorr, obsrvr, spoint, ctypes.byref(trgepc),
               srfvec, ctypes.byref(phase), ctypes.byref(solar), ctypes.byref(emissn))
-    return trgepc.value, stypes.vectortolist(srfvec), phase.value, solar.value, emissn.value
+    return trgepc.value, stypes.vectorToList(srfvec), phase.value, solar.value, emissn.value
 
 
 def inedpl(a, b, c, plane):
@@ -1949,7 +1980,7 @@ def inelpl(ellips, plane):
     xpt1 = stypes.doubleVector(3)
     xpt2 = stypes.doubleVector(3)
     libspice.inelpl_c(ctypes.byref(ellips), ctypes.byref(plane), ctypes.byref(nxpts), xpt1, xpt2)
-    return nxpts.value, stypes.vectortolist(xpt1), stypes.vectortolist(xpt2)
+    return nxpts.value, stypes.vectorToList(xpt1), stypes.vectorToList(xpt2)
 
 
 def inrypl(vertex, direct, plane):
@@ -1960,7 +1991,7 @@ def inrypl(vertex, direct, plane):
     nxpts = ctypes.c_int()
     xpt = stypes.doubleVector(3)
     libspice.inrypl_c(vertex, direct, ctypes.byref(plane), ctypes.byref(nxpts), xpt)
-    return nxpts.value, stypes.vectortolist(xpt)
+    return nxpts.value, stypes.vectorToList(xpt)
 
 
 def insrtc(item, inset):
@@ -2018,7 +2049,7 @@ def invert(m):
     m = stypes.listtodoublematrix(m)
     mout = stypes.doubleMatrix()
     libspice.invert_c(m, mout)
-    return stypes.matrixtolist(mout)
+    return stypes.matrixToList(mout)
 
 
 def invort(m):
@@ -2026,7 +2057,7 @@ def invort(m):
     m = stypes.listtodoublematrix(m)
     mout = stypes.doubleMatrix()
     libspice.invort_c(m, mout)
-    return stypes.matrixtolist(mout)
+    return stypes.matrixToList(mout)
 
 
 def isordv(array, n):
@@ -2174,7 +2205,7 @@ def latrec(radius, longitude, latitude):
     latitude = ctypes.c_double(latitude)
     rectan = stypes.doubleVector(3)
     libspice.latrec_c(radius, longitude, latitude, rectan)
-    return stypes.vectortolist(rectan)
+    return stypes.vectorToList(rectan)
 
 
 def latsph(radius, lon, lat):
@@ -2365,7 +2396,7 @@ def m2q(r):
     r = stypes.listtodoublematrix(r)
     q = stypes.doubleVector(4)
     libspice.m2q_c(r, q)
-    return stypes.vectortolist(q)
+    return stypes.vectorToList(q)
 
 
 def matchi(string, templ, wstr, wchr):
@@ -2396,7 +2427,7 @@ def mequ(m1):
     m1 = stypes.listtodoublematrix(m1)
     mout = stypes.doubleMatrix()
     libspice.mequ_c(m1, mout)
-    return stypes.matrixtolist(mout)
+    return stypes.matrixToList(mout)
 
 
 def mequg(m1, nr, nc):
@@ -2405,7 +2436,7 @@ def mequg(m1, nr, nc):
     nr = ctypes.c_int(nr)
     mout = stypes.doubleMatrix(x=nc, y=nr)
     libspice.mequg_c(m1, nc, nr, mout)
-    return stypes.matrixtolist(mout)
+    return stypes.matrixToList(mout)
 
 
 #skiping for now mind_c, odd as arguments must be parsed and not really important
@@ -2419,7 +2450,7 @@ def mtxm(m1, m2):
     m2 = stypes.listtodoublematrix(m2)
     mout = stypes.doubleMatrix()
     libspice.mtxm_c(m1, m2, mout)
-    return stypes.matrixtolist(mout)
+    return stypes.matrixToList(mout)
 
 
 def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
@@ -2431,7 +2462,7 @@ def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
     nr1r2 = ctypes.c_int(nr1r2)
     ncol2 = ctypes.c_int(ncol2)
     libspice.mtxmg_c(m1, m2, ncol1, nr1r2, ncol2, mout)
-    return stypes.matrixtolist(mout)
+    return stypes.matrixToList(mout)
 
 
 def mtxv(m1, vin):
@@ -2440,7 +2471,7 @@ def mtxv(m1, vin):
     vin = stypes.toDoubleVector(vin)
     vout = stypes.doubleVector(3)
     libspice.mtxv_c(m1, vin, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def mtxvg(m1, v2, ncol1, nr1r2):
@@ -2450,7 +2481,7 @@ def mtxvg(m1, v2, ncol1, nr1r2):
     nr1r2 = ctypes.c_int(nr1r2)
     vout = stypes.doubleVector(ncol1.value)
     libspice.mtxvg_c(m1, v2, ncol1, nr1r2, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def mxm(m1, m2):
@@ -2458,7 +2489,7 @@ def mxm(m1, m2):
     m2 = stypes.listtodoublematrix(m2)
     mout = stypes.doubleMatrix()
     libspice.mxm_c(m1, m2, mout)
-    return stypes.matrixtolist(mout)
+    return stypes.matrixToList(mout)
 
 
 def mxmg(m1, m2, nrow1, ncol1, ncol2):
@@ -2469,7 +2500,7 @@ def mxmg(m1, m2, nrow1, ncol1, ncol2):
     ncol1 = ctypes.c_int(ncol1)
     ncol2 = ctypes.c_int(ncol2)
     libspice.mxmg_c(m1, m2, nrow1, ncol1, ncol2, mout)
-    return stypes.matrixtolist(mout)
+    return stypes.matrixToList(mout)
 
 
 def mxmt(m1, m2):
@@ -2477,7 +2508,7 @@ def mxmt(m1, m2):
     m2 = stypes.listtodoublematrix(m2)
     mout = stypes.doubleMatrix()
     libspice.mxmt_c(m1, m2, mout)
-    return stypes.matrixtolist(mout)
+    return stypes.matrixToList(mout)
 
 
 def mxmtg(m1, m2, nrow1, nc1c2, nrow2):
@@ -2488,7 +2519,7 @@ def mxmtg(m1, m2, nrow1, nc1c2, nrow2):
     nc1c2 = ctypes.c_int(nc1c2)
     nrow2 = ctypes.c_int(nrow2)
     libspice.mxmtg_c(m1, m2, nrow1, nc1c2, nrow2, mout)
-    return stypes.matrixtolist(mout)
+    return stypes.matrixToList(mout)
 
 
 def mxv(m1, vin):
@@ -2497,7 +2528,7 @@ def mxv(m1, vin):
     vin = stypes.toDoubleVector(vin)
     vout = stypes.doubleVector(3)
     libspice.mxv_c(m1, vin, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def mxvg(m1, v2, nrow1, nc1r2):
@@ -2507,7 +2538,7 @@ def mxvg(m1, v2, nrow1, nc1r2):
     nc1r2 = ctypes.c_int(nc1r2)
     vout = stypes.doubleVector(nrow1.value)
     libspice.mxvg_c(m1, v2, nrow1, nc1r2, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 ########################################################################################################################
 # N
@@ -2546,7 +2577,7 @@ def nearpt(positn, a, b, c):
     npoint = stypes.doubleVector(3)
     alt = ctypes.c_double()
     libspice.nearpt_c(positn, a, b, c, npoint, ctypes.byref(alt))
-    return stypes.vectortolist(npoint), alt.value
+    return stypes.vectorToList(npoint), alt.value
 
 
 def npedln(a, b, c, linept, linedr):
@@ -2632,7 +2663,7 @@ def orderc(lenvals, array, ndim):
     array = stypes.listtocharvector(array)
     lenvals = ctypes.c_int(lenvals)
     libspice.orderc_c(lenvals, array, ndim, iorder)
-    return stypes.vectortolist(iorder)
+    return stypes.vectorToList(iorder)
 
 
 def orderd(array, ndim):
@@ -2641,7 +2672,7 @@ def orderd(array, ndim):
     iorder = stypes.toIntVector([0] * ndim)
     ndim = ctypes.c_int(ndim)
     libspice.orderd_c(array, ndim, iorder)
-    return stypes.vectortolist(iorder)
+    return stypes.vectorToList(iorder)
 
 
 def orderi(array, ndim):
@@ -2649,7 +2680,7 @@ def orderi(array, ndim):
     iorder = stypes.toIntVector([0] * ndim)
     ndim = ctypes.c_int(ndim)
     libspice.orderi_c(array, ndim, iorder)
-    return stypes.vectortolist(iorder)
+    return stypes.vectorToList(iorder)
 
 
 def oscelt(stat, et, mu):
@@ -2659,7 +2690,7 @@ def oscelt(stat, et, mu):
     mu = ctypes.c_double(mu)
     elts = stypes.doubleVector(8)
     libspice.oscelt_c(stat, et, mu, elts)
-    return stypes.vectortolist(elts)
+    return stypes.vectorToList(elts)
 
 ########################################################################################################################
 # P
@@ -2729,7 +2760,7 @@ def pgrrec(body, lon, lat, alt, re, f):
     f = ctypes.c_double(f)
     rectan = stypes.doubleVector(3)
     libspice.pgrrec(body, lon, lat, alt, re, f, rectan)
-    return stypes.vectortolist(rectan)
+    return stypes.vectorToList(rectan)
 
 
 def pi():
@@ -2758,7 +2789,7 @@ def pl2nvc(plane):
     normal = stypes.doubleVector(3)
     constant = ctypes.c_double()
     libspice.pl2nvc_c(ctypes.byref(plane), normal, ctypes.byref(constant))
-    return stypes.vectortolist(normal), constant.value
+    return stypes.vectorToList(normal), constant.value
 
 
 def pl2nvp(plane):
@@ -2767,7 +2798,7 @@ def pl2nvp(plane):
     normal = stypes.doubleVector(3)
     point = stypes.doubleVector(3)
     libspice.pl2nvp_c(ctypes.byref(plane), normal, point)
-    return stypes.vectortolist(normal), stypes.vectortolist(point)
+    return stypes.vectorToList(normal), stypes.vectorToList(point)
 
 
 def pl2psv(plane):
@@ -2777,7 +2808,7 @@ def pl2psv(plane):
     span1 = stypes.doubleVector(3)
     span2 = stypes.doubleVector(3)
     libspice.pl2psv_c(ctypes.byref(plane), point, span1, span2)
-    return stypes.vectortolist(point), stypes.vectortolist(span1), stypes.vectortolist(span2)
+    return stypes.vectorToList(point), stypes.vectorToList(span1), stypes.vectorToList(span2)
 
 
 def pos(string, substr, start):
@@ -2804,7 +2835,7 @@ def prop2b(gm, pvinit, dt):
     dt = ctypes.c_double(dt)
     pvprop = stypes.doubleVector(6)
     libspice.prop2b_c(gm, pvinit, dt, pvprop)
-    return stypes.vectortolist(pvprop)
+    return stypes.vectorToList(pvprop)
 
 
 def prsdp(string):
@@ -2843,7 +2874,7 @@ def pxform(fromstr, tostr, et):
     fromstr = stypes.strtocharpoint(fromstr)
     rotatematrix = stypes.doubleMatrix()
     libspice.pxform_c(fromstr, tostr, et, rotatematrix)
-    return stypes.matrixtolist(rotatematrix)
+    return stypes.matrixToList(rotatematrix)
 
 
 ########################################################################################################################
@@ -2854,7 +2885,7 @@ def q2m(q):
     q = stypes.toDoubleVector(q)
     mout = stypes.doubleMatrix()
     libspice.q2m_c(q, mout)
-    return stypes.matrixtolist(mout)
+    return stypes.matrixToList(mout)
 
 
 def qdq2av(q, dq):
@@ -2863,7 +2894,7 @@ def qdq2av(q, dq):
     dq = stypes.toDoubleVector(dq)
     vout = stypes.doubleVector(3)
     libspice.qdq2av(q, dq, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def qxq(q1, q2):
@@ -2872,7 +2903,7 @@ def qxq(q1, q2):
     q2 = stypes.toDoubleVector(q2)
     vout = stypes.doubleVector(4)
     libspice.qxq_c(q1, q2, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 ########################################################################################################################
 # R
@@ -2885,7 +2916,7 @@ def radrec(inrange, re, dec):
     dec = ctypes.c_double(dec)
     rectan = stypes.doubleVector(3)
     libspice.radrec_c(inrange, re, dec, rectan)
-    return stypes.vectortolist(rectan)
+    return stypes.vectorToList(rectan)
 
 
 def rav2xf(rot, av):
@@ -2894,7 +2925,7 @@ def rav2xf(rot, av):
     av = stypes.toDoubleVector(av)
     xform = stypes.doubleMatrix(x=6, y=6)
     libspice.rav2xf_c(rot, av, xform)
-    return stypes.matrixtolist(xform)
+    return stypes.matrixToList(xform)
 
 
 def raxisa(matrix):
@@ -2903,7 +2934,7 @@ def raxisa(matrix):
     axis = stypes.doubleVector(3)
     angle = ctypes.c_double()
     libspice.raxisa_c(matrix, axis, ctypes.byref(angle))
-    return stypes.vectortolist(axis), angle.value
+    return stypes.vectorToList(axis), angle.value
 
 
 def rdtext(file, lenout):
@@ -3003,12 +3034,12 @@ def removi(item, inset):
 
 
 def reordc(iorder, ndim, lenvals, array):
-    #Todo: test reordc, no idea if this will work, I/O on 2d char array
+    #Todo: fix reordc, this should work, not sure why as shellc works despite this
     iorder = stypes.toIntVector(iorder)
     array = stypes.listToCharArray(array, xLen=lenvals, yLen=ndim)
     ndim = ctypes.c_int(ndim)
     lenvals = ctypes.c_int(lenvals)
-    libspice.reordc_c(iorder, ndim, lenvals, array)
+    libspice.reordc_c(iorder, ndim, lenvals, ctypes.byref(array))
     return stypes.vectorToList(array)
 
 
@@ -3018,7 +3049,7 @@ def reordd(iorder, ndim, array):
     ndim = ctypes.c_int(ndim)
     array = stypes.toDoubleVector(array)
     libspice.reordd_c(iorder, ndim, array)
-    return stypes.vectortolist(array)
+    return stypes.vectorToList(array)
 
 
 def reordi(iorder, ndim, array):
@@ -3027,7 +3058,7 @@ def reordi(iorder, ndim, array):
     ndim = ctypes.c_int(ndim)
     array = stypes.toIntVector(array)
     libspice.reordi_c(iorder, ndim, array)
-    return stypes.vectortolist(array)
+    return stypes.vectorToList(array)
 
 
 def reordl(iorder, ndim, array):
@@ -3125,7 +3156,7 @@ def rotate(angle, iaxis):
     iaxis = ctypes.c_int(iaxis)
     mout = stypes.doubleMatrix()
     libspice.rotate_c(angle, iaxis, mout)
-    return stypes.matrixtolist(mout)
+    return stypes.matrixToList(mout)
 
 
 def rotmat(m1, angle, iaxis):
@@ -3135,7 +3166,7 @@ def rotmat(m1, angle, iaxis):
     iaxis = ctypes.c_int(iaxis)
     mout = stypes.doubleMatrix()
     libspice.rotmat_c(m1, angle, iaxis, mout)
-    return stypes.matrixtolist(mout)
+    return stypes.matrixToList(mout)
 
 
 def rotvec(v1, angle, iaxis):
@@ -3145,7 +3176,7 @@ def rotvec(v1, angle, iaxis):
     iaxis = ctypes.c_int(iaxis)
     vout = stypes.doubleVector(3)
     libspice.rotvec_c(v1, angle, iaxis, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def rpd():
@@ -3172,7 +3203,7 @@ def saelgv(vec1, vec2):
     smajor = stypes.doubleVector(3)
     sminor = stypes.doubleVector(3)
     libspice.saelgv_c(vec1, vec2, smajor, sminor)
-    return stypes.vectortolist(smajor), stypes.vectortolist(sminor)
+    return stypes.vectorToList(smajor), stypes.vectorToList(sminor)
 
 
 def scard(incard, cell):
@@ -3313,13 +3344,12 @@ def setmsg(message):
 
 
 def shellc(ndim, lenvals, array):
-    #Todo: fix, this does not work!
-    #How do we make a mutable char vector?
-    array = stypes.listtocharvector(array)
+    #This works! looks like this is a mutable 2d char array
+    array = stypes.listToCharArray(array, xLen=lenvals, yLen=ndim)
     ndim = ctypes.c_int(ndim)
     lenvals = ctypes.c_int(lenvals)
     libspice.shellc_c(ndim, lenvals, ctypes.byref(array))
-    pass
+    return stypes.vectorToList(array)
 
 
 def shelld(ndim, array):
@@ -3327,7 +3357,7 @@ def shelld(ndim, array):
     array = stypes.toDoubleVector(array)
     ndim = ctypes.c_int(ndim)
     libspice.shelld_c(ndim, ctypes.cast(array, ctypes.POINTER(ctypes.c_double)))
-    return stypes.vectortolist(array)
+    return stypes.vectorToList(array)
 
 
 def shelli(ndim, array):
@@ -3335,7 +3365,7 @@ def shelli(ndim, array):
     array = stypes.toIntVector(array)
     ndim = ctypes.c_int(ndim)
     libspice.shelli_c(ndim, ctypes.cast(array, ctypes.POINTER(ctypes.c_int)))
-    return stypes.vectortolist(array)
+    return stypes.vectorToList(array)
 
 
 def sigerr(message):
@@ -3359,7 +3389,7 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
     srfvec = stypes.doubleVector(3)
     found = ctypes.c_bool(0)
     libspice.sincpt_c(method, target, et, fixref, abcorr, obsrvr, dref, dvec, spoint, ctypes.byref(trgepc), srfvec, ctypes.byref(found))
-    return stypes.vectortolist(spoint), trgepc.value, stypes.vectortolist(srfvec), found.value
+    return stypes.vectorToList(spoint), trgepc.value, stypes.vectorToList(srfvec), found.value
 
 
 def size(cell):
@@ -3400,7 +3430,7 @@ def sphrec(r, colat, lon):
     lon = ctypes.c_double(lon)
     rectan = stypes.doubleVector(3)
     libspice.sphrec_c(r, colat, lon, rectan)
-    return stypes.vectortolist(rectan)
+    return stypes.vectorToList(rectan)
 
 
 def spkacs(targ, et, ref, abcorr, obs):
@@ -3414,7 +3444,7 @@ def spkacs(targ, et, ref, abcorr, obs):
     lt = ctypes.c_double()
     dlt = ctypes.c_double()
     libspice.spkacs_c(targ, et, ref, abcorr, obs, starg, ctypes.byref(lt), ctypes.byref(dlt))
-    return stypes.vectortolist(starg), lt.value, dlt.value
+    return stypes.vectorToList(starg), lt.value, dlt.value
 
 
 def spkapo(targ, et, ref, sobs, abcorr):
@@ -3427,7 +3457,7 @@ def spkapo(targ, et, ref, sobs, abcorr):
     ptarg = stypes.doubleVector(3)
     lt = ctypes.c_double()
     libspice.spkapo_c(targ, et, ref, sobs, abcorr, ptarg, ctypes.byref(lt))
-    return stypes.vectortolist(ptarg), lt.value
+    return stypes.vectorToList(ptarg), lt.value
 
 
 def spkapp(targ, et, ref, sobs, abcorr):
@@ -3440,7 +3470,7 @@ def spkapp(targ, et, ref, sobs, abcorr):
     starg = stypes.doubleVector(6)
     lt = ctypes.c_double()
     libspice.spkapp_c(targ, et, ref, sobs, abcorr, starg, ctypes.byref(lt))
-    return stypes.vectortolist(starg), lt.value
+    return stypes.vectorToList(starg), lt.value
 
 
 def spkaps(targ, et, ref, abcorr, stobs, accobs):
@@ -3455,7 +3485,7 @@ def spkaps(targ, et, ref, abcorr, stobs, accobs):
     lt = ctypes.c_double()
     dlt = ctypes.c_double()
     libspice.spkaps_c(targ, et, ref, abcorr, stobs, accobs, starg, ctypes.byref(lt), ctypes.byref(dlt))
-    return stypes.vectortolist(starg), lt.value, dlt.value
+    return stypes.vectorToList(starg), lt.value, dlt.value
 
 
 #spk14a
@@ -3511,7 +3541,7 @@ def spkez(targ, et, ref, abcorr, obs):
     starg = stypes.doubleVector(6)
     lt = ctypes.c_double()
     libspice.spkez_c(targ, et, ref, abcorr, obs, starg, ctypes.byref(lt))
-    return stypes.vectortolist(starg), lt.value
+    return stypes.vectorToList(starg), lt.value
 
 
 def spkezp(targ, et, ref, abcorr, obs):
@@ -3524,7 +3554,7 @@ def spkezp(targ, et, ref, abcorr, obs):
     ptarg = stypes.doubleVector(3)
     lt = ctypes.c_double()
     libspice.spkezp_c(targ, et, ref, abcorr, obs, ptarg, ctypes.byref(lt))
-    return stypes.vectortolist(ptarg), lt.value
+    return stypes.vectorToList(ptarg), lt.value
 
 
 def spkezr(targ, et, ref, abcorr, obs):
@@ -3537,7 +3567,7 @@ def spkezr(targ, et, ref, abcorr, obs):
     starg = stypes.doubleVector(6)
     lt = ctypes.c_double()
     libspice.spkezr_c(targ, et, ref, abcorr, obs, starg, ctypes.byref(lt))
-    return stypes.vectortolist(starg), lt.value
+    return stypes.vectorToList(starg), lt.value
 
 
 def spkgeo(targ, et, ref, obs):
@@ -3549,7 +3579,7 @@ def spkgeo(targ, et, ref, obs):
     state = stypes.doubleVector(6)
     lt = ctypes.c_double()
     libspice.spkgeo_c(targ, et, ref, obs, state, ctypes.byref(lt))
-    return stypes.vectortolist(state), lt.value
+    return stypes.vectorToList(state), lt.value
 
 
 def spkgps(targ, et, ref, obs):
@@ -3561,7 +3591,7 @@ def spkgps(targ, et, ref, obs):
     position = stypes.doubleVector(3)
     lt = ctypes.c_double()
     libspice.spkgeo_c(targ, et, ref, obs, position, ctypes.byref(lt))
-    return stypes.vectortolist(position), lt.value
+    return stypes.vectorToList(position), lt.value
 
 
 def spklef(filename):
@@ -3584,7 +3614,7 @@ def spkltc(targ, et, ref, abcorr, stobs):
     lt = ctypes.c_double()
     dlt = ctypes.c_double()
     libspice.spkltc_c(targ, et, ref, abcorr, stobs, starg, ctypes.byref(lt), ctypes.byref(dlt))
-    return stypes.vectortolist(starg), lt.value, dlt.value
+    return stypes.vectorToList(starg), lt.value, dlt.value
 
 
 def spkobj(spk, ids=None):
@@ -3626,7 +3656,7 @@ def spkpds(body, center, framestr, typenum, first, last):
     last = ctypes.c_double(last)
     descr = stypes.doubleVector(5)
     libspice.spkpds_c(body, center, framestr, typenum, first, last, descr)
-    return stypes.vectortolist(descr)
+    return stypes.vectorToList(descr)
 
 
 def spkpos(targ, et, ref, abcorr, obs):
@@ -3647,7 +3677,7 @@ def spkpos(targ, et, ref, abcorr, obs):
     ptarg = stypes.doubleVector(3)
     lt = ctypes.c_double()
     libspice.spkpos_c(targ, et, ref, abcorr, obs, ptarg, ctypes.byref(lt))
-    return stypes.vectortolist(ptarg), lt.value
+    return stypes.vectorToList(ptarg), lt.value
 
 
 def spkssb(targ, et, ref):
@@ -3818,7 +3848,7 @@ def srfrec(body, longitude, latitude):
     latitude = ctypes.c_double(latitude)
     rectan = stypes.doubleVector(3)
     libspice.srfrec_c(body, longitude, latitude, rectan)
-    return stypes.vectortolist(rectan)
+    return stypes.vectorToList(rectan)
 
 
 def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
@@ -3837,7 +3867,7 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
     found = ctypes.c_bool()
     libspice.srfxpt_c(method, target, et, abcorr, obsrvr, dref, dvec,
                       spoint, ctypes.byref(dist), ctypes.byref(trgepc), obspos, ctypes.byref(found))
-    return stypes.vectortolist(spoint), dist.value, trgepc.value, stypes.vectortolist(obspos), found.value
+    return stypes.vectorToList(spoint), dist.value, trgepc.value, stypes.vectorToList(obspos), found.value
 
 
 def ssize(newsize, cell):
@@ -3853,7 +3883,7 @@ def stelab(pobj, vobs):
     vobs = stypes.toDoubleVector(vobs)
     appobj = stypes.doubleVector(3)
     libspice.stelab_c(pobj, vobs, appobj)
-    return stypes.vectortolist(appobj)
+    return stypes.vectorToList(appobj)
 
 
 def stpool(item, nth, contin, lenout):
@@ -3888,7 +3918,7 @@ def subpnt(method, target, et, fixref, abcorr, obsrvr):
     trgepc = ctypes.c_double(0)
     srfvec = stypes.doubleVector(3)
     libspice.subpnt_c(method, target, et, fixref, abcorr, obsrvr, spoint, ctypes.byref(trgepc), srfvec)
-    return stypes.vectortolist(spoint), trgepc.value, stypes.vectortolist(srfvec)
+    return stypes.vectorToList(spoint), trgepc.value, stypes.vectorToList(srfvec)
 
 
 def subpt(method, target, et, abcorr, obsrvr):
@@ -3901,7 +3931,7 @@ def subpt(method, target, et, abcorr, obsrvr):
     spoint = stypes.doubleVector(3)
     alt = ctypes.c_double()
     libspice.subpt_c(method, target, et, abcorr, obsrvr, spoint, ctypes.byref(alt))
-    return stypes.vectortolist(spoint), alt.value
+    return stypes.vectorToList(spoint), alt.value
 
 
 def subslr(method, target, et, fixref, abcorr, obsrvr):
@@ -3916,7 +3946,7 @@ def subslr(method, target, et, fixref, abcorr, obsrvr):
     trgepc = ctypes.c_double(0)
     srfvec = stypes.doubleVector(3)
     libspice.subslr_c(method, target, et, fixref, abcorr, obsrvr, spoint, ctypes.byref(trgepc), srfvec)
-    return stypes.vectortolist(spoint), trgepc.value, stypes.vectortolist(srfvec)
+    return stypes.vectorToList(spoint), trgepc.value, stypes.vectorToList(srfvec)
 
 
 def subsol(method, target, et, abcorr, obsrvr):
@@ -3928,7 +3958,7 @@ def subsol(method, target, et, abcorr, obsrvr):
     obsrvr = stypes.strtocharpoint(obsrvr)
     spoint = stypes.doubleVector(3)
     libspice.subsol_c(method, target, et, abcorr, obsrvr, spoint)
-    return stypes.vectortolist(spoint)
+    return stypes.vectorToList(spoint)
 
 
 def sumad(array, n):
@@ -3951,7 +3981,7 @@ def surfnm(a, b, c, point):
     point = stypes.toDoubleVector(point)
     normal = stypes.doubleVector(3)
     libspice.surfnm_c(a, b, c, point, normal)
-    return stypes.vectortolist(normal)
+    return stypes.vectorToList(normal)
 
 
 def surfpt(positn, u, a, b, c):
@@ -3964,7 +3994,7 @@ def surfpt(positn, u, a, b, c):
     point = stypes.doubleVector(3)
     found = ctypes.c_bool()
     libspice.surfpt_c(positn, u, a, b, c, point, ctypes.byref(found))
-    return stypes.vectortolist(point), found.value
+    return stypes.vectorToList(point), found.value
 
 
 def surfpv(stvrtx, stdir, a, b, c):
@@ -3977,7 +4007,7 @@ def surfpv(stvrtx, stdir, a, b, c):
     stx = stypes.doubleVector(6)
     found = ctypes.c_bool()
     libspice.surfpv_c(stvrtx, stdir, a, b, c, stx, ctypes.byref(found))
-    return stypes.vectortolist(stx), found.value
+    return stypes.vectorToList(stx), found.value
 
 
 def swpool(agent, nnames, lenvals, names):
@@ -3997,7 +4027,7 @@ def sxfrom(instring, tostring, et):
     et = ctypes.c_double(et)
     xform = stypes.doubleMatrix(x=6, y=6)
     libspice.sxform_c(instring, tostring, et, xform)
-    return stypes.matrixtolist(xform)
+    return stypes.matrixToList(xform)
 
 
 def szpool(name):
@@ -4042,7 +4072,7 @@ def tipbod(ref, body, et):
     et = ctypes.c_int(et)
     retmatrix = stypes.doubleMatrix()
     libspice.tipbod_c(ref, body, et, retmatrix)
-    return stypes.matrixtolist(retmatrix)
+    return stypes.matrixToList(retmatrix)
 
 
 def tisbod(ref, body, et):
@@ -4052,7 +4082,7 @@ def tisbod(ref, body, et):
     et = ctypes.c_int(et)
     retmatrix = stypes.doubleMatrix(x=6, y=6)
     libspice.tisbod_c(ref, body, et, retmatrix)
-    return stypes.matrixtolist(retmatrix)
+    return stypes.matrixToList(retmatrix)
 
 
 def tkvrsn(item):
@@ -4113,7 +4143,7 @@ def twovec(axdef, indexa, plndef, indexp):
     indexp = ctypes.c_int(indexp)
     mout = stypes.doubleMatrix()
     libspice.twovec_c(axdef, indexa, plndef, indexp, mout)
-    return stypes.matrixtolist(mout)
+    return stypes.matrixToList(mout)
 
 
 def tyear():
@@ -4138,7 +4168,7 @@ def ucrss(v1, v2):
     v2 = stypes.toDoubleVector(v2)
     vout = stypes.doubleVector(3)
     libspice.ucrss_c(v1, v2, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 #UDDC # callback?
@@ -4184,7 +4214,7 @@ def unorm(v1):
     vout = stypes.doubleVector(3)
     vmag = ctypes.c_double()
     libspice.unorm_c(v1, vout, ctypes.byref(vmag))
-    return stypes.vectortolist(vout), vmag.value
+    return stypes.vectorToList(vout), vmag.value
 
 
 def unormg(v1, ndim):
@@ -4193,7 +4223,7 @@ def unormg(v1, ndim):
     vmag = ctypes.c_double()
     ndim = ctypes.c_int(ndim)
     libspice.unormg_c(v1, ndim, vout, ctypes.byref(vmag))
-    return stypes.vectortolist(vout), vmag.value
+    return stypes.vectorToList(vout), vmag.value
 
 
 def utc2et(utcstr):
@@ -4211,7 +4241,7 @@ def vadd(v1, v2):
     v2 = stypes.toDoubleVector(v2)
     vout = stypes.doubleVector(3)
     libspice.vadd_c(v1, v2, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def vaddg(v1, v2, ndim):
@@ -4220,7 +4250,7 @@ def vaddg(v1, v2, ndim):
     vout = stypes.doubleVector(ndim)
     ndim = ctypes.c_int(ndim)
     libspice.vaddg_c(v1, v2, ndim, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def valid(insize, n, inset):
@@ -4237,7 +4267,7 @@ def vcrss(v1, v2):
     v2 = stypes.toDoubleVector(v2)
     vout = stypes.doubleVector(3)
     libspice.vcrss_c(v1, v2, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def vdist(v1, v2):
@@ -4273,7 +4303,7 @@ def vequ(v1):
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.doubleVector(3)
     libspice.vequ_c(v1, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def vequg(v1, ndim):
@@ -4281,14 +4311,14 @@ def vequg(v1, ndim):
     vout = stypes.doubleVector(ndim)
     ndim = ctypes.c_int(ndim)
     libspice.vequg_c(v1, ndim, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def vhat(v1):
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.doubleVector(3)
     libspice.vhat_c(v1, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def vhatg(v1, ndim):
@@ -4296,7 +4326,7 @@ def vhatg(v1, ndim):
     vout = stypes.doubleVector(ndim)
     ndim = ctypes.c_int(ndim)
     libspice.vhatg_c(v1, ndim, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def vlcom(a, v1, b, v2):
@@ -4307,7 +4337,7 @@ def vlcom(a, v1, b, v2):
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
     libspice.vlcom_c(a, v1, b, v2, sumv)
-    return stypes.vectortolist(sumv)
+    return stypes.vectorToList(sumv)
 
 
 def vlcom3(a, v1, b, v2, c, v3):
@@ -4320,7 +4350,7 @@ def vlcom3(a, v1, b, v2, c, v3):
     b = ctypes.c_double(b)
     c = ctypes.c_double(c)
     libspice.vlcom3_c(a, v1, b, v2, c, v3, sumv)
-    return stypes.vectortolist(sumv)
+    return stypes.vectorToList(sumv)
 
 
 def vlcomg(n, a, v1, b, v2):
@@ -4332,7 +4362,7 @@ def vlcomg(n, a, v1, b, v2):
     b = ctypes.c_double(b)
     n = ctypes.c_int(n)
     libspice.vlcomg_c(n, a, v1, b, v2, sumv)
-    return stypes.vectortolist(sumv)
+    return stypes.vectorToList(sumv)
 
 
 def vminug(vin, ndim):
@@ -4341,7 +4371,7 @@ def vminug(vin, ndim):
     vout = stypes.doubleVector(ndim)
     ndim = ctypes.c_int(ndim)
     libspice.vminug_c(vin, ndim, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def vminus(vin):
@@ -4349,7 +4379,7 @@ def vminus(vin):
     vin = stypes.toDoubleVector(vin)
     vout = stypes.doubleVector(3)
     libspice.vminus_c(vin, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def vnorm(v):
@@ -4370,7 +4400,7 @@ def vpack(x, y, z):
     z = ctypes.c_double(z)
     vout = stypes.doubleVector(3)
     libspice.vpack_c(x, y, z, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def vperp(a, b):
@@ -4378,14 +4408,14 @@ def vperp(a, b):
     b = stypes.toDoubleVector(b)
     vout = stypes.doubleVector(3)
     libspice.vperp_c(a, b, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def vprjp(vin, plane):
     vin = stypes.toDoubleVector(vin)
     vout = stypes.doubleVector(3)
     libspice.vprjp_c(vin, ctypes.byref(plane), vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def vprjpi(vin, projpl, invpl):
@@ -4393,7 +4423,7 @@ def vprjpi(vin, projpl, invpl):
     vout = stypes.doubleVector(3)
     found = ctypes.c_bool()
     libspice.vprjpi_c(vin, ctypes.byref(projpl), ctypes.byref(invpl), vout, ctypes.byref(found))
-    return stypes.vectortolist(vout), found.value
+    return stypes.vectorToList(vout), found.value
 
 
 def vproj(a, b):
@@ -4401,7 +4431,7 @@ def vproj(a, b):
     b = stypes.toDoubleVector(b)
     vout = stypes.doubleVector(3)
     libspice.vproj_c(a, b, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def vrel(v1, v2):
@@ -4426,7 +4456,7 @@ def vrotv(v, axis, theta):
     theta = ctypes.c_double(theta)
     r = stypes.doubleVector(3)
     libspice.vrotv_c(v, axis, theta, r)
-    return stypes.vectortolist(r)
+    return stypes.vectorToList(r)
 
 
 def vscl(s, v1):
@@ -4435,7 +4465,7 @@ def vscl(s, v1):
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.doubleVector(3)
     libspice.vscl_c(s, v1, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def vsclg(s, v1, ndim):
@@ -4445,7 +4475,7 @@ def vsclg(s, v1, ndim):
     vout = stypes.doubleVector(ndim)
     ndim = ctypes.c_int(ndim)
     libspice.vsclg_c(s, v1, ndim, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def vsep(v1, v2):
@@ -4469,7 +4499,7 @@ def vsub(v1, v2):
     v2 = stypes.toDoubleVector(v2)
     vout = stypes.doubleVector(3)
     libspice.vsub_c(v1, v2, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def vsubg(v1, v2, ndim):
@@ -4479,7 +4509,7 @@ def vsubg(v1, v2, ndim):
     vout = stypes.doubleVector(ndim)
     ndim = stypes.ctypes.c_int(ndim)
     libspice.vsubg_c(v1, v2, ndim, vout)
-    return stypes.vectortolist(vout)
+    return stypes.vectorToList(vout)
 
 
 def vtmv(v1, matrix, v2):
@@ -4720,7 +4750,7 @@ def xpose(m):
     m = stypes.listtodoublematrix(m)
     mout = stypes.doubleMatrix()
     libspice.xpose_c(m, mout)
-    return stypes.matrixtolist(m)
+    return stypes.matrixToList(m)
 
 
 def xpose6(m):
@@ -4728,7 +4758,7 @@ def xpose6(m):
     m = stypes.listtodoublematrix(m, x=6, y=6)
     mout = stypes.doubleMatrix(x=6, y=6)
     libspice.xpose6_c(m, mout)
-    return stypes.matrixtolist(m)
+    return stypes.matrixToList(m)
 
 
 def xposeg(matrix, nrow, ncol):
@@ -4738,7 +4768,7 @@ def xposeg(matrix, nrow, ncol):
     ncol = ctypes.c_int(ncol)
     nrow = ctypes.c_int(nrow)
     libspice.xposeg_c(matrix, nrow, ncol, mout)
-    return stypes.matrixtolist(mout)
+    return stypes.matrixToList(mout)
 
 ########################################################################################################################
 # Y
