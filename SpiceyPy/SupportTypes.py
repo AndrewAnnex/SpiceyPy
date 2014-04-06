@@ -16,6 +16,10 @@ def toIntVector(x):
     return IntArray.from_param(param=x)
 
 
+def toBoolVector(x):
+    return BoolArray.from_param(param=x)
+
+
 def listtointvector(x):
     assert(isinstance(x, list))
     return (ctypes.c_int * len(x))(*x)
@@ -52,7 +56,9 @@ def intvector(n):
 
 
 def vectorToList(x):
-    if isinstance(x[0], int):
+    if isinstance(x[0], bool):
+        return [y for y in x]
+    elif isinstance(x[0], int):
         return [y for y in x]
     elif isinstance(x[0], float):
         return [y for y in x]
@@ -213,9 +219,40 @@ class IntArrayType:
         ptr, _ = param.buffer_info()
         return ctypes.cast(ptr, ctypes.POINTER(ctypes.c_int))
 
+
+class BoolArrayType:
+    # Class type that will handle all int vectors, inspiration from python cookbook 3rd edition
+    def from_param(self, param):
+        typename = type(param).__name__
+        if hasattr(self, 'from_' + typename):
+            return getattr(self, 'from_' + typename)(param)
+        elif isinstance(param, ctypes.Array):
+            return param
+        else:
+            raise TypeError("Can't convert %s" % typename)
+
+    # Cast from lists/tuples
+    def from_list(self, param):
+        val = ((ctypes.c_bool) * len(param))(*param)
+        return val
+
+    # Cast from Tuple
+    def from_tuple(self, param):
+        val = ((ctypes.c_bool) * len(param))(*param)
+        return val
+
+    # Cast from a numpy array
+    def from_ndarray(self, param):
+        #return param.ctypes.data_as(ctypes.POINTER(ctypes.c_int)) # not sure if long is same as int, it should be..
+        #return numpy.ctypeslib.as_ctypes(param)
+        return self.from_param(param.tolist())
+
+
 DoubleArray = DoubleArrayType()
 
 IntArray = IntArrayType()
+
+BoolArray = BoolArrayType()
 
 DoubleMatrix = DoubleMatrixType()
 

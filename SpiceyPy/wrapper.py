@@ -516,7 +516,14 @@ def cylsph(r, lonc, z):
 ########################################################################################################################
 # D
 
-# def dafac
+def dafac(handle, n, lenvals, buffer):
+    #Todo: test dafac
+    handle = ctypes.c_int(handle)
+    buffer = stypes.listToCharArrayPtr(buffer, xLen=lenvals, yLen=n)
+    n = ctypes.c_int(n)
+    lenvals = ctypes.c_int(lenvals)
+    libspice.dafac_c(handle, n, lenvals, ctypes.byref(buffer))
+    pass
 
 
 def dafbbs(handle):
@@ -554,7 +561,16 @@ def dafdc(handle):
     pass
 
 
-# def dafec
+def dafec(handle, bufsiz, lenout):
+    #Todo: test dafec
+    handle = ctypes.c_int(handle)
+    buffer = stypes.charvector(bufsiz, lenout)
+    bufsiz = ctypes.c_int(bufsiz)
+    lenout = ctypes.c_int(lenout)
+    n = ctypes.c_int()
+    done = ctypes.c_bool()
+    libspice.dafec_c(handle, bufsiz, lenout, ctypes.byref(n), ctypes.byref(buffer), ctypes.byref(done))
+    return n.value, stypes.vectorToList(buffer), done.value
 
 
 def daffna():
@@ -659,10 +675,25 @@ def dafrs(insum):
     pass
 
 
-# def dafus is this real?
+def dafus(insum, nd, ni):
+    #Todo: test dafus
+    insum = stypes.toDoubleVector(insum)
+    dc = stypes.doubleVector(nd)
+    ic = stypes.intvector(ni)
+    nd = ctypes.c_int(nd)
+    ni = ctypes.c_int(ni)
+    libspice.dafus_c(insum, nd, ni, dc, ic)
+    return stypes.vectorToList(dc), stypes.vectorToList(ic)
 
 
-# def dasac
+def dasac(handle, n, buflen, buffer):
+    #Todo: test dasac
+    handle = ctypes.c_int(handle)
+    buffer = stypes.charvector(n, buflen)
+    n = ctypes.c_int(n)
+    buflen = ctypes.c_int(buflen)
+    libspice.dasac_c(handle, n, buflen, ctypes.byref(buffer))
+    return stypes.vectorToList(buffer)
 
 
 def dascls(handle):
@@ -672,7 +703,16 @@ def dascls(handle):
     pass
 
 
-# def dasec
+def dasec(handle, bufsiz, buflen):
+    #Todo: test dasec
+    handle = ctypes.c_int(handle)
+    buffer = stypes.charvector(bufsiz, buflen)
+    bufsiz = ctypes.c_int(bufsiz)
+    buflen = ctypes.c_int(buflen)
+    n = ctypes.c_int()
+    done = ctypes.c_bool()
+    libspice.dafec_c(handle, bufsiz, buflen, ctypes.byref(n), ctypes.byref(buffer), ctypes.byref(done))
+    return n.value, stypes.vectorToList(buffer), done.value
 
 
 def dasopr(fname):
@@ -1598,7 +1638,14 @@ def georec(lon, lat, alt, re, f):
 # getcml not really needed
 
 
-# getelm cells?
+def getelm(frstyr, lineln, lines):
+    #Todo: test getelm
+    frstyr = ctypes.c_int(frstyr)
+    lineln = ctypes.c_int(lineln)
+    lines = stypes.listToCharArrayPtr(lines, xLen=2, yLen=lineln)
+    epoch = ctypes.c_double()
+    elems = stypes.doubleVector(lineln)  # guess for length
+    libspice.getelm_c(frstyr, lineln, ctypes.byref(lines), ctypes.byref(epoch), ctypes.byref(elems))
 
 
 def getfat(file, arclen, typlen):
@@ -2244,13 +2291,37 @@ def lmpool(cvals, lenvals, n):
     pass
 
 
-#lparse
+def lparse(inlist, delim, nmax, lenout):
+    #Todo: test lparse
+    inlist = stypes.strtocharpoint(inlist)
+    delim = stypes.strtocharpoint(delim)
+    items = stypes.charvector(nmax, lenout)
+    nmax = ctypes.c_int(nmax)
+    lenout = ctypes.c_int(lenout)
+    n = ctypes.c_int()
+    libspice.lparse_c(inlist, delim, nmax, lenout, ctypes.byref(n), ctypes.byref(items))
+    return n.value, stypes.vectorToList(items)
 
 
-#lparsm
+def lparsm(inlist, delims, nmax, lenout):
+    #Todo: test lparsm
+    inlist = stypes.strtocharpoint(inlist)
+    delims = stypes.strtocharpoint(delims)
+    items = stypes.charvector(nmax, lenout)
+    nmax = ctypes.c_int(nmax)
+    lenout = ctypes.c_int(lenout)
+    n = ctypes.c_int()
+    libspice.lparsm_c(inlist, delims, nmax, lenout, ctypes.byref(n), ctypes.byref(items))
+    return n.value, stypes.vectorToList(items)
 
 
-#lparss cells
+def lparss(inlist, delims, NMAX=20, LENGTH=50):
+    #todo: test lparss, not working exactly
+    inlist = stypes.strtocharpoint(inlist)
+    delims = stypes.strtocharpoint(delims)
+    returnSet = stypes.SPICECHAR_CELL(NMAX, LENGTH)
+    libspice.lparss_c(inlist, delims, ctypes.byref(returnSet))
+    return returnSet
 
 
 def lspcn(body, et, abcorr):
@@ -3062,11 +3133,12 @@ def reordi(iorder, ndim, array):
 
 
 def reordl(iorder, ndim, array):
-    #Todo: test reordl
+    #Todo: test reordl, not updating values
     iorder = stypes.toIntVector(iorder)
     ndim = ctypes.c_int(ndim)
-    #boolean array
-    pass
+    array = stypes.toBoolVector(array)
+    libspice.reordl_c(iorder, ndim, array)
+    return stypes.vectorToList(array)
 
 
 def repmc(instr, marker, value, lenout):
