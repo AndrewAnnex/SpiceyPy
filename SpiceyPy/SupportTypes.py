@@ -294,16 +294,22 @@ class DataType(object):
         pass
 
 
-class SpiceEKDataType(ctypes.py_object):
-    #No clue whatsoever if py_object works here
-    SPICE_CHR = ctypes.c_int(0)
-    SPICE_DP = ctypes.c_int(1)
-    SPICE_INT = ctypes.c_int(2)
-    SPICE_TIME = ctypes.c_int(3)
-    SPICE_BOOL = ctypes.c_int(4)
+class SpiceEKDataType(ctypes.c_int):
+    _fields_ = [
+        ('SPICE_CHR', ctypes.c_int(0)),
+        ('SPICE_DP', ctypes.c_int(1)),
+        ('SPICE_INT', ctypes.c_int(2)),
+        ('SPICE_TIME', ctypes.c_int(3)),
+        ('SPICE_BOOL', ctypes.c_int(4)),
+    ]
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+
+class SpiceEKExprClass(ctypes.c_int):
+    _fields_ = [
+        ('SPICE_EK_EXP_COL', ctypes.c_int(0)),
+        ('SPICE_EK_EXP_FUNC', ctypes.c_int(1)),
+        ('SPICE_EK_EXP_EXPR', ctypes.c_int(2))
+    ]
 
 
 class SpiceEKAttDsc(ctypes.Structure):
@@ -319,6 +325,20 @@ class SpiceEKAttDsc(ctypes.Structure):
     def __str__(self):
         return '<SpiceEKAttDsc cclass = %s, dtype = %s, strlen = %s, size = %s, indexd = %s, nullok = %s >' % \
                (self.cclass, self.dtype, self.strlen, self.size, self.indexd, self.nullok)
+
+
+class SpiceEKSegSum(ctypes.Structure):
+    _fields_ = [
+        ('tabnam', ctypes.c_char * 65),
+        ('nrows', ctypes.c_int),
+        ('ncols', ctypes.c_int),
+        ('cnames', (ctypes.c_char * 100) * 33),
+        ('cdescrs', ctypes.c_char * 100)
+    ]
+
+    def __str__(self):
+        return '<SpiceEKSegSum tabnam = %s, nrows = %s, ncols = %s, cnames = %s, cdescrs = %s >' % (self.tabnam, self.nrows, self.ncols, self.cnames, self.cdescrs)
+
 
 #SpiceCell implementation below is inpart from github.com/DaRasch/spiceminer/
 # and modified as needed for this author, maybe we should work together?

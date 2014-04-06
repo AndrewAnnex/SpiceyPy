@@ -651,7 +651,14 @@ def dafps(nd, ni, dc, ic):
     return stypes.vectorToList(outsum)
 
 
-# dafrda is deprecated
+def dafrda(handle, begin, end):
+    #Todo: test dafrda
+    handle = ctypes.c_int(handle)
+    begin = ctypes.c_int(begin)
+    end = ctypes.c_int(end)
+    data = stypes.doubleVector(8)  # value of 8 from help file
+    libspice.dafrda_c(handle, begin, end, ctypes.byref(data))
+    return stypes.vectorToList(data)
 
 
 def dafrfr(handle, lenout):
@@ -1269,7 +1276,23 @@ def ekopw(fname):
     return handle.value
 
 
-#ekpsel
+def ekpsel(query, msglen, tablen, collen):
+    #Todo: test ekpsel
+    query = stypes.strtocharpoint(query)
+    msglen = ctypes.c_int(msglen)
+    tablen = ctypes.c_int(tablen)
+    collen = ctypes.c_int(collen)
+    n = ctypes.c_int()
+    xbegs = ctypes.c_int()
+    xends = ctypes.c_int()
+    xtypes = stypes.SpiceEKDataType()
+    xclass = stypes.SpiceEKExprClass()
+    tabs = stypes.charvector(100, 33)
+    cols = stypes.charvector(100, 65)
+    error = ctypes.c_bool()
+    errmsg = stypes.strtocharpoint(msglen)
+    libspice.ekpsel_c(query, msglen, tablen, collen, ctypes.byref(n), ctypes.byref(xbegs), ctypes.byref(xends), ctypes.byref(xtypes), ctypes.byref(xclass), ctypes.byref(tabs), ctypes.byref(cols), ctypes.byref(error), ctypes.byref(errmsg))
+    return n.value, xbegs.value, xends.value, xtypes.value, xclass.value, stypes.vectorToList(tabs), stypes.vectorToList(cols), error.value, errmsg.value
 
 
 def ekrcec(handle, segno, recno, column, lenout, nelts=3):
@@ -1312,7 +1335,13 @@ def ekrcei(handle, segno, recno, column):
     return nvals.value, stypes.vectorToList(ivals), isnull.value
 
 
-#ekssum Spice EKSegSum type
+def ekssum(handle, segno):
+    #Todo: test ekssum and spiceEKSegSum type
+    handle = ctypes.c_int(handle)
+    segno = ctypes.c_int(segno)
+    segsum = stypes.SpiceEKSegSum()
+    libspice.ekssum_c(handle, segno, ctypes.byref(segsum))
+    return segsum
 
 
 def ektnam(n, lenout):
@@ -1943,7 +1972,17 @@ def gipool(name, start, room):
     return n.value, ivals.value, found.value
 
 
-#gnpool, not yet confident with getting back string arrays.
+def gnpool(name, start, room, lenout):
+    #Todo: test gnpool
+    name = stypes.strtocharpoint(name)
+    start = ctypes.c_int(start)
+    kvars = stypes.charvector(room, lenout)
+    room = ctypes.c_int(room)
+    lenout = ctypes.c_int(lenout)
+    n = ctypes.c_int()
+    found = ctypes.c_bool()
+    libspice.gnpool_c(name, start, room, lenout, ctypes.byref(n), kvars, ctypes.byref(found))
+    return n.value, stypes.vectorToList(kvars), found.value
 
 
 ########################################################################################################################
@@ -2215,12 +2254,24 @@ def kinfo(file, typlen, srclen):
 
 def ktotal(kind):
     kind = stypes.strtocharpoint(kind)
-    count = ctypes.c_int(0)
+    count = ctypes.c_int()
     libspice.ktotal_c(kind, ctypes.byref(count))
     return count.value
 
 
-#skip kxtrct, not really needed in python, also it looks complicated
+def kxtrct(keywd, termlen, terms, nterms, stringlen, substrlen, string):
+    #Todo: test kxtrct
+    keywd = stypes.strtocharpoint(keywd)
+    termlen = ctypes.c_int(termlen)
+    terms = stypes.listToCharArrayPtr(terms, xlen=stringlen, yLen=nterms)
+    nterms = ctypes.c_int(nterms)
+    string = stypes.strtocharpoint(string, inlen=stringlen)
+    substr = stypes.strtocharpoint(" "*substrlen, inlen=substrlen)
+    stringlen = ctypes.c_int(stringlen)
+    substrlen = ctypes.c_int(substrlen)
+    found = ctypes.c_bool()
+    libspice.kxtrct_c(keywd, termlen, terms, nterms, stringlen, substrlen, ctypes.byref(string), ctypes.byref(found), ctypes.byref(substr))
+    return string.value, found.value, substr.value
 
 
 ########################################################################################################################

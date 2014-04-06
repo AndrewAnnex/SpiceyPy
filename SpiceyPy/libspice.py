@@ -102,7 +102,7 @@ libspice.dafgsr_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c
 libspice.dafopr_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
 libspice.dafopw_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
 libspice.dafps_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
-libspice.dafrda_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_double]
+libspice.dafrda_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_double)]
 libspice.dafrfr_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.c_char_p, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
 libspice.dafrs_c.argtype = [ctypes.POINTER(ctypes.c_double)]
 libspice.dafus_c.argtypes = [ctypes.POINTER(ctypes.c_int), ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_int)]
@@ -175,11 +175,11 @@ libspice.ekopn_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, cty
 libspice.ekopr_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
 libspice.ekops_c.argtypes = [ctypes.POINTER(ctypes.c_int)]
 libspice.ekopw_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
-libspice.ekpsel_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_bool, ctypes.c_char_p]
+libspice.ekpsel_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(stypes.SpiceEKDataType), ctypes.POINTER(stypes.SpiceEKExprClass), ctypes.c_void_p, ctypes.c_void_p, ctypes.POINTER(ctypes.c_bool), ctypes.c_char_p]
 libspice.ekrcec_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
 libspice.ekrced_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_bool)]
 libspice.ekrcei_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_bool)]
-libspice.ekssum_c.argtypes = [ctypes.c_int, ctypes.c_int]
+libspice.ekssum_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(stypes.SpiceEKSegSum)]
 libspice.ektnam_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_char_p]
 libspice.ekucec_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_void_p, ctypes.c_bool]
 libspice.ekuced_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_double), ctypes.c_bool]
@@ -256,7 +256,7 @@ libspice.gfsubc_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p,
 libspice.gftfov_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.POINTER(stypes.SpiceCell), ctypes.POINTER(stypes.SpiceCell)]
 # libspice.gfuds_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_bool, ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_int, None, None]
 libspice.gipool_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_bool)]
-libspice.gnpool_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_bool]
+libspice.gnpool_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.c_void_p, ctypes.POINTER(ctypes.c_bool)]
 
 ########################################################################################################################
 # H
@@ -309,7 +309,7 @@ libspice.kclear_c.restype = None
 libspice.kdata_c.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_bool)]
 libspice.kinfo_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_bool)]
 libspice.ktotal_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
-libspice.kxtrct_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.c_bool, ctypes.c_char_p]
+libspice.kxtrct_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool), ctypes.c_char_p]
 
 ########################################################################################################################
 # L

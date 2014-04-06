@@ -1,6 +1,6 @@
 # SpiceyPy
 
-The NAIF C SPICE Toolkit Wrapper for Python 3, written using ctypes.
+The now mostly complete NAIF C SPICE Toolkit Wrapper for Python 3, written using ctypes.
 
 *IMPORTANT*: I have no current affiliation with NASA, NAIF, or JPL. The code is provided "as is", use at your own risk.
 ### Introduction
@@ -11,13 +11,14 @@ The [SPICE Toolkit](http://naif.jpl.nasa.gov/naif/). In short it is an essential
 
 A growing list of completed functions can be found [here](https://github.com/Apollo117/SpiceyPy/wiki/Wrapper-Completion).
 Functions that have written functions that have not been tested do generally work, but tests have not been written yet.
+Functions labeled with 'Skip' are being ignored, as they are either not needed in a python environment or impossible to implement.
 
 ### Design Goals
-- [ ] Complete working coverage of all existing CSPICE commands, within reason.
+- [ ] Majorly complete coverage of all existing CSPICE commands, within reason.
 - [ ] Useful, but abbreviated commenting on functions.
-- [ ] Make vectorized versions of certain functions to be more like ICY.
+- [ ] Enable vectorization of certain functions to be more like ICY.
 - [ ] Python 2 and 3 support.
-- [ ] Numpy integration?
+- [ ] Numpy Support.
 
 ### Important User Information
 A very primative setup.py file exists now and should work, **You Must Download the CSPICE library for your system and extract it into the directory setup.py is located in.**
@@ -30,6 +31,8 @@ in the Python 3.3.3 64-bit Mac OS X 10.9.2 environment. Not much else to say unt
 * Python 2.7.5 64-bit Mac OS X 10.9.2
 * Python 3.2.3 64-bit Ubuntu 12.04 LTS (VM)
 
+### Acknowledgements
+[DaRasch](https://github.com/DaRasch) wrote code for spiceminer that I looked at to get SpiceCells working, thanks!
 
 ### Steps for making the shared library
 The below steps are now integrated into the setup.py file included, but for those who want to try for themselves I left the following sequences for you.
@@ -44,4 +47,3 @@ Next compile the shared library, last I checked this was correct on my system.
 ```
 gcc -shared -fPIC -lm *.o -o spice.so
 ```
-
