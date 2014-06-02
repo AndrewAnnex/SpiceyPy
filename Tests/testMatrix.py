@@ -1,8 +1,10 @@
 __author__ = 'Apollo117'
 import SpiceyPy as spice
+import numpy as np
 m1 =[[1.0,2.0,3.0],[0.0,4.0,5.0],[0.0,6.0,0.0]]
-
+m2 =[[1.0,0.0,0.0],[2.0,4.0,6.0],[3.0,5.0,0.0]]
 print("xpose: ", spice.xpose(m1))
+print("xpose: ", spice.xpose(m2))
 print("xposeg: ", spice.xposeg(m1, 3, 3))
 
 

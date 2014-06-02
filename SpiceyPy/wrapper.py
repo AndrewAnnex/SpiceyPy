@@ -5,6 +5,7 @@ __author__ = 'Apollo117'
 import ctypes
 import SpiceyPy.SupportTypes as stypes
 from SpiceyPy.libspice import libspice
+import numpy
 
 ########################################################################################################################
 # A
@@ -3161,7 +3162,7 @@ def reordc(iorder, ndim, lenvals, array):
     array = stypes.listToCharArray(array, xLen=lenvals, yLen=ndim)
     ndim = ctypes.c_int(ndim)
     lenvals = ctypes.c_int(lenvals)
-    libspice.reordc_c(iorder, ndim, lenvals, ctypes.byref(array))
+    libspice.reordc_c(iorder, ndim, lenvals, array)
     return stypes.vectorToList(array)
 
 
@@ -4329,7 +4330,7 @@ def trcoff():
 def tsetyr(year):
     #Todo: test tsetyr
     year = ctypes.c_int(year)
-    libspice.tsetyr(year)
+    libspice.tsetyr_c(year)
     pass
 
 
@@ -4742,11 +4743,46 @@ def vupack(v):
 
 
 def vzero(v):
+    """
+
+    :rtype : bool
+    :param v: Double Vector of length 3
+    :return: True if all values equal zero, false else.
+
+    #Tests
+    >>> vzero([0.0,0.0,1.0])
+    False
+    >>> vzero([0.0,0.0,0.0])
+    True
+    >>> vzero(numpy.array([0.0,0.0,1.0]))
+    False
+    >>> vzero(numpy.array([0.0,0.0,0.0]))
+    True
+
+    """
     v = stypes.toDoubleVector(v)
     return libspice.vzero_c(v)
 
 
 def vzerog(v, ndim):
+    """
+
+    :rtype : bool
+    :param v: Double Vector of length ndim
+    :param ndim: length of v
+    :return: True if all values equal zero, false else.
+
+    #Tests
+    >>> vzerog([0.0,1.0], 2)
+    False
+    >>> vzerog([0.0,0.0], 2)
+    True
+    >>> vzerog(numpy.array([0.0,0.0,1.0,0.0]), 4)
+    False
+    >>> vzerog(numpy.array([0.0,0.0,0.0,0.0]), 4)
+    True
+
+    """
     v = stypes.toDoubleVector(v)
     ndim = stypes.ctypes.c_int(ndim)
     return libspice.vzerog_c(v, ndim)
@@ -4928,7 +4964,7 @@ def wnvald(insize, n, window):
 # X
 
 def xf2eul(xform, axisa, axisb, axisc):
-    #Todo: tes
+    #Todo: test xf2eul
     xform = stypes.listtodoublematrix(xform, x=6, y=6)
     axisa = ctypes.c_int(axisa)
     axisb = ctypes.c_int(axisb)
@@ -4936,31 +4972,31 @@ def xf2eul(xform, axisa, axisb, axisc):
     eulang = stypes.doubleVector(6)
     unique = ctypes.c_bool()
     libspice.xf2eul_c(xform, axisa, axisb, axisc, eulang, unique)
-    return eulang, unique
+    return stypes.vectorToList(eulang), unique.value
 
 
 def xf2rav(xform):
-    #Todo: test
+    #Todo: test xf2rav
     xform = stypes.listtodoublematrix(xform, x=6, y=6)
     rot = stypes.doubleMatrix()
     av = stypes.doubleVector(3)
     libspice.xf2rav_c(xform, rot, av)
-    return rot, av
+    return stypes.matrixToList(rot), stypes.vectorToList(av)
 
 
 def xpose(m):
-    m = stypes.listtodoublematrix(m)
-    mout = stypes.doubleMatrix()
+    m = stypes.toDoubleMatrix(m)
+    mout = stypes.doubleMatrix(x=3, y=3)
     libspice.xpose_c(m, mout)
-    return stypes.matrixToList(m)
+    return stypes.matrixToList(mout)
 
 
 def xpose6(m):
-    #Todo: test
-    m = stypes.listtodoublematrix(m, x=6, y=6)
+    #Todo: test xpose6
+    m = stypes.toDoubleMatrix(m)
     mout = stypes.doubleMatrix(x=6, y=6)
     libspice.xpose6_c(m, mout)
-    return stypes.matrixToList(m)
+    return stypes.matrixToList(mout)
 
 
 def xposeg(matrix, nrow, ncol):
@@ -4978,3 +5014,4 @@ def xposeg(matrix, nrow, ncol):
 
 ########################################################################################################################
 # Z
+
