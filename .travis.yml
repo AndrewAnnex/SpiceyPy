@@ -9,3 +9,4 @@ install:
 # run tests
 script:
     python setup.py install
+    py.test
