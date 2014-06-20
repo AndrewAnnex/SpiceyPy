@@ -135,7 +135,7 @@ try:
     move_to_root_directory()
     setup(
         name='SpiceyPy',
-        version='0.5.1',
+        version='0.5.2',
         description='A Python Wrapper for the NAIF CSPICE Toolkit using ctypes',
         author='Apollo117',
         packages=['SpiceyPy'],

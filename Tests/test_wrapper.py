@@ -588,7 +588,9 @@ def test_elemi():
 
 
 def test_eqstr():
-    assert 0
+    assert spice.eqstr("A short string    ", "ashortstring")
+    assert spice.eqstr("Embedded        blanks", "Em be dd ed bl an ks")
+    assert spice.eqstr("One word left out", "WORD LEFT OUT") is False
 
 
 def test_erract():
@@ -1077,11 +1079,26 @@ def test_mtxvg():
 
 
 def test_mxm():
-    assert 0
+    m1 = [[1.0, 1.0, 0.0], [-1.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+    m2 = [[1.0, 0.0, 0.0], [0.0, 1.0, 1.0], [0.0, -1.0, 1.0]]
+    mout = np.array(spice.mxm(m1, m2))
+    m1 = np.array(m1)
+    m2 = np.array(m2)
+    mout2 = np.dot(m1, m2)
+    assert np.array_equal(mout, mout2)
 
 
 def test_mxmg():
-    assert 0
+    m1 = [[1.0, 4.0], [2.0, 5.0], [3.0, 6.0]]
+    m2 = [[1.0, 2.0, 3.0], [2.0, 4.0, 6.0]]
+    nrow1 = 3
+    ncol1 = 2
+    ncol2 = 3
+    mout = np.array(spice.mxmg(m1, m2, nrow1, ncol1, ncol2))
+    m1 = np.array(m1)
+    m2 = np.array(m2)
+    mout2 = np.dot(m1, m2)
+    assert np.array_equal(mout, mout2)
 
 
 def test_mxmt():
