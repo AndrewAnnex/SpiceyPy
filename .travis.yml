@@ -6,8 +6,8 @@ python:
 # install dependencies
 install:
     pip install numpy pytest
-    python getspice.py
 # run tests
 script:
+    python getspice.py
     python setup.py install
     py.test
