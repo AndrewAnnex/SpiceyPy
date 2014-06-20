@@ -7,7 +7,13 @@ import os
 import sys
 import platform
 
-import urllib.request
+#Python 2 and 3 compatibility
+try:
+    # Python 3 urllib
+    from urllib.request import urlopen
+except ImportError:
+    # Fallback for python2
+    from urllib2 import urlopen
 import io
 import zipfile
 import subprocess
@@ -65,7 +71,7 @@ def getSpice():
     archive_path = os.path.join(root_dir, result.split('/')[1])
 
     print('\nDownloading...')
-    download = urllib.request.urlopen(root_url + result)
+    download = urlopen(root_url + result)
 
     print('Unpacking... (this may take some time!)')
     if result[:-3] == 'zip':
