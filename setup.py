@@ -30,6 +30,7 @@ class PyTest(Command):
         errno = subprocess.call([sys.executable, 'Tests/test_wrapper.py'])
         raise SystemExit(errno)
 
+
 def check_for_spice():
     if not os.path.exists(cspice_dir):
         message = 'Unable to find CSPICE at {0}. Attempting to Download CSPICE For you:'.format(cspice_dir)
