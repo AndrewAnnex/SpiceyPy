@@ -910,7 +910,8 @@ def test_jyear():
 
 
 def test_kclear():
-    assert 0
+    spice.kclear()
+    assert spice.ktotal("ALL") == 0
 
 
 def test_kdata():
@@ -1250,11 +1251,11 @@ def test_prop2b():
 
 
 def test_prsdp():
-    assert 0
+    assert spice.prsdp("-1. 000") == -1.0
 
 
 def test_prsint():
-    assert 0
+    assert spice.prsint("PI") == 3
 
 
 def test_psv2pl():

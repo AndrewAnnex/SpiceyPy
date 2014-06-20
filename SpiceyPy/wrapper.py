@@ -2965,7 +2965,7 @@ def prsdp(string):
     #Todo: test prsdp
     string = stypes.strtocharpoint(string)
     dpval = ctypes.c_double()
-    libspice.prsdp_c(string, ctypes.POINTER(dpval))
+    libspice.prsdp_c(string, ctypes.byref(dpval))
     return dpval.value
 
 
@@ -2973,7 +2973,7 @@ def prsint(string):
     #Todo: test prsint
     string = stypes.strtocharpoint(string)
     intval = ctypes.c_int()
-    libspice.prsint_c(string, ctypes.POINTER(intval))
+    libspice.prsint_c(string, ctypes.byref(intval))
     return intval.value
 
 
