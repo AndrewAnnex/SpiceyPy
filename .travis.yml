@@ -13,6 +13,6 @@ install:
     - python setup.py install
 # run tests
 script:
-    - coverage run --source=SpiceyPy setup.py test
+    - python setup.py test
 after_success:
     - coveralls
