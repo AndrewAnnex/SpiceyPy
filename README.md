@@ -13,11 +13,12 @@ A growing list of completed functions can be found [here](https://github.com/Apo
 Functions that have written functions that have not been tested do generally work, but tests have not been written yet.
 Functions labeled with 'Skip' are being ignored, as they are either not needed in a python environment or impossible to implement.
 
-### Travis Status
+### Travis and Coveralls Status
 
 Should say how we are doing (please be kind if it is red!)
 
 [![Build Status](https://travis-ci.org/Apollo117/SpiceyPy.svg?branch=master)](https://travis-ci.org/Apollo117/SpiceyPy)
+[![Coverage Status](https://coveralls.io/repos/Apollo117/SpiceyPy/badge.png)](https://coveralls.io/r/Apollo117/SpiceyPy)
 
 ### Design Goals
 - [ ] Majorly complete coverage of all existing CSPICE commands, within reason.

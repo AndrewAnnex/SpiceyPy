@@ -4,10 +4,14 @@ python:
  - 3.3
  - 3.4
 # install dependencies
+before_install:
+    pip install numpy
+    pip install pytest
+    python getspice.py
 install:
-    pip install numpy pytest
+    python setup.py install
 # run tests
 script:
-    python getspice.py
-    python setup.py install
     py.test
+after_success:
+    coveralls
