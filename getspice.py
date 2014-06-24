@@ -68,7 +68,7 @@ def getSpice():
 
     ### DOWNLOAD AND UNPACK BEST PACKAGE ###
     root_dir = os.path.realpath(os.path.dirname(__file__))
-    archive_path = os.path.join(root_dir, result.split('/')[1])
+    #archive_path = os.path.join(root_dir, result.split('/')[1])
 
     print('\nDownloading...')
     download = urlopen(root_url + result)
@@ -81,7 +81,7 @@ def getSpice():
         filelike.close()
     else:
         cmd = 'gunzip | tar xC ' + root_dir
-        proc = subprocess.Popen(cmd, shell = True, stdin = subprocess.PIPE)
+        proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE)
         proc.stdin.write(download.read())
     download.close()
 

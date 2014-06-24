@@ -1,5 +1,6 @@
 __author__ = 'Apollo117'
-from setuptools import setup, Command
+from setuptools import setup
+from setuptools.command.test import test as TestCommand
 import sys
 import getspice
 import os
@@ -17,7 +18,7 @@ data_files = []
 
 
 # py.test integration from pytest.org
-class PyTest(Command):
+class PyTest(TestCommand):
     user_options = []
 
     def initialize_options(self):
@@ -26,9 +27,12 @@ class PyTest(Command):
     def finalize_options(self):
         pass
 
-    def run(self):
-        errno = subprocess.call([sys.executable, 'Tests/test_wrapper.py'])
-        raise SystemExit(errno)
+    def run_tests(self):
+        #import here, cause outside the eggs aren't loaded
+        import pytest
+        errno = pytest.main("./Tests/test_wrapper.py")
+        sys.exit(errno)
+
 
 
 def check_for_spice():
@@ -141,6 +145,7 @@ try:
         description='A Python Wrapper for the NAIF CSPICE Toolkit using ctypes',
         author='Apollo117',
         packages=['SpiceyPy'],
+        tests_require=['pytest'],
         requires=['numpy', 'pytest'],
         package_data={'SpiceyPy': ['*.so']},
         include_package_data=True,
