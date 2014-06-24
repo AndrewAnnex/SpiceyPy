@@ -28,11 +28,8 @@ class PyTest(TestCommand):
         pass
 
     def run_tests(self):
-        #import here, cause outside the eggs aren't loaded
-        import pytest
-        errno = pytest.main("./Tests/test_wrapper.py")
-        sys.exit(errno)
-
+        errno = subprocess.call([sys.executable, "./Tests/test_wrapper.py"])
+        raise SystemExit(errno)
 
 
 def check_for_spice():
