@@ -1,6 +1,5 @@
 __author__ = 'Apollo117'
-from setuptools import setup
-from setuptools.command.test import test as TestCommand
+from setuptools import setup, Command
 import sys
 import getspice
 import os
@@ -18,7 +17,7 @@ data_files = []
 
 
 # py.test integration from pytest.org
-class PyTest(TestCommand):
+class PyTest(Command):
     user_options = []
 
     def initialize_options(self):
