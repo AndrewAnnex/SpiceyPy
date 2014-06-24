@@ -1,5 +1,6 @@
 __author__ = 'Apollo117'
 import pytest
+
 import SpiceyPy as spice
 import numpy as np
 import numpy.testing as npt
@@ -1798,7 +1799,7 @@ def test_unload():
 
 
 def test_unorm():
-    assert spice.unorm([5.0, 12.0, 0.0]) == ([5/13, 12/13, 0.0], 13.0)
+    assert spice.unorm([5.0, 12.0, 0.0]) == ([5.0/13.0, 12.0/13.0, 0.0], 13.0)
 
 
 def test_unormg():
