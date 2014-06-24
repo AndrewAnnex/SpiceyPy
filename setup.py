@@ -120,7 +120,8 @@ def move_to_root_directory():
 def cleanup():
     # Delete the extra files created by this file
     os.chdir(lib_dir)
-    cleanupList = [file for file in os.listdir(lib_dir) if file.endswith('.o') or file.endswith('.so')]
+    currentDir = os.getcwd()
+    cleanupList = [file for file in os.listdir(currentDir) if file.endswith('.o') or file.endswith('.so')]
     for file in cleanupList:
         os.remove(file)
     pass
