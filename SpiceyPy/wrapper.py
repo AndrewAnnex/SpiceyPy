@@ -4483,7 +4483,7 @@ def vdistg(v1, v2, ndim):
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
     ndim = ctypes.c_int(ndim)
-    return libspice.vdist_c(v1, v2, ndim)
+    return libspice.vdistg_c(v1, v2, ndim)
 
 
 def vdot(v1, v2):
@@ -4498,7 +4498,7 @@ def vdotg(v1, v2, ndim):
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
     ndim = ctypes.c_int(ndim)
-    return libspice.vdot_c(v1, v2, ndim)
+    return libspice.vdotg_c(v1, v2, ndim)
 
 
 def vequ(v1):

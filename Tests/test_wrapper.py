@@ -1861,39 +1861,59 @@ def test_valid():
 
 
 def test_vcrss():
-    assert 1
+    v1 = np.array([0.0, 1.0, 0.0])
+    v2 = np.array([1.0, 0.0, 0.0])
+    vout = spice.vcrss(v1, v2)
+    expected = np.array([0.0, 0.0, -1.0])
+    assert np.array_equal(vout, expected)
 
 
 def test_vdist():
-    assert 1
+    v1 = np.array([2.0, 3.0, 0.0])
+    v2 = np.array([5.0, 7.0, 12.0])
+    assert spice.vdist(v1, v2) == 13.0
 
 
 def test_vdistg():
-    assert 1
+    v1 = np.array([2.0, 3.0])
+    v2 = np.array([5.0, 7.0])
+    assert spice.vdistg(v1, v2, 2) == 5.0
 
 
 def test_vdot():
-    assert 1
+    v1 = np.array([1.0, 0.0, -2.0])
+    v2 = np.array([2.0, 1.0, -1.0])
+    assert spice.vdot(v1, v2) == 4.0
 
 
 def test_vdotg():
-    assert 1
+    v1 = np.array([1.0, 0.0])
+    v2 = np.array([2.0, 1.0])
+    assert spice.vdotg(v1, v2, 2) == 2
 
 
 def test_vequ():
-    assert 1
+    v1 = np.ones(3)
+    assert np.array_equal(v1, spice.vequ(v1))
 
 
 def test_vequg():
-    assert 1
+    v1 = np.ones(4)
+    assert np.array_equal(v1, spice.vequg(v1, 4))
 
 
 def test_vhat():
-    assert 1
+    v1 = np.array([5.0, 12.0, 0.0])
+    expected = np.array([5/13.0, 12/13.0, 0.0])
+    vout = spice.vhat(v1)
+    assert np.array_equal(vout, expected)
 
 
 def test_vhatg():
-    assert 1
+    v1 = np.array([5.0, 12.0, 0.0, 0.0])
+    expected = np.array([5 / 13.0, 12 / 13.0, 0.0, 0.0])
+    vout = spice.vhatg(v1, 4)
+    assert np.array_equal(vout, expected)
 
 
 def test_vlcom3():
@@ -1909,27 +1929,36 @@ def test_vlcomg():
 
 
 def test_vminug():
-    assert 1
+    v1 = np.array([1.0, -2.0, 4.0, 0.0])
+    expected = np.array([-1.0, 2.0, -4.0, 0.0])
+    assert np.array_equal(spice.vminug(v1, 4), expected)
 
 
 def test_vminus():
-    assert 1
+    v1 = np.array([1.0, -2.0, 0.0])
+    expected = np.array([-1.0, 2.0, 0.0])
+    assert np.array_equal(spice.vminus(v1), expected)
 
 
 def test_vnorm():
-    assert 1
+    v1 = np.array([1.e0, 2.e0, 2.e0])
+    assert spice.vnorm(v1) == 3.e0
 
 
 def test_vnormg():
-    assert 1
+    v1 = np.array([3.0, 3.0, 3.0, 3.0])
+    assert spice.vnormg(v1, 4) == 6.0
 
 
 def test_vpack():
-    assert 1
+    assert np.array_equal(spice.vpack(1.0, 1.0, 1.0), np.ones(3))
 
 
 def test_vperp():
-    assert 1
+    v1 = np.array([6.0, 6.0, 6.0])
+    v2 = np.array([2.0, 0.0, 0.0])
+    expected = np.array([0.0, 6.0, 6.0])
+    assert np.array_equal(spice.vperp(v1, v2), expected)
 
 
 def test_vprjp():
@@ -1957,47 +1986,69 @@ def test_vrotv():
 
 
 def test_vscl():
-    assert 1
+    v1 = np.array([1.0, -2.0, 0.0])
+    expected = np.array([-1.0, 2.0, 0.0])
+    assert np.array_equal(spice.vscl(-1.0, v1), expected)
 
 
 def test_vsclg():
-    assert 1
+    v1 = np.array([1.0, 2.0, -3.0, 4.0])
+    expected = np.zeros(4)
+    assert np.array_equal(spice.vsclg(0.0, v1, 4), expected)
 
 
 def test_vsep():
-    assert 1
+    v1 = np.array([1.0, 0.0, 0.0])
+    v2 = np.array([0.0, 1.0, 0.0])
+    assert spice.vsep(v1, v2) == np.pi/2
 
 
 def test_vsepg():
-    assert 1
+    v1 = np.array([3.0, 0.0])
+    v2 = np.array([-5.0, 0.0])
+    assert spice.vsepg(v1, v2, 2) == np.pi
 
 
 def test_vsub():
-    assert 1
+    v1 = np.array([1.0, 2.0, 3.0])
+    v2 = np.array([4.0, 5.0, 6.0])
+    expected = np.array([-3.0, -3.0, -3.0])
+    assert np.array_equal(spice.vsub(v1, v2), expected)
 
 
 def test_vsubg():
-    assert 1
+    v1 = np.array([1.0, 2.0, 3.0, 4.0])
+    v2 = np.array([1.0, 1.0, 1.0, 1.0])
+    expected = np.array([0.0, 1.0, 2.0, 3.0])
+    assert np.array_equal(spice.vsubg(v1, v2, 4), expected)
 
 
 def test_vtmv():
-    assert 1
+    v1 = np.array([2.0, 4.0, 6.0])
+    v2 = np.array([1.0, 1.0, 1.0])
+    matrix = np.array([[0.0, 1.0, 0.0], [-1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
+    assert spice.vtmv(v1, matrix, v2) == 4.0
 
 
 def test_vtmvg():
-    assert 1
+    v1 = np.array([1.0, 2.0, 3.0])
+    v2 = np.array([1.0, 2.0])
+    matrix = np.array([[2.0, 0.0], [1.0, 2.0], [1.0, 1.0]])
+    assert spice.vtmvg(v1, matrix, v2, 3, 2) == 21.0
 
 
 def test_vupack():
-    assert 1
+    v1 = np.array([1.0, 2.0, 3.0])
+    expected = (1.0, 2.0, 3.0)
+    assert spice.vupack(v1) == expected
 
 
 def test_vzero():
-    assert 1
+    assert spice.vzero(np.zeros(3))
 
 
 def test_vzerog():
-    assert 1
+    assert spice.vzerog(np.zeros(5), 5)
 
 
 def test_wncard():
