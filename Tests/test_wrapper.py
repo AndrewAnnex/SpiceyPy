@@ -1048,11 +1048,15 @@ def test_maxi():
 
 
 def test_mequ():
-    assert 1
+    m1 = np.identity(3)
+    mout = spice.mequ(m1)
+    assert np.array_equal(m1, mout)
 
 
 def test_mequg():
-    assert 1
+    m1 = np.identity(2)
+    mout = spice.mequg(m1, 2, 2)
+    assert np.array_equal(m1, mout)
 
 
 def test_mind():
@@ -1064,19 +1068,35 @@ def test_mini():
 
 
 def test_mtxm():
-    assert 1
+    m1 = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
+    m2 = np.array([[1.0, 1.0, 0.0], [-1.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
+    mout = spice.mtxm(m1, m2)
+    expected = np.array([[-3.0, 5.0, 7.0], [-3.0, 7.0, 8.0], [-3.0, 9.0, 9.0]])
+    assert np.array_equal(mout, expected)
 
 
 def test_mtxmg():
-    assert 1
+    m1 = np.array([[1.0, 2.0, 3.0, 0.0], [1.0, 1.0, 1.0, 1.0]])
+    m2 = np.array([[1.0, 2.0, 3.0], [0.0, 0.0, 0.0]])
+    mout = spice.mtxmg(m1, m2, 4, 2, 3)
+    expected = np.array([[1.0, 2.0, 3.0], [2.0, 4.0, 6.0], [3.0, 6.0, 9.0], [0.0, 0.0, 0.0]])
+    assert np.array_equal(mout, expected)
 
 
 def test_mtxv():
-    assert 1
+    m1 = np.array([[1.0, 1.0, 0.0], [-1.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
+    vin = np.array([5.0, 10.0, 15.0])
+    mout = spice.mtxv(m1, vin)
+    expected = np.array([-5.0, 15.0, 15.0])
+    assert np.array_equal(mout, expected)
 
 
 def test_mtxvg():
-    assert 1
+    m1 = np.array([[1.0, 2.0], [1.0, 3.0], [1.0, 4.0]])
+    v2 = np.array([1.0, 2.0, 3.0])
+    mout = spice.mtxvg(m1, v2, 2, 3)
+    expected = np.array([6.0, 20.0])
+    assert np.array_equal(mout, expected)
 
 
 def test_mxm():
@@ -1103,19 +1123,33 @@ def test_mxmg():
 
 
 def test_mxmt():
-    assert 1
+    m1 = [[0.0, 1.0, 0.0], [-1.0, 0.0, 0.0], [0.0, 0.0, 1.0]]
+    mout = spice.mxmt(m1, m1)
+    assert np.array_equal(mout, np.identity(3))
 
 
 def test_mxmtg():
-    assert 1
+    m1 = np.array([[1.0, 2.0, 3.0], [3.0, 2.0, 1.0]])
+    m2 = np.array([[1.0, 2.0, 0.0], [2.0, 1.0, 2.0], [1.0, 2.0, 0.0], [2.0, 1.0, 2.0]])
+    mout = spice.mxmtg(m1, m2, 2, 3, 4)
+    expected = np.array([[5.0, 10.0, 5.0, 10.0], [7.0, 10.0, 7.0, 10.0]])
+    assert np.array_equal(mout, expected)
 
 
 def test_mxv():
-    assert 1
+    m1 = np.array([[0.0, 1.0, 0.0], [-1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
+    vin = np.array([1.0, 2.0, 3.0])
+    mout = spice.mxv(m1, vin)
+    expected = np.array([2.0, -1.0, 3.0])
+    assert np.array_equal(mout, expected)
 
 
 def test_mxvg():
-    assert 1
+    m1 = np.array([[1.0, 1.0, 1.0], [2.0, 3.0, 4.0]])
+    v2 = np.array([1.0, 2.0, 3.0])
+    mout = spice.mxvg(m1, v2, 2, 3)
+    expected = np.array([6.0, 20.0])
+    assert np.array_equal(mout, expected)
 
 
 def test_namfrm():

@@ -2555,9 +2555,9 @@ def mequ(m1):
 
 def mequg(m1, nr, nc):
     m1 = stypes.listtodoublematrix(m1, x=nc, y=nr)
+    mout = stypes.doubleMatrix(x=nc, y=nr)
     nc = ctypes.c_int(nc)
     nr = ctypes.c_int(nr)
-    mout = stypes.doubleMatrix(x=nc, y=nr)
     libspice.mequg_c(m1, nc, nr, mout)
     return stypes.matrixToList(mout)
 
@@ -2577,10 +2577,9 @@ def mtxm(m1, m2):
 
 
 def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
-    #Todo: test mtxmg
     m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nr1r2)
     m2 = stypes.listtodoublematrix(m2, x=ncol2, y=nr1r2)
-    mout = stypes.doubleMatrix(x=ncol2, y=nr1r2)
+    mout = stypes.doubleMatrix(x=ncol2, y=ncol1)
     ncol1 = ctypes.c_int(ncol1)
     nr1r2 = ctypes.c_int(nr1r2)
     ncol2 = ctypes.c_int(ncol2)
