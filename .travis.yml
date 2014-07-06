@@ -6,12 +6,13 @@ python:
 # install dependencies
 before_install:
     - pip install numpy
+    - pip install coverage
     - pip install coveralls
     - pip install pytest
 install:
     - python setup.py install
 # run tests
 script:
-    - py.test ./test/test_wrapper.py
+    - coverage run --source=SpiceyPy setup.py test
 after_success:
     - coveralls

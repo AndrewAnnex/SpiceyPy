@@ -1,5 +1,6 @@
 __author__ = 'Apollo117'
-from setuptools import setup, Command
+from setuptools import setup
+from setuptools.command.test import test as TestCommand
 import sys
 import getspice
 import os
@@ -17,18 +18,16 @@ data_files = []
 
 
 # py.test integration from pytest.org
-class PyTest(Command):
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
+class PyTest(TestCommand):
     def finalize_options(self):
-        pass
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
 
     def run_tests(self):
-        errno = subprocess.call([sys.executable, "./test/test_wrapper.py"])
-        raise SystemExit(errno)
+        import pytest
+        errcode = pytest.main(self.test_args)
+        sys.exit(errcode)
 
 
 def check_for_spice():
@@ -145,8 +144,8 @@ try:
         packages=['SpiceyPy'],
         tests_require=['pytest'],
         cmdclass={'test': PyTest},
-        test_suite='SpiceyPy.test.test_wrapper.py',
-        requires=['numpy', 'pytest', 'coveralls'],
+        test_suite='test.test_wrapper.py',
+        requires=['numpy', 'pytest', 'coveralls', 'coverage'],
         package_data={'SpiceyPy': ['*.so']},
         include_package_data=True,
         zip_safe=False,
