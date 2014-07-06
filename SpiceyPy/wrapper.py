@@ -3122,12 +3122,11 @@ def recrad(rectan):
 
 
 def recsph(rectan):
-    #Todo: Test recsph
     rectan = stypes.toDoubleVector(rectan)
     r = ctypes.c_double()
     colat = ctypes.c_double()
     lon = ctypes.c_double()
-    libspice.rectan_c(rectan, ctypes.byref(r), ctypes.byref(colat), ctypes.byref(lon))
+    libspice.recsph_c(rectan, ctypes.byref(r), ctypes.byref(colat), ctypes.byref(lon))
     return r.value, colat.value, lon.value
 
 
@@ -4971,7 +4970,6 @@ def xf2eul(xform, axisa, axisb, axisc):
 
 
 def xf2rav(xform):
-    #Todo: test xf2rav
     xform = stypes.listtodoublematrix(xform, x=6, y=6)
     rot = stypes.doubleMatrix()
     av = stypes.doubleVector(3)
@@ -4987,7 +4985,6 @@ def xpose(m):
 
 
 def xpose6(m):
-    #Todo: test xpose6
     m = stypes.toDoubleMatrix(m)
     mout = stypes.doubleMatrix(x=6, y=6)
     libspice.xpose6_c(m, mout)
@@ -4995,18 +4992,9 @@ def xpose6(m):
 
 
 def xposeg(matrix, nrow, ncol):
-    #Todo: test xposeg, not sure if this will work as is..
     matrix = stypes.listtodoublematrix(matrix, x=ncol, y=nrow)
     mout = stypes.doubleMatrix(x=ncol, y=nrow)
     ncol = ctypes.c_int(ncol)
     nrow = ctypes.c_int(nrow)
     libspice.xposeg_c(matrix, nrow, ncol, mout)
     return stypes.matrixToList(mout)
-
-########################################################################################################################
-# Y
-
-
-########################################################################################################################
-# Z
-

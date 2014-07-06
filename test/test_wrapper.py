@@ -1366,7 +1366,8 @@ def test_recrad():
 
 
 def test_recsph():
-    assert 1
+    v1 = np.array([-1.0, 0.0, 0.0])
+    assert spice.recsph(v1) == (1.0, np.pi/2, np.pi)
 
 
 def test_removc():
@@ -1846,11 +1847,21 @@ def test_unload():
 
 
 def test_unorm():
-    assert spice.unorm([5.0, 12.0, 0.0]) == ([5.0/13.0, 12.0/13.0, 0.0], 13.0)
+    v1 = np.array([5.0, 12.0, 0.0])
+    expectedVout = np.array([5.0 / 13.0, 12.0 / 13.0, 0.0])
+    expectedVmag = 13.0
+    vout, vmag = spice.unorm(v1)
+    assert vmag == expectedVmag
+    assert np.array_equal(expectedVout, vout)
 
 
 def test_unormg():
-    assert 1
+    v1 = np.array([5.0, 12.0])
+    expectedVout = np.array([5.0/13.0, 12.0/13.0])
+    expectedVmag = 13.0
+    vout, vmag = spice.unormg(v1, 2)
+    assert vmag == expectedVmag
+    assert np.array_equal(expectedVout, vout)
 
 
 def test_utc2et():
@@ -1983,7 +1994,11 @@ def test_vprjpi():
 
 
 def test_vproj():
-    assert 1
+    v1 = np.array([6.0, 6.0, 6.0])
+    v2 = np.array([2.0, 0.0, 0.0])
+    expected = np.array([6.0, 0.0, 0.0])
+    vout = spice.vproj(v1, v2)
+    assert np.array_equal(expected, vout)
 
 
 def test_vrel():
@@ -1995,7 +2010,12 @@ def test_vrelg():
 
 
 def test_vrotv():
-    assert 1
+    v = np.array([1.0, 2.0, 3.0])
+    axis = np.array([0.0, 0.0, 1.0])
+    theta = spice.halfpi()
+    vout = spice.vrotv(v, axis, theta)
+    expected = np.array([-2.0, 1.0, 3.0])
+    np.testing.assert_almost_equal(vout, expected, decimal=7)
 
 
 def test_vscl():
