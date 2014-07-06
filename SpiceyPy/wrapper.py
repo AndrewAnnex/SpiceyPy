@@ -3790,9 +3790,7 @@ def spkpds(body, center, framestr, typenum, first, last):
 
 
 def spkpos(targ, et, ref, abcorr, obs):
-    #Todo: test spkpos both vectorized and not, see how fast this is...
-    if isinstance(et, list):
-        #  we assume we have some sort of list
+    if hasattr(et, "__iter__"):
         ptarg = []
         ltimes = []
         for time in et:
@@ -4715,7 +4713,6 @@ def vsubg(v1, v2, ndim):
 
 
 def vtmv(v1, matrix, v2):
-    #Todo: test
     v1 = stypes.toDoubleVector(v1)
     matrix = stypes.listtodoublematrix(matrix)
     v2 = stypes.toDoubleVector(v2)
@@ -4723,7 +4720,6 @@ def vtmv(v1, matrix, v2):
 
 
 def vtmvg(v1, matrix, v2, nrow, ncol):
-    #Todo: test
     v1 = stypes.toDoubleVector(v1)
     matrix = stypes.listtodoublematrix(matrix, x=ncol, y=nrow)
     v2 = stypes.toDoubleVector(v2)
@@ -4748,7 +4744,7 @@ def vzero(v):
     :param v: Double Vector of length 3
     :return: True if all values equal zero, false else.
 
-    #Tests
+    #test
     >>> vzero([0.0,0.0,1.0])
     False
     >>> vzero([0.0,0.0,0.0])
@@ -4771,7 +4767,7 @@ def vzerog(v, ndim):
     :param ndim: length of v
     :return: True if all values equal zero, false else.
 
-    #Tests
+    #test
     >>> vzerog([0.0,1.0], 2)
     False
     >>> vzerog([0.0,0.0], 2)

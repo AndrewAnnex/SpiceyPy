@@ -27,7 +27,7 @@ class PyTest(Command):
         pass
 
     def run_tests(self):
-        errno = subprocess.call([sys.executable, "./Tests/test_wrapper.py"])
+        errno = subprocess.call([sys.executable, "./test/test_wrapper.py"])
         raise SystemExit(errno)
 
 
@@ -127,7 +127,9 @@ def cleanup():
     pass
 
 try:
-    #First unpack cspice.a
+    #First check for spice
+    check_for_spice()
+    #Next unpack cspice.a
     unpack_cspicelib()
     #Next unpack csupport.a
     unpack_csupportlib()
@@ -142,11 +144,16 @@ try:
         author='Apollo117',
         packages=['SpiceyPy'],
         tests_require=['pytest'],
-        requires=['numpy', 'pytest'],
+        cmdclass={'test': PyTest},
+        test_suite='SpiceyPy.test.test_wrapper.py',
+        requires=['numpy', 'pytest', 'coveralls'],
         package_data={'SpiceyPy': ['*.so']},
         include_package_data=True,
         zip_safe=False,
-        cmdclass={'test': PyTest}
+        extras_require={
+            'testing': ['pytest'],
+        }
+
     )
 
 finally:

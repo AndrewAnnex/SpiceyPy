@@ -11,11 +11,19 @@ def test_appndc():
 
 
 def test_appndd():
-    assert 1
+    testCell = spice.stypes.SPICEDOUBLE_CELL(8)
+    spice.appndd(1.0, testCell)
+    spice.appndd(2.0, testCell)
+    spice.appndd(3.0, testCell)
+    assert [x for x in testCell] == [1.0, 2.0, 3.0]
 
 
 def test_appndi():
-    assert 1
+    testCell = spice.stypes.SPICEINT_CELL(8)
+    spice.appndi(1, testCell)
+    spice.appndi(2, testCell)
+    spice.appndi(3, testCell)
+    assert [x for x in testCell] == [1, 2, 3]
 
 
 def test_axisar():
