@@ -498,7 +498,7 @@ def cylrec(r, lon, z):
     lon = ctypes.c_double(lon)
     z = ctypes.c_double(z)
     rectan = stypes.doubleVector(3)
-    libspice.cylrec_c(r, lon, z, ctypes.byref(rectan))
+    libspice.cylrec_c(r, lon, z, rectan)
     return stypes.vectorToList(rectan)
 
 
