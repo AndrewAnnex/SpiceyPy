@@ -12,6 +12,6 @@ install:
     - python setup.py install
 # run tests
 script:
-    - py.test ./Tests/test_wrapper.py
+    - py.test ./test/test_wrapper.py
 after_success:
     - coveralls
