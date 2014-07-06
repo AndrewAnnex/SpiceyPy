@@ -20,11 +20,6 @@ def toBoolVector(x):
     return BoolArray.from_param(param=x)
 
 
-def listtointvector(x):
-    assert(isinstance(x, list))
-    return (ctypes.c_int * len(x))(*x)
-
-
 def listtocharvector(x):
     assert (isinstance(x, list))
     return (ctypes.c_char_p * len(x))(*[strtocharpoint(y) for y in x])
@@ -50,7 +45,7 @@ def doubleVector(n):
     return (ctypes.c_double*n)()
 
 
-def intvector(n):
+def intVector(n):
     assert(isinstance(n, int))
     return (ctypes.c_int*n)()
 
@@ -64,10 +59,6 @@ def vectorToList(x):
         return [y for y in x]
     elif isinstance(x[0].value, bytes):
         return [bytes.decode(y.value) for y in x]
-
-
-def vectorToTuple(x):
-    return tuple(vectorToList(x))
 
 
 def matrixToList(x):

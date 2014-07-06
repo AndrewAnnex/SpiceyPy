@@ -79,7 +79,7 @@ libspice.cposr_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
 libspice.cposr_c.restype = ctypes.c_int
 libspice.cvpool_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
 libspice.cyllat_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
-libspice.cylrec_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, (ctypes.c_double*3)]
+libspice.cylrec_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.POINTER(ctypes.c_double)]
 libspice.cylsph_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
 
 ########################################################################################################################

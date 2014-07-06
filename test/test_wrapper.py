@@ -215,11 +215,11 @@ def test_cvpool():
 
 
 def test_cyllat():
-    assert 1
+    assert spice.cyllat(1.0, 180.0*spice.rpd(), -1.0) == (np.sqrt(2), np.pi, -np.pi/4)
 
 
 def test_cylrec():
-    assert 1
+    assert spice.cylrec(0.0, np.radians(33.0), 0.0) == [0.0, 0.0, 0.0]
 
 
 def test_cylsph():
@@ -333,7 +333,9 @@ def test_deltet():
 
 
 def test_det():
-    assert 1
+    m1 = np.array([[5.0, -2.0, 1.0], [0.0, 3.0, -1.0], [2.0, 0.0, 7.0]])
+    expected = 103
+    assert spice.det(m1) == expected
 
 
 def test_dgeodr():
@@ -867,7 +869,10 @@ def test_intmin():
 
 
 def test_invert():
-    assert 1
+    m1 = np.array([[0.0, -1.0, 0.0], [0.5, 0.0, 0.0], [0.0, 0.0, 1.0]])
+    expected = np.array([[0.0, 2.0, 0.0], [-1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
+    mout = spice.invert(m1)
+    assert np.array_equal(expected, mout)
 
 
 def test_invort():

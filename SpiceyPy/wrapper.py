@@ -498,7 +498,7 @@ def cylrec(r, lon, z):
     lon = ctypes.c_double(lon)
     z = ctypes.c_double(z)
     rectan = stypes.doubleVector(3)
-    libspice.cylrec_c(r, lon, z, rectan)
+    libspice.cylrec_c(r, lon, z, ctypes.byref(rectan))
     return stypes.vectorToList(rectan)
 
 
@@ -687,7 +687,7 @@ def dafus(insum, nd, ni):
     #Todo: test dafus
     insum = stypes.toDoubleVector(insum)
     dc = stypes.doubleVector(nd)
-    ic = stypes.intvector(ni)
+    ic = stypes.intVector(ni)
     nd = ctypes.c_int(nd)
     ni = ctypes.c_int(ni)
     libspice.dafus_c(insum, nd, ni, dc, ic)
@@ -1194,7 +1194,7 @@ def ekgi(selidx, row, element):
 def ekifld(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls):
     #Todo: test ekifld
     handle = ctypes.c_int(handle)
-    recptrs = stypes.intvector(nrows)
+    recptrs = stypes.intVector(nrows)
     tabnam = stypes.strtocharpoint(tabnam)
     cnames = stypes.listToCharArrayPtr(cnames, xLen=ncols, yLen=cnmlen)
     decls = stypes.listToCharArrayPtr(decls, xLen=ncols, yLen=declen)

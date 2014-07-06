@@ -3,7 +3,6 @@ import SpiceyPy as spice
 import ctypes
 testArray = [-11,0,22,750]
 
-print(spice.stypes.listtointvector(testArray))
 
 print(spice.bsrchi(-11, 4, testArray))
 print(spice.bsrchi(22, 4, testArray))
