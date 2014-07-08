@@ -4,7 +4,9 @@ import pytest
 import SpiceyPy as spice
 import numpy as np
 import numpy.testing as npt
-
+import os
+cwd = os.path.realpath(os.path.dirname(__file__))
+_testKernelPath = cwd + "/testKernels.txt"
 
 def test_appndc():
     assert 1
@@ -681,7 +683,10 @@ def test_ftncls():
 
 
 def test_furnsh():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    # 3 kernels + the meta kernel = 4
+    assert spice.ktotal("ALL") == 4
+    spice.kclear()
 
 
 def test_gcpool():
@@ -1318,7 +1323,11 @@ def test_pxform():
 
 
 def test_q2m():
-    assert 1
+    mout = spice.q2m(np.array([0.5, 0.4, 0.3, 0.1]))
+    expected = np.array([[0.607843137254902, 0.27450980392156854, 0.7450980392156862],
+                         [0.6666666666666666, 0.33333333333333326, -0.6666666666666666],
+                         [-0.43137254901960775, 0.9019607843137255, 0.019607843137254832]])
+    assert np.array_equal(expected, mout)
 
 
 def test_qdq2av():

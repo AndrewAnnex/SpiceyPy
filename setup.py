@@ -3,6 +3,7 @@ from setuptools import setup
 from setuptools.command.test import test as TestCommand
 import sys
 import getspice
+import test.gettestkernels as getTestKernels
 import os
 import subprocess
 
@@ -25,6 +26,7 @@ class PyTest(TestCommand):
         self.test_suite = True
 
     def run_tests(self):
+        getTestKernels
         import pytest
         errcode = pytest.main(self.test_args)
         sys.exit(errcode)
@@ -145,7 +147,7 @@ try:
         tests_require=['pytest'],
         cmdclass={'test': PyTest},
         test_suite='test.test_wrapper.py',
-        requires=['numpy', 'pytest', 'coveralls', 'coverage'],
+        requires=['numpy', 'pytest', 'coveralls', 'coverage', 'six'],
         package_data={'SpiceyPy': ['*.so']},
         include_package_data=True,
         zip_safe=False,
