@@ -26,7 +26,7 @@ class PyTest(TestCommand):
         self.test_suite = True
 
     def run_tests(self):
-        getTestKernels
+        getTestKernels.downloadKernels()
         import pytest
         errcode = pytest.main(self.test_args)
         sys.exit(errcode)
