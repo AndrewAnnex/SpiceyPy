@@ -9,6 +9,7 @@ before_install:
     - pip install coverage
     - pip install coveralls
     - pip install pytest
+    - pip install six
 install:
     - python setup.py install
 # run tests
