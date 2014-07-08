@@ -4,12 +4,16 @@ import os
 from six.moves import urllib
 
 kernelList = ['pck00010.tpc', 'de421.bsp', 'naif0010.tls']
+cwd = os.path.realpath(os.path.dirname(__file__))
 
 
 def getKernel(url):
     kernelName = url.split('/')[-1]
     print('Downloading: {0}'.format(kernelName))
-    urllib.request.urlretrieve(url, kernelName)
+    #urllib.request.urlretrieve(url, kernelName)
+    with open('{0}/{1}'.format(cwd, kernelName), "wb") as kernel:
+        kernel.write(urllib.request.urlopen(url).read())
+        kernel.close()
 
 
 def getKernels():
@@ -23,7 +27,6 @@ def getKernels():
 
 def writeTestMetaKernel():
     # Update the paths!
-    cwd = os.path.realpath(os.path.dirname(__file__))
     with open('{0}/testKernels.txt'.format(cwd), 'w') as kernelFile:
         kernelFile.write('\\begindata\n')
         kernelFile.write('KERNELS_TO_LOAD = (\n')

@@ -8,6 +8,7 @@ import os
 cwd = os.path.realpath(os.path.dirname(__file__))
 _testKernelPath = cwd + "/testKernels.txt"
 
+
 def test_appndc():
     assert 1
 
