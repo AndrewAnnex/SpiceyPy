@@ -13,7 +13,6 @@ def getKernel(url):
     #urllib.request.urlretrieve(url, kernelName)
     with open('{0}/{1}'.format(cwd, kernelName), "wb") as kernel:
         kernel.write(urllib.request.urlopen(url).read())
-        kernel.close()
 
 
 def getKernels():

@@ -7,7 +7,7 @@ instnm = 'CASSINI_ISS_NAC'
 time = '2004 jun 11 19:32:00'
 
 # You must download the needed kernels, please read testMetaK.txt for links
-spice.furnsh('./testMetaK.txt')
+spice.furnsh('./old/testMetaK.txt')
 
 et = spice.str2et(time)
 print("Epoch: ", et)
