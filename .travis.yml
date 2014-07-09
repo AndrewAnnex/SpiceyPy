@@ -10,7 +10,6 @@ before_install:
     - pip install coveralls
     - pip install pytest
     - pip install six
-    - python ./test/gettestkernels.py
 install:
     - python setup.py install
 # run tests
