@@ -10,7 +10,6 @@ cwd = os.path.realpath(os.path.dirname(__file__))
 def getKernel(url):
     kernelName = url.split('/')[-1]
     print('Downloading: {0}'.format(kernelName))
-    #urllib.request.urlretrieve(url, kernelName)
     with open('{0}/{1}'.format(cwd, kernelName), "wb") as kernel:
         kernel.write(urllib.request.urlopen(url).read())
 

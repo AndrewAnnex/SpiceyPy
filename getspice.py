@@ -1,25 +1,36 @@
 #!/usr/bin/env python3
 __author__ = 'Apollo117'
 
-# Sources: mostly from DaRasch, spiceminer/getcspice.py, with edits as needed for python3
+# Sources: mostly from DaRasch, spiceminer/getcspice.py,
+# with edits as needed for python2/3 compatibility
 # https://github.com/DaRasch/spiceminer/blob/master/getcspice.py
 import os
 import sys
 import platform
-
-#Python 2 and 3 compatibility
-try:
-    # Python 3 urllib
-    from urllib.request import urlopen
-except ImportError:
-    # Fallback for python2
-    from urllib2 import urlopen
+from six.moves import urllib
 import io
 import zipfile
 import subprocess
 
 
 def getSpice():
+
+    def give_points(dct, info):
+        for key in dct:
+            if info in key:
+                dct[key] += 1
+
+    def get_winner(dct):
+        candidates = list(dct.keys())
+        values = list(dct.values())
+        winner = candidates[0]
+        winner_value = 0
+        for cand, value in zip(candidates, values):
+            if value > winner_value:
+                winner_value = value
+                winner = cand
+        return winner
+
     root_url = 'http://naif.jpl.nasa.gov/pub/naif/toolkit/C/'
     platform_urls = [
         'MacIntel_OSX_AppleC_32bit/',
@@ -34,11 +45,6 @@ def getSpice():
     print('Gathering information...')
     points = {url: 0 for url in platform_urls}
 
-    def give_points(dct, info):
-        for key in dct:
-            if info in key:
-                dct[key] += 1
-
     system = platform.system()
     if system == 'Darwin':
         system = 'Mac'
@@ -52,17 +58,6 @@ def getSpice():
     print('MACHINE:  ', machine)
     give_points(points, machine)
 
-    def get_winner(dct):
-        candidates = list(dct.keys())
-        values = list(dct.values())
-        winner = candidates[0]
-        winner_value = 0
-        for cand, value in zip(candidates, values):
-            if value > winner_value:
-                winner_value = value
-                winner = cand
-        return winner
-
     result = get_winner(points) + 'packages/cspice.tar.Z'
     print('Best option:', result.split('/')[0])
 
@@ -71,7 +66,7 @@ def getSpice():
     #archive_path = os.path.join(root_dir, result.split('/')[1])
 
     print('\nDownloading...')
-    download = urlopen(root_url + result)
+    download = urllib.request.urlopen(root_url + result)
 
     print('Unpacking... (this may take some time!)')
     if result[:-3] == 'zip':
