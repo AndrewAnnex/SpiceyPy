@@ -1,6 +1,7 @@
 # Collection of supporting functions for wrapper functions
 __author__ = 'Apollo117'
 import ctypes
+from ctypes import c_char_p
 import numpy
 import six
 
@@ -23,6 +24,8 @@ def toBoolVector(x):
 
 def toPythonString(inString):
     if six.PY2:
+        if isinstance(inString, c_char_p):
+            return toPythonString(inString.value)
         return inString.split('\x00')[0]
     elif six.PY3:
         return bytes.decode(inString.value)

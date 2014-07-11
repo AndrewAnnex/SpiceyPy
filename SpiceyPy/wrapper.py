@@ -1444,9 +1444,10 @@ def erract(op, lenout, action=None):
         action = ""
     lenout = ctypes.c_int(lenout)
     op = stypes.strtocharpoint(op)
-    action = stypes.strtocharpoint(action)
-    libspice.erract_c(op, lenout, action)
-    return stypes.toPythonString(action)
+    action = ctypes.create_string_buffer(str.encode(action), lenout.value)
+    actionptr = ctypes.c_char_p(ctypes.addressof(action))
+    libspice.erract_c(op, lenout, actionptr)
+    return stypes.toPythonString(actionptr)
 
 
 def errch(marker, string):
@@ -1516,7 +1517,7 @@ def et2lst(et, body, lon, typein, timlen, ampmlen):
     ampm = stypes.strtocharpoint(ampmlen)
     libspice.et2lst(et, body, lon, typein, timlen, ampmlen,
                     ctypes.byref(hr), ctypes.byref(mn), ctypes.byref(sc), time, ampm)
-    return hr.value, mn.value, sc.value, stypes.toPythonString(time.value), stypes.toPythonString(ampm.value)
+    return hr.value, mn.value, sc.value, stypes.toPythonString(time), stypes.toPythonString(ampm)
 
 
 def et2utc(et, formatStr, prec, lenout):
