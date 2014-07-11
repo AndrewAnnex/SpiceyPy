@@ -23,7 +23,7 @@ def toBoolVector(x):
 
 def toPythonString(inString):
     if six.PY2:
-        return inString
+        return inString.split('\x00')[0]
     elif six.PY3:
         return bytes.decode(inString.value)
 

@@ -1519,7 +1519,6 @@ def et2lst(et, body, lon, typein, timlen, ampmlen):
 
 
 def et2utc(et, formatStr, prec, lenout):
-    #Todo: test et2utc
     et = ctypes.c_double(et)
     prec = ctypes.c_int(prec)
     lenout = ctypes.c_int(lenout)
@@ -1535,7 +1534,7 @@ def etcal(et, lenout):
     lenout = ctypes.c_int(lenout)
     string = stypes.strtocharpoint(lenout)
     libspice.etcal_c(et, lenout, string)
-    return string.value
+    return stypes.toPythonString(string)
 
 
 def eul2m(angle3, angle2, angle1, axis3, axis2, axis1):
@@ -4298,7 +4297,7 @@ def tparse(instring, lenout):
     instring = stypes.strtocharpoint(instring)
     sp2000 = ctypes.c_double()
     libspice.tparse_c(instring, lenout, ctypes.POINTER(sp2000), errmsg)
-    return sp2000.value, errmsg
+    return sp2000.value, stypes.toPythonString(errmsg)
 
 
 def tpictr(sample, lenout, lenerr):
