@@ -72,7 +72,7 @@ def bodc2n(code, lenout):
     lenout = ctypes.c_int(lenout)
     found = ctypes.c_bool(0)
     libspice.bodc2n_c(code, lenout, name, ctypes.byref(found))
-    return name.value
+    return stypes.toPythonString(name)
 
 
 def bodc2s(code, lenout):
@@ -81,7 +81,7 @@ def bodc2s(code, lenout):
     name = stypes.strtocharpoint(" "*lenout)
     lenout = ctypes.c_int(lenout)
     libspice.bodc2s_c(code, lenout, name)
-    return name.value
+    return stypes.toPythonString(name)
 
 
 def boddef(name, code):
@@ -416,7 +416,7 @@ def cmprss(delim, n, instr, lenout):
     lenout = ctypes.c_int(lenout)
     output = stypes.strtocharpoint(lenout)
     libspice.cmprss_c(delim, n, instr, lenout, output)
-    return output.value
+    return stypes.toPythonString(output)
 
 
 def cnmfrm(cname, lenout):
@@ -427,7 +427,7 @@ def cnmfrm(cname, lenout):
     found = ctypes.c_bool()
     frcode = ctypes.c_int()
     libspice.cnmfrm_c(cname, lenout, ctypes.byref(frcode), frname, ctypes.byref(found))
-    return frcode.value, frname.value, found.value
+    return frcode.value, stypes.toPythonString(frname), found.value
 
 
 def conics(elts, et):
@@ -603,7 +603,7 @@ def dafgn(lenout):
     lenout = ctypes.c_int(lenout)
     name = stypes.strtocharpoint(lenout)
     libspice.dafgn_c(lenout, name)
-    return name.value
+    return stypes.toPythonString(name)
 
 
 def dafgs():
@@ -673,7 +673,7 @@ def dafrfr(handle, lenout):
     bward = ctypes.c_int()
     free = ctypes.c_int()
     libspice.dafrfr_c(handle, lenout, ctypes.byref(nd), ctypes.byref(ni), ifname, ctypes.byref(fward), ctypes.byref(bward), ctypes.byref(free))
-    return nd.value, ni.value, ifname.value, fward.value, bward.value, free.value
+    return nd.value, ni.value, stypes.toPythonString(ifname), fward.value, bward.value, free.value
 
 
 def dafrs(insum):
@@ -737,6 +737,7 @@ def dcyldr(x, y, z):
     z = ctypes.c_double(z)
     jacobi = stypes.doubleMatrix()
     libspice.dcyldr_c(x, y, z, jacobi)
+    return stypes.matrixToList(jacobi)
 
 
 def deltet(epoch, eptype):
@@ -800,6 +801,7 @@ def dlatdr(x, y, z):
     z = ctypes.c_double(z)
     jacobi = stypes.doubleMatrix()
     libspice.dlatdr_c(x, y, z, jacobi)
+    return stypes.matrixToList(jacobi)
 
 
 def dp2hx(number, lenout):
@@ -813,7 +815,7 @@ def dp2hx(number, lenout):
     string = stypes.strtocharpoint(lenout)
     length = ctypes.c_int()
     libspice.dp2hx_c(number, lenout, string, ctypes.byref(length))
-    return string.value, length.value
+    return stypes.toPythonString(string), length.value
 
 
 def dpgrdr(body, x, y, z, re, f):
@@ -915,7 +917,7 @@ def dtpool(name):
     n = ctypes.c_int()
     typeout = ctypes.c_char()
     libspice.dtpool_c(name, ctypes.byref(found), ctypes.byref(n), ctypes.byref(typeout))
-    return found.value, n.value, typeout.value
+    return found.value, n.value, stypes.toPythonString(typeout)
 
 
 def ducrss(s1, s2):
@@ -1115,7 +1117,7 @@ def ekcii(table, cindex, lenout):
     column = stypes.strtocharpoint(lenout)
     attdsc = stypes.SpiceEKAttDsc()
     libspice.ekcii_c(table, cindex, lenout, column, ctypes.byref(attdsc))
-    return column.value, attdsc
+    return stypes.toPythonString(column), attdsc
 
 
 def ekcls(handle):
@@ -1151,7 +1153,7 @@ def ekfind(query, lenout):
     error = ctypes.c_bool()
     errmsg = stypes.strtocharpoint(lenout)
     libspice.ekfind(query, lenout, ctypes.byref(nmrows), ctypes.byref(error), errmsg)
-    return nmrows.value, error.value, errmsg
+    return nmrows.value, error.value, stypes.toPythonString(errmsg)
 
 
 def ekgc(selidx, row, element, lenout):
@@ -1164,7 +1166,7 @@ def ekgc(selidx, row, element, lenout):
     found = ctypes.c_bool()
     cdata = stypes.strtocharpoint(lenout)
     libspice.ekgc_c(selidx, row, element, lenout, cdata, null, found)
-    return cdata.value, null.value, found.value
+    return stypes.toPythonString(cdata), null.value, found.value
 
 
 def ekgd(selidx, row, element):
@@ -1293,7 +1295,7 @@ def ekpsel(query, msglen, tablen, collen):
     error = ctypes.c_bool()
     errmsg = stypes.strtocharpoint(msglen)
     libspice.ekpsel_c(query, msglen, tablen, collen, ctypes.byref(n), ctypes.byref(xbegs), ctypes.byref(xends), ctypes.byref(xtypes), ctypes.byref(xclass), ctypes.byref(tabs), ctypes.byref(cols), ctypes.byref(error), ctypes.byref(errmsg))
-    return n.value, xbegs.value, xends.value, xtypes.value, xclass.value, stypes.vectorToList(tabs), stypes.vectorToList(cols), error.value, errmsg.value
+    return n.value, xbegs.value, xends.value, xtypes.value, xclass.value, stypes.vectorToList(tabs), stypes.vectorToList(cols), error.value, stypes.toPythonString(errmsg)
 
 
 def ekrcec(handle, segno, recno, column, lenout, nelts=3):
@@ -1351,7 +1353,7 @@ def ektnam(n, lenout):
     lenout = ctypes.c_int(lenout)
     table = stypes.strtocharpoint(lenout)
     libspice.ektnam_c(n, lenout, table)
-    return table.value
+    return stypes.toPythonString(table.value)
 
 
 def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
@@ -1446,7 +1448,7 @@ def erract(op, lenout, action=None):
     action = ctypes.create_string_buffer(str.encode(action), lenout.value)
     actionptr = ctypes.c_char_p(ctypes.addressof(action))
     libspice.erract_c(op, lenout, actionptr)
-    return bytes.decode(actionptr.value)
+    return stypes.toPythonString(actionptr)
 
 
 def errch(marker, string):
@@ -1463,7 +1465,7 @@ def errdev(op, lenout, device):
     device = ctypes.create_string_buffer(str.encode(device), lenout.value)
     deviceptr = ctypes.c_char_p(ctypes.addressof(device))
     libspice.errdev_c(op, lenout, deviceptr)
-    return bytes.decode(deviceptr.value)
+    return stypes.toPythonString(deviceptr)
 
 
 def errdp(marker, number):
@@ -1489,7 +1491,7 @@ def errprt(op, lenout, inlist):
     inlist = ctypes.create_string_buffer(str.encode(inlist), lenout.value)
     inlistptr = ctypes.c_char_p(ctypes.addressof(inlist))
     libspice.errdev_c(op, lenout, inlistptr)
-    return bytes.decode(inlistptr.value)
+    return stypes.toPythonString(inlistptr)
 
 
 def esrchc(value, ndim, lenvals, array):
@@ -1514,8 +1516,9 @@ def et2lst(et, body, lon, typein, timlen, ampmlen):
     sc = ctypes.c_int()
     time = stypes.strtocharpoint(timlen)
     ampm = stypes.strtocharpoint(ampmlen)
-    libspice.et2lst(et, body, lon, typein, timlen, ampmlen, ctypes.byref(hr), ctypes.byref(mn), ctypes.byref(sc), time, ampm)
-    return hr.value, mn.value, sc.value, time.value, ampm.value
+    libspice.et2lst(et, body, lon, typein, timlen, ampmlen,
+                    ctypes.byref(hr), ctypes.byref(mn), ctypes.byref(sc), time, ampm)
+    return hr.value, mn.value, sc.value, stypes.toPythonString(time.value), stypes.toPythonString(ampm.value)
 
 
 def et2utc(et, formatStr, prec, lenout):
@@ -1610,7 +1613,7 @@ def frmnam(frcode, lenout):
     lenout = ctypes.c_int(lenout)
     frname = stypes.strtocharpoint(lenout)
     libspice.frmnam_c(frcode, lenout, frname)
-    return frname.value
+    return stypes.toPythonString(frname)
 
 
 def ftncls(unit):
@@ -1687,7 +1690,7 @@ def getfat(file, arclen, typlen):
     arch = stypes.strtocharpoint(arclen)
     rettype = stypes.strtocharpoint(typlen)
     libspice.getfat_c(file, arclen, typlen, arch, rettype)
-    return arch.value, rettype.value
+    return stypes.toPythonString(arch), stypes.toPythonString(rettype)
 
 
 def getfov(instid, room, shapelen, framelen):
@@ -1702,7 +1705,7 @@ def getfov(instid, room, shapelen, framelen):
     n = ctypes.c_int(0)
     bounds = stypes.doubleMatrix(x=3, y=4)
     libspice.getfov_c(instid, room, shapelen, framelen, shape, framen, bsight, ctypes.byref(n), bounds)
-    return shape.value, framen.value, stypes.vectorToList(bsight), stypes.matrixToList(bounds)
+    return stypes.toPythonString(shape), stypes.toPythonString(framen), stypes.vectorToList(bsight), stypes.matrixToList(bounds)
 
 
 def getmsg(option, lenout):
@@ -1711,7 +1714,7 @@ def getmsg(option, lenout):
     lenout = ctypes.c_int(lenout)
     msg = stypes.strtocharpoint(lenout)
     libspice.getmsg_c(option, lenout, msg)
-    return msg.value
+    return stypes.toPythonString(msg)
 
 
 def gfbail():
@@ -2003,7 +2006,7 @@ def hx2dp(string, lenout):
     number = ctypes.c_int()
     error = ctypes.c_bool()
     libspice.hx2dp_c(string, lenout, ctypes.byref(number), ctypes.byref(error), errmsg)
-    return number.value, error.value, errmsg
+    return number.value, error.value, stypes.toPythonString(errmsg)
 
 
 ########################################################################################################################
@@ -2238,7 +2241,7 @@ def kdata(which, kind, fillen, typlen, srclen):
     handle = ctypes.c_int()
     found = ctypes.c_bool()
     libspice.kdata_c(which, kind, fillen, typlen, srclen, file, filtyp, source, ctypes.byref(handle), ctypes.byref(found))
-    return file.value, filtyp.value, source.value, handle.value, found.value
+    return stypes.toPythonString(file), stypes.toPythonString(filtyp), stypes.toPythonString(source), handle.value, found.value
 
 
 def kinfo(file, typlen, srclen):
@@ -2251,7 +2254,7 @@ def kinfo(file, typlen, srclen):
     handle = ctypes.c_int()
     found = ctypes.c_bool()
     libspice.kinfo_c(file, typlen, srclen, filtyp, source, ctypes.byref(handle), ctypes.byref(found))
-    return filtyp.value, source.value, handle.value, found.value
+    return stypes.toPythonString(filtyp), stypes.toPythonString(source), handle.value, found.value
 
 
 def ktotal(kind):
@@ -2273,7 +2276,7 @@ def kxtrct(keywd, termlen, terms, nterms, stringlen, substrlen, string):
     substrlen = ctypes.c_int(substrlen)
     found = ctypes.c_bool()
     libspice.kxtrct_c(keywd, termlen, terms, nterms, stringlen, substrlen, ctypes.byref(string), ctypes.byref(found), ctypes.byref(substr))
-    return string.value, found.value, substr.value
+    return stypes.toPythonString(string), found.value, stypes.toPythonString(substr)
 
 
 ########################################################################################################################
@@ -2326,7 +2329,7 @@ def lcase(instr, lenout):
     lenout = ctypes.c_int(lenout)
     outstr = stypes.strtocharpoint(lenout)
     libspice.lcase_c(instr, lenout, outstr)
-    return outstr.value
+    return stypes.toPythonString(outstr)
 
 
 def ldpool(filename):
@@ -2722,6 +2725,7 @@ def npelpt(point, ellips):
     pnear = stypes.doubleVector(3)
     dist = ctypes.c_double()
     libspice.npelpt_c(point, ctypes.byref(ellips), pnear, ctypes.byref(dist))
+    return stypes.vectorToList(pnear), dist.value
 
 
 def nplnpt(linpt, lindir, point):
@@ -2748,6 +2752,7 @@ def nvp2pl(normal, point):
     point = stypes.toDoubleVector(point)
     plane = stypes.Plane()
     libspice.nvp2pl_c(normal, point, ctypes.byref(plane))
+    return plane
 
 
 ########################################################################################################################
@@ -3200,7 +3205,7 @@ def repmc(instr, marker, value, lenout):
     lenout = ctypes.c_int(lenout)
     out = stypes.strtocharpoint(lenout)
     libspice.repmc_c(instr, marker, value, lenout, out)
-    return out.value
+    return stypes.toPythonString(out)
 
 
 def repmct(instr, marker, value, repcase, lenout):
@@ -3212,7 +3217,7 @@ def repmct(instr, marker, value, repcase, lenout):
     lenout = ctypes.c_int(lenout)
     out = stypes.strtocharpoint(lenout)
     libspice.repmct_c(instr, marker, value, repcase, lenout, out)
-    return out.value
+    return stypes.toPythonString(out)
 
 
 def repmd(instr, marker, value, sigdig, lenout):
@@ -3224,7 +3229,7 @@ def repmd(instr, marker, value, sigdig, lenout):
     lenout = ctypes.c_int(lenout)
     out = stypes.strtocharpoint(lenout)
     libspice.repmd_c(instr, marker, value, sigdig, lenout, out)
-    return out.value
+    return stypes.toPythonString(out)
 
 
 def repmf(instr, marker, value, sigdig, informat, lenout):
@@ -3237,7 +3242,7 @@ def repmf(instr, marker, value, sigdig, informat, lenout):
     informat = ctypes.c_char(informat)
     out = stypes.strtocharpoint(lenout)
     libspice.repmf(instr, marker, value, sigdig, informat, lenout, out)
-    return out.value
+    return stypes.toPythonString(out)
 
 
 def repmi(instr, marker, value, lenout):
@@ -3248,7 +3253,7 @@ def repmi(instr, marker, value, lenout):
     lenout = ctypes.c_int(lenout)
     out = stypes.strtocharpoint(lenout)
     libspice.repmi_c(instr, marker, value, lenout, out)
-    return out.value
+    return stypes.toPythonString(out)
 
 
 def repmot(instr, marker, value, repcase, lenout):
@@ -3260,7 +3265,7 @@ def repmot(instr, marker, value, repcase, lenout):
     lenout = ctypes.c_int(lenout)
     out = stypes.strtocharpoint(lenout)
     libspice.repmot_c(instr, marker, value, repcase, lenout, out)
-    return out.value
+    return stypes.toPythonString(out)
 
 
 def reset():
@@ -3344,7 +3349,7 @@ def scdecd(sc, sclkdp, lenout, MXPART=None):
     sclkch = stypes.strtocharpoint(" "*lenout)
     lenout = ctypes.c_int(lenout)
     libspice.scdecd_c(sc, sclkdp, lenout, sclkch)
-    return sclkch
+    return stypes.toPythonString(sclkch)
 
 
 def sce2c(sc, et):
@@ -3363,7 +3368,7 @@ def sce2s(sc, et, lenout):
     sclkch = stypes.strtocharpoint(" " * lenout)
     lenout = ctypes.c_int(lenout)
     libspice.sce2s_c(sc, et, lenout, sclkch)
-    return sclkch
+    return stypes.toPythonString(sclkch)
 
 
 def sce2t(sc, et):
@@ -3391,7 +3396,7 @@ def scfmt(sc, ticks, lenout):
     clkstr = stypes.strtocharpoint(lenout)
     lenout = ctypes.c_int(lenout)
     libspice.scfmt_c(sc, ticks, lenout, clkstr)
-    return clkstr
+    return stypes.toPythonString(clkstr)
 
 
 def scpart(sc, nparts, pstart, MXPART=None):
@@ -4096,7 +4101,7 @@ def stpool(item, nth, contin, lenout):
     found = ctypes.c_bool()
     size = ctypes.c_int()
     libspice.stpool_c(item, nth, contin, lenout, strout, ctypes.byref(size), ctypes.byref(found))
-    return strout, size.value, found.value
+    return stypes.toPythonString(strout), size.value, found.value
 
 
 def str2et(time):
@@ -4252,7 +4257,7 @@ def timdef(action, item, lenout, value=None):
     else:
         value = stypes.strtocharpoint(value)
     libspice.timdef_c(action, item, lenout, value)
-    return value
+    return stypes.toPythonString(value)
 
 
 def timout(et, pictur, lenout):
@@ -4262,7 +4267,7 @@ def timout(et, pictur, lenout):
     et = ctypes.c_double(et)
     lenout = ctypes.c_int(lenout)
     libspice.timout_c(et, pictur, lenout, output)
-    return output
+    return stypes.toPythonString(output)
 
 
 def tipbod(ref, body, et):
@@ -4359,7 +4364,7 @@ def ucase(inchar, lenout):
     outchar = stypes.strtocharpoint(lenout)
     lenout = ctypes.c_int(lenout)
     libspice.ucase_c(inchar, lenout, outchar)
-    return outchar.value
+    return stypes.toPythonString(outchar)
 
 
 def ucrss(v1, v2):
