@@ -5,11 +5,11 @@ python:
  - 3.4
 # install dependencies
 before_install:
-    - pip install numpy
-    - pip install coverage
-    - pip install coveralls
-    - pip install pytest
-    - pip install six
+    - pip install --use-mirrors numpy
+    - pip install --use-mirrors coverage
+    - pip install --use-mirrors coveralls
+    - pip install --use-mirrors pytest
+    - pip install --use-mirrors six
 install:
     - python setup.py install
 # run tests

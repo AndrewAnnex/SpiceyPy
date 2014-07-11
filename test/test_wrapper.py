@@ -644,7 +644,7 @@ def test_et2utc():
     spice.furnsh(_testKernelPath)
     et = -527644192.5403653
     output = spice.et2utc(et, "J", 6, 35)
-    assert output == b"JD 2445438.006415"
+    assert output == "JD 2445438.006415"
     spice.kclear()
 
 
@@ -689,6 +689,7 @@ def test_ftncls():
 
 
 def test_furnsh():
+    spice.kclear()
     spice.furnsh(_testKernelPath)
     # 3 kernels + the meta kernel = 4
     assert spice.ktotal("ALL") == 4
@@ -1808,7 +1809,7 @@ def test_tparse():
 def test_tpictr():
     testString = "10:23 P.M. PDT January 3, 1993"
     pictur, ok, err = spice.tpictr(testString, 80, 80)
-    assert pictur == b"AP:MN AMPM PDT Month DD, YYYY ::UTC-7"
+    assert pictur == "AP:MN AMPM PDT Month DD, YYYY ::UTC-7"
 
 
 def test_trace():

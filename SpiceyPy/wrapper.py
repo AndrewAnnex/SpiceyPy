@@ -1526,7 +1526,7 @@ def et2utc(et, formatStr, prec, lenout):
     formatStr = stypes.strtocharpoint(formatStr)
     utcstr = stypes.strtocharpoint(lenout)
     libspice.et2utc_c(et, formatStr, prec, lenout, utcstr)
-    return utcstr.value
+    return stypes.toPythonString(utcstr)
 
 
 def etcal(et, lenout):
@@ -4310,7 +4310,7 @@ def tpictr(sample, lenout, lenerr):
     lenerr = ctypes.c_int(lenerr)
     ok = ctypes.c_bool()
     libspice.tpictr_c(sample, lenout, lenerr, pictur, ctypes.byref(ok), errmsg)
-    return pictur.value, ok.value, errmsg.value
+    return stypes.toPythonString(pictur), ok.value, stypes.toPythonString(errmsg)
 
 
 def trace(matrix):

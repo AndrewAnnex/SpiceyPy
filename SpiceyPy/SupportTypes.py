@@ -2,6 +2,7 @@
 __author__ = 'Apollo117'
 import ctypes
 import numpy
+import six
 
 
 def toDoubleVector(x):
@@ -18,6 +19,13 @@ def toIntVector(x):
 
 def toBoolVector(x):
     return BoolArray.from_param(param=x)
+
+
+def toPythonString(inString):
+    if six.PY2:
+        return inString
+    elif six.PY3:
+        return bytes.decode(inString.value)
 
 
 def listtocharvector(x):
