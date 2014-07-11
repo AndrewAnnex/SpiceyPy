@@ -608,7 +608,8 @@ def test_eqstr():
 
 
 def test_erract():
-    assert 1
+    assert spice.erract("GET", 10, "") == "REPORT"
+    assert spice.erract("GET", 10) == "REPORT"
 
 
 def test_errch():
@@ -640,7 +641,11 @@ def test_et2lst():
 
 
 def test_et2utc():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    et = -527644192.5403653
+    output = spice.et2utc(et, "J", 6, 35)
+    assert output == b"JD 2445438.006415"
+    spice.kclear()
 
 
 def test_etcal():
@@ -1801,7 +1806,9 @@ def test_tparse():
 
 
 def test_tpictr():
-    assert 1
+    testString = "10:23 P.M. PDT January 3, 1993"
+    pictur, ok, err = spice.tpictr(testString, 80, 80)
+    assert pictur == b"AP:MN AMPM PDT Month DD, YYYY ::UTC-7"
 
 
 def test_trace():
@@ -1853,7 +1860,12 @@ def test_unitim():
 
 
 def test_unload():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    # 3 kernels + the meta kernel = 4
+    assert spice.ktotal("ALL") == 4
+    spice.unload(_testKernelPath)
+    assert spice.ktotal("ALL") == 0
+    spice.kclear()
 
 
 def test_unorm():

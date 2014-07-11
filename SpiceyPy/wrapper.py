@@ -1437,8 +1437,10 @@ def eqstr(a, b):
     return libspice.eqstr_c(stypes.strtocharpoint(a), stypes.strtocharpoint(b))
 
 
-def erract(op, lenout, action):
+def erract(op, lenout, action=None):
     #erract works, new method for dealing with returned strings/buffers
+    if action is None:
+        action = ""
     lenout = ctypes.c_int(lenout)
     op = stypes.strtocharpoint(op)
     action = ctypes.create_string_buffer(str.encode(action), lenout.value)
@@ -4307,8 +4309,8 @@ def tpictr(sample, lenout, lenerr):
     lenout = ctypes.c_int(lenout)
     lenerr = ctypes.c_int(lenerr)
     ok = ctypes.c_bool()
-    libspice.tpictr_c(sample, lenout, lenerr, pictur, ctypes.POINTER(ok), errmsg)
-    return pictur, ok.value, errmsg
+    libspice.tpictr_c(sample, lenout, lenerr, pictur, ctypes.byref(ok), errmsg)
+    return pictur.value, ok.value, errmsg.value
 
 
 def trace(matrix):
