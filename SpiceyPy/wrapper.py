@@ -1440,15 +1440,13 @@ def eqstr(a, b):
 
 
 def erract(op, lenout, action=None):
-    #erract works, new method for dealing with returned strings/buffers
     if action is None:
         action = ""
     lenout = ctypes.c_int(lenout)
     op = stypes.strtocharpoint(op)
-    action = ctypes.create_string_buffer(str.encode(action), lenout.value)
-    actionptr = ctypes.c_char_p(ctypes.addressof(action))
-    libspice.erract_c(op, lenout, actionptr)
-    return stypes.toPythonString(actionptr)
+    action = stypes.strtocharpoint(action)
+    libspice.erract_c(op, lenout, action)
+    return stypes.toPythonString(action)
 
 
 def errch(marker, string):
