@@ -350,11 +350,11 @@ BITSIZE = {'char': ctypes.sizeof(ctypes.c_char), 'int': ctypes.sizeof(ctypes.c_i
 
 
 def _char_getter(data_p, index, length):
-    return (ctypes.c_char * length).from_address(data_p + index * BITSIZE['char']).value
+    return toPythonString((ctypes.c_char * length).from_address(data_p + index * BITSIZE['char']))
 
 
 def _double_getter(data_p, index, length):
-    return toPythonString(ctypes.c_double.from_address(data_p + index * BITSIZE['double']))
+    return ctypes.c_double.from_address(data_p + index * BITSIZE['double']).value
 
 
 def _int_getter(data_p, index, length):
