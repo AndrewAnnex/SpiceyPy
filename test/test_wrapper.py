@@ -100,39 +100,80 @@ def test_bodvar():
 
 
 def test_bodvcd():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    dim, values = spice.bodvcd(399, "RADII", 3)
+    assert dim == 3
+    expected = np.array([6378.140, 6378.140, 6356.755])
+    np.testing.assert_array_almost_equal(expected, values, decimal = 1)
+    spice.kclear()
 
 
 def test_bodvrd():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    dim, values = spice.bodvrd("EARTH", "RADII", 3)
+    assert dim == 3
+    expected = np.array([6378.140, 6378.140, 6356.755])
+    np.testing.assert_array_almost_equal(expected, values, decimal = 1)
+    spice.kclear()
 
 
 def test_brcktd():
-    assert 1
+    assert spice.brcktd(-1.0, 1.0, 10.0) == 1.0
+    assert spice.brcktd(29.0, 1.0, 10.0) == 10.0
+    assert spice.brcktd(3.0, -10.0, 10.0) == 3.0
+    assert spice.brcktd(3.0, -10.0, -1.0) == -1.0
 
 
 def test_brckti():
-    assert 1
+    assert spice.brckti(-1, 1, 10) == 1
+    assert spice.brckti(29, 1, 10) == 10
+    assert spice.brckti(3, -10, 10) == 3
+    assert spice.brckti(3, -10, -1) == -1
 
 
 def test_bschoc():
-    assert 1
+    array = ["FEYNMAN", "BOHR", "EINSTEIN", "NEWTON", "GALILEO"]
+    order = [1, 2, 0, 4, 3]
+    lenvals = 10
+    assert spice.bschoc("NEWTON", 5, lenvals, array, order) == 3
+    assert spice.bschoc("EINSTEIN", 5, lenvals, array, order) == 2
+    assert spice.bschoc("GALILEO", 5, lenvals, array, order) == 4
+    assert spice.bschoc("Galileo", 5, lenvals, array, order) == -1
+    assert spice.bschoc("BETHE", 5, lenvals, array, order) == -1
 
 
 def test_bschoi():
-    assert 1
+    array = [100, 1, 10, 10000, 1000]
+    order = [1, 2, 0, 4, 3]
+    assert spice.bschoi(1000, 5, array, order) == 4
+    assert spice.bschoi(1, 5, array, order) == 1
+    assert spice.bschoi(10000, 5, array, order) == 3
+    assert spice.bschoi(-1, 5, array, order) == -1
+    assert spice.bschoi(17, 5, array, order) == -1
 
 
 def test_bsrchc():
-    assert 1
+    array = ["BOHR", "EINSTEIN", "FEYNMAN", "GALILEO", "NEWTON"]
+    lenvals = 10
+    assert spice.bsrchc("NEWTON", 5, lenvals, array) == 4
+    assert spice.bsrchc("EINSTEIN", 5, lenvals, array) == 1
+    assert spice.bsrchc("GALILEO", 5, lenvals, array) == 3
+    assert spice.bsrchc("Galileo", 5, lenvals, array) == -1
+    assert spice.bsrchc("BETHE", 5, lenvals, array) == -1
 
 
 def test_bsrchd():
-    assert 1
+    array = np.array([-11.0, 0.0, 22.0, 750.0])
+    assert spice.bsrchd(-11.0, 4, array) == 0
+    assert spice.bsrchd(22.0, 4, array) == 2
+    assert spice.bsrchd(751.0, 4, array) == -1
 
 
 def test_bsrchi():
-    assert 1
+    array = np.array([-11, 0, 22, 750])
+    assert spice.bsrchi(-11, 4, array) == 0
+    assert spice.bsrchi(22, 4, array) == 2
+    assert spice.bsrchi(751, 4, array) == -1
 
 
 def test_card():
@@ -880,7 +921,7 @@ def test_inelpl():
 
 def test_inrypl():
     spice.furnsh(_testKernelPath)
-    radii = spice.bodvrd("SATURN", "RADII", 3)
+    dim, radii = spice.bodvrd("SATURN", "RADII", 3)
     vertex = [3.0 * radii[0], 0.0, radii[2] * 0.5]
     dire = [0.0, np.cos(30.0 * spice.rpd()), -1.0 * np.sin(30.0 * spice.rpd())]
     normal = [0.0, 0.0, 1.0]

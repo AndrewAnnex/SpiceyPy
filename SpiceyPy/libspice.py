@@ -28,14 +28,17 @@ libspice.bodfnd_c.argtypes = [ctypes.c_int, ctypes.c_char_p]
 libspice.bodfnd_c.restype = ctypes.c_bool
 libspice.bodn2c_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_bool)]
 libspice.bods2c_c.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_bool)]
-libspice.bodvar_c.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.POINTER(ctypes.c_int), (ctypes.c_double * 3)] # last one is some vector.. work on this
-libspice.bodvcd_c.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.c_double]
-libspice.bodvrd_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_int), (ctypes.c_double * 3)]
+libspice.bodvar_c.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.POINTER(ctypes.c_int), ctypes.c_void_p]
+libspice.bodvcd_c.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_int),
+                              ctypes.c_void_p]
+libspice.bodvrd_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_int),
+                              ctypes.c_void_p]
 libspice.brcktd_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double]
 libspice.brcktd_c.restype = ctypes.c_double
 libspice.brckti_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int]
 libspice.brckti_c.restype = ctypes.c_int
-libspice.bschoc_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_char_p), ctypes.POINTER(ctypes.c_int)]
+libspice.bschoc_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_char_p,
+                              ctypes.POINTER(ctypes.c_int)]
 libspice.bschoc_c.restype = ctypes.c_int
 libspice.bschoi_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
 libspice.bschoi_c.restype = ctypes.c_int
