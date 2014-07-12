@@ -19,7 +19,7 @@ libspice.axisar_c.argtypes = [(ctypes.c_double * 3), ctypes.c_double, (ctypes.c_
 # B
 libspice.b1900_c.restype = ctypes.c_double
 libspice.b1950_c.restype = ctypes.c_double
-libspice.bodc2n_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
+libspice.bodc2n_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
 libspice.bodc2s_c.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_char_p]
 libspice.boddef_c.argtypes = [ctypes.c_char_p, ctypes.c_int]
 libspice.badkpv_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_char_p]

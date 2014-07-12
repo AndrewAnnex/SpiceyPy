@@ -62,21 +62,22 @@ def badkpv(caller, name, comp, insize, divby, intype):
     insize = ctypes.c_int(insize)
     divby = ctypes.c_int(divby)
     intype = stypes.strtocharpoint(intype)
-    return libspice.badkpv(caller, name, comp, insize, divby, intype)
+    return libspice.badkpv_c(caller, name, comp, insize, divby, intype)
 
 
 def bodc2n(code, lenout):
-    #todo: test bodc2n
     code = ctypes.c_int(code)
     name = stypes.strtocharpoint(" "*lenout)
     lenout = ctypes.c_int(lenout)
-    found = ctypes.c_bool(0)
+    found = ctypes.c_bool()
     libspice.bodc2n_c(code, lenout, name, ctypes.byref(found))
-    return stypes.toPythonString(name)
+    if found.value:
+        return stypes.toPythonString(name)
+    else:
+        return None
 
 
 def bodc2s(code, lenout):
-    #todo: test bodc2s
     code = ctypes.c_int(code)
     name = stypes.strtocharpoint(" "*lenout)
     lenout = ctypes.c_int(lenout)
@@ -95,7 +96,7 @@ def boddef(name, code):
 def bodfnd(body, item):
     body = ctypes.c_int(body)
     item = stypes.strtocharpoint(item)
-    return libspice.bodfnd(body, item)
+    return libspice.bodfnd_c(body, item)
 
 
 def bodn2c(name):
@@ -110,7 +111,6 @@ def bodn2c(name):
 
 
 def bods2c(name):
-    #Todo: test bods2c
     name = stypes.strtocharpoint(name)
     code = ctypes.c_int(0)
     found = ctypes.c_bool(0)
@@ -122,12 +122,11 @@ def bods2c(name):
 
 
 def bodvar(body, item, dim):
-    #Todo: test bodvar
     body = ctypes.c_int(body)
     dim = ctypes.c_int(dim)
     item = stypes.strtocharpoint(item)
     values = stypes.doubleVector(dim.value)
-    libspice.bodvar(body, item, ctypes.byref(dim), values)
+    libspice.bodvar_c(body, item, ctypes.byref(dim), values)
     return stypes.vectorToList(values)
 
 
@@ -173,7 +172,7 @@ def bschoc(value, ndim, lenvals, array, order):
     lenvals = ctypes.c_int(lenvals)
     array = stypes.listtocharvector(array)
     order = stypes.toIntVector(order)
-    return libspice.bschoc(value, ndim, lenvals, ctypes.byref(array), ctypes.byref(order))
+    return libspice.bschoc_c(value, ndim, lenvals, ctypes.byref(array), ctypes.byref(order))
 
 
 def bschoi(value, ndim, array, order):
