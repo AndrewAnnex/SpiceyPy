@@ -939,11 +939,19 @@ def test_insrtc():
 
 
 def test_insrtd():
-    assert 1
+    testCell = spice.stypes.SPICEDOUBLE_CELL(8)
+    dlist = [0.5, 2.0, 30.0, 0.01, 30.0]
+    for d in dlist:
+        spice.insrtd(d, testCell)
+    assert [x for x in testCell] == [0.01, 0.5, 2.0, 30.0]
 
 
 def test_insrti():
-    assert 1
+    testCell = spice.stypes.SPICEINT_CELL(8)
+    ilist = [1, 2, 30, 1, 30]
+    for i in ilist:
+        spice.insrti(i, testCell)
+    assert [x for x in testCell] == [1, 2, 30]
 
 
 def test_inter():
@@ -970,19 +978,31 @@ def test_invort():
 
 
 def test_isordv():
-    assert 1
+    assert spice.isordv([0, 1], 2)
+    assert spice.isordv([0, 1, 2], 3)
+    assert spice.isordv([0, 1, 2, 3], 4)
+    assert spice.isordv([1, 1, 1], 3) is False
 
 
 def test_isrchc():
-    assert 1
+    array = ["1", "0", "4", "2"]
+    assert spice.isrchc("4", 4, 3, array) == 2
+    assert spice.isrchc("2", 4, 3, array) == 3
+    assert spice.isrchc("3", 4, 3, array) == -1
 
 
 def test_isrchd():
-    assert 1
+    array = [1.0, 0.0, 4.0, 2.0]
+    assert spice.isrchd(4.0, 4, array) == 2
+    assert spice.isrchd(2.0, 4, array) == 3
+    assert spice.isrchd(3.0, 4, array) == -1
 
 
 def test_isrchi():
-    assert 1
+    array = [1, 0, 4, 2]
+    assert spice.isrchi(4, 4, array) == 2
+    assert spice.isrchi(2, 4, array) == 3
+    assert spice.isrchi(3, 4, array) == -1
 
 
 def test_isrot():
@@ -990,7 +1010,8 @@ def test_isrot():
 
 
 def test_iswhsp():
-    assert 1
+    assert spice.iswhsp("       ")
+    assert spice.iswhsp("spice") is False
 
 
 def test_j1900():
@@ -1035,7 +1056,10 @@ def test_kxtrct():
 
 
 def test_lastnb():
-    assert 1
+    assert spice.lastnb("ABCDE") == 4
+    assert spice.lastnb("AN EXAMPLE") == 9
+    assert spice.lastnb("AN EXAMPLE        ") == 9
+    assert spice.lastnb("        ") == -1
 
 
 def test_latcyl():
@@ -1043,7 +1067,12 @@ def test_latcyl():
 
 
 def test_latrec():
-    assert 1
+    expected1 = np.array([1.0, 0.0, 0.0])
+    expected2 = np.array([0.0, 1.0, 0.0])
+    expected3 = np.array([-1.0, 0.0, 0.0])
+    np.testing.assert_array_almost_equal(expected1, spice.latrec(1.0, 0.0, 0.0), decimal = 7)
+    np.testing.assert_array_almost_equal(expected2, spice.latrec(1.0, 90.0 * spice.rpd(), 0.0), decimal = 7)
+    np.testing.assert_array_almost_equal(expected3, spice.latrec(1.0, 180.0 * spice.rpd(), 0.0), decimal = 7)
 
 
 def test_latsph():
@@ -1051,7 +1080,8 @@ def test_latsph():
 
 
 def test_lcase():
-    assert 1
+    assert spice.lcase("THIS IS AN EXAMPLE", 20) == "THIS IS AN EXAMPLE".lower()
+    assert spice.lcase("1234", 5) == "1234"
 
 
 def test_ldpool():

@@ -354,7 +354,7 @@ def _char_getter(data_p, index, length):
 
 
 def _double_getter(data_p, index, length):
-    return ctypes.c_double.from_address(data_p + index * BITSIZE['double']).value
+    return toPythonString(ctypes.c_double.from_address(data_p + index * BITSIZE['double']))
 
 
 def _int_getter(data_p, index, length):
