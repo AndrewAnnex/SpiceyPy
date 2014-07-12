@@ -2081,26 +2081,23 @@ def inrypl(vertex, direct, plane):
 
 
 def insrtc(item, inset):
-    #Todo: test instrc
     assert isinstance(inset, stypes.SpiceCell)
     item = stypes.strtocharpoint(item)
-    libspice.instri_c(item, ctypes.byref(inset))
+    libspice.insrtc_c(item, ctypes.byref(inset))
     pass
 
 
 def insrtd(item, inset):
-    #Todo: test instrd
     assert isinstance(inset, stypes.SpiceCell)
     item = ctypes.c_double(item)
-    libspice.instrd_c(item, ctypes.byref(inset))
+    libspice.insrtd_c(item, ctypes.byref(inset))
     pass
 
 
 def insrti(item, inset):
-    #Todo: test instri
     assert isinstance(inset, stypes.SpiceCell)
     item = ctypes.c_int(item)
-    libspice.instri_c(item, ctypes.byref(inset))
+    libspice.insrti_c(item, ctypes.byref(inset))
     pass
 
 
@@ -2154,7 +2151,6 @@ def isordv(array, n):
 
 
 def isrchc(value, ndim, lenvals, array):
-    #Todo: test isrchc
     value = stypes.strtocharpoint(value)
     array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=ndim)
     ndim = ctypes.c_int(ndim)
@@ -2163,15 +2159,13 @@ def isrchc(value, ndim, lenvals, array):
 
 
 def isrchd(value, ndim, array):
-    #todo: test isrchd
-    value = ctypes.c_int(value)
+    value = ctypes.c_double(value)
     ndim = ctypes.c_int(ndim)
     array = stypes.toDoubleVector(array)
     return libspice.isrchd_c(value, ndim, array)
 
 
 def isrchi(value, ndim, array):
-    #todo: test isrchi
     value = ctypes.c_int(value)
     ndim = ctypes.c_int(ndim)
     array = stypes.toIntVector(array)
@@ -2319,7 +2313,6 @@ def latsph(radius, lon, lat):
 
 
 def lcase(instr, lenout):
-    #Todo: test lcase
     instr = stypes.strtocharpoint(instr)
     lenout = ctypes.c_int(lenout)
     outstr = stypes.strtocharpoint(lenout)
