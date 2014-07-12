@@ -30,7 +30,14 @@ def test_appndi():
 
 
 def test_axisar():
-    assert 1
+    axis = np.array([0.0, 0.0, 1.0])
+    outmatrix = spice.axisar(axis, spice.halfpi())
+    expected = np.array(
+        [[0.0, -1.0, 0.0],
+         [1.0, 0.0, 0.0],
+         [0.0, 0.0, 1.0]]
+    )
+    np.testing.assert_array_almost_equal(expected, outmatrix, decimal = 6)
 
 
 def test_b1900():
@@ -46,31 +53,50 @@ def test_badkpv():
 
 
 def test_bodc2n():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    assert spice.bodc2n(399, 10) == "EARTH"
+    assert spice.bodc2n(0, 40) == "SOLAR SYSTEM BARYCENTER"
+    spice.kclear()
 
 
 def test_bodc2s():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    assert spice.bodc2s(399, 10) == "EARTH"
+    assert spice.bodc2s(0, 40) == "SOLAR SYSTEM BARYCENTER"
+    spice.kclear()
 
 
 def test_boddef():
-    assert 1
+    spice.boddef("Jebediah", 117)
+    assert spice.bodc2n(117, 10) == "Jebediah"
 
 
 def test_bodfnd():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    assert spice.bodfnd(599, "RADII")
+    spice.kclear()
 
 
 def test_bodn2c():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    assert spice.bodn2c("EARTH") == 399
+    assert spice.bodn2c("U.S.S. Enterprise") is None
+    spice.kclear()
 
 
 def test_bods2c():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    assert spice.bods2c("EARTH") == 399
+    assert spice.bods2c("U.S.S. Enterprise") is None
+    spice.kclear()
 
 
 def test_bodvar():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    radii = spice.bodvar(399, "RADII", 3)
+    expected = np.array([6378.140, 6378.140, 6356.755])
+    np.testing.assert_array_almost_equal(expected, radii, decimal = 1)
+    spice.kclear()
 
 
 def test_bodvcd():
@@ -661,7 +687,7 @@ def test_eul2xf():
 
 
 def test_exists():
-    assert 1
+    assert spice.exists(_testKernelPath)
 
 
 def test_expool():
@@ -853,7 +879,18 @@ def test_inelpl():
 
 
 def test_inrypl():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    radii = spice.bodvrd("SATURN", "RADII", 3)
+    vertex = [3.0 * radii[0], 0.0, radii[2] * 0.5]
+    dire = [0.0, np.cos(30.0 * spice.rpd()), -1.0 * np.sin(30.0 * spice.rpd())]
+    normal = [0.0, 0.0, 1.0]
+    point = [0.0, 0.0, 0.0]
+    plane = spice.nvp2pl(normal, point)
+    nxpts, xpt = spice.inrypl(vertex, dire, plane)
+    expectedXpt = np.array([180804.0, 47080.6050513, 0.0])
+    assert nxpts == 1
+    np.testing.assert_almost_equal(np.array(xpt), expectedXpt, decimal = 6)
+    spice.kclear()
 
 
 def test_insrtc():
