@@ -131,24 +131,23 @@ def bodvar(body, item, dim):
 
 
 def bodvcd(bodyid, item, maxn):
-    #todo: test bodvcd
     bodyid = ctypes.c_int(bodyid)
     item = stypes.strtocharpoint(item)
-    maxn = ctypes.c_int(maxn)
-    dim = ctypes.c_int(0)
+    dim = ctypes.c_int()
     values = stypes.doubleVector(maxn)
+    maxn = ctypes.c_int(maxn)
     libspice.bodvcd_c(bodyid, item, maxn, ctypes.byref(dim), values)
-    return stypes.vectorToList(values)
+    return dim.value, stypes.vectorToList(values)
 
 
 def bodvrd(bodynm, item, maxn):
     bodynm = stypes.strtocharpoint(bodynm)
     item = stypes.strtocharpoint(item)
+    dim = ctypes.c_int()
+    values = stypes.doubleVector(maxn)
     maxn = ctypes.c_int(maxn)
-    dim = ctypes.c_int(0)
-    values = stypes.doubleVector(3)
     libspice.bodvrd_c(bodynm, item, maxn, ctypes.byref(dim), values)
-    return stypes.vectorToList(values)
+    return dim.value, stypes.vectorToList(values)
 
 
 def brcktd(number, end1, end2):
@@ -166,22 +165,20 @@ def brckti(number, end1, end2):
 
 
 def bschoc(value, ndim, lenvals, array, order):
-    #todo: Fix, probably not working
     value = stypes.strtocharpoint(value)
     ndim = ctypes.c_int(ndim)
     lenvals = ctypes.c_int(lenvals)
-    array = stypes.listtocharvector(array)
+    array = stypes.listToCharArrayPtr(array, xLen = lenvals, yLen = ndim)
     order = stypes.toIntVector(order)
-    return libspice.bschoc_c(value, ndim, lenvals, ctypes.byref(array), ctypes.byref(order))
+    return libspice.bschoc_c(value, ndim, lenvals, array, order)
 
 
 def bschoi(value, ndim, array, order):
-    #todo: Fix, this is not working
     value = ctypes.c_int(value)
     ndim = ctypes.c_int(ndim)
-    order = stypes.toIntVector(order)
     array = stypes.toIntVector(array)
-    return libspice.bschoi_c(value, ndim, ctypes.byref(order), ctypes.byref(array))
+    order = stypes.toIntVector(order)
+    return libspice.bschoi_c(value, ndim, array, order)
 
 
 def bsrchc(value, ndim, lenvals, array):
