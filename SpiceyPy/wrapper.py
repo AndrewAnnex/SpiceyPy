@@ -2479,9 +2479,8 @@ def lx4uns(string, first):
 
 
 def lxqstr(string, qchar, first):
-    # Works, use ord for char!
     string = stypes.strtocharpoint(string)
-    qchar = ctypes.c_char(ord(qchar))
+    qchar = ctypes.c_char(qchar.encode(encoding = 'UTF-8'))
     first = ctypes.c_int(first)
     last = ctypes.c_int()
     nchar = ctypes.c_int()
@@ -2517,17 +2516,17 @@ def m2q(r):
 def matchi(string, templ, wstr, wchr):
     string = stypes.strtocharpoint(string)
     templ = stypes.strtocharpoint(templ)
-    wstr = ctypes.c_char(ord(wstr))
-    wchr = ctypes.c_char(ord(wchr))
+    wstr = ctypes.c_char(wstr.encode(encoding = 'UTF-8'))
+    wchr = ctypes.c_char(wchr.encode(encoding = 'UTF-8'))
     return libspice.matchi_c(string, templ, wstr, wchr)
 
 
 def matchw(string, templ, wstr, wchr):
-    # wstr.encode(encoding='UTF-8')
+    # ctypes.c_char(wstr.encode(encoding='UTF-8')
     string = stypes.strtocharpoint(string)
     templ = stypes.strtocharpoint(templ)
-    wstr = ctypes.c_char(ord(wstr))
-    wchr = ctypes.c_char(ord(wchr))
+    wstr = ctypes.c_char(wstr.encode(encoding = 'UTF-8'))
+    wchr = ctypes.c_char(wchr.encode(encoding = 'UTF-8'))
     return libspice.matchw_c(string, templ, wstr, wchr)
 
 

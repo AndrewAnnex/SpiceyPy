@@ -1232,8 +1232,8 @@ def test_m2q():
 
 def test_matchi():
     string = "  ABCDEFGHIJKLMNOPQRSTUVWXYZ  "
-    wstr = '*'
-    wchr = '%'
+    wstr = "*"
+    wchr = "%"
     assert spice.matchi(string, "*A*", wstr, wchr)
     assert spice.matchi(string, "A%D*", wstr, wchr) is False
     assert spice.matchi(string, "A%C*", wstr, wchr)
@@ -1249,8 +1249,8 @@ def test_matchi():
 
 def test_matchw():
     string = "  ABCDEFGHIJKLMNOPQRSTUVWXYZ  "
-    wstr = '*'
-    wchr = '%'
+    wstr = "*"
+    wchr = "%"
     assert spice.matchw(string, "*A*", wstr, wchr)
     assert spice.matchw(string, "A%D*", wstr, wchr) is False
     assert spice.matchw(string, "A%C*", wstr, wchr)
