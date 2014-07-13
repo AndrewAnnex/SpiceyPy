@@ -273,11 +273,35 @@ def test_copy():
 
 
 def test_cpos():
-    assert 1
+    string = "BOB, JOHN, TED, AND MARTIN...."
+    assert spice.cpos(string, " ,", 0) == 3
+    assert spice.cpos(string, " ,", 4) == 4
+    assert spice.cpos(string, " ,", 5) == 9
+    assert spice.cpos(string, " ,", 10) == 10
+    assert spice.cpos(string, " ,", 11) == 14
+    assert spice.cpos(string, " ,", 15) == 15
+    assert spice.cpos(string, " ,", 16) == 19
+    assert spice.cpos(string, " ,", 20) == -1
+    assert spice.cpos(string, " ,", -112) == 3
+    assert spice.cpos(string, " ,", -1) == 3
+    assert spice.cpos(string, " ,", 1230) == -1
 
 
 def test_cposr():
-    assert 1
+    string = "BOB, JOHN, TED, AND MARTIN...."
+    assert spice.cposr(string, " ,", 29) == 19
+    assert spice.cposr(string, " ,", 25) == 19
+    assert spice.cposr(string, " ,", 18) == 15
+    assert spice.cposr(string, " ,", 14) == 14
+    assert spice.cposr(string, " ,", 13) == 10
+    assert spice.cposr(string, " ,", 9) == 9
+    assert spice.cposr(string, " ,", 8) == 4
+    assert spice.cposr(string, " ,", 3) == 3
+    assert spice.cposr(string, " ,", 2) == -1
+    assert spice.cposr(string, " ,", 230) == 19
+    assert spice.cposr(string, " ,", 30) == 19
+    assert spice.cposr(string, " ,", -1) == -1
+    assert spice.cposr(string, " ,", -10) == -1
 
 
 def test_cvpool():
@@ -1109,27 +1133,59 @@ def test_lspcn():
 
 
 def test_lstlec():
-    assert 1
+    array = ["BOHR", "EINSTEIN", "FEYNMAN", "GALILEO", "NEWTON"]
+    lenvals = 10
+    assert spice.lstlec("NEWTON", 5, lenvals, array) == 4
+    assert spice.lstlec("EINSTEIN", 5, lenvals, array) == 1
+    assert spice.lstlec("GALILEO", 5, lenvals, array) == 3
+    assert spice.lstlec("Galileo", 5, lenvals, array) == 3
+    assert spice.lstlec("BETHE", 5, lenvals, array) == -1
 
 
 def test_lstled():
-    assert 1
+    array = [-2.0, -2.0, 0.0, 1.0, 1.0, 11.0]
+    assert spice.lstled(-3.0, 6, array) == -1
+    assert spice.lstled(-2.0, 6, array) == 1
+    assert spice.lstled(0.0, 6, array) == 2
+    assert spice.lstled(1.0, 6, array) == 4
+    assert spice.lstled(11.1, 6, array) == 5
 
 
 def test_lstlei():
-    assert 1
+    array = [-2, -2, 0, 1, 1, 11]
+    assert spice.lstlei(-3, 6, array) == -1
+    assert spice.lstlei(-2, 6, array) == 1
+    assert spice.lstlei(0, 6, array) == 2
+    assert spice.lstlei(1, 6, array) == 4
+    assert spice.lstlei(12, 6, array) == 5
 
 
 def test_lstltc():
-    assert 1
+    array = ["BOHR", "EINSTEIN", "FEYNMAN", "GALILEO", "NEWTON"]
+    lenvals = 10
+    assert spice.lstltc("NEWTON", 5, lenvals, array) == 3
+    assert spice.lstltc("EINSTEIN", 5, lenvals, array) == 0
+    assert spice.lstltc("GALILEO", 5, lenvals, array) == 2
+    assert spice.lstltc("Galileo", 5, lenvals, array) == 3
+    assert spice.lstltc("BETHE", 5, lenvals, array) == -1
 
 
 def test_lstltd():
-    assert 1
+    array = [-2.0, -2.0, 0.0, 1.0, 1.0, 11.0]
+    assert spice.lstltd(-3.0, 6, array) == -1
+    assert spice.lstltd(-2.0, 6, array) == -1
+    assert spice.lstltd(0.0, 6, array) == 1
+    assert spice.lstltd(1.0, 6, array) == 2
+    assert spice.lstltd(11.1, 6, array) == 5
 
 
 def test_lstlti():
-    assert 1
+    array = [-2, -2, 0, 1, 1, 11]
+    assert spice.lstlti(-3, 6, array) == -1
+    assert spice.lstlti(-2, 6, array) == -1
+    assert spice.lstlti(0, 6, array) == 1
+    assert spice.lstlti(1, 6, array) == 2
+    assert spice.lstlti(12, 6, array) == 5
 
 
 def test_ltime():
@@ -1153,7 +1209,14 @@ def test_lx4uns():
 
 
 def test_lxqstr():
-    assert 1
+    assert spice.lxqstr('The "SPICE" system', "\"", 4) == (10, 7)
+    assert spice.lxqstr('The "SPICE" system', '"', 4) == (10, 7)
+    assert spice.lxqstr('The "SPICE" system', '"', 0) == (-1, 0)
+    assert spice.lxqstr('The "SPICE" system', "'", 4) == (3, 0)
+    assert spice.lxqstr('The """SPICE"""" system', '"', 4) == (14, 11)
+    assert spice.lxqstr('The &&&SPICE system', '&', 4) == (5, 2)
+    assert spice.lxqstr("' '", "'", 0) == (2, 3)
+    assert spice.lxqstr("''", "'", 0) == (1, 2)
 
 
 def test_m2eul():
@@ -1161,15 +1224,44 @@ def test_m2eul():
 
 
 def test_m2q():
-    assert 1
+    r = spice.rotate(spice.halfpi(), 3)
+    q = spice.m2q(r)
+    expected = [np.sqrt(2) / 2.0, 0.0, 0.0, -np.sqrt(2) / 2.0]
+    np.testing.assert_array_almost_equal(expected, q, decimal = 6)
 
 
 def test_matchi():
-    assert 1
+    string = "  ABCDEFGHIJKLMNOPQRSTUVWXYZ  "
+    wstr = '*'
+    wchr = '%'
+    assert spice.matchi(string, "*A*", wstr, wchr)
+    assert spice.matchi(string, "A%D*", wstr, wchr) is False
+    assert spice.matchi(string, "A%C*", wstr, wchr)
+    assert spice.matchi(string, "%A*", wstr, wchr) is False
+    assert spice.matchi(string, "%%CD*Z", wstr, wchr)
+    assert spice.matchi(string, "%%CD", wstr, wchr) is False
+    assert spice.matchi(string, "A*MN*Y*Z", wstr, wchr)
+    assert spice.matchi(string, "A*MN*Y*%Z", wstr, wchr) is False
+    assert spice.matchi(string, "*BCD*Z*", wstr, wchr)
+    assert spice.matchi(string, "*bdc*z*", wstr, wchr) is False
+    assert spice.matchi(string, " *bcD*Z*", wstr, wchr)
 
 
 def test_matchw():
-    assert 1
+    string = "  ABCDEFGHIJKLMNOPQRSTUVWXYZ  "
+    wstr = '*'
+    wchr = '%'
+    assert spice.matchw(string, "*A*", wstr, wchr)
+    assert spice.matchw(string, "A%D*", wstr, wchr) is False
+    assert spice.matchw(string, "A%C*", wstr, wchr)
+    assert spice.matchw(string, "%A*", wstr, wchr) is False
+    assert spice.matchw(string, "%%CD*Z", wstr, wchr)
+    assert spice.matchw(string, "%%CD", wstr, wchr) is False
+    assert spice.matchw(string, "A*MN*Y*Z", wstr, wchr)
+    assert spice.matchw(string, "A*MN*Y*%Z", wstr, wchr) is False
+    assert spice.matchw(string, "*BCD*Z*", wstr, wchr)
+    assert spice.matchw(string, "*bdc*z*", wstr, wchr) is False
+    assert spice.matchw(string, " *BCD*Z*", wstr, wchr)
 
 
 def test_maxd():
@@ -1290,11 +1382,44 @@ def test_namfrm():
 
 
 def test_ncpos():
-    assert 1
+    string = "BOB, JOHN, TED, AND MARTIN    "
+    chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    assert spice.ncpos(string, chars, 0) == 3
+    assert spice.ncpos(string, chars, 4) == 4
+    assert spice.ncpos(string, chars, 5) == 9
+    assert spice.ncpos(string, chars, 10) == 10
+    assert spice.ncpos(string, chars, 11) == 14
+    assert spice.ncpos(string, chars, 15) == 15
+    assert spice.ncpos(string, chars, 16) == 19
+    assert spice.ncpos(string, chars, 20) == 26
+    assert spice.ncpos(string, chars, 27) == 27
+    assert spice.ncpos(string, chars, 28) == 28
+    assert spice.ncpos(string, chars, 29) == 29
+    assert spice.ncpos(string, chars, -12) == 3
+    assert spice.ncpos(string, chars, -1) == 3
+    assert spice.ncpos(string, chars, 30) == -1
+    assert spice.ncpos(string, chars, 122) == -1
 
 
 def test_ncposr():
-    assert 1
+    string = "BOB, JOHN, TED, AND MARTIN...."
+    chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    assert spice.ncposr(string, chars, 29) == 29
+    assert spice.ncposr(string, chars, 28) == 28
+    assert spice.ncposr(string, chars, 27) == 27
+    assert spice.ncposr(string, chars, 26) == 26
+    assert spice.ncposr(string, chars, 25) == 19
+    assert spice.ncposr(string, chars, 18) == 15
+    assert spice.ncposr(string, chars, 14) == 14
+    assert spice.ncposr(string, chars, 13) == 10
+    assert spice.ncposr(string, chars, 9) == 9
+    assert spice.ncposr(string, chars, 8) == 4
+    assert spice.ncposr(string, chars, 3) == 3
+    assert spice.ncposr(string, chars, 2) == -1
+    assert spice.ncposr(string, chars, -1) == -1
+    assert spice.ncposr(string, chars, -5) == -1
+    assert spice.ncposr(string, chars, 30) == 29
+    assert spice.ncposr(string, chars, 122) == 29
 
 
 def test_nearpt():
@@ -1402,11 +1527,38 @@ def test_pl2psv():
 
 
 def test_pos():
-    assert 1
+    string = "AN ANT AND AN ELEPHANT        "
+    assert spice.pos(string, "AN", 0) == 0
+    assert spice.pos(string, "AN", 2) == 3
+    assert spice.pos(string, "AN", 5) == 7
+    assert spice.pos(string, "AN", 9) == 11
+    assert spice.pos(string, "AN", 13) == 19
+    assert spice.pos(string, "AN", 21) == -1
+    assert spice.pos(string, "AN", -6) == 0
+    assert spice.pos(string, "AN", -1) == 0
+    assert spice.pos(string, "AN", 30) == -1
+    assert spice.pos(string, "AN", 43) == -1
+    assert spice.pos(string, "AN", 0) == 0
+    assert spice.pos(string, " AN", 0) == 2
+    assert spice.pos(string, " AN ", 0) == 10
+    assert spice.pos(string, " AN  ", 0) == -1
 
 
 def test_posr():
-    assert 1
+    string = "AN ANT AND AN ELEPHANT        "
+    assert spice.posr(string, "AN", 29) == 19
+    assert spice.posr(string, "AN", 18) == 11
+    assert spice.posr(string, "AN", 10) == 7
+    assert spice.posr(string, "AN", 6) == 3
+    assert spice.posr(string, "AN", 2) == 0
+    assert spice.posr(string, "AN", -6) == -1
+    assert spice.posr(string, "AN", -1) == -1
+    assert spice.posr(string, "AN", 30) == 19
+    assert spice.posr(string, "AN", 43) == 19
+    assert spice.posr(string, " AN", 29) == 10
+    assert spice.posr(string, " AN ", 29) == 10
+    assert spice.posr(string, " AN ", 9) == -1
+    assert spice.posr(string, " AN  ", 29) == -1
 
 
 def test_prompt():
@@ -1450,7 +1602,19 @@ def test_qdq2av():
 
 
 def test_qxq():
-    assert 1
+    qID = [1.0, 0.0, 0.0, 0.0]
+    nqID = [-1.0, 0.0, 0.0, 0.0]
+    qI = [0.0, 1.0, 0.0, 0.0]
+    qJ = [0.0, 0.0, 1.0, 0.0]
+    qK = [0.0, 0.0, 0.0, 1.0]
+    assert spice.qxq(qI, qJ) == qK
+    assert spice.qxq(qJ, qK) == qI
+    assert spice.qxq(qK, qI) == qJ
+    assert spice.qxq(qI, qI) == nqID
+    assert spice.qxq(qJ, qJ) == nqID
+    assert spice.qxq(qK, qK) == nqID
+    assert spice.qxq(qID, qI) == qI
+    assert spice.qxq(qI, qID) == qI
 
 
 def test_radrec():
