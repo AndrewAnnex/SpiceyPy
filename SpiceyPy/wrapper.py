@@ -3657,7 +3657,7 @@ def spkcov(spk, idcode, cover=None):
 def spkez(targ, et, ref, abcorr, obs):
     #Todo: test spkez
     targ = ctypes.c_int(targ)
-    et = ctypes.c_int(et)
+    et = ctypes.c_double(et)
     ref = stypes.strtocharpoint(ref)
     abcorr = stypes.strtocharpoint(abcorr)
     obs = ctypes.c_int(obs)
@@ -3670,7 +3670,7 @@ def spkez(targ, et, ref, abcorr, obs):
 def spkezp(targ, et, ref, abcorr, obs):
     #Todo: test spkezp
     targ = ctypes.c_int(targ)
-    et = ctypes.c_int(et)
+    et = ctypes.c_double(et)
     ref = stypes.strtocharpoint(ref)
     abcorr = stypes.strtocharpoint(abcorr)
     obs = ctypes.c_int(obs)
@@ -3683,10 +3683,10 @@ def spkezp(targ, et, ref, abcorr, obs):
 def spkezr(targ, et, ref, abcorr, obs):
     #Todo: test spkezr
     targ = stypes.strtocharpoint(targ)
-    et = ctypes.c_int(et)
+    et = ctypes.c_double(et)
     ref = stypes.strtocharpoint(ref)
     abcorr = stypes.strtocharpoint(abcorr)
-    obs = ctypes.c_int(obs)
+    obs = stypes.strtocharpoint(obs)
     starg = stypes.doubleVector(6)
     lt = ctypes.c_double()
     libspice.spkezr_c(targ, et, ref, abcorr, obs, starg, ctypes.byref(lt))
@@ -3696,7 +3696,7 @@ def spkezr(targ, et, ref, abcorr, obs):
 def spkgeo(targ, et, ref, obs):
     #Todo: test spkgeo
     targ = ctypes.c_int(targ)
-    et = ctypes.c_int(et)
+    et = ctypes.c_double(et)
     ref = stypes.strtocharpoint(ref)
     obs = ctypes.c_int(obs)
     state = stypes.doubleVector(6)
@@ -3708,7 +3708,7 @@ def spkgeo(targ, et, ref, obs):
 def spkgps(targ, et, ref, obs):
     #Todo: test spkgps
     targ = ctypes.c_int(targ)
-    et = ctypes.c_int(et)
+    et = ctypes.c_double(et)
     ref = stypes.strtocharpoint(ref)
     obs = ctypes.c_int(obs)
     position = stypes.doubleVector(3)
