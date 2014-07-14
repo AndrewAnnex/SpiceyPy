@@ -1,7 +1,0 @@
-\begindata
-KERNELS_TO_LOAD = (
-'/Users/ama6fy/PycharmProjects/SpiceyPy/test/pck00010.tpc'
-'/Users/ama6fy/PycharmProjects/SpiceyPy/test/de421.bsp'
-'/Users/ama6fy/PycharmProjects/SpiceyPy/test/naif0010.tls'
-)
-\begintext
