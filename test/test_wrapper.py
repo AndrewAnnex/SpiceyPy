@@ -37,7 +37,7 @@ def test_axisar():
          [1.0, 0.0, 0.0],
          [0.0, 0.0, 1.0]]
     )
-    np.testing.assert_array_almost_equal(expected, outmatrix, decimal = 6)
+    np.testing.assert_array_almost_equal(expected, outmatrix, decimal=6)
 
 
 def test_b1900():
@@ -177,7 +177,14 @@ def test_bsrchi():
 
 
 def test_card():
-    assert 1
+    testCell = spice.stypes.SPICEDOUBLE_CELL(8)
+    assert spice.card(testCell) == 0
+    spice.appndd(1.0, testCell)
+    assert spice.card(testCell) == 1
+    spice.appndd(2.0, testCell)
+    assert spice.card(testCell) == 2
+    spice.appndd(3.0, testCell)
+    assert spice.card(testCell) == 3
 
 
 def test_cgv2el():
@@ -1799,15 +1806,21 @@ def test_setmsg():
 
 
 def test_shellc():
-    assert 1
+    array = ["FEYNMAN", "NEWTON", "EINSTEIN", "GALILEO", "EUCLID", "Galileo"]
+    expected = ["EINSTEIN", "EUCLID", "FEYNMAN", "GALILEO", "Galileo", "NEWTON"]
+    assert spice.shellc(6, 10, array) == expected
 
 
 def test_shelld():
-    assert 1
+    array = [99.0, 33.0, 55.0, 44.0, -77.0, 66.0]
+    expected = [-77.0, 33.0, 44.0, 55.0, 66.0, 99.0]
+    assert spice.shelld(6, array) == expected
 
 
 def test_shelli():
-    assert 1
+    array = [99, 33, 55, 44, -77, 66]
+    expected = [-77, 33, 44, 55, 66, 99]
+    assert spice.shelli(6, array) == expected
 
 
 def test_sigerr():

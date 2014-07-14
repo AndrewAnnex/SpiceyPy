@@ -33,7 +33,7 @@ def toPythonString(inString):
 
 def listtocharvector(x):
     assert (isinstance(x, list))
-    return (ctypes.c_char_p * len(x))(*[strtocharpoint(y) for y in x])
+    return (ctypes.c_char_p * len(x))(*[stringToCharP(y) for y in x])
 
 
 def charvector(ndim=1, lenvals=10):
@@ -47,16 +47,16 @@ def listtodoublematrix(data, x=3, y=3):
     return matrix
 
 
-def doubleMatrix(x=3, y=3):
+def emptyDoubleMatrix(x=3, y=3):
     return ((ctypes.c_double * x) * y)()
 
 
-def doubleVector(n):
+def emptyDoubleVector(n):
     assert(isinstance(n, int))
     return (ctypes.c_double*n)()
 
 
-def intVector(n):
+def emptyIntVector(n):
     assert(isinstance(n, int))
     return (ctypes.c_int*n)()
 
@@ -76,7 +76,7 @@ def matrixToList(x):
     return [vectorToList(y) for y in x]
 
 
-def strtocharpoint(inobject, inlen=None):
+def stringToCharP(inobject, inlen=None):
 
     """
     :param inobject: input string, int for getting null string of length of int
@@ -88,9 +88,9 @@ def strtocharpoint(inobject, inlen=None):
     if isinstance(inobject, bytes):
         return inobject
     if isinstance(inobject, ctypes.c_int):
-        return strtocharpoint(" " * inobject.value)
+        return stringToCharP(" " * inobject.value)
     if isinstance(inobject, int):
-        return strtocharpoint(" " * inobject)
+        return stringToCharP(" " * inobject)
     return ctypes.c_char_p(inobject.encode(encoding='UTF-8'))
 
 
@@ -104,7 +104,7 @@ def listToCharArray(inList, xLen=None, yLen=None):
         xLen = xLen.value
     if isinstance(yLen, ctypes.c_int):
         yLen = yLen.value
-    return ((ctypes.c_char*xLen)*yLen)(*[strtocharpoint(l, inlen=xLen) for l in inList])
+    return ((ctypes.c_char * xLen) * yLen)(*[stringToCharP(l, inlen=xLen) for l in inList])
 
 
 def listToCharArrayPtr(inList, xLen=None, yLen=None):
@@ -117,7 +117,8 @@ def listToCharArrayPtr(inList, xLen=None, yLen=None):
         xLen = xLen.value
     if isinstance(yLen, ctypes.c_int):
         yLen = yLen.value
-    return ctypes.cast(((ctypes.c_char*xLen)*yLen)(*[strtocharpoint(l, inlen=xLen) for l in inList]), ctypes.c_char_p)
+    return ctypes.cast(((ctypes.c_char * xLen) * yLen)(*[stringToCharP(l, inlen=xLen) for l in inList]),
+                       ctypes.c_char_p)
 
 
 class DoubleArrayType:
