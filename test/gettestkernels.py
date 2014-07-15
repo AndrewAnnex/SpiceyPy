@@ -15,12 +15,13 @@ def getKernel(url):
 
 
 def getKernels():
-    print("\tDownloading kernels...\n")
+    print("\tChecking for kernels...\n")
     kernelURLlist = ['http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/pck00010.tpc',
                      'http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/a_old_versions/de421.bsp',
                      'http://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0010.tls']
     for kernel in kernelURLlist:
-        getKernel(kernel)
+        if not os.path.isfile(os.path.join(cwd, kernel.split('/')[-1])):
+            getKernel(kernel)
 
 
 def writeTestMetaKernel():
