@@ -2173,7 +2173,12 @@ def test_unormg():
 
 
 def test_utc2et():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    utcstr = 'December 1, 2004 15:04:11'
+    output = spice.utc2et(utcstr)
+    assert output == 155185515.1831043
+    # icy utc2et example gives 1.5518552e+08 as output
+    spice.kclear()
 
 
 def test_vadd():
