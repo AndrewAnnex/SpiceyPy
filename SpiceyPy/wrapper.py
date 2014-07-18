@@ -4277,7 +4277,7 @@ def tpictr(sample, lenout, lenerr):
 
 def trace(matrix):
     #Todo: test trace
-    matrix = stypes.listtodoublematrix(matrix)
+    matrix = stypes.toDoubleMatrix(matrix)
     return libspice.trace_c(matrix)
 
 
@@ -4316,9 +4316,11 @@ def tyear():
 ########################################################################################################################
 # U
 
-def ucase(inchar, lenout):
+def ucase(inchar, lenout=None):
+    if lenout is None:
+        lenout = len(inchar) + 1
     inchar = stypes.stringToCharP(inchar)
-    outchar = stypes.stringToCharP(lenout)
+    outchar = stypes.stringToCharP(" " * lenout)
     lenout = ctypes.c_int(lenout)
     libspice.ucase_c(inchar, lenout, outchar)
     return stypes.toPythonString(outchar)
@@ -4708,7 +4710,6 @@ def wncard(window):
 
 
 def wncomd(left, right, window):
-    #Todo: test wncomd
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
     left = ctypes.c_double(left)
@@ -4719,7 +4720,6 @@ def wncomd(left, right, window):
 
 
 def wncond(left, right, window):
-    #Todo: test wncond
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
     left = ctypes.c_double(left)
@@ -4729,18 +4729,16 @@ def wncond(left, right, window):
 
 
 def wndifd(a, b):
-    #Todo: test wndifd
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == 1
     assert b.dtype == 1
-    c = stypes.SpiceCell.double(a.size+b.size)
+    c = stypes.SpiceCell.double(a.size + b.size)
     libspice.wndifd_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
     return c
 
 
 def wnelmd(point, window):
-    #Todo: test wnelmd
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
     point = ctypes.c_double(point)
@@ -4748,7 +4746,6 @@ def wnelmd(point, window):
 
 
 def wnexpd(left, right, window):
-    #Todo: test wnexpd
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
     left = ctypes.c_double(left)
@@ -4758,17 +4755,15 @@ def wnexpd(left, right, window):
 
 
 def wnextd(side, window):
-    #Todo: test wnextd
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
     assert side == 'L' or side == 'R'
-    side = ctypes.c_char(side)
+    side = ctypes.c_char(side.encode(encoding='UTF-8'))
     libspice.wnextd_c(side, ctypes.byref(window))
     return window
 
 
 def wnfetd(window, n):
-    #Todo: test wnfetd
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
     n = ctypes.c_int(n)
@@ -4779,7 +4774,6 @@ def wnfetd(window, n):
 
 
 def wnfild(small, window):
-    #Todo: test wnfild
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
     small = ctypes.c_double(small)
@@ -4788,7 +4782,6 @@ def wnfild(small, window):
 
 
 def wnfltd(small, window):
-    #Todo: test wnfltd
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
     small = ctypes.c_double(small)
@@ -4797,7 +4790,6 @@ def wnfltd(small, window):
 
 
 def wnincd(left, right, window):
-    #Todo: test wnincd
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
     left = ctypes.c_double(left)
@@ -4806,39 +4798,34 @@ def wnincd(left, right, window):
 
 
 def wninsd(left, right, window):
-    #Todo: test wninsd
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
     left = ctypes.c_double(left)
     right = ctypes.c_double(right)
     libspice.wninsd_c(left, right, ctypes.byref(window))
-    return window
 
 
 def wnintd(a, b):
-    #Todo: test wnintd
     assert isinstance(a, stypes.SpiceCell)
     assert b.dtype == 1
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == 1
-    c = stypes.SpiceCell.double(b.size+a.size)
+    c = stypes.SpiceCell.double(b.size + a.size)
     libspice.wnintd_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
     return c
 
 
 def wnreld(a, op, b):
-    #Todo: test wnreld
     assert isinstance(a, stypes.SpiceCell)
     assert b.dtype == 1
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == 1
     assert isinstance(op, str)
-    op = stypes.stringToCharP(op)
+    op = stypes.stringToCharP(op.encode(encoding='UTF-8'))
     return libspice.wnreld_c(ctypes.byref(a), op, ctypes.byref(b))
 
 
 def wnsumd(window):
-    #Todo: test wnsumd
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
     meas = ctypes.c_double()
@@ -4851,7 +4838,6 @@ def wnsumd(window):
 
 
 def wnunid(a, b):
-    #Todo: test wnunid
     assert isinstance(a, stypes.SpiceCell)
     assert b.dtype == 1
     assert isinstance(b, stypes.SpiceCell)
@@ -4862,7 +4848,6 @@ def wnunid(a, b):
 
 
 def wnvald(insize, n, window):
-    #Todo: test wnvalid
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
     insize = ctypes.c_int(insize)

@@ -2098,7 +2098,8 @@ def test_tpictr():
 
 
 def test_trace():
-    assert 1
+    matrix = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+    assert spice.trace(matrix) == 3.0
 
 
 def test_trcoff():
@@ -2114,7 +2115,10 @@ def test_twopi():
 
 
 def test_twovec():
-    assert 1
+    axdef = [1.0, 0.0, 0.0]
+    plndef = [0.0, -1.0, 0.0]
+    expected = [[1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, -1.0]]
+    assert spice.twovec(axdef, 1, plndef, 2) == expected
 
 
 def test_tyear():
@@ -2122,7 +2126,8 @@ def test_tyear():
 
 
 def test_ucase():
-    assert 1
+    assert spice.ucase("hi") == "HI"
+    assert spice.ucase("hi", 3) == "HI"
 
 
 def test_ucrss():
@@ -2398,71 +2403,232 @@ def test_vzerog():
 
 
 def test_wncard():
-    assert 1
+    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
+    for d in darray:
+        spice.wninsd(d[0], d[1], window)
+    assert spice.wncard(window) == 3
 
 
 def test_wncomd():
-    assert 1
+    window1 = spice.stypes.SPICEDOUBLE_CELL(8)
+    darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
+    for d in darray:
+        spice.wninsd(d[0], d[1], window1)
+    assert spice.wncard(window1) == 3
+    window2 = spice.wncomd(2.0, 20.0, window1)
+    assert spice.wncard(window2) == 2
+    assert spice.wnfetd(window2, 0) == (3.0, 7.0)
+    assert spice.wnfetd(window2, 1) == (11.0, 20.0)
 
 
 def test_wncond():
-    assert 1
+    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
+    for d in darray:
+        spice.wninsd(d[0], d[1], window)
+    assert spice.wncard(window) == 3
+    window = spice.wncond(2.0, 1.0, window)
+    assert spice.wncard(window) == 2
+    assert spice.wnfetd(window, 0) == (9.0, 10.0)
+    assert spice.wnfetd(window, 1) == (25.0, 26.0)
 
 
 def test_wndifd():
-    assert 1
+    window1 = spice.stypes.SPICEDOUBLE_CELL(8)
+    window2 = spice.stypes.SPICEDOUBLE_CELL(8)
+    darray1 = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
+    darray2 = [[2.0, 6.0], [8.0, 10.0], [16.0, 18.0]]
+    for d in darray1:
+        spice.wninsd(d[0], d[1], window1)
+    assert spice.wncard(window1) == 3
+    for d in darray2:
+        spice.wninsd(d[0], d[1], window2)
+    assert spice.wncard(window2) == 3
+    window3 = spice.wndifd(window1, window2)
+    assert spice.wncard(window3) == 4
+    assert spice.wnfetd(window3, 0) == (1.0, 2.0)
+    assert spice.wnfetd(window3, 1) == (7.0, 8.0)
+    assert spice.wnfetd(window3, 2) == (10.0, 11.0)
+    assert spice.wnfetd(window3, 3) == (23.0, 27.0)
 
 
 def test_wnelmd():
-    assert 1
+    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
+    for d in darray:
+        spice.wninsd(d[0], d[1], window)
+    assert spice.wncard(window) == 3
+    array = [0.0, 1.0, 9.0, 13.0, 29.0]
+    expected = [False, True, True, False, False]
+    for a, exp in zip(array, expected):
+        assert spice.wnelmd(a, window) == exp
 
 
 def test_wnexpd():
-    assert 1
+    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0], [29.0, 29.0]]
+    for d in darray:
+        spice.wninsd(d[0], d[1], window)
+    assert spice.wncard(window) == 4
+    window = spice.wnexpd(2.0, 1.0, window)
+    assert spice.wncard(window) == 3
+    assert spice.wnfetd(window, 0) == (-1.0, 4.0)
+    assert spice.wnfetd(window, 1) == (5.0, 12.0)
+    assert spice.wnfetd(window, 2) == (21.0, 30.0)
 
 
 def test_wnextd():
-    assert 1
+    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0], [29.0, 29.0]]
+    for d in darray:
+        spice.wninsd(d[0], d[1], window)
+    assert spice.wncard(window) == 4
+    window = spice.wnextd('L', window)
+    assert spice.wncard(window) == 4
+    assert spice.wnfetd(window, 0) == (1.0, 1.0)
+    assert spice.wnfetd(window, 1) == (7.0, 7.0)
+    assert spice.wnfetd(window, 2) == (23.0, 23.0)
+    assert spice.wnfetd(window, 3) == (29.0, 29.0)
 
 
 def test_wnfetd():
-    assert 1
+    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
+    for d in darray:
+        spice.wninsd(d[0], d[1], window)
+    assert spice.wncard(window) == 3
+    assert spice.wnfetd(window, 0) == (1.0, 3.0)
+    assert spice.wnfetd(window, 1) == (7.0, 11.0)
+    assert spice.wnfetd(window, 2) == (23.0, 27.0)
 
 
 def test_wnfild():
-    assert 1
+    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0], [29.0, 29.0]]
+    for d in darray:
+        spice.wninsd(d[0], d[1], window)
+    assert spice.wncard(window) == 4
+    window = spice.wnfild(3.0, window)
+    assert spice.wncard(window) == 3
+    assert spice.wnfetd(window, 0) == (1.0, 3.0)
+    assert spice.wnfetd(window, 1) == (7.0, 11.0)
+    assert spice.wnfetd(window, 2) == (23.0, 29.0)
 
 
 def test_wnfltd():
-    assert 1
+    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0], [29.0, 29.0]]
+    for d in darray:
+        spice.wninsd(d[0], d[1], window)
+    assert spice.wncard(window) == 4
+    window = spice.wnfltd(3.0, window)
+    assert spice.wncard(window) == 2
+    assert spice.wnfetd(window, 0) == (7.0, 11.0)
+    assert spice.wnfetd(window, 1) == (23.0, 27.0)
 
 
 def test_wnincd():
-    assert 1
+    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
+    for d in darray:
+        spice.wninsd(d[0], d[1], window)
+    assert spice.wncard(window) == 3
+    array = [[1.0, 3.0], [9.0, 10.0], [0.0, 2.0], [13.0, 15.0], [29.0, 30.0]]
+    expected = [True, True, False, False, False]
+    for a, exp in zip(array, expected):
+        assert spice.wnincd(a[0], a[1], window) == exp
 
 
 def test_wninsd():
-    assert 1
+    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
+    for d in darray:
+        spice.wninsd(d[0], d[1], window)
+    assert spice.wncard(window) == 3
+    assert [x for x in window] == [1.0, 3.0, 7.0, 11.0, 23.0, 27.0]
 
 
 def test_wnintd():
-    assert 1
+    window1 = spice.stypes.SPICEDOUBLE_CELL(8)
+    window2 = spice.stypes.SPICEDOUBLE_CELL(8)
+    darray1 = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
+    darray2 = [[2.0, 6.0], [8.0, 10.0], [16.0, 18.0]]
+    for d in darray1:
+        spice.wninsd(d[0], d[1], window1)
+    assert spice.wncard(window1) == 3
+    for d in darray2:
+        spice.wninsd(d[0], d[1], window2)
+    assert spice.wncard(window2) == 3
+    window3 = spice.wnintd(window1, window2)
+    assert spice.wncard(window3) == 2
+    assert spice.wnfetd(window3, 0) == (2.0, 3.0)
+    assert spice.wnfetd(window3, 1) == (8.0, 10.0)
 
 
 def test_wnreld():
-    assert 1
+    window1 = spice.stypes.SPICEDOUBLE_CELL(8)
+    window2 = spice.stypes.SPICEDOUBLE_CELL(8)
+    darray1 = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
+    darray2 = [[1.0, 2.0], [9.0, 9.0], [24.0, 27.0]]
+    for d in darray1:
+        spice.wninsd(d[0], d[1], window1)
+    assert spice.wncard(window1) == 3
+    for d in darray2:
+        spice.wninsd(d[0], d[1], window2)
+    assert spice.wncard(window2) == 3
+    ops = ['=', '<>', '<=', '<', '>=', '>']
+    expected = [False, True, False, False, True, True]
+    for op, exp in zip(ops, expected):
+        assert spice.wnreld(window1, op, window2) == exp
 
 
 def test_wnsumd():
-    assert 1
+    window = spice.stypes.SPICEDOUBLE_CELL(12)
+    darray = [[1.0, 3.0], [7.0, 11.0], [18.0, 18.0], [23.0, 27.0], [30.0, 69.0], [72.0, 80.0]]
+    for d in darray:
+        spice.wninsd(d[0], d[1], window)
+    meas, avg, stddev, shortest, longest = spice.wnsumd(window)
+    assert meas == 57.0
+    assert avg == 9.5
+    assert np.around(stddev, decimals=6) == 13.413302
+    assert shortest == 4
+    assert longest == 8
 
 
 def test_wnunid():
-    assert 1
+    window1 = spice.stypes.SPICEDOUBLE_CELL(8)
+    window2 = spice.stypes.SPICEDOUBLE_CELL(8)
+    darray1 = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
+    darray2 = [[2.0, 6.0], [8.0, 10.0], [16.0, 18.0]]
+    for d in darray1:
+        spice.wninsd(d[0], d[1], window1)
+    assert spice.wncard(window1) == 3
+    for d in darray2:
+        spice.wninsd(d[0], d[1], window2)
+    assert spice.wncard(window2) == 3
+    window3 = spice.wnunid(window1, window2)
+    assert spice.wncard(window3) == 4
+    assert spice.wnfetd(window3, 0) == (1.0, 6.0)
+    assert spice.wnfetd(window3, 1) == (7.0, 11.0)
+    assert spice.wnfetd(window3, 2) == (16.0, 18.0)
+    assert spice.wnfetd(window3, 3) == (23.0, 27.0)
 
 
 def test_wnvald():
-    assert 1
+    window = spice.stypes.SPICEDOUBLE_CELL(30)
+    array = [[0.0, 0.0], [10.0, 12.0], [2.0, 7.0],
+             [13.0, 15.0], [1.0, 5.0], [23.0, 29.0],
+             [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]
+    for a in array:
+        spice.wninsd(a[0], a[1], window)
+    result = spice.wnvald(30, 20, window)
+    assert spice.wncard(result) == 5
+    assert spice.wnfetd(result, 0) == (0.0, 0.0)
+    assert spice.wnfetd(result, 1) == (1.0, 7.0)
+    assert spice.wnfetd(result, 2) == (10.0, 12.0)
+    assert spice.wnfetd(result, 3) == (13.0, 15.0)
+    assert spice.wnfetd(result, 4) == (23.0, 29.0)
 
 
 def test_xf2eul():
