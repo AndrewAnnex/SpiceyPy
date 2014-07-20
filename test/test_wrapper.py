@@ -1446,11 +1446,23 @@ def test_nplnpt():
 
 
 def test_nvc2pl():
-    assert 1
+    normal = [1.0, 1.0, 1.0]
+    constant = 23.0
+    expectedConstant = 13.279056
+    expectedNormal = [0.57735027, 0.57735027, 0.57735027]
+    plane = spice.nvc2pl(normal, constant)
+    npt.assert_array_almost_equal(plane.normal, expectedNormal)
+    npt.assert_almost_equal(plane.constant, expectedConstant, decimal=6)
 
 
 def test_nvp2pl():
-    assert 1
+    normal = [1.0, 1.0, 1.0]
+    point = [1.0, 4.0, 9.0]
+    expectedConstant = 8.0829038
+    expectedNormal = [0.57735027, 0.57735027, 0.57735027]
+    plane = spice.nvp2pl(normal, point)
+    npt.assert_array_almost_equal(plane.normal, expectedNormal)
+    npt.assert_almost_equal(plane.constant, expectedConstant, decimal=6)
 
 
 def test_ordc():
@@ -1522,15 +1534,32 @@ def test_pjelpl():
 
 
 def test_pl2nvc():
-    assert 1
+    normal = [-1.0, 5.0, -3.5]
+    point = [9.0, -0.65, -12.0]
+    plane = spice.nvp2pl(normal, point)
+    normal, constant = spice.pl2nvc(plane)
+    expectedNormal = [-0.16169042, 0.80845208, -0.56591646]
+    npt.assert_almost_equal(constant, 4.8102899, decimal=6)
+    npt.assert_array_almost_equal(expectedNormal, normal, decimal=6)
 
 
 def test_pl2nvp():
-    assert 1
+    plane_norm = [2.44, -5.0 / 3.0, 11.0 / 9.0]
+    const = 3.141592654
+    plane = spice.nvc2pl(plane_norm, const)
+    norm_vec, point = spice.pl2nvp(plane)
+    expectedPoint = [0.74966576, -0.51206678, 0.37551564]
+    npt.assert_array_almost_equal(expectedPoint, point)
 
 
 def test_pl2psv():
-    assert 1
+    normal = [-1.0, 5.0, -3.5]
+    point = [9.0, -0.65, -12.0]
+    plane = spice.nvp2pl(normal, point)
+    point, span1, span2 = spice.pl2psv(plane)
+    npt.assert_almost_equal(spice.vdot(point, span1), 0)
+    npt.assert_almost_equal(spice.vdot(point, span2), 0)
+    npt.assert_almost_equal(spice.vdot(span1, span2), 0)
 
 
 def test_pos():
@@ -1585,7 +1614,18 @@ def test_prsint():
 
 
 def test_psv2pl():
-    assert 1
+    epoch = 'Jan 1 2005'
+    frame = 'ECLIPJ2000'
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et(epoch)
+    state, ltime = spice.spkezr('EARTH', et, frame, 'NONE', 'Solar System Barycenter')
+    es_plane = spice.psv2pl(state[0:3], state[0:3], state[3:6])
+    es_norm, es_const = spice.pl2nvc(es_plane)
+    mstate, mltime = spice.spkezr('MOON', et, frame, 'NONE', 'EARTH BARYCENTER')
+    em_plane = spice.psv2pl(mstate[0:3], mstate[0:3], mstate[3:6])
+    em_norm, em_const = spice.pl2nvc(em_plane)
+    spice.kclear()
+    npt.assert_almost_equal(spice.vsep(es_norm, em_norm) * spice.dpr(), 5.0424941, decimal=6)
 
 
 def test_putcml():
