@@ -1101,9 +1101,9 @@ def test_latrec():
     expected1 = np.array([1.0, 0.0, 0.0])
     expected2 = np.array([0.0, 1.0, 0.0])
     expected3 = np.array([-1.0, 0.0, 0.0])
-    np.testing.assert_array_almost_equal(expected1, spice.latrec(1.0, 0.0, 0.0), decimal = 7)
-    np.testing.assert_array_almost_equal(expected2, spice.latrec(1.0, 90.0 * spice.rpd(), 0.0), decimal = 7)
-    np.testing.assert_array_almost_equal(expected3, spice.latrec(1.0, 180.0 * spice.rpd(), 0.0), decimal = 7)
+    npt.assert_array_almost_equal(expected1, spice.latrec(1.0, 0.0, 0.0), decimal=7)
+    npt.assert_array_almost_equal(expected2, spice.latrec(1.0, 90.0 * spice.rpd(), 0.0), decimal=7)
+    npt.assert_array_almost_equal(expected3, spice.latrec(1.0, 180.0 * spice.rpd(), 0.0), decimal=7)
 
 
 def test_latsph():
@@ -1633,7 +1633,13 @@ def test_rav2xf():
 
 
 def test_raxisa():
-    assert 1
+    axis = [1.0, 2.0, 3.0]
+    angle = 0.1 * spice.twopi()
+    rotate_matrix = spice.axisar(axis, angle)
+    axout, angout = spice.raxisa(rotate_matrix)
+    expectedAngout = [0.26726124, 0.53452248, 0.80178373]
+    npt.assert_approx_equal(angout, 0.62831853, significant=7)
+    npt.assert_array_almost_equal(axout, expectedAngout)
 
 
 def test_rdtext():
@@ -1641,7 +1647,12 @@ def test_rdtext():
 
 
 def test_reccyl():
-    assert 1
+    expected1 = np.array([0.0, 0.0, 0.0])
+    expected2 = np.array([1.0, 90.0 * spice.rpd(), 0.0])
+    expected3 = np.array([1.0, 270.0 * spice.rpd(), 0.0])
+    npt.assert_array_almost_equal(expected1, spice.reccyl([0.0, 0.0, 0.0]), decimal=7)
+    npt.assert_array_almost_equal(expected2, spice.reccyl([0.0, 1.0, 0.0]), decimal=7)
+    npt.assert_array_almost_equal(expected3, spice.reccyl([0.0, -1.0, 0.0]), decimal=7)
 
 
 def test_recgeo():
@@ -1670,11 +1681,29 @@ def test_removc():
 
 
 def test_removd():
-    assert 1
+    cell = spice.stypes.SPICEDOUBLE_CELL(10)
+    items = [0.0, 1.0, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 21.0]
+    for i in items:
+        spice.insrtd(i, cell)
+    removeItems = [0.0, 2.0, 4.0, 6.0, 8.0, 12.0]
+    for r in removeItems:
+        spice.removd(r, cell)
+    expected = [1.0, 3.0, 5.0, 13.0, 21.0]
+    for x, y in zip(cell, expected):
+        assert x == y
 
 
 def test_removi():
-    assert 1
+    cell = spice.stypes.SPICEINT_CELL(10)
+    items = [0, 1, 1, 2, 3, 5, 8, 13, 21]
+    for i in items:
+        spice.insrti(i, cell)
+    removeItems = [0, 2, 4, 6, 8, 12]
+    for r in removeItems:
+        spice.removi(r, cell)
+    expected = [1, 3, 5, 13, 21]
+    for x, y in zip(cell, expected):
+        assert x == y
 
 
 def test_reordc():
@@ -1726,15 +1755,29 @@ def test_return():
 
 
 def test_rotate():
-    assert 1
+    mout = spice.rotate(spice.pi() / 4, 3)
+    mExpected = [[np.sqrt(2) / 2.0, np.sqrt(2) / 2.0, 0.0],
+                 [-np.sqrt(2) / 2.0, np.sqrt(2) / 2.0, 0.0],
+                 [0.0, 0.0, 1.0]]
+    npt.assert_array_almost_equal(mout, mExpected)
 
 
 def test_rotmat():
-    assert 1
+    ident = spice.ident()
+    expectedR = [[0.0, 0.0, -1.0],
+                 [0.0, 1.0, 0.0],
+                 [1.0, 0.0, 0.0]]
+    rOut = spice.rotmat(ident, spice.halfpi(), 2)
+    npt.assert_array_almost_equal(rOut, expectedR)
 
 
 def test_rotvec():
-    assert 1
+    vin = [np.sqrt(2), 0.0, 0.0]
+    angle = spice.pi() / 4
+    iaxis = 3
+    vExpected = [1.0, -1.0, 0.0]
+    vout = spice.rotvec(vin, angle, iaxis)
+    npt.assert_array_almost_equal(vout, vExpected)
 
 
 def test_rpd():
@@ -1742,15 +1785,33 @@ def test_rpd():
 
 
 def test_rquad():
-    assert 1
+    # solve x^2 + 2x + 3 = 0
+    root1, root2 = spice.rquad(1.0, 2.0, 3.0)
+    expectedRootOne = [-1.0, np.sqrt(2.0)]
+    expectedRootTwo = [-1.0, -np.sqrt(2.0)]
+    npt.assert_array_almost_equal(root1, expectedRootOne)
+    npt.assert_array_almost_equal(root2, expectedRootTwo)
 
 
 def test_saelgv():
-    assert 1
+    vec1 = [1.0, 1.0, 1.0]
+    vec2 = [1.0, -1.0, 1.0]
+    expectedSmajor = [np.sqrt(2.0), 0.0, np.sqrt(2.0)]
+    expectedSminor = [0.0, np.sqrt(2.0), 0.0]
+    smajor, sminor = spice.saelgv(vec1, vec2)
+    npt.assert_array_almost_equal(smajor, expectedSmajor)
+    npt.assert_array_almost_equal(sminor, expectedSminor)
 
 
 def test_scard():
-    assert 1
+    cell = spice.stypes.SPICEDOUBLE_CELL(10)
+    darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
+    assert spice.card(cell) == 0
+    for w in darray:
+        spice.wninsd(w[0], w[1], cell)
+    assert spice.card(cell) == 6
+    spice.scard(0, cell)
+    assert spice.card(cell) == 0
 
 
 def test_scdecd():

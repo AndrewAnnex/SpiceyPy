@@ -3276,8 +3276,8 @@ def rquad(a, b, c):
     c = ctypes.c_double(c)
     root1 = stypes.emptyDoubleVector(2)
     root2 = stypes.emptyDoubleVector(2)
-    libspice.rquad(a, b, c, root1, root2)
-    return root1, root2
+    libspice.rquad_c(a, b, c, root1, root2)
+    return stypes.vectorToList(root1), stypes.vectorToList(root2)
 
 ########################################################################################################################
 # S
