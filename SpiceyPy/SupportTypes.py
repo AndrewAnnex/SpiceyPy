@@ -262,12 +262,20 @@ DoubleMatrix = DoubleMatrixType()
 
 class Plane(ctypes.Structure):
     _fields_ = [
-        ('normal', ctypes.c_double*3),
-        ('constant', ctypes.c_double)
+        ('_normal', ctypes.c_double * 3),
+        ('_constant', ctypes.c_double)
     ]
 
+    @property
+    def normal(self):
+        return vectorToList(self._normal)
+
+    @property
+    def constant(self):
+        return self._constant
+
     def __str__(self):
-        return '<Plane: normal=%s; constant=%s>' % (', '.join([str(x) for x in self.normal]), self.constant)
+        return '<Plane: normal=%s; constant=%s>' % (', '.join([str(x) for x in self._normal]), self._constant)
 
 
 class Ellipse(ctypes.Structure):
