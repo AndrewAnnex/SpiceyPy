@@ -3115,7 +3115,7 @@ def removi(item, inset):
     #Todo: test removi
     assert isinstance(inset, stypes.SpiceCell)
     item = ctypes.c_int(item)
-    libspice.removi(item, ctypes.byref(inset))
+    libspice.removi_c(item, ctypes.byref(inset))
     pass
 
 
