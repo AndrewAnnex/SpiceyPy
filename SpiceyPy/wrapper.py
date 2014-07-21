@@ -2040,7 +2040,6 @@ def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
 
 
 def inedpl(a, b, c, plane):
-    #Todo: test inedpl
     assert (isinstance(plane, stypes.Plane))
     ellipse = stypes.Ellipse()
     a = ctypes.c_double(a)
@@ -2048,7 +2047,10 @@ def inedpl(a, b, c, plane):
     c = ctypes.c_double(c)
     found = ctypes.c_bool()
     libspice.inedpl_c(a, b, c, ctypes.byref(plane), ctypes.byref(ellipse), ctypes.byref(found))
-    return ellipse, found.value
+    if found.value:
+        return ellipse
+    else:
+        return None
 
 
 def inelpl(ellips, plane):
@@ -2635,7 +2637,6 @@ def mxvg(m1, v2, nrow1, nc1r2):
 
 
 def namfrm(frname):
-    #todo: test namfrm
     frname = stypes.stringToCharP(frname)
     frcode = ctypes.c_int()
     libspice.namfrm_c(frname, ctypes.byref(frcode))
@@ -2657,7 +2658,6 @@ def ncposr(string, chars, start):
 
 
 def nearpt(positn, a, b, c):
-    #Todo: test nearpt
     positn = stypes.toDoubleVector(positn)
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
@@ -2677,11 +2677,10 @@ def npedln(a, b, c, linept, linedr):
     pnear = stypes.emptyDoubleVector(3)
     dist = ctypes.c_double()
     libspice.npedln_c(a, b, c, linept, linedr, pnear, ctypes.byref(dist))
-    return pnear, dist
+    return stypes.vectorToList(pnear), dist.value
 
 
 def npelpt(point, ellips):
-    #Todo: test npelpt
     assert(isinstance(ellips, stypes.Ellipse))
     point = stypes.toDoubleVector(point)
     pnear = stypes.emptyDoubleVector(3)
@@ -2697,7 +2696,7 @@ def nplnpt(linpt, lindir, point):
     pnear = stypes.emptyDoubleVector(3)
     dist = ctypes.c_double()
     libspice.nplnpt_c(linpt, lindir, point, pnear, ctypes.byref(dist))
-    return stypes.toDoubleVector(pnear), dist.value
+    return stypes.vectorToList(pnear), dist.value
 
 
 def nvc2pl(normal, constant):
@@ -2709,7 +2708,6 @@ def nvc2pl(normal, constant):
 
 
 def nvp2pl(normal, point):
-    #todo: test nvp2pl
     normal = stypes.toDoubleVector(normal)
     point = stypes.toDoubleVector(point)
     plane = stypes.Plane()
@@ -2866,11 +2864,11 @@ def pipool(name, n, ivals):
 
 
 def pjelpl(elin, plane):
-    #Todo: test pjelpl, figure out if we want asserts to help users
     assert(isinstance(elin, stypes.Ellipse))
     assert(isinstance(plane, stypes.Plane))
     elout = stypes.Ellipse()
     libspice.pjelpl_c(ctypes.byref(elin), ctypes.byref(plane), ctypes.byref(elout))
+    return elout
 
 
 def pl2nvc(plane):
@@ -3284,7 +3282,6 @@ def rquad(a, b, c):
 
 
 def saelgv(vec1, vec2):
-    #Todo: test saelgv
     vec1 = stypes.toDoubleVector(vec1)
     vec2 = stypes.toDoubleVector(vec2)
     smajor = stypes.emptyDoubleVector(3)
