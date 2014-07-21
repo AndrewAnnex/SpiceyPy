@@ -188,7 +188,16 @@ def test_card():
 
 
 def test_cgv2el():
-    assert 1
+    vec1 = [1.0, 1.0, 1.0]
+    vec2 = [1.0, -1.0, 1.0]
+    center = [-1.0, 1.0, -1.0]
+    ellipse = spice.cgv2el(center, vec1, vec2)
+    expectedSmajor = [np.sqrt(2.0), 0.0, np.sqrt(2.0)]
+    expectedSminor = [0.0, np.sqrt(2.0), 0.0]
+    expectedCenter = [-1.0, 1.0, -1.0]
+    npt.assert_array_almost_equal(expectedCenter, ellipse.center)
+    npt.assert_array_almost_equal(expectedSmajor, ellipse.semi_major)
+    npt.assert_array_almost_equal(expectedSminor, ellipse.semi_minor)
 
 
 def test_chkin():
@@ -532,7 +541,14 @@ def test_dvsep():
 
 
 def test_edlimb():
-    assert 1
+    viewpt = [2.0, 0.0, 0.0]
+    limb = spice.edlimb(np.sqrt(2), 2.0 * np.sqrt(2), np.sqrt(2), viewpt)
+    expectedSMinor = [0.0, 0.0, -1.0]
+    expectedSMajor = [0.0, 2.0, 0.0]
+    expectedCenter = [1.0, 0.0, 0.0]
+    npt.assert_array_almost_equal(limb.center, expectedCenter)
+    npt.assert_array_almost_equal(limb.semi_major, expectedSMajor)
+    npt.assert_array_almost_equal(limb.semi_minor, expectedSMinor)
 
 
 def test_ekacec():
@@ -684,7 +700,17 @@ def test_ekuef():
 
 
 def test_el2cgv():
-    assert 1
+    vec1 = [1.0, 1.0, 1.0]
+    vec2 = [1.0, -1.0, 1.0]
+    center = [1.0, 1.0, 1.0]
+    smajor, sminor = spice.saelgv(vec1, vec2)
+    ellipse = spice.cgv2el(center, smajor, sminor)
+    expectedCenter = [1.0, 1.0, 1.0]
+    expectedSmajor = [np.sqrt(2.0), 0.0, np.sqrt(2.0)]
+    expectedSminor = [0.0, np.sqrt(2.0), 0.0]
+    npt.assert_array_almost_equal(ellipse.center, expectedCenter)
+    npt.assert_array_almost_equal(ellipse.semi_major, expectedSmajor)
+    npt.assert_array_almost_equal(ellipse.semi_minor, expectedSminor)
 
 
 def test_elemc():
@@ -943,11 +969,45 @@ def test_ilumin():
 
 
 def test_inedpl():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    TIME = 'Oct 31 2002, 12:55:00 PST'
+    FRAME = 'J2000'
+    CORR = 'LT+S'
+    et = spice.str2et(TIME)
+    state, ltime = spice.spkezr('EARTH', et, FRAME, CORR, 'SUN')
+    pos = state[0:3]
+    dim, radii = spice.bodvrd('EARTH', 'RADII', 3)
+    pos = [pos[0] / radii[0] ** 2.0,
+           pos[1] / radii[1] ** 2.0,
+           pos[2] / radii[2] ** 2.0]
+    plane = spice.nvc2pl(pos, 1.0)
+    term = spice.inedpl(radii[0], radii[1], radii[2], plane)
+    spice.kclear()
+    expectedCenter = [0.21512031, 0.15544527, 0.067391641]
+    expectedSMajor = [-3735.61161, 5169.70331, -9.7794273e-12]
+    expectedSMinor = [-1276.33361, -922.27471, 6159.97370]
+    npt.assert_array_almost_equal(expectedCenter, term.center)
+    npt.assert_array_almost_equal(expectedSMajor, term.semi_major, decimal=5)
+    npt.assert_array_almost_equal(expectedSMinor, term.semi_minor, decimal=5)
+    npt.assert_almost_equal(spice.vnorm(term.semi_major), 6378.1365, decimal=2)
+    npt.assert_almost_equal(spice.vnorm(term.semi_minor), 6358.0558, decimal=2)
 
 
 def test_inelpl():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    dim, radii = spice.bodvrd('SATURN', 'RADII', 3)
+    vertex = [100.0 * radii[0], 0.0, radii[0] * 100.0]
+    limb = spice.edlimb(radii[0], radii[1], radii[2], vertex)
+    normal = [0.0, 0.0, 1.0]
+    point = [0.0, 0.0, 0.0]
+    plane = spice.nvp2pl(normal, point)
+    nxpts, xpt1, xpt2 = spice.inelpl(limb, plane)
+    expectedXpt1 = [602.68000, 60264.9865, 0.0]
+    expectedXpt2 = [602.68000, -60264.9865, 0.0]
+    assert nxpts == 2.0
+    npt.assert_array_almost_equal(expectedXpt1, xpt1, decimal=4)
+    npt.assert_array_almost_equal(expectedXpt2, xpt2, decimal=4)
+    spice.kclear()
 
 
 def test_inrypl():
@@ -1385,7 +1445,7 @@ def test_mxvg():
 
 
 def test_namfrm():
-    assert 1
+    assert spice.namfrm('J2000') == 1
 
 
 def test_ncpos():
@@ -1430,19 +1490,48 @@ def test_ncposr():
 
 
 def test_nearpt():
-    assert 1
+    a, b, c = 1.0, 2.0, 3.0
+    point = [3.5, 0.0, 0.0]
+    pnear, alt = spice.nearpt(point, a, b, c)
+    expectedPnear = [1.0, 0.0, 0.0]
+    expectedAlt = 2.5
+    npt.assert_almost_equal(alt, expectedAlt)
+    npt.assert_array_almost_equal(pnear, expectedPnear)
 
 
 def test_npedln():
-    assert 1
+    linept = [1.0e6, 2.0e6, 3.0e6]
+    a, b, c = 7.0e5, 7.0e5, 6.0e5
+    linedr = [-4.472091234e-1, -8.944182469e-1, -4.472091234e-3]
+    pnear, dist = spice.npedln(a, b, c, linept, linedr)
+    expectedPnear = [-1633.3111, -3266.6222, 599991.83]
+    expectedDist = 2389967.9
+    npt.assert_almost_equal(dist, expectedDist, decimal=1)
+    npt.assert_array_almost_equal(expectedPnear, pnear, decimal=2)
 
 
 def test_npelpt():
-    assert 1
+    center = [1.0, 2.0, 3.0]
+    smajor = [3.0, 0.0, 0.0]
+    sminor = [0.0, 2.0, 0.0]
+    point = [-4.0, 2.0, 1.0]
+    expectedPnear = [-2.0, 2.0, 3.0]
+    expectedDist = 2.8284271
+    ellipse = spice.cgv2el(center, smajor, sminor)
+    pnear, dist = spice.npelpt(point, ellipse)
+    npt.assert_almost_equal(dist, expectedDist)
+    npt.assert_array_almost_equal(expectedPnear, pnear)
 
 
 def test_nplnpt():
-    assert 1
+    linept = [1.0, 2.0, 3.0]
+    linedr = [0.0, 1.0, 1.0]
+    point = [-6.0, 9.0, 10.0]
+    pnear, dist = spice.nplnpt(linept, linedr, point)
+    expectedPnear = [1.0, 9.0, 10.0]
+    expectedDist = 7.0
+    assert dist == expectedDist
+    npt.assert_array_almost_equal(expectedPnear, pnear)
 
 
 def test_nvc2pl():
@@ -1530,7 +1619,19 @@ def test_pipool():
 
 
 def test_pjelpl():
-    assert 1
+    center = [1.0, 1.0, 1.0]
+    vec1 = [2.0, 0.0, 0.0]
+    vec2 = [0.0, 1.0, 1.0]
+    normal = [0.0, 0.0, 1.0]
+    plane = spice.nvc2pl(normal, 0.0)
+    elin = spice.cgv2el(center, vec1, vec2)
+    ellipse = spice.pjelpl(elin, plane)
+    expectedSmajor = [2.0, 0.0, 0.0]
+    expectedSminor = [0.0, 1.0, 0.0]
+    expectedCenter = [1.0, 1.0, 0.0]
+    npt.assert_array_almost_equal(expectedCenter, ellipse.center)
+    npt.assert_array_almost_equal(expectedSmajor, ellipse.semi_major)
+    npt.assert_array_almost_equal(expectedSminor, ellipse.semi_minor)
 
 
 def test_pl2nvc():

@@ -280,13 +280,26 @@ class Plane(ctypes.Structure):
 
 class Ellipse(ctypes.Structure):
     _fields_ = [
-        ('center', ctypes.c_double*3),
-        ('semi_major', ctypes.c_double*3),
-        ('semi_minor', ctypes.c_double*3)
+        ('_center', ctypes.c_double * 3),
+        ('_semi_major', ctypes.c_double * 3),
+        ('_semi_minor', ctypes.c_double * 3)
     ]
 
+    @property
+    def center(self):
+        return vectorToList(self._center)
+
+    @property
+    def semi_major(self):
+        return vectorToList(self._semi_major)
+
+    @property
+    def semi_minor(self):
+        return vectorToList(self._semi_minor)
+
     def __str__(self):
-        return '<SpiceEllipse: center = %s, semi_major = %s, semi_minor = %s>' % (self.center, self.semi_major, self.semi_minor)
+        return '<SpiceEllipse: center = %s, semi_major = %s, semi_minor = %s>' % \
+               (self.center, self.semi_major, self.semi_minor)
 
 
 class DataType(object):
