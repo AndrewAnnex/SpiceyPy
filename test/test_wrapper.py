@@ -209,7 +209,15 @@ def test_chkout():
 
 
 def test_cidfrm():
-    assert 1
+    frcode, frname = spice.cidfrm(501, 10)
+    assert frcode == 10023
+    assert frname == 'IAU_IO'
+    frcode, frname = spice.cidfrm(399, 10)
+    assert frcode == 10013
+    assert frname == 'IAU_EARTH'
+    frcode, frname = spice.cidfrm(301, 10)
+    assert frcode == 10020
+    assert frname == 'IAU_MOON'
 
 
 def test_ckcls():
@@ -265,23 +273,51 @@ def test_clight():
 
 
 def test_clpool():
-    assert 1
+    spice.kclear()
+    spice.pdpool('TEST_VAR', 1, [-666.0])
+    dval, value = spice.gdpool('TEST_VAR', 0, 1)
+    assert dval == 1
+    assert value[0] == -666.0
+    spice.clpool()
+    found = spice.gdpool('TEST_VAR', 0, 1)
+    assert found is None
+    spice.kclear()
 
 
 def test_cmprss():
-    assert 1
+    strings = ['ABC...DE.F...', '...........', '.. ..AB....CD']
+    assert spice.cmprss('.', 2, strings[0], 15) == 'ABC..DE.F..'
+    assert spice.cmprss('.', 3, strings[1], 15) == '...'
+    assert spice.cmprss('.', 1, strings[2], 15) == '. .AB.CD'
+    assert spice.cmprss('.', 3, strings[1]) == '...'
+    assert spice.cmprss('.', 1, strings[2]) == '. .AB.CD'
+    assert spice.cmprss(' ', 0, ' Embe dde d -sp   a c  es   ', 20) == 'Embedded-spaces'
 
 
 def test_cnmfrm():
-    assert 1
+    ioFrcode, ioFrname = spice.cnmfrm('IO', 10)
+    assert ioFrcode == 10023
+    assert ioFrname == 'IAU_IO'
 
 
 def test_conics():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et('Dec 25, 2007')
+    state, ltime = spice.spkezr('Moon', et, 'J2000', 'NONE', 'EARTH')
+    dim, mu = spice.bodvrd('EARTH', 'GM', 1)
+    elts = spice.oscelt(state, et, mu[0])
+    later = et + 7.0 * spice.spd()
+    later_state = spice.conics(elts, later)
+    state, ltime = spice.spkezr('Moon', later, 'J2000', 'NONE', 'EARTH')
+    spice.kclear()
+    pert = np.array(later_state) - np.array(state)
+    expectedPert = [-7488.85977, 397.610079, 195.745581, -0.0361527602, -0.00127926674, -0.00201458871]
+    npt.assert_array_almost_equal(pert, expectedPert, decimal=5)
 
 
 def test_convrt():
-    assert 1
+    assert spice.convrt(300.0, 'statute_miles', 'km') == 482.80320
+    npt.assert_almost_equal(spice.convrt(1.0, 'parsecs', 'lightyears'), 3.2615638, decimal=6)
 
 
 def test_copy():
@@ -439,7 +475,16 @@ def test_dcyldr():
 
 
 def test_deltet():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    UTC_1997 = 'Jan 1 1997'
+    UTC_2004 = 'Jan 1 2004'
+    et_1997 = spice.str2et(UTC_1997)
+    et_2004 = spice.str2et(UTC_2004)
+    delt_1997 = spice.deltet(et_1997, 'ET')
+    delt_2004 = spice.deltet(et_2004, 'ET')
+    npt.assert_almost_equal(delt_1997, 62.1839353, decimal=6)
+    npt.assert_almost_equal(delt_2004, 64.1839116, decimal=6)
+    spice.kclear()
 
 
 def test_det():
@@ -453,7 +498,12 @@ def test_dgeodr():
 
 
 def test_diags2():
-    assert 1
+    mat = [[1.0, 4.0], [4.0, -5.0]]
+    diag, rot = spice.diags2(mat)
+    expectedDiag = [[3.0, 0.0], [0.0, -7.0]]
+    expectedRot = [[0.89442719, -0.44721360], [0.44721360, 0.89442719]]
+    npt.assert_array_almost_equal(diag, expectedDiag)
+    npt.assert_array_almost_equal(rot, expectedRot)
 
 
 def test_diff():
@@ -465,7 +515,14 @@ def test_dlatdr():
 
 
 def test_dp2hx():
-    assert 1
+    assert spice.dp2hx(2.0e-9) == "89705F4136B4A8^-7"
+    assert spice.dp2hx(1.0) == "1^1"
+    assert spice.dp2hx(-1.0) == "-1^1"
+    assert spice.dp2hx(1024.0) == "4^3"
+    assert spice.dp2hx(-1024.0) == "-4^3"
+    assert spice.dp2hx(521707.0) == "7F5EB^5"
+    assert spice.dp2hx(27.0) == "1B^2"
+    assert spice.dp2hx(0.0) == "0^0"
 
 
 def test_dpgrdr():
@@ -815,8 +872,8 @@ def test_ftncls():
 def test_furnsh():
     spice.kclear()
     spice.furnsh(_testKernelPath)
-    # 3 kernels + the meta kernel = 4
-    assert spice.ktotal("ALL") == 4
+    # 4 kernels + the meta kernel = 5
+    assert spice.ktotal("ALL") == 5
     spice.kclear()
 
 
@@ -2246,11 +2303,15 @@ def test_sumai():
 
 
 def test_surfnm():
-    assert 1
+    point = [0.0, 0.0, 3.0]
+    assert spice.surfnm(1.0, 2.0, 3.0, point) == [0.0, 0.0, 1.0]
 
 
 def test_surfpt():
-    assert 1
+    position = [2.0, 0.0, 0.0]
+    u = [-1.0, 0.0, 0.0]
+    point = spice.surfpt(position, u, 1.0, 2.0, 3.0)
+    assert point == [1.0, 0.0, 0.0]
 
 
 def test_surfpv():
@@ -2354,8 +2415,8 @@ def test_unitim():
 
 def test_unload():
     spice.furnsh(_testKernelPath)
-    # 3 kernels + the meta kernel = 4
-    assert spice.ktotal("ALL") == 4
+    # 4 kernels + the meta kernel = 5
+    assert spice.ktotal("ALL") == 5
     spice.unload(_testKernelPath)
     assert spice.ktotal("ALL") == 0
     spice.kclear()
@@ -2506,11 +2567,26 @@ def test_vperp():
 
 
 def test_vprjp():
-    assert 1
+    vec1 = [-5.0, 7.0, 2.2]
+    norm = [0.0, 0.0, 1.0]
+    orig = [0.0, 0.0, 0.0]
+    plane = spice.nvp2pl(norm, orig)
+    proj = spice.vprjp(vec1, plane)
+    expected = [-5.0, 7.0, 0.0]
+    npt.assert_array_almost_equal(proj, expected)
 
 
 def test_vprjpi():
-    assert 1
+    norm1 = [0.0, 0.0, 1.0]
+    norm2 = [1.0, 0.0, 1.0]
+    con1 = 1.2
+    con2 = 0.65
+    plane1 = spice.nvc2pl(norm1, con1)
+    plane2 = spice.nvc2pl(norm2, con2)
+    vec = [1.0, 1.0, 0.0]
+    result = spice.vprjpi(vec, plane1, plane2)
+    expected = [1.0, 1.0, -0.35]
+    npt.assert_array_almost_equal(result, expected)
 
 
 def test_vproj():
@@ -2522,11 +2598,15 @@ def test_vproj():
 
 
 def test_vrel():
-    assert 1
+    vec1 = [12.3, -4.32, 76.0]
+    vec2 = [23.0423, -11.99, -0.10]
+    npt.assert_almost_equal(spice.vrel(vec1, vec2), 1.0016370)
 
 
 def test_vrelg():
-    assert 1
+    vec1 = [12.3, -4.32, 76.0, 1.87]
+    vec2 = [23.0423, -11.99, -0.10, -99.1]
+    npt.assert_almost_equal(spice.vrelg(vec1, vec2, 4), 1.2408623)
 
 
 def test_vrotv():

@@ -549,7 +549,8 @@ libspice.sumai_c.restype = ctypes.c_int
 libspice.sumad_c.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.c_int]
 libspice.sumad_c.restype = ctypes.c_double
 libspice.surfnm_c.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double,(ctypes.c_double*3), (ctypes.c_double*3)]
-libspice.surfpt_c.argtypes = [(ctypes.c_double*3), (ctypes.c_double*3), ctypes.c_double, (ctypes.c_double*3), ctypes.POINTER(ctypes.c_bool)]
+libspice.surfpt_c.argtypes = [(ctypes.c_double * 3), (ctypes.c_double * 3), ctypes.c_double, ctypes.c_double,
+                              ctypes.c_double, (ctypes.c_double * 3), ctypes.POINTER(ctypes.c_bool)]
 libspice.surfpv_c.argtypes = [(ctypes.c_double*6), (ctypes.c_double*6), ctypes.c_double, (ctypes.c_double*6), ctypes.POINTER(ctypes.c_bool)]
 libspice.swpool_c.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]
 libspice.sxform_c.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, (ctypes.c_double*6)*6]
