@@ -231,14 +231,16 @@ def chkout(module):
 
 
 def cidfrm(cent, lenout):
-    #Todo: test cidfrm
     cent = ctypes.c_int(cent)
     lenout = ctypes.c_int(lenout)
     frcode = ctypes.c_int()
     frname = stypes.stringToCharP(lenout)
     found = ctypes.c_bool()
     libspice.cidfrm_c(cent, lenout, ctypes.byref(frcode), frname, ctypes.byref(found))
-    return frcode.value, frname.value, found.value
+    if found.value:
+        return frcode.value, stypes.toPythonString(frname)
+    else:
+        return None
 
 
 def ckcls(handle):
@@ -397,30 +399,32 @@ def clpool():
     pass
 
 
-def cmprss(delim, n, instr, lenout):
-    #Todo: test cmprss
-    delim = ctypes.c_char(delim)  # may have to decode/encode...
+def cmprss(delim, n, instr, lenout=None):
+    # automatically determine lenout (cannot be more than instr)
+    if lenout is None:
+        lenout = ctypes.c_int(len(instr) + 1)
+    delim = ctypes.c_char(delim.encode(encoding='UTF-8'))
     n = ctypes.c_int(n)
     instr = stypes.stringToCharP(instr)
-    lenout = ctypes.c_int(lenout)
     output = stypes.stringToCharP(lenout)
     libspice.cmprss_c(delim, n, instr, lenout, output)
     return stypes.toPythonString(output)
 
 
 def cnmfrm(cname, lenout):
-    #Todo: test cnmfrm
     lenout = ctypes.c_int(lenout)
     frname = stypes.stringToCharP(lenout)
     cname = stypes.stringToCharP(cname)
     found = ctypes.c_bool()
     frcode = ctypes.c_int()
     libspice.cnmfrm_c(cname, lenout, ctypes.byref(frcode), frname, ctypes.byref(found))
-    return frcode.value, stypes.toPythonString(frname), found.value
+    if found.value:
+        return frcode.value, stypes.toPythonString(frname)
+    else:
+        return None
 
 
 def conics(elts, et):
-    #Todo: test conics
     elts = stypes.toDoubleVector(elts)
     et = ctypes.c_double(et)
     state = stypes.emptyDoubleVector(6)
@@ -787,18 +791,15 @@ def dlatdr(x, y, z):
     return stypes.matrixToList(jacobi)
 
 
-def dp2hx(number, lenout):
-    #Works, but interesting results, you must add 1 to lenout
-    #for it to work properly, so string length may need to be
-    #handled with some process that adds one to the length
-    #or removes the user from making the decision entirely
-    #may be what causes certin strings to fail
+def dp2hx(number, lenout=None):
+    if lenout is None:
+        lenout = 255
     number = ctypes.c_double(number)
     lenout = ctypes.c_int(lenout)
     string = stypes.stringToCharP(lenout)
     length = ctypes.c_int()
     libspice.dp2hx_c(number, lenout, string, ctypes.byref(length))
-    return stypes.toPythonString(string), length.value
+    return stypes.toPythonString(string)
 
 
 def dpgrdr(body, x, y, z, re, f):
@@ -1633,7 +1634,10 @@ def gdpool(name, start, room):
     found = ctypes.c_bool()
     libspice.gdpool_c(name, start, room, ctypes.byref(n),
                       ctypes.cast(values, ctypes.POINTER(ctypes.c_double)), ctypes.byref(found))
-    return n.value, stypes.vectorToList(values), found.value
+    if found.value:
+        return n.value, stypes.vectorToList(values)
+    else:
+        return None
 
 
 def georec(lon, lat, alt, re, f):
@@ -2771,13 +2775,12 @@ def orderi(array, ndim):
     return stypes.vectorToList(iorder)
 
 
-def oscelt(stat, et, mu):
-    #Todo: Test oscelt
-    stat = stypes.toDoubleVector(stat)
+def oscelt(state, et, mu):
+    state = stypes.toDoubleVector(state)
     et = ctypes.c_double(et)
     mu = ctypes.c_double(mu)
     elts = stypes.emptyDoubleVector(8)
-    libspice.oscelt_c(stat, et, mu, elts)
+    libspice.oscelt_c(state, et, mu, elts)
     return stypes.vectorToList(elts)
 
 ########################################################################################################################
@@ -2831,7 +2834,6 @@ def pcpool(name, n, lenvals, cvals):
 
 
 def pdpool(name, n, dvals):
-    #Todo: test pdpool
     name = stypes.stringToCharP(name)
     dvals = stypes.toDoubleVector(dvals)
     n = ctypes.c_int(n)
@@ -4135,7 +4137,6 @@ def sumai(array, n):
 
 
 def surfnm(a, b, c, point):
-    #Todo: test surfnm
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
     c = ctypes.c_double(c)
@@ -4146,7 +4147,6 @@ def surfnm(a, b, c, point):
 
 
 def surfpt(positn, u, a, b, c):
-    #Todo: test surfpt
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
     c = ctypes.c_double(c)
@@ -4155,7 +4155,10 @@ def surfpt(positn, u, a, b, c):
     point = stypes.emptyDoubleVector(3)
     found = ctypes.c_bool()
     libspice.surfpt_c(positn, u, a, b, c, point, ctypes.byref(found))
-    return stypes.vectorToList(point), found.value
+    if found.value:
+        return stypes.vectorToList(point)
+    else:
+        return None
 
 
 def surfpv(stvrtx, stdir, a, b, c):
@@ -4579,7 +4582,10 @@ def vprjpi(vin, projpl, invpl):
     vout = stypes.emptyDoubleVector(3)
     found = ctypes.c_bool()
     libspice.vprjpi_c(vin, ctypes.byref(projpl), ctypes.byref(invpl), vout, ctypes.byref(found))
-    return stypes.vectorToList(vout), found.value
+    if found.value:
+        return stypes.vectorToList(vout)
+    else:
+        return None
 
 
 def vproj(a, b):
