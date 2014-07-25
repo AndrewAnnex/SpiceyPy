@@ -7,33 +7,32 @@ The now mostly complete NAIF C SPICE Toolkit Wrapper for Python 3, written using
 
 The [SPICE Toolkit](http://naif.jpl.nasa.gov/naif/). In short it is an essential tool for scientists and engineers alike in the planetary science field for Solar System Geometry. Please visit the NAIF website listed earlier for more details.
 
-### Completion
-
-A growing list of completed functions can be found [here](https://github.com/Apollo117/SpiceyPy/wiki/Wrapper-Completion).
-Functions that have written functions that have not been tested do generally work, but tests have not been written yet.
-Functions labeled with 'Skip' are being ignored, as they are either not needed in a python environment or impossible to implement.
 
 ### Travis and Coveralls Status
 
-Should say how we are doing (please be kind if it is red!)
-
 [![Build Status](https://travis-ci.org/Apollo117/SpiceyPy.svg?branch=master)](https://travis-ci.org/Apollo117/SpiceyPy)
-[![Coverage Status](https://coveralls.io/repos/Apollo117/SpiceyPy/badge.png)](https://coveralls.io/r/Apollo117/SpiceyPy)
+[![Coverage Status](https://img.shields.io/coveralls/Apollo117/SpiceyPy.svg)](https://coveralls.io/r/Apollo117/SpiceyPy?branch=master)
+A secondary list (non-maintained) can be found [here](https://github.com/Apollo117/SpiceyPy/wiki/Wrapper-Completion).
+Functions that have written functions that have not been tested do generally work, but tests may not have been written yet.
+Functions labeled with 'Skip' are being ignored, as they are either not needed in a python environment or impossible to implement.
+If you encounter an error with a function please report it or write up a PR to fix it, with ctypes it is easy!
 
 ### Design Goals
 - [ ] Majorly complete coverage of all existing CSPICE commands, within reason.
 - [ ] Useful, but abbreviated commenting on functions.
 - [ ] Enable vectorization of certain functions to be more like ICY.
-- [ ] Python 2 and 3 support.
-- [ ] Numpy Support.
+- [x] Python 2 and 3 support.
+- [x] Numpy Support.
 
-### Important User Information
-A very primative setup.py file exists now and should work, **You Must Download the CSPICE library for your system and extract it into the directory setup.py is located in.**
-Be sure to completely delete the resulting folder in your site-packages folder if you are uninstalling the library or upgrading to a new version.
+### Installation
+First install the dependencies (numpy, six, pytest). Then download the project, extract it, and inside just run `python setup.py install`.
+If you are updating to the newest commit/version, be sure to completely delete the SpiceyPy folder in your site-packages.
 
 ### Known Working Environments:
 These are the following OS environments I have been able to run the exampleProgramTest.py program on. SpiceyPy is being developed
-in the Python 3.3.3 64-bit Mac OS X 10.9.2 environment. Not much else to say until comprehensive tests are made.
+in the Python 3.3.3 64-bit Mac OS X 10.9.4 environment. Travis CI is also ubuntu 12.04 LTS to my knowledge.
+* Python 3.3.3 64-bit Mac OS X 10.9.4
+* Python 2.7.5 64-bit Mac OS X 10.9.4
 * Python 3.3.3 64-bit Mac OS X 10.9.2
 * Python 2.7.5 64-bit Mac OS X 10.9.2
 * Python 3.2.3 64-bit Ubuntu 12.04 LTS (VM)
