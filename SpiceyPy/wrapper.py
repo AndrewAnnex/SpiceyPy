@@ -61,6 +61,13 @@ def badkpv(caller, name, comp, insize, divby, intype):
     return libspice.badkpv_c(caller, name, comp, insize, divby, intype)
 
 
+def bltfrm(frmcls):
+    frmcls = ctypes.c_int(frmcls)
+    outcell = stypes.SPICEINT_CELL(126)
+    libspice.bltfrm_c(frmcls, outcell)
+    return outcell
+
+
 def bodc2n(code, lenout):
     code = ctypes.c_int(code)
     name = stypes.stringToCharP(" " * lenout)
@@ -201,9 +208,23 @@ def bsrchi(value, ndim, array):
 ########################################################################################################################
 # C
 
-
 def card(cell):
     return libspice.card_c(ctypes.byref(cell))
+
+
+def ccifrm(frclss, clssid, lenout):
+    frclss = ctypes.c_int(frclss)
+    clssid = ctypes.c_int(clssid)
+    lenout = ctypes.c_int(lenout)
+    frcode = ctypes.c_int()
+    frname = stypes.stringToCharP(lenout)
+    center = ctypes.c_int()
+    found = ctypes.c_bool()
+    libspice.ccifrm_c(frclss, clssid, lenout, ctypes.byref(frcode), frname, ctypes.byref(center), ctypes.byref(found))
+    if found.value:
+        return frcode.value, stypes.toPythonString(frname), center.value
+    else:
+        return None
 
 
 def cgv2el(center, vec1, vec2):
@@ -584,6 +605,12 @@ def dafgda(handle, begin, end):
     data = ctypes.c_double()
     libspice.dafgda_c(handle, begin, end, ctypes.byref(data))
     return data.value
+
+
+def dafgh():
+    outvalue = ctypes.c_int()
+    libspice.dafgh_c(ctypes.byref(outvalue))
+    return outvalue.value
 
 
 def dafgn(lenout):
@@ -1416,6 +1443,17 @@ def elemi(item, inset):
     return libspice.elemi_c(item, ctypes.byref(inset))
 
 
+def eqncpv(et, epoch, eqel, rapol, decpol):
+    et = ctypes.c_double(et)
+    epoch = ctypes.c_double(epoch)
+    eqel = stypes.toDoubleVector(eqel)
+    rapol = ctypes.c_double(rapol)
+    decpol = ctypes.c_double(decpol)
+    state = stypes.emptyDoubleVector(6)
+    libspice.eqncpv_c(et, epoch, eqel, rapol, decpol, state)
+    return stypes.vectorToList(state)
+
+
 def eqstr(a, b):
     #Todo: test eqstr
     return libspice.eqstr_c(stypes.stringToCharP(a), stypes.stringToCharP(b))
@@ -1565,6 +1603,33 @@ def expool(name):
 def failed():
     #todo: test failed
     return libspice.failed_c()
+
+
+def fovray(inst, raydir, rframe, abcorr, observer, et):
+    # Unsure if et is returned or not (I vs I/O)
+    inst = stypes.stringToCharP(inst)
+    raydir = stypes.toDoubleVector(raydir)
+    rframe = stypes.stringToCharP(rframe)
+    abcorr = stypes.stringToCharP(abcorr)
+    observer = stypes.stringToCharP(observer)
+    et = ctypes.c_double(et)
+    visible = ctypes.c_bool()
+    libspice.fovray_c(inst, raydir, rframe, abcorr, observer, ctypes.byref(et), ctypes.byref(visible))
+    return visible.value
+
+
+def fovtrg(inst, target, tshape, tframe, abcorr, observer, et):
+    # Unsure if et is returned or not (I vs I/O)
+    inst = stypes.stringToCharP(inst)
+    target = stypes.stringToCharP(target)
+    tshape = stypes.stringToCharP(tshape)
+    tframe = stypes.stringToCharP(tframe)
+    abcorr = stypes.stringToCharP(abcorr)
+    observer = stypes.stringToCharP(observer)
+    et = ctypes.c_double(et)
+    visible = ctypes.c_bool()
+    libspice.fovtrg_c(inst, target, tshape, tframe, abcorr, observer, ctypes.byref(et), ctypes.byref(visible))
+    return visible.value
 
 
 def frame(x):
@@ -1917,6 +1982,12 @@ def gfstep(time):
     step = ctypes.c_double()
     libspice.gfstep_c(time, ctypes.byref(step))
     return step.value
+
+
+def gfstol(value):
+    value = ctypes.c_double(value)
+    libspice.gfstol_c(value)
+    pass
 
 
 def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate, refval, adjust, step, nintvals, cnfine):
@@ -2965,6 +3036,15 @@ def pxform(fromstr, tostr, et):
     return stypes.matrixToList(rotatematrix)
 
 
+def pxfrm2(frame_from, frame_to, etfrom, etto):
+    frame_from = stypes.stringToCharP(frame_from)
+    frame_to = stypes.stringToCharP(frame_to)
+    etfrom = ctypes.c_double(etfrom)
+    etto = ctypes.c_double(etto)
+    outmatrix = stypes.emptyDoubleMatrix()
+    libspice.pxfrm2_c(frame_from, frame_to, etfrom, etto, outmatrix)
+    return stypes.matrixToList(outmatrix)
+
 ########################################################################################################################
 # Q
 
@@ -3624,6 +3704,68 @@ def spkcov(spk, idcode, cover=None):
     return cover
 
 
+def spkcpo(target, et, outref, refloc, abcorr, obspos, obsctr, obsref):
+    target = stypes.stringToCharP(target)
+    et = ctypes.c_double(et)
+    outref = stypes.stringToCharP(outref)
+    refloc = stypes.stringToCharP(refloc)
+    abcorr = stypes.stringToCharP(abcorr)
+    obspos = stypes.toDoubleVector(obspos)
+    obsctr = stypes.stringToCharP(obsctr)
+    obsref = stypes.stringToCharP(obsref)
+    state = stypes.emptyDoubleVector(6)
+    lt = ctypes.c_double()
+    libspice.spkcpo_c(target, et, outref, refloc, abcorr, obspos, obsctr, obsref, state, ctypes.byref(lt))
+    return stypes.vectorToList(state), lt.value
+
+
+def spkcpt(trgpos, trgctr, trgref, et, outref, refloc, abcorr, obsrvr):
+    trgpos = stypes.toDoubleVector(trgpos)
+    trgctr = stypes.stringToCharP(trgctr)
+    trgref = stypes.stringToCharP(trgref)
+    et = ctypes.c_double(et)
+    outref = stypes.stringToCharP(outref)
+    refloc = stypes.stringToCharP(refloc)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    state = stypes.emptyDoubleVector(6)
+    lt = ctypes.c_double()
+    libspice.spkcpt_c(trgpos, trgctr, trgref, et, outref, refloc, abcorr, obsrvr, state, ctypes.byref(lt))
+    return stypes.vectorToList(state), lt.value
+
+
+def spkcvo(target, et, outref, refloc, abcorr, obssta, obsepc, obsct, obsref):
+    target = stypes.stringToCharP(target)
+    et = ctypes.c_double(et)
+    outref = stypes.stringToCharP(outref)
+    refloc = stypes.stringToCharP(refloc)
+    abcorr = stypes.stringToCharP(abcorr)
+    obssta = stypes.toDoubleVector(obssta)
+    obsepc = ctypes.c_double(obsepc)
+    obsct = stypes.stringToCharP(obsct)
+    obsref = stypes.stringToCharP(obsref)
+    state = stypes.emptyDoubleVector(6)
+    lt = ctypes.c_double()
+    libspice.spkcpo_c(target, et, outref, refloc, abcorr, obssta, obsepc, obsct, obsref, state, ctypes.byref(lt))
+    return stypes.vectorToList(state), lt.value
+
+
+def spkcvt(trgsta, trgepc, trgctr, trgref, et, outref, refloc, abcorr, obsrvr):
+    trgpos = stypes.toDoubleVector(trgsta)
+    trgepc = ctypes.c_double(trgepc)
+    trgctr = stypes.stringToCharP(trgctr)
+    trgref = stypes.stringToCharP(trgref)
+    et = ctypes.c_double(et)
+    outref = stypes.stringToCharP(outref)
+    refloc = stypes.stringToCharP(refloc)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    state = stypes.emptyDoubleVector(6)
+    lt = ctypes.c_double()
+    libspice.spkcvt_c(trgpos, trgepc, trgctr, trgref, et, outref, refloc, abcorr, obsrvr, state, ctypes.byref(lt))
+    return stypes.vectorToList(state), lt.value
+
+
 def spkez(targ, et, ref, abcorr, obs):
     #Todo: test spkez
     targ = ctypes.c_int(targ)
@@ -3769,6 +3911,17 @@ def spkpos(targ, et, ref, abcorr, obs):
     lt = ctypes.c_double()
     libspice.spkpos_c(targ, et, ref, abcorr, obs, ptarg, ctypes.byref(lt))
     return stypes.vectorToList(ptarg), lt.value
+
+
+def spkpvn(handle, descr, et):
+    handle = ctypes.c_int(handle)
+    descr = stypes.toDoubleVector(descr)
+    et = ctypes.c_double(et)
+    ref = ctypes.c_int()
+    state = stypes.emptyDoubleVector(6)
+    center = ctypes.c_int()
+    libspice.spkpvn_c(handle, descr, et, ctypes.byref(ref), state, ctypes.byref(center))
+    return ref.value, stypes.vectorToList(state), center.value
 
 
 def spkssb(targ, et, ref):
@@ -4251,7 +4404,7 @@ def tisbod(ref, body, et):
 
 def tkvrsn(item):
     item = stypes.stringToCharP(item)
-    return libspice.tkvrsn_c(item)
+    return stypes.toPythonString(libspice.tkvrsn_c(item))
 
 
 def tparse(instring, lenout):
@@ -4880,6 +5033,16 @@ def xf2rav(xform):
     av = stypes.emptyDoubleVector(3)
     libspice.xf2rav_c(xform, rot, av)
     return stypes.matrixToList(rot), stypes.vectorToList(av)
+
+
+def xfmsta(input_state, input_coord_sys, output_coord_sys, body):
+    input_state = stypes.toDoubleVector(input_state)
+    input_coord_sys = stypes.stringToCharP(input_coord_sys)
+    output_coord_sys = stypes.stringToCharP(output_coord_sys)
+    body = stypes.stringToCharP(body)
+    output_state = stypes.emptyDoubleVector(6)
+    libspice.xfmsta_c(input_state, input_coord_sys, output_coord_sys, body, output_state)
+    return stypes.vectorToList(output_state)
 
 
 def xpose(m):

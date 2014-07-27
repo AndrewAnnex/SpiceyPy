@@ -28,7 +28,9 @@ def toPythonString(inString):
             return toPythonString(inString.value)
         return inString.split('\x00')[0]
     elif six.PY3:
-        return bytes.decode(inString.value)
+        if isinstance(inString, c_char_p):
+            return toPythonString(inString.value)
+        return bytes.decode(inString)
 
 
 def listtocharvector(x):
