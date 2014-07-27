@@ -1002,6 +1002,22 @@ def edlimb(a, b, c, viewpt):
     return limb
 
 
+def edterm(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts):
+    trmtyp = stypes.stringToCharP(trmtyp)
+    source = stypes.stringToCharP(source)
+    target = stypes.stringToCharP(target)
+    et = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    trgepc = ctypes.c_double()
+    obspos = stypes.emptyDoubleVector(3)
+    trmpts = stypes.emptyDoubleMatrix(x=3, y=npts)
+    npts = ctypes.c_int(npts)
+    libspice.edterm_c(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts, ctypes.byref(trgepc), obspos, trmpts)
+    return trgepc.value, stypes.vectorToList(obspos), stypes.matrixToList(trmpts)
+
+
 def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     #Todo: test ekacec
     handle = ctypes.c_int(handle)
@@ -1800,6 +1816,9 @@ def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls, cnfine
 #gffove  callbacks? cells
 
 
+# gfilum
+
+
 def gfinth(sigcode):
     #Todo: test gfinth
     sigcode = ctypes.c_int(sigcode)
@@ -1828,6 +1847,9 @@ def gfoclt_c(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr
     libspice.gfoclt_c(occtyp, front, fshape, fframe, back, bshape, bframe,
                       abcorr, obsrvr, step, ctypes.byref(cnfine), ctypes.byref(result))
     return cnfine, result
+
+
+# gfpa
 
 
 def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval, adjust, step, nintvals, cnfine):
@@ -2312,6 +2334,13 @@ def kinfo(file, typlen, srclen):
     return stypes.toPythonString(filtyp), stypes.toPythonString(source), handle.value, found.value
 
 
+def kplfrm(frmcls, cell_size=1000):
+    frmcls = ctypes.c_int(frmcls)
+    idset = stypes.SPICEINT_CELL(cell_size)
+    libspice.kplfrm_c(frmcls, ctypes.byref(idset))
+    return idset
+
+
 def ktotal(kind):
     kind = stypes.stringToCharP(kind)
     count = ctypes.c_int()
@@ -2793,6 +2822,21 @@ def nvp2pl(normal, point):
 ########################################################################################################################
 # O
 
+def occult(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer, et):
+    target1 = stypes.stringToCharP(target1)
+    shape1 = stypes.stringToCharP(shape1)
+    frame1 = stypes.stringToCharP(frame1)
+    target2 = stypes.stringToCharP(target2)
+    shape2 = stypes.stringToCharP(shape2)
+    frame2 = stypes.stringToCharP(frame2)
+    abcorr = stypes.stringToCharP(abcorr)
+    observer = stypes.stringToCharP(observer)
+    et = ctypes.c_double(et)
+    occult_code = ctypes.c_int()
+    libspice.occult_c(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer, et, ctypes.byref(occult_code))
+    return occult_code.value
+
+
 def ordc(item, inset):
     #Todo: test ordc
     assert isinstance(inset, stypes.SpiceCell)
@@ -2922,6 +2966,15 @@ def pgrrec(body, lon, lat, alt, re, f):
     rectan = stypes.emptyDoubleVector(3)
     libspice.pgrrec(body, lon, lat, alt, re, f, rectan)
     return stypes.vectorToList(rectan)
+
+
+def phaseq(et, target, illmn, obsrvr, abcorr):
+    et = ctypes.c_double(et)
+    target = stypes.stringToCharP(target)
+    illmn = stypes.stringToCharP(illmn)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    abcorr = stypes.stringToCharP(abcorr)
+    return libspice.phaseq_c(et, target, illmn, obsrvr, abcorr)
 
 
 def pi():
@@ -3924,6 +3977,22 @@ def spkpvn(handle, descr, et):
     return ref.value, stypes.vectorToList(state), center.value
 
 
+def spksfs(body, et, idlen):
+    # Todo: test, spksfs has a Parameter SIDLEN, sounds like an optional but is that possible?
+    body = ctypes.c_int(body)
+    et = ctypes.c_double(et)
+    idlen = ctypes.c_int(idlen)
+    handle = ctypes.c_int()
+    descr = stypes.emptyDoubleVector(5)
+    identstring = stypes.stringToCharP(idlen)
+    found = ctypes.c_bool()
+    libspice.spksfs_c(body, et, idlen, ctypes.byref(handle), descr, identstring, ctypes.byref(found))
+    if found.value:
+        return handle.value, stypes.vectorToList(descr), stypes.toPythonString(identstring)
+    else:
+        return None
+
+
 def spkssb(targ, et, ref):
     #Todo: test spkssb
     targ = ctypes.c_int(targ)
@@ -4432,6 +4501,20 @@ def trace(matrix):
     #Todo: test trace
     matrix = stypes.toDoubleMatrix(matrix)
     return libspice.trace_c(matrix)
+
+
+def trcnam(index, namlen):
+    index = ctypes.c_int(index)
+    name = stypes.stringToCharP(namlen)
+    namlen = ctypes.c_int(namlen)
+    libspice.tcnam(index, namlen, name)
+    return stypes.toPythonString(name)
+
+
+def trcdep():
+    depth = ctypes.c_int()
+    libspice.trcdep_c(ctypes.byref(depth))
+    return depth.value
 
 
 def trcoff():
