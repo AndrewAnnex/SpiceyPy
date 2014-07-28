@@ -2275,7 +2275,12 @@ def test_stpool():
 
 
 def test_str2et():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    date = 'Thu Mar 20 12:53:29 PST 1997'
+    et = spice.str2et(date)
+    npt.assert_almost_equal(et, -87836728.81438904)
+    spice.kclear()
 
 
 def test_subpnt():
@@ -2291,7 +2296,13 @@ def test_subslr():
 
 
 def test_subsol():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    point = spice.subsol('near point', 'earth', 0.0, 'lt+s', 'mars')
+    npt.assert_array_almost_equal(point, [5850.44947427, 509.68837118, -2480.24722673], decimal=4)
+    intercept = spice.subsol('intercept', 'earth', 0.0, 'lt+s', 'mars')
+    npt.assert_array_almost_equal(intercept, [5844.4362338, 509.16450054, -2494.39569089], decimal=4)
+    spice.kclear()
 
 
 def test_sumad():
@@ -2323,27 +2334,66 @@ def test_swpool():
 
 
 def test_sxform():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    lon = 118.25 * spice.rpd()
+    lat = 34.05 * spice.rpd()
+    alt = 0.0
+    utc = 'January 1, 1990'
+    et = spice.str2et(utc)
+    len, abc = spice.bodvrd('EARTH', 'RADII', 3)
+    equatr = abc[0]
+    polar = abc[2]
+    f = (equatr - polar) / equatr
+    estate = spice.georec(lon, lat, alt, equatr, f)
+    estate += [0.0, 0.0, 0.0]
+    xform = np.array(spice.sxfrom('IAU_EARTH', 'J2000', et))
+    spice.kclear()
+    jstate = np.dot(xform, estate)
+    expected = np.array([-4131.45969, -3308.36805, 3547.02462, 0.241249619, -0.301019201, 0.000234215666])
+    npt.assert_array_almost_equal(jstate, expected, decimal=4)
 
 
 def test_szpool():
-    assert 1
+    assert spice.szpool("MAXVAR") == 26003
+    assert spice.szpool("MAXLEN") == 32
+    assert spice.szpool("MAXVAL") == 400000
+    assert spice.szpool("MXNOTE") == 130015
+    assert spice.szpool("MAXAGT") == 1000
+    assert spice.szpool("MAXCHR") == 80
+    assert spice.szpool("MAXLIN") == 15000
 
 
 def test_timdef():
-    assert 1
+    value = spice.timdef('GET', 'CALENDAR', 10)
+    assert value == 'GREGORIAN' or 'JULIAN' or 'MIXED'
 
 
 def test_timout():
-    assert 1
+    sample = 'Thu Oct 1 11:11:11 PDT 1111'
+    lenout = len(sample) + 2
+    spice.furnsh(_testKernelPath)
+    pic, ok, err = spice.tpictr(sample, 64, 60)
+    assert ok
+    et = 188745364.0
+    out = spice.timout(et, pic, lenout)
+    assert out == "Sat Dec 24 18:14:59 PDT 2005"
+    spice.kclear()
 
 
 def test_tipbod():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et('Jan 1 2005')
+    tipm = spice.tipbod('J2000', 699, et)
+    assert tipm is not None
+    spice.kclear()
 
 
 def test_tisbod():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et('Jan 1 2005')
+    tsipm = spice.tisbod('J2000', 699, et)
+    assert tsipm is not None
+    spice.kclear()
 
 
 def test_tkvrsn():
@@ -2411,7 +2461,11 @@ def test_union():
 
 
 def test_unitim():
-    assert 1
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et('Dec 19 2003')
+    converted_et = spice.unitim(et, 'ET', 'JED')
+    npt.assert_almost_equal(converted_et, 2452992.5007428653)
+    spice.kclear()
 
 
 def test_unload():
@@ -2463,7 +2517,13 @@ def test_vaddg():
 
 
 def test_valid():
-    assert 1
+    data = np.arange(0, 10)[::-1]
+    a = spice.stypes.SPICEDOUBLE_CELL(20)
+    for x in data:
+        spice.appndd(x, a)
+    assert a.is_set() is False
+    a = spice.valid(20, 10, a)
+    assert a.is_set() is True
 
 
 def test_vcrss():

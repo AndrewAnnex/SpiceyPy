@@ -6,7 +6,7 @@ sitePath = os.path.dirname(__file__)
 sitePath = os.path.join(sitePath, 'spice.so')
 libspice = CDLL(sitePath)
 
-import SpiceyPy.SupportTypes as stypes
+import SpiceyPy.support_types as stypes
 
 # ######################################################################################################################
 # A
@@ -652,7 +652,7 @@ libspice.szpool_c.argtypes = [c_char_p, POINTER(c_int), POINTER(c_bool)]
 
 libspice.timdef_c.argtypes = [c_char_p, c_char_p, c_int, c_char_p]
 libspice.timout_c.argtypes = [c_double, c_char_p, c_int, c_char_p]
-libspice.tipbod_c.argtypes = [c_char_p, c_int, c_double, c_double]
+libspice.tipbod_c.argtypes = [c_char_p, c_int, c_double, (c_double * 3) * 3]
 libspice.tisbod_c.argtypes = [c_char_p, c_int, c_double, (c_double * 6) * 6]
 libspice.tkvrsn_c.argtypes = [c_char_p]
 libspice.tkvrsn_c.restype = c_char_p
