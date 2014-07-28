@@ -2,7 +2,7 @@ __author__ = 'Apollo117'
 # wrapper.py, a weak wrapper for libspice.py, here is where all the important ctypes setup and returning occurs.
 
 import ctypes
-import SpiceyPy.SupportTypes as stypes
+import SpiceyPy.support_types as stypes
 from SpiceyPy.libspice import libspice
 import numpy
 
@@ -4421,7 +4421,10 @@ def szpool(name):
     n = ctypes.c_int()
     found = ctypes.c_bool(0)
     libspice.szpool_c(name, ctypes.byref(n), ctypes.byref(found))
-    return n, found.value
+    if found.value:
+        return n.value
+    else:
+        return False
 
 
 ########################################################################################################################
@@ -4434,7 +4437,7 @@ def timdef(action, item, lenout, value=None):
     item = stypes.stringToCharP(item)
     lenout = ctypes.c_int(lenout)
     if value is None:
-        value = stypes.stringToCharP(" " * lenout.value)
+        value = stypes.stringToCharP(lenout)
     else:
         value = stypes.stringToCharP(value)
     libspice.timdef_c(action, item, lenout, value)
@@ -4444,7 +4447,7 @@ def timdef(action, item, lenout, value=None):
 def timout(et, pictur, lenout):
     #todo: test
     pictur = stypes.stringToCharP(pictur)
-    output = stypes.stringToCharP(" " * lenout)
+    output = stypes.stringToCharP(lenout)
     et = ctypes.c_double(et)
     lenout = ctypes.c_int(lenout)
     libspice.timout_c(et, pictur, lenout, output)
@@ -4455,7 +4458,7 @@ def tipbod(ref, body, et):
     #Todo: test
     ref = stypes.stringToCharP(ref)
     body = ctypes.c_int(body)
-    et = ctypes.c_int(et)
+    et = ctypes.c_double(et)
     retmatrix = stypes.emptyDoubleMatrix()
     libspice.tipbod_c(ref, body, et, retmatrix)
     return stypes.matrixToList(retmatrix)
@@ -4465,7 +4468,7 @@ def tisbod(ref, body, et):
     #Todo: test tisbod
     ref = stypes.stringToCharP(ref)
     body = ctypes.c_int(body)
-    et = ctypes.c_int(et)
+    et = ctypes.c_double(et)
     retmatrix = stypes.emptyDoubleMatrix(x=6, y=6)
     libspice.tisbod_c(ref, body, et, retmatrix)
     return stypes.matrixToList(retmatrix)
@@ -4658,7 +4661,7 @@ def valid(insize, n, inset):
     assert isinstance(inset, stypes.SpiceCell)
     insize = ctypes.c_int(insize)
     n = ctypes.c_int(n)
-    libspice.valid_c(insize, n, ctypes.byref(inset))
+    libspice.valid_c(insize, n, inset)
     return inset
 
 
@@ -4899,7 +4902,7 @@ def vsubg(v1, v2, ndim):
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
     vout = stypes.emptyDoubleVector(ndim)
-    ndim = stypes.ctypes.c_int(ndim)
+    ndim = ctypes.c_int(ndim)
     libspice.vsubg_c(v1, v2, ndim, vout)
     return stypes.vectorToList(vout)
 
@@ -4936,7 +4939,7 @@ def vzero(v):
 
 def vzerog(v, ndim):
     v = stypes.toDoubleVector(v)
-    ndim = stypes.ctypes.c_int(ndim)
+    ndim = ctypes.c_int(ndim)
     return libspice.vzerog_c(v, ndim)
 
 ########################################################################################################################

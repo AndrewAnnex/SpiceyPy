@@ -1,7 +1,7 @@
 # Collection of supporting functions for wrapper functions
 __author__ = 'Apollo117'
-import ctypes
-from ctypes import c_char_p
+from ctypes import c_char_p, c_bool, c_int, c_double, c_char, c_void_p, sizeof, \
+    POINTER, pointer, Array, create_string_buffer, create_unicode_buffer, cast, Structure
 import numpy
 import six
 
@@ -35,32 +35,32 @@ def toPythonString(inString):
 
 def listtocharvector(x):
     assert (isinstance(x, list))
-    return (ctypes.c_char_p * len(x))(*[stringToCharP(y) for y in x])
+    return (c_char_p * len(x))(*[stringToCharP(y) for y in x])
 
 
 def charvector(ndim=1, lenvals=10):
-    return ((ctypes.c_char * lenvals)*ndim)()
+    return ((c_char * lenvals) * ndim)()
 
 
 def listtodoublematrix(data, x=3, y=3):
-    matrix = ((ctypes.c_double * x) * y)()
+    matrix = ((c_double * x) * y)()
     for i, row in enumerate(data):
         matrix[i] = tuple(row)
     return matrix
 
 
 def emptyDoubleMatrix(x=3, y=3):
-    return ((ctypes.c_double * x) * y)()
+    return ((c_double * x) * y)()
 
 
 def emptyDoubleVector(n):
     assert(isinstance(n, int))
-    return (ctypes.c_double*n)()
+    return (c_double * n)()
 
 
 def emptyIntVector(n):
     assert(isinstance(n, int))
-    return (ctypes.c_int*n)()
+    return (c_int * n)()
 
 
 def vectorToList(x):
@@ -86,14 +86,14 @@ def stringToCharP(inobject, inlen=None):
     :return:
     """
     if inlen and isinstance(inobject, str):
-        return ctypes.create_string_buffer(inobject.encode(encoding='UTF-8'), inlen)
+        return create_string_buffer(inobject.encode(encoding='UTF-8'), inlen)
     if isinstance(inobject, bytes):
         return inobject
-    if isinstance(inobject, ctypes.c_int):
+    if isinstance(inobject, c_int):
         return stringToCharP(" " * inobject.value)
     if isinstance(inobject, int):
         return stringToCharP(" " * inobject)
-    return ctypes.c_char_p(inobject.encode(encoding='UTF-8'))
+    return c_char_p(inobject.encode(encoding='UTF-8'))
 
 
 def listToCharArray(inList, xLen=None, yLen=None):
@@ -102,11 +102,11 @@ def listToCharArray(inList, xLen=None, yLen=None):
         yLen = len(inList)
     if not xLen:
         xLen = max(len(s) for s in inList)
-    if isinstance(xLen, ctypes.c_int):
+    if isinstance(xLen, c_int):
         xLen = xLen.value
-    if isinstance(yLen, ctypes.c_int):
+    if isinstance(yLen, c_int):
         yLen = yLen.value
-    return ((ctypes.c_char * xLen) * yLen)(*[stringToCharP(l, inlen=xLen) for l in inList])
+    return ((c_char * xLen) * yLen)(*[stringToCharP(l, inlen=xLen) for l in inList])
 
 
 def listToCharArrayPtr(inList, xLen=None, yLen=None):
@@ -115,12 +115,12 @@ def listToCharArrayPtr(inList, xLen=None, yLen=None):
         yLen = len(inList)
     if not xLen:
         xLen = max(len(s) for s in inList)
-    if isinstance(xLen, ctypes.c_int):
+    if isinstance(xLen, c_int):
         xLen = xLen.value
-    if isinstance(yLen, ctypes.c_int):
+    if isinstance(yLen, c_int):
         yLen = yLen.value
-    return ctypes.cast(((ctypes.c_char * xLen) * yLen)(*[stringToCharP(l, inlen=xLen) for l in inList]),
-                       ctypes.c_char_p)
+    return cast(((c_char * xLen) * yLen)(*[stringToCharP(l, inlen=xLen) for l in inList]),
+                c_char_p)
 
 
 class DoubleArrayType:
@@ -129,24 +129,24 @@ class DoubleArrayType:
         typename = type(param).__name__
         if hasattr(self, 'from_' + typename):
             return getattr(self, 'from_' + typename)(param)
-        elif isinstance(param, ctypes.Array):
+        elif isinstance(param, Array):
             return param
         else:
             raise TypeError("Can't convert %s" % typename)
 
     # Cast from lists/tuples
     def from_list(self, param):
-        val = ((ctypes.c_double)*len(param))(*param)
+        val = ((c_double) * len(param))(*param)
         return val
 
     # Cast from Tuple
     def from_tuple(self, param):
-        val = ((ctypes.c_double) * len(param))(*param)
+        val = ((c_double) * len(param))(*param)
         return val
 
     # Cast from a numpy array,
     def from_ndarray(self, param):
-        #return param.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        # return param.data_as(POINTER(c_double))
         # the above older method does not work with functions which take vectors of known size
         return numpy.ctypeslib.as_ctypes(param)
 
@@ -155,7 +155,7 @@ class DoubleArrayType:
         if param.typecode != 'd':
             raise TypeError('must be an array of doubles')
         ptr, _ = param.buffer_info()
-        return ctypes.cast(ptr, ctypes.POINTER(ctypes.c_double))
+        return cast(ptr, POINTER(c_double))
 
 
 class DoubleMatrixType:
@@ -164,29 +164,29 @@ class DoubleMatrixType:
         typename = type(param).__name__
         if hasattr(self, 'from_' + typename):
             return getattr(self, 'from_' + typename)(param)
-        elif isinstance(param, ctypes.Array):
+        elif isinstance(param, Array):
             return param
         else:
             raise TypeError("Can't convert %s" % typename)
 
     # Cast from lists/tuples
     def from_list(self, param):
-        val = ((ctypes.c_double*len(param[0]))*len(param))(*[DoubleArray.from_param(x) for x in param])
+        val = ((c_double * len(param[0])) * len(param))(*[DoubleArray.from_param(x) for x in param])
         return val
 
     # Cast from Tuple
     def from_tuple(self, param):
-        val = ((ctypes.c_double*len(param[0]))*len(param))(*[DoubleArray.from_param(x) for x in param])
+        val = ((c_double * len(param[0])) * len(param))(*[DoubleArray.from_param(x) for x in param])
         return val
 
     # Cast from a numpy array
     def from_ndarray(self, param):
-        #return param.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        #return param.data_as(POINTER(c_double))
         return numpy.ctypeslib.as_ctypes(param)
 
     # Cast from a numpy matrix
     def from_matrix(self, param):
-        #return param.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        #return param.data_as(POINTER(c_double))
         return numpy.ctypeslib.as_ctypes(param)
 
 
@@ -196,24 +196,24 @@ class IntArrayType:
         typename = type(param).__name__
         if hasattr(self, 'from_' + typename):
             return getattr(self, 'from_' + typename)(param)
-        elif isinstance(param, ctypes.Array):
+        elif isinstance(param, Array):
             return param
         else:
             raise TypeError("Can't convert %s" % typename)
 
     # Cast from lists/tuples
     def from_list(self, param):
-        val = ((ctypes.c_int)*len(param))(*param)
+        val = ((c_int) * len(param))(*param)
         return val
 
     # Cast from Tuple
     def from_tuple(self, param):
-        val = ((ctypes.c_int) * len(param))(*param)
+        val = ((c_int) * len(param))(*param)
         return val
 
     # Cast from a numpy array
     def from_ndarray(self, param):
-        #return param.ctypes.data_as(ctypes.POINTER(ctypes.c_int)) # not sure if long is same as int, it should be..
+        #return param.data_as(POINTER(c_int)) # not sure if long is same as int, it should be..
         #return numpy.ctypeslib.as_ctypes(param)
         return self.from_param(param.tolist())
 
@@ -222,7 +222,7 @@ class IntArrayType:
         if param.typecode != 'i':
             raise TypeError('must be an array of ints')
         ptr, _ = param.buffer_info()
-        return ctypes.cast(ptr, ctypes.POINTER(ctypes.c_int))
+        return cast(ptr, POINTER(c_int))
 
 
 class BoolArrayType:
@@ -231,24 +231,24 @@ class BoolArrayType:
         typename = type(param).__name__
         if hasattr(self, 'from_' + typename):
             return getattr(self, 'from_' + typename)(param)
-        elif isinstance(param, ctypes.Array):
+        elif isinstance(param, Array):
             return param
         else:
             raise TypeError("Can't convert %s" % typename)
 
     # Cast from lists/tuples
     def from_list(self, param):
-        val = ((ctypes.c_bool) * len(param))(*param)
+        val = ((c_bool) * len(param))(*param)
         return val
 
     # Cast from Tuple
     def from_tuple(self, param):
-        val = ((ctypes.c_bool) * len(param))(*param)
+        val = ((c_bool) * len(param))(*param)
         return val
 
     # Cast from a numpy array
     def from_ndarray(self, param):
-        #return param.ctypes.data_as(ctypes.POINTER(ctypes.c_int)) # not sure if long is same as int, it should be..
+        #return param.data_as(POINTER(c_int)) # not sure if long is same as int, it should be..
         #return numpy.ctypeslib.as_ctypes(param)
         return self.from_param(param.tolist())
 
@@ -262,10 +262,10 @@ BoolArray = BoolArrayType()
 DoubleMatrix = DoubleMatrixType()
 
 
-class Plane(ctypes.Structure):
+class Plane(Structure):
     _fields_ = [
-        ('_normal', ctypes.c_double * 3),
-        ('_constant', ctypes.c_double)
+        ('_normal', c_double * 3),
+        ('_constant', c_double)
     ]
 
     @property
@@ -280,11 +280,11 @@ class Plane(ctypes.Structure):
         return '<Plane: normal=%s; constant=%s>' % (', '.join([str(x) for x in self._normal]), self._constant)
 
 
-class Ellipse(ctypes.Structure):
+class Ellipse(Structure):
     _fields_ = [
-        ('_center', ctypes.c_double * 3),
-        ('_semi_major', ctypes.c_double * 3),
-        ('_semi_minor', ctypes.c_double * 3)
+        ('_center', c_double * 3),
+        ('_semi_major', c_double * 3),
+        ('_semi_minor', c_double * 3)
     ]
 
     @property
@@ -320,32 +320,32 @@ class DataType(object):
         pass
 
 
-class SpiceEKDataType(ctypes.c_int):
+class SpiceEKDataType(c_int):
     _fields_ = [
-        ('SPICE_CHR', ctypes.c_int(0)),
-        ('SPICE_DP', ctypes.c_int(1)),
-        ('SPICE_INT', ctypes.c_int(2)),
-        ('SPICE_TIME', ctypes.c_int(3)),
-        ('SPICE_BOOL', ctypes.c_int(4)),
+        ('SPICE_CHR', c_int(0)),
+        ('SPICE_DP', c_int(1)),
+        ('SPICE_INT', c_int(2)),
+        ('SPICE_TIME', c_int(3)),
+        ('SPICE_BOOL', c_int(4)),
     ]
 
 
-class SpiceEKExprClass(ctypes.c_int):
+class SpiceEKExprClass(c_int):
     _fields_ = [
-        ('SPICE_EK_EXP_COL', ctypes.c_int(0)),
-        ('SPICE_EK_EXP_FUNC', ctypes.c_int(1)),
-        ('SPICE_EK_EXP_EXPR', ctypes.c_int(2))
+        ('SPICE_EK_EXP_COL', c_int(0)),
+        ('SPICE_EK_EXP_FUNC', c_int(1)),
+        ('SPICE_EK_EXP_EXPR', c_int(2))
     ]
 
 
-class SpiceEKAttDsc(ctypes.Structure):
+class SpiceEKAttDsc(Structure):
     _fields_ = [
-        ('cclass', ctypes.c_int),
+        ('cclass', c_int),
         ('dtype', SpiceEKDataType),
-        ('strlen', ctypes.c_int),
-        ('size', ctypes.c_int),
-        ('indexd', ctypes.c_bool),
-        ('nullok', ctypes.c_bool)
+        ('strlen', c_int),
+        ('size', c_int),
+        ('indexd', c_bool),
+        ('nullok', c_bool)
     ]
 
     def __str__(self):
@@ -353,13 +353,13 @@ class SpiceEKAttDsc(ctypes.Structure):
                (self.cclass, self.dtype, self.strlen, self.size, self.indexd, self.nullok)
 
 
-class SpiceEKSegSum(ctypes.Structure):
+class SpiceEKSegSum(Structure):
     _fields_ = [
-        ('tabnam', ctypes.c_char * 65),
-        ('nrows', ctypes.c_int),
-        ('ncols', ctypes.c_int),
-        ('cnames', (ctypes.c_char * 100) * 33),
-        ('cdescrs', ctypes.c_char * 100)
+        ('tabnam', c_char * 65),
+        ('nrows', c_int),
+        ('ncols', c_int),
+        ('cnames', (c_char * 100) * 33),
+        ('cdescrs', c_char * 100)
     ]
 
     def __str__(self):
@@ -370,19 +370,19 @@ class SpiceEKSegSum(ctypes.Structure):
 # and modified as needed for this author, maybe we should work together?
 
 ### helper classes/functions ###
-BITSIZE = {'char': ctypes.sizeof(ctypes.c_char), 'int': ctypes.sizeof(ctypes.c_int), 'double': ctypes.sizeof(ctypes.c_double)}
+BITSIZE = {'char': sizeof(c_char), 'int': sizeof(c_int), 'double': sizeof(c_double)}
 
 
 def _char_getter(data_p, index, length):
-    return toPythonString((ctypes.c_char * length).from_address(data_p + index * BITSIZE['char']))
+    return toPythonString((c_char * length).from_address(data_p + index * BITSIZE['char']))
 
 
 def _double_getter(data_p, index, length):
-    return ctypes.c_double.from_address(data_p + index * BITSIZE['double']).value
+    return c_double.from_address(data_p + index * BITSIZE['double']).value
 
 
 def _int_getter(data_p, index, length):
-    return ctypes.c_int.from_address(data_p + index * BITSIZE['int']).value
+    return c_int.from_address(data_p + index * BITSIZE['int']).value
 
 
 def SPICEDOUBLE_CELL(size):
@@ -397,7 +397,7 @@ def SPICECHAR_CELL(size, length):
     return SpiceCell.character(size, length)
 
 
-class SpiceCell(ctypes.Structure):
+class SpiceCell(Structure):
     #Most written by DaRasch
     DATATYPES_ENUM = {'char': 0, 'double': 1, 'int': 2, 'time': 3, 'bool': 4}
     DATATYPES_GET = [_char_getter, _double_getter] + [_int_getter] * 3
@@ -405,15 +405,15 @@ class SpiceCell(ctypes.Structure):
     minCharLen = 6
     CTRLBLOCK = 6
     _fields_ = [
-        ('dtype', ctypes.c_int),
-        ('length', ctypes.c_int),
-        ('size', ctypes.c_int),
-        ('card', ctypes.c_int),
-        ('isSet', ctypes.c_int),
-        ('adjust', ctypes.c_int),
-        ('init', ctypes.c_int),
-        ('base', ctypes.c_void_p),
-        ('data', ctypes.c_void_p)
+        ('dtype', c_int),
+        ('length', c_int),
+        ('size', c_int),
+        ('card', c_int),
+        ('isSet', c_int),
+        ('adjust', c_int),
+        ('init', c_int),
+        ('base', c_void_p),
+        ('data', c_void_p)
     ]
 
     def __init__(self, dtype=None, length=None, size=None, card=None, isSet=None, base=None, data=None):
@@ -447,36 +447,36 @@ class SpiceCell(ctypes.Structure):
         return self.dtype == 4
 
     def is_set(self):
-        return self.isSet is True
+        return self.isSet == 1
 
     @classmethod
     def character(cls, size, length):
-        base = (ctypes.c_char * ((cls.CTRLBLOCK + size) * length))()
-        data = (ctypes.c_char * (size * length)).from_buffer(
+        base = (c_char * ((cls.CTRLBLOCK + size) * length))()
+        data = (c_char * (size * length)).from_buffer(
             base, cls.CTRLBLOCK * BITSIZE['char'] * length)
         instance = cls(cls.DATATYPES_ENUM['char'], length, size, 0, 1,
-                       ctypes.cast(base, ctypes.c_void_p),
-                       ctypes.cast(data, ctypes.c_void_p))
+                       cast(base, c_void_p),
+                       cast(data, c_void_p))
         return instance
 
     @classmethod
     def integer(cls, size):
-        base = (ctypes.c_int * (cls.CTRLBLOCK + size))()
-        data = (ctypes.c_int * size).from_buffer(
+        base = (c_int * (cls.CTRLBLOCK + size))()
+        data = (c_int * size).from_buffer(
             base, cls.CTRLBLOCK * BITSIZE['int'])
         instance = cls(cls.DATATYPES_ENUM['int'], 0, size, 0, 1,
-                       ctypes.cast(base, ctypes.c_void_p),
-                       ctypes.cast(data, ctypes.c_void_p))
+                       cast(base, c_void_p),
+                       cast(data, c_void_p))
         return instance
 
     @classmethod
     def double(cls, size):
-        base = (ctypes.c_double * (cls.CTRLBLOCK + size))()
-        data = (ctypes.c_double * size).from_buffer(
+        base = (c_double * (cls.CTRLBLOCK + size))()
+        data = (c_double * size).from_buffer(
             base, cls.CTRLBLOCK * BITSIZE['double'])
         instance = cls(cls.DATATYPES_ENUM['double'], 0, size, 0, 1,
-                       ctypes.cast(base, ctypes.c_void_p),
-                       ctypes.cast(data, ctypes.c_void_p))
+                       cast(base, c_void_p),
+                       cast(data, c_void_p))
         return instance
 
     def __len__(self):
