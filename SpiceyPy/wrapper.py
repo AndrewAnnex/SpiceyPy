@@ -920,13 +920,12 @@ def dsphdr(x, y, z):
 
 
 def dtpool(name):
-    #Todo: test dtpool
     name = stypes.stringToCharP(name)
     found = ctypes.c_bool()
     n = ctypes.c_int()
     typeout = ctypes.c_char()
     libspice.dtpool_c(name, ctypes.byref(found), ctypes.byref(n), ctypes.byref(typeout))
-    return found.value, n.value, stypes.toPythonString(typeout)
+    return found.value, n.value, stypes.toPythonString(typeout.value)
 
 
 def ducrss(s1, s2):
@@ -1693,20 +1692,21 @@ def furnsh(path):
 
 
 def gcpool(name, start, room, lenout):
-    #Todo: test gcpool
     name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
     room = ctypes.c_int(room)
     lenout = ctypes.c_int(lenout)
     n = ctypes.c_int()
-    cvals = ctypes.c_void_p()  # not sure if this will work...
+    cvals = stypes.emptyCharArray(lenout, room)
     found = ctypes.c_bool()
     libspice.gcpool_c(name, start, room, lenout, ctypes.byref(n), ctypes.byref(cvals), ctypes.byref(found))
-    return n.value, cvals.value, found.value
+    if found.value:
+        return [stypes.toPythonString(x.value) for x in cvals[0:n.value]]
+    else:
+        return None
 
 
 def gdpool(name, start, room):
-    #Todo: test gdpool works!
     name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
     values = stypes.emptyDoubleVector(room)
@@ -1716,7 +1716,7 @@ def gdpool(name, start, room):
     libspice.gdpool_c(name, start, room, ctypes.byref(n),
                       ctypes.cast(values, ctypes.POINTER(ctypes.c_double)), ctypes.byref(found))
     if found.value:
-        return n.value, stypes.vectorToList(values)
+        return stypes.vectorToList(values)[0:n.value]
     else:
         return None
 
@@ -2051,15 +2051,17 @@ def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
 
 
 def gipool(name, start, room):
-    #Todo: fix gipool room isn't doing anything
     name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
+    ivals = stypes.emptyIntVector(room)
     room = ctypes.c_int(room)
     n = ctypes.c_int()
-    ivals = ctypes.c_int()
     found = ctypes.c_bool()
-    libspice.gipool_c(name, start, room, ctypes.byref(n), ctypes.byref(ivals), ctypes.byref(found))
-    return n.value, ivals.value, found.value
+    libspice.gipool_c(name, start, room, ctypes.byref(n), ivals, ctypes.byref(found))
+    if found.value:
+        return stypes.vectorToList(ivals)[0:n.value]
+    else:
+        return False
 
 
 def gnpool(name, start, room, lenout):
@@ -2419,25 +2421,23 @@ def ldpool(filename):
     pass
 
 
-def lmpool(cvals, lenvals, n):
-    #Todo: test lmpool
-    lenvals = ctypes.c_int(lenvals)
-    n = ctypes.c_int(n)
+def lmpool(cvals):
+    lenvals = ctypes.c_int(len(max(cvals, key=len)))
+    n = ctypes.c_int(len(cvals))
     cvals = stypes.listToCharArrayPtr(cvals, xLen=lenvals, yLen=n)
     libspice.lmpool_c(cvals, lenvals, n)
     pass
 
 
-def lparse(inlist, delim, nmax, lenout):
-    #Todo: test lparse
-    inlist = stypes.stringToCharP(inlist)
+def lparse(inlist, delim, nmax):
     delim = stypes.stringToCharP(delim)
-    items = stypes.charvector(nmax, lenout)
+    lenout = ctypes.c_int(len(inlist))
+    inlist = stypes.stringToCharP(inlist)
     nmax = ctypes.c_int(nmax)
-    lenout = ctypes.c_int(lenout)
+    items = stypes.emptyCharArray(lenout, nmax)
     n = ctypes.c_int()
     libspice.lparse_c(inlist, delim, nmax, lenout, ctypes.byref(n), ctypes.byref(items))
-    return n.value, stypes.vectorToList(items)
+    return [stypes.toPythonString(x.value) for x in items[0:n.value]]
 
 
 def lparsm(inlist, delims, nmax, lenout):
@@ -2478,7 +2478,7 @@ def ltime(etobs, obs, direct, targ):
     ettarg = ctypes.c_double()
     elapsd = ctypes.c_double()
     libspice.ltime_c(etobs, obs, direct, targ, ctypes.byref(ettarg), ctypes.byref(elapsd))
-    return ettarg, elapsd
+    return ettarg.value, elapsd.value
 
 
 def lstlec(string, n, lenvals, array):
@@ -2580,7 +2580,6 @@ def lxqstr(string, qchar, first):
 
 
 def m2eul(r, axis3, axis2, axis1):
-    #todo: test m2eul
     r = stypes.listtodoublematrix(r)
     axis3 = ctypes.c_int(axis3)
     axis2 = ctypes.c_int(axis2)
@@ -2939,19 +2938,18 @@ def pckuof(handle):
     pass
 
 
-def pcpool(name, n, lenvals, cvals):
-    #Todo: test pcpool
+def pcpool(name, cvals):
     name = stypes.stringToCharP(name)
-    cvals = stypes.listtocharvector(cvals)
-    n = ctypes.c_int(n)
-    lenvals = ctypes.c_int(lenvals)
+    lenvals = ctypes.c_int(len(max(cvals, key=len)))
+    n = ctypes.c_int(len(cvals))
+    cvals = stypes.listToCharArray(cvals, lenvals, n)
     libspice.pcpool_c(name, n, lenvals, cvals)
 
 
-def pdpool(name, n, dvals):
+def pdpool(name, dvals):
     name = stypes.stringToCharP(name)
+    n = ctypes.c_int(len(dvals))
     dvals = stypes.toDoubleVector(dvals)
-    n = ctypes.c_int(n)
     libspice.pdpool_c(name, n, dvals)
 
 
@@ -2981,11 +2979,10 @@ def pi():
     return libspice.pi_c()
 
 
-def pipool(name, n, ivals):
-    #Todo: test pipool
+def pipool(name, ivals):
     name = stypes.stringToCharP(name)
+    n = ctypes.c_int(len(ivals))
     ivals = stypes.toIntVector(ivals)
-    n = ctypes.c_int(n)
     libspice.pipool_c(name, n, ivals)
 
 
@@ -3114,7 +3111,7 @@ def qdq2av(q, dq):
     q = stypes.toDoubleVector(q)
     dq = stypes.toDoubleVector(dq)
     vout = stypes.emptyDoubleVector(3)
-    libspice.qdq2av(q, dq, vout)
+    libspice.qdq2av_c(q, dq, vout)
     return stypes.vectorToList(vout)
 
 
