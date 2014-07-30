@@ -274,9 +274,9 @@ def test_clight():
 
 def test_clpool():
     spice.kclear()
-    spice.pdpool('TEST_VAR', 1, [-666.0])
-    dval, value = spice.gdpool('TEST_VAR', 0, 1)
-    assert dval == 1
+    spice.pdpool('TEST_VAR', [-666.0])
+    value = spice.gdpool('TEST_VAR', 0, 1)
+    assert len(value) == 1
     assert value[0] == -666.0
     spice.clpool()
     found = spice.gdpool('TEST_VAR', 0, 1)
@@ -1237,11 +1237,46 @@ def test_ldpool():
 
 
 def test_lmpool():
-    assert 1
+    spice.kclear()
+    lmpoolNames = ['DELTET/DELTA_T_A', 'DELTET/K', 'DELTET/EB', 'DELTET/M', 'DELTET/DELTA_AT']
+    lmpoolLens = [1, 1, 1, 2, 46]
+    textbuf = ['DELTET/DELTA_T_A = 32.184', 'DELTET/K = 1.657D-3', 'DELTET/EB  = 1.671D-2',
+               'DELTET/M = ( 6.239996 1.99096871D-7 )', 'DELTET/DELTA_AT = ( 10, @1972-JAN-1',
+               '                     11, @1972-JUL-1',
+               '                     12, @1973-JAN-1',
+               '                     13, @1974-JAN-1',
+               '                     14, @1975-JAN-1',
+               '                     15, @1976-JAN-1',
+               '                     16, @1977-JAN-1',
+               '                     17, @1978-JAN-1',
+               '                     18, @1979-JAN-1',
+               '                     19, @1980-JAN-1',
+               '                     20, @1981-JUL-1',
+               '                     21, @1982-JUL-1',
+               '                     22, @1983-JUL-1',
+               '                     23, @1985-JUL-1',
+               '                     24, @1988-JAN-1',
+               '                     25, @1990-JAN-1',
+               '                     26, @1991-JAN-1',
+               '                     27, @1992-JUL-1',
+               '                     28, @1993-JUL-1',
+               '                     29, @1994-JUL-1',
+               '                     30, @1996-JAN-1',
+               '                     31, @1997-JUL-1',
+               '                     32, @1999-JAN-1 )']
+    spice.lmpool(textbuf)
+    for var, expectLen in zip(lmpoolNames, lmpoolLens):
+        found, n, vartype = spice.dtpool(var)
+        assert found
+        assert expectLen == n
+        assert vartype == 'N'
+    spice.kclear()
 
 
 def test_lparse():
-    assert 1
+    stringtest = 'one two three four'
+    items = spice.lparse(stringtest, ' ', 25)
+    assert items == ['one', 'two', 'three', 'four']
 
 
 def test_lparsm():
@@ -1253,7 +1288,12 @@ def test_lparss():
 
 
 def test_lspcn():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et('21 march 2005')
+    lon = spice.dpr() * spice.lspcn('EARTH', et, 'NONE')
+    spice.kclear()
+    npt.assert_almost_equal(lon, 0.48153787)
 
 
 def test_lstlec():
@@ -1313,7 +1353,21 @@ def test_lstlti():
 
 
 def test_ltime():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    OBS = 399
+    TARGET = 5
+    TIME_STR = 'July 4, 2004'
+    et = spice.str2et(TIME_STR)
+    arrive, ltime = spice.ltime(et, OBS, "->", TARGET)
+    arrive_utc = spice.et2utc(arrive, 'C', 3, 50)
+    npt.assert_almost_equal(ltime, 2918.71705, decimal=4)
+    assert arrive_utc == '2004 JUL 04 00:48:38.717'
+    receive, rtime = spice.ltime(et, OBS, "<-", TARGET)
+    receive_utc = spice.et2utc(receive, 'C', 3, 50)
+    spice.kclear()
+    npt.assert_almost_equal(rtime, 2918.75247, decimal=4)
+    assert receive_utc == '2004 JUL 03 23:11:21.248'
 
 
 def test_lx4dec():
@@ -1344,7 +1398,15 @@ def test_lxqstr():
 
 
 def test_m2eul():
-    assert 1
+    ticam = [[0.49127379678135830, 0.50872620321864170, 0.70699908539882417],
+             [-0.50872620321864193, -0.49127379678135802, 0.70699908539882428],
+             [0.70699908539882406, -0.70699908539882439, 0.01745240643728360]]
+    kappa, ang2, ang1 = spice.m2eul(ticam, 3, 1, 3)
+    alpha = ang1 + 1.5 * spice.pi()
+    delta = spice.halfpi() - ang2
+    expected = [315.000000, 1.000000, 45.000000]
+    result = [spice.dpr() * alpha, spice.dpr() * delta, spice.dpr() * kappa]
+    npt.assert_array_almost_equal(expected, result)
 
 
 def test_m2q():
@@ -1636,7 +1698,16 @@ def test_orderi():
 
 
 def test_oscelt():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et('Dec 25, 2007')
+    state, ltime = spice.spkezr('Moon', et, 'J2000', 'LT+S', 'EARTH')
+    mass_earth = spice.bodvrd('EARTH', 'GM', 1)
+    elts = spice.oscelt(state, et, mass_earth[0])
+    expected = [365914.1064478308, 423931.14818353514, 0.4871779356168817, 6.185842076488205,
+                1.8854463601391007, 18676.97965206709, 251812865.1837092, 1.0000]
+    npt.assert_array_almost_equal(elts, expected, decimal=4)
+    spice.kclear()
 
 
 def test_pckcov():
@@ -1656,11 +1727,23 @@ def test_pckuof():
 
 
 def test_pcpool():
-    assert 1
+    import string
+
+    spice.kclear()
+    data = [j + str(i) for i, j in enumerate(list(string.ascii_lowercase))]
+    spice.pcpool('pcpool_test', data)
+    cvals = spice.gcpool('pcpool_test', 0, 30, 4)
+    assert data == cvals
+    spice.kclear()
 
 
 def test_pdpool():
-    assert 1
+    spice.kclear()
+    data = np.arange(0.0, 10.0)
+    spice.pdpool('pdpool_array', data)
+    dvals = spice.gdpool('pdpool_array', 0, 30)
+    npt.assert_array_almost_equal(data, dvals)
+    spice.kclear()
 
 
 def test_pgrrec():
@@ -1672,7 +1755,12 @@ def test_pi():
 
 
 def test_pipool():
-    assert 1
+    spice.kclear()
+    data = np.arange(0, 10)
+    spice.pipool('pipool_array', data)
+    ivals = spice.gipool('pipool_array', 0, 50)
+    npt.assert_array_almost_equal(data, ivals)
+    spice.kclear()
 
 
 def test_pjelpl():
@@ -1760,7 +1848,13 @@ def test_prompt():
 
 
 def test_prop2b():
-    assert 1
+    mu = 398600.45
+    r = 1.0e8
+    speed = np.sqrt(mu / r)
+    t = spice.pi() * (r / speed)
+    pvinit = np.array([0.0, r / np.sqrt(2.0), r / np.sqrt(2.0), 0.0, -speed / np.sqrt(2.0), speed / np.sqrt(2.0)])
+    state = np.array(spice.prop2b(mu, pvinit, t))
+    npt.assert_array_almost_equal(state, -1.0 * pvinit, decimal=6)
 
 
 def test_prsdp():
@@ -1791,6 +1885,25 @@ def test_putcml():
 
 
 def test_pxform():
+    spice.furnsh(_testKernelPath)
+    lon = 118.25 * spice.rpd()
+    lat = 34.05 * spice.rpd()
+    alt = 0.0
+    utc = 'January 1, 2005'
+    et = spice.str2et(utc)
+    len, abc = spice.bodvrd('EARTH', 'RADII', 3)
+    equatr = abc[0]
+    polar = abc[2]
+    f = (equatr - polar) / equatr
+    epos = spice.georec(lon, lat, alt, equatr, f)
+    rotate = np.array(spice.pxform('IAU_EARTH', 'J2000', et))
+    spice.kclear()
+    jstate = np.dot(epos, rotate)
+    expected = np.array([5042.1309421, 1603.52962986, 3549.82398086])
+    npt.assert_array_almost_equal(jstate, expected, decimal=4)
+
+
+def test_pxfrm2():
     assert 1
 
 
@@ -1803,7 +1916,15 @@ def test_q2m():
 
 
 def test_qdq2av():
-    assert 1
+    angle = [-20.0 * spice.rpd(), 50.0 * spice.rpd(), -60.0 * spice.rpd()]
+    m = spice.eul2m(angle[2], angle[1], angle[0], 3, 1, 3)
+    q = spice.m2q(m)
+    expav = [1.0, 2.0, 3.0]
+    qav = [0.0, 1.0, 2.0, 3.0]
+    dq = spice.qxq(q, qav)
+    dq = [-0.5 * x for x in dq]
+    av = spice.qdq2av(q, dq)
+    npt.assert_array_almost_equal(av, expav)
 
 
 def test_qxq():

@@ -49,6 +49,18 @@ def listtodoublematrix(data, x=3, y=3):
     return matrix
 
 
+def emptyCharArray(xLen=None, yLen=None):
+    if not yLen:
+        yLen = 1
+    if not xLen:
+        xLen = 1
+    if isinstance(xLen, c_int):
+        xLen = xLen.value
+    if isinstance(yLen, c_int):
+        yLen = yLen.value
+    return ((c_char * xLen) * yLen)()
+
+
 def emptyDoubleMatrix(x=3, y=3):
     return ((c_double * x) * y)()
 
