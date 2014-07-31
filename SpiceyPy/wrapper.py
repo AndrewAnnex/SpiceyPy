@@ -3137,8 +3137,7 @@ def radrec(inrange, re, dec):
 
 
 def rav2xf(rot, av):
-    #Todo: test rav2xf
-    rot = stypes.listtodoublematrix(rot)
+    rot = stypes.toDoubleMatrix(rot)
     av = stypes.toDoubleVector(av)
     xform = stypes.emptyDoubleMatrix(x=6, y=6)
     libspice.rav2xf_c(rot, av, xform)
@@ -3250,17 +3249,16 @@ def removi(item, inset):
 
 
 def reordc(iorder, ndim, lenvals, array):
-    #Todo: fix reordc, this should work, not sure why as shellc works despite this
+    # Todo: fix reordc, this should work, not sure why it won't
     iorder = stypes.toIntVector(iorder)
     array = stypes.listToCharArray(array, xLen=lenvals, yLen=ndim)
     ndim = ctypes.c_int(ndim)
     lenvals = ctypes.c_int(lenvals)
-    libspice.reordc_c(iorder, ndim, lenvals, array)
-    return stypes.vectorToList(array)
+    libspice.reordc_c(iorder, ndim, lenvals, ctypes.byref(array))
+    return [stypes.toPythonString(x.value) for x in array]
 
 
 def reordd(iorder, ndim, array):
-    #todo: test reordd
     iorder = stypes.toIntVector(iorder)
     ndim = ctypes.c_int(ndim)
     array = stypes.toDoubleVector(array)
@@ -3269,7 +3267,6 @@ def reordd(iorder, ndim, array):
 
 
 def reordi(iorder, ndim, array):
-    #Todo: test reordi
     iorder = stypes.toIntVector(iorder)
     ndim = ctypes.c_int(ndim)
     array = stypes.toIntVector(array)
@@ -3278,7 +3275,6 @@ def reordi(iorder, ndim, array):
 
 
 def reordl(iorder, ndim, array):
-    #Todo: test reordl, not updating values
     iorder = stypes.toIntVector(iorder)
     ndim = ctypes.c_int(ndim)
     array = stypes.toBoolVector(array)
@@ -3286,72 +3282,71 @@ def reordl(iorder, ndim, array):
     return stypes.vectorToList(array)
 
 
-def repmc(instr, marker, value, lenout):
-    #Todo: test repmc
+def repmc(instr, marker, value, lenout=None):
+    if lenout is None:
+        lenout = ctypes.c_int(len(instr) + len(value) + len(marker) + 15)
     instr = stypes.stringToCharP(instr)
     marker = stypes.stringToCharP(marker)
     value = stypes.stringToCharP(value)
-    lenout = ctypes.c_int(lenout)
     out = stypes.stringToCharP(lenout)
     libspice.repmc_c(instr, marker, value, lenout, out)
     return stypes.toPythonString(out)
 
 
-def repmct(instr, marker, value, repcase, lenout):
-    #Todo: test repmct
+def repmct(instr, marker, value, repcase, lenout=None):
+    if lenout is None:
+        lenout = ctypes.c_int(len(instr) + len(marker) + 15)
     instr = stypes.stringToCharP(instr)
     marker = stypes.stringToCharP(marker)
-    value = ctypes.c_double(value)
-    repcase = ctypes.c_char(repcase)
-    lenout = ctypes.c_int(lenout)
+    value = ctypes.c_int(value)
+    repcase = ctypes.c_char(repcase.encode(encoding='UTF-8'))
     out = stypes.stringToCharP(lenout)
     libspice.repmct_c(instr, marker, value, repcase, lenout, out)
     return stypes.toPythonString(out)
 
 
-def repmd(instr, marker, value, sigdig, lenout):
-    #Todo: test repmd
+def repmd(instr, marker, value, sigdig):
+    lenout = ctypes.c_int(len(instr) + len(marker) + 15)
     instr = stypes.stringToCharP(instr)
     marker = stypes.stringToCharP(marker)
     value = ctypes.c_double(value)
     sigdig = ctypes.c_int(sigdig)
-    lenout = ctypes.c_int(lenout)
     out = stypes.stringToCharP(lenout)
     libspice.repmd_c(instr, marker, value, sigdig, lenout, out)
     return stypes.toPythonString(out)
 
 
-def repmf(instr, marker, value, sigdig, informat, lenout):
-    #Todo: test repmf
+def repmf(instr, marker, value, sigdig, informat, lenout=None):
+    if lenout is None:
+        lenout = ctypes.c_int(len(instr) + len(marker) + 15)
     instr = stypes.stringToCharP(instr)
     marker = stypes.stringToCharP(marker)
     value = ctypes.c_double(value)
     sigdig = ctypes.c_int(sigdig)
-    lenout = ctypes.c_int(lenout)
-    informat = ctypes.c_char(informat)
+    informat = ctypes.c_char(informat.encode(encoding='UTF-8'))
     out = stypes.stringToCharP(lenout)
-    libspice.repmf(instr, marker, value, sigdig, informat, lenout, out)
+    libspice.repmf_c(instr, marker, value, sigdig, informat, lenout, out)
     return stypes.toPythonString(out)
 
 
-def repmi(instr, marker, value, lenout):
-    #Todo: test repmi
+def repmi(instr, marker, value, lenout=None):
+    if lenout is None:
+        lenout = ctypes.c_int(len(instr) + len(marker) + 15)
     instr = stypes.stringToCharP(instr)
     marker = stypes.stringToCharP(marker)
     value = ctypes.c_int(value)
-    lenout = ctypes.c_int(lenout)
     out = stypes.stringToCharP(lenout)
     libspice.repmi_c(instr, marker, value, lenout, out)
     return stypes.toPythonString(out)
 
 
-def repmot(instr, marker, value, repcase, lenout):
-    #Todo: test repmot
+def repmot(instr, marker, value, repcase, lenout=None):
+    if lenout is None:
+        lenout = ctypes.c_int(len(instr) + len(marker) + 15)
     instr = stypes.stringToCharP(instr)
     marker = stypes.stringToCharP(marker)
     value = ctypes.c_int(value)
-    repcase = ctypes.c_char(repcase)
-    lenout = ctypes.c_int(lenout)
+    repcase = ctypes.c_char(repcase.encode(encoding='UTF-8'))
     out = stypes.stringToCharP(lenout)
     libspice.repmot_c(instr, marker, value, repcase, lenout, out)
     return stypes.toPythonString(out)
@@ -3677,9 +3672,8 @@ def spkapo(targ, et, ref, sobs, abcorr):
 
 
 def spkapp(targ, et, ref, sobs, abcorr):
-    #Todo: test spkapp (depricated)
     targ = ctypes.c_int(targ)
-    et = ctypes.c_int(et)
+    et = ctypes.c_double(et)
     ref = stypes.stringToCharP(ref)
     abcorr = stypes.stringToCharP(abcorr)
     sobs = stypes.toDoubleVector(sobs)
@@ -3997,7 +3991,7 @@ def spkssb(targ, et, ref):
     ref = stypes.stringToCharP(ref)
     starg = stypes.emptyDoubleVector(6)
     libspice.spkssb_c(targ, et, ref, starg)
-    pass
+    return stypes.vectorToList(starg)
 
 
 def spksub(handle, descr, identin, begin, end, newh):

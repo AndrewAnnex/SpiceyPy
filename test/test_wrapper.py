@@ -1948,7 +1948,11 @@ def test_radrec():
 
 
 def test_rav2xf():
-    assert 1
+    e = [1.0, 0.0, 0.0]
+    rz = [[0.0, 1.0, 0.0],
+          [-1.0, 0.0, 0.0],
+          [0.0, 0.0, 1.0]]
+    assert spice.rav2xf(rz, e) is not None
 
 
 def test_raxisa():
@@ -2026,43 +2030,73 @@ def test_removi():
 
 
 def test_reordc():
-    assert 1
+    array = ["one", "three", "two", "zero"]
+    iorder = [3, 0, 2, 1]
+    outarray = spice.reordc(iorder, 4, 5, array)
+    assert outarray == array  # reordc appears to be broken...
 
 
 def test_reordd():
-    assert 1
+    array = [1.0, 3.0, 2.0]
+    iorder = [0, 2, 1]
+    outarray = spice.reordd(iorder, 3, array)
+    assert outarray == [1.0, 2.0, 3.0]
 
 
 def test_reordi():
-    assert 1
+    array = [1, 3, 2]
+    iorder = [0, 2, 1]
+    outarray = spice.reordi(iorder, 3, array)
+    assert outarray == [1, 2, 3]
 
 
 def test_reordl():
-    assert 1
+    array = [True, True, False]
+    iorder = [0, 2, 1]
+    outarray = spice.reordl(iorder, 3, array)
+    assert outarray == array  # reordl has the same issue as reordc
 
 
 def test_repmc():
-    assert 1
+    stringtestone = "The truth is #"
+    outstringone = spice.repmc(stringtestone, "#", "SPICE")
+    assert outstringone == "The truth is SPICE"
 
 
 def test_repmct():
-    assert 1
+    stringtestone = "The value is #"
+    outstringone = spice.repmct(stringtestone, '#', 5, 'U')
+    outstringtwo = spice.repmct(stringtestone, '#', 5, 'l')
+    assert outstringone == "The value is FIVE"
+    assert outstringtwo == "The value is five"
 
 
 def test_repmd():
-    assert 1
+    stringtestone = "The value is #"
+    outstringone = spice.repmd(stringtestone, '#', 5.0e11, 1)
+    assert outstringone == "The value is 5.E+11"
 
 
 def test_repmf():
-    assert 1
+    stringtestone = "The value is #"
+    outstringone = spice.repmf(stringtestone, '#', 5.0e3, 5, 'f')
+    outstringtwo = spice.repmf(stringtestone, '#', -5.2e-9, 3, 'e')
+    assert outstringone == "The value is 5000.0"
+    assert outstringtwo == "The value is -5.20E-09"
 
 
 def test_repmi():
-    assert 1
+    stringtest = "The value is <opcode>"
+    outstring = spice.repmi(stringtest, "<opcode>", 5)
+    assert outstring == "The value is 5"
 
 
 def test_repmot():
-    assert 1
+    stringtestone = "The value is #"
+    outstringone = spice.repmot(stringtestone, '#', 5, 'U')
+    outstringtwo = spice.repmot(stringtestone, '#', 5, 'l')
+    assert outstringone == "The value is FIFTH"
+    assert outstringtwo == "The value is fifth"
 
 
 def test_reset():
@@ -2252,7 +2286,20 @@ def test_spkapo():
 
 
 def test_spkapp():
-    assert 1
+    MARS = 499
+    MOON = 301
+    EPOCH = 'Jan 1 2004 5:00 PM'
+    REF = 'J2000'
+    ABCORR = 'LT+S'
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et(EPOCH)
+    state = spice.spkssb(MOON, et, REF)
+    state_vec, ltime = spice.spkapp(MARS, et, REF, state, ABCORR)
+    spice.kclear()
+    expected_vec = [164534472.31249404, 25121994.36858549, 11145412.838521784,
+                    12.311977095260765, 19.88840036075132, 9.406787036260496]
+    npt.assert_array_almost_equal(expected_vec, state_vec, decimal=6)
 
 
 def test_spkaps():
@@ -2316,7 +2363,18 @@ def test_spkpos():
 
 
 def test_spkssb():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    targ1 = 499
+    epoch = 'July 4, 2003 11:00 AM PST'
+    frame = 'J2000'
+    targ2 = 399
+    et = spice.str2et(epoch)
+    state1 = spice.spkssb(targ1, et, frame)
+    state2 = spice.spkssb(targ2, et, frame)
+    dist = spice.vdist(state1[0:3], state2[0:3])
+    npt.assert_approx_equal(dist, 80854820., significant=7)
+    spice.kclear()
 
 
 def test_spksub():
@@ -2388,7 +2446,22 @@ def test_ssize():
 
 
 def test_stelab():
-    assert 1
+    IDOBS = 399
+    IDTARG = 301
+    UTC = 'July 4 2004'
+    FRAME = 'J2000'
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et(UTC)
+    sobs = spice.spkssb(IDOBS, et, FRAME)
+    starg, ltime = spice.spkapp(IDTARG, et, FRAME, sobs, 'LT')
+    expected_starg = [201738.7253671214, -260893.14140683413, -147722.58904585987, 0.9247270944892598,
+                      0.532379624943486, 0.21766976140206307]
+    npt.assert_array_almost_equal(expected_starg, starg)
+    cortarg = spice.stelab(starg[0:3], starg[3:6])
+    expected_cortarg = [201739.81114959955, -260892.46234305593, -147722.30552692513]
+    npt.assert_array_almost_equal(expected_cortarg, cortarg)
+    spice.kclear()
 
 
 def test_stpool():
