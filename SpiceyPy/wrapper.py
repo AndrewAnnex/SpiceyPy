@@ -361,11 +361,12 @@ def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
     avflag = ctypes.c_bool(avflag)
     segid = stypes.stringToCharP(segid)
     sclkdp = stypes.toDoubleVector(sclkdp)
-    quats = stypes.listtodoublematrix(quats, x=4, y=nrec)  # may need to swap x and y values here
-    avvs = stypes.listtodoublematrix(avvs, x=3, y=nrec)  # may need to swap x and y values here
-    nrec = ctypes.c_int(nrec)  # looks like this defines the dimensions for quats and avvs
-    libspice.ckw01_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec,
-                     ctypes.byref(sclkdp), ctypes.byref(quats), ctypes.byref(avvs))
+    quats = stypes.toDoubleMatrix(quats)
+    avvs = stypes.toDoubleMatrix(avvs)
+    nrec = ctypes.c_int(nrec)
+    libspice.ckw01_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp,
+                     ctypes.cast(quats, ctypes.POINTER(ctypes.c_double)),
+                     ctypes.cast(avvs, ctypes.POINTER(ctypes.c_double)))
     pass
 
 
@@ -380,10 +381,13 @@ def ckw02(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats, av
     start = stypes.toDoubleVector(start)
     stop = stypes.toDoubleVector(stop)
     rates = stypes.toDoubleVector(rates)
-    quats = stypes.listtodoublematrix(quats, x=4, y=nrec)  # may need to swap x and y values here
-    avvs = stypes.listtodoublematrix(avvs, x=3, y=nrec)  # may need to swap x and y values here
-    nrec = ctypes.c_int(nrec)  # looks like this defines the dimensions for quats and avvs
-    libspice.ckw02_c(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats, avvs, rates)
+    quats = stypes.toDoubleMatrix(quats)
+    avvs = stypes.toDoubleMatrix(avvs)
+    nrec = ctypes.c_int(nrec)
+    libspice.ckw02_c(handle, begtim, endtim, inst, ref, segid, nrec, start, stop,
+                     ctypes.cast(quats, ctypes.POINTER(ctypes.c_double)),
+                     ctypes.cast(avvs, ctypes.POINTER(ctypes.c_double)),
+                     rates)
     pass
 
 
@@ -397,13 +401,15 @@ def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
     avflag = ctypes.c_bool(avflag)
     segid = stypes.stringToCharP(segid)
     sclkdp = stypes.toDoubleVector(sclkdp)
-    quats = stypes.listtodoublematrix(quats, x=4, y=nrec)  # may need to swap x and y values here
-    avvs = stypes.listtodoublematrix(avvs, x=3, y=nrec)  # may need to swap x and y values here
+    quats = stypes.toDoubleMatrix(quats)
+    avvs = stypes.toDoubleMatrix(avvs)
     nrec = ctypes.c_int(nrec)  # looks like this defines the dimensions for quats and avvs
     starts = stypes.toDoubleVector(starts)
     nints = ctypes.c_int(nints)
-    libspice.ckw03_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec,
-                     ctypes.byref(sclkdp), ctypes.byref(quats), ctypes.byref(avvs), nints, ctypes.byref(starts))
+    libspice.ckw03_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp,
+                     ctypes.cast(quats, ctypes.POINTER(ctypes.c_double)),
+                     ctypes.cast(avvs, ctypes.POINTER(ctypes.c_double)),
+                     nints, starts)
     pass
 
 
@@ -2085,15 +2091,17 @@ def halfpi():
     return libspice.halfpi_c()
 
 
-def hx2dp(string, lenout):
-    #Todo: test hx2dp
+def hx2dp(string):
     string = stypes.stringToCharP(string)
-    lenout = ctypes.c_int(lenout)
+    lenout = ctypes.c_int(80)
     errmsg = stypes.stringToCharP(lenout)
-    number = ctypes.c_int()
+    number = ctypes.c_double()
     error = ctypes.c_bool()
     libspice.hx2dp_c(string, lenout, ctypes.byref(number), ctypes.byref(error), errmsg)
-    return number.value, error.value, stypes.toPythonString(errmsg)
+    if not error.value:
+        return number.value
+    else:
+        return stypes.toPythonString(errmsg)
 
 
 ########################################################################################################################
