@@ -628,7 +628,7 @@ def test_dvnorm():
     x = np.array([1.0, np.sqrt(2.0), np.sqrt(3.0)])
     s1 = np.array([x * 10.0 ** mag[0], x]).flatten()
     s2 = np.array([x * 10.0 ** mag[1], -x]).flatten()
-    s3 = np.array([0.0, 0.0, 0.0, x * 10 ** mag[2]]).flatten()
+    s3 = np.array([[0.0, 0.0, 0.0], x * 10 ** mag[2]]).flatten()
     npt.assert_approx_equal(spice.dvnorm(s1), 2.4494897)
     npt.assert_approx_equal(spice.dvnorm(s2), -2.4494897)
     npt.assert_approx_equal(spice.dvnorm(s3), 0.0)
