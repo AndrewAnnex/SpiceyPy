@@ -253,7 +253,45 @@ def test_ckupf():
 
 
 def test_ckw01():
-    assert 1
+    CK1 = cwd + "/type1.bc"
+    if os.path.isfile(CK1):
+        os.remove(CK1)
+    INST = -77701
+    MAXREC = 201
+    SECPERTICK = 0.001
+    SEGID = "Test type 1 CK segment"
+    IFNAME = "Test CK type 1 segment created by cspice_ckw01"
+    NCOMCH = 0
+    REF = "J2000"
+    SPACING_TICKS = 10.0
+    SPACING_SECS = SPACING_TICKS * SECPERTICK
+    RATE = 0.01
+    handle = spice.ckopn(CK1, IFNAME, NCOMCH)
+    init_size = os.path.getsize(CK1)
+    quats = np.zeros((MAXREC, 4))
+    av = np.zeros((MAXREC, 3))
+    work_mat = spice.ident()
+    work_quat = spice.m2q(work_mat)
+    quats[0] = work_quat
+    av[0] = [0.0, 0.0, RATE]
+    sclkdp = np.arange(MAXREC) * SPACING_TICKS
+    sclkdp += 1000.0
+    for i in range(1, MAXREC - 1):
+        theta = i * RATE * SPACING_SECS * 1.0
+        work_mat = spice.rotmat(work_mat, theta, 3)
+        work_quat = spice.m2q(work_mat)
+        quats[i] = work_quat
+        av[i] = [0.0, 0.0, RATE]
+    avflag = True
+    begtime = sclkdp[0]
+    endtime = sclkdp[-1]
+    spice.ckw01(handle, begtime, endtime, INST, REF, avflag, SEGID, MAXREC - 1, sclkdp, quats, av)
+    spice.ckcls(handle)
+    end_size = os.path.getsize(CK1)
+    assert end_size != init_size
+    # cleanup
+    if os.path.isfile(CK1):
+        os.remove(CK1)
 
 
 def test_ckw02():
@@ -586,7 +624,14 @@ def test_dvhat():
 
 
 def test_dvnorm():
-    assert 1
+    mag = np.array([-4.0, 4, 12])
+    x = np.array([1.0, np.sqrt(2.0), np.sqrt(3.0)])
+    s1 = np.array([x * 10.0 ** mag[0], x]).flatten()
+    s2 = np.array([x * 10.0 ** mag[1], -x]).flatten()
+    s3 = np.array([[0.0, 0.0, 0.0], x * 10 ** mag[2]]).flatten()
+    npt.assert_approx_equal(spice.dvnorm(s1), 2.4494897)
+    npt.assert_approx_equal(spice.dvnorm(s2), -2.4494897)
+    npt.assert_approx_equal(spice.dvnorm(s3), 0.0)
 
 
 def test_dvpool():
@@ -594,7 +639,14 @@ def test_dvpool():
 
 
 def test_dvsep():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et('JAN 1 2009')
+    state_e, eltime = spice.spkezr('EARTH', et, 'J2000', 'NONE', 'SUN')
+    state_m, mltime = spice.spkezr('MOON', et, 'J2000', 'NONE', 'SUN')
+    dsept = spice.dvsep(state_e, state_m)
+    npt.assert_approx_equal(dsept, 3.8121194e-09)
+    spice.kclear()
 
 
 def test_edlimb():
@@ -1010,11 +1062,15 @@ def test_halfpi():
 
 
 def test_hx2dp():
-    assert 1
+    assert spice.hx2dp('1^1') == 1.0
+    assert spice.hx2dp('7F5EB^5') == 521707.0
+    assert spice.hx2dp('+1B^+2') == 27.0
 
 
 def test_ident():
-    assert 1
+    ident = spice.ident()
+    expected = np.identity(3)
+    npt.assert_array_almost_equal(ident, expected)
 
 
 def test_illum():
