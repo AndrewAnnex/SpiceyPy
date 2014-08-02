@@ -930,15 +930,39 @@ def test_furnsh():
 
 
 def test_gcpool():
-    assert 1
+    # same as pcpool test
+    import string
+
+    spice.kclear()
+    data = [j + str(i) for i, j in enumerate(list(string.ascii_lowercase))]
+    spice.pcpool('pcpool_test', data)
+    cvals = spice.gcpool('pcpool_test', 0, 30, 4)
+    assert data == cvals
+    spice.kclear()
 
 
 def test_gdpool():
-    assert 1
+    # same as pdpool test
+    spice.kclear()
+    data = np.arange(0.0, 10.0)
+    spice.pdpool('pdpool_array', data)
+    dvals = spice.gdpool('pdpool_array', 0, 30)
+    npt.assert_array_almost_equal(data, dvals)
+    spice.kclear()
 
 
 def test_georec():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    size, radii = spice.bodvrd('EARTH', 'RADII', 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    lon = 118.0 * spice.rpd()
+    lat = 32.0 * spice.rpd()
+    alt = 0.0
+    spice.kclear()
+    output = spice.georec(lon, lat, alt, radii[0], flat)
+    expected = [-2541.74621567, 4780.329376, 3360.4312092]
+    npt.assert_array_almost_equal(expected, output)
 
 
 def test_getcml():
@@ -950,7 +974,9 @@ def test_getelm():
 
 
 def test_getfat():
-    assert 1
+    arch, outtype = spice.getfat(cwd + '/naif0010.tls')
+    assert arch == "KPL"
+    assert outtype == "LSK"
 
 
 def test_getfov():
@@ -1050,11 +1076,29 @@ def test_gfuds():
 
 
 def test_gipool():
-    assert 1
+    # same as pipool test
+    spice.kclear()
+    data = np.arange(0, 10)
+    spice.pipool('pipool_array', data)
+    ivals = spice.gipool('pipool_array', 0, 50)
+    npt.assert_array_almost_equal(data, ivals)
+    spice.kclear()
 
 
 def test_gnpool():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    var = "BODY599*"
+    index = 0
+    room = 10
+    strlen = 81
+    expected = ["BODY599_POLE_DEC", "BODY599_LONG_AXIS", "BODY599_PM", "BODY599_RADII",
+                "BODY599_POLE_RA", "BODY599_GM", "BODY599_NUT_PREC_PM", "BODY599_NUT_PREC_DEC",
+                "BODY599_NUT_PREC_RA"]
+    kervar, found = spice.gnpool(var, index, room, strlen)
+    spice.kclear()
+    assert found
+    assert set(expected) == set(kervar)
 
 
 def test_halfpi():
@@ -1134,7 +1178,7 @@ def test_inrypl():
     nxpts, xpt = spice.inrypl(vertex, dire, plane)
     expectedXpt = np.array([180804.0, 47080.6050513, 0.0])
     assert nxpts == 1
-    np.testing.assert_almost_equal(np.array(xpt), expectedXpt, decimal = 6)
+    np.testing.assert_almost_equal(np.array(xpt), expectedXpt, decimal=6)
     spice.kclear()
 
 
@@ -1163,11 +1207,11 @@ def test_inter():
 
 
 def test_intmax():
-    assert 1
+    assert spice.intmax() >= 2147483647 or spice.intmax() >= 32768
 
 
 def test_intmin():
-    assert 1
+    assert spice.intmin() <= -2147483648 or spice.intmin() <= -32768
 
 
 def test_invert():
@@ -1252,7 +1296,13 @@ def test_kinfo():
 
 
 def test_ktotal():
-    assert 1
+    # same as unload test
+    spice.furnsh(_testKernelPath)
+    # 4 kernels + the meta kernel = 5
+    assert spice.ktotal("ALL") == 5
+    spice.unload(_testKernelPath)
+    assert spice.ktotal("ALL") == 0
+    spice.kclear()
 
 
 def test_kxtrct():
@@ -1734,23 +1784,44 @@ def test_ordc():
 
 
 def test_ordd():
-    assert 1
+    doubleset = spice.stypes.SPICEDOUBLE_CELL(7)
+    inputs = [8.0, 1.0, 2.0, 9.0, 7.0, 4.0, 10.0]
+    expected = [4, 0, 1, 5, 3, 2, 6]
+    for d in inputs:
+        spice.insrtd(d, doubleset)
+    for i, e in zip(inputs, expected):
+        assert e == spice.ordd(i, doubleset)
 
 
 def test_ordi():
-    assert 1
+    intset = spice.stypes.SPICEINT_CELL(7)
+    inputs = [8, 1, 2, 9, 7, 4, 10]
+    expected = [4, 0, 1, 5, 3, 2, 6]
+    for i in inputs:
+        spice.insrti(i, intset)
+    for i, e in zip(inputs, expected):
+        assert e == spice.ordi(i, intset)
 
 
 def test_orderc():
-    assert 1
+    inarray = ["a", "abc", "ab"]
+    expectedOrder = [0, 2, 1]
+    order = spice.orderc(inarray)
+    assert expectedOrder == order
 
 
 def test_orderd():
-    assert 1
+    inarray = [0.0, 2.0, 1.0]
+    expectedOrder = [0, 2, 1]
+    order = spice.orderd(inarray)
+    assert expectedOrder == order
 
 
 def test_orderi():
-    assert 1
+    inarray = [0, 2, 1]
+    expectedOrder = [0, 2, 1]
+    order = spice.orderi(inarray)
+    assert expectedOrder == order
 
 
 def test_oscelt():
@@ -1784,7 +1855,6 @@ def test_pckuof():
 
 def test_pcpool():
     import string
-
     spice.kclear()
     data = [j + str(i) for i, j in enumerate(list(string.ascii_lowercase))]
     spice.pcpool('pcpool_test', data)
@@ -3229,7 +3299,14 @@ def test_xf2eul():
 
 
 def test_xf2rav():
-    assert 1
+    e = [1.0, 0.0, 0.0]
+    rz = [[0.0, 1.0, 0.0],
+          [-1.0, 0.0, 0.0],
+          [0.0, 0.0, 1.0]]
+    xform = spice.rav2xf(rz, e)
+    rz2, e2 = spice.xf2rav(xform)
+    assert e == e2
+    assert rz == rz2
 
 
 def test_xpose6():

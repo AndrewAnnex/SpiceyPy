@@ -1752,11 +1752,10 @@ def getelm(frstyr, lineln, lines):
     libspice.getelm_c(frstyr, lineln, ctypes.byref(lines), ctypes.byref(epoch), ctypes.byref(elems))
 
 
-def getfat(file, arclen, typlen):
-    #Todo: test getfat, or is this really needed at all?
+def getfat(file):
     file = stypes.stringToCharP(file)
-    arclen = ctypes.c_int(arclen)
-    typlen = ctypes.c_int(typlen)
+    arclen = ctypes.c_int(4)
+    typlen = ctypes.c_int(4)
     arch = stypes.stringToCharP(arclen)
     rettype = stypes.stringToCharP(typlen)
     libspice.getfat_c(file, arclen, typlen, arch, rettype)
@@ -2071,7 +2070,6 @@ def gipool(name, start, room):
 
 
 def gnpool(name, start, room, lenout):
-    #Todo: test gnpool
     name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
     kvars = stypes.charvector(room, lenout)
@@ -2080,7 +2078,7 @@ def gnpool(name, start, room, lenout):
     n = ctypes.c_int()
     found = ctypes.c_bool()
     libspice.gnpool_c(name, start, room, lenout, ctypes.byref(n), kvars, ctypes.byref(found))
-    return n.value, stypes.vectorToList(kvars), found.value
+    return stypes.vectorToList(kvars)[0:n.value], found.value
 
 
 ########################################################################################################################
@@ -2448,16 +2446,16 @@ def lparse(inlist, delim, nmax):
     return [stypes.toPythonString(x.value) for x in items[0:n.value]]
 
 
-def lparsm(inlist, delims, nmax, lenout):
-    #Todo: test lparsm
+def lparsm(inlist, delims, nmax, lenout=None):
+    if lenout is None:
+        lenout = ctypes.c_int(len(inlist) + 1)
     inlist = stypes.stringToCharP(inlist)
     delims = stypes.stringToCharP(delims)
-    items = stypes.charvector(nmax, lenout)
+    items = stypes.emptyCharArray(nmax, lenout)
     nmax = ctypes.c_int(nmax)
-    lenout = ctypes.c_int(lenout)
     n = ctypes.c_int()
-    libspice.lparsm_c(inlist, delims, nmax, lenout, ctypes.byref(n), ctypes.byref(items))
-    return n.value, stypes.vectorToList(items)
+    libspice.lparsm_c(inlist, delims, nmax, lenout, ctypes.byref(n), items)
+    return [stypes.toPythonString(x.value) for x in items]
 
 
 def lparss(inlist, delims, NMAX=20, LENGTH=50):
@@ -2870,29 +2868,36 @@ def ordi(item, inset):
     return libspice.ordi_c(item, ctypes.byref(inset))
 
 
-def orderc(lenvals, array, ndim):
-    #Todo: test, works but I am not convinced yet
-    iorder = stypes.toIntVector([0] * ndim)
-    ndim = ctypes.c_int(ndim)
-    array = stypes.listtocharvector(array)
-    lenvals = ctypes.c_int(lenvals)
+def orderc(array, ndim=None):
+    if ndim is None:
+        ndim = ctypes.c_int(len(array))
+    else:
+        ndim = ctypes.c_int(ndim)
+    lenvals = ctypes.c_int(len(max(array, key=len)))
+    iorder = stypes.emptyIntVector(ndim)
+    array = stypes.listToCharArray(array, lenvals, ndim)
     libspice.orderc_c(lenvals, array, ndim, iorder)
     return stypes.vectorToList(iorder)
 
 
-def orderd(array, ndim):
-    #Todo: test orderd
+def orderd(array, ndim=None):
+    if ndim is None:
+        ndim = ctypes.c_int(len(array))
+    else:
+        ndim = ctypes.c_int(ndim)
     array = stypes.toDoubleVector(array)
-    iorder = stypes.toIntVector([0] * ndim)
-    ndim = ctypes.c_int(ndim)
+    iorder = stypes.emptyIntVector(ndim)
     libspice.orderd_c(array, ndim, iorder)
     return stypes.vectorToList(iorder)
 
 
-def orderi(array, ndim):
+def orderi(array, ndim=None):
+    if ndim is None:
+        ndim = ctypes.c_int(len(array))
+    else:
+        ndim = ctypes.c_int(ndim)
     array = stypes.toIntVector(array)
-    iorder = stypes.toIntVector([0] * ndim)
-    ndim = ctypes.c_int(ndim)
+    iorder = stypes.emptyIntVector(ndim)
     libspice.orderi_c(array, ndim, iorder)
     return stypes.vectorToList(iorder)
 

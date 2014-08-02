@@ -66,12 +66,16 @@ def emptyDoubleMatrix(x=3, y=3):
 
 
 def emptyDoubleVector(n):
+    if isinstance(n, c_int):
+        n = n.value
     assert(isinstance(n, int))
     return (c_double * n)()
 
 
 def emptyIntVector(n):
-    assert(isinstance(n, int))
+    if isinstance(n, c_int):
+        n = n.value
+    assert (isinstance(n, int))
     return (c_int * n)()
 
 
