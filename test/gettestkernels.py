@@ -1,8 +1,7 @@
 __author__ = 'Apollo117'
 
 import os
-# from six.moves import urllib
-import six.moves.urllib as urllib
+from six.moves import urllib
 
 standardKernelList = ['pck00010.tpc', 'de421.bsp', 'gm_de431.tpc', 'naif0010.tls']
 cwd = os.path.realpath(os.path.dirname(__file__))
@@ -48,10 +47,10 @@ def writeTestMetaKernel():
 def downloadKernels():
     # Download the kernels listed in kernelList and kernelURLlist
     getStandardKernels()
-    # Now create the meta kernal file for tests
-    writeTestMetaKernel()
     # Now grab any extra test kernels we need
     getExtraTestKernels()
+    # Now create the meta kernal file for tests
+    writeTestMetaKernel()
 
 
 if __name__ == '__main__':
