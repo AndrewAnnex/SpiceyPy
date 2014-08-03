@@ -3449,7 +3449,6 @@ def scdecd(sc, sclkdp, lenout, MXPART=None):
 
 
 def sce2c(sc, et):
-    #todo: test sce2c
     sc = ctypes.c_int(sc)
     et = ctypes.c_double(et)
     sclkdp = ctypes.c_double()
@@ -3458,7 +3457,6 @@ def sce2c(sc, et):
 
 
 def sce2s(sc, et, lenout):
-    #todo: test sce2s
     sc = ctypes.c_int(sc)
     et = ctypes.c_double(et)
     sclkch = stypes.stringToCharP(" " * lenout)
@@ -3468,7 +3466,6 @@ def sce2s(sc, et, lenout):
 
 
 def sce2t(sc, et):
-    #todo; test sce2t
     sc = ctypes.c_int(sc)
     et = ctypes.c_double(et)
     sclkdp = ctypes.c_double()
@@ -3477,7 +3474,6 @@ def sce2t(sc, et):
 
 
 def scencd(sc, sclkch, MXPART=None):
-    #todo: figure out how to use mxpart, and test scencd
     sc = ctypes.c_int(sc)
     sclkch = stypes.stringToCharP(sclkch)
     sclkdp = ctypes.c_double()
@@ -3486,7 +3482,6 @@ def scencd(sc, sclkch, MXPART=None):
 
 
 def scfmt(sc, ticks, lenout):
-    #Todo: test scfmt
     sc = ctypes.c_int(sc)
     ticks = ctypes.c_double(ticks)
     clkstr = stypes.stringToCharP(lenout)
@@ -3495,18 +3490,16 @@ def scfmt(sc, ticks, lenout):
     return stypes.toPythonString(clkstr)
 
 
-def scpart(sc, nparts, pstart, MXPART=None):
-    #todo: figure out how to use mxpart, and test scpart
+def scpart(sc):
     sc = ctypes.c_int(sc)
-    nparts = ctypes.c_int(nparts)
-    pstart = ctypes.c_double(pstart)
-    pstop = ctypes.c_double()
-    libspice.scpart_c(sc, nparts, pstart, ctypes.byref(pstop))
-    return pstop.value
+    nparts = ctypes.c_int()
+    pstart = stypes.emptyDoubleVector(9999)
+    pstop = stypes.emptyDoubleVector(9999)
+    libspice.scpart_c(sc, nparts, pstart, pstop)
+    return stypes.vectorToList(pstart)[0:nparts.value], stypes.vectorToList(pstop)[0:nparts.value]
 
 
 def scs2e(sc, sclkch):
-    #todo: test scs2e
     sc = ctypes.c_int(sc)
     sclkch = stypes.stringToCharP(sclkch)
     et = ctypes.c_double()
@@ -3515,7 +3508,6 @@ def scs2e(sc, sclkch):
 
 
 def sct2e(sc, sclkdp):
-    #todo: test scs2e
     sc = ctypes.c_int(sc)
     sclkdp = ctypes.c_double(sclkdp)
     et = ctypes.c_double()
@@ -3524,7 +3516,6 @@ def sct2e(sc, sclkdp):
 
 
 def sctiks(sc, clkstr):
-    #todo: test sctiks
     sc = ctypes.c_int(sc)
     clkstr = stypes.stringToCharP(clkstr)
     ticks = ctypes.c_double()
@@ -3658,9 +3649,8 @@ def sphrec(r, colat, lon):
 
 
 def spkacs(targ, et, ref, abcorr, obs):
-    #Todo: test spkacs
     targ = ctypes.c_int(targ)
-    et = ctypes.c_int(et)
+    et = ctypes.c_double(et)
     ref = stypes.stringToCharP(ref)
     abcorr = stypes.stringToCharP(abcorr)
     obs = ctypes.c_int(obs)
@@ -3672,9 +3662,8 @@ def spkacs(targ, et, ref, abcorr, obs):
 
 
 def spkapo(targ, et, ref, sobs, abcorr):
-    #Todo: test spkacs
     targ = ctypes.c_int(targ)
-    et = ctypes.c_int(et)
+    et = ctypes.c_double(et)
     ref = stypes.stringToCharP(ref)
     abcorr = stypes.stringToCharP(abcorr)
     sobs = stypes.toDoubleVector(sobs)
@@ -3875,14 +3864,13 @@ def spkgeo(targ, et, ref, obs):
 
 
 def spkgps(targ, et, ref, obs):
-    #Todo: test spkgps
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
     ref = stypes.stringToCharP(ref)
     obs = ctypes.c_int(obs)
     position = stypes.emptyDoubleVector(3)
     lt = ctypes.c_double()
-    libspice.spkgeo_c(targ, et, ref, obs, position, ctypes.byref(lt))
+    libspice.spkgps_c(targ, et, ref, obs, position, ctypes.byref(lt))
     return stypes.vectorToList(position), lt.value
 
 
@@ -4283,9 +4271,9 @@ def stpool(item, nth, contin, lenout):
     lenout = ctypes.c_int(lenout)
     strout = stypes.stringToCharP(" " * lenout.value)
     found = ctypes.c_bool()
-    size = ctypes.c_int()
-    libspice.stpool_c(item, nth, contin, lenout, strout, ctypes.byref(size), ctypes.byref(found))
-    return stypes.toPythonString(strout), size.value, found.value
+    sizet = ctypes.c_int()
+    libspice.stpool_c(item, nth, contin, lenout, strout, ctypes.byref(sizet), ctypes.byref(found))
+    return stypes.toPythonString(strout), sizet.value, found.value
 
 
 def str2et(time):
@@ -4296,7 +4284,6 @@ def str2et(time):
 
 
 def subpnt(method, target, et, fixref, abcorr, obsrvr):
-    #Todo: test subpnt
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
@@ -4311,7 +4298,6 @@ def subpnt(method, target, et, fixref, abcorr, obsrvr):
 
 
 def subpt(method, target, et, abcorr, obsrvr):
-    #Todo: test subpt
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
@@ -4324,7 +4310,6 @@ def subpt(method, target, et, abcorr, obsrvr):
 
 
 def subslr(method, target, et, fixref, abcorr, obsrvr):
-    #Todo: test subslr
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
@@ -4745,7 +4730,6 @@ def vlcom(a, v1, b, v2):
 
 
 def vlcom3(a, v1, b, v2, c, v3):
-    #Todo: test
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
     v3 = stypes.toDoubleVector(v3)
@@ -4758,7 +4742,6 @@ def vlcom3(a, v1, b, v2, c, v3):
 
 
 def vlcomg(n, a, v1, b, v2):
-    #Todo: test
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
     sumv = stypes.emptyDoubleVector(n)
