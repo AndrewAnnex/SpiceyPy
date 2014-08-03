@@ -7,6 +7,7 @@ import numpy.testing as npt
 import os
 cwd = os.path.realpath(os.path.dirname(__file__))
 _testKernelPath = cwd + "/testKernels.txt"
+_extraTestVoyagerKernel = cwd + "/vg200022.tsc"
 
 
 def test_appndc():
@@ -2294,43 +2295,106 @@ def test_scard():
 
 
 def test_scdecd():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_extraTestVoyagerKernel)
+    timein = spice.scencd(-32, '2/20538:39:768')
+    sclkch = spice.scdecd(-32, timein, 50)
+    assert sclkch == '2/20538:39:768'
+    spice.kclear()
 
 
 def test_sce2c():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_extraTestVoyagerKernel)
+    et = spice.str2et('1979 JUL 05 21:50:21.23379')
+    sclkdp = spice.sce2c(-32, et)
+    npt.assert_almost_equal(sclkdp, 985327949.9999709, decimal=6)
+    spice.kclear()
 
 
 def test_sce2s():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_extraTestVoyagerKernel)
+    et = spice.str2et('1979 JUL 05 21:50:21.23379')
+    sclkch = spice.sce2s(-32, et, 50)
+    assert sclkch == "2/20538:39:768"
+    spice.kclear()
 
 
 def test_sce2t():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_extraTestVoyagerKernel)
+    et = spice.str2et('1979 JUL 05 21:50:21.23379')
+    sclkdp = spice.sce2t(-32, et)
+    npt.assert_almost_equal(sclkdp, 985327950.000000)
+    spice.kclear()
 
 
 def test_scencd():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_extraTestVoyagerKernel)
+    sclkch = spice.scdecd(-32, 985327950.0, 50)
+    sclkdp = spice.scencd(-32, sclkch)
+    npt.assert_almost_equal(sclkdp, 985327950.0)
+    assert sclkch == "2/20538:39:768"
+    spice.kclear()
 
 
 def test_scfmt():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_extraTestVoyagerKernel)
+    pstart, pstop = spice.scpart(-32)
+    start = spice.scfmt(-32, pstart[0], 50)
+    stop = spice.scfmt(-32, pstop[0], 50)
+    assert start == "00011:00:001"
+    assert stop == "04011:21:784"
+    spice.kclear()
 
 
 def test_scpart():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_extraTestVoyagerKernel)
+    pstart, pstop = spice.scpart(-32)
+    assert pstart is not None
+    assert pstop is not None
+    spice.kclear()
 
 
 def test_scs2e():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_extraTestVoyagerKernel)
+    et = spice.scs2e(-32, '2/20538:39:768')
+    npt.assert_almost_equal(et, -646668528.58222842)
+    utc = spice.et2utc(et, 'C', 3, 50)
+    assert utc == "1979 JUL 05 21:50:21.234"
+    spice.kclear()
 
 
 def test_sct2e():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_extraTestVoyagerKernel)
+    et = spice.sct2e(-32, 985327965.0)
+    utc = spice.et2utc(et, 'C', 3, 50)
+    assert utc == "1979 JUL 05 21:50:22.134"
+    spice.kclear()
 
 
 def test_sctiks():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_extraTestVoyagerKernel)
+    ticks = spice.sctiks(-32, '20656:14:768')
+    assert ticks == 991499967.00000000
+    spice.kclear()
 
 
 def test_sdiff():
@@ -2404,11 +2468,34 @@ def test_spk14e():
 
 
 def test_spkacs():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et("2000 JAN 1 12:00:00 TDB")
+    state, lt, dlt = spice.spkacs(301, et, "J2000", "lt+s", 399)
+    expected_state = [-291584.6134480068, -266693.40606842656, -76095.65338145087,
+                      0.6434391581633632, -0.6660658731229177, -0.3013100630066896]
+    expected_lt = 1.3423106103603615
+    expected_dlt = 1.073169085424106e-07
+    npt.assert_almost_equal(expected_lt, lt)
+    npt.assert_almost_equal(expected_dlt, dlt)
+    npt.assert_array_almost_equal(expected_state, state)
+    spice.kclear()
 
 
 def test_spkapo():
-    assert 1
+    MARS = 499
+    MOON = 301
+    EPOCH = 'Jan 1 2004 5:00 PM'
+    REF = 'J2000'
+    ABCORR = 'LT+S'
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et(EPOCH)
+    state = spice.spkssb(MOON, et, REF)
+    pos_vec, ltime = spice.spkapo(MARS, et, REF, state, ABCORR)
+    expectedPos = [164534472.31249404, 25121994.36858549, 11145412.838521784]
+    npt.assert_array_almost_equal(pos_vec, expectedPos, decimal=5)
+    spice.kclear()
 
 
 def test_spkapp():
@@ -2422,10 +2509,10 @@ def test_spkapp():
     et = spice.str2et(EPOCH)
     state = spice.spkssb(MOON, et, REF)
     state_vec, ltime = spice.spkapp(MARS, et, REF, state, ABCORR)
-    spice.kclear()
     expected_vec = [164534472.31249404, 25121994.36858549, 11145412.838521784,
                     12.311977095260765, 19.88840036075132, 9.406787036260496]
     npt.assert_array_almost_equal(expected_vec, state_vec, decimal=6)
+    spice.kclear()
 
 
 def test_spkaps():
@@ -2441,23 +2528,66 @@ def test_spkcov():
 
 
 def test_spkez():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et('July 4, 2003 11:00 AM PST')
+    state, lt = spice.spkez(499, et, 'J2000', 'LT+S', 399)
+    expected_lt = 269.6898816177049
+    expected_state = [73822235.33116072, -27127919.178592984, -18741306.284863796,
+                      -6.808513317178952, 7.513996167680786, 3.001298515816776]
+    npt.assert_almost_equal(lt, expected_lt)
+    npt.assert_array_almost_equal(state, expected_state)
+    spice.kclear()
 
 
 def test_spkezp():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et('July 4, 2003 11:00 AM PST')
+    pos, lt = spice.spkezp(499, et, 'J2000', 'LT+S', 399)
+    expected_lt = 269.6898816177049
+    expected_pos = [73822235.33116072, -27127919.178592984, -18741306.284863796]
+    npt.assert_almost_equal(lt, expected_lt)
+    npt.assert_array_almost_equal(pos, expected_pos)
+    spice.kclear()
 
 
 def test_spkezr():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et('July 4, 2003 11:00 AM PST')
+    state, lt = spice.spkezr("Mars", et, "J2000", "LT+S", "Earth")
+    expected_lt = 269.6898816177049
+    expected_state = [73822235.33116072, -27127919.178592984, -18741306.284863796,
+                      -6.808513317178952, 7.513996167680786, 3.001298515816776]
+    npt.assert_almost_equal(lt, expected_lt)
+    npt.assert_array_almost_equal(state, expected_state)
+    spice.kclear()
 
 
 def test_spkgeo():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et('July 4, 2003 11:00 AM PST')
+    state, lt = spice.spkgeo(499, et, 'J2000', 399)
+    expected_lt = 269.7026477630999
+    expected_state = [73826216.43519413, -27128030.732554913, -18741973.86834258,
+                      -6.809503565936936, 7.513814280414338, 3.001290049558291]
+    npt.assert_almost_equal(lt, expected_lt)
+    npt.assert_array_almost_equal(state, expected_state)
+    spice.kclear()
 
 
 def test_spkgps():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et('July 4, 2003 11:00 AM PST')
+    pos, lt = spice.spkgps(499, et, 'J2000', 399)
+    expected_lt = 269.7026477630999
+    expected_pos = [73826216.43519413, -27128030.732554913, -18741973.86834258]
+    npt.assert_almost_equal(lt, expected_lt)
+    npt.assert_array_almost_equal(pos, expected_pos)
+    spice.kclear()
 
 
 def test_spklef():
@@ -2485,7 +2615,15 @@ def test_spkpds():
 
 
 def test_spkpos():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et('July 4, 2003 11:00 AM PST')
+    pos, lt = spice.spkpos("Mars", et, "J2000", "LT+S", "Earth")
+    expected_lt = 269.6898816177049
+    expected_pos = [73822235.33116072, -27127919.178592984, -18741306.284863796]
+    npt.assert_almost_equal(lt, expected_lt)
+    npt.assert_array_almost_equal(pos, expected_pos)
+    spice.kclear()
 
 
 def test_spkssb():
@@ -2604,11 +2742,53 @@ def test_str2et():
 
 
 def test_subpnt():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et('2008 aug 11 00:00:00')
+    num_vals, radii = spice.bodvrd("MARS", "RADII", 3)
+    re = radii[0]
+    rp = radii[2]
+    f = (re - rp) / re
+    methods = ['Intercept:  ellipsoid', 'Near point: ellipsoid']
+    expecteds = [[349199089.54077595, 349199089.57747161, 0.0, 199.30230503198658, 199.30230503198658,
+                  26.262401237213588, 25.99493675077423, 160.69769496801342, 160.69769496801342,
+                  25.994934171245205, 25.994934171245202],
+                 [349199089.54076770, 349199089.54076773, 0.0, 199.30230503240247, 199.30230503240247,
+                  25.99493675092049, 25.99493675092049, 160.69769496759753, 160.69769496759753,
+                  25.729407227461937, 25.994934171391463]]
+    for expected, method in zip(expecteds, methods):
+        spoint, trgepc, srfvec = spice.subpnt(method, 'Mars', et, 'IAU_MARS', 'LT+S', 'Earth')
+        odist = np.linalg.norm(srfvec)
+        npt.assert_almost_equal(odist, expected[1], decimal=5)
+        spglon, spglat, spgalt = spice.recpgr('mars', spoint, re, f)
+        npt.assert_almost_equal(spgalt, expected[2], decimal=5)
+        npt.assert_almost_equal(spglon * spice.dpr(), expected[3], decimal=5)
+        npt.assert_almost_equal(spglat * spice.dpr(), expected[5], decimal=5)
+        spcrad, spclon, spclat = spice.reclat(spoint)
+        npt.assert_almost_equal(spclon * spice.dpr(), expected[7], decimal=5)
+        npt.assert_almost_equal(spclat * spice.dpr(), expected[9], decimal=5)
+        obspos = np.subtract(spoint, srfvec)
+        opglon, opglat, opgalt = spice.recpgr('mars', obspos, re, f)
+        npt.assert_almost_equal(opgalt, expected[0], decimal=5)
+        npt.assert_almost_equal(opglon * spice.dpr(), expected[4], decimal=5)
+        npt.assert_almost_equal(opglat * spice.dpr(), expected[6], decimal=5)
+        opcrad, opclon, opclat = spice.reclat(obspos)
+        npt.assert_almost_equal(opclon * spice.dpr(), expected[8], decimal=5)
+        npt.assert_almost_equal(opclat * spice.dpr(), expected[10], decimal=5)
+    spice.kclear()
 
 
 def test_subpt():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et("JAN 1, 2006")
+    point1, alt1 = np.array(spice.subpt("near point", "earth", et, "lt+s", "moon"))
+    point2, alt2 = np.array(spice.subpt("intercept", "earth", et, "lt+s", "moon"))
+    dist = np.linalg.norm(np.subtract(point1, point2))
+    sep = spice.vsep(point1, point2) * spice.dpr()
+    npt.assert_almost_equal(dist, 16.705476097706171)
+    npt.assert_almost_equal(sep, 0.15016657506598063)
+    spice.kclear()
 
 
 def test_subslr():
@@ -2765,7 +2945,11 @@ def test_ucase():
 
 
 def test_ucrss():
-    assert 1
+    vec1 = np.array([1.0, 2.0, 3.0])
+    vec2 = np.array([6.0, 1.0, 6.0])
+    expected = np.cross(vec1, vec2) / np.linalg.norm(np.cross(vec1, vec2))
+    outvec = spice.ucrss(vec1, vec2)
+    npt.assert_array_almost_equal(expected, outvec)
 
 
 def test_uddc():
@@ -2903,15 +3087,28 @@ def test_vhatg():
 
 
 def test_vlcom3():
-    assert 1
+    vec1 = [1.0, 1.0, 1.0]
+    vec2 = [2.0, 2.0, 2.0]
+    vec3 = [3.0, 3.0, 3.0]
+    outvec = spice.vlcom3(1.0, vec1, 1.0, vec2, 1.0, vec3)
+    expected = [6.0, 6.0, 6.0]
+    assert outvec == expected
 
 
 def test_vlcom():
-    assert 1
+    vec1 = [1.0, 1.0, 1.0]
+    vec2 = [2.0, 2.0, 2.0]
+    outvec = spice.vlcom(1.0, vec1, 1.0, vec2)
+    expected = [3.0, 3.0, 3.0]
+    assert outvec == expected
 
 
 def test_vlcomg():
-    assert 1
+    vec1 = [1.0, 1.0]
+    vec2 = [2.0, 2.0]
+    outvec = spice.vlcomg(2, 1.0, vec1, 1.0, vec2)
+    expected = [3.0, 3.0]
+    assert outvec == expected
 
 
 def test_vminug():
