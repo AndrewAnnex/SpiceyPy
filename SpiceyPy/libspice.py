@@ -620,7 +620,7 @@ libspice.spkw20_c.argtypes = [c_int, c_int, c_int, c_char_p, c_double,
                               c_double, c_char_p, c_double, c_int, c_int,
                               POINTER(c_double), c_double, c_double, c_double,
                               c_double]
-libspice.srfrec_c.argtypes = [c_int, c_double, c_double, c_double]
+libspice.srfrec_c.argtypes = [c_int, c_double, c_double, c_double * 3]
 libspice.size_c.argtypes = [POINTER(stypes.SpiceCell)]
 libspice.size_c.restype = c_int
 libspice.srfxpt_c.argtypes = [c_char_p, c_char_p, c_double, c_char_p, c_char_p, c_char_p, (c_double * 3),
