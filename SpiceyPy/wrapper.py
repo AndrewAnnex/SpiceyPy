@@ -265,7 +265,6 @@ def cidfrm(cent, lenout):
 
 
 def ckcls(handle):
-    #Todo: test ckcls
     handle = ctypes.c_int(handle)
     libspice.ckcls_c(handle)
     pass
@@ -335,7 +334,6 @@ def ckobj(ck, ids):
 
 
 def ckopn(filename, ifname, ncomch):
-    #Todo: test ckopn
     filename = stypes.stringToCharP(filename)
     ifname = stypes.stringToCharP(ifname)
     ncomch = ctypes.c_int(ncomch)
@@ -1024,21 +1022,20 @@ def edterm(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts):
 
 
 def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
-    #Todo: test ekacec
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
     vallen = ctypes.c_int(vallen)
-    cvals = ctypes.cast(stypes.listtocharvector(cvals), ctypes.c_void_p())  #this may not work
+    cvals = stypes.listToCharArrayPtr(cvals)
+    # ctypes.cast(stypes.listtocharvector(cvals), ctypes.c_void_p())  #this may not work
     isnull = ctypes.c_bool(isnull)
     libspice.ekacec_c(handle, segno, recno, column, nvals, vallen, cvals, isnull)
     pass
 
 
 def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
-    #Todo: test ekaced
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
@@ -1046,12 +1043,11 @@ def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
     nvals = ctypes.c_int(nvals)
     dvals = stypes.toDoubleVector(dvals)
     isnull = ctypes.c_bool(isnull)
-    libspice.ekaced_c(handle, segno, recno, column, nvals, ctypes.byref(dvals), isnull)  # not sure
+    libspice.ekaced_c(handle, segno, recno, column, nvals, ctypes.cast(dvals, ctypes.POINTER(ctypes.c_double)), isnull)
     pass
 
 
 def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
-    #Todo: test ekacei
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
@@ -1059,7 +1055,7 @@ def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
     nvals = ctypes.c_int(nvals)
     ivals = stypes.toIntVector(ivals)
     isnull = ctypes.c_bool(isnull)
-    libspice.ekacei_c(handle, segno, recno, column, nvals, ctypes.byref(ivals), isnull)  # not sure
+    libspice.ekacei_c(handle, segno, recno, column, nvals, ctypes.cast(ivals, ctypes.POINTER(ctypes.c_int)), isnull)
     pass
 
 
@@ -1117,15 +1113,22 @@ def ekappr(handle, segno):
     return recno.value
 
 
-def ekbseg(handle, tabnam, ncols, cnmlen, cnames, declen, decls):
-    #Todo: test ekbseg
+def ekbseg(handle, tabnam, ncols, cnames, decls, **kwargs):
+    if 'cnmlen' in kwargs:
+        cnmlen = kwargs['cnmlen']
+    else:
+        cnmlen = len(max(cnames, key=len))
+    if 'declen' in kwargs:
+        declen = kwargs['declen']
+    else:
+        declen = len(max(decls, key=len))
     handle = ctypes.c_int(handle)
     tabnam = stypes.stringToCharP(tabnam)
     ncols = ctypes.c_int(ncols)
     cnmlen = ctypes.c_int(cnmlen)
-    cnames = stypes.listtocharvector(cnames)  # not sure if this works
+    cnames = stypes.listToCharArray(cnames)  # not sure if this works
     declen = ctypes.c_int(declen)
-    decls = stypes.listtocharvector(decls)
+    decls = stypes.listToCharArray(decls)
     segno = ctypes.c_int()
     libspice.ekbseg_c(handle, tabnam, ncols, cnmlen, cnames, declen, decls, ctypes.byref(segno))
     return segno.value
@@ -1277,7 +1280,6 @@ def ekntab():
 
 
 def ekopn(fname, ifname, ncomch):
-    #Todo: test ekopn
     fname = stypes.stringToCharP(fname)
     ifname = stypes.stringToCharP(ifname)
     ncomch = ctypes.c_int(ncomch)
@@ -1287,22 +1289,19 @@ def ekopn(fname, ifname, ncomch):
 
 
 def ekopr(fname):
-    #Todo: test ekopr
     fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
     libspice.ekopr_c(fname, ctypes.byref(handle))
     return handle.value
 
 
-def ekpos():
-    #Todo: test ekpos
+def ekops():
     handle = ctypes.c_int()
-    libspice.ekpos_c(ctypes.byref(handle))
+    libspice.ekops_c(ctypes.byref(handle))
     return handle.value
 
 
 def ekopw(fname):
-    #Todo: test ekopw
     fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
     libspice.ekopw_c(fname, ctypes.byref(handle))
@@ -2967,7 +2966,6 @@ def pdpool(name, dvals):
 
 
 def pgrrec(body, lon, lat, alt, re, f):
-    #Todo: test pgrrec
     body = stypes.stringToCharP(body)
     lon = ctypes.c_double(lon)
     lat = ctypes.c_double(lat)
@@ -2975,7 +2973,7 @@ def pgrrec(body, lon, lat, alt, re, f):
     re = ctypes.c_double(re)
     f = ctypes.c_double(f)
     rectan = stypes.emptyDoubleVector(3)
-    libspice.pgrrec(body, lon, lat, alt, re, f, rectan)
+    libspice.pgrrec_c(body, lon, lat, alt, re, f, rectan)
     return stypes.vectorToList(rectan)
 
 
@@ -4219,7 +4217,6 @@ def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel, rapol
 
 
 def srfrec(body, longitude, latitude):
-    #Todo: test srfrec
     body = ctypes.c_int(body)
     longitude = ctypes.c_double(longitude)
     latitude = ctypes.c_double(latitude)
@@ -4229,7 +4226,6 @@ def srfrec(body, longitude, latitude):
 
 
 def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
-    #Todo: test srfxpt, but it is depricated
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
@@ -4255,7 +4251,6 @@ def ssize(newsize, cell):
 
 
 def stelab(pobj, vobs):
-    #Todo: test stelab
     pobj = stypes.toDoubleVector(pobj)
     vobs = stypes.toDoubleVector(vobs)
     appobj = stypes.emptyDoubleVector(3)
@@ -4619,7 +4614,6 @@ def unormg(v1, ndim):
 
 
 def utc2et(utcstr):
-    #Todo: test utc2et
     utcstr = stypes.stringToCharP(utcstr)
     et = ctypes.c_double()
     libspice.utc2et_c(utcstr, ctypes.byref(et))
