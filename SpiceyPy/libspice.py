@@ -16,7 +16,7 @@ libspice.appndd_c.argtypes = [c_double, POINTER(stypes.SpiceCell)]
 libspice.appndi_c.argtypes = [c_int, POINTER(stypes.SpiceCell)]
 libspice.axisar_c.argtypes = [(c_double * 3), c_double, (c_double * 3) * 3]
 
-########################################################################################################################
+# #######################################################################################################################
 # B
 libspice.b1900_c.restype = c_double
 libspice.b1950_c.restype = c_double
@@ -599,17 +599,17 @@ libspice.spkw02_c.argtypes = [c_int, c_int, c_int, c_char_p, c_double, c_double,
 libspice.spkw03_c.argtypes = [c_int, c_int, c_int, c_char_p, c_double, c_double, c_char_p, c_double, c_int, c_int,
                               POINTER(c_double), c_double]
 libspice.spkw05_c.argtypes = [c_int, c_int, c_int, c_char_p, c_double, c_double, c_char_p, c_double, c_int,
-                              POINTER(c_double), POINTER(c_double), ]
+                              POINTER(c_double * 6), POINTER(c_double)]
 libspice.spkw08_c.argtypes = [c_int, c_int, c_int, c_char_p, c_double, c_double, c_char_p, c_int, c_int,
-                              POINTER(c_double), c_double, c_double]
+                              POINTER(c_double * 6), c_double, c_double]
 libspice.spkw09_c.argtypes = [c_int, c_int, c_int, c_char_p, c_double, c_double, c_char_p, c_int, c_int,
-                              POINTER(c_double), POINTER(c_double)]
+                              POINTER(c_double * 6), POINTER(c_double)]
 libspice.spkw10_c.argtypes = [c_int, c_int, c_int, c_char_p, c_double, c_double, c_char_p, (c_double * 8), c_int,
                               POINTER(c_double), POINTER(c_double)]
 libspice.spkw12_c.argtypes = [c_int, c_int, c_int, c_char_p, c_double, c_double, c_char_p, c_int, c_int,
-                              POINTER(c_double), c_double, c_double]
+                              POINTER(c_double * 6), c_double, c_double]
 libspice.spkw13_c.argtypes = [c_int, c_int, c_int, c_char_p, c_double, c_double, c_char_p, c_int, c_int,
-                              POINTER(c_double), POINTER(c_double)]
+                              POINTER(c_double * 6), POINTER(c_double)]
 libspice.spkw15_c.argtypes = [c_int, c_int, c_int, c_char_p, c_double, c_double, c_char_p, c_double, (c_double * 3),
                               (c_double * 3), c_double, c_double, c_double, (c_double * 3), c_double, c_double,
                               c_double]
