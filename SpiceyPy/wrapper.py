@@ -1742,13 +1742,13 @@ def georec(lon, lat, alt, re, f):
 
 
 def getelm(frstyr, lineln, lines):
-    #Todo: test getelm
     frstyr = ctypes.c_int(frstyr)
     lineln = ctypes.c_int(lineln)
-    lines = stypes.listToCharArrayPtr(lines, xLen=2, yLen=lineln)
+    lines = stypes.listToCharArrayPtr(lines, xLen=lineln, yLen=2)
     epoch = ctypes.c_double()
-    elems = stypes.emptyDoubleVector(lineln)  # guess for length
-    libspice.getelm_c(frstyr, lineln, ctypes.byref(lines), ctypes.byref(epoch), ctypes.byref(elems))
+    elems = stypes.emptyDoubleVector(10)  # guess for length
+    libspice.getelm_c(frstyr, lineln, lines, ctypes.byref(epoch), elems)
+    return epoch.value, stypes.vectorToList(elems)
 
 
 def getfat(file):
@@ -4030,9 +4030,6 @@ def spkuef(handle):
 
 
 def spkw02(handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, btime):
-    #Todo: test spkw02
-    # array[] can be treated as array *,
-    # http://stackoverflow.com/questions/5573310/difference-between-passing-array-and-array-pointer-into-function-in-c
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
@@ -4045,14 +4042,11 @@ def spkw02(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
     polydg = ctypes.c_int(polydg)
     cdata = stypes.toDoubleVector(cdata)
     btime = ctypes.c_double(btime)
-    libspice.spkw02_c(handle, body, center, inframe, first, last, segid, intlen, n, polydg, ctypes.byref(cdata), btime)
+    libspice.spkw02_c(handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, btime)
     pass
 
 
 def spkw03(handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, btime):
-    #Todo: test spkw03
-    # array[] can be treated as array *,
-    # http://stackoverflow.com/questions/5573310/difference-between-passing-array-and-array-pointer-into-function-in-c
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
@@ -4065,12 +4059,12 @@ def spkw03(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
     polydg = ctypes.c_int(polydg)
     cdata = stypes.toDoubleVector(cdata)
     btime = ctypes.c_double(btime)
-    libspice.spkw03_c(handle, body, center, inframe, first, last, segid, intlen, n, polydg, ctypes.byref(cdata), btime)
+    libspice.spkw03_c(handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, btime)
     pass
 
 
 def spkw05(handle, body, center, inframe, first, last, segid, gm, n, states, epochs):
-    #Todo: test spkw05
+    # see libspice args for solution to array[][N] problem
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
@@ -4078,16 +4072,16 @@ def spkw05(handle, body, center, inframe, first, last, segid, gm, n, states, epo
     first = ctypes.c_double(first)
     last = ctypes.c_double(last)
     segid = stypes.stringToCharP(segid)
-    gm = ctypes.c_int(gm)
+    gm = ctypes.c_double(gm)
     n = ctypes.c_int(n)
-    states = stypes.toDoubleMatrix(states)  # X by 6 array
+    states = stypes.toDoubleMatrix(states)
     epochs = stypes.toDoubleVector(epochs)
-    libspice.spkw05_c(handle, body, center, inframe, first, last, segid, gm, n, ctypes.byref(states), ctypes.byref(epochs))
+    libspice.spkw05_c(handle, body, center, inframe, first, last, segid, gm, n, states, epochs)
     pass
 
 
 def spkw08(handle, body, center, inframe, first, last, segid, degree, n, states, epoch1, step):
-    #Todo: test spkw08
+    # see libspice args for solution to array[][N] problem
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
@@ -4100,7 +4094,7 @@ def spkw08(handle, body, center, inframe, first, last, segid, degree, n, states,
     states = stypes.toDoubleMatrix(states)  # X by 6 array
     epoch1 = ctypes.c_double(epoch1)
     step = ctypes.c_double(step)
-    libspice.spkw08_c(handle, body, center, inframe, first, last, segid, degree, n, ctypes.byref(states), epoch1, step)
+    libspice.spkw08_c(handle, body, center, inframe, first, last, segid, degree, n, states, epoch1, step)
     pass
 
 
@@ -4116,13 +4110,12 @@ def spkw09(handle, body, center, inframe, first, last, segid, degree, n, states,
     degree = ctypes.c_int(degree)
     n = ctypes.c_int(n)
     states = stypes.toDoubleMatrix(states)  # X by 6 array
-    epochs = stypes.toDoubleMatrix(epochs)
-    libspice.spkw09_c(handle, body, center, inframe, first, last, segid, degree, n, ctypes.byref(states), ctypes.byref(epochs))
+    epochs = stypes.toDoubleVector(epochs)
+    libspice.spkw09_c(handle, body, center, inframe, first, last, segid, degree, n, states, epochs)
     pass
 
 
 def spkw10(handle, body, center, inframe, first, last, segid, consts, n, elems, epochs):
-    #Todo: test spkw10
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
@@ -4134,12 +4127,11 @@ def spkw10(handle, body, center, inframe, first, last, segid, consts, n, elems, 
     n = ctypes.c_int(n)
     elems = stypes.toDoubleVector(elems)
     epochs = stypes.toDoubleVector(epochs)
-    libspice.spkw10_c(handle, body, center, inframe, first, last, segid, consts, n, ctypes.byref(elems), ctypes.byref(epochs))
+    libspice.spkw10_c(handle, body, center, inframe, first, last, segid, consts, n, elems, epochs)
     pass
 
 
 def spkw12(handle, body, center, inframe, first, last, segid, degree, n, states, epoch0, step):
-    #Todo: test spkw12
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
@@ -4152,12 +4144,11 @@ def spkw12(handle, body, center, inframe, first, last, segid, degree, n, states,
     states = stypes.toDoubleMatrix(states)  # X by 6 array
     epoch0 = ctypes.c_double(epoch0)
     step = ctypes.c_double(step)
-    libspice.spkw12_c(handle, body, center, inframe, first, last, segid, degree, n, ctypes.byref(states), epoch0, step)
+    libspice.spkw12_c(handle, body, center, inframe, first, last, segid, degree, n, states, epoch0, step)
     pass
 
 
 def spkw13(handle, body, center, inframe, first, last, segid, degree, n, states, epochs):
-    #Todo: test spkw13
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
@@ -4168,8 +4159,8 @@ def spkw13(handle, body, center, inframe, first, last, segid, degree, n, states,
     degree = ctypes.c_int(degree)
     n = ctypes.c_int(n)
     states = stypes.toDoubleMatrix(states)  # X by 6 array
-    epochs = stypes.toDoubleMatrix(epochs)
-    libspice.spkw13_c(handle, body, center, inframe, first, last, segid, degree, n, ctypes.byref(states), ctypes.byref(epochs))
+    epochs = stypes.toDoubleVector(epochs)
+    libspice.spkw13_c(handle, body, center, inframe, first, last, segid, degree, n, states, epochs)
     pass
 
 

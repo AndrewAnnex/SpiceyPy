@@ -2836,35 +2836,253 @@ def test_spkuef():
 
 
 def test_spkw02():
-    assert 1
+    SPK2 = cwd + "/test2.bsp"
+    if spice.exists(SPK2):
+        os.remove(SPK2)
+    spice.kclear()
+    handle = spice.spkopn(SPK2, 'Type 2 SPK internal file name.', 4)
+    init_size = os.path.getsize(SPK2)
+    discrete_epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
+    cheby_coeffs02 = [1.0101, 1.0102, 1.0103, 1.0201, 1.0202, 1.0203, 1.0301, 1.0302,
+                      1.0303, 2.0101, 2.0102, 2.0103, 2.0201, 2.0202, 2.0203, 2.0301,
+                      2.0302, 2.0303, 3.0101, 3.0102, 3.0103, 3.0201, 3.0202, 3.0203,
+                      3.0301, 3.0302, 3.0303, 4.0101, 4.0102, 4.0103, 4.0201, 4.0202,
+                      4.0203, 4.0301, 4.0302, 4.0303]
+    segid = 'SPK type 2 test segment'
+    intlen = discrete_epochs[1] - discrete_epochs[0]
+    spice.spkw02(handle, 3, 10, "J2000", discrete_epochs[0],
+                 discrete_epochs[4], segid, intlen, 4, 2, cheby_coeffs02, discrete_epochs[0])
+    spice.spkcls(handle)
+    end_size = os.path.getsize(SPK2)
+    spice.kclear()
+    assert end_size != init_size
+    if spice.exists(SPK2):
+        os.remove(SPK2)
 
 
 def test_spkw03():
-    assert 1
+    SPK3 = cwd + "/test3.bsp"
+    if spice.exists(SPK3):
+        os.remove(SPK3)
+    spice.kclear()
+    handle = spice.spkopn(SPK3, 'Type 3 SPK internal file name.', 4)
+    init_size = os.path.getsize(SPK3)
+    discrete_epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
+    cheby_coeffs03 = [1.0101, 1.0102, 1.0103, 1.0201, 1.0202, 1.0203, 1.0301, 1.0302, 1.0303,
+                      1.0401, 1.0402, 1.0403, 1.0501, 1.0502, 1.0503, 1.0601, 1.0602, 1.0603,
+                      2.0101, 2.0102, 2.0103, 2.0201, 2.0202, 2.0203, 2.0301, 2.0302, 2.0303,
+                      2.0401, 2.0402, 2.0403, 2.0501, 2.0502, 2.0503, 2.0601, 2.0602, 2.0603,
+                      3.0101, 3.0102, 3.0103, 3.0201, 3.0202, 3.0203, 3.0301, 3.0302, 3.0303,
+                      3.0401, 3.0402, 3.0403, 3.0501, 3.0502, 3.0503, 3.0601, 3.0602, 3.0603,
+                      4.0101, 4.0102, 4.0103, 4.0201, 4.0202, 4.0203, 4.0301, 4.0302, 4.0303,
+                      4.0401, 4.0402, 4.0403, 4.0501, 4.0502, 4.0503, 4.0601, 4.0602, 4.0603]
+    segid = 'SPK type 3 test segment'
+    intlen = discrete_epochs[1] - discrete_epochs[0]
+    spice.spkw03(handle, 3, 10, "J2000", discrete_epochs[0],
+                 discrete_epochs[4], segid, intlen, 4, 2, cheby_coeffs03, discrete_epochs[0])
+    spice.spkcls(handle)
+    end_size = os.path.getsize(SPK3)
+    spice.kclear()
+    assert end_size != init_size
+    if spice.exists(SPK3):
+        os.remove(SPK3)
 
 
 def test_spkw05():
-    assert 1
+    SPK5 = cwd + "/test5.bsp"
+    if spice.exists(SPK5):
+        os.remove(SPK5)
+    spice.kclear()
+    handle = spice.spkopn(SPK5, 'Type 5 SPK internal file name.', 4)
+    init_size = os.path.getsize(SPK5)
+    discrete_epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
+    discrete_states = [
+        [101.0, 201.0, 301.0, 401.0, 501.0, 601.0],
+        [102.0, 202.0, 302.0, 402.0, 502.0, 602.0],
+        [103.0, 203.0, 303.0, 403.0, 503.0, 603.0],
+        [104.0, 204.0, 304.0, 404.0, 504.0, 604.0],
+        [105.0, 205.0, 305.0, 405.0, 505.0, 605.0],
+        [106.0, 206.0, 306.0, 406.0, 506.0, 606.0],
+        [107.0, 207.0, 307.0, 407.0, 507.0, 607.0],
+        [108.0, 208.0, 308.0, 408.0, 508.0, 608.0],
+        [109.0, 209.0, 309.0, 409.0, 509.0, 609.0]
+    ]
+    segid = 'SPK type 5 test segment'
+    spice.spkw05(handle, 3, 10, "J2000", discrete_epochs[0], discrete_epochs[-1], segid,
+                 132712440023.310, 9, discrete_states, discrete_epochs)
+    spice.spkcls(handle)
+    end_size = os.path.getsize(SPK5)
+    spice.kclear()
+    assert end_size != init_size
+    if spice.exists(SPK5):
+        os.remove(SPK5)
 
 
 def test_spkw08():
-    assert 1
+    SPK8 = cwd + "/test8.bsp"
+    if spice.exists(SPK8):
+        os.remove(SPK8)
+    spice.kclear()
+    handle = spice.spkopn(SPK8, 'Type 8 SPK internal file name.', 4)
+    init_size = os.path.getsize(SPK8)
+    discrete_epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
+    discrete_states = [
+        [101.0, 201.0, 301.0, 401.0, 501.0, 601.0],
+        [102.0, 202.0, 302.0, 402.0, 502.0, 602.0],
+        [103.0, 203.0, 303.0, 403.0, 503.0, 603.0],
+        [104.0, 204.0, 304.0, 404.0, 504.0, 604.0],
+        [105.0, 205.0, 305.0, 405.0, 505.0, 605.0],
+        [106.0, 206.0, 306.0, 406.0, 506.0, 606.0],
+        [107.0, 207.0, 307.0, 407.0, 507.0, 607.0],
+        [108.0, 208.0, 308.0, 408.0, 508.0, 608.0],
+        [109.0, 209.0, 309.0, 409.0, 509.0, 609.0]
+    ]
+    segid = 'SPK type 8 test segment'
+    step = discrete_epochs[1] - discrete_epochs[0]
+    spice.spkw08(handle, 3, 10, "J2000", discrete_epochs[0], discrete_epochs[-1], segid,
+                 3, 9, discrete_states, discrete_epochs[0], step)
+    spice.spkcls(handle)
+    end_size = os.path.getsize(SPK8)
+    spice.kclear()
+    assert end_size != init_size
+    if spice.exists(SPK8):
+        os.remove(SPK8)
 
 
 def test_spkw09():
-    assert 1
+    SPK9 = cwd + "/test9.bsp"
+    if spice.exists(SPK9):
+        os.remove(SPK9)
+    spice.kclear()
+    handle = spice.spkopn(SPK9, 'Type 9 SPK internal file name.', 4)
+    init_size = os.path.getsize(SPK9)
+    discrete_epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
+    discrete_states = [
+        [101.0, 201.0, 301.0, 401.0, 501.0, 601.0],
+        [102.0, 202.0, 302.0, 402.0, 502.0, 602.0],
+        [103.0, 203.0, 303.0, 403.0, 503.0, 603.0],
+        [104.0, 204.0, 304.0, 404.0, 504.0, 604.0],
+        [105.0, 205.0, 305.0, 405.0, 505.0, 605.0],
+        [106.0, 206.0, 306.0, 406.0, 506.0, 606.0],
+        [107.0, 207.0, 307.0, 407.0, 507.0, 607.0],
+        [108.0, 208.0, 308.0, 408.0, 508.0, 608.0],
+        [109.0, 209.0, 309.0, 409.0, 509.0, 609.0]
+    ]
+    segid = 'SPK type 9 test segment'
+    spice.spkw09(handle, 3, 10, "J2000", discrete_epochs[0], discrete_epochs[-1], segid,
+                 3, 9, discrete_states, discrete_epochs)
+    spice.spkcls(handle)
+    end_size = os.path.getsize(SPK9)
+    spice.kclear()
+    assert end_size != init_size
+    if spice.exists(SPK9):
+        os.remove(SPK9)
 
 
 def test_spkw10():
-    assert 1
+    SPK10 = cwd + "/test10.bsp"
+    spice.kclear()
+    tle = ['1 18123U 87 53  A 87324.61041692 -.00000023  00000-0 -75103-5 0 00675',
+           '2 18123  98.8296 152.0074 0014950 168.7820 191.3688 14.12912554 21686',
+           '1 18123U 87 53  A 87326.73487726  .00000045  00000-0  28709-4 0 00684',
+           '2 18123  98.8335 154.1103 0015643 163.5445 196.6235 14.12912902 21988',
+           '1 18123U 87 53  A 87331.40868801  .00000104  00000-0  60183-4 0 00690',
+           '2 18123  98.8311 158.7160 0015481 149.9848 210.2220 14.12914624 22644',
+           '1 18123U 87 53  A 87334.24129978  .00000086  00000-0  51111-4 0 00702',
+           '2 18123  98.8296 161.5054 0015372 142.4159 217.8089 14.12914879 23045',
+           '1 18123U 87 53  A 87336.93227900 -.00000107  00000-0 -52860-4 0 00713',
+           '2 18123  98.8317 164.1627 0014570 135.9191 224.2321 14.12910572 23425',
+           '1 18123U 87 53  A 87337.28635487  .00000173  00000-0  10226-3 0 00726',
+           '2 18123  98.8284 164.5113 0015289 133.5979 226.6438 14.12916140 23475',
+           '1 18123U 87 53  A 87339.05673569  .00000079  00000-0  47069-4 0 00738',
+           '2 18123  98.8288 166.2585 0015281 127.9985 232.2567 14.12916010 24908',
+           '1 18123U 87 53  A 87345.43010859  .00000022  00000-0  16481-4 0 00758',
+           '2 18123  98.8241 172.5226 0015362 109.1515 251.1323 14.12915487 24626',
+           '1 18123U 87 53  A 87349.04167543  .00000042  00000-0  27370-4 0 00764',
+           '2 18123  98.8301 176.1010 0015565 100.0881 260.2047 14.12916361 25138']
+    epoch_x = []
+    elems_x = []
+    spice.furnsh(_testKernelPath)
+    for i in range(0, 18, 2):
+        lines = [tle[i], tle[i + 1]]
+        epoch, elems = spice.getelm(1950, 75, lines)
+        epoch_x.append(epoch)
+        elems_x.extend(elems)
+    first = epoch_x[0] - 0.5 * spice.spd()
+    last = epoch_x[-1] + 0.5 * spice.spd()
+    consts = [1.082616e-3, -2.538813e-6, -1.65597e-6, 7.43669161e-2, 120.0, 78.0, 6378.135, 1.0]
+    if spice.exists(SPK10):
+        os.remove(SPK10)
+    handle = spice.spkopn(SPK10, 'Type 10 SPK internal file name.', 100)
+    init_size = os.path.getsize(SPK10)
+    spice.spkw10(handle, -118123, 399, "J2000", first, last, "DMSP F8", consts, 9, elems_x, epoch_x)
+    spice.spkcls(handle)
+    end_size = os.path.getsize(SPK10)
+    assert end_size != init_size
+    spice.kclear()
+    if spice.exists(SPK10):
+        os.remove(SPK10)
 
 
 def test_spkw12():
-    assert 1
+    SPK12 = cwd + "/test12.bsp"
+    if spice.exists(SPK12):
+        os.remove(SPK12)
+    spice.kclear()
+    handle = spice.spkopn(SPK12, 'Type 12 SPK internal file name.', 4)
+    init_size = os.path.getsize(SPK12)
+    discrete_epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
+    discrete_states = [
+        [101.0, 201.0, 301.0, 401.0, 501.0, 601.0],
+        [102.0, 202.0, 302.0, 402.0, 502.0, 602.0],
+        [103.0, 203.0, 303.0, 403.0, 503.0, 603.0],
+        [104.0, 204.0, 304.0, 404.0, 504.0, 604.0],
+        [105.0, 205.0, 305.0, 405.0, 505.0, 605.0],
+        [106.0, 206.0, 306.0, 406.0, 506.0, 606.0],
+        [107.0, 207.0, 307.0, 407.0, 507.0, 607.0],
+        [108.0, 208.0, 308.0, 408.0, 508.0, 608.0],
+        [109.0, 209.0, 309.0, 409.0, 509.0, 609.0]
+    ]
+    segid = 'SPK type 12 test segment'
+    step = discrete_epochs[1] - discrete_epochs[0]
+    spice.spkw12(handle, 3, 10, "J2000", discrete_epochs[0], discrete_epochs[-1], segid,
+                 3, 9, discrete_states, discrete_epochs[0], step)
+    spice.spkcls(handle)
+    end_size = os.path.getsize(SPK12)
+    spice.kclear()
+    assert end_size != init_size
+    if spice.exists(SPK12):
+        os.remove(SPK12)
 
 
 def test_spkw13():
-    assert 1
+    SPK13 = cwd + "/test13.bsp"
+    if spice.exists(SPK13):
+        os.remove(SPK13)
+    spice.kclear()
+    handle = spice.spkopn(SPK13, 'Type 13 SPK internal file name.', 4)
+    init_size = os.path.getsize(SPK13)
+    discrete_epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
+    discrete_states = [
+        [101.0, 201.0, 301.0, 401.0, 501.0, 601.0],
+        [102.0, 202.0, 302.0, 402.0, 502.0, 602.0],
+        [103.0, 203.0, 303.0, 403.0, 503.0, 603.0],
+        [104.0, 204.0, 304.0, 404.0, 504.0, 604.0],
+        [105.0, 205.0, 305.0, 405.0, 505.0, 605.0],
+        [106.0, 206.0, 306.0, 406.0, 506.0, 606.0],
+        [107.0, 207.0, 307.0, 407.0, 507.0, 607.0],
+        [108.0, 208.0, 308.0, 408.0, 508.0, 608.0],
+        [109.0, 209.0, 309.0, 409.0, 509.0, 609.0]
+    ]
+    segid = 'SPK type 13 test segment'
+    spice.spkw13(handle, 3, 10, "J2000", discrete_epochs[0], discrete_epochs[-1], segid,
+                 3, 9, discrete_states, discrete_epochs)
+    spice.spkcls(handle)
+    end_size = os.path.getsize(SPK13)
+    spice.kclear()
+    assert end_size != init_size
+    if spice.exists(SPK13):
+        os.remove(SPK13)
 
 
 def test_spkw15():
@@ -2876,6 +3094,10 @@ def test_spkw17():
 
 
 def test_spkw18():
+    assert 1
+
+
+def test_spkw20():
     assert 1
 
 
