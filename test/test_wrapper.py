@@ -640,6 +640,12 @@ def test_dafgs():
     spice.kclear()
 
 
+def test_dafgsstress():
+    # this is to show that memory issue with dafgs is fixed.
+    for i in range(1000):
+        test_dafgs()
+
+
 def test_dafgsr():
     assert 1
 

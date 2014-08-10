@@ -612,9 +612,10 @@ def dafgn(lenout):
     return stypes.toPythonString(name)
 
 
-def dafgs(n=124):
-    # note size must be +1
-    retarray = stypes.emptyDoubleVector(n + 1)
+def dafgs(n=125):
+    # The 125 may be a hard set, I got strange errors that occasionally happend without it
+    retarray = stypes.emptyDoubleVector(125)
+    # libspice.dafgs_c(ctypes.cast(retarray, ctypes.POINTER(ctypes.c_double)))
     libspice.dafgs_c(retarray)
     return stypes.vectorToList(retarray)[0:n]
 
