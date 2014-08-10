@@ -67,11 +67,11 @@ libspice.cklpf_c.argtypes = [c_char_p, POINTER(c_int)]
 libspice.ckopn_c.argtypes = [c_char_p, c_char_p, c_int, POINTER(c_int)]
 libspice.ckupf_c.argtypes = [c_int]
 libspice.ckw01_c.argtypes = [c_int, c_double, c_double, c_int, c_char_p, c_bool, c_char_p, c_int, POINTER(c_double),
-                             POINTER(c_double), POINTER(c_double)]
+                             POINTER(c_double * 4), POINTER(c_double * 3)]
 libspice.ckw02_c.argtypes = [c_int, c_double, c_double, c_int, c_char_p, c_char_p, c_int, POINTER(c_double),
-                             POINTER(c_double), POINTER(c_double), POINTER(c_double), POINTER(c_double)]
+                             POINTER(c_double), POINTER(c_double * 4), POINTER(c_double * 3), POINTER(c_double)]
 libspice.ckw03_c.argtypes = [c_int, c_double, c_double, c_int, c_char_p, c_bool, c_char_p, c_int, POINTER(c_double),
-                             POINTER(c_double), POINTER(c_double), c_int, POINTER(c_double)]
+                             POINTER(c_double * 4), POINTER(c_double * 3), c_int, POINTER(c_double)]
 libspice.ckw05_c.argtypes = [c_int, c_int, c_double, c_double, c_int, c_char_p, c_bool, c_char_p, c_int, c_double,
                              c_int]
 libspice.clight_c.argtypes = None
@@ -115,7 +115,7 @@ libspice.dafrda_c.argtypes = [c_int, c_int, c_int, POINTER(c_double)]
 libspice.dafrfr_c.argtypes = [c_int, c_int, POINTER(c_int), POINTER(c_int), c_char_p, POINTER(c_int), POINTER(c_int),
                               POINTER(c_int)]
 libspice.dafrs_c.argtype = [POINTER(c_double)]
-libspice.dafus_c.argtypes = [POINTER(c_int), c_int, c_int, POINTER(c_double), POINTER(c_int)]
+libspice.dafus_c.argtypes = [POINTER(c_double), c_int, c_int, POINTER(c_double), POINTER(c_int)]
 libspice.dasac_c.argtypes = [c_int, c_int, c_int, c_void_p]
 libspice.dascls_c.argtypes = [c_int]
 libspice.dasec_c.argtypes = [c_int, c_int, c_int, POINTER(c_int), c_void_p, POINTER(c_bool)]

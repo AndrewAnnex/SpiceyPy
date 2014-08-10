@@ -350,7 +350,6 @@ def ckupf(handle):
 
 
 def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats, avvs):
-    #Todo: test ckw01
     handle = ctypes.c_int(handle)
     begtim = ctypes.c_double(begtim)
     endtim = ctypes.c_double(endtim)
@@ -362,9 +361,7 @@ def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
     quats = stypes.toDoubleMatrix(quats)
     avvs = stypes.toDoubleMatrix(avvs)
     nrec = ctypes.c_int(nrec)
-    libspice.ckw01_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp,
-                     ctypes.cast(quats, ctypes.POINTER(ctypes.c_double)),
-                     ctypes.cast(avvs, ctypes.POINTER(ctypes.c_double)))
+    libspice.ckw01_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats, avvs)
     pass
 
 
@@ -382,15 +379,11 @@ def ckw02(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats, av
     quats = stypes.toDoubleMatrix(quats)
     avvs = stypes.toDoubleMatrix(avvs)
     nrec = ctypes.c_int(nrec)
-    libspice.ckw02_c(handle, begtim, endtim, inst, ref, segid, nrec, start, stop,
-                     ctypes.cast(quats, ctypes.POINTER(ctypes.c_double)),
-                     ctypes.cast(avvs, ctypes.POINTER(ctypes.c_double)),
-                     rates)
+    libspice.ckw02_c(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats, avvs, rates)
     pass
 
 
 def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats, avvs, nints, starts):
-    #Todo: test ckw03
     handle = ctypes.c_int(handle)
     begtim = ctypes.c_double(begtim)
     endtim = ctypes.c_double(endtim)
@@ -401,13 +394,10 @@ def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
     sclkdp = stypes.toDoubleVector(sclkdp)
     quats = stypes.toDoubleMatrix(quats)
     avvs = stypes.toDoubleMatrix(avvs)
-    nrec = ctypes.c_int(nrec)  # looks like this defines the dimensions for quats and avvs
+    nrec = ctypes.c_int(nrec)
     starts = stypes.toDoubleVector(starts)
     nints = ctypes.c_int(nints)
-    libspice.ckw03_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp,
-                     ctypes.cast(quats, ctypes.POINTER(ctypes.c_double)),
-                     ctypes.cast(avvs, ctypes.POINTER(ctypes.c_double)),
-                     nints, starts)
+    libspice.ckw03_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats, avvs, nints, starts)
     pass
 
 
@@ -533,7 +523,7 @@ def cylsph(r, lonc, z):
 def dafac(handle, n, lenvals, buffer):
     #Todo: test dafac
     handle = ctypes.c_int(handle)
-    buffer = stypes.listToCharArrayPtr(buffer, xLen=lenvals, yLen=n)
+    buffer = stypes.listToCharArrayPtr(buffer)
     n = ctypes.c_int(n)
     lenvals = ctypes.c_int(lenvals)
     libspice.dafac_c(handle, n, lenvals, ctypes.byref(buffer))
@@ -548,14 +538,12 @@ def dafbbs(handle):
 
 
 def dafbfs(handle):
-    #Todo: test dafbfs
     handle = ctypes.c_int(handle)
     libspice.dafbfs_c(handle)
     pass
 
 
 def dafcls(handle):
-    #Todo: test dafcls
     handle = ctypes.c_int(handle)
     libspice.dafcls_c(handle)
     pass
@@ -588,7 +576,6 @@ def dafec(handle, bufsiz, lenout):
 
 
 def daffna():
-    #Todo: test daffna
     found = ctypes.c_bool()
     libspice.daffna_c(ctypes.byref(found))
     return found.value
@@ -625,11 +612,11 @@ def dafgn(lenout):
     return stypes.toPythonString(name)
 
 
-def dafgs():
-    #todo test dafgs, is this a valid way of getting a double array back?
-    retarray = ctypes.c_double()
-    libspice.dafgs_c(ctypes.byref(retarray))
-    return stypes.vectorToList(retarray)
+def dafgs(n=124):
+    # note size must be +1
+    retarray = stypes.emptyDoubleVector(n + 1)
+    libspice.dafgs_c(retarray)
+    return stypes.vectorToList(retarray)[0:n]
 
 
 def dafgsr(handle, recno, begin, end):
@@ -645,7 +632,6 @@ def dafgsr(handle, recno, begin, end):
 
 
 def dafopr(fname):
-    #Todo: test dafopr
     fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
     libspice.dafopr_c(fname, ctypes.byref(handle))
@@ -653,7 +639,6 @@ def dafopr(fname):
 
 
 def dafopw(fname):
-    #Todo: test dafopw
     fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
     libspice.dafopw_c(fname, ctypes.byref(handle))
@@ -682,7 +667,6 @@ def dafrda(handle, begin, end):
 
 
 def dafrfr(handle, lenout):
-    #Todo: test dafrfr
     handle = ctypes.c_int(handle)
     lenout = ctypes.c_int(lenout)
     nd = ctypes.c_int()
@@ -703,7 +687,6 @@ def dafrs(insum):
 
 
 def dafus(insum, nd, ni):
-    #Todo: test dafus
     insum = stypes.toDoubleVector(insum)
     dc = stypes.emptyDoubleVector(nd)
     ic = stypes.emptyIntVector(ni)

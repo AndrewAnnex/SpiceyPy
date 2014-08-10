@@ -347,11 +347,89 @@ def test_ckw01():
 
 
 def test_ckw02():
-    assert 1
+    spice.kclear()
+    CK2 = cwd + "/type2.bc"
+    if spice.exists(CK2):
+        os.remove(CK2)
+    INST = -77702
+    MAXREC = 201
+    SECPERTICK = 0.001
+    SEGID = "Test type 2 CK segment"
+    IFNAME = "Test CK type 2 segment created by cspice_ckw02"
+    NCOMCH = 0
+    REF = "J2000"
+    SPACING_TICKS = 10.0
+    SPACING_SECS = SPACING_TICKS * SECPERTICK
+    RATE = 0.01
+    handle = spice.ckopn(CK2, IFNAME, NCOMCH)
+    init_size = os.path.getsize(CK2)
+    quats = np.zeros((MAXREC, 4))
+    av = np.zeros((MAXREC, 3))
+    work_mat = spice.ident()
+    work_quat = spice.m2q(work_mat)
+    quats[0] = work_quat
+    av[0] = [0.0, 0.0, RATE]
+    rates = [SECPERTICK] * MAXREC
+    sclkdp = np.arange(MAXREC) * SPACING_TICKS
+    sclkdp += 1000.0
+    starts = sclkdp
+    stops = sclkdp + (0.8 * SPACING_TICKS)
+    for i in range(1, MAXREC - 1):
+        theta = i * RATE * SPACING_SECS * 1.0
+        work_mat = spice.rotmat(work_mat, theta, 3)
+        work_quat = spice.m2q(work_mat)
+        quats[i] = work_quat
+        av[i] = [0.0, 0.0, RATE]
+    begtime = sclkdp[0]
+    endtime = sclkdp[-1]
+    spice.ckw02(handle, begtime, endtime, INST, REF, SEGID, MAXREC - 1, starts, stops, quats, av, rates)
+    spice.ckcls(handle)
+    end_size = os.path.getsize(CK2)
+    assert end_size != init_size
+    spice.kclear()
+    if spice.exists(CK2):
+        os.remove(CK2)
 
 
 def test_ckw03():
-    assert 1
+    spice.kclear()
+    CK3 = cwd + "/type3.bc"
+    if spice.exists(CK3):
+        os.remove(CK3)
+    MAXREC = 201
+    SECPERTICK = 0.001
+    SEGID = "Test type 3 CK segment"
+    IFNAME = "Test CK type 3 segment created by cspice_ckw03"
+    SPACING_TICKS = 10.0
+    SPACING_SECS = SPACING_TICKS * SECPERTICK
+    RATE = 0.01
+    handle = spice.ckopn(CK3, IFNAME, 0)
+    init_size = os.path.getsize(CK3)
+    quats = np.zeros((MAXREC, 4))
+    av = np.zeros((MAXREC, 3))
+    work_mat = spice.ident()
+    work_quat = spice.m2q(work_mat)
+    quats[0] = work_quat
+    av[0] = [0.0, 0.0, RATE]
+    rates = [SECPERTICK] * MAXREC
+    sclkdp = np.arange(MAXREC) * SPACING_TICKS
+    sclkdp += 1000.0
+    for i in range(1, MAXREC - 1):
+        theta = i * RATE * SPACING_SECS * 1.0
+        work_mat = spice.rotmat(work_mat, theta, 3)
+        work_quat = spice.m2q(work_mat)
+        quats[i] = work_quat
+        av[i] = [0.0, 0.0, RATE]
+    starts = [sclkdp[2 * i] for i in range(99)]
+    begtime = sclkdp[0]
+    endtime = sclkdp[-1]
+    spice.ckw03(handle, begtime, endtime, -77703, "J2000", True, SEGID, MAXREC - 1, sclkdp, quats, av, 99, starts)
+    spice.ckcls(handle)
+    end_size = os.path.getsize(CK3)
+    assert end_size != init_size
+    spice.kclear()
+    if spice.exists(CK3):
+        os.remove(CK3)
 
 
 def test_ckw05():
@@ -470,15 +548,33 @@ def test_dafac():
 
 
 def test_dafbbs():
-    assert 1
+    spice.kclear()
+    handle = spice.dafopr(cwd + "/de421.bsp")
+    spice.dafbbs(handle)
+    found = spice.daffpa()
+    assert found
+    spice.dafcls(handle)
+    spice.kclear()
 
 
 def test_dafbfs():
-    assert 1
+    spice.kclear()
+    handle = spice.dafopr(cwd + "/de421.bsp")
+    spice.dafbfs(handle)
+    found = spice.daffna()
+    assert found
+    spice.dafcls(handle)
+    spice.kclear()
 
 
 def test_dafcls():
-    assert 1
+    spice.kclear()
+    handle = spice.dafopr(cwd + "/de421.bsp")
+    spice.dafbfs(handle)
+    found = spice.daffna()
+    assert found
+    spice.dafcls(handle)
+    spice.kclear()
 
 
 def test_dafcs():
@@ -490,15 +586,38 @@ def test_dafdc():
 
 
 def test_dafec():
-    assert 1
+    spice.kclear()
+    handle = spice.dafopr(cwd + "/de421.bsp")
+    n, buffer, done = spice.dafec(handle, 15, 80)
+    assert n == 15
+    assert buffer == ['; de421.bsp LOG FILE', ';', '; Created 2008-02-12/11:33:34.00.', ';', '; BEGIN NIOSPK COMMANDS',
+                      '', 'LEAPSECONDS_FILE    = naif0007.tls', 'SPK_FILE            = de421.bsp',
+                      '  SPK_LOG_FILE      = de421_spk_conversion.log', '  NOTE              = NIOSPK 6.1.0 Conversion',
+                      '  SOURCE_NIO_FILE   = de421.nio', '    BEGIN_TIME      = CAL-ET 1899 JUL 29 00:00:00.000',
+                      '    END_TIME        = CAL-ET 2053 OCT 09 00:00:00.000', '', '; END NIOSPK COMMANDS']
+    assert done is False
+    spice.dafcls(handle)
+    spice.kclear()
 
 
 def test_daffna():
-    assert 1
+    spice.kclear()
+    handle = spice.dafopr(cwd + "/de421.bsp")
+    spice.dafbfs(handle)
+    found = spice.daffna()
+    assert found
+    spice.dafcls(handle)
+    spice.kclear()
 
 
 def test_daffpa():
-    assert 1
+    spice.kclear()
+    handle = spice.dafopr(cwd + "/de421.bsp")
+    spice.dafbbs(handle)
+    found = spice.daffpa()
+    assert found
+    spice.dafcls(handle)
+    spice.kclear()
 
 
 def test_dafgda():
@@ -510,7 +629,15 @@ def test_dafgn():
 
 
 def test_dafgs():
-    assert 1
+    spice.kclear()
+    handle = spice.dafopr(cwd + "/de421.bsp")
+    spice.dafbfs(handle)
+    found = spice.daffna()
+    assert found
+    out = spice.dafgs(n=2)
+    assert out == [-3169195200.0000000, 1696852800.0000000]
+    spice.dafcls(handle)
+    spice.kclear()
 
 
 def test_dafgsr():
@@ -518,7 +645,13 @@ def test_dafgsr():
 
 
 def test_dafopr():
-    assert 1
+    spice.kclear()
+    handle = spice.dafopr(cwd + "/de421.bsp")
+    spice.dafbfs(handle)
+    found = spice.daffna()
+    assert found
+    spice.dafcls(handle)
+    spice.kclear()
 
 
 def test_dafopw():
@@ -534,7 +667,16 @@ def test_dafrda():
 
 
 def test_dafrfr():
-    assert 1
+    spice.kclear()
+    handle = spice.dafopr(cwd + "/de421.bsp")
+    nd, ni, ifname, fward, bward, free = spice.dafrfr(handle, 61)
+    spice.dafcls(handle)
+    assert nd == 2
+    assert ni == 6
+    assert ifname == "NIO2SPK"
+    assert fward == 4
+    assert bward == 4
+    spice.kclear()
 
 
 def test_dafrs():
@@ -542,7 +684,17 @@ def test_dafrs():
 
 
 def test_dafus():
-    assert 1
+    spice.kclear()
+    handle = spice.dafopr(cwd + "/de421.bsp")
+    spice.dafbfs(handle)
+    found = spice.daffna()
+    assert found
+    out = spice.dafgs(n=124)
+    dc, ic = spice.dafus(out, 2, 6)
+    spice.dafcls(handle)
+    assert dc == [-3169195200.0000000, 1696852800.0000000]
+    assert ic == [1, 0, 1, 2, 641, 310404]
+    spice.kclear()
 
 
 def test_dasac():
