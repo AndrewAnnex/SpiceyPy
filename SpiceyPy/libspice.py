@@ -265,11 +265,13 @@ libspice.gfclrh_c.argtypes = None
 libspice.gfdist_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double, c_double, c_int,
                               POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
 # libspice.gfevnt_c.argtypes = [c_double, c_double, c_double, c_double, c_bool, c_bool, c_double, c_char_p, c_int, c_int, c_char_p, c_double, c_double, c_double, c_bool, None, c_char_p, c_char_p, c_double, c_double, c_double, c_int, c_bool, c_bool, None, None]
-#libspice.gffove_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double, c_double, c_double,  c_double, c_bool, c_bool, c_double, c_bool, None,  c_char_p, c_char_p, c_double, c_double, c_double,  c_bool, c_bool, None, None]
+# libspice.gffove_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double, c_double, c_double,  c_double, c_bool, c_bool, c_double, c_bool, None,  c_char_p, c_char_p, c_double, c_double, c_double,  c_bool, c_bool, None, None]
 libspice.gfinth_c.argtypes = [c_int]
-#libspice.gfocce_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double, c_double, c_double, c_double, c_bool, c_bool, c_double, c_bool, None, c_char_p, c_char_p, c_double, c_double, c_double, c_bool, c_bool, None, None]
+# libspice.gfocce_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double, c_double, c_double, c_double, c_bool, c_bool, c_double, c_bool, None, c_char_p, c_char_p, c_double, c_double, c_double, c_bool, c_bool, None, None]
 libspice.gfoclt_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p,
                               c_double, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
+libspice.gfpa_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double,
+                            c_double, c_int, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
 libspice.gfposc_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double,
                               c_double, c_int, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
 libspice.gfrefn_c.argtypes = [c_double, c_double, c_bool, c_bool, POINTER(c_double)]
@@ -456,7 +458,7 @@ libspice.pcpool_c.argtypes = [c_char_p, c_int, c_int, c_void_p]
 libspice.pdpool_c.argtypes = [c_char_p, c_int, POINTER(c_double)]
 libspice.pipool_c.argtypes = [c_char_p, c_int, POINTER(c_int)]
 libspice.pgrrec_c.argtypes = [c_char_p, c_double, c_double, c_double, c_double, c_double, (c_double * 3)]
-libspice.phaseq_c.argtypes = [c_int, c_char_p, c_char_p, c_char_p, c_char_p]
+libspice.phaseq_c.argtypes = [c_double, c_char_p, c_char_p, c_char_p, c_char_p]
 libspice.phaseq_c.restype = c_double
 libspice.pi_c.restype = c_double
 libspice.pjelpl_c.argtypes = [POINTER(stypes.Ellipse), POINTER(stypes.Plane), POINTER(stypes.Ellipse)]

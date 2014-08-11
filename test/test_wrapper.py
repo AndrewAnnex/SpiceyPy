@@ -642,7 +642,7 @@ def test_dafgs():
 
 def test_dafgsstress():
     # this is to show that memory issue with dafgs is fixed.
-    for i in range(1000):
+    for i in range(500):
         test_dafgs()
 
 
@@ -816,7 +816,40 @@ def test_dsphdr():
 
 
 def test_dtpool():
-    assert 1
+    spice.kclear()
+    lmpoolNames = ['DELTET/DELTA_T_A', 'DELTET/K', 'DELTET/EB', 'DELTET/M', 'DELTET/DELTA_AT']
+    lmpoolLens = [1, 1, 1, 2, 46]
+    textbuf = ['DELTET/DELTA_T_A = 32.184', 'DELTET/K = 1.657D-3', 'DELTET/EB  = 1.671D-2',
+               'DELTET/M = ( 6.239996 1.99096871D-7 )', 'DELTET/DELTA_AT = ( 10, @1972-JAN-1',
+               '                     11, @1972-JUL-1',
+               '                     12, @1973-JAN-1',
+               '                     13, @1974-JAN-1',
+               '                     14, @1975-JAN-1',
+               '                     15, @1976-JAN-1',
+               '                     16, @1977-JAN-1',
+               '                     17, @1978-JAN-1',
+               '                     18, @1979-JAN-1',
+               '                     19, @1980-JAN-1',
+               '                     20, @1981-JUL-1',
+               '                     21, @1982-JUL-1',
+               '                     22, @1983-JUL-1',
+               '                     23, @1985-JUL-1',
+               '                     24, @1988-JAN-1',
+               '                     25, @1990-JAN-1',
+               '                     26, @1991-JAN-1',
+               '                     27, @1992-JUL-1',
+               '                     28, @1993-JUL-1',
+               '                     29, @1994-JUL-1',
+               '                     30, @1996-JAN-1',
+               '                     31, @1997-JUL-1',
+               '                     32, @1999-JAN-1 )']
+    spice.lmpool(textbuf)
+    for var, expectLen in zip(lmpoolNames, lmpoolLens):
+        found, n, vartype = spice.dtpool(var)
+        assert found
+        assert expectLen == n
+        assert vartype == 'N'
+    spice.kclear()
 
 
 def test_ducrss():
@@ -1162,7 +1195,16 @@ def test_esrchc():
 
 
 def test_et2lst():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et("2014 may 17 16:30:00")
+    hr, mn, sc, time, ampm = spice.et2lst(et, 399, 281.49521300000004 * spice.rpd(), "planetocentric", 51, 51)
+    assert hr == 11
+    assert mn == 19
+    assert sc == 20
+    assert time == "11:19:20"
+    assert ampm == '11:19:20 A.M.'
+    spice.kclear()
 
 
 def test_et2utc():
@@ -1175,11 +1217,14 @@ def test_et2utc():
 
 
 def test_etcal():
-    assert 1
+    et = np.arange(0, 20)
+    cal = spice.etcal(et[0], 51)
+    assert cal == '2000 JAN 01 12:00:00.000'
 
 
 def test_eul2m():
-    assert 1
+    rot = np.array(spice.eul2m(spice.halfpi(), 0.0, 0.0, 3, 1, 1))
+    assert rot.shape == ((3, 3))
 
 
 def test_eul2xf():
@@ -1191,7 +1236,18 @@ def test_exists():
 
 
 def test_expool():
-    assert 1
+    spice.kclear()
+    textbuf = ['DELTET/K = 1.657D-3', 'DELTET/EB = 1.671D-2']
+    spice.lmpool(textbuf)
+    assert spice.expool('DELTET/K')
+    assert spice.expool('DELTET/EB')
+    spice.kclear()
+
+
+def test_expoolstress():
+    # this is to show that the bug in lmpool is fixed (lenvals needs +=1)
+    for i in range(500):
+        test_expool()
 
 
 def test_failed():
@@ -1309,6 +1365,46 @@ def test_gfocce():
 
 def test_gfoclt():
     assert 1
+
+
+def test_gfpa():
+    relate = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
+    expected = {"=": ["2006-DEC-02 13:31:34.414", "2006-DEC-02 13:31:34.414", "2006-DEC-07 14:07:55.470",
+                      "2006-DEC-07 14:07:55.470", "2006-DEC-31 23:59:59.997", "2006-DEC-31 23:59:59.997",
+                      "2007-JAN-06 08:16:25.512", "2007-JAN-06 08:16:25.512", "2007-JAN-30 11:41:32.557",
+                      "2007-JAN-30 11:41:32.557"],
+                "<": ["2006-DEC-02 13:31:34.414", "2006-DEC-07 14:07:55.470", "2006-DEC-31 23:59:59.997",
+                      "2007-JAN-06 08:16:25.512", "2007-JAN-30 11:41:32.557", "2007-JAN-31 00:00:00.000"],
+                ">": ["2006-DEC-01 00:00:00.000", "2006-DEC-02 13:31:34.414", "2006-DEC-07 14:07:55.470",
+                      "2006-DEC-31 23:59:59.997", "2007-JAN-06 08:16:25.512", "2007-JAN-30 11:41:32.557"],
+                "LOCMIN": ["2006-DEC-05 00:16:50.317", "2006-DEC-05 00:16:50.317",
+                           "2007-JAN-03 14:18:31.977", "2007-JAN-03 14:18:31.977"],
+                "ABSMIN": ["2007-JAN-03 14:18:31.977", "2007-JAN-03 14:18:31.977"],
+                "LOCMAX": ["2006-DEC-20 14:09:10.392", "2006-DEC-20 14:09:10.392",
+                           "2007-JAN-19 04:27:54.600", "2007-JAN-19 04:27:54.600"],
+                "ABSMAX": ["2007-JAN-19 04:27:54.600", "2007-JAN-19 04:27:54.600"]
+    }
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et0 = spice.str2et('2006 DEC 01')
+    et1 = spice.str2et('2007 JAN 31')
+    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    spice.wninsd(et0, et1, cnfine)
+    result = spice.stypes.SPICEDOUBLE_CELL(10000)
+    for relation in relate:
+        spice.gfpa("Moon", "Sun", "LT+S", "Earth", relation, 0.57598845,
+                   0.0, spice.spd(), 5000, cnfine, result)
+        count = spice.wncard(result)
+        if count > 0:
+            tempResults = []
+            for i in range(0, count):
+                left, right = spice.wnfetd(result, i)
+                timstrLeft = spice.timout(left, 'YYYY-MON-DD HR:MN:SC.###', 41)
+                timstrRight = spice.timout(right, 'YYYY-MON-DD HR:MN:SC.###', 41)
+                tempResults.append(timstrLeft)
+                tempResults.append(timstrRight)
+            assert tempResults == expected.get(relation)
+    spice.kclear()
 
 
 def test_gfposc():
@@ -1673,6 +1769,12 @@ def test_lmpool():
         assert expectLen == n
         assert vartype == 'N'
     spice.kclear()
+
+
+def test_lmpoolstress():
+    # occasional crash in lmpool believed to be caused by lenvals not being +=1'ed for end of line.
+    for i in range(500):
+        test_lmpool()
 
 
 def test_lparse():
@@ -2182,7 +2284,37 @@ def test_pgrrec():
 
 
 def test_phaseq():
-    assert 1
+    relate = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
+    expected = {"=": [0.575988450, 0.575988450, 0.575988450, 0.575988450, 0.575988450,
+                      0.575988450, 0.575988450, 0.575988450, 0.575988450, 0.575988450],
+                "<": [0.575988450, 0.575988450, 0.575988450, 0.575988450, 0.575988450, 0.468279091],
+                ">": [0.940714974, 0.575988450, 0.575988450, 0.575988450, 0.575988450, 0.575988450],
+                "LOCMIN": [0.086121423, 0.086121423, 0.079899769, 0.079899769],
+                "ABSMIN": [0.079899769, 0.079899769],
+                "LOCMAX": [3.055062862, 3.055062862, 3.074603891, 3.074603891],
+                "ABSMAX": [3.074603891, 3.074603891]
+    }
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et0 = spice.str2et('2006 DEC 01')
+    et1 = spice.str2et('2007 JAN 31')
+    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    spice.wninsd(et0, et1, cnfine)
+    result = spice.stypes.SPICEDOUBLE_CELL(10000)
+    for relation in relate:
+        spice.gfpa("Moon", "Sun", "LT+S", "Earth", relation, 0.57598845,
+                   0.0, spice.spd(), 5000, cnfine, result)
+        count = spice.wncard(result)
+        if count > 0:
+            tempResults = []
+            for i in range(0, count):
+                start, stop = spice.wnfetd(result, i)
+                startPhase = spice.phaseq(start, "moon", "sun", "earth", "lt+s")
+                stopPhase = spice.phaseq(stop, "moon", "sun", "earth", "lt+s")
+                tempResults.append(startPhase)
+                tempResults.append(stopPhase)
+            npt.assert_array_almost_equal(tempResults, expected.get(relation))
+    spice.kclear()
 
 
 def test_pi():
@@ -2963,7 +3095,15 @@ def test_spkpos():
 
 
 def test_spkpvn():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et("2012 APR 27 00:00:00.000 TDB")
+    handle, descr, ident = spice.spksfs(5, et, 41)
+    refid, state, center = spice.spkpvn(handle, descr, et)
+    expected_state = [464528993.98216486, 541513126.156852, 220785135.6246294,
+                      -10.38685648307655, 7.953247007137424, 3.661858354313065]
+    npt.assert_array_almost_equal(expected_state, state)
+    spice.kclear()
 
 
 def test_spkssb():
@@ -3404,11 +3544,11 @@ def test_subsol():
 
 
 def test_sumad():
-    assert 1
+    assert spice.sumad([1.0, 2.0, 3.0]) == 6.0
 
 
 def test_sumai():
-    assert 1
+    assert spice.sumai([1, 2, 3]) == 6
 
 
 def test_surfnm():

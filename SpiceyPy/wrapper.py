@@ -1101,11 +1101,11 @@ def ekbseg(handle, tabnam, ncols, cnames, decls, **kwargs):
     if 'cnmlen' in kwargs:
         cnmlen = kwargs['cnmlen']
     else:
-        cnmlen = len(max(cnames, key=len))
+        cnmlen = len(max(cnames, key=len)) + 1
     if 'declen' in kwargs:
         declen = kwargs['declen']
     else:
-        declen = len(max(decls, key=len))
+        declen = len(max(decls, key=len)) + 1
     handle = ctypes.c_int(handle)
     tabnam = stypes.stringToCharP(tabnam)
     ncols = ctypes.c_int(ncols)
@@ -1538,7 +1538,7 @@ def et2lst(et, body, lon, typein, timlen, ampmlen):
     sc = ctypes.c_int()
     time = stypes.stringToCharP(timlen)
     ampm = stypes.stringToCharP(ampmlen)
-    libspice.et2lst(et, body, lon, typein, timlen, ampmlen,
+    libspice.et2lst_c(et, body, lon, typein, timlen, ampmlen,
                     ctypes.byref(hr), ctypes.byref(mn), ctypes.byref(sc), time, ampm)
     return hr.value, mn.value, sc.value, stypes.toPythonString(time), stypes.toPythonString(ampm)
 
@@ -1554,7 +1554,6 @@ def et2utc(et, formatStr, prec, lenout):
 
 
 def etcal(et, lenout):
-    #Todo: test etcal
     et = ctypes.c_double(et)
     lenout = ctypes.c_int(lenout)
     string = stypes.stringToCharP(lenout)
@@ -1596,7 +1595,7 @@ def expool(name):
     #Todo: test expool
     name = stypes.stringToCharP(name)
     found = ctypes.c_bool()
-    libspice.expool_c(name, found)
+    libspice.expool_c(name, ctypes.byref(found))
     return found.value
 
 
@@ -1837,7 +1836,24 @@ def gfoclt_c(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr
     return cnfine, result
 
 
-# gfpa
+def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine, result):
+    # Todo: test gfpa
+    assert isinstance(cnfine, stypes.SpiceCell)
+    assert cnfine.is_double()
+    assert isinstance(result, stypes.SpiceCell)
+    assert result.is_double()
+    target = stypes.stringToCharP(target)
+    illmin = stypes.stringToCharP(illmin)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    relate = stypes.stringToCharP(relate)
+    refval = ctypes.c_double(refval)
+    adjust = ctypes.c_double(adjust)
+    step = ctypes.c_double(step)
+    nintvals = ctypes.c_int(nintvals)
+    libspice.gfpa_c(target, illmin, abcorr, obsrvr, relate, refval,
+                    adjust, step, nintvals, ctypes.byref(cnfine), ctypes.byref(result))
+    pass
 
 
 def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval, adjust, step, nintvals, cnfine):
@@ -2411,7 +2427,7 @@ def ldpool(filename):
 
 
 def lmpool(cvals):
-    lenvals = ctypes.c_int(len(max(cvals, key=len)))
+    lenvals = ctypes.c_int(len(max(cvals, key=len)) + 1)
     n = ctypes.c_int(len(cvals))
     cvals = stypes.listToCharArrayPtr(cvals, xLen=lenvals, yLen=n)
     libspice.lmpool_c(cvals, lenvals, n)
@@ -2856,7 +2872,7 @@ def orderc(array, ndim=None):
         ndim = ctypes.c_int(len(array))
     else:
         ndim = ctypes.c_int(ndim)
-    lenvals = ctypes.c_int(len(max(array, key=len)))
+    lenvals = ctypes.c_int(len(max(array, key=len)) + 1)
     iorder = stypes.emptyIntVector(ndim)
     array = stypes.listToCharArray(array, lenvals, ndim)
     libspice.orderc_c(lenvals, array, ndim, iorder)
@@ -2936,7 +2952,7 @@ def pckuof(handle):
 
 def pcpool(name, cvals):
     name = stypes.stringToCharP(name)
-    lenvals = ctypes.c_int(len(max(cvals, key=len)))
+    lenvals = ctypes.c_int(len(max(cvals, key=len)) + 1)
     n = ctypes.c_int(len(cvals))
     cvals = stypes.listToCharArray(cvals, lenvals, n)
     libspice.pcpool_c(name, n, lenvals, cvals)
@@ -4305,15 +4321,15 @@ def subsol(method, target, et, abcorr, obsrvr):
     return stypes.vectorToList(spoint)
 
 
-def sumad(array, n):
+def sumad(array):
+    n = ctypes.c_int(len(array))
     array = stypes.toDoubleVector(array)
-    n = ctypes.c_int(n)
     return libspice.sumad_c(array, n)
 
 
-def sumai(array, n):
+def sumai(array):
+    n = ctypes.c_int(len(array))
     array = stypes.toIntVector(array)
-    n = ctypes.c_int(n)
     return libspice.sumai_c(array, n)
 
 
