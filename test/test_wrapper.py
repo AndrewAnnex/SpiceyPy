@@ -853,11 +853,33 @@ def test_dtpool():
 
 
 def test_ducrss():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    z_earth = [0.0, 0.0, 1.0, 0.0, 0.0, 0.0]
+    et = spice.str2et("Jan 1, 2009")
+    trans = spice.sxfrom("IAU_EARTH", "J2000", et)
+    z_j2000 = np.dot(np.array(trans), np.array(z_earth))
+    state, ltime = spice.spkezr("Sun", et, "J2000", "LT+S", "Earth")
+    z_new = spice.ducrss(state, z_j2000)
+    z_expected = [-0.9798625180326394, -0.1996715076226282, 0.0008572038510904833,
+                  4.453114222872359e-08, -2.1853106962531453e-07, -3.6140021238340607e-11]
+    npt.assert_array_almost_equal(z_new, z_expected)
+    spice.kclear()
 
 
 def test_dvcrss():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    z_earth = [0.0, 0.0, 1.0, 0.0, 0.0, 0.0]
+    et = spice.str2et("Jan 1, 2009")
+    trans = spice.sxfrom("IAU_EARTH", "J2000", et)
+    z_j2000 = np.dot(np.array(trans), np.array(z_earth))
+    state, ltime = spice.spkezr("Sun", et, "J2000", "LT+S", "Earth")
+    z = spice.dvcrss(state, z_j2000)
+    spice.kclear()
+    expected = [-132672690.30582438, -27035380.582678422, 116064.79375599445,
+                5.12510707364564, -29.773241559425408, -0.00410216479731787]
+    npt.assert_almost_equal(z, expected)
 
 
 def test_dvdot():
@@ -865,7 +887,15 @@ def test_dvdot():
 
 
 def test_dvhat():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et("Jan 1, 2009")
+    state, ltime = spice.spkezr("Sun", et, "J2000", "LT+S", "Earth")
+    x_new = spice.dvhat(state)
+    spice.kclear()
+    expected = [0.1834466376334262, -0.9019196633282948, -0.39100927360200305,
+                2.0244976750658316e-07, 3.4660106111045445e-08, 1.5033141925267006e-08]
+    npt.assert_array_almost_equal(expected, x_new)
 
 
 def test_dvnorm():
@@ -1191,7 +1221,12 @@ def test_errprt():
 
 
 def test_esrchc():
-    assert 1
+    array = ["This", "is", "a", "test"]
+    assert spice.esrchc("This", array) == 0
+    assert spice.esrchc("is", array) == 1
+    assert spice.esrchc("a", array) == 2
+    assert spice.esrchc("test", array) == 3
+    assert spice.esrchc("fail", array) == -1
 
 
 def test_et2lst():
@@ -1251,19 +1286,35 @@ def test_expoolstress():
 
 
 def test_failed():
+    assert not spice.failed()
+
+
+def test_fovray():
+    assert 1
+
+
+def test_fovtrg():
     assert 1
 
 
 def test_frame():
-    assert 1
+    vec = [23.0, -3.0, 18.0]
+    x, y, z = spice.frame(vec)
+    expected_x = [0.78338311, -0.10218041, 0.61308243]
+    expected_y = [0.61630826, 0.0000000, -0.78750500]
+    expected_z = [0.080467580, 0.99476588, 0.062974628]
+    npt.assert_array_almost_equal(expected_x, x)
+    npt.assert_array_almost_equal(expected_y, y)
+    npt.assert_array_almost_equal(expected_z, z)
 
 
 def test_frinfo():
-    assert 1
+    assert spice.frinfo(13000) == (399, 2, 3000, True)
 
 
 def test_frmnam():
-    assert 1
+    assert spice.frmnam(13000, 30) == "ITRF93"
+    assert spice.frmnam(13000) == "ITRF93"
 
 
 def test_ftncls():
@@ -1784,7 +1835,9 @@ def test_lparse():
 
 
 def test_lparsm():
-    assert 1
+    stringtest = "  A number of words   separated   by spaces   "
+    items = spice.lparsm(stringtest, " ", 20, lenout=20)
+    assert items == ['A', 'number', 'of', 'words', 'separated', 'by', 'spaces']
 
 
 def test_lparss():

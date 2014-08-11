@@ -1517,12 +1517,11 @@ def errprt(op, lenout, inlist):
     return stypes.toPythonString(inlistptr)
 
 
-def esrchc(value, ndim, lenvals, array):
-    #Todo: test esrchc
+def esrchc(value, array):
     value = stypes.stringToCharP(value)
-    array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=ndim)
-    ndim = ctypes.c_int(ndim)
-    lenvals = ctypes.c_int(lenvals)
+    ndim = ctypes.c_int(len(array))
+    lenvals = ctypes.c_int(len(max(array, key=len)) + 1)
+    array = stypes.listToCharArray(array, xLen=lenvals, yLen=ndim)
     return libspice.esrchc_c(value, ndim, lenvals, array)
 
 
@@ -1654,7 +1653,7 @@ def frinfo(frcode):
     return cent.value, frclss.value, clssid.value, found.value
 
 
-def frmnam(frcode, lenout):
+def frmnam(frcode, lenout=125):
     #Todo: test frmnam
     frcode = ctypes.c_int(frcode)
     lenout = ctypes.c_int(lenout)
@@ -2454,7 +2453,7 @@ def lparsm(inlist, delims, nmax, lenout=None):
     nmax = ctypes.c_int(nmax)
     n = ctypes.c_int()
     libspice.lparsm_c(inlist, delims, nmax, lenout, ctypes.byref(n), items)
-    return [stypes.toPythonString(x.value) for x in items]
+    return [stypes.toPythonString(x.value) for x in items][0:n.value]
 
 
 def lparss(inlist, delims, NMAX=20, LENGTH=50):
@@ -4382,7 +4381,6 @@ def swpool(agent, nnames, lenvals, names):
 
 
 def sxfrom(instring, tostring, et):
-    #Todo: test sxform
     instring = stypes.stringToCharP(instring)
     tostring = stypes.stringToCharP(tostring)
     et = ctypes.c_double(et)
