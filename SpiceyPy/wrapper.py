@@ -19,15 +19,23 @@ def appndc(item, cell):
 
 def appndd(item, cell):
     assert isinstance(cell, stypes.SpiceCell)
-    item = ctypes.c_double(item)
-    libspice.appndd_c(item, cell)
+    if hasattr(item, "__iter__"):
+        for d in item:
+            libspice.appndd(ctypes.c_double(d), cell)
+    else:
+        item = ctypes.c_double(item)
+        libspice.appndd_c(item, cell)
     pass
 
 
 def appndi(item, cell):
     assert isinstance(cell, stypes.SpiceCell)
-    item = ctypes.c_int(item)
-    libspice.appndi_c(item, cell)
+    if hasattr(item, "__iter__"):
+        for i in item:
+            libspice.appndi_c(ctypes.c_int(i), cell)
+    else:
+        item = ctypes.c_int(item)
+        libspice.appndi_c(item, cell)
     pass
 
 
@@ -1778,10 +1786,11 @@ def gfclrh():
     pass
 
 
-def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls, cnfine):
-    #Todo: test gfdist
+def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls, cnfine, result):
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
+    assert isinstance(result, stypes.SpiceCell)
+    assert result.is_double()
     target = stypes.stringToCharP(target)
     abcorr = stypes.stringToCharP(abcorr)
     obsrvr = stypes.stringToCharP(obsrvr)
@@ -1790,10 +1799,8 @@ def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls, cnfine
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
     nintvls = ctypes.c_int(nintvls)
-    result = stypes.SPICEDOUBLE_CELL(cnfine.size)
     libspice.gfdist_c(target, abcorr, obsrvr, relate, refval, adjust,
                       step, nintvls, ctypes.byref(cnfine), ctypes.byref(result))
-    return cnfine, result
 
 
 #gdevnt  callbacks? cells
@@ -1815,10 +1822,11 @@ def gfinth(sigcode):
 #gfocce  callbacks? cells
 
 
-def gfoclt_c(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr, step, cnfine):
-    #Todo: test gfoclt
+def gfoclt(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr, step, cnfine, result):
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
+    assert isinstance(result, stypes.SpiceCell)
+    assert result.is_double()
     occtyp = stypes.stringToCharP(occtyp)
     front = stypes.stringToCharP(front)
     fshape = stypes.stringToCharP(fshape)
@@ -1829,14 +1837,11 @@ def gfoclt_c(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr
     abcorr = stypes.stringToCharP(abcorr)
     obsrvr = stypes.stringToCharP(obsrvr)
     step = ctypes.c_double(step)
-    result = stypes.SPICEDOUBLE_CELL(cnfine.size)
     libspice.gfoclt_c(occtyp, front, fshape, fframe, back, bshape, bframe,
                       abcorr, obsrvr, step, ctypes.byref(cnfine), ctypes.byref(result))
-    return cnfine, result
 
 
 def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine, result):
-    # Todo: test gfpa
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
     assert isinstance(result, stypes.SpiceCell)
@@ -1855,10 +1860,11 @@ def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals,
     pass
 
 
-def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval, adjust, step, nintvals, cnfine):
-    #Todo: test gfposc
+def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval, adjust, step, nintvals, cnfine, result):
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
+    assert isinstance(result, stypes.SpiceCell)
+    assert result.is_double()
     target = stypes.stringToCharP(target)
     inframe = stypes.stringToCharP(inframe)
     abcorr = stypes.stringToCharP(abcorr)
@@ -1870,10 +1876,9 @@ def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval, adjus
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
     nintvals = ctypes.c_int(nintvals)
-    result = stypes.SPICEDOUBLE_CELL(cnfine.size)
     libspice.gfposc_c(target, inframe, abcorr, obsrvr, crdsys, coord,
                       relate, refval, adjust, step, nintvals, ctypes.byref(cnfine), ctypes.byref(result))
-    return cnfine, result
+    pass
 
 
 def gfrefn(t1, t2, s1, s2):
@@ -1912,25 +1917,26 @@ def gfrepu(ivbeg, ivend, time):
     pass
 
 
-def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine):
+def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result):
     #Todo: test gfrfov
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
+    assert isinstance(result, stypes.SpiceCell)
+    assert result.is_double()
     inst = stypes.stringToCharP(inst)
     raydir = stypes.toDoubleVector(raydir)
     rframe = stypes.stringToCharP(rframe)
     abcorr = stypes.stringToCharP(abcorr)
     obsrvr = stypes.stringToCharP(obsrvr)
     step = ctypes.c_double(step)
-    result = stypes.SPICEDOUBLE_CELL(cnfine.size)
     libspice.gfrfov_c(inst, raydir, rframe, abcorr, obsrvr, step, ctypes.byref(cnfine), ctypes.byref(result))
-    return cnfine, result
 
 
-def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine):
-    #Todo: test gfrr
+def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine, result):
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
+    assert isinstance(result, stypes.SpiceCell)
+    assert result.is_double()
     target = stypes.stringToCharP(target)
     abcorr = stypes.stringToCharP(abcorr)
     obsrvr = stypes.stringToCharP(obsrvr)
@@ -1939,16 +1945,15 @@ def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
     nintvals = ctypes.c_int(nintvals)
-    result = stypes.SPICEDOUBLE_CELL(cnfine.size)
     libspice.gfrr_c(target, abcorr, obsrvr, relate, refval,
                     adjust, step, nintvals, ctypes.byref(cnfine), ctypes.byref(result))
-    return cnfine, result
 
 
-def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine):
-    #Todo: test gfsep
+def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine, result):
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
+    assert isinstance(result, stypes.SpiceCell)
+    assert result.is_double()
     targ1 = stypes.stringToCharP(targ1)
     shape1 = stypes.stringToCharP(shape1)
     inframe1 = stypes.stringToCharP(inframe1)
@@ -1962,11 +1967,9 @@ def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr, rela
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
     nintvals = ctypes.c_int(nintvals)
-    result = stypes.SPICEDOUBLE_CELL(cnfine.size)
     libspice.gfsep_c(targ1, shape1, inframe1, targ2, shape2, inframe2,
                      abcorr, obsrvr, relate, refval, adjust, step, nintvals,
                      ctypes.byref(cnfine), ctypes.byref(result))
-    return cnfine, result
 
 
 def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord, relate, refval, adjust, step, nintvals, cnfine):
@@ -2199,17 +2202,16 @@ def insrti(item, inset):
 
 
 def inter(a, b):
-    #Todo: test inter, this cell handleing may work for copy.
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
     assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     if a.dtype is 0:
-        c = stypes.SPICECHAR_CELL(a.size, a.length)
+        c = stypes.SPICECHAR_CELL(max(a.size, b.size), max(a.length, b.length))
     if a.dtype is 1:
-        c = stypes.SPICEDOUBLE_CELL(a.size)
+        c = stypes.SPICEDOUBLE_CELL(max(a.size, b.size))
     elif a.dtype is 2:
-        c = stypes.SPICEINT_CELL(a.size)
+        c = stypes.SPICEINT_CELL(max(a.size, b.size))
     else:
         raise NotImplementedError
     libspice.inter_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
@@ -2935,7 +2937,6 @@ def pckfrm(pck, ids=None):
 
 
 def pcklof(filename):
-    #Todo: test pcklof
     filename = stypes.stringToCharP(filename)
     handle = ctypes.c_int()
     libspice.pcklof_c(filename, ctypes.byref(handle))
@@ -2943,7 +2944,6 @@ def pcklof(filename):
 
 
 def pckuof(handle):
-    #Todo: test pckuof
     handle = ctypes.c_int(handle)
     libspice.pckuof_c(handle)
     pass
@@ -3810,7 +3810,6 @@ def spkcvt(trgsta, trgepc, trgctr, trgref, et, outref, refloc, abcorr, obsrvr):
 
 
 def spkez(targ, et, ref, abcorr, obs):
-    #Todo: test spkez
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
     ref = stypes.stringToCharP(ref)
@@ -3823,7 +3822,6 @@ def spkez(targ, et, ref, abcorr, obs):
 
 
 def spkezp(targ, et, ref, abcorr, obs):
-    #Todo: test spkezp
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
     ref = stypes.stringToCharP(ref)
@@ -3836,7 +3834,6 @@ def spkezp(targ, et, ref, abcorr, obs):
 
 
 def spkezr(targ, et, ref, abcorr, obs):
-    #Todo: test spkezr
     targ = stypes.stringToCharP(targ)
     et = ctypes.c_double(et)
     ref = stypes.stringToCharP(ref)
@@ -3849,7 +3846,6 @@ def spkezr(targ, et, ref, abcorr, obs):
 
 
 def spkgeo(targ, et, ref, obs):
-    #Todo: test spkgeo
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
     ref = stypes.stringToCharP(ref)
@@ -3872,7 +3868,6 @@ def spkgps(targ, et, ref, obs):
 
 
 def spklef(filename):
-    #Todo: test spklef
     filename = stypes.stringToCharP(filename)
     handle = ctypes.c_int()
     libspice.spklef_c(filename, ctypes.byref(handle))
@@ -3880,7 +3875,6 @@ def spklef(filename):
 
 
 def spkltc(targ, et, ref, abcorr, stobs):
-    #Todo: test spkltc
     assert len(stobs) == 6
     targ = stypes.stringToCharP(targ)
     et = ctypes.c_int(et)
@@ -3938,13 +3932,7 @@ def spkpds(body, center, framestr, typenum, first, last):
 
 def spkpos(targ, et, ref, abcorr, obs):
     if hasattr(et, "__iter__"):
-        ptarg = []
-        ltimes = []
-        for time in et:
-            temp_ptarg, temp_ltime = spkpos(targ, time, ref, abcorr, obs)
-            ptarg.append(temp_ptarg)
-            ltimes.append(temp_ltime)
-        return ptarg, ltimes
+        return [spkpos(targ, t, ref, abcorr, obs) for t in et]
     targ = stypes.stringToCharP(targ)
     ref = stypes.stringToCharP(ref)
     abcorr = stypes.stringToCharP(abcorr)
@@ -4207,6 +4195,8 @@ def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel, rapol
 
 
 def srfrec(body, longitude, latitude):
+    if hasattr(longitude, "__iter__") and hasattr(latitude, "__iter__"):
+        return [srfrec(body, lon, lat) for lon, lat in zip(longitude, latitude)]
     body = ctypes.c_int(body)
     longitude = ctypes.c_double(longitude)
     latitude = ctypes.c_double(latitude)
@@ -4216,6 +4206,8 @@ def srfrec(body, longitude, latitude):
 
 
 def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
+    if hasattr(et, "__iter__"):
+        return [srfxpt(method, target, t, abcorr, obsrvr, dref, dvec) for t in et]
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
@@ -4262,8 +4254,10 @@ def stpool(item, nth, contin, lenout):
 
 
 def str2et(time):
+    if isinstance(time, list):
+        return [str2et(t) for t in time]
     time = stypes.stringToCharP(time)
-    et = ctypes.c_double(0)
+    et = ctypes.c_double()
     libspice.str2et_c(time, ctypes.byref(et))
     return et.value
 
@@ -4283,6 +4277,8 @@ def subpnt(method, target, et, fixref, abcorr, obsrvr):
 
 
 def subpt(method, target, et, abcorr, obsrvr):
+    if hasattr(et, "__iter__"):
+        return [subpt(method, target, t, abcorr, obsrvr) for t in et]
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
@@ -4380,7 +4376,9 @@ def swpool(agent, nnames, lenvals, names):
     pass
 
 
-def sxfrom(instring, tostring, et):
+def sxform(instring, tostring, et):
+    if hasattr(et, "__iter__"):
+        return [sxform(instring, tostring, t) for t in et]
     instring = stypes.stringToCharP(instring)
     tostring = stypes.stringToCharP(tostring)
     et = ctypes.c_double(et)
@@ -4418,11 +4416,12 @@ def timdef(action, item, lenout, value=None):
 
 
 def timout(et, pictur, lenout):
-    #todo: test
+    if hasattr(et, "__iter__"):
+        return [timout(t, pictur, lenout) for t in et]
     pictur = stypes.stringToCharP(pictur)
     output = stypes.stringToCharP(lenout)
-    et = ctypes.c_double(et)
     lenout = ctypes.c_int(lenout)
+    et = ctypes.c_double(et)
     libspice.timout_c(et, pictur, lenout, output)
     return stypes.toPythonString(output)
 
@@ -4561,7 +4560,7 @@ def union(a, b):
     assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     if a.dtype is 0:
         c = stypes.SPICECHAR_CELL(a.size+b.size, a.length+b.length)
-    if a.dtype is 1:
+    elif a.dtype is 1:
         c = stypes.SPICEDOUBLE_CELL(a.size+b.size)
     elif a.dtype is 2:
         c = stypes.SPICEINT_CELL(a.size+b.size)
@@ -4580,6 +4579,9 @@ def unitim(epoch, insys, outsys):
 
 
 def unload(filename):
+    if hasattr(filename, "__iter__"):
+        for f in filename:
+            libspice.unload_c(stypes.stringToCharP(f))
     filename = stypes.stringToCharP(filename)
     libspice.unload_c(filename)
     pass
