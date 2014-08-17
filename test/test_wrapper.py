@@ -8,6 +8,7 @@ import os
 cwd = os.path.realpath(os.path.dirname(__file__))
 _testKernelPath = cwd + "/testKernels.txt"
 _extraTestVoyagerKernel = cwd + "/vg200022.tsc"
+_testPckPath = cwd + "/pck00010.tpc"
 
 
 def test_appndc():
@@ -857,7 +858,7 @@ def test_ducrss():
     spice.furnsh(_testKernelPath)
     z_earth = [0.0, 0.0, 1.0, 0.0, 0.0, 0.0]
     et = spice.str2et("Jan 1, 2009")
-    trans = spice.sxfrom("IAU_EARTH", "J2000", et)
+    trans = spice.sxform("IAU_EARTH", "J2000", et)
     z_j2000 = np.dot(np.array(trans), np.array(z_earth))
     state, ltime = spice.spkezr("Sun", et, "J2000", "LT+S", "Earth")
     z_new = spice.ducrss(state, z_j2000)
@@ -872,7 +873,7 @@ def test_dvcrss():
     spice.furnsh(_testKernelPath)
     z_earth = [0.0, 0.0, 1.0, 0.0, 0.0, 0.0]
     et = spice.str2et("Jan 1, 2009")
-    trans = spice.sxfrom("IAU_EARTH", "J2000", et)
+    trans = spice.sxform("IAU_EARTH", "J2000", et)
     z_j2000 = np.dot(np.array(trans), np.array(z_earth))
     state, ltime = spice.spkezr("Sun", et, "J2000", "LT+S", "Earth")
     z = spice.dvcrss(state, z_j2000)
@@ -1395,7 +1396,29 @@ def test_gfclrh():
 
 
 def test_gfdist():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et0 = spice.str2et('2007 JAN 01 00:00:00 TDB')
+    et1 = spice.str2et('2007 APR 01 00:00:00 TDB')
+    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    spice.wninsd(et0, et1, cnfine)
+    result = spice.stypes.SPICEDOUBLE_CELL(1000)
+    spice.gfdist("moon", "none", "earth", ">", 400000, 0.0, spice.spd(), 1000, cnfine, result)
+    count = spice.wncard(result)
+    assert count == 4
+    tempResults = []
+    for i in range(0, count):
+        left, right = spice.wnfetd(result, i)
+        timstrLeft = spice.timout(left, 'YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND', 41)
+        timstrRight = spice.timout(right, 'YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND', 41)
+        tempResults.append(timstrLeft)
+        tempResults.append(timstrRight)
+    expected = ["2007-JAN-08 00:11:07.623827 (TDB)", "2007-JAN-13 06:37:47.954706 (TDB)",
+                "2007-FEB-04 07:02:35.279110 (TDB)", "2007-FEB-10 09:31:01.844110 (TDB)",
+                "2007-MAR-03 00:20:25.183640 (TDB)", "2007-MAR-10 14:04:38.497606 (TDB)",
+                "2007-MAR-29 22:53:58.147001 (TDB)", "2007-APR-01 00:00:00.000000 (TDB)"]
+    assert expected == tempResults
+    spice.kclear()
 
 
 def test_gfevnt():
@@ -1415,7 +1438,23 @@ def test_gfocce():
 
 
 def test_gfoclt():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et0 = spice.str2et('2001 DEC 01 00:00:00 TDB')
+    et1 = spice.str2et('2002 JAN 01 00:00:00 TDB')
+    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    spice.wninsd(et0, et1, cnfine)
+    result = spice.stypes.SPICEDOUBLE_CELL(1000)
+    spice.gfoclt("any", "moon", "ellipsoid", "iau_moon", "sun",
+                 "ellipsoid", "iau_sun", "lt", "earth", 180.0, cnfine, result)
+    count = spice.wncard(result)
+    assert count == 1
+    start, end = spice.wnfetd(result, 0)
+    startTime = spice.timout(start, 'YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND', 41)
+    endTime = spice.timout(end, 'YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND', 41)
+    assert startTime == "2001-DEC-14 20:10:14.195952 (TDB)"
+    assert endTime == "2001-DEC-14 21:35:50.317994 (TDB)"
+    spice.kclear()
 
 
 def test_gfpa():
@@ -1433,15 +1472,14 @@ def test_gfpa():
                 "ABSMIN": ["2007-JAN-03 14:18:31.977", "2007-JAN-03 14:18:31.977"],
                 "LOCMAX": ["2006-DEC-20 14:09:10.392", "2006-DEC-20 14:09:10.392",
                            "2007-JAN-19 04:27:54.600", "2007-JAN-19 04:27:54.600"],
-                "ABSMAX": ["2007-JAN-19 04:27:54.600", "2007-JAN-19 04:27:54.600"]
-    }
+                "ABSMAX": ["2007-JAN-19 04:27:54.600", "2007-JAN-19 04:27:54.600"]}
     spice.kclear()
     spice.furnsh(_testKernelPath)
     et0 = spice.str2et('2006 DEC 01')
     et1 = spice.str2et('2007 JAN 31')
     cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
     spice.wninsd(et0, et1, cnfine)
-    result = spice.stypes.SPICEDOUBLE_CELL(10000)
+    result = spice.stypes.SPICEDOUBLE_CELL(2000)
     for relation in relate:
         spice.gfpa("Moon", "Sun", "LT+S", "Earth", relation, 0.57598845,
                    0.0, spice.spd(), 5000, cnfine, result)
@@ -1459,7 +1497,23 @@ def test_gfpa():
 
 
 def test_gfposc():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et0 = spice.str2et('2007 JAN 01')
+    et1 = spice.str2et('2008 JAN 01')
+    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    spice.wninsd(et0, et1, cnfine)
+    result = spice.stypes.SPICEDOUBLE_CELL(1000)
+    spice.gfposc("sun", "iau_earth", "none", "earth", "latitudinal", "latitude",
+                 "absmax", 0.0, 0.0, 90.0 * spice.spd(), 1000, cnfine, result)
+    count = spice.wncard(result)
+    assert count == 1
+    start, end = spice.wnfetd(result, 0)
+    startTime = spice.timout(start, 'YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND', 41)
+    endTime = spice.timout(end, 'YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND', 41)
+    assert startTime == endTime
+    assert startTime == "2007-JUN-21 17:54:13.172475 (TDB)"
+    spice.kclear()
 
 
 def test_gfrefn():
@@ -1483,11 +1537,72 @@ def test_gfrfov():
 
 
 def test_gfrr():
-    assert 1
+    relate = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
+    expected = {"=": ["2007-JAN-02 00:35:19.571", "2007-JAN-02 00:35:19.571", "2007-JAN-19 22:04:54.897",
+                      "2007-JAN-19 22:04:54.897", "2007-FEB-01 23:30:13.427", "2007-FEB-01 23:30:13.427",
+                      "2007-FEB-17 11:10:46.538", "2007-FEB-17 11:10:46.538", "2007-MAR-04 15:50:19.929",
+                      "2007-MAR-04 15:50:19.929", "2007-MAR-18 09:59:05.957", "2007-MAR-18 09:59:05.957"],
+                "<": ["2007-JAN-02 00:35:19.571", "2007-JAN-19 22:04:54.897", "2007-FEB-01 23:30:13.427",
+                      "2007-FEB-17 11:10:46.538", "2007-MAR-04 15:50:19.929", "2007-MAR-18 09:59:05.957"],
+                ">": ["2007-JAN-01 00:00:00.000", "2007-JAN-02 00:35:19.571", "2007-JAN-19 22:04:54.897",
+                      "2007-FEB-01 23:30:13.427", "2007-FEB-17 11:10:46.538", "2007-MAR-04 15:50:19.929",
+                      "2007-MAR-18 09:59:05.957", "2007-APR-01 00:00:00.000"],
+                "LOCMIN": ["2007-JAN-11 07:03:58.991", "2007-JAN-11 07:03:58.991",
+                           "2007-FEB-10 06:26:15.441", "2007-FEB-10 06:26:15.441",
+                           "2007-MAR-12 03:28:36.404", "2007-MAR-12 03:28:36.404"],
+                "ABSMIN": ["2007-JAN-11 07:03:58.991", "2007-JAN-11 07:03:58.991"],
+                "LOCMAX": ["2007-JAN-26 02:27:33.762", "2007-JAN-26 02:27:33.762",
+                           "2007-FEB-24 09:35:07.812", "2007-FEB-24 09:35:07.812",
+                           "2007-MAR-25 17:26:56.148", "2007-MAR-25 17:26:56.148"],
+                "ABSMAX": ["2007-MAR-25 17:26:56.148", "2007-MAR-25 17:26:56.148"]}
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et0 = spice.str2et('2007 JAN 01')
+    et1 = spice.str2et('2007 APR 01')
+    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    spice.wninsd(et0, et1, cnfine)
+    for relation in relate:
+        result = spice.stypes.SPICEDOUBLE_CELL(2000)
+        spice.gfrr("moon", "none", "sun", relation, 0.3365, 0.0, spice.spd(), 2000, cnfine, result)
+        count = spice.wncard(result)
+        if count > 0:
+            tempResults = []
+            for i in range(0, count):
+                left, right = spice.wnfetd(result, i)
+                timstrLeft = spice.timout(left, 'YYYY-MON-DD HR:MN:SC.###', 41)
+                timstrRight = spice.timout(right, 'YYYY-MON-DD HR:MN:SC.###', 41)
+                tempResults.append(timstrLeft)
+                tempResults.append(timstrRight)
+            assert tempResults == expected.get(relation)
+    spice.kclear()
 
 
 def test_gfsep():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    expected = ["2007-JAN-03 14:20:24.617627 (TDB)", "2007-FEB-02 06:16:24.101517 (TDB)",
+                "2007-MAR-03 23:22:41.994972 (TDB)", "2007-APR-02 16:49:16.135505 (TDB)",
+                "2007-MAY-02 09:41:43.830081 (TDB)", "2007-JUN-01 01:03:44.527470 (TDB)",
+                "2007-JUN-30 14:15:26.576292 (TDB)", "2007-JUL-30 01:14:49.000963 (TDB)",
+                "2007-AUG-28 10:39:01.388249 (TDB)", "2007-SEP-26 19:25:51.509426 (TDB)",
+                "2007-OCT-26 04:30:56.625105 (TDB)", "2007-NOV-24 14:31:04.331185 (TDB)",
+                "2007-DEC-24 01:40:12.235392 (TDB)"]
+    et0 = spice.str2et('2007 JAN 01')
+    et1 = spice.str2et('2008 JAN 01')
+    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    spice.wninsd(et0, et1, cnfine)
+    result = spice.stypes.SPICEDOUBLE_CELL(2000)
+    spice.gfsep("MOON", "SPHERE", "NULL", "SUN", "SPHERE", "NULL", "NONE", "EARTH",
+                "LOCMAX", 0.0, 0.0, 6.0 * spice.spd(), 1000, cnfine, result)
+    count = spice.wncard(result)
+    assert count == 13
+    tempResults = []
+    for i in range(0, count):
+        start, end = spice.wnfetd(result, i)
+        assert start == end
+        tempResults.append(spice.timout(start, 'YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND', 41))
+    assert tempResults == expected
+    spice.kclear()
 
 
 def test_gfsntc():
@@ -1499,6 +1614,10 @@ def test_gfsstp():
 
 
 def test_gfstep():
+    assert 1
+
+
+def test_gfstol():
     assert 1
 
 
@@ -1645,7 +1764,14 @@ def test_insrti():
 
 
 def test_inter():
-    assert 1
+    testCellOne = spice.stypes.SPICEINT_CELL(8)
+    testCellTwo = spice.stypes.SPICEINT_CELL(8)
+    spice.insrti(1, testCellOne)
+    spice.insrti(2, testCellOne)
+    spice.insrti(1, testCellTwo)
+    spice.insrti(3, testCellTwo)
+    outCell = spice.inter(testCellOne, testCellTwo)
+    assert [x for x in outCell] == [1]
 
 
 def test_intmax():
@@ -3638,11 +3764,25 @@ def test_sxform():
     f = (equatr - polar) / equatr
     estate = spice.georec(lon, lat, alt, equatr, f)
     estate += [0.0, 0.0, 0.0]
-    xform = np.array(spice.sxfrom('IAU_EARTH', 'J2000', et))
+    xform = np.array(spice.sxform('IAU_EARTH', 'J2000', et))
     spice.kclear()
     jstate = np.dot(xform, estate)
     expected = np.array([-4131.45969, -3308.36805, 3547.02462, 0.241249619, -0.301019201, 0.000234215666])
     npt.assert_array_almost_equal(jstate, expected, decimal=4)
+
+
+def test_sxform_vectorized():
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    utc1 = 'January 1, 1990'
+    utc2 = 'January 1, 2010'
+    et1 = spice.str2et(utc1)
+    et2 = spice.str2et(utc2)
+    step = (et2 - et1) / 240.0
+    et = np.arange(240) * step + et1
+    xform = spice.sxform('IAU_EARTH', 'J2000', et)
+    assert len(xform) == 240
+    spice.kclear()
 
 
 def test_szpool():
@@ -3670,6 +3810,23 @@ def test_timout():
     et = 188745364.0
     out = spice.timout(et, pic, lenout)
     assert out == "Sat Dec 24 18:14:59 PDT 2005"
+    spice.kclear()
+
+
+def test_timout_vectorized():
+    sample = 'Thu Oct 1 11:11:11 PDT 1111'
+    lenout = len(sample) + 2
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    pic, ok, err = spice.tpictr(sample, 64, 60)
+    assert ok
+    et = np.array(np.arange(5) * 10000) + 188745364.0
+    out = list(spice.timout(et, pic, lenout))
+    expected = ["Sat Dec 24 18:14:59 PDT 2005", "Sat Dec 24 21:01:39 PDT 2005",
+                "Sat Dec 24 23:48:19 PDT 2005", "Sun Dec 25 02:34:59 PDT 2005",
+                "Sun Dec 25 05:21:39 PDT 2005"]
+    for e in expected:
+        assert e in out
     spice.kclear()
 
 

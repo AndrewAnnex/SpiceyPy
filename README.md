@@ -1,6 +1,6 @@
 # SpiceyPy
 
-The now mostly complete NAIF C SPICE Toolkit Wrapper for Python 3, written using ctypes.
+The now mostly complete NAIF C SPICE Toolkit Wrapper for Python 2 and 3, written using ctypes.
 
 *IMPORTANT*: I have no current affiliation with NASA, NAIF, or JPL. The code is provided "as is", use at your own risk.
 ### Introduction
@@ -10,8 +10,8 @@ The [SPICE Toolkit](http://naif.jpl.nasa.gov/naif/). In short it is an essential
 
 ### Travis and Coveralls Status
 
-[![Build Status](https://travis-ci.org/Apollo117/SpiceyPy.svg?branch=master)](https://travis-ci.org/Apollo117/SpiceyPy)
-[![Coverage Status](https://img.shields.io/coveralls/Apollo117/SpiceyPy.svg)](https://coveralls.io/r/Apollo117/SpiceyPy?branch=master)
+[![Build Status](https://travis-ci.org/Apollo117/SpiceyPy.svg?branch=master?style=flat)](https://travis-ci.org/Apollo117/SpiceyPy)
+[![Coverage Status](https://img.shields.io/coveralls/Apollo117/SpiceyPy.svg?style=flat)](https://coveralls.io/r/Apollo117/SpiceyPy?branch=master)
 A secondary list (non-maintained) can be found [here](https://github.com/Apollo117/SpiceyPy/wiki/Wrapper-Completion).
 Functions that have written functions that have not been tested do generally work, but tests may not have been written yet.
 Functions labeled with 'Skip' are being ignored, as they are either not needed in a python environment or impossible to implement.
@@ -38,7 +38,7 @@ in the Python 3.3.3 64-bit Mac OS X 10.9.4 environment. Travis CI is also ubuntu
 * Python 3.2.3 64-bit Ubuntu 12.04 LTS (VM)
 
 ### Acknowledgements
-[DaRasch](https://github.com/DaRasch) wrote code for spiceminer that I looked at to get SpiceCells working, thanks!
+[DaRasch](https://github.com/DaRasch) wrote spiceminer, which I looked at to get SpiceCells working, thanks!
 
 ### Steps for making the shared library
 The below steps are now integrated into the setup.py file included, but for those who want to try for themselves I left the following sequences for you.
