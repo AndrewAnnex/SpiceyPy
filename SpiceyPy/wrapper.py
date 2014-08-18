@@ -59,19 +59,18 @@ def b1950():
 
 
 def badkpv(caller, name, comp, insize, divby, intype):
-    #todo: test badkpv
     caller = stypes.stringToCharP(caller)
     name = stypes.stringToCharP(name)
     comp = stypes.stringToCharP(comp)
     insize = ctypes.c_int(insize)
     divby = ctypes.c_int(divby)
-    intype = stypes.stringToCharP(intype)
+    intype = ctypes.c_char(intype.encode(encoding='UTF-8'))
     return libspice.badkpv_c(caller, name, comp, insize, divby, intype)
 
 
-def bltfrm(frmcls):
+def bltfrm(frmcls, outSize=126):
     frmcls = ctypes.c_int(frmcls)
-    outcell = stypes.SPICEINT_CELL(126)
+    outcell = stypes.SPICEINT_CELL(outSize)
     libspice.bltfrm_c(frmcls, outcell)
     return outcell
 
@@ -465,9 +464,16 @@ def convrt(x, inunit, outunit):
 
 
 def copy(cell):
-    #Todo: test copy, possible necessitates changes to SpiceCell as new object has the name base and data pointers
     assert isinstance(cell, stypes.SpiceCell)
-    newcopy = stypes.SpiceCell(dtype=cell.dtype, length=cell.length, size=cell.size, card=cell.card, isSet=cell.isSet, base=cell.base, data=cell.data)
+    assert cell.dtype == 0 or cell.dtype == 1 or cell.dtype == 2
+    if cell.dtype is 0:
+        newcopy = stypes.SPICECHAR_CELL(cell.size, cell.length)
+    elif cell.dtype is 1:
+        newcopy = stypes.SPICEDOUBLE_CELL(cell.size)
+    elif cell.dtype is 2:
+        newcopy = stypes.SPICEINT_CELL(cell.size)
+    else:
+        raise NotImplementedError
     libspice.copy_c(ctypes.byref(cell), ctypes.byref(newcopy))
     return newcopy
 
@@ -787,17 +793,16 @@ def diags2(symmat):
 
 
 def diff(a, b):
-    #Todo: test diff, this cell handleing may work for copy.
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
     assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     if a.dtype is 0:
-        c = stypes.SPICECHAR_CELL(a.size, a.length)
-    if a.dtype is 1:
-        c = stypes.SPICEDOUBLE_CELL(a.size)
+        c = stypes.SPICECHAR_CELL(max(a.size, b.size), max(a.length, b.length))
+    elif a.dtype is 1:
+        c = stypes.SPICEDOUBLE_CELL(max(a.size, b.size))
     elif a.dtype is 2:
-        c = stypes.SPICEINT_CELL(a.size)
+        c = stypes.SPICEINT_CELL(max(a.size, b.size))
     else:
         raise NotImplementedError
     libspice.diff_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
@@ -1442,15 +1447,15 @@ def elemc(item, inset):
 
 
 def elemd(item, inset):
-    #Todo: test elemd
     assert isinstance(inset, stypes.SpiceCell)
+    assert inset.dtype == 1
     item = ctypes.c_double(item)
     return libspice.elemd_c(item, ctypes.byref(inset))
 
 
 def elemi(item, inset):
-    #Todo: test elemi
     assert isinstance(inset, stypes.SpiceCell)
+    assert inset.dtype == 2
     item = ctypes.c_int(item)
     return libspice.elemi_c(item, ctypes.byref(inset))
 
@@ -1972,10 +1977,13 @@ def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr, rela
                      ctypes.byref(cnfine), ctypes.byref(result))
 
 
-def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord, relate, refval, adjust, step, nintvals, cnfine):
+def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord, relate, refval, adjust, step, nintvals,
+           cnfine, result):
     #Todo: test gfsntc
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
+    assert isinstance(result, stypes.SpiceCell)
+    assert result.is_double()
     target = stypes.stringToCharP(target)
     fixref = stypes.stringToCharP(fixref)
     method = stypes.stringToCharP(method)
@@ -1990,11 +1998,9 @@ def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord, re
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
     nintvals = ctypes.c_int(nintvals)
-    result = stypes.SPICEDOUBLE_CELL(cnfine.size)
     libspice.gfsntc_c(target, fixref, method, abcorr, obsrvr,
                       dref, dvec, crdsys, coord, relate, refval,
                       adjust, step, nintvals, ctypes.byref(cnfine), ctypes.byref(result))
-    return cnfine, result
 
 
 def gfsstp(step):
@@ -2018,10 +2024,12 @@ def gfstol(value):
     pass
 
 
-def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate, refval, adjust, step, nintvals, cnfine):
-    #Todo: test gfsubc
+def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate, refval, adjust, step, nintvals, cnfine,
+           result):
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
+    assert isinstance(result, stypes.SpiceCell)
+    assert result.is_double()
     target = stypes.stringToCharP(target)
     fixref = stypes.stringToCharP(fixref)
     method = stypes.stringToCharP(method)
@@ -2034,7 +2042,6 @@ def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate, refval
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
     nintvals = ctypes.c_int(nintvals)
-    result = stypes.SPICEDOUBLE_CELL(cnfine.size)
     libspice.gfsubc_c(target, fixref, method, abcorr, obsrvr, crdsys,
                       coord, relate, refval, adjust, step, nintvals, ctypes.byref(cnfine), ctypes.byref(result))
 
@@ -2208,7 +2215,7 @@ def inter(a, b):
     assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     if a.dtype is 0:
         c = stypes.SPICECHAR_CELL(max(a.size, b.size), max(a.length, b.length))
-    if a.dtype is 1:
+    elif a.dtype is 1:
         c = stypes.SPICEDOUBLE_CELL(max(a.size, b.size))
     elif a.dtype is 2:
         c = stypes.SPICEINT_CELL(max(a.size, b.size))

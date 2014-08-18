@@ -11,7 +11,7 @@ The [SPICE Toolkit](http://naif.jpl.nasa.gov/naif/). In short it is an essential
 ### Travis and Coveralls Status
 
 [![Build Status](https://travis-ci.org/Apollo117/SpiceyPy.svg?style=flat?branch=master)](https://travis-ci.org/Apollo117/SpiceyPy)
-[![Coverage Status](https://img.shields.io/coveralls/Apollo117/SpiceyPy.svg?style=flat)](https://coveralls.io/r/Apollo117/SpiceyPy?branch=master)
+[![Coverage Status](https://img.shields.io/coveralls/Apollo117/SpiceyPy.svg?)](https://coveralls.io/r/Apollo117/SpiceyPy?branch=master)
 A secondary list (non-maintained) can be found [here](https://github.com/Apollo117/SpiceyPy/wiki/Wrapper-Completion).
 Functions that have written functions that have not been tested do generally work, but tests may not have been written yet.
 Functions labeled with 'Skip' are being ignored, as they are either not needed in a python environment or impossible to implement.

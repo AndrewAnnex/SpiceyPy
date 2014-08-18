@@ -51,11 +51,17 @@ def test_b1950():
 
 
 def test_badkpv():
-    assert 1
+    spice.kclear()
+    spice.pdpool('DTEST_VAL', [3.1415, 186.0, 282.397])
+    assert not spice.badkpv("SpiceyPy BADKPV test", "DTEST_VAL", "=", 3, 1, 'N')
+    spice.clpool()
+    assert not spice.expool("DTEST_VAL")
+    spice.kclear()
 
 
 def test_bltfrm():
-    assert 1
+    outCell = spice.bltfrm(-1)
+    assert outCell.size >= 126
 
 
 def test_bodc2n():
@@ -491,7 +497,11 @@ def test_convrt():
 
 
 def test_copy():
-    assert 1
+    outCell = spice.bltfrm(-1)
+    assert outCell.size >= 126
+    cellCopy = spice.copy(outCell)
+    assert cellCopy.size >= 126
+    assert cellCopy is not outCell
 
 
 def test_cpos():
@@ -758,7 +768,16 @@ def test_diags2():
 
 
 def test_diff():
-    assert 1
+    testCellOne = spice.stypes.SPICEINT_CELL(8)
+    testCellTwo = spice.stypes.SPICEINT_CELL(8)
+    spice.insrti(1, testCellOne)
+    spice.insrti(2, testCellOne)
+    spice.insrti(3, testCellOne)
+    spice.insrti(2, testCellTwo)
+    spice.insrti(3, testCellTwo)
+    spice.insrti(4, testCellTwo)
+    outCell = spice.diff(testCellOne, testCellTwo)
+    assert [x for x in outCell] == [1]
 
 
 def test_dlatdr():
@@ -911,7 +930,13 @@ def test_dvnorm():
 
 
 def test_dvpool():
-    assert 1
+    spice.kclear()
+    spice.pdpool("DTEST_VAL", [3.1415, 186.0, 282.397])
+    assert spice.expool("DTEST_VAL")
+    spice.dvpool("DTEST_VAL")
+    assert not spice.expool("DTEST_VAL")
+    spice.clpool()
+    spice.kclear()
 
 
 def test_dvsep():
@@ -934,6 +959,10 @@ def test_edlimb():
     npt.assert_array_almost_equal(limb.center, expectedCenter)
     npt.assert_array_almost_equal(limb.semi_major, expectedSMajor)
     npt.assert_array_almost_equal(limb.semi_minor, expectedSMinor)
+
+
+def test_edterm():
+    assert 1
 
 
 def test_ekacec():
@@ -1183,11 +1212,27 @@ def test_elemc():
 
 
 def test_elemd():
-    assert 1
+    testCellOne = spice.stypes.SPICEDOUBLE_CELL(8)
+    spice.insrtd(1.0, testCellOne)
+    spice.insrtd(2.0, testCellOne)
+    spice.insrtd(3.0, testCellOne)
+    assert spice.elemd(1.0, testCellOne)
+    assert spice.elemd(2.0, testCellOne)
+    assert spice.elemd(3.0, testCellOne)
+    assert not spice.elemd(4.0, testCellOne)
+    assert not spice.elemd(-1.0, testCellOne)
 
 
 def test_elemi():
-    assert 1
+    testCellOne = spice.stypes.SPICEINT_CELL(8)
+    spice.insrti(1, testCellOne)
+    spice.insrti(2, testCellOne)
+    spice.insrti(3, testCellOne)
+    assert spice.elemi(1, testCellOne)
+    assert spice.elemi(2, testCellOne)
+    assert spice.elemi(3, testCellOne)
+    assert not spice.elemi(4, testCellOne)
+    assert not spice.elemi(-1, testCellOne)
 
 
 def test_eqstr():
@@ -1622,7 +1667,23 @@ def test_gfstol():
 
 
 def test_gfsubc():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et0 = spice.str2et('2007 JAN 01')
+    et1 = spice.str2et('2008 JAN 01')
+    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    spice.wninsd(et0, et1, cnfine)
+    result = spice.stypes.SPICEDOUBLE_CELL(2000)
+    spice.gfsubc("earth", "iau_earth", "Near point: ellipsoid", "none", "sun", "geodetic", "latitude", ">",
+                 16.0 * spice.rpd(), 0.0, spice.spd() * 90.0, 1000, cnfine, result)
+    count = spice.wncard(result)
+    assert count > 0
+    start, end = spice.wnfetd(result, 0)
+    startTime = spice.timout(start, 'YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND', 41)
+    endTime = spice.timout(end, 'YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND', 41)
+    assert startTime == "2007-MAY-04 17:08:56.608433 (TDB)"
+    assert endTime == "2007-AUG-09 01:51:29.367602 (TDB)"
+    spice.kclear()
 
 
 def test_gftfov():
