@@ -2792,15 +2792,38 @@ def test_reccyl():
 
 
 def test_recgeo():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    num_vals, radii = spice.bodvrd("EARTH", "RADII", 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    x = [-2541.748162, 4780.333036, 3360.428190]
+    lon, lat, alt = spice.recgeo(x, radii[0], flat)
+    actual = [lon * spice.dpr(), lat * spice.dpr(), alt]
+    expected = [118.000000, 32.000000, 0.001915518]
+    npt.assert_array_almost_equal(actual, expected, decimal=4)
+    spice.kclear()
 
 
 def test_reclat():
-    assert 1
+    expected1 = np.array([1.0, 0.0, 0.0])
+    expected2 = np.array([1.0, 90.0 * spice.rpd(), 0.0])
+    expected3 = np.array([1.0, 180.0 * spice.rpd(), 0.0])
+    npt.assert_array_almost_equal(expected1, spice.reclat([1.0, 0.0, 0.0]), decimal=7)
+    npt.assert_array_almost_equal(expected2, spice.reclat([0.0, 1.0, 0.0]), decimal=7)
+    npt.assert_array_almost_equal(expected3, spice.reclat([-1.0, 0.0, 0.0]), decimal=7)
 
 
 def test_recpgr():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    num_vals, radii = spice.bodvrd("MARS", "RADII", 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    x = [0.0, -2620.678914818178, 2592.408908856967]
+    lon, lat, alt = spice.recpgr("MARS", x, radii[0], flat)
+    actual = [lon * spice.dpr(), lat * spice.dpr(), alt]
+    expected = [90.0, 45.0, 300.0]
+    npt.assert_array_almost_equal(actual, expected, decimal=4)
+    spice.kclear()
 
 
 def test_recrad():
@@ -3122,7 +3145,8 @@ def test_sincpt():
 
 
 def test_size():
-    assert 1
+    testCellOne = spice.stypes.SPICEINT_CELL(8)
+    assert spice.size(testCellOne) == 8
 
 
 def test_spd():
@@ -3303,7 +3327,19 @@ def test_spklef():
 
 
 def test_spkltc():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et("2000 JAN 1 12:00:00 TDB")
+    stobs = spice.spkssb(399, et, "j2000")
+    state, lt, dlt = spice.spkltc(301, et, "j2000", "lt", stobs)
+    expectedOneWayLt = 1.342310610325
+    expectedLt = 1.07316909e-07
+    expectedState = [-291569.26516582, -266709.18671506, -76099.15529096,
+                     0.6435306139500, -0.6660818164735, -0.3013228313733]
+    npt.assert_almost_equal(lt, expectedOneWayLt)
+    npt.assert_almost_equal(dlt, expectedLt)
+    npt.assert_array_almost_equal(state, expectedState, decimal=5)
+    spice.kclear()
 
 
 def test_spkobj():
@@ -3653,7 +3689,10 @@ def test_srfxpt():
 
 
 def test_ssize():
-    assert 1
+    cell = spice.stypes.SPICEDOUBLE_CELL(10)
+    assert cell.size == 10
+    spice.ssize(5, cell)
+    assert cell.size == 5
 
 
 def test_stelab():
@@ -3676,7 +3715,29 @@ def test_stelab():
 
 
 def test_stpool():
-    assert 1
+    spice.kclear()
+    kernel = '{0}/stpool_t.ker'.format(cwd)
+    if spice.exists(kernel):
+        os.remove(kernel)
+    with open(kernel, 'w') as kernelFile:
+        kernelFile.write('\\begindata\n')
+        kernelFile.write("SPK_FILES = ( 'this_is_the_full_path_specification_*',\n")
+        kernelFile.write("              'of_a_file_with_a_long_name',\n")
+        kernelFile.write("              'this_is_the_full_path_specification_*',\n")
+        kernelFile.write("              'of_a_second_file_name' )\n")
+        kernelFile.close()
+    spice.furnsh(kernel)
+    string, n, found = spice.stpool("SPK_FILES", 0, "*", 256)
+    assert found
+    assert n == 62
+    assert string == "this_is_the_full_path_specification_of_a_file_with_a_long_name"
+    string, n, found = spice.stpool("SPK_FILES", 1, "*", 256)
+    assert found
+    assert n == 57
+    assert string == "this_is_the_full_path_specification_of_a_second_file_name"
+    spice.kclear()
+    if spice.exists(kernel):
+        os.remove(kernel)
 
 
 def test_str2et():
@@ -3915,7 +3976,12 @@ def test_tkvrsn():
 
 
 def test_tparse():
-    assert 1
+    actualOne, errorOne = spice.tparse("1996-12-18T12:28:28", 100)
+    assert actualOne == -95815892.0
+    actualTwo, errorTwo = spice.tparse("1 DEC 1997 12:28:29.192", 100)
+    assert actualTwo == -65748690.808
+    actualThree, errorThree = spice.tparse("1997-162::12:18:28.827", 100)
+    assert actualThree == -80696491.173
 
 
 def test_tpictr():
@@ -3982,7 +4048,14 @@ def test_udf():
 
 
 def test_union():
-    assert 1
+    testCellOne = spice.stypes.SPICEINT_CELL(8)
+    testCellTwo = spice.stypes.SPICEINT_CELL(8)
+    spice.insrti(1, testCellOne)
+    spice.insrti(2, testCellOne)
+    spice.insrti(3, testCellTwo)
+    spice.insrti(4, testCellTwo)
+    outCell = spice.union(testCellOne, testCellTwo)
+    assert [x for x in outCell] == [1, 2, 3, 4]
 
 
 def test_unitim():

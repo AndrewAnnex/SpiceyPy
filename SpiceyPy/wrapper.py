@@ -3883,8 +3883,8 @@ def spklef(filename):
 
 def spkltc(targ, et, ref, abcorr, stobs):
     assert len(stobs) == 6
-    targ = stypes.stringToCharP(targ)
-    et = ctypes.c_int(et)
+    targ = stypes.c_int(targ)
+    et = ctypes.c_double(et)
     ref = stypes.stringToCharP(ref)
     abcorr = stypes.stringToCharP(abcorr)
     stobs = stypes.toDoubleVector(stobs)
@@ -4248,12 +4248,11 @@ def stelab(pobj, vobs):
 
 
 def stpool(item, nth, contin, lenout):
-    #Todo: test stpool
     item = stypes.stringToCharP(item)
     contin = stypes.stringToCharP(contin)
     nth = ctypes.c_int(nth)
+    strout = stypes.stringToCharP(lenout)
     lenout = ctypes.c_int(lenout)
-    strout = stypes.stringToCharP(" " * lenout.value)
     found = ctypes.c_bool()
     sizet = ctypes.c_int()
     libspice.stpool_c(item, nth, contin, lenout, strout, ctypes.byref(sizet), ctypes.byref(found))
@@ -4459,12 +4458,11 @@ def tkvrsn(item):
 
 
 def tparse(instring, lenout):
-    #Todo: test tparse
     errmsg = stypes.stringToCharP(lenout)
     lenout = ctypes.c_int(lenout)
     instring = stypes.stringToCharP(instring)
     sp2000 = ctypes.c_double()
-    libspice.tparse_c(instring, lenout, ctypes.POINTER(sp2000), errmsg)
+    libspice.tparse_c(instring, lenout, ctypes.byref(sp2000), errmsg)
     return sp2000.value, stypes.toPythonString(errmsg)
 
 
@@ -4560,17 +4558,16 @@ def ucrss(v1, v2):
 
 
 def union(a, b):
-    #Todo: test union
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
     assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     if a.dtype is 0:
-        c = stypes.SPICECHAR_CELL(a.size+b.size, a.length+b.length)
+        c = stypes.SPICECHAR_CELL(max(a.size, b.size), max(a.length, b.length))
     elif a.dtype is 1:
-        c = stypes.SPICEDOUBLE_CELL(a.size+b.size)
+        c = stypes.SPICEDOUBLE_CELL(max(a.size, b.size))
     elif a.dtype is 2:
-        c = stypes.SPICEINT_CELL(a.size+b.size)
+        c = stypes.SPICEINT_CELL(max(a.size, b.size))
     else:
         raise NotImplementedError
     libspice.union_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
