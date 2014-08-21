@@ -1472,7 +1472,6 @@ def eqncpv(et, epoch, eqel, rapol, decpol):
 
 
 def eqstr(a, b):
-    #Todo: test eqstr
     return libspice.eqstr_c(stypes.stringToCharP(a), stypes.stringToCharP(b))
 
 
@@ -1495,7 +1494,6 @@ def errch(marker, string):
 
 
 def errdev(op, lenout, device):
-    #Todo: test errdev
     lenout = ctypes.c_int(lenout)
     op = stypes.stringToCharP(op)
     device = ctypes.create_string_buffer(str.encode(device), lenout.value)
@@ -1505,15 +1503,13 @@ def errdev(op, lenout, device):
 
 
 def errdp(marker, number):
-    #Todo: test errdb
     marker = stypes.stringToCharP(marker)
     number = ctypes.c_double(number)
-    libspice.errdb_c(marker, number)
+    libspice.errdp_c(marker, number)
     pass
 
 
 def errint(marker, number):
-    #Todo: test errint
     marker = stypes.stringToCharP(marker)
     number = ctypes.c_int(number)
     libspice.errint_c(marker, number)
@@ -1772,7 +1768,6 @@ def getfov(instid, room, shapelen, framelen):
 
 
 def getmsg(option, lenout):
-    #todo: test getmsg
     option = stypes.stringToCharP(option)
     lenout = ctypes.c_int(lenout)
     msg = stypes.stringToCharP(lenout)
@@ -3375,7 +3370,6 @@ def reset():
 
 
 def return_c():
-    #Todo: test return_c
     return libspice.return_c()
 
 
@@ -3546,7 +3540,6 @@ def sdiff(a, b):
 
 
 def set(a, op, b):
-    #Todo: test set
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype

@@ -1247,23 +1247,38 @@ def test_erract():
 
 
 def test_errch():
-    assert 1
+    spice.setmsg("test errch value: #")
+    spice.errch("#", "some error")
+    spice.sigerr("some error")
+    message = spice.getmsg("LONG", 2000)
+    assert message == "test errch value: some error"
+    spice.reset()
 
 
 def test_errdev():
-    assert 1
+    assert spice.errdev("GET", 10, "Screen") == "SCREEN"
 
 
 def test_errdp():
-    assert 1
+    spice.setmsg("test errdp value: #")
+    spice.errdp("#", 42.1)
+    spice.sigerr("some error")
+    message = spice.getmsg("LONG", 2000)
+    assert message == "test errdp value: 4.2100000000000E+01"
+    spice.reset()
 
 
 def test_errint():
-    assert 1
+    spice.setmsg("test errint value: #")
+    spice.errint("#", 42)
+    spice.sigerr("some error")
+    message = spice.getmsg("LONG", 2000)
+    assert message == "test errint value: 42"
+    spice.reset()
 
 
 def test_errprt():
-    assert 1
+    assert spice.errprt("GET", 40, "ALL") == "SCREEN"
 
 
 def test_esrchc():
@@ -1429,7 +1444,10 @@ def test_getfov():
 
 
 def test_getmsg():
-    assert 1
+    spice.sigerr("test error")
+    message = spice.getmsg("SHORT", 200)
+    assert message == "test error"
+    spice.reset()
 
 
 def test_gfbail():
@@ -2936,11 +2954,14 @@ def test_repmot():
 
 
 def test_reset():
-    assert 1
+    spice.reset()
+    assert not spice.failed()
 
 
-def test_return():
-    assert 1
+def test_return_c():
+    spice.reset()
+    assert not spice.return_c()
+    spice.reset()
 
 
 def test_rotate():
@@ -3111,11 +3132,33 @@ def test_sdiff():
 
 
 def test_set():
-    assert 1
+    a = spice.stypes.SPICEINT_CELL(8)
+    b = spice.stypes.SPICEINT_CELL(8)
+    c = spice.stypes.SPICEINT_CELL(8)
+    spice.insrti(1, a)
+    spice.insrti(2, a)
+    spice.insrti(3, a)
+    spice.insrti(4, a)
+    spice.insrti(1, b)
+    spice.insrti(3, b)
+    spice.insrti(1, c)
+    spice.insrti(3, c)
+    assert spice.set(b, "=", c)
+    assert spice.set(a, "<>", c)
+    assert spice.set(b, "<=", c)
+    assert not spice.set(b, "<", c)
+    assert spice.set(c, ">=", b)
+    assert spice.set(a, ">", b)
+    assert spice.set(b, "&", c)
+    assert not spice.set(a, "~", a)
 
 
 def test_setmsg():
-    assert 1
+    spice.setmsg("test setmsg")
+    spice.sigerr("some error")
+    message = spice.getmsg("LONG", 2000)
+    assert message == "test setmsg"
+    spice.reset()
 
 
 def test_shellc():
@@ -3137,7 +3180,10 @@ def test_shelli():
 
 
 def test_sigerr():
-    assert 1
+    spice.sigerr("test error")
+    message = spice.getmsg("SHORT", 200)
+    assert message == "test error"
+    spice.reset()
 
 
 def test_sincpt():
