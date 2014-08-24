@@ -4,7 +4,6 @@ import pytest
 import SpiceyPy as spice
 import numpy as np
 import numpy.testing as npt
-from time import sleep
 import os
 cwd = os.path.realpath(os.path.dirname(__file__))
 _testKernelPath = cwd + "/testKernels.txt"
@@ -211,7 +210,10 @@ def test_card():
 
 
 def test_ccifrm():
-    assert 1
+    frcode, frname, center = spice.ccifrm(2, 3000, 33)
+    assert frname == "ITRF93"
+    assert frcode == 13000
+    assert center == 399
 
 
 def test_cgv2el():
@@ -991,7 +993,7 @@ def test_dvcrss():
 
 
 def test_dvdot():
-    assert 1
+    assert spice.dvdot([1.0, 0.0, 1.0, 0.0, 1.0, 0.0], [0.0, 1.0, 0.0, 1.0, 0.0, 1.0]) == 3.0
 
 
 def test_dvhat():
@@ -1429,7 +1431,15 @@ def test_eul2m():
 
 
 def test_eul2xf():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et("Jan 1, 2009")
+    expected = spice.sxform('IAU_EARTH', 'J2000', et)
+    eul = [1.571803284049681, 0.0008750002978301174, 2.9555269829740034,
+           3.5458495690569166e-12, 3.080552365717176e-12, -7.292115373266558e-05]
+    out = spice.eul2xf(eul, 3, 1, 3)
+    npt.assert_array_almost_equal(out, expected)
+    spice.kclear()
 
 
 def test_exists():
@@ -2062,7 +2072,7 @@ def test_isrchi():
 
 
 def test_isrot():
-    assert 1
+    assert spice.isrot(spice.ident(), 0.0001, 0.0001)
 
 
 def test_iswhsp():
@@ -2304,19 +2314,27 @@ def test_ltime():
 
 
 def test_lx4dec():
-    assert 1
+    assert spice.lx4dec("1%2%3", 0) == (0, 1)
+    assert spice.lx4dec("1%2%3", 1) == (0, 0)
+    assert spice.lx4dec("1%2%3", 2) == (2, 1)
 
 
 def test_lx4num():
-    assert 1
+    assert spice.lx4num("1%2%3", 0) == (0, 1)
+    assert spice.lx4num("1%2%3", 1) == (0, 0)
+    assert spice.lx4num("1%2%3", 2) == (2, 1)
+    assert spice.lx4num("1%2e1%3", 2) == (4, 3)
 
 
 def test_lx4sgn():
-    assert 1
+    assert spice.lx4sgn("1%2%3", 0) == (0, 1)
+    assert spice.lx4sgn("1%2%3", 1) == (0, 0)
+    assert spice.lx4sgn("1%2%3", 2) == (2, 1)
 
 
 def test_lx4uns():
-    assert 1
+    # not a very good test
+    assert spice.lx4uns("test 10 end", 4) == (3, 0)
 
 
 def test_lxqstr():
@@ -2839,10 +2857,6 @@ def test_posr():
     assert spice.posr(string, " AN  ", 29) == -1
 
 
-def test_prompt():
-    assert 1
-
-
 def test_prop2b():
     mu = 398600.45
     r = 1.0e8
@@ -2875,10 +2889,6 @@ def test_psv2pl():
     em_norm, em_const = spice.pl2nvc(em_plane)
     spice.kclear()
     npt.assert_almost_equal(spice.vsep(es_norm, em_norm) * spice.dpr(), 5.0424941, decimal=6)
-
-
-def test_putcml():
-    assert 1
 
 
 def test_pxform():
@@ -4834,7 +4844,16 @@ def test_wnvald():
 
 
 def test_xf2eul():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et("Jan 1, 2009")
+    m = spice.sxform('IAU_EARTH', 'J2000', et)
+    eulang, unique = spice.xf2eul(m, 3, 1, 3)
+    assert unique
+    expected = [1.571803284049681, 0.0008750002978301174, 2.9555269829740034,
+                3.5458495690569166e-12, 3.080552365717176e-12, -7.292115373266558e-05]
+    npt.assert_array_almost_equal(expected, eulang)
+    spice.kclear()
 
 
 def test_xf2rav():
