@@ -229,13 +229,12 @@ def ccifrm(frclss, clssid, lenout):
     found = ctypes.c_bool()
     libspice.ccifrm_c(frclss, clssid, lenout, ctypes.byref(frcode), frname, ctypes.byref(center), ctypes.byref(found))
     if found.value:
-        return frcode.value, stypes.toPythonString(frname), center.value
+        return frcode.value, stypes.toPythonString(frname), center.value,
     else:
         return None
 
 
 def cgv2el(center, vec1, vec2):
-    #Todo: test cgv2el
     center = stypes.toDoubleVector(center)
     vec1 = stypes.toDoubleVector(vec1)
     vec2 = stypes.toDoubleVector(vec2)
@@ -373,7 +372,6 @@ def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
 
 
 def ckw02(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats, avvs, rates):
-    #Todo: test ckw02
     handle = ctypes.c_int(handle)
     begtim = ctypes.c_double(begtim)
     endtim = ctypes.c_double(endtim)
@@ -416,7 +414,6 @@ def clight():
 
 
 def clpool():
-    #Todo: test clpool
     libspice.clpool_c()
     pass
 
@@ -769,7 +766,6 @@ def det(m1):
 
 
 def dgeodr(x, y, z, re, f):
-    #Todo: test dgeodr
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
     z = ctypes.c_double(z)
@@ -781,7 +777,6 @@ def dgeodr(x, y, z, re, f):
 
 
 def diags2(symmat):
-    #Todo: test diags2
     symmat = stypes.listtodoublematrix(symmat, x=2, y=2)
     diag = stypes.emptyDoubleMatrix(x=2, y=2)
     rotateout = stypes.emptyDoubleMatrix(x=2, y=2)
@@ -807,7 +802,6 @@ def diff(a, b):
 
 
 def dlatdr(x, y, z):
-    #Todo: test dlatdr
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
     z = ctypes.c_double(z)
@@ -828,7 +822,6 @@ def dp2hx(number, lenout=None):
 
 
 def dpgrdr(body, x, y, z, re, f):
-    #Todo: test dpgrdr
     body = stypes.stringToCharP(body)
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
@@ -921,7 +914,6 @@ def dtpool(name):
 
 
 def ducrss(s1, s2):
-    #Todo: test dvcrss
     assert len(s1) is 6 and len(s2) is 6
     s1 = stypes.toDoubleVector(s1)
     s2 = stypes.toDoubleVector(s2)
@@ -931,7 +923,6 @@ def ducrss(s1, s2):
 
 
 def dvcrss(s1, s2):
-    #Todo: test dvcrss
     assert len(s1) is 6 and len(s2) is 6
     s1 = stypes.toDoubleVector(s1)
     s2 = stypes.toDoubleVector(s2)
@@ -941,7 +932,6 @@ def dvcrss(s1, s2):
 
 
 def dvdot(s1, s2):
-    #Todo: test dvdot
     assert len(s1) is 6 and len(s2) is 6
     s1 = stypes.toDoubleVector(s1)
     s2 = stypes.toDoubleVector(s2)
@@ -949,7 +939,6 @@ def dvdot(s1, s2):
 
 
 def dvhat(s1):
-    #Todo: test dvhat
     assert len(s1) is 6
     s1 = stypes.toDoubleVector(s1)
     sout = stypes.emptyDoubleVector(6)
@@ -958,21 +947,18 @@ def dvhat(s1):
 
 
 def dvnorm(state):
-    #Todo: test dvnorm
     assert len(state) is 6
     state = stypes.toDoubleVector(state)
     return libspice.dvnorm_c(state)
 
 
 def dvpool(name):
-    #Todo: test dvpool
     name = stypes.stringToCharP(name)
     libspice.dvpool_c(name)
     pass
 
 
 def dvsep(s1, s2):
-    #Todo: test dvsep
     assert len(s1) is 6 and len(s2) is 6
     s1 = stypes.toDoubleVector(s1)
     s2 = stypes.toDoubleVector(s2)
@@ -1561,7 +1547,6 @@ def etcal(et, lenout):
 
 
 def eul2m(angle3, angle2, angle1, axis3, axis2, axis1):
-    #Todo: test eul2m
     angle3 = ctypes.c_double(angle3)
     angle2 = ctypes.c_double(angle2)
     angle1 = ctypes.c_double(angle1)
@@ -1574,7 +1559,6 @@ def eul2m(angle3, angle2, angle1, axis3, axis2, axis1):
 
 
 def eul2xf(eulang, axisa, axisb, axisc):
-    #Todo: eul2xf
     assert len(eulang) is 6
     eulang = stypes.toDoubleVector(eulang)
     axisa = ctypes.c_int(axisa)
@@ -1603,7 +1587,6 @@ def expool(name):
 
 
 def failed():
-    #todo: test failed
     return libspice.failed_c()
 
 
@@ -2262,7 +2245,6 @@ def isrchi(value, ndim, array):
 
 
 def isrot(m, ntol, dtol):
-    #todo: test isrot
     m = stypes.listtodoublematrix(m)
     ntol = ctypes.c_double(ntol)
     dtol = ctypes.c_double(dtol)
@@ -2393,7 +2375,6 @@ def latrec(radius, longitude, latitude):
 
 
 def latsph(radius, lon, lat):
-    #Todo: test latsph
     radius = ctypes.c_double(radius)
     lon = ctypes.c_double(lon)
     lat = ctypes.c_double(lat)
@@ -2467,7 +2448,6 @@ def lspcn(body, et, abcorr):
 
 
 def ltime(etobs, obs, direct, targ):
-    #Todo: test ltime
     etobs = ctypes.c_double(etobs)
     obs = ctypes.c_int(obs)
     direct = stypes.stringToCharP(direct)
@@ -2523,7 +2503,6 @@ def lstlti(x, n, array):
 
 
 def lx4dec(string, first):
-    #Todo: test lx4dec
     string = stypes.stringToCharP(string)
     first = ctypes.c_int(first)
     last = ctypes.c_int()
@@ -2533,7 +2512,6 @@ def lx4dec(string, first):
 
 
 def lx4num(string, first):
-    #Todo: test lx4num
     string = stypes.stringToCharP(string)
     first = ctypes.c_int(first)
     last = ctypes.c_int()
@@ -2543,7 +2521,6 @@ def lx4num(string, first):
 
 
 def lx4sgn(string, first):
-    #Todo: test lx4sgn
     string = stypes.stringToCharP(string)
     first = ctypes.c_int(first)
     last = ctypes.c_int()
@@ -2553,7 +2530,6 @@ def lx4sgn(string, first):
 
 
 def lx4uns(string, first):
-    #Todo: test lx4uns
     string = stypes.stringToCharP(string)
     first = ctypes.c_int(first)
     last = ctypes.c_int()
@@ -2843,7 +2819,6 @@ def ordc(item, inset):
 
 
 def ordd(item, inset):
-    #Todo: test ordd
     assert isinstance(inset, stypes.SpiceCell)
     assert inset.is_double()
     item = ctypes.c_double(item)
@@ -2851,7 +2826,6 @@ def ordd(item, inset):
 
 
 def ordi(item, inset):
-    #Todo: test ordi
     assert isinstance(inset, stypes.SpiceCell)
     assert inset.is_int()
     assert isinstance(item, int)
@@ -3005,7 +2979,6 @@ def pl2nvc(plane):
 
 
 def pl2nvp(plane):
-    #Todo: test pl2nvp
     assert(isinstance(plane, stypes.Plane))
     normal = stypes.emptyDoubleVector(3)
     point = stypes.emptyDoubleVector(3)
@@ -3014,7 +2987,6 @@ def pl2nvp(plane):
 
 
 def pl2psv(plane):
-    #Todo: test pl2psv
     assert (isinstance(plane, stypes.Plane))
     point = stypes.emptyDoubleVector(3)
     span1 = stypes.emptyDoubleVector(3)
@@ -3065,7 +3037,6 @@ def prsint(string):
 
 
 def psv2pl(point, span1, span2):
-    #Todo: test psv2pl
     point = stypes.toDoubleVector(point)
     span1 = stypes.toDoubleVector(span1)
     span2 = stypes.toDoubleVector(span2)
@@ -3078,7 +3049,6 @@ def psv2pl(point, span1, span2):
 
 
 def pxform(fromstr, tostr, et):
-    #Todo: test pxform
     et = ctypes.c_double(et)
     tostr = stypes.stringToCharP(tostr)
     fromstr = stypes.stringToCharP(fromstr)
@@ -3128,7 +3098,6 @@ def qxq(q1, q2):
 
 
 def radrec(inrange, re, dec):
-    #Todo: test radrec
     inrange = ctypes.c_double(inrange)
     re = ctypes.c_double(re)
     dec = ctypes.c_double(dec)
@@ -3194,7 +3163,6 @@ def recgeo(rectan, re, f):
 
 
 def recpgr(body, rectan, re, f):
-    #Todo: Test recpgr
     body = stypes.stringToCharP(body)
     rectan = stypes.toDoubleVector(rectan)
     re = ctypes.c_double(re)
@@ -3207,7 +3175,6 @@ def recpgr(body, rectan, re, f):
 
 
 def recrad(rectan):
-    #Todo: Test recrad
     rectan = stypes.toDoubleVector(rectan)
     outrange = ctypes.c_double()
     ra = ctypes.c_double()
@@ -3234,7 +3201,6 @@ def removc(item, inset):
 
 
 def removd(item, inset):
-    #Todo: test removd
     assert isinstance(inset, stypes.SpiceCell)
     item = ctypes.c_double(item)
     libspice.removd_c(item, ctypes.byref(inset))
@@ -3242,7 +3208,6 @@ def removd(item, inset):
 
 
 def removi(item, inset):
-    #Todo: test removi
     assert isinstance(inset, stypes.SpiceCell)
     item = ctypes.c_int(item)
     libspice.removi_c(item, ctypes.byref(inset))
@@ -3363,7 +3328,6 @@ def return_c():
 
 
 def rotate(angle, iaxis):
-    #Todo: test rotate
     angle = ctypes.c_double(angle)
     iaxis = ctypes.c_int(iaxis)
     mout = stypes.emptyDoubleMatrix()
@@ -3372,7 +3336,6 @@ def rotate(angle, iaxis):
 
 
 def rotmat(m1, angle, iaxis):
-    #Todo: test rotmat
     m1 = stypes.listtodoublematrix(m1)
     angle = ctypes.c_double(angle)
     iaxis = ctypes.c_int(iaxis)
@@ -3382,7 +3345,6 @@ def rotmat(m1, angle, iaxis):
 
 
 def rotvec(v1, angle, iaxis):
-    #Todo: test rotvec
     v1 = stypes.toDoubleVector(v1)
     angle = ctypes.c_double(angle)
     iaxis = ctypes.c_int(iaxis)
@@ -3418,7 +3380,6 @@ def saelgv(vec1, vec2):
 
 
 def scard(incard, cell):
-    #Todo: test scard
     assert isinstance(cell, stypes.SpiceCell)
     incard = ctypes.c_int(incard)
     libspice.scard_c(incard, ctypes.byref(cell))
@@ -3511,7 +3472,6 @@ def sctiks(sc, clkstr):
 
 
 def sdiff(a, b):
-    #Todo: test sdiff
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
@@ -3538,7 +3498,6 @@ def set(a, op, b):
 
 
 def setmsg(message):
-    #todo: test setmsg
     message = stypes.stringToCharP(message)
     libspice.setmsg_c(message)
     pass
@@ -3554,7 +3513,7 @@ def shellc(ndim, lenvals, array):
 
 
 def shelld(ndim, array):
-    #Todo: Works!, use this as example for "I/O" parameters
+    # Works!, use this as example for "I/O" parameters
     array = stypes.toDoubleVector(array)
     ndim = ctypes.c_int(ndim)
     libspice.shelld_c(ndim, ctypes.cast(array, ctypes.POINTER(ctypes.c_double)))
@@ -3562,7 +3521,7 @@ def shelld(ndim, array):
 
 
 def shelli(ndim, array):
-    #Todo: Works!, use this as example for "I/O" parameters
+    # Works!, use this as example for "I/O" parameters
     array = stypes.toIntVector(array)
     ndim = ctypes.c_int(ndim)
     libspice.shelli_c(ndim, ctypes.cast(array, ctypes.POINTER(ctypes.c_int)))
@@ -3570,7 +3529,6 @@ def shelli(ndim, array):
 
 
 def sigerr(message):
-    #todo: test
     message = stypes.stringToCharP(message)
     libspice.sigerr_c(message)
     pass
@@ -3594,7 +3552,6 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
 
 
 def size(cell):
-    #Todo: test size
     assert isinstance(cell, stypes.SpiceCell)
     return libspice.size_c(ctypes.byref(cell))
 
@@ -4074,7 +4031,6 @@ def spkw08(handle, body, center, inframe, first, last, segid, degree, n, states,
 
 
 def spkw09(handle, body, center, inframe, first, last, segid, degree, n, states, epochs):
-    #Todo: test spkw09
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
@@ -4414,7 +4370,6 @@ def timout(et, pictur, lenout):
 
 
 def tipbod(ref, body, et):
-    #Todo: test
     ref = stypes.stringToCharP(ref)
     body = ctypes.c_int(body)
     et = ctypes.c_double(et)
@@ -4424,7 +4379,6 @@ def tipbod(ref, body, et):
 
 
 def tisbod(ref, body, et):
-    #Todo: test tisbod
     ref = stypes.stringToCharP(ref)
     body = ctypes.c_int(body)
     et = ctypes.c_double(et)
@@ -4496,7 +4450,6 @@ def twopi():
 
 
 def twovec(axdef, indexa, plndef, indexp):
-    #Todo: Test twovec
     axdef = stypes.toDoubleVector(axdef)
     indexa = ctypes.c_int(indexa)
     plndef = stypes.toDoubleVector(plndef)
@@ -4524,7 +4477,6 @@ def ucase(inchar, lenout=None):
 
 
 def ucrss(v1, v2):
-    #Todo: test ucrss
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
     vout = stypes.emptyDoubleVector(3)
@@ -4556,7 +4508,6 @@ def union(a, b):
 
 
 def unitim(epoch, insys, outsys):
-    #Todo: test unitim
     epoch = ctypes.c_double(epoch)
     insys = stypes.stringToCharP(insys)
     outsys = stypes.stringToCharP(outsys)
@@ -4616,7 +4567,6 @@ def vaddg(v1, v2, ndim):
 
 
 def valid(insize, n, inset):
-    #Todo: test valid
     assert isinstance(inset, stypes.SpiceCell)
     insize = ctypes.c_int(insize)
     n = ctypes.c_int(n)
@@ -4689,7 +4639,6 @@ def vhatg(v1, ndim):
 
 
 def vlcom(a, v1, b, v2):
-    #Todo: test
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
     sumv = stypes.emptyDoubleVector(3)
@@ -4731,7 +4680,6 @@ def vminug(vin, ndim):
 
 
 def vminus(vin):
-    #todo: test
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(3)
     libspice.vminus_c(vin, vout)
@@ -4799,7 +4747,6 @@ def vrel(v1, v2):
 
 
 def vrelg(v1, v2, ndim):
-    #Todo: test
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
     ndim = ctypes.c_int(ndim)
@@ -5059,7 +5006,6 @@ def wnvald(insize, n, window):
 # X
 
 def xf2eul(xform, axisa, axisb, axisc):
-    #Todo: test xf2eul
     xform = stypes.listtodoublematrix(xform, x=6, y=6)
     axisa = ctypes.c_int(axisa)
     axisb = ctypes.c_int(axisb)
