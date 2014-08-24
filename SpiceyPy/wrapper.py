@@ -1043,8 +1043,7 @@ def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
     nvals = ctypes.c_int(nvals)
     ivals = stypes.toIntVector(ivals)
     isnull = ctypes.c_bool(isnull)
-    libspice.ekacei_c(handle, segno, recno, column, nvals, ctypes.cast(ivals, ctypes.POINTER(ctypes.c_int)), isnull)
-    pass
+    libspice.ekacei_c(handle, segno, recno, column, nvals, ivals, isnull)
 
 
 def ekaclc(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs, wkindx):
@@ -1110,9 +1109,12 @@ def ekbseg(handle, tabnam, ncols, cnames, decls, **kwargs):
         declen = kwargs['declen']
     else:
         declen = len(max(decls, key=len)) + 1
+    if 'ncols' in kwargs:
+        ncols = kwargs['ncols']
+    else:
+        ncols = len(cnames)
     handle = ctypes.c_int(handle)
     tabnam = stypes.stringToCharP(tabnam)
-    ncols = ctypes.c_int(ncols)
     cnmlen = ctypes.c_int(cnmlen)
     cnames = stypes.listToCharArray(cnames)  # not sure if this works
     declen = ctypes.c_int(declen)
@@ -1240,11 +1242,10 @@ def ekinsr(handle, segno, recno):
 
 
 def eklef(fname):
-    #Todo: test eklef
     fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
     libspice.eklef_c(fname, handle)
-    pass
+    return handle.value
 
 
 def eknelt(selidx, row):
@@ -1414,7 +1415,6 @@ def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
 
 
 def ekuef(handle):
-    #Todo: test ekuef
     handle = ctypes.c_int(handle)
     libspice.ekuef_c(handle)
     pass
@@ -1965,7 +1965,6 @@ def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr, rela
 
 def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord, relate, refval, adjust, step, nintvals,
            cnfine, result):
-    #Todo: test gfsntc
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
     assert isinstance(result, stypes.SpiceCell)
@@ -2374,7 +2373,6 @@ def lastnb(string):
 
 
 def latcyl(radius, lon, lat):
-    #Todo: test latcyl
     radius = ctypes.c_double(radius)
     lon = ctypes.c_double(lon)
     lat = ctypes.c_double(lat)

@@ -4,6 +4,7 @@ import pytest
 import SpiceyPy as spice
 import numpy as np
 import numpy.testing as npt
+from time import sleep
 import os
 cwd = os.path.realpath(os.path.dirname(__file__))
 _testKernelPath = cwd + "/testKernels.txt"
@@ -1170,6 +1171,25 @@ def test_ekinsr():
 
 def test_eklef():
     assert 1
+    # spice.kclear()
+    # ekpath = cwd + "/exampleek1.ek"
+    # if spice.exists(ekpath):
+    # os.remove(ekpath)
+    # handle = spice.ekopn(ekpath, ekpath, 0)
+    # segno = spice.ekbseg(handle, "test_table", 1, ["c1"],
+    #                      ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
+    # recno = spice.ekappr(handle, segno)
+    # spice.ekacei(handle, segno, recno, "c1", 2, [1, 2], False)
+    # sleep(0.5)
+    # spice.ekcls(handle)
+    # sleep(0.5)
+    # spice.kclear()
+    # sleep(0.5)
+    # handle = spice.eklef(ekpath)
+    # assert handle is not None
+    # spice.ekuef(handle)
+    # if spice.exists(ekpath):
+    #     os.remove(ekpath)
 
 
 def test_eknelt():
@@ -1510,12 +1530,19 @@ def test_georec():
     npt.assert_array_almost_equal(expected, output)
 
 
-def test_getcml():
-    assert 1
-
-
 def test_getelm():
-    assert 1
+    spice.kclear()
+    tle = ['1 18123U 87 53  A 87324.61041692 -.00000023  00000-0 -75103-5 0 00675',
+           '2 18123  98.8296 152.0074 0014950 168.7820 191.3688 14.12912554 21686']
+    spice.furnsh(_testKernelPath)
+    epoch, elems = spice.getelm(1950, 75, tle)
+    expected_elems = [-6.969196665949579e-13, 0.0, -7.510300000000001e-06,
+                      1.724901918428988, 2.653029617396028, 0.001495,
+                      2.9458016181010693, 3.3400156455905243, 0.06164994027515544, -382310404.79526937]
+    expected_epoch = -382310404.79526937
+    npt.assert_array_almost_equal(expected_elems, elems)
+    npt.assert_almost_equal(epoch, expected_epoch)
+    spice.kclear()
 
 
 def test_getfat():
@@ -1754,7 +1781,56 @@ def test_gfsep():
 
 
 def test_gfsntc():
-    assert 1
+    spice.kclear()
+    kernel = '{0}/gfnstc_test.tf'.format(cwd)
+    if spice.exists(kernel):
+        os.remove(kernel)
+    with open(kernel, 'w') as kernelFile:
+        kernelFile.write('\\begindata\n')
+        kernelFile.write("FRAME_SEM                     =  10100000\n")
+        kernelFile.write("FRAME_10100000_NAME           = 'SEM'\n")
+        kernelFile.write("FRAME_10100000_CLASS          =  5\n")
+        kernelFile.write("FRAME_10100000_CLASS_ID       =  10100000\n")
+        kernelFile.write("FRAME_10100000_CENTER         =  10\n")
+        kernelFile.write("FRAME_10100000_RELATIVE       = 'J2000'\n")
+        kernelFile.write("FRAME_10100000_DEF_STYLE      = 'PARAMETERIZED'\n")
+        kernelFile.write("FRAME_10100000_FAMILY         = 'TWO-VECTOR'\n")
+        kernelFile.write("FRAME_10100000_PRI_AXIS       = 'X'\n")
+        kernelFile.write("FRAME_10100000_PRI_VECTOR_DEF = 'OBSERVER_TARGET_POSITION'\n")
+        kernelFile.write("FRAME_10100000_PRI_OBSERVER   = 'SUN'\n")
+        kernelFile.write("FRAME_10100000_PRI_TARGET     = 'EARTH'\n")
+        kernelFile.write("FRAME_10100000_PRI_ABCORR     = 'NONE'\n")
+        kernelFile.write("FRAME_10100000_SEC_AXIS       = 'Y'\n")
+        kernelFile.write("FRAME_10100000_SEC_VECTOR_DEF = 'OBSERVER_TARGET_VELOCITY'\n")
+        kernelFile.write("FRAME_10100000_SEC_OBSERVER   = 'SUN'\n")
+        kernelFile.write("FRAME_10100000_SEC_TARGET     = 'EARTH'\n")
+        kernelFile.write("FRAME_10100000_SEC_ABCORR     = 'NONE'\n")
+        kernelFile.write("FRAME_10100000_SEC_FRAME      = 'J2000'\n")
+        kernelFile.close()
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(kernel)
+    et0 = spice.str2et('2007 JAN 01')
+    et1 = spice.str2et('2008 JAN 01')
+    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    spice.wninsd(et0, et1, cnfine)
+    result = spice.stypes.SPICEDOUBLE_CELL(2000)
+    spice.gfsntc("EARTH", "IAU_EARTH", "Ellipsoid", "NONE", "SUN", "SEM", [1.0, 0.0, 0.0], "LATITUDINAL",
+                 "LATITUDE", "=", 0.0, 0.0, 90.0 * spice.spd(), 1000, cnfine, result)
+    count = spice.wncard(result)
+    assert count > 0
+    beg, end = spice.wnfetd(result, 0)
+    begstr = spice.timout(beg, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 80)
+    endstr = spice.timout(end, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 80)
+    assert begstr == "2007-MAR-21 00:01:25.500672 (TDB)"
+    assert endstr == "2007-MAR-21 00:01:25.500672 (TDB)"
+    beg, end = spice.wnfetd(result, 1)
+    begstr = spice.timout(beg, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 80)
+    endstr = spice.timout(end, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 80)
+    assert begstr == "2007-SEP-23 09:46:39.579484 (TDB)"
+    assert endstr == "2007-SEP-23 09:46:39.579484 (TDB)"
+    spice.kclear()
+    if spice.exists(kernel):
+        os.remove(kernel)
 
 
 def test_gfsstp():
@@ -2050,7 +2126,12 @@ def test_lastnb():
 
 
 def test_latcyl():
-    assert 1
+    expected1 = np.array([1.0, 0.0, 0.0])
+    expected2 = np.array([1.0, 90.0 * spice.rpd(), 0.0])
+    expected3 = np.array([1.0, 180.0 * spice.rpd(), 0.0])
+    npt.assert_array_almost_equal(expected1, spice.latcyl(1.0, 0.0, 0.0), decimal=7)
+    npt.assert_array_almost_equal(expected2, spice.latcyl(1.0, 90.0 * spice.rpd(), 0.0), decimal=7)
+    npt.assert_array_almost_equal(expected3, spice.latcyl(1.0, 180.0 * spice.rpd(), 0.0), decimal=7)
 
 
 def test_latrec():
@@ -2063,7 +2144,12 @@ def test_latrec():
 
 
 def test_latsph():
-    assert 1
+    expected1 = np.array([1.0, 90.0 * spice.rpd(), 0.0])
+    expected2 = np.array([1.0, 90.0 * spice.rpd(), 90.0 * spice.rpd()])
+    expected3 = np.array([1.0, 90.0 * spice.rpd(), 180.0 * spice.rpd()])
+    npt.assert_array_almost_equal(expected1, spice.latsph(1.0, 0.0, 0.0), decimal=7)
+    npt.assert_array_almost_equal(expected2, spice.latsph(1.0, 90.0 * spice.rpd(), 0.0), decimal=7)
+    npt.assert_array_almost_equal(expected3, spice.latsph(1.0, 180.0 * spice.rpd(), 0.0), decimal=7)
 
 
 def test_lcase():
@@ -2860,7 +2946,9 @@ def test_qxq():
 
 
 def test_radrec():
-    assert 1
+    npt.assert_array_almost_equal([1.0, 0.0, 0.0], spice.radrec(1.0, 0.0, 0.0))
+    npt.assert_array_almost_equal([0.0, 1.0, 0.0], spice.radrec(1.0, 90.0 * spice.rpd(), 0.0))
+    npt.assert_array_almost_equal([0.0, 0.0, 1.0], spice.radrec(1.0, 0.0, 90.0 * spice.rpd()))
 
 
 def test_rav2xf():
@@ -2930,7 +3018,12 @@ def test_recpgr():
 
 
 def test_recrad():
-    assert 1
+    range1, ra1, dec1 = spice.recrad([1.0, 0.0, 0.0])
+    range2, ra2, dec2 = spice.recrad([0.0, 1.0, 0.0])
+    range3, ra3, dec3 = spice.recrad([0.0, 0.0, 1.0])
+    npt.assert_array_almost_equal([1.0, 0.0, 0.0], [range1, ra1, dec1])
+    npt.assert_array_almost_equal([1.0, 90 * spice.rpd(), 0.0], [range2, ra2, dec2])
+    npt.assert_array_almost_equal([1.0, 0.0, 90 * spice.rpd()], [range3, ra3, dec3])
 
 
 def test_recsph():
@@ -3292,7 +3385,9 @@ def test_spd():
 
 
 def test_sphcyl():
-    assert 1
+    a = np.array(spice.sphcyl(1.4142, np.deg2rad(180.0), np.deg2rad(45.0)))
+    b = [0.0, np.deg2rad(45.0), -np.sqrt(2)]
+    np.testing.assert_almost_equal(a, b, decimal=4)
 
 
 def test_sphlat():
