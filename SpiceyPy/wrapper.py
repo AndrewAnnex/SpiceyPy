@@ -596,20 +596,18 @@ def daffna():
 
 
 def daffpa():
-    #Todo: todo daffpa
     found = ctypes.c_bool()
     libspice.daffpa_c(ctypes.byref(found))
     return found.value
 
 
 def dafgda(handle, begin, end):
-    #Todo: test dafgda , is it returning an array?
     handle = ctypes.c_int(handle)
+    data = stypes.emptyDoubleVector(abs(end - begin))
     begin = ctypes.c_int(begin)
     end = ctypes.c_int(end)
-    data = ctypes.c_double()
-    libspice.dafgda_c(handle, begin, end, ctypes.byref(data))
-    return data.value
+    libspice.dafgda_c(handle, begin, end, data)
+    return stypes.vectorToList(data)
 
 
 def dafgh():
@@ -619,7 +617,6 @@ def dafgh():
 
 
 def dafgn(lenout):
-    #Todo: test dafgn
     lenout = ctypes.c_int(lenout)
     name = stypes.stringToCharP(lenout)
     libspice.dafgn_c(lenout, name)
@@ -856,7 +853,6 @@ def dpr():
 
 
 def drdcyl(r, lon, z):
-    #Todo: drdcyl
     r = ctypes.c_double(r)
     lon = ctypes.c_double(lon)
     z = ctypes.c_double(z)
@@ -866,7 +862,6 @@ def drdcyl(r, lon, z):
 
 
 def drdgeo(lon, lat, alt, re, f):
-    #Todo: test drdgeo
     lon = ctypes.c_double(lon)
     lat = ctypes.c_double(lat)
     alt = ctypes.c_double(alt)
@@ -878,7 +873,6 @@ def drdgeo(lon, lat, alt, re, f):
 
 
 def drdlat(r, lon, lat):
-    #Todo: test drdsph
     r = ctypes.c_double(r)
     lon = ctypes.c_double(lon)
     lat = ctypes.c_double(lat)
@@ -888,7 +882,6 @@ def drdlat(r, lon, lat):
 
 
 def drdpgr(body, lon, lat, alt, re, f):
-    #Todo: test drdpgr
     body = stypes.stringToCharP(body)
     lon = ctypes.c_double(lon)
     lat = ctypes.c_double(lat)
@@ -901,7 +894,6 @@ def drdpgr(body, lon, lat, alt, re, f):
 
 
 def drdsph(r, colat, lon):
-    #Todo: test drdsph
     r = ctypes.c_double(r)
     colat = ctypes.c_double(colat)
     lon = ctypes.c_double(lon)
@@ -911,7 +903,6 @@ def drdsph(r, colat, lon):
 
 
 def dsphdr(x, y, z):
-    #Todo: test dsphdr
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
     z = ctypes.c_double(z)
@@ -3683,9 +3674,8 @@ def spkapp(targ, et, ref, sobs, abcorr):
 
 
 def spkaps(targ, et, ref, abcorr, stobs, accobs):
-    #Todo: test spkaps
     targ = ctypes.c_int(targ)
-    et = ctypes.c_int(et)
+    et = ctypes.c_double(et)
     ref = stypes.stringToCharP(ref)
     abcorr = stypes.stringToCharP(abcorr)
     stobs = stypes.toDoubleVector(stobs)
