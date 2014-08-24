@@ -632,11 +632,27 @@ def test_daffpa():
 
 
 def test_dafgda():
-    assert 1
+    # not a very good test...
+    spice.kclear()
+    handle = spice.dafopr(cwd + "/de421.bsp")
+    elements = spice.dafgda(handle, 20, 21)
+    assert elements == [0.0]
+    spice.dafcls(handle)
+    spice.kclear()
 
 
 def test_dafgn():
-    assert 1
+    spice.kclear()
+    handle = spice.dafopr(cwd + "/de421.bsp")
+    spice.dafbfs(handle)
+    found = spice.daffna()
+    assert found
+    out = spice.dafgs(n=2)
+    assert out == [-3169195200.0000000, 1696852800.0000000]
+    outname = spice.dafgn(100)
+    assert outname == 'DE-0421LE-0421'
+    spice.dafcls(handle)
+    spice.kclear()
 
 
 def test_dafgs():
@@ -731,7 +747,11 @@ def test_dasopr():
 
 
 def test_dcyldr():
-    assert 1
+    output = spice.dcyldr(1.0, 0.0, 0.0)
+    expected = [[1.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [0.0, 0.0, 1.0]]
+    npt.assert_array_almost_equal(output, expected)
 
 
 def test_deltet():
@@ -755,7 +775,20 @@ def test_det():
 
 
 def test_dgeodr():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    size, radii = spice.bodvrd('EARTH', 'RADII', 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    lon = 118.0 * spice.rpd()
+    lat = 32.0 * spice.rpd()
+    alt = 0.0
+    spice.kclear()
+    rec = spice.latrec(lon, lat, alt)
+    output = spice.dgeodr(rec[0], rec[1], rec[2], radii[0], flat)
+    expected = [[-0.25730624850202866, 0.41177607401581356, 0.0],
+                [-0.019818463887750683, -0.012383950685377182, 0.0011247386599188864],
+                [0.040768073853231314, 0.02547471988726025, 0.9988438330394612]]
+    npt.assert_array_almost_equal(output, expected)
 
 
 def test_diags2():
@@ -781,7 +814,11 @@ def test_diff():
 
 
 def test_dlatdr():
-    assert 1
+    output = spice.dlatdr(1.0, 0.0, 0.0)
+    expected = [[1.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [0.0, 0.0, 1.0]]
+    npt.assert_array_almost_equal(output, expected)
 
 
 def test_dp2hx():
@@ -796,15 +833,26 @@ def test_dp2hx():
 
 
 def test_dpgrdr():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    n, radii = spice.bodvrd("MARS", "RADII", 3)
+    re = radii[0]
+    rp = radii[2]
+    f = (re - rp) / re
+    output = spice.dpgrdr("Mars", 90.0 * spice.rpd(), 45 * spice.rpd(), 300, re, f)
+    expected = [[0.25464790894703276, -0.5092958178940655, -0.0],
+                [-0.002629849831988239, -0.0013149249159941194, 1.5182979166821334e-05],
+                [0.004618598844358383, 0.0023092994221791917, 0.9999866677515724]]
+    npt.assert_array_almost_equal(output, expected)
+    spice.kclear()
 
 
 def test_dpmax():
-    assert 1
+    assert spice.dpmax() >= 1.0e37
 
 
 def test_dpmin():
-    assert 1
+    assert spice.dpmin() <= -1.0e37
 
 
 def test_dpr():
@@ -812,27 +860,66 @@ def test_dpr():
 
 
 def test_drdcyl():
-    assert 1
+    output = spice.drdcyl(1.0, np.deg2rad(180.0), 1.0)
+    expected = [[-1.0, 0.0, 0.0],
+                [0.0, -1.0, 0.0],
+                [0.0, 0.0, 1.0]]
+    npt.assert_array_almost_equal(output, expected)
 
 
 def test_drdgeo():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    size, radii = spice.bodvrd('EARTH', 'RADII', 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    lon = 118.0 * spice.rpd()
+    lat = 32.0 * spice.rpd()
+    alt = 0.0
+    spice.kclear()
+    output = spice.drdgeo(lon, lat, alt, radii[0], flat)
+    expected = [[-4780.329375996193, 1580.5982261675397, -0.3981344650201568],
+                [-2541.7462156656084, -2972.6729150327574, 0.7487820251299121],
+                [0.0, 5387.9427815962445, 0.5299192642332049]]
+    npt.assert_array_almost_equal(output, expected)
 
 
 def test_drdlat():
-    assert 1
+    output = spice.drdlat(1.0, 90.0 * spice.rpd(), 0.0)
+    expected = [[1.0, 0.0, -0.0],
+                [0.0, 0.0, 1.0],
+                [0.0, -1.0, 0.0]]
+    npt.assert_array_almost_equal(output, expected)
 
 
 def test_drdpgr():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    n, radii = spice.bodvrd("MARS", "RADII", 3)
+    re = radii[0]
+    rp = radii[2]
+    f = (re - rp) / re
+    output = spice.drdpgr("Mars", 90.0 * spice.rpd(), 45 * spice.rpd(), 300, re, f)
+    expected = [[-2620.6789148181783, 0.0, 0.0],
+                [0.0, 2606.460468253308, -0.7071067811865476],
+                [-0.0, 2606.460468253308, 0.7071067811865475]]
+    npt.assert_array_almost_equal(output, expected)
+    spice.kclear()
 
 
 def test_drdsph():
-    assert 1
+    output = spice.drdsph(1.0, np.pi / 2, np.pi)
+    expected = [[-1.0, 0.0, 0.0],
+                [0.0, 0.0, -1.0],
+                [0.0, -1.0, 0.0]]
+    npt.assert_array_almost_equal(output, expected)
 
 
 def test_dsphdr():
-    assert 1
+    output = spice.dsphdr(-1.0, 0.0, 0.0)
+    expected = [[-1.0, 0.0, 0.0],
+                [0.0, 0.0, -1.0],
+                [0.0, -1.0, 0.0]]
+    npt.assert_array_almost_equal(output, expected)
 
 
 def test_dtpool():
@@ -1111,7 +1198,6 @@ def test_ekopn():
 
 
 def test_ekopr():
-    assert 1
     spice.kclear()
     ekpath = cwd + "/exampleek.ek"
     if spice.exists(ekpath):
@@ -1133,7 +1219,6 @@ def test_ekops():
     assert handle is not None
     spice.ekcls(handle)
     spice.kclear()
-    assert 1
 
 
 def test_ekopw():
@@ -3128,7 +3213,14 @@ def test_sctiks():
 
 
 def test_sdiff():
-    assert 1
+    a = spice.stypes.SPICEINT_CELL(8)
+    b = spice.stypes.SPICEINT_CELL(8)
+    spice.insrti(1, a)
+    spice.insrti(2, a)
+    spice.insrti(3, b)
+    spice.insrti(4, b)
+    c = spice.sdiff(a, b)
+    assert [x for x in c] == [1, 2, 3, 4]
 
 
 def test_set():
@@ -3262,15 +3354,10 @@ def test_spkapo():
 
 def test_spkapp():
     spice.kclear()
-    MARS = 499
-    MOON = 301
-    EPOCH = 'Jan 1 2004 5:00 PM'
-    REF = 'J2000'
-    ABCORR = 'LT+S'
     spice.furnsh(_testKernelPath)
-    et = spice.str2et(EPOCH)
-    state = spice.spkssb(MOON, et, REF)
-    state_vec, ltime = spice.spkapp(MARS, et, REF, state, ABCORR)
+    et = spice.str2et('Jan 1 2004 5:00 PM')
+    state = spice.spkssb(301, et, 'J2000')
+    state_vec, ltime = spice.spkapp(499, et, 'J2000', state, 'LT+S')
     expected_vec = [164534472.31249404, 25121994.36858549, 11145412.838521784,
                     12.311977095260765, 19.88840036075132, 9.406787036260496]
     npt.assert_array_almost_equal(expected_vec, state_vec, decimal=6)
@@ -3278,7 +3365,24 @@ def test_spkapp():
 
 
 def test_spkaps():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et("2000 JAN 1 12:00:00 TDB")
+    stobs = spice.spkssb(399, et, 'J2000')
+    state0 = np.array(spice.spkssb(399, et - 1, 'J2000'))
+    state2 = np.array(spice.spkssb(399, et + 1, 'J2000'))
+    # qderiv proc
+    acc = spice.vlcomg(3, 0.5 / 1.0, state0 + 3, -0.5 / 1.0, state2 + 3)
+    acc = [acc[0], acc[1], acc[2], 0.0, 0.0, 0.0]
+    state, lt, dlt = spice.spkaps(301, et, "j2000", "lt+s", stobs, acc)
+    spice.kclear()
+    expectedLt = 1.3423106103603615
+    expectedDlt = 1.073169085424106e-07
+    expectedState = [-291584.61344800, -266693.406068426, -76095.653381450,
+                     15.9912693205773, -16.4471172000903, -3.80333394481323]
+    npt.assert_almost_equal(expectedLt, lt)
+    npt.assert_almost_equal(expectedDlt, dlt)
+    npt.assert_array_almost_equal(state, expectedState, decimal=5)
 
 
 def test_spkcls():
