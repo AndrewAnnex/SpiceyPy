@@ -1692,7 +1692,6 @@ def gdpool(name, start, room):
 
 
 def georec(lon, lat, alt, re, f):
-    #Todo: test georec
     lon = ctypes.c_double(lon)
     lat = ctypes.c_double(lat)
     alt = ctypes.c_double(alt)
@@ -1727,18 +1726,18 @@ def getfat(file):
 
 
 def getfov(instid, room, shapelen, framelen):
-    #This is technically a hack, please fix so that room does something!
     instid = ctypes.c_int(instid)
-    room = ctypes.c_int(room)
     shape = stypes.stringToCharP(" " * shapelen)
     framen = stypes.stringToCharP(" " * framelen)
     shapelen = ctypes.c_int(shapelen)
     framelen = ctypes.c_int(framelen)
     bsight = stypes.emptyDoubleVector(3)
-    n = ctypes.c_int(0)
-    bounds = stypes.emptyDoubleMatrix(x=3, y=4)
+    n = ctypes.c_int()
+    bounds = stypes.emptyDoubleMatrix(x=3, y=room)
+    room = ctypes.c_int(room)
     libspice.getfov_c(instid, room, shapelen, framelen, shape, framen, bsight, ctypes.byref(n), bounds)
-    return stypes.toPythonString(shape), stypes.toPythonString(framen), stypes.vectorToList(bsight), stypes.matrixToList(bounds)
+    return stypes.toPythonString(shape), stypes.toPythonString(framen), stypes.vectorToList(
+        bsight), n.value, stypes.matrixToList(bounds)[0:n.value]
 
 
 def getmsg(option, lenout):
@@ -2288,15 +2287,14 @@ def kclear():
 
 
 def kdata(which, kind, fillen, typlen, srclen):
-    #Todo: test kdata
     which = ctypes.c_int(which)
     kind = stypes.stringToCharP(kind)
     fillen = ctypes.c_int(fillen)
     typlen = ctypes.c_int(typlen)
     srclen = ctypes.c_int(srclen)
-    file = stypes.stringToCharP(" " * fillen.value)
-    filtyp = stypes.stringToCharP(" " * typlen.value)
-    source = stypes.stringToCharP(" " * srclen.value)
+    file = stypes.stringToCharP(fillen)
+    filtyp = stypes.stringToCharP(typlen)
+    source = stypes.stringToCharP(srclen)
     handle = ctypes.c_int()
     found = ctypes.c_bool()
     libspice.kdata_c(which, kind, fillen, typlen, srclen, file, filtyp, source, ctypes.byref(handle), ctypes.byref(found))
@@ -2304,7 +2302,6 @@ def kdata(which, kind, fillen, typlen, srclen):
 
 
 def kinfo(file, typlen, srclen):
-    #todo: test kinfo
     typlen = ctypes.c_int(typlen)
     srclen = ctypes.c_int(srclen)
     file = stypes.stringToCharP(file)
@@ -4297,7 +4294,6 @@ def surfpt(positn, u, a, b, c):
 
 
 def surfpv(stvrtx, stdir, a, b, c):
-    #Todo: test surfpv
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
     c = ctypes.c_double(c)

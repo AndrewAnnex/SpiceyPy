@@ -644,6 +644,10 @@ def test_dafgda():
     spice.kclear()
 
 
+def test_dafgh():
+    pass
+
+
 def test_dafgn():
     spice.kclear()
     handle = spice.dafopr(cwd + "/de421.bsp")
@@ -1342,6 +1346,25 @@ def test_elemi():
     assert not spice.elemi(-1, testCellOne)
 
 
+def test_eqncpv():
+    p = 10000.0
+    gm = 398600.436
+    ecc = 0.1
+    a = p / (1.0 - ecc)
+    n = np.sqrt(gm / a) / a
+    argp = 30. * spice.rpd()
+    node = 15. * spice.rpd()
+    inc = 10. * spice.rpd()
+    m0 = 45. * spice.rpd()
+    t0 = -100000000.0
+    eqel = [a, ecc * np.sin(argp + node), ecc * np.cos(argp + node), m0 + argp + node,
+            np.tan(inc / 2.0) * np.sin(node), np.tan(inc / 2.0) * np.cos(node), 0.0, n, 0.0]
+    state = spice.eqncpv(t0 - 9750.0, t0, eqel, spice.halfpi() * -1, spice.halfpi())
+    expected = [-10732.167433285387, 3902.505790600528, 1154.4516152766892,
+                -2.540766899262123, -5.15226920298345, -0.7615758062877463]
+    npt.assert_array_almost_equal(expected, state, decimal=5)
+
+
 def test_eqstr():
     assert spice.eqstr("A short string    ", "ashortstring")
     assert spice.eqstr("Embedded        blanks", "Em be dd ed bl an ks")
@@ -1562,7 +1585,31 @@ def test_getfat():
 
 
 def test_getfov():
-    assert 1
+    spice.kclear()
+    kernel = '{0}/getfov_test.ti'.format(cwd)
+    if spice.exists(kernel):
+        os.remove(kernel)
+    with open(kernel, 'w') as kernelFile:
+        kernelFile.write('\\begindata\n')
+        kernelFile.write("INS-999004_FOV_SHAPE            = 'POLYGON'\n")
+        kernelFile.write("INS-999004_FOV_FRAME            = 'SC999_INST004'\n")
+        kernelFile.write("INS-999004_BORESIGHT            = (  0.0,  1.0,  0.0 )\n")
+        kernelFile.write("INS-999004_FOV_BOUNDARY_CORNERS = (  0.0,  0.8,  0.5,\n")
+        kernelFile.write("                                     0.4,  0.8, -0.2,\n")
+        kernelFile.write("                                    -0.4,  0.8, -0.2,\n")
+        kernelFile.write("\\begintext\n")
+        kernelFile.close()
+    spice.furnsh(kernel)
+    shape, frame, bsight, n, bounds = spice.getfov(-999004, 4, 32, 32)
+    assert shape == "POLYGON"
+    assert frame == "SC999_INST004"
+    assert bsight == [0.0, 1.0, 0.0]
+    assert n == 3
+    expected = np.array([[0.0, 0.8, 0.5], [0.4, 0.8, -0.2], [-0.4, 0.8, -0.2]])
+    npt.assert_array_almost_equal(expected, bounds)
+    spice.kclear()
+    if spice.exists(kernel):
+        os.remove(kernel)
 
 
 def test_getmsg():
@@ -1611,6 +1658,10 @@ def test_gfevnt():
 
 
 def test_gffove():
+    assert 1
+
+
+def test_gfilum():
     assert 1
 
 
@@ -2106,11 +2157,29 @@ def test_kclear():
 
 
 def test_kdata():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    file, ftype, source, handle, found = spice.kdata(0, "META", 400, 10, 50)
+    assert found
+    assert ftype == 'META'
+    spice.kclear()
 
 
 def test_kinfo():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    filetype, source, handle, found = spice.kinfo(_testKernelPath, 80, 80)
+    assert found
+    assert filetype == 'META'
+    spice.kclear()
+
+
+def test_kplfrm():
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    cell = spice.kplfrm(-1)
+    assert cell.size > 100
+    spice.kclear()
 
 
 def test_ktotal():
@@ -2168,7 +2237,51 @@ def test_lcase():
 
 
 def test_ldpool():
-    assert 1
+    spice.kclear()
+    ldpoolNames = ['DELTET/DELTA_T_A', 'DELTET/K', 'DELTET/EB', 'DELTET/M', 'DELTET/DELTA_AT']
+    ldpoolLens = [1, 1, 1, 2, 46]
+    textbuf = ['DELTET/DELTA_T_A = 32.184', 'DELTET/K = 1.657D-3', 'DELTET/EB  = 1.671D-2',
+               'DELTET/M = ( 6.239996 1.99096871D-7 )', 'DELTET/DELTA_AT = ( 10, @1972-JAN-1',
+               '                     11, @1972-JUL-1',
+               '                     12, @1973-JAN-1',
+               '                     13, @1974-JAN-1',
+               '                     14, @1975-JAN-1',
+               '                     15, @1976-JAN-1',
+               '                     16, @1977-JAN-1',
+               '                     17, @1978-JAN-1',
+               '                     18, @1979-JAN-1',
+               '                     19, @1980-JAN-1',
+               '                     20, @1981-JUL-1',
+               '                     21, @1982-JUL-1',
+               '                     22, @1983-JUL-1',
+               '                     23, @1985-JUL-1',
+               '                     24, @1988-JAN-1',
+               '                     25, @1990-JAN-1',
+               '                     26, @1991-JAN-1',
+               '                     27, @1992-JUL-1',
+               '                     28, @1993-JUL-1',
+               '                     29, @1994-JUL-1',
+               '                     30, @1996-JAN-1',
+               '                     31, @1997-JUL-1',
+               '                     32, @1999-JAN-1 )']
+    kernel = '{0}/ldpool_test.tls'.format(cwd)
+    if spice.exists(kernel):
+        os.remove(kernel)
+    with open(kernel, 'w') as kernelFile:
+        kernelFile.write('\\begindata\n')
+        for line in textbuf:
+            kernelFile.write(line + "\n")
+        kernelFile.write("\\begintext\n")
+        kernelFile.close()
+    spice.ldpool(kernel)
+    for var, expectLen in zip(ldpoolNames, ldpoolLens):
+        found, n, vartype = spice.dtpool(var)
+        assert found
+        assert expectLen == n
+        assert vartype == 'N'
+    spice.kclear()
+    if spice.exists(kernel):
+        os.remove(kernel)
 
 
 def test_lmpool():
@@ -2401,14 +2514,6 @@ def test_matchw():
     assert spice.matchw(string, " *BCD*Z*", wstr, wchr)
 
 
-def test_maxd():
-    assert 1
-
-
-def test_maxi():
-    assert 1
-
-
 def test_mequ():
     m1 = np.identity(3)
     mout = spice.mequ(m1)
@@ -2419,14 +2524,6 @@ def test_mequg():
     m1 = np.identity(2)
     mout = spice.mequg(m1, 2, 2)
     assert np.array_equal(m1, mout)
-
-
-def test_mind():
-    assert 1
-
-
-def test_mini():
-    assert 1
 
 
 def test_mtxm():
@@ -3637,6 +3734,16 @@ def test_spkpvn():
     spice.kclear()
 
 
+def test_spksfs():
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    idcode = spice.bodn2c("PLUTO BARYCENTER")
+    et = spice.str2et("2011 FEB 18 UTC")
+    handle, descr, ident = spice.spksfs(idcode, et, 41)
+    assert ident == "DE-0421LE-0421"
+    spice.kclear()
+
+
 def test_spkssb():
     spice.kclear()
     spice.furnsh(_testKernelPath)
@@ -4120,7 +4227,12 @@ def test_surfpt():
 
 
 def test_surfpv():
-    assert 1
+    stvrtx = [2.0, 0.0, 0.0, 0.0, 0.0, 3.0]
+    stdir = [-1.0, 0.0, 0.0, 0.0, 0.0, 4.0]
+    stx, found = spice.surfpv(stvrtx, stdir, 1.0, 2.0, 3.0)
+    expected = [1.0, 0.0, 0.0, 0.0, 0.0, 7.0]
+    assert found
+    npt.assert_array_almost_equal(expected, stx)
 
 
 def test_swpool():
@@ -4248,6 +4360,10 @@ def test_tpictr():
 def test_trace():
     matrix = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
     assert spice.trace(matrix) == 3.0
+
+
+def test_trcdep():
+    pass
 
 
 def test_trcnam():

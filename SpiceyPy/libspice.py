@@ -258,7 +258,7 @@ libspice.getcml_c.argtypes = [c_int, c_char_p]
 libspice.getelm_c.argtypes = [c_int, c_int, c_void_p, POINTER(c_double), POINTER(c_double)]
 libspice.getfat_c.argtypes = [c_char_p, c_int, c_int, c_char_p, c_char_p]
 libspice.getfov_c.argtypes = [c_int, c_int, c_int, c_int, c_char_p, c_char_p, (c_double * 3), POINTER(c_int),
-                              (c_double * 3) * 4]
+                              POINTER(c_double * 3)]
 libspice.getmsg_c.argtypes = [c_char_p, c_int, c_char_p]
 libspice.gfbail_c.restype = c_bool
 libspice.gfclrh_c.argtypes = None
@@ -644,7 +644,8 @@ libspice.sumad_c.restype = c_double
 libspice.surfnm_c.argtypes = [c_double, c_double, c_double, (c_double * 3), (c_double * 3)]
 libspice.surfpt_c.argtypes = [(c_double * 3), (c_double * 3), c_double, c_double,
                               c_double, (c_double * 3), POINTER(c_bool)]
-libspice.surfpv_c.argtypes = [(c_double * 6), (c_double * 6), c_double, (c_double * 6), POINTER(c_bool)]
+libspice.surfpv_c.argtypes = [(c_double * 6), (c_double * 6), c_double, c_double, c_double, (c_double * 6),
+                              POINTER(c_bool)]
 libspice.swpool_c.argtypes = [c_char_p, c_int, c_int, c_void_p]
 libspice.sxform_c.argtypes = [c_char_p, c_char_p, c_double, (c_double * 6) * 6]
 libspice.szpool_c.argtypes = [c_char_p, POINTER(c_int), POINTER(c_bool)]
