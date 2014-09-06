@@ -230,11 +230,31 @@ def test_cgv2el():
 
 
 def test_chkin():
-    assert 1
+    spice.reset()
+    assert spice.trcdep() == 0
+    spice.chkin("test")
+    assert spice.trcdep() == 1
+    spice.chkin("trcdep")
+    assert spice.trcdep() == 2
+    spice.chkout("trcdep")
+    assert spice.trcdep() == 1
+    spice.chkout("test")
+    assert spice.trcdep() == 0
+    spice.reset()
 
 
 def test_chkout():
-    assert 1
+    spice.reset()
+    assert spice.trcdep() == 0
+    spice.chkin("test")
+    assert spice.trcdep() == 1
+    spice.chkin("trcdep")
+    assert spice.trcdep() == 2
+    spice.chkout("trcdep")
+    assert spice.trcdep() == 1
+    spice.chkout("test")
+    assert spice.trcdep() == 0
+    spice.reset()
 
 
 def test_cidfrm():
@@ -548,7 +568,7 @@ def test_cyllat():
 
 
 def test_cylrec():
-    assert spice.cylrec(0.0, np.radians(33.0), 0.0) == [0.0, 0.0, 0.0]
+    npt.assert_array_almost_equal(spice.cylrec(0.0, np.radians(33.0), 0.0), [0.0, 0.0, 0.0])
 
 
 def test_cylsph():
@@ -645,7 +665,7 @@ def test_dafgda():
 
 
 def test_dafgh():
-    pass
+    assert 1
 
 
 def test_dafgn():
@@ -655,7 +675,7 @@ def test_dafgn():
     found = spice.daffna()
     assert found
     out = spice.dafgs(n=2)
-    assert out == [-3169195200.0000000, 1696852800.0000000]
+    npt.assert_array_almost_equal(out, [-3169195200.0000000, 1696852800.0000000])
     outname = spice.dafgn(100)
     assert outname == 'DE-0421LE-0421'
     spice.dafcls(handle)
@@ -669,7 +689,7 @@ def test_dafgs():
     found = spice.daffna()
     assert found
     out = spice.dafgs(n=2)
-    assert out == [-3169195200.0000000, 1696852800.0000000]
+    npt.assert_array_almost_equal(out, [-3169195200.0000000, 1696852800.0000000])
     spice.dafcls(handle)
     spice.kclear()
 
@@ -732,8 +752,8 @@ def test_dafus():
     out = spice.dafgs(n=124)
     dc, ic = spice.dafus(out, 2, 6)
     spice.dafcls(handle)
-    assert dc == [-3169195200.0000000, 1696852800.0000000]
-    assert ic == [1, 0, 1, 2, 641, 310404]
+    npt.assert_array_almost_equal(dc, [-3169195200.0000000, 1696852800.0000000])
+    npt.assert_array_almost_equal(ic, [1, 0, 1, 2, 641, 310404])
     spice.kclear()
 
 
@@ -1603,7 +1623,7 @@ def test_getfov():
     shape, frame, bsight, n, bounds = spice.getfov(-999004, 4, 32, 32)
     assert shape == "POLYGON"
     assert frame == "SC999_INST004"
-    assert bsight == [0.0, 1.0, 0.0]
+    npt.assert_array_almost_equal(bsight, [0.0, 1.0, 0.0])
     assert n == 3
     expected = np.array([[0.0, 0.8, 0.5], [0.4, 0.8, -0.2], [-0.4, 0.8, -0.2]])
     npt.assert_array_almost_equal(expected, bounds)
@@ -2749,21 +2769,21 @@ def test_orderc():
     inarray = ["a", "abc", "ab"]
     expectedOrder = [0, 2, 1]
     order = spice.orderc(inarray)
-    assert expectedOrder == order
+    npt.assert_array_almost_equal(expectedOrder, order)
 
 
 def test_orderd():
     inarray = [0.0, 2.0, 1.0]
     expectedOrder = [0, 2, 1]
     order = spice.orderd(inarray)
-    assert expectedOrder == order
+    npt.assert_array_almost_equal(expectedOrder, order)
 
 
 def test_orderi():
     inarray = [0, 2, 1]
     expectedOrder = [0, 2, 1]
     order = spice.orderi(inarray)
-    assert expectedOrder == order
+    npt.assert_array_almost_equal(expectedOrder, order)
 
 
 def test_oscelt():
@@ -3021,7 +3041,14 @@ def test_q2m():
 
 
 def test_qcktrc():
-    assert 1
+    spice.reset()
+    spice.chkin("test")
+    spice.chkin("qcktrc")
+    trace = spice.qcktrc(40)
+    assert trace == 'test --> qcktrc'
+    spice.chkout("qcktrc")
+    spice.chkout("test")
+    spice.reset()
 
 
 def test_qdq2av():
@@ -3042,14 +3069,14 @@ def test_qxq():
     qI = [0.0, 1.0, 0.0, 0.0]
     qJ = [0.0, 0.0, 1.0, 0.0]
     qK = [0.0, 0.0, 0.0, 1.0]
-    assert spice.qxq(qI, qJ) == qK
-    assert spice.qxq(qJ, qK) == qI
-    assert spice.qxq(qK, qI) == qJ
-    assert spice.qxq(qI, qI) == nqID
-    assert spice.qxq(qJ, qJ) == nqID
-    assert spice.qxq(qK, qK) == nqID
-    assert spice.qxq(qID, qI) == qI
-    assert spice.qxq(qI, qID) == qI
+    npt.assert_array_almost_equal(spice.qxq(qI, qJ), qK)
+    npt.assert_array_almost_equal(spice.qxq(qJ, qK), qI)
+    npt.assert_array_almost_equal(spice.qxq(qK, qI), qJ)
+    npt.assert_array_almost_equal(spice.qxq(qI, qI), nqID)
+    npt.assert_array_almost_equal(spice.qxq(qJ, qJ), nqID)
+    npt.assert_array_almost_equal(spice.qxq(qK, qK), nqID)
+    npt.assert_array_almost_equal(spice.qxq(qID, qI), qI)
+    npt.assert_array_almost_equal(spice.qxq(qI, qID), qI)
 
 
 def test_radrec():
@@ -3179,21 +3206,21 @@ def test_reordd():
     array = [1.0, 3.0, 2.0]
     iorder = [0, 2, 1]
     outarray = spice.reordd(iorder, 3, array)
-    assert outarray == [1.0, 2.0, 3.0]
+    npt.assert_array_almost_equal(outarray, [1.0, 2.0, 3.0])
 
 
 def test_reordi():
     array = [1, 3, 2]
     iorder = [0, 2, 1]
     outarray = spice.reordi(iorder, 3, array)
-    assert outarray == [1, 2, 3]
+    npt.assert_array_almost_equal(outarray, [1, 2, 3])
 
 
 def test_reordl():
     array = [True, True, False]
     iorder = [0, 2, 1]
     outarray = spice.reordl(iorder, 3, array)
-    assert outarray == array  # reordl has the same issue as reordc
+    npt.assert_array_almost_equal(outarray, array)  # reordl has the same issue as reordc
 
 
 def test_repmc():
@@ -3462,13 +3489,13 @@ def test_shellc():
 def test_shelld():
     array = [99.0, 33.0, 55.0, 44.0, -77.0, 66.0]
     expected = [-77.0, 33.0, 44.0, 55.0, 66.0, 99.0]
-    assert spice.shelld(6, array) == expected
+    npt.assert_array_almost_equal(spice.shelld(6, array), expected)
 
 
 def test_shelli():
     array = [99, 33, 55, 44, -77, 66]
     expected = [-77, 33, 44, 55, 66, 99]
-    assert spice.shelli(6, array) == expected
+    npt.assert_array_almost_equal(spice.shelli(6, array), expected)
 
 
 def test_sigerr():
@@ -3504,9 +3531,10 @@ def test_sphlat():
 
 
 def test_sphrec():
-    assert spice.sphrec(0.0, 0.0, 0.0) == [0.0, 0.0, 0.0]
+    expected1 = np.array([0.0, 0.0, 0.0])
     expected2 = np.array([1.0, 0.0, 0.0])
     expected3 = np.array([0.0, 0.0, -1.0])
+    npt.assert_array_almost_equal(spice.sphrec(0.0, 0.0, 0.0), expected1)
     npt.assert_array_almost_equal(spice.sphrec(1.0, 90.0 * spice.rpd(), 0.0), expected2)
     npt.assert_array_almost_equal(spice.sphrec(1.0, 180.0 * spice.rpd(), 0.0), expected3)
 
@@ -4216,14 +4244,14 @@ def test_sumai():
 
 def test_surfnm():
     point = [0.0, 0.0, 3.0]
-    assert spice.surfnm(1.0, 2.0, 3.0, point) == [0.0, 0.0, 1.0]
+    npt.assert_array_almost_equal(spice.surfnm(1.0, 2.0, 3.0, point), [0.0, 0.0, 1.0])
 
 
 def test_surfpt():
     position = [2.0, 0.0, 0.0]
     u = [-1.0, 0.0, 0.0]
     point = spice.surfpt(position, u, 1.0, 2.0, 3.0)
-    assert point == [1.0, 0.0, 0.0]
+    npt.assert_array_almost_equal(point, [1.0, 0.0, 0.0])
 
 
 def test_surfpv():
@@ -4252,7 +4280,7 @@ def test_sxform():
     polar = abc[2]
     f = (equatr - polar) / equatr
     estate = spice.georec(lon, lat, alt, equatr, f)
-    estate += [0.0, 0.0, 0.0]
+    estate = np.append(estate, [0.0, 0.0, 0.0])
     xform = np.array(spice.sxform('IAU_EARTH', 'J2000', et))
     spice.kclear()
     jstate = np.dot(xform, estate)
@@ -4363,11 +4391,33 @@ def test_trace():
 
 
 def test_trcdep():
-    pass
+    spice.reset()
+    assert spice.trcdep() == 0
+    spice.chkin("test")
+    assert spice.trcdep() == 1
+    spice.chkin("trcdep")
+    assert spice.trcdep() == 2
+    spice.chkout("trcdep")
+    assert spice.trcdep() == 1
+    spice.chkout("test")
+    assert spice.trcdep() == 0
+    spice.reset()
 
 
 def test_trcnam():
-    assert 1
+    spice.reset()
+    assert spice.trcdep() == 0
+    spice.chkin("test")
+    assert spice.trcdep() == 1
+    assert spice.trcnam(0, 10) == "test"
+    spice.chkin("trcnam")
+    assert spice.trcdep() == 2
+    assert spice.trcnam(1, 10) == "trcnam"
+    spice.chkout("trcnam")
+    assert spice.trcdep() == 1
+    spice.chkout("test")
+    assert spice.trcdep() == 0
+    spice.reset()
 
 
 def test_trcoff():
@@ -4386,7 +4436,7 @@ def test_twovec():
     axdef = [1.0, 0.0, 0.0]
     plndef = [0.0, -1.0, 0.0]
     expected = [[1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, -1.0]]
-    assert spice.twovec(axdef, 1, plndef, 2) == expected
+    npt.assert_array_almost_equal(spice.twovec(axdef, 1, plndef, 2), expected)
 
 
 def test_tyear():
@@ -4479,13 +4529,13 @@ def test_utc2et():
 def test_vadd():
     v1 = [1.0, 2.0, 3.0]
     v2 = [4.0, 5.0, 6.0]
-    assert spice.vadd(v1, v2) == [5.0, 7.0, 9.0]
+    npt.assert_array_almost_equal(spice.vadd(v1, v2), [5.0, 7.0, 9.0])
 
 
 def test_vaddg():
     v1 = [1.0, 2.0, 3.0]
     v2 = [4.0, 5.0, 6.0]
-    assert spice.vaddg(v1, v2, 3) == [5.0, 7.0, 9.0]
+    npt.assert_array_almost_equal(spice.vaddg(v1, v2, 3), [5.0, 7.0, 9.0])
 
 
 def test_valid():
@@ -4560,7 +4610,7 @@ def test_vlcom3():
     vec3 = [3.0, 3.0, 3.0]
     outvec = spice.vlcom3(1.0, vec1, 1.0, vec2, 1.0, vec3)
     expected = [6.0, 6.0, 6.0]
-    assert outvec == expected
+    npt.assert_array_almost_equal(outvec, expected)
 
 
 def test_vlcom():
@@ -4568,7 +4618,7 @@ def test_vlcom():
     vec2 = [2.0, 2.0, 2.0]
     outvec = spice.vlcom(1.0, vec1, 1.0, vec2)
     expected = [3.0, 3.0, 3.0]
-    assert outvec == expected
+    npt.assert_array_almost_equal(outvec, expected)
 
 
 def test_vlcomg():
@@ -4576,7 +4626,7 @@ def test_vlcomg():
     vec2 = [2.0, 2.0]
     outvec = spice.vlcomg(2, 1.0, vec1, 1.0, vec2)
     expected = [3.0, 3.0]
-    assert outvec == expected
+    npt.assert_array_almost_equal(outvec, expected)
 
 
 def test_vminug():
@@ -4979,8 +5029,8 @@ def test_xf2rav():
           [0.0, 0.0, 1.0]]
     xform = spice.rav2xf(rz, e)
     rz2, e2 = spice.xf2rav(xform)
-    assert e == e2
-    assert rz == rz2
+    npt.assert_array_almost_equal(e, e2)
+    npt.assert_array_almost_equal(rz, rz2)
 
 
 def test_xfmsta():
@@ -4991,16 +5041,16 @@ def test_xpose6():
     m1 = [[1.0, 2.0, 3.0, 4.0, 5.0, 6.0], [0.0, 7.0, 8.0, 9.0, 10.0, 11.0], [0.0, 0.0, 12.0, 13.0, 14.0, 15.0],
           [0.0, 0.0, 0.0, 16.0, 17.0, 18.0], [0.0, 0.0, 0.0, 0.0, 19.0, 20.0], [0.0, 0.0, 0.0, 0.0, 0.0, 21.0]]
     mout_expected = np.array(m1).transpose().tolist()
-    assert spice.xpose6(m1) == mout_expected
+    npt.assert_array_almost_equal(spice.xpose6(m1), mout_expected)
 
 
 def test_xpose():
     m1 = [[1.0, 2.0, 3.0], [0.0, 4.0, 5.0], [0.0, 6.0, 0.0]]
-    assert spice.xpose(m1) == [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]]
-    assert spice.xpose(np.array(m1)) == [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]]
+    npt.assert_array_almost_equal(spice.xpose(m1), [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]])
+    npt.assert_array_almost_equal(spice.xpose(np.array(m1)), [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]])
 
 
 def test_xposeg():
     m1 = [[1.0, 2.0, 3.0], [0.0, 4.0, 5.0], [0.0, 6.0, 0.0]]
-    assert spice.xposeg(m1, 3, 3) == [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]]
-    assert spice.xposeg(np.array(m1), 3, 3) == [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]]
+    npt.assert_array_almost_equal(spice.xposeg(m1, 3, 3), [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]])
+    npt.assert_array_almost_equal(spice.xposeg(np.array(m1), 3, 3), [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]])

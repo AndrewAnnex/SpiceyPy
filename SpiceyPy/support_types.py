@@ -1,8 +1,11 @@
 # Collection of supporting functions for wrapper functions
 __author__ = 'Apollo117'
 from ctypes import c_char_p, c_bool, c_int, c_double, c_char, c_void_p, sizeof, \
-    POINTER, pointer, Array, create_string_buffer, create_unicode_buffer, cast, Structure
+    POINTER, pointer, Array, create_string_buffer, create_unicode_buffer, cast, Structure, \
+    CFUNCTYPE
+
 import numpy
+from numpy import ctypeslib as numpc
 import six
 
 
@@ -81,17 +84,17 @@ def emptyIntVector(n):
 
 def vectorToList(x):
     if isinstance(x[0], bool):
-        return [y for y in x]
+        return numpy.fromiter(x, numpy.bool, count=len(x))
     elif isinstance(x[0], int):
-        return [y for y in x]
+        return numpy.fromiter(x, numpy.int_, count=len(x))
     elif isinstance(x[0], float):
-        return [y for y in x]
+        return numpy.fromiter(x, numpy.float64, count=len(x))
     elif isinstance(x[0].value, bytes):
         return [bytes.decode(y.value) for y in x]
 
 
 def matrixToList(x):
-    return [vectorToList(y) for y in x]
+    return numpc.as_array(x)
 
 
 def stringToCharP(inobject, inlen=None):
@@ -135,8 +138,7 @@ def listToCharArrayPtr(inList, xLen=None, yLen=None):
         xLen = xLen.value
     if isinstance(yLen, c_int):
         yLen = yLen.value
-    return cast(((c_char * xLen) * yLen)(*[stringToCharP(l, inlen=xLen) for l in inList]),
-                c_char_p)
+    return cast(((c_char * xLen) * yLen)(*[stringToCharP(l, inlen=xLen) for l in inList]), c_char_p)
 
 
 class DoubleArrayType:
