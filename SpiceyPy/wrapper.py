@@ -244,14 +244,12 @@ def cgv2el(center, vec1, vec2):
 
 
 def chkin(module):
-    #Todo: test chkin
     module = stypes.stringToCharP(module)
     libspice.chkin_c(module)
     pass
 
 
 def chkout(module):
-    #Todo: test chkout
     module = stypes.stringToCharP(module)
     libspice.chkout_c(module)
     pass
@@ -542,7 +540,6 @@ def dafac(handle, n, lenvals, buffer):
 
 
 def dafbbs(handle):
-    #Todo: test dafbbs
     handle = ctypes.c_int(handle)
     libspice.dafbbs_c(handle)
     pass
@@ -969,7 +966,6 @@ def dvsep(s1, s2):
 
 
 def edlimb(a, b, c, viewpt):
-    #Todo: test edlimb
     limb = stypes.Ellipse()
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
@@ -1494,7 +1490,6 @@ def errint(marker, number):
 
 
 def errprt(op, lenout, inlist):
-    #Todo: test errprt
     lenout = ctypes.c_int(lenout)
     op = stypes.stringToCharP(op)
     inlist = ctypes.create_string_buffer(str.encode(inlist), lenout.value)
@@ -1575,7 +1570,6 @@ def exists(fname):
 
 
 def expool(name):
-    #Todo: test expool
     name = stypes.stringToCharP(name)
     found = ctypes.c_bool()
     libspice.expool_c(name, ctypes.byref(found))
@@ -1626,7 +1620,6 @@ def frame(x):
 
 
 def frinfo(frcode):
-    #Todo: test frinfo
     frcode = ctypes.c_int(frcode)
     cent = ctypes.c_int()
     frclss = ctypes.c_int()
@@ -1637,7 +1630,6 @@ def frinfo(frcode):
 
 
 def frmnam(frcode, lenout=125):
-    #Todo: test frmnam
     frcode = ctypes.c_int(frcode)
     lenout = ctypes.c_int(lenout)
     frname = stypes.stringToCharP(lenout)
@@ -2134,7 +2126,6 @@ def inedpl(a, b, c, plane):
 
 
 def inelpl(ellips, plane):
-    #Todo: test inelpl
     assert(isinstance(plane, stypes.Plane))
     assert(isinstance(ellips, stypes.Ellipse))
     nxpts = ctypes.c_int()
@@ -2437,7 +2428,6 @@ def lparss(inlist, delims, NMAX=20, LENGTH=50):
 
 
 def lspcn(body, et, abcorr):
-    #Todo: test lspcn
     body = stypes.stringToCharP(body)
     et = ctypes.c_double(et)
     abcorr = stypes.stringToCharP(abcorr)
@@ -3010,7 +3000,6 @@ def posr(string, substr, start):
 
 
 def prop2b(gm, pvinit, dt):
-    #todo: test prob2b
     gm = ctypes.c_double(gm)
     pvinit = stypes.toDoubleVector(pvinit)
     dt = ctypes.c_double(dt)
@@ -3072,6 +3061,13 @@ def q2m(q):
     mout = stypes.emptyDoubleMatrix()
     libspice.q2m_c(q, mout)
     return stypes.matrixToList(mout)
+
+
+def qcktrc(tracelen):
+    tracestr = stypes.stringToCharP(tracelen)
+    tracelen = ctypes.c_int(tracelen)
+    libspice.qcktrc_c(tracelen, tracestr)
+    return stypes.toPythonString(tracestr)
 
 
 def qdq2av(q, dq):
@@ -4245,7 +4241,6 @@ def subslr(method, target, et, fixref, abcorr, obsrvr):
 
 
 def subsol(method, target, et, abcorr, obsrvr):
-    #Todo: test subsol
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
@@ -4342,7 +4337,6 @@ def szpool(name):
 
 
 def timdef(action, item, lenout, value=None):
-    #todo: test
     action = stypes.stringToCharP(action)
     item = stypes.stringToCharP(item)
     lenout = ctypes.c_int(lenout)
@@ -4409,7 +4403,6 @@ def tpictr(sample, lenout, lenerr):
 
 
 def trace(matrix):
-    #Todo: test trace
     matrix = stypes.toDoubleMatrix(matrix)
     return libspice.trace_c(matrix)
 
@@ -4418,7 +4411,7 @@ def trcnam(index, namlen):
     index = ctypes.c_int(index)
     name = stypes.stringToCharP(namlen)
     namlen = ctypes.c_int(namlen)
-    libspice.tcnam(index, namlen, name)
+    libspice.trcnam_c(index, namlen, name)
     return stypes.toPythonString(name)
 
 
