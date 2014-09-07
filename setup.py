@@ -3,7 +3,7 @@ from setuptools import setup
 from setuptools.command.test import test as TestCommand
 import sys
 import getspice
-import test.gettestkernels as getTestKernels
+import SpiceyPy.test.gettestkernels as getTestKernels
 import os
 import subprocess
 
