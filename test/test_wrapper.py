@@ -2129,7 +2129,10 @@ def test_invert():
 
 
 def test_invort():
-    assert 1
+    # I think this is valid...
+    m = spice.ident()
+    mit = spice.invort(m)
+    npt.assert_array_almost_equal(m, mit)
 
 
 def test_isordv():
@@ -2233,6 +2236,17 @@ def test_ktotal():
 
 def test_kxtrct():
     assert 1
+    # Unstable, not sure why but I am getting segfaults
+    # instring = "FROM 1 October 1984 12:00:00 TO 1 January 1987"
+    # outstring, found, substr = spice.kxtrct("TO", 13, ["FROM", "TO", "BEGINNING", "ENDING"], 5, 120, 120, instring)
+    # assert found
+    # assert outstring == 'FROM 1 October 1984 12:00:00'
+    # assert substr == '1 January 1987'
+
+
+# def test_kxtrctstress():
+# for i in range(500):
+#         test_kxtrct()
 
 
 def test_lastnb():
@@ -2378,7 +2392,11 @@ def test_lparsm():
 
 
 def test_lparss():
-    assert 1
+    stringtest = "  A number of words   separated   by spaces.   "
+    delims = " ,."
+    outset = spice.lparss(stringtest, delims)
+    expected = ['', 'A', 'by', 'number', 'of', 'separated', 'spaces', 'words']
+    assert [x for x in outset] == expected
 
 
 def test_lspcn():
@@ -3133,6 +3151,12 @@ def test_raxisa():
 
 def test_rdtext():
     assert 1
+    # This technically works, but there is no way to reset the read position between runs that I could find.
+    # spice.kclear()
+    # line, eof = spice.rdtext(_testKernelPath, 100)
+    # assert not eof
+    # assert line == '\\begindata'
+    # spice.kclear()
 
 
 def test_reccyl():
@@ -5070,7 +5094,20 @@ def test_xf2rav():
 
 
 def test_xfmsta():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et('July 4, 2003 11:00 AM PST')
+    state, lt = spice.spkezr("Mars", et, "J2000", "LT+S", "Earth")
+    expected_lt = 269.6898816177049
+    expected_state = [73822235.33116072, -27127919.178592984, -18741306.284863796,
+                      -6.808513317178952, 7.513996167680786, 3.001298515816776]
+    npt.assert_almost_equal(lt, expected_lt)
+    npt.assert_array_almost_equal(state, expected_state)
+    state_lat = spice.xfmsta(state, "rectangular", "latitudinal", " ")
+    expected_lat_state = [80850992.507900745, -0.35215825739096612, -0.23392826228310765,
+                          -9.4334897343891715, 5.9815768435033359e-08, 1.0357556211756963e-08]
+    npt.assert_array_almost_equal(state_lat, expected_lat_state)
+    spice.kclear()
 
 
 def test_xpose6():

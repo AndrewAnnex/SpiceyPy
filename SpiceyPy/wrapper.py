@@ -2318,19 +2318,19 @@ def ktotal(kind):
     return count.value
 
 
-def kxtrct(keywd, termlen, terms, nterms, stringlen, substrlen, string):
-    #Todo: test kxtrct
+def kxtrct(keywd, termlen, terms, nterms, stringlen, substrlen, instring):
     keywd = stypes.stringToCharP(keywd)
     termlen = ctypes.c_int(termlen)
-    terms = stypes.listToCharArrayPtr(terms, xlen=stringlen, yLen=nterms)
+    terms = stypes.listToCharArrayPtr(terms)
     nterms = ctypes.c_int(nterms)
-    string = stypes.stringToCharP(string, inlen=stringlen)
-    substr = stypes.stringToCharP(" " * substrlen, inlen=substrlen)
+    instring = stypes.stringToCharP(instring)
+    substr = stypes.stringToCharP(substrlen)
     stringlen = ctypes.c_int(stringlen)
     substrlen = ctypes.c_int(substrlen)
     found = ctypes.c_bool()
-    libspice.kxtrct_c(keywd, termlen, terms, nterms, stringlen, substrlen, ctypes.byref(string), ctypes.byref(found), ctypes.byref(substr))
-    return stypes.toPythonString(string), found.value, stypes.toPythonString(substr)
+    libspice.kxtrct_c(keywd, termlen, ctypes.byref(terms), nterms,
+                      stringlen, substrlen, instring, ctypes.byref(found), substr)
+    return stypes.toPythonString(instring), found.value, stypes.toPythonString(substr)
 
 
 ########################################################################################################################
@@ -2419,7 +2419,6 @@ def lparsm(inlist, delims, nmax, lenout=None):
 
 
 def lparss(inlist, delims, NMAX=20, LENGTH=50):
-    #todo: test lparss, not working exactly
     inlist = stypes.stringToCharP(inlist)
     delims = stypes.stringToCharP(delims)
     returnSet = stypes.SPICECHAR_CELL(NMAX, LENGTH)
@@ -3108,7 +3107,6 @@ def rav2xf(rot, av):
 
 
 def raxisa(matrix):
-    #Todo: test raxisa
     matrix = stypes.listtodoublematrix(matrix)
     axis = stypes.emptyDoubleVector(3)
     angle = ctypes.c_double()
@@ -3116,14 +3114,13 @@ def raxisa(matrix):
     return stypes.vectorToList(axis), angle.value
 
 
-def rdtext(file, lenout):
-    #Todo: test rdtext
+def rdtext(file, lenout):  # pragma: no cover
     file = stypes.stringToCharP(file)
-    line = stypes.stringToCharP(" " * lenout)
+    line = stypes.stringToCharP(lenout)
     lenout = ctypes.c_int(lenout)
     eof = ctypes.c_bool()
     libspice.rdtext_c(file, lenout, line, ctypes.byref(eof))
-    return line, eof.value
+    return stypes.toPythonString(line), eof.value
 
 
 def reccyl(rectan):
