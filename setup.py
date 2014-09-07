@@ -147,7 +147,7 @@ try:
         packages=['SpiceyPy'],
         tests_require=['pytest'],
         cmdclass={'test': PyTest},
-        test_suite='test.test_wrapper.py',
+        test_suite='SpiceyPy.test.test_wrapper.py',
         requires=['numpy', 'pytest', 'coveralls', 'coverage', 'six'],
         package_data={'SpiceyPy': ['*.so']},
         include_package_data=True,

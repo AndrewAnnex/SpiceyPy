@@ -4,9 +4,8 @@ __author__ = 'Apollo117'
 import ctypes
 import SpiceyPy.support_types as stypes
 from SpiceyPy.libspice import libspice
-import numpy
 
-########################################################################################################################
+# #######################################################################################################################
 # A
 
 
@@ -45,6 +44,7 @@ def axisar(axis, angle):
     r = stypes.emptyDoubleMatrix()
     libspice.axisar_c(axis, angle, r)
     return stypes.matrixToList(r)
+
 
 ########################################################################################################################
 # B
@@ -681,7 +681,8 @@ def dafrfr(handle, lenout):
     fward = ctypes.c_int()
     bward = ctypes.c_int()
     free = ctypes.c_int()
-    libspice.dafrfr_c(handle, lenout, ctypes.byref(nd), ctypes.byref(ni), ifname, ctypes.byref(fward), ctypes.byref(bward), ctypes.byref(free))
+    libspice.dafrfr_c(handle, lenout, ctypes.byref(nd), ctypes.byref(ni), ifname, ctypes.byref(fward),
+                      ctypes.byref(bward), ctypes.byref(free))
     return nd.value, ni.value, stypes.toPythonString(ifname), fward.value, bward.value, free.value
 
 
@@ -961,6 +962,7 @@ def dvsep(s1, s2):
     s2 = stypes.toDoubleVector(s2)
     return libspice.dvsep_c(s1, s2)
 
+
 ########################################################################################################################
 # E
 
@@ -1039,7 +1041,8 @@ def ekaclc(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs, wkindx)
     nlflgs = ctypes.c_bool(nlflgs)
     rcptrs = ctypes.c_int(rcptrs)
     wkindx = ctypes.c_int(wkindx)
-    libspice.ekaclc_c(handle, segno, column, vallen, ctypes.byref(cvals), ctypes.byref(entszs), ctypes.byref(nlflgs), ctypes.byref(rcptrs), ctypes.cast(wkindx, ctypes.POINTER(ctypes.c_int)))
+    libspice.ekaclc_c(handle, segno, column, vallen, ctypes.byref(cvals), ctypes.byref(entszs), ctypes.byref(nlflgs),
+                      ctypes.byref(rcptrs), ctypes.cast(wkindx, ctypes.POINTER(ctypes.c_int)))
     return wkindx.value
 
 
@@ -1210,7 +1213,8 @@ def ekifld(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls):
     cnmlen = ctypes.c_int(cnmlen)
     declen = ctypes.c_int(declen)
     segno = ctypes.c_int()
-    libspice.ekifld_c(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls, ctypes.byref(segno), ctypes.byref(recptrs))
+    libspice.ekifld_c(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls, ctypes.byref(segno),
+                      ctypes.byref(recptrs))
     return segno.value, stypes.vectorToList(recptrs)
 
 
@@ -1294,8 +1298,11 @@ def ekpsel(query, msglen, tablen, collen):
     cols = stypes.charvector(100, 65)
     error = ctypes.c_bool()
     errmsg = stypes.stringToCharP(msglen)
-    libspice.ekpsel_c(query, msglen, tablen, collen, ctypes.byref(n), ctypes.byref(xbegs), ctypes.byref(xends), ctypes.byref(xtypes), ctypes.byref(xclass), ctypes.byref(tabs), ctypes.byref(cols), ctypes.byref(error), ctypes.byref(errmsg))
-    return n.value, xbegs.value, xends.value, xtypes.value, xclass.value, stypes.vectorToList(tabs), stypes.vectorToList(cols), error.value, stypes.toPythonString(errmsg)
+    libspice.ekpsel_c(query, msglen, tablen, collen, ctypes.byref(n), ctypes.byref(xbegs), ctypes.byref(xends),
+                      ctypes.byref(xtypes), ctypes.byref(xclass), ctypes.byref(tabs), ctypes.byref(cols),
+                      ctypes.byref(error), ctypes.byref(errmsg))
+    return n.value, xbegs.value, xends.value, xtypes.value, xclass.value, stypes.vectorToList(
+        tabs), stypes.vectorToList(cols), error.value, stypes.toPythonString(errmsg)
 
 
 def ekrcec(handle, segno, recno, column, lenout, nelts=3):
@@ -1308,7 +1315,8 @@ def ekrcec(handle, segno, recno, column, lenout, nelts=3):
     nvals = ctypes.c_int()
     cvals = stypes.charvector(ndim=nelts, lenvals=lenout)
     isnull = ctypes.c_bool()
-    libspice.ekrcec_c(handle, segno, recno, column, lenout, ctypes.byref(nvals), ctypes.byref(cvals), ctypes.byref(isnull))
+    libspice.ekrcec_c(handle, segno, recno, column, lenout, ctypes.byref(nvals), ctypes.byref(cvals),
+                      ctypes.byref(isnull))
     return nvals.value, stypes.vectorToList(cvals), isnull.value
 
 
@@ -1404,7 +1412,7 @@ def ekuef(handle):
 
 def el2cgv(ellipse):
     #Todo: test el2cgv
-    assert(isinstance(ellipse, stypes.Ellipse))
+    assert (isinstance(ellipse, stypes.Ellipse))
     center = stypes.emptyDoubleVector(3)
     smajor = stypes.emptyDoubleVector(3)
     sminor = stypes.emptyDoubleVector(3)
@@ -1519,7 +1527,7 @@ def et2lst(et, body, lon, typein, timlen, ampmlen):
     time = stypes.stringToCharP(timlen)
     ampm = stypes.stringToCharP(ampmlen)
     libspice.et2lst_c(et, body, lon, typein, timlen, ampmlen,
-                    ctypes.byref(hr), ctypes.byref(mn), ctypes.byref(sc), time, ampm)
+                      ctypes.byref(hr), ctypes.byref(mn), ctypes.byref(sc), time, ampm)
     return hr.value, mn.value, sc.value, stypes.toPythonString(time), stypes.toPythonString(ampm)
 
 
@@ -1648,6 +1656,7 @@ def furnsh(path):
     path = stypes.stringToCharP(path)
     libspice.furnsh_c(path)
     pass
+
 
 ########################################################################################################################
 # G
@@ -1914,7 +1923,8 @@ def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine,
                     adjust, step, nintvals, ctypes.byref(cnfine), ctypes.byref(result))
 
 
-def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine, result):
+def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr, relate, refval, adjust, step, nintvals,
+          cnfine, result):
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
     assert isinstance(result, stypes.SpiceCell)
@@ -2107,7 +2117,7 @@ def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
     solar = ctypes.c_double(0)
     emissn = ctypes.c_double(0)
     libspice.ilumin_c(method, target, et, fixref, abcorr, obsrvr, spoint, ctypes.byref(trgepc),
-              srfvec, ctypes.byref(phase), ctypes.byref(solar), ctypes.byref(emissn))
+                      srfvec, ctypes.byref(phase), ctypes.byref(solar), ctypes.byref(emissn))
     return trgepc.value, stypes.vectorToList(srfvec), phase.value, solar.value, emissn.value
 
 
@@ -2126,8 +2136,8 @@ def inedpl(a, b, c, plane):
 
 
 def inelpl(ellips, plane):
-    assert(isinstance(plane, stypes.Plane))
-    assert(isinstance(ellips, stypes.Ellipse))
+    assert (isinstance(plane, stypes.Plane))
+    assert (isinstance(ellips, stypes.Ellipse))
     nxpts = ctypes.c_int()
     xpt1 = stypes.emptyDoubleVector(3)
     xpt2 = stypes.emptyDoubleVector(3)
@@ -2136,7 +2146,7 @@ def inelpl(ellips, plane):
 
 
 def inrypl(vertex, direct, plane):
-    assert(isinstance(plane, stypes.Plane))
+    assert (isinstance(plane, stypes.Plane))
     vertex = stypes.toDoubleVector(vertex)
     direct = stypes.toDoubleVector(direct)
     nxpts = ctypes.c_int()
@@ -2268,6 +2278,8 @@ def j2100():
 
 def jyear():
     return libspice.jyear_c()
+
+
 ########################################################################################################################
 # K
 
@@ -2288,8 +2300,10 @@ def kdata(which, kind, fillen, typlen, srclen):
     source = stypes.stringToCharP(srclen)
     handle = ctypes.c_int()
     found = ctypes.c_bool()
-    libspice.kdata_c(which, kind, fillen, typlen, srclen, file, filtyp, source, ctypes.byref(handle), ctypes.byref(found))
-    return stypes.toPythonString(file), stypes.toPythonString(filtyp), stypes.toPythonString(source), handle.value, found.value
+    libspice.kdata_c(which, kind, fillen, typlen, srclen, file, filtyp, source, ctypes.byref(handle),
+                     ctypes.byref(found))
+    return stypes.toPythonString(file), stypes.toPythonString(filtyp), stypes.toPythonString(
+        source), handle.value, found.value
 
 
 def kinfo(file, typlen, srclen):
@@ -2329,7 +2343,8 @@ def kxtrct(keywd, termlen, terms, nterms, stringlen, substrlen, string):
     stringlen = ctypes.c_int(stringlen)
     substrlen = ctypes.c_int(substrlen)
     found = ctypes.c_bool()
-    libspice.kxtrct_c(keywd, termlen, terms, nterms, stringlen, substrlen, ctypes.byref(string), ctypes.byref(found), ctypes.byref(substr))
+    libspice.kxtrct_c(keywd, termlen, terms, nterms, stringlen, substrlen, ctypes.byref(string), ctypes.byref(found),
+                      ctypes.byref(substr))
     return stypes.toPythonString(string), found.value, stypes.toPythonString(substr)
 
 
@@ -2527,7 +2542,7 @@ def lx4uns(string, first):
 
 def lxqstr(string, qchar, first):
     string = stypes.stringToCharP(string)
-    qchar = ctypes.c_char(qchar.encode(encoding = 'UTF-8'))
+    qchar = ctypes.c_char(qchar.encode(encoding='UTF-8'))
     first = ctypes.c_int(first)
     last = ctypes.c_int()
     nchar = ctypes.c_int()
@@ -2561,8 +2576,8 @@ def m2q(r):
 def matchi(string, templ, wstr, wchr):
     string = stypes.stringToCharP(string)
     templ = stypes.stringToCharP(templ)
-    wstr = ctypes.c_char(wstr.encode(encoding = 'UTF-8'))
-    wchr = ctypes.c_char(wchr.encode(encoding = 'UTF-8'))
+    wstr = ctypes.c_char(wstr.encode(encoding='UTF-8'))
+    wchr = ctypes.c_char(wchr.encode(encoding='UTF-8'))
     return libspice.matchi_c(string, templ, wstr, wchr)
 
 
@@ -2570,8 +2585,8 @@ def matchw(string, templ, wstr, wchr):
     # ctypes.c_char(wstr.encode(encoding='UTF-8')
     string = stypes.stringToCharP(string)
     templ = stypes.stringToCharP(templ)
-    wstr = ctypes.c_char(wstr.encode(encoding = 'UTF-8'))
-    wchr = ctypes.c_char(wchr.encode(encoding = 'UTF-8'))
+    wstr = ctypes.c_char(wstr.encode(encoding='UTF-8'))
+    wchr = ctypes.c_char(wchr.encode(encoding='UTF-8'))
     return libspice.matchw_c(string, templ, wstr, wchr)
 
 
@@ -2695,6 +2710,7 @@ def mxvg(m1, v2, nrow1, nc1r2):
     libspice.mxvg_c(m1, v2, nrow1, nc1r2, vout)
     return stypes.vectorToList(vout)
 
+
 ########################################################################################################################
 # N
 
@@ -2744,7 +2760,7 @@ def npedln(a, b, c, linept, linedr):
 
 
 def npelpt(point, ellips):
-    assert(isinstance(ellips, stypes.Ellipse))
+    assert (isinstance(ellips, stypes.Ellipse))
     point = stypes.toDoubleVector(point)
     pnear = stypes.emptyDoubleVector(3)
     dist = ctypes.c_double()
@@ -2862,6 +2878,7 @@ def oscelt(state, et, mu):
     libspice.oscelt_c(state, et, mu, elts)
     return stypes.vectorToList(elts)
 
+
 ########################################################################################################################
 # P
 
@@ -2949,8 +2966,8 @@ def pipool(name, ivals):
 
 
 def pjelpl(elin, plane):
-    assert(isinstance(elin, stypes.Ellipse))
-    assert(isinstance(plane, stypes.Plane))
+    assert (isinstance(elin, stypes.Ellipse))
+    assert (isinstance(plane, stypes.Plane))
     elout = stypes.Ellipse()
     libspice.pjelpl_c(ctypes.byref(elin), ctypes.byref(plane), ctypes.byref(elout))
     return elout
@@ -2958,7 +2975,7 @@ def pjelpl(elin, plane):
 
 def pl2nvc(plane):
     #Works! we have working planes!
-    assert(isinstance(plane, stypes.Plane))
+    assert (isinstance(plane, stypes.Plane))
     normal = stypes.emptyDoubleVector(3)
     constant = ctypes.c_double()
     libspice.pl2nvc_c(ctypes.byref(plane), normal, ctypes.byref(constant))
@@ -2966,7 +2983,7 @@ def pl2nvc(plane):
 
 
 def pl2nvp(plane):
-    assert(isinstance(plane, stypes.Plane))
+    assert (isinstance(plane, stypes.Plane))
     normal = stypes.emptyDoubleVector(3)
     point = stypes.emptyDoubleVector(3)
     libspice.pl2nvp_c(ctypes.byref(plane), normal, point)
@@ -3052,6 +3069,7 @@ def pxfrm2(frame_from, frame_to, etfrom, etto):
     libspice.pxfrm2_c(frame_from, frame_to, etfrom, etto, outmatrix)
     return stypes.matrixToList(outmatrix)
 
+
 ########################################################################################################################
 # Q
 
@@ -3085,6 +3103,7 @@ def qxq(q1, q2):
     vout = stypes.emptyDoubleVector(4)
     libspice.qxq_c(q1, q2, vout)
     return stypes.vectorToList(vout)
+
 
 ########################################################################################################################
 # R
@@ -3358,6 +3377,7 @@ def rquad(a, b, c):
     libspice.rquad_c(a, b, c, root1, root2)
     return stypes.vectorToList(root1), stypes.vectorToList(root2)
 
+
 ########################################################################################################################
 # S
 
@@ -3539,7 +3559,8 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
     trgepc = ctypes.c_double(0)
     srfvec = stypes.emptyDoubleVector(3)
     found = ctypes.c_bool(0)
-    libspice.sincpt_c(method, target, et, fixref, abcorr, obsrvr, dref, dvec, spoint, ctypes.byref(trgepc), srfvec, ctypes.byref(found))
+    libspice.sincpt_c(method, target, et, fixref, abcorr, obsrvr, dref, dvec, spoint, ctypes.byref(trgepc), srfvec,
+                      ctypes.byref(found))
     return stypes.vectorToList(spoint), trgepc.value, stypes.vectorToList(srfvec), found.value
 
 
@@ -3942,7 +3963,8 @@ def spkuds(descr):
     last = ctypes.c_double()
     begin = ctypes.c_int()
     end = ctypes.c_int()
-    libspice.spkuds_c(descr, ctypes.byref(body), ctypes.byref(center), ctypes.byref(framenum), ctypes.byref(typenum), ctypes.byref(first), ctypes.byref(last), ctypes.byref(begin), ctypes.byref(end))
+    libspice.spkuds_c(descr, ctypes.byref(body), ctypes.byref(center), ctypes.byref(framenum), ctypes.byref(typenum),
+                      ctypes.byref(first), ctypes.byref(last), ctypes.byref(begin), ctypes.byref(end))
     return body.value, center.value, framenum.value, typenum.value, first.value, last.value, begin.value, end.value
 
 
@@ -4106,7 +4128,8 @@ def spkw15(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p, 
     gm = ctypes.c_double(gm)
     j2 = ctypes.c_double(j2)
     radius = ctypes.c_double(radius)
-    libspice.spkw15_c(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p, ecc, j2flg, pv, gm, j2, radius)
+    libspice.spkw15_c(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p, ecc, j2flg, pv, gm, j2,
+                      radius)
     pass
 
 
@@ -4533,6 +4556,8 @@ def utc2et(utcstr):
     et = ctypes.c_double()
     libspice.utc2et_c(utcstr, ctypes.byref(et))
     return et.value
+
+
 ########################################################################################################################
 # V
 
@@ -4834,6 +4859,7 @@ def vzerog(v, ndim):
     ndim = ctypes.c_int(ndim)
     return libspice.vzerog_c(v, ndim)
 
+
 ########################################################################################################################
 # W
 
@@ -4967,7 +4993,8 @@ def wnsumd(window):
     stddev = ctypes.c_double()
     shortest = ctypes.c_int()
     longest = ctypes.c_int()
-    libspice.wnsumd_c(ctypes.byref(window), ctypes.byref(meas), ctypes.byref(avg), ctypes.byref(stddev), ctypes.byref(shortest), ctypes.byref(longest))
+    libspice.wnsumd_c(ctypes.byref(window), ctypes.byref(meas), ctypes.byref(avg), ctypes.byref(stddev),
+                      ctypes.byref(shortest), ctypes.byref(longest))
     return meas.value, avg.value, stddev.value, shortest.value, longest.value
 
 
@@ -4976,7 +5003,7 @@ def wnunid(a, b):
     assert b.dtype == 1
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == 1
-    c = stypes.SpiceCell.double(b.size+a.size)
+    c = stypes.SpiceCell.double(b.size + a.size)
     libspice.wnunid_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
     return c
 
