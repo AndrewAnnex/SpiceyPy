@@ -12,7 +12,13 @@ _testPckPath = cwd + "/pck00010.tpc"
 
 
 def test_appndc():
-    assert 1
+    testCell = spice.stypes.SPICECHAR_CELL(10, 10)
+    spice.appndc("one", testCell)
+    spice.appndc("two", testCell)
+    spice.appndc("three", testCell)
+    assert testCell[0] == "one"
+    assert testCell[1] == "two"
+    assert testCell[2] == "three"
 
 
 def test_appndd():
@@ -1339,7 +1345,15 @@ def test_el2cgv():
 
 
 def test_elemc():
-    assert 1
+    testCellOne = spice.stypes.SPICECHAR_CELL(10, 10)
+    spice.insrtc("one", testCellOne)
+    spice.insrtc("two", testCellOne)
+    spice.insrtc("three", testCellOne)
+    assert spice.elemc("one", testCellOne)
+    assert spice.elemc("two", testCellOne)
+    assert spice.elemc("three", testCellOne)
+    assert not spice.elemc("not", testCellOne)
+    assert not spice.elemc("there", testCellOne)
 
 
 def test_elemd():
@@ -2065,7 +2079,11 @@ def test_inrypl():
 
 
 def test_insrtc():
-    assert 1
+    testCell = spice.stypes.SPICECHAR_CELL(10, 10)
+    cList = ["aaa", "bbb", "ccc", "bbb"]
+    for c in cList:
+        spice.insrtc(c, testCell)
+    assert [x for x in testCell] == ["aaa", "bbb", "ccc"]
 
 
 def test_insrtd():
@@ -2741,8 +2759,18 @@ def test_nvp2pl():
     npt.assert_almost_equal(plane.constant, expectedConstant, decimal=6)
 
 
-def test_ordc():
+def test_occult():
     assert 1
+
+
+def test_ordc():
+    charset = spice.stypes.SPICECHAR_CELL(10, 10)
+    inputs = ["8", "1", "2", "9", "7", "4", "10"]
+    expected = [5, 0, 2, 6, 4, 3, 1]
+    for c in inputs:
+        spice.insrtc(c, charset)
+    for i, e in zip(inputs, expected):
+        assert e == spice.ordc(i, charset)
 
 
 def test_ordd():
@@ -3166,7 +3194,15 @@ def test_recsph():
 
 
 def test_removc():
-    assert 1
+    cell = spice.stypes.SPICECHAR_CELL(10, 10)
+    items = ["one", "two", "three", "four"]
+    for i in items:
+        spice.insrtc(i, cell)
+    removeItems = ["three", "four"]
+    for r in removeItems:
+        spice.removc(r, cell)
+    expected = ["one", "two"]
+    assert expected == [x for x in cell]
 
 
 def test_removd():
