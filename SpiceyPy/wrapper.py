@@ -3208,12 +3208,11 @@ def removi(item, inset):
 
 
 def reordc(iorder, ndim, lenvals, array):
-    # Todo: fix reordc, this should work, not sure why it won't
     iorder = stypes.toIntVector(iorder)
-    array = stypes.listToCharArray(array, xLen=lenvals, yLen=ndim)
+    array = stypes.listToCharArray(array)
     ndim = ctypes.c_int(ndim)
     lenvals = ctypes.c_int(lenvals)
-    libspice.reordc_c(iorder, ndim, lenvals, ctypes.byref(array))
+    libspice.reordc_c(iorder, ndim, lenvals, array)
     return [stypes.toPythonString(x.value) for x in array]
 
 

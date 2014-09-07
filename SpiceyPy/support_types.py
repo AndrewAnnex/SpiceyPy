@@ -2,7 +2,7 @@
 __author__ = 'Apollo117'
 from ctypes import c_char_p, c_bool, c_int, c_double, c_char, c_void_p, sizeof, \
     POINTER, pointer, Array, create_string_buffer, create_unicode_buffer, cast, Structure, \
-    CFUNCTYPE
+    CFUNCTYPE, string_at
 
 import numpy
 from numpy import ctypeslib as numpc
@@ -29,11 +29,11 @@ def toPythonString(inString):
     if six.PY2:
         if isinstance(inString, c_char_p):
             return toPythonString(inString.value)
-        return inString.split('\x00')[0]
+        return string_at(inString)
     elif six.PY3:
         if isinstance(inString, c_char_p):
             return toPythonString(inString.value)
-        return bytes.decode(inString)
+        return bytes.decode(string_at(inString))
 
 
 def listtocharvector(x):
@@ -392,7 +392,7 @@ BITSIZE = {'char': sizeof(c_char), 'int': sizeof(c_int), 'double': sizeof(c_doub
 
 
 def _char_getter(data_p, index, length):
-    return toPythonString((c_char * length).from_address(data_p + index * BITSIZE['char']))
+    return toPythonString((c_char * length).from_address(data_p + index * length * BITSIZE['char']))
 
 
 def _double_getter(data_p, index, length):
