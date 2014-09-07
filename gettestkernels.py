@@ -4,7 +4,8 @@ import os
 from six.moves import urllib
 
 standardKernelList = ['pck00010.tpc', 'de421.bsp', 'gm_de431.tpc', 'naif0010.tls']
-cwd = os.path.realpath(os.path.dirname(__file__))
+pathToTests = "/SpiceyPy/test"
+cwd = os.path.realpath(os.path.dirname(__file__)) + pathToTests
 
 
 def getKernel(url):

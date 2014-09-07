@@ -5,6 +5,7 @@ import SpiceyPy as spice
 import numpy as np
 import numpy.testing as npt
 import os
+
 cwd = os.path.realpath(os.path.dirname(__file__))
 _testKernelPath = cwd + "/testKernels.txt"
 _extraTestVoyagerKernel = cwd + "/vg200022.tsc"
@@ -121,7 +122,7 @@ def test_bodvar():
     spice.furnsh(_testKernelPath)
     radii = spice.bodvar(399, "RADII", 3)
     expected = np.array([6378.140, 6378.140, 6356.755])
-    np.testing.assert_array_almost_equal(expected, radii, decimal = 1)
+    np.testing.assert_array_almost_equal(expected, radii, decimal=1)
     spice.kclear()
 
 
@@ -131,7 +132,7 @@ def test_bodvcd():
     dim, values = spice.bodvcd(399, "RADII", 3)
     assert dim == 3
     expected = np.array([6378.140, 6378.140, 6356.755])
-    np.testing.assert_array_almost_equal(expected, values, decimal = 1)
+    np.testing.assert_array_almost_equal(expected, values, decimal=1)
     spice.kclear()
 
 
@@ -141,7 +142,7 @@ def test_bodvrd():
     dim, values = spice.bodvrd("EARTH", "RADII", 3)
     assert dim == 3
     expected = np.array([6378.140, 6378.140, 6356.755])
-    np.testing.assert_array_almost_equal(expected, values, decimal = 1)
+    np.testing.assert_array_almost_equal(expected, values, decimal=1)
     spice.kclear()
 
 
@@ -570,7 +571,7 @@ def test_cvpool():
 
 
 def test_cyllat():
-    assert spice.cyllat(1.0, 180.0*spice.rpd(), -1.0) == (np.sqrt(2), np.pi, -np.pi/4)
+    assert spice.cyllat(1.0, 180.0 * spice.rpd(), -1.0) == (np.sqrt(2), np.pi, -np.pi / 4)
 
 
 def test_cylrec():
@@ -1126,7 +1127,7 @@ def test_ekbseg():
     # cnames = ["ORDER_ID", "CUSTOMER_ID", "LAST_NAME", "FIRST_NAME", "ORDER_DATE", "COST"]
     # cdecls = ["DATATYPE = INTEGER, INDEXED = TRUE", "DATATYPE = INTEGER, INDEXED = TRUE",
     # "DATATYPE = CHARACTER*(*), INDEXED  = TRUE", "DATATYPE = CHARACTER*(*), INDEXED  = TRUE",
-    #           "DATATYPE = DOUBLE PRECISION, INDEXED = TRUE", "DATATYPE = DOUBLE PRECISION, INDEXED  = TRUE, NULLS_OK = TRUE"]
+    # "DATATYPE = DOUBLE PRECISION, INDEXED = TRUE", "DATATYPE = DOUBLE PRECISION, INDEXED  = TRUE, NULLS_OK = TRUE"]
     # segno = spice.ekbseg(handle, "DATAORDERS", 6, cnames, cdecls)
     # recno = spice.ekappr(handle, segno)
     # ordids = [x for x in range(9)]
@@ -1209,7 +1210,7 @@ def test_eklef():
     # os.remove(ekpath)
     # handle = spice.ekopn(ekpath, ekpath, 0)
     # segno = spice.ekbseg(handle, "test_table", 1, ["c1"],
-    #                      ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
+    # ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
     # recno = spice.ekappr(handle, segno)
     # spice.ekacei(handle, segno, recno, "c1", 2, [1, 2], False)
     # sleep(0.5)
@@ -1565,6 +1566,7 @@ def test_furnsh():
 def test_gcpool():
     # same as pcpool test
     import string
+
     spice.kclear()
     data = [j + str(i) for i, j in enumerate(list(string.ascii_lowercase))]
     spice.pcpool('pcpool_test', data)
@@ -2515,7 +2517,7 @@ def test_m2q():
     r = spice.rotate(spice.halfpi(), 3)
     q = spice.m2q(r)
     expected = [np.sqrt(2) / 2.0, 0.0, 0.0, -np.sqrt(2) / 2.0]
-    np.testing.assert_array_almost_equal(expected, q, decimal = 6)
+    np.testing.assert_array_almost_equal(expected, q, decimal=6)
 
 
 def test_matchi():
@@ -2845,6 +2847,7 @@ def test_pckuof():
 
 def test_pcpool():
     import string
+
     spice.kclear()
     data = [j + str(i) for i, j in enumerate(list(string.ascii_lowercase))]
     spice.pcpool('pcpool_test', data)
@@ -3190,7 +3193,7 @@ def test_recrad():
 
 def test_recsph():
     v1 = np.array([-1.0, 0.0, 0.0])
-    assert spice.recsph(v1) == (1.0, np.pi/2, np.pi)
+    assert spice.recsph(v1) == (1.0, np.pi / 2, np.pi)
 
 
 def test_removc():
@@ -4545,7 +4548,7 @@ def test_unorm():
 
 def test_unormg():
     v1 = np.array([5.0, 12.0])
-    expectedVout = np.array([5.0/13.0, 12.0/13.0])
+    expectedVout = np.array([5.0 / 13.0, 12.0 / 13.0])
     expectedVmag = 13.0
     vout, vmag = spice.unormg(v1, 2)
     assert vmag == expectedVmag
@@ -4628,7 +4631,7 @@ def test_vequg():
 
 def test_vhat():
     v1 = np.array([5.0, 12.0, 0.0])
-    expected = np.array([5/13.0, 12/13.0, 0.0])
+    expected = np.array([5 / 13.0, 12 / 13.0, 0.0])
     vout = spice.vhat(v1)
     assert np.array_equal(vout, expected)
 
@@ -4765,7 +4768,7 @@ def test_vsclg():
 def test_vsep():
     v1 = np.array([1.0, 0.0, 0.0])
     v2 = np.array([0.0, 1.0, 0.0])
-    assert spice.vsep(v1, v2) == np.pi/2
+    assert spice.vsep(v1, v2) == np.pi / 2
 
 
 def test_vsepg():
