@@ -749,7 +749,6 @@ def dcyldr(x, y, z):
 
 
 def deltet(epoch, eptype):
-    #Todo: test deltet
     epoch = ctypes.c_double(epoch)
     eptype = stypes.stringToCharP(eptype)
     delta = ctypes.c_double()
@@ -1013,7 +1012,7 @@ def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
     nvals = ctypes.c_int(nvals)
     dvals = stypes.toDoubleVector(dvals)
     isnull = ctypes.c_bool(isnull)
-    libspice.ekaced_c(handle, segno, recno, column, nvals, ctypes.cast(dvals, ctypes.POINTER(ctypes.c_double)), isnull)
+    libspice.ekaced_c(handle, segno, recno, column, nvals, dvals, isnull)
     pass
 
 
@@ -2154,6 +2153,9 @@ def insrtc(item, inset):
 
 def insrtd(item, inset):
     assert isinstance(inset, stypes.SpiceCell)
+    if hasattr(item, "__iter__"):
+        for d in item:
+            insrtd(d, inset)
     item = ctypes.c_double(item)
     libspice.insrtd_c(item, ctypes.byref(inset))
     pass
@@ -2161,6 +2163,9 @@ def insrtd(item, inset):
 
 def insrti(item, inset):
     assert isinstance(inset, stypes.SpiceCell)
+    if hasattr(item, "__iter__"):
+        for i in item:
+            insrtd(i, inset)
     item = ctypes.c_int(item)
     libspice.insrti_c(item, ctypes.byref(inset))
     pass
@@ -3866,7 +3871,7 @@ def spkpds(body, center, framestr, typenum, first, last):
 
 def spkpos(targ, et, ref, abcorr, obs):
     if hasattr(et, "__iter__"):
-        return [spkpos(targ, t, ref, abcorr, obs) for t in et]
+        return numpy.array([spkpos(targ, t, ref, abcorr, obs) for t in et])
     targ = stypes.stringToCharP(targ)
     ref = stypes.stringToCharP(ref)
     abcorr = stypes.stringToCharP(abcorr)
@@ -4129,7 +4134,7 @@ def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel, rapol
 
 def srfrec(body, longitude, latitude):
     if hasattr(longitude, "__iter__") and hasattr(latitude, "__iter__"):
-        return [srfrec(body, lon, lat) for lon, lat in zip(longitude, latitude)]
+        return numpy.array([srfrec(body, lon, lat) for lon, lat in zip(longitude, latitude)])
     body = ctypes.c_int(body)
     longitude = ctypes.c_double(longitude)
     latitude = ctypes.c_double(latitude)
@@ -4140,7 +4145,7 @@ def srfrec(body, longitude, latitude):
 
 def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
     if hasattr(et, "__iter__"):
-        return [srfxpt(method, target, t, abcorr, obsrvr, dref, dvec) for t in et]
+        return numpy.array([srfxpt(method, target, t, abcorr, obsrvr, dref, dvec) for t in et])
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
@@ -4187,7 +4192,7 @@ def stpool(item, nth, contin, lenout):
 
 def str2et(time):
     if isinstance(time, list):
-        return [str2et(t) for t in time]
+        return numpy.array([str2et(t) for t in time])
     time = stypes.stringToCharP(time)
     et = ctypes.c_double()
     libspice.str2et_c(time, ctypes.byref(et))
@@ -4210,7 +4215,7 @@ def subpnt(method, target, et, fixref, abcorr, obsrvr):
 
 def subpt(method, target, et, abcorr, obsrvr):
     if hasattr(et, "__iter__"):
-        return [subpt(method, target, t, abcorr, obsrvr) for t in et]
+        return numpy.array([subpt(method, target, t, abcorr, obsrvr) for t in et])
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
@@ -4308,7 +4313,7 @@ def swpool(agent, nnames, lenvals, names):
 
 def sxform(instring, tostring, et):
     if hasattr(et, "__iter__"):
-        return [sxform(instring, tostring, t) for t in et]
+        return numpy.array([sxform(instring, tostring, t) for t in et])
     instring = stypes.stringToCharP(instring)
     tostring = stypes.stringToCharP(tostring)
     et = ctypes.c_double(et)
@@ -4346,7 +4351,7 @@ def timdef(action, item, lenout, value=None):
 
 def timout(et, pictur, lenout):
     if hasattr(et, "__iter__"):
-        return [timout(t, pictur, lenout) for t in et]
+        return numpy.array([timout(t, pictur, lenout) for t in et])
     pictur = stypes.stringToCharP(pictur)
     output = stypes.stringToCharP(lenout)
     lenout = ctypes.c_int(lenout)
@@ -4500,7 +4505,7 @@ def unitim(epoch, insys, outsys):
 
 
 def unload(filename):
-    if hasattr(filename, "__iter__"):
+    if isinstance(filename, list):
         for f in filename:
             libspice.unload_c(stypes.stringToCharP(f))
     filename = stypes.stringToCharP(filename)
