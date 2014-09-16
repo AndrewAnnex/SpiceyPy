@@ -2839,19 +2839,40 @@ def test_oscelt():
 
 
 def test_pckcov():
-    assert 1
+    spice.kclear()
+    ids = spice.stypes.SPICEINT_CELL(1000)
+    cover = spice.stypes.SPICEDOUBLE_CELL(2000)
+    spice.pckfrm(_spkEarthPck, ids)
+    spice.scard(0, cover)
+    spice.pckcov(_spkEarthPck, ids[0], cover)
+    result = [x for x in cover]
+    expected = [-1197547158.8155186, 230817665.18534085]
+    npt.assert_array_almost_equal(expected, result)
+    spice.kclear()
 
 
 def test_pckfrm():
-    assert 1
+    spice.kclear()
+    ids = spice.stypes.SPICEINT_CELL(1000)
+    spice.pckfrm(_spkEarthPck, ids)
+    assert ids[0] == 3000
+    spice.kclear()
 
 
 def test_pcklof():
-    assert 1
+    spice.kclear()
+    handle = spice.pcklof(_spkEarthPck)
+    assert handle != -1
+    spice.pckuof(handle)
+    spice.kclear()
 
 
 def test_pckuof():
-    assert 1
+    spice.kclear()
+    handle = spice.pcklof(_spkEarthPck)
+    assert handle != -1
+    spice.pckuof(handle)
+    spice.kclear()
 
 
 def test_pcpool():
@@ -3669,7 +3690,29 @@ def test_spkaps():
 
 
 def test_spkcls():
-    assert 1
+    # Same as test_spkw02
+    SPK2 = cwd + "/test2.bsp"
+    if spice.exists(SPK2):
+        os.remove(SPK2)
+    spice.kclear()
+    handle = spice.spkopn(SPK2, 'Type 2 SPK internal file name.', 4)
+    init_size = os.path.getsize(SPK2)
+    discrete_epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
+    cheby_coeffs02 = [1.0101, 1.0102, 1.0103, 1.0201, 1.0202, 1.0203, 1.0301, 1.0302,
+                      1.0303, 2.0101, 2.0102, 2.0103, 2.0201, 2.0202, 2.0203, 2.0301,
+                      2.0302, 2.0303, 3.0101, 3.0102, 3.0103, 3.0201, 3.0202, 3.0203,
+                      3.0301, 3.0302, 3.0303, 4.0101, 4.0102, 4.0103, 4.0201, 4.0202,
+                      4.0203, 4.0301, 4.0302, 4.0303]
+    segid = 'SPK type 2 test segment'
+    intlen = discrete_epochs[1] - discrete_epochs[0]
+    spice.spkw02(handle, 3, 10, "J2000", discrete_epochs[0],
+                 discrete_epochs[4], segid, intlen, 4, 2, cheby_coeffs02, discrete_epochs[0])
+    spice.spkcls(handle)
+    end_size = os.path.getsize(SPK2)
+    spice.kclear()
+    assert end_size != init_size
+    if spice.exists(SPK2):
+        os.remove(SPK2)
 
 
 def test_spkcov():
@@ -3840,7 +3883,18 @@ def test_spkltc():
 
 
 def test_spkobj():
-    assert 1
+    # Same as test_spkcov
+    spice.kclear()
+    ids = spice.stypes.SPICEINT_CELL(1000)
+    cover = spice.stypes.SPICEDOUBLE_CELL(2000)
+    spice.spkobj(_spk, ids)
+    tempObj = ids[0]
+    spice.scard(0, cover)
+    spice.spkcov(_spk, tempObj, cover)
+    result = [x for x in cover]
+    expected = [-3169195200.0, 1696852800.0]
+    npt.assert_array_almost_equal(expected, result)
+    spice.kclear()
 
 
 def test_spkopa():
@@ -3848,7 +3902,29 @@ def test_spkopa():
 
 
 def test_spkopn():
-    assert 1
+    # Same as test_spkw02
+    SPK2 = cwd + "/test2.bsp"
+    if spice.exists(SPK2):
+        os.remove(SPK2)
+    spice.kclear()
+    handle = spice.spkopn(SPK2, 'Type 2 SPK internal file name.', 4)
+    init_size = os.path.getsize(SPK2)
+    discrete_epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
+    cheby_coeffs02 = [1.0101, 1.0102, 1.0103, 1.0201, 1.0202, 1.0203, 1.0301, 1.0302,
+                      1.0303, 2.0101, 2.0102, 2.0103, 2.0201, 2.0202, 2.0203, 2.0301,
+                      2.0302, 2.0303, 3.0101, 3.0102, 3.0103, 3.0201, 3.0202, 3.0203,
+                      3.0301, 3.0302, 3.0303, 4.0101, 4.0102, 4.0103, 4.0201, 4.0202,
+                      4.0203, 4.0301, 4.0302, 4.0303]
+    segid = 'SPK type 2 test segment'
+    intlen = discrete_epochs[1] - discrete_epochs[0]
+    spice.spkw02(handle, 3, 10, "J2000", discrete_epochs[0],
+                 discrete_epochs[4], segid, intlen, 4, 2, cheby_coeffs02, discrete_epochs[0])
+    spice.spkcls(handle)
+    end_size = os.path.getsize(SPK2)
+    spice.kclear()
+    assert end_size != init_size
+    if spice.exists(SPK2):
+        os.remove(SPK2)
 
 
 def test_spkpds():

@@ -2873,23 +2873,16 @@ def oscelt(state, et, mu):
 def pckcov(pck, idcode, cover):
     pck = stypes.stringToCharP(pck)
     idcode = ctypes.c_int(idcode)
-    if not cover:
-        cover = stypes.SPICEDOUBLE_CELL(2000)  # random size really
     assert isinstance(cover, stypes.SpiceCell)
     assert cover.dtype == 1
     libspice.pckcov_c(pck, idcode, ctypes.byref(cover))
-    return cover
 
 
-def pckfrm(pck, ids=None):
-    #Todo: test pckfrm
+def pckfrm(pck, ids):
     pck = stypes.stringToCharP(pck)
-    if not ids:
-        ids = stypes.SPICEINT_CELL(1000)  # just picked 1000 for no reason
     assert isinstance(ids, stypes.SpiceCell)
     assert ids.dtype == 2
     libspice.pckfrm_c(pck, ctypes.byref(ids))
-    return ids
 
 
 def pcklof(filename):
@@ -3668,7 +3661,6 @@ def spk14e(handle):
 
 
 def spkcls(handle):
-    #Todo: test spkcls
     handle = ctypes.c_int(handle)
     libspice.spkcls_c(handle)
     pass
@@ -3839,7 +3831,6 @@ def spkopa(filename):
 
 
 def spkopn(filename, ifname, ncomch):
-    #Todo: test spkopn
     filename = stypes.stringToCharP(filename)
     ifname = stypes.stringToCharP(ifname)
     ncomch = ctypes.c_int(ncomch)
@@ -3886,7 +3877,7 @@ def spkpvn(handle, descr, et):
 
 
 def spksfs(body, et, idlen):
-    # Todo: test, spksfs has a Parameter SIDLEN, sounds like an optional but is that possible?
+    # spksfs has a Parameter SIDLEN, sounds like an optional but is that possible?
     body = ctypes.c_int(body)
     et = ctypes.c_double(et)
     idlen = ctypes.c_int(idlen)
