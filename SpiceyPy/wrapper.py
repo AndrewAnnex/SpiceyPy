@@ -3674,16 +3674,12 @@ def spkcls(handle):
     pass
 
 
-def spkcov(spk, idcode, cover=None):
-    #Todo: test spkcov
+def spkcov(spk, idcode, cover):
     spk = stypes.stringToCharP(spk)
     idcode = ctypes.c_int(idcode)
-    if not cover:
-        cover = stypes.SPICEDOUBLE_CELL(2000)  #random size really
     assert isinstance(cover, stypes.SpiceCell)
     assert cover.dtype == 1
     libspice.spkcov_c(spk, idcode, ctypes.byref(cover))
-    return cover
 
 
 def spkcpo(target, et, outref, refloc, abcorr, obspos, obsctr, obsref):
@@ -3728,7 +3724,7 @@ def spkcvo(target, et, outref, refloc, abcorr, obssta, obsepc, obsct, obsref):
     obsref = stypes.stringToCharP(obsref)
     state = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
-    libspice.spkcpo_c(target, et, outref, refloc, abcorr, obssta, obsepc, obsct, obsref, state, ctypes.byref(lt))
+    libspice.spkcvo_c(target, et, outref, refloc, abcorr, obssta, obsepc, obsct, obsref, state, ctypes.byref(lt))
     return stypes.vectorToList(state), lt.value
 
 
@@ -3827,15 +3823,11 @@ def spkltc(targ, et, ref, abcorr, stobs):
     return stypes.vectorToList(starg), lt.value, dlt.value
 
 
-def spkobj(spk, ids=None):
-    #Todo: test spkobj
+def spkobj(spk, ids):
     spk = stypes.stringToCharP(spk)
-    if not ids:
-        ids = stypes.SPICEINT_CELL(1000)  # just picked 1000 for no reason
     assert isinstance(ids, stypes.SpiceCell)
     assert ids.dtype == 2
     libspice.spkobj_c(spk, ctypes.byref(ids))
-    return ids
 
 
 def spkopa(filename):
