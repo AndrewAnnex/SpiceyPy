@@ -29,6 +29,12 @@ def getExtraTestKernels():
     # these are test kernels not included in the standard meta kernel
     voyagerSclk = "http://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/sclk/vg200022.tsc"
     getKernel(voyagerSclk)
+    earthTopoTf = "http://naif.jpl.nasa.gov/pub/naif/generic_kernels/fk/stations/earth_topo_050714.tf"
+    getKernel(earthTopoTf)
+    earthStnSpk = "http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/stations/earthstns_itrf93_050714.bsp"
+    getKernel(earthStnSpk)
+    earthGenPck = "http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/earth_720101_070426.bpc"
+    getKernel(earthGenPck)
 
 
 def writeTestMetaKernel():

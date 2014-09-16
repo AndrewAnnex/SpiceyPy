@@ -9,6 +9,13 @@ cwd = os.path.realpath(os.path.dirname(__file__))
 _testKernelPath = cwd + "/testKernels.txt"
 _extraTestVoyagerKernel = cwd + "/vg200022.tsc"
 _testPckPath = cwd + "/pck00010.tpc"
+_spkEarthPck = cwd + "/earth_720101_070426.bpc"
+_spkEarthFk = cwd + "/earthstns_itrf93_050714.bsp"
+_spkEarthTf = cwd + "/earth_topo_050714.tf"
+_spkMGSTi = cwd + "/mgs_moc_v20.ti"
+_spkMgsSclk = cwd + "/mgs_sclkscet_00061.tsc"
+_spkMgsSpk = cwd + "/mgs_crus.bsp"
+_spk = cwd + "/de421.bsp"
 
 
 def test_appndc():
@@ -1115,37 +1122,23 @@ def test_ekappr():
 
 def test_ekbseg():
     assert 1
-    # Incomplete test, there is some issue with ekaced, basically it hangs and memory starts being eaten up
-    # ekacei and ekacec oddly however do work, I am unsure how to procede or if it may be more desireable
-    # to drop ek commands entirely....
     # ekpath = cwd + "/exampleek.ek"
     # spice.kclear()
     # if spice.exists(ekpath):
     # os.remove(ekpath)
-    # handle = spice.ekopn(ekpath, "Test EK", 0)
-    # cnames = ["ORDER_ID", "CUSTOMER_ID", "LAST_NAME", "FIRST_NAME", "ORDER_DATE", "COST"]
-    # cdecls = ["DATATYPE = INTEGER, INDEXED = TRUE", "DATATYPE = INTEGER, INDEXED = TRUE",
-    # "DATATYPE = CHARACTER*(*), INDEXED  = TRUE", "DATATYPE = CHARACTER*(*), INDEXED  = TRUE",
-    #           "DATATYPE = DOUBLE PRECISION, INDEXED = TRUE", "DATATYPE = DOUBLE PRECISION, INDEXED  = TRUE, NULLS_OK = TRUE"]
-    # segno = spice.ekbseg(handle, "DATAORDERS", 6, cnames, cdecls)
+    # handle = spice.ekopn(ekpath, "Test EK", 100)
+    # cnames = ["ORDER_ID"]
+    # cdecls = ["DATATYPE = INTEGER, SIZE = 15"]
+    # segno = spice.ekbseg(handle, "DATAORDERS", 1, 10, cnames, len(cdecls[0])+1, cdecls)
     # recno = spice.ekappr(handle, segno)
+    # assert recno != -1
     # ordids = [x for x in range(9)]
-    # spice.ekacei(handle, segno, recno, "order_id", 9, ordids, False)
-    # cstids = [x*100 for x in range(9)]
-    # spice.ekacei(handle, segno, recno, "CUSTOMER_ID", 9, cstids, False)
-    # # lnames = ["Order2  string {}".format(x) for x in range(9)]
-    # # spice.ekacec(handle, segno, recno, "last_name", 9, 50, lnames, False)
-    # # fnames = ["Order string {}".format(x) for x in range(9)]
-    # # spice.ekacec(handle, segno, recno, "first_name", 9, 80, fnames, False)
-    # # spice.furnsh(_testKernelPath)
-    # #ets = [spice.str2et("Tue March 1{} 12:00:00 EST 2010".format(x)) for x in range(9)]
-    # #spice.ekaced(handle, segno, recno, "order_date", 9, ets, False)
-    # costs = [10.0 * x for x in range(9)]
-    # spice.ekaced(handle, segno, recno, "cost", 9, costs, False)
+    # spice.ekacei(handle, segno, recno, "ORDER_ID", 9, ordids, False)
     # spice.ekcls(handle)
     # spice.kclear()
     # if spice.exists(ekpath):
     #     os.remove(ekpath)
+    # assert not spice.exists(ekpath)
 
 
 def test_ekccnt():
@@ -1233,7 +1226,7 @@ def test_eknseg():
 
 
 def test_ekntab():
-    assert 1
+    assert spice.ekntab() == 0
 
 
 def test_ekopn():
@@ -3680,23 +3673,87 @@ def test_spkcls():
 
 
 def test_spkcov():
-    assert 1
+    spice.kclear()
+    ids = spice.stypes.SPICEINT_CELL(1000)
+    cover = spice.stypes.SPICEDOUBLE_CELL(2000)
+    spice.spkobj(_spk, ids)
+    tempObj = ids[0]
+    spice.scard(0, cover)
+    spice.spkcov(_spk, tempObj, cover)
+    result = [x for x in cover]
+    expected = [-3169195200.0, 1696852800.0]
+    npt.assert_array_almost_equal(expected, result)
+    spice.kclear()
 
 
 def test_spkcpo():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_spkEarthFk)
+    spice.furnsh(_spkEarthPck)
+    spice.furnsh(_spkEarthTf)
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et("2003 Oct 13 06:00:00")
+    obspos = [-2353.6213656676991, -4641.3414911499403, 3677.0523293197439]
+    state, lt = spice.spkcpo("SUN", et, "DSS-14_TOPO", "OBSERVER", "CN+S", obspos, "EARTH", "ITRF93")
+    spice.kclear()
+    expected_lt = 497.93167796983954
+    expected_state = [62512272.820748448, 58967494.425136007, -122059095.46751881, 2475.9732651736126,
+                      -9870.2670623216945, -3499.9080996916828]
+    npt.assert_almost_equal(lt, expected_lt)
+    npt.assert_array_almost_equal(state, expected_state, decimal=6)
 
 
 def test_spkcpt():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_spkEarthFk)
+    spice.furnsh(_spkEarthPck)
+    spice.furnsh(_spkEarthTf)
+    spice.furnsh(_testKernelPath)
+    obstime = spice.str2et("2003 Oct 13 06:00:00")
+    trgpos = [-2353.6213656676991, -4641.3414911499403, 3677.0523293197439]
+    state, lt = spice.spkcpt(trgpos, "EARTH", "ITRF93", obstime, "ITRF93", "TARGET", "CN+S", "SUN")
+    spice.kclear()
+    expected_lt = 497.9321929168437
+    expected_state = [-3412628.5100264344, -147916331.60178328, 19812403.694927953,
+                      -10758.244807895861, 250.02820706157181, 11.135445277312105]
+    npt.assert_almost_equal(lt, expected_lt)
+    npt.assert_array_almost_equal(state, expected_state, decimal=6)
 
 
 def test_spkcvo():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_spkEarthFk)
+    spice.furnsh(_spkEarthPck)
+    spice.furnsh(_spkEarthTf)
+    spice.furnsh(_testKernelPath)
+    obstime = spice.str2et("2003 Oct 13 06:00:00")
+    obstate = [-2353.6213656676991, -4641.3414911499403, 3677.0523293197439, -0.00000000000057086, 0.00000000000020549,
+               -0.00000000000012171]
+    state, lt = spice.spkcvo("SUN", obstime, "DSS-14_TOPO", "OBSERVER", "CN+S", obstate, 0.0, "EARTH", "ITRF93")
+    spice.kclear()
+    expected_lt = 497.9316779697656
+    expected_state = [62512272.820765018, 58967494.425064847, -122059095.46751761,
+                      2475.9732651736767, -9870.2670623218419, -3499.908099691786]
+    npt.assert_almost_equal(lt, expected_lt)
+    npt.assert_array_almost_equal(state, expected_state, decimal=6)
 
 
 def test_spkcvt():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_spkEarthFk)
+    spice.furnsh(_spkEarthPck)
+    spice.furnsh(_spkEarthTf)
+    spice.furnsh(_testKernelPath)
+    obstime = spice.str2et("2003 Oct 13 06:00:00")
+    trgstate = [-2353.6213656676991, -4641.3414911499403, 3677.0523293197439, -0.00000000000057086, 0.00000000000020549,
+                -0.00000000000012171]
+    state, lt = spice.spkcvt(trgstate, 0.0, "EARTH", "ITRF93", obstime, "ITRF93", "TARGET", "CN+S", "SUN")
+    spice.kclear()
+    expected_lt = 497.9321929167615
+    expected_state = [-3412628.5100945341, -147916331.60175875, 19812403.694913436,
+                      -10758.244807895686, 250.02820706156825, 11.135445277311799]
+    npt.assert_almost_equal(lt, expected_lt)
+    npt.assert_array_almost_equal(state, expected_state, decimal=6)
 
 
 def test_spkez():
