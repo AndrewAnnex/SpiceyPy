@@ -625,7 +625,14 @@ def test_dafcls():
 
 
 def test_dafcs():
-    assert 1
+    spice.kclear()
+    handle = spice.dafopr(cwd + "/de421.bsp")
+    spice.dafbbs(handle)
+    spice.dafcs(handle)
+    found = spice.daffpa()
+    assert found
+    spice.dafcls(handle)
+    spice.kclear()
 
 
 def test_dafdc():
@@ -678,7 +685,14 @@ def test_dafgda():
 
 
 def test_dafgh():
-    assert 1
+    spice.kclear()
+    handle = spice.dafopr(cwd + "/de421.bsp")
+    spice.dafbbs(handle)
+    spice.dafcs(handle)
+    searchHandle = spice.dafgh()
+    assert searchHandle == handle
+    spice.dafcls(handle)
+    spice.kclear()
 
 
 def test_dafgn():
@@ -728,7 +742,13 @@ def test_dafopr():
 
 
 def test_dafopw():
-    assert 1
+    spice.kclear()
+    handle = spice.dafopw(cwd + "/de421.bsp")
+    spice.dafbfs(handle)
+    found = spice.daffna()
+    assert found
+    spice.dafcls(handle)
+    spice.kclear()
 
 
 def test_dafps():
@@ -3614,15 +3634,82 @@ def test_sphrec():
 
 
 def test_spk14a():
-    assert 1
+    discrete_epochs = [100.0, 200.0, 300.0, 400.0]
+    cheby_coeffs14 = [1.0101, 1.0102, 1.0103, 1.0201, 1.0202, 1.0203, 1.0301, 1.0302,
+                      1.0303, 2.0101, 2.0102, 2.0103, 2.0201, 2.0202, 2.0203, 2.0301,
+                      2.0302, 2.0303, 3.0101, 3.0102, 3.0103, 3.0201, 3.0202, 3.0203,
+                      3.0301, 3.0302, 3.0303, 4.0101, 4.0102, 4.0103, 4.0201, 4.0202,
+                      4.0203, 4.0301, 4.0302, 4.0303]
+    spk14 = cwd + "/test14.bsp"
+    if spice.exists(spk14):
+        os.remove(spk14)
+    spice.kclear()
+    handle = spice.spkopn(spk14, 'Type 14 SPK internal file name.', 1024)
+    init_size = os.path.getsize(spk14)
+    spice.spk14b(handle, "SAMPLE_SPK_TYPE_14_SEGMENT", 399, 0, "J2000", 100.0, 400.0, 2)
+    spice.spk14a(handle, 4, cheby_coeffs14, discrete_epochs)
+    spice.spk14e(handle)
+    spice.spkcls(handle)
+    end_size = os.path.getsize(spk14)
+    spice.kclear()
+    assert end_size != init_size
+    if spice.exists(spk14):
+        os.remove(spk14)
+
+
+def test_spk14bstress():
+    for i in range(30):
+        test_spk14a()
 
 
 def test_spk14b():
-    assert 1
+    # Same as test_spk14a
+    discrete_epochs = [100.0, 200.0, 300.0, 400.0]
+    cheby_coeffs14 = [1.0101, 1.0102, 1.0103, 1.0201, 1.0202, 1.0203, 1.0301, 1.0302,
+                      1.0303, 2.0101, 2.0102, 2.0103, 2.0201, 2.0202, 2.0203, 2.0301,
+                      2.0302, 2.0303, 3.0101, 3.0102, 3.0103, 3.0201, 3.0202, 3.0203,
+                      3.0301, 3.0302, 3.0303, 4.0101, 4.0102, 4.0103, 4.0201, 4.0202,
+                      4.0203, 4.0301, 4.0302, 4.0303]
+    spk14 = cwd + "/test14.bsp"
+    if spice.exists(spk14):
+        os.remove(spk14)
+    spice.kclear()
+    handle = spice.spkopn(spk14, 'Type 14 SPK internal file name.', 1024)
+    init_size = os.path.getsize(spk14)
+    spice.spk14b(handle, "SAMPLE_SPK_TYPE_14_SEGMENT", 399, 0, "J2000", 100.0, 400.0, 2)
+    spice.spk14a(handle, 4, cheby_coeffs14, discrete_epochs)
+    spice.spk14e(handle)
+    spice.spkcls(handle)
+    end_size = os.path.getsize(spk14)
+    spice.kclear()
+    assert end_size != init_size
+    if spice.exists(spk14):
+        os.remove(spk14)
 
 
 def test_spk14e():
-    assert 1
+    # Same as test_spk14a
+    discrete_epochs = [100.0, 200.0, 300.0, 400.0]
+    cheby_coeffs14 = [1.0101, 1.0102, 1.0103, 1.0201, 1.0202, 1.0203, 1.0301, 1.0302,
+                      1.0303, 2.0101, 2.0102, 2.0103, 2.0201, 2.0202, 2.0203, 2.0301,
+                      2.0302, 2.0303, 3.0101, 3.0102, 3.0103, 3.0201, 3.0202, 3.0203,
+                      3.0301, 3.0302, 3.0303, 4.0101, 4.0102, 4.0103, 4.0201, 4.0202,
+                      4.0203, 4.0301, 4.0302, 4.0303]
+    spk14 = cwd + "/test14.bsp"
+    if spice.exists(spk14):
+        os.remove(spk14)
+    spice.kclear()
+    handle = spice.spkopn(spk14, 'Type 14 SPK internal file name.', 1024)
+    init_size = os.path.getsize(spk14)
+    spice.spk14b(handle, "SAMPLE_SPK_TYPE_14_SEGMENT", 399, 0, "J2000", 100.0, 400.0, 2)
+    spice.spk14a(handle, 4, cheby_coeffs14, discrete_epochs)
+    spice.spk14e(handle)
+    spice.spkcls(handle)
+    end_size = os.path.getsize(spk14)
+    spice.kclear()
+    assert end_size != init_size
+    if spice.exists(spk14):
+        os.remove(spk14)
 
 
 def test_spkacs():

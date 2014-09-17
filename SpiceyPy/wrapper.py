@@ -558,7 +558,6 @@ def dafcls(handle):
 
 
 def dafcs(handle):
-    #Todo: test dafcs
     handle = ctypes.c_int(handle)
     libspice.dafcs_c(handle)
     pass
@@ -572,7 +571,6 @@ def dafdc(handle):
 
 
 def dafec(handle, bufsiz, lenout):
-    #Todo: test dafec
     handle = ctypes.c_int(handle)
     buffer = stypes.charvector(bufsiz, lenout)
     bufsiz = ctypes.c_int(bufsiz)
@@ -3630,17 +3628,15 @@ def spkaps(targ, et, ref, abcorr, stobs, accobs):
 
 
 def spk14a(handle, ncsets, coeffs, epochs):
-    #Todo: test spk14a
     handle = ctypes.c_int(handle)
     ncsets = ctypes.c_int(ncsets)
     coeffs = stypes.toDoubleVector(coeffs)
     epochs = stypes.toDoubleVector(epochs)
-    libspice.spk14a_c(handle, ncsets, ctypes.byref(coeffs), ctypes.byref(epochs))
+    libspice.spk14a_c(handle, ncsets, coeffs, epochs)
     pass
 
 
 def spk14b(handle, segid, body, center, framename, first, last, chbdeg):
-    #Todo: test spk14b
     handle = ctypes.c_int(handle)
     segid = stypes.stringToCharP(segid)
     body = ctypes.c_int(body)
@@ -3654,7 +3650,6 @@ def spk14b(handle, segid, body, center, framename, first, last, chbdeg):
 
 
 def spk14e(handle):
-    #Todo: test spk14e
     handle = ctypes.c_int(handle)
     libspice.spk14e_c(handle)
     pass
