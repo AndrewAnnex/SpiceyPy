@@ -1109,7 +1109,50 @@ def test_edlimb():
 
 
 def test_edterm():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et("2007 FEB 3 00:00:00.000")
+    # umbral
+    trgepc, obspos, trmpts = spice.edterm("UMBRAL", "SUN", "MOON", et, "IAU_MOON", "LT+S", "EARTH", 3)
+    expected_trgepc = 223732863.86351672
+    expected_obspos = [394721.10311942, 27265.12569734, -19069.08642173]
+    expected_trmpts0 = [-153.978389497704, -1730.5633188256702, 0.12289334835869758]
+    expected_trmpts1 = [87.375069963142522, 864.40670521284744, 1504.5681789576722]
+    expected_trmpts2 = [42.213243378688254, 868.21134651980412, -1504.3223922609538]
+    npt.assert_almost_equal(trgepc, expected_trgepc)
+    npt.assert_array_almost_equal(obspos, expected_obspos)
+    npt.assert_array_almost_equal(trmpts[0], expected_trmpts0)
+    npt.assert_array_almost_equal(trmpts[1], expected_trmpts1)
+    npt.assert_array_almost_equal(trmpts[2], expected_trmpts2)
+    iluet0, srfvec0, phase0, solar0, emissn0 = spice.ilumin("Ellipsoid", "MOON", et, "IAU_MOON",
+                                                            "LT+S", "EARTH", trmpts[0])
+    npt.assert_almost_equal(spice.dpr() * solar0, 90.269765819)
+    iluet1, srfvec1, phase1, solar1, emissn1 = spice.ilumin("Ellipsoid", "MOON", et, "IAU_MOON",
+                                                            "LT+S", "EARTH", trmpts[1])
+    npt.assert_almost_equal(spice.dpr() * solar1, 90.269765706)
+    iluet2, srfvec2, phase2, solar2, emissn2 = spice.ilumin("Ellipsoid", "MOON", et, "IAU_MOON",
+                                                            "LT+S", "EARTH", trmpts[2])
+    npt.assert_almost_equal(spice.dpr() * solar2, 90.269765730)
+    #penumbral
+    trgepc, obspos, trmpts = spice.edterm("PENUMBRAL", "SUN", "MOON", et, "IAU_MOON", "LT+S", "EARTH", 3)
+    expected_trmpts0 = [154.01906431647933, 1730.5596992224057, -0.12350843234403218]
+    expected_trmpts1 = [-87.334368432224963, -864.41003761407035, -1504.5686275350108]
+    expected_trmpts2 = [-42.172546846121648, -868.21467849994303, 1504.3216106703221]
+    npt.assert_almost_equal(trgepc, expected_trgepc)
+    npt.assert_array_almost_equal(obspos, expected_obspos)
+    npt.assert_array_almost_equal(trmpts[0], expected_trmpts0)
+    npt.assert_array_almost_equal(trmpts[1], expected_trmpts1)
+    npt.assert_array_almost_equal(trmpts[2], expected_trmpts2)
+    iluet0, srfvec0, phase0, solar0, emissn0 = spice.ilumin("Ellipsoid", "MOON", et, "IAU_MOON",
+                                                            "LT+S", "EARTH", trmpts[0])
+    npt.assert_almost_equal(spice.dpr() * solar0, 89.730234406)
+    iluet1, srfvec1, phase1, solar1, emissn1 = spice.ilumin("Ellipsoid", "MOON", et, "IAU_MOON",
+                                                            "LT+S", "EARTH", trmpts[1])
+    npt.assert_almost_equal(spice.dpr() * solar1, 89.730234298)
+    iluet2, srfvec2, phase2, solar2, emissn2 = spice.ilumin("Ellipsoid", "MOON", et, "IAU_MOON",
+                                                            "LT+S", "EARTH", trmpts[2])
+    npt.assert_almost_equal(spice.dpr() * solar2, 89.730234322)
+    spice.kclear()
 
 
 def test_ekacec():
@@ -2024,11 +2067,47 @@ def test_ident():
 
 
 def test_illum():
-    assert 1
+    # Nearly the same as first half of test_edterm
+    # possibly not smart to pick a terminator point for test.
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et("2007 FEB 3 00:00:00.000")
+    trgepc, obspos, trmpts = spice.edterm("UMBRAL", "SUN", "MOON", et, "IAU_MOON", "LT+S", "EARTH", 3)
+    expected_trmpts0 = [-153.978389497704, -1730.5633188256702, 0.12289334835869758]
+    npt.assert_array_almost_equal(trmpts[0], expected_trmpts0)
+    phase, solar, emissn = spice.illum("MOON", et, "LT+S", "EARTH", trmpts[0])
+    npt.assert_almost_equal(spice.dpr() * phase, 9.206598961784051)
+    npt.assert_almost_equal(spice.dpr() * solar, 90.26976568986987)
+    npt.assert_almost_equal(spice.dpr() * emissn, 99.27359973712625)
+    spice.kclear()
 
 
 def test_ilumin():
-    assert 1
+    # Same as first half of test_edterm
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et("2007 FEB 3 00:00:00.000")
+    trgepc, obspos, trmpts = spice.edterm("UMBRAL", "SUN", "MOON", et, "IAU_MOON", "LT+S", "EARTH", 3)
+    expected_trgepc = 223732863.86351672
+    expected_obspos = [394721.10311942, 27265.12569734, -19069.08642173]
+    expected_trmpts0 = [-153.978389497704, -1730.5633188256702, 0.12289334835869758]
+    expected_trmpts1 = [87.375069963142522, 864.40670521284744, 1504.5681789576722]
+    expected_trmpts2 = [42.213243378688254, 868.21134651980412, -1504.3223922609538]
+    npt.assert_almost_equal(trgepc, expected_trgepc)
+    npt.assert_array_almost_equal(obspos, expected_obspos)
+    npt.assert_array_almost_equal(trmpts[0], expected_trmpts0)
+    npt.assert_array_almost_equal(trmpts[1], expected_trmpts1)
+    npt.assert_array_almost_equal(trmpts[2], expected_trmpts2)
+    iluet0, srfvec0, phase0, solar0, emissn0 = spice.ilumin("Ellipsoid", "MOON", et, "IAU_MOON",
+                                                            "LT+S", "EARTH", trmpts[0])
+    npt.assert_almost_equal(spice.dpr() * solar0, 90.269765819)
+    iluet1, srfvec1, phase1, solar1, emissn1 = spice.ilumin("Ellipsoid", "MOON", et, "IAU_MOON",
+                                                            "LT+S", "EARTH", trmpts[1])
+    npt.assert_almost_equal(spice.dpr() * solar1, 90.269765706)
+    iluet2, srfvec2, phase2, solar2, emissn2 = spice.ilumin("Ellipsoid", "MOON", et, "IAU_MOON",
+                                                            "LT+S", "EARTH", trmpts[2])
+    npt.assert_almost_equal(spice.dpr() * solar2, 90.269765730)
+    spice.kclear()
 
 
 def test_inedpl():
