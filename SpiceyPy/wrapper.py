@@ -2077,7 +2077,6 @@ def ident():
 
 
 def illum(target, et, abcorr, obsrvr, spoint):
-    #Todo: test illum
     target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
     abcorr = stypes.stringToCharP(abcorr)
@@ -4456,6 +4455,9 @@ def ucrss(v1, v2):
 
 
 #UDDF # callback?
+
+
+# UDF # callback?
 
 
 def union(a, b):
