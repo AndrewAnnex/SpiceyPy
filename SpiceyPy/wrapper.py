@@ -1960,14 +1960,12 @@ def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord, re
 
 
 def gfsstp(step):
-    #Todo: test gfsstp
     step = ctypes.c_double(step)
     libspice.gfsstp_c(step)
     pass
 
 
 def gfstep(time):
-    #Todo: test gfstep
     time = ctypes.c_double(time)
     step = ctypes.c_double()
     libspice.gfstep_c(time, ctypes.byref(step))
@@ -3848,7 +3846,12 @@ def spkpds(body, center, framestr, typenum, first, last):
 
 def spkpos(targ, et, ref, abcorr, obs):
     if hasattr(et, "__iter__"):
-        return numpy.array([spkpos(targ, t, ref, abcorr, obs) for t in et])
+        vlen = len(et)
+        positions = numpy.zeros((vlen, 3), dtype=numpy.float)
+        times = numpy.zeros(vlen, dtype=numpy.float)
+        for (index, time) in enumerate(et):
+            positions[index], times[index] = spkpos(targ, time, ref, abcorr, obs)
+        return positions, times
     targ = stypes.stringToCharP(targ)
     ref = stypes.stringToCharP(ref)
     abcorr = stypes.stringToCharP(abcorr)

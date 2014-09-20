@@ -1985,7 +1985,8 @@ def test_gfsntc():
 
 
 def test_gfsstp():
-    assert 1
+    spice.gfsstp(0.5)
+    assert spice.gfstep(0.5) == 0.5
 
 
 def test_gfstep():
@@ -4104,6 +4105,19 @@ def test_spkpos():
     pos, lt = spice.spkpos("Mars", et, "J2000", "LT+S", "Earth")
     expected_lt = 269.6898816177049
     expected_pos = [73822235.33116072, -27127919.178592984, -18741306.284863796]
+    npt.assert_almost_equal(lt, expected_lt)
+    npt.assert_array_almost_equal(pos, expected_pos)
+    spice.kclear()
+
+
+def test_spkpos_vectorized():
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et(['July 4, 2003 11:00 AM PST', 'July 11, 2003 11:00 AM PST'])
+    pos, lt = spice.spkpos("Mars", et, "J2000", "LT+S", "Earth")
+    expected_lt = [269.6898816177049, 251.44204349322627]
+    expected_pos = [[73822235.33116072, -27127919.178592984, -18741306.284863796],
+                    [69682765.56114145, -23090281.33320471, -17127756.9131108]]
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(pos, expected_pos)
     spice.kclear()
