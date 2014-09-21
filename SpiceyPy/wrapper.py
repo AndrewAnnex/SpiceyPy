@@ -12,8 +12,12 @@ import numpy
 
 def appndc(item, cell):
     assert isinstance(cell, stypes.SpiceCell)
-    item = stypes.stringToCharP(item)
-    libspice.appndc_c(item, cell)
+    if isinstance(item, list):
+        for c in item:
+            libspice.appndc_c(stypes.stringToCharP(c), cell)
+    else:
+        item = stypes.stringToCharP(item)
+        libspice.appndc_c(item, cell)
     pass
 
 
@@ -21,7 +25,7 @@ def appndd(item, cell):
     assert isinstance(cell, stypes.SpiceCell)
     if hasattr(item, "__iter__"):
         for d in item:
-            libspice.appndd(ctypes.c_double(d), cell)
+            libspice.appndd_c(ctypes.c_double(d), cell)
     else:
         item = ctypes.c_double(item)
         libspice.appndd_c(item, cell)
@@ -737,7 +741,6 @@ def dasopr(fname):
 
 
 def dcyldr(x, y, z):
-    #Todo: test dlatdr
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
     z = ctypes.c_double(z)
@@ -1400,7 +1403,6 @@ def ekuef(handle):
 
 
 def el2cgv(ellipse):
-    #Todo: test el2cgv
     assert(isinstance(ellipse, stypes.Ellipse))
     center = stypes.emptyDoubleVector(3)
     smajor = stypes.emptyDoubleVector(3)
@@ -1410,7 +1412,6 @@ def el2cgv(ellipse):
 
 
 def elemc(item, inset):
-    #Todo: test elemc
     assert isinstance(inset, stypes.SpiceCell)
     item = stypes.stringToCharP(item)
     return libspice.elemc_c(item, ctypes.byref(inset))
@@ -1642,8 +1643,12 @@ def ftncls(unit):
 
 
 def furnsh(path):
-    path = stypes.stringToCharP(path)
-    libspice.furnsh_c(path)
+    if isinstance(path, list):
+        for p in path:
+            libspice.furnsh_c(stypes.stringToCharP(p))
+    else:
+        path = stypes.stringToCharP(path)
+        libspice.furnsh_c(path)
     pass
 
 ########################################################################################################################
@@ -2141,8 +2146,12 @@ def inrypl(vertex, direct, plane):
 
 def insrtc(item, inset):
     assert isinstance(inset, stypes.SpiceCell)
-    item = stypes.stringToCharP(item)
-    libspice.insrtc_c(item, ctypes.byref(inset))
+    if isinstance(item, list):
+        for c in item:
+            libspice.insrtc_c(stypes.stringToCharP(c), ctypes.byref(inset))
+    else:
+        item = stypes.stringToCharP(item)
+        libspice.insrtc_c(item, ctypes.byref(inset))
     pass
 
 
@@ -2150,9 +2159,10 @@ def insrtd(item, inset):
     assert isinstance(inset, stypes.SpiceCell)
     if hasattr(item, "__iter__"):
         for d in item:
-            insrtd(d, inset)
-    item = ctypes.c_double(item)
-    libspice.insrtd_c(item, ctypes.byref(inset))
+            libspice.insrtd_c(ctypes.c_double(d), ctypes.byref(inset))
+    else:
+        item = ctypes.c_double(item)
+        libspice.insrtd_c(item, ctypes.byref(inset))
     pass
 
 
@@ -2160,9 +2170,10 @@ def insrti(item, inset):
     assert isinstance(inset, stypes.SpiceCell)
     if hasattr(item, "__iter__"):
         for i in item:
-            insrtd(i, inset)
-    item = ctypes.c_int(item)
-    libspice.insrti_c(item, ctypes.byref(inset))
+            libspice.insrti_c(ctypes.c_int(i), ctypes.byref(inset))
+    else:
+        item = ctypes.c_int(item)
+        libspice.insrti_c(item, ctypes.byref(inset))
     pass
 
 
