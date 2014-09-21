@@ -28,6 +28,14 @@ def test_appndc():
     assert testCell[2] == "three"
 
 
+def test_appndc_vectorized():
+    testCell = spice.stypes.SPICECHAR_CELL(10, 10)
+    spice.appndc(["one", "two", "three"], testCell)
+    assert testCell[0] == "one"
+    assert testCell[1] == "two"
+    assert testCell[2] == "three"
+
+
 def test_appndd():
     testCell = spice.stypes.SPICEDOUBLE_CELL(8)
     spice.appndd(1.0, testCell)
@@ -36,11 +44,23 @@ def test_appndd():
     assert [x for x in testCell] == [1.0, 2.0, 3.0]
 
 
+def test_appndd_vectorized():
+    testCell = spice.stypes.SPICEDOUBLE_CELL(8)
+    spice.appndd([1.0, 2.0, 3.0], testCell)
+    assert [x for x in testCell] == [1.0, 2.0, 3.0]
+
+
 def test_appndi():
     testCell = spice.stypes.SPICEINT_CELL(8)
     spice.appndi(1, testCell)
     spice.appndi(2, testCell)
     spice.appndi(3, testCell)
+    assert [x for x in testCell] == [1, 2, 3]
+
+
+def test_appndi_vectorized():
+    testCell = spice.stypes.SPICEINT_CELL(8)
+    spice.appndi([1, 2, 3], testCell)
     assert [x for x in testCell] == [1, 2, 3]
 
 
@@ -1618,6 +1638,14 @@ def test_furnsh():
     spice.kclear()
 
 
+def test_furnsh_vectorized():
+    spice.kclear()
+    spice.furnsh([_testKernelPath, _extraTestVoyagerKernel])
+    # 4 + 1 + 1 = 6
+    assert spice.ktotal("ALL") == 6
+    spice.kclear()
+    
+
 def test_gcpool():
     # same as pcpool test
     import string
@@ -2179,6 +2207,13 @@ def test_insrtc():
     assert [x for x in testCell] == ["aaa", "bbb", "ccc"]
 
 
+def test_insrtc_vectorized():
+    testCell = spice.stypes.SPICECHAR_CELL(10, 10)
+    cList = ["aaa", "bbb", "ccc", "bbb"]
+    spice.insrtc(cList, testCell)
+    assert [x for x in testCell] == ["aaa", "bbb", "ccc"]
+
+
 def test_insrtd():
     testCell = spice.stypes.SPICEDOUBLE_CELL(8)
     dlist = [0.5, 2.0, 30.0, 0.01, 30.0]
@@ -2187,11 +2222,25 @@ def test_insrtd():
     assert [x for x in testCell] == [0.01, 0.5, 2.0, 30.0]
 
 
+def test_insrtd_vectorized():
+    testCell = spice.stypes.SPICEDOUBLE_CELL(8)
+    dList = [0.5, 2.0, 30.0, 0.01, 30.0]
+    spice.insrtd(dList, testCell)
+    assert [x for x in testCell] == [0.01, 0.5, 2.0, 30.0]
+
+
 def test_insrti():
     testCell = spice.stypes.SPICEINT_CELL(8)
     ilist = [1, 2, 30, 1, 30]
     for i in ilist:
         spice.insrti(i, testCell)
+    assert [x for x in testCell] == [1, 2, 30]
+
+
+def test_insrti_vectorized():
+    testCell = spice.stypes.SPICEINT_CELL(8)
+    iList = [1, 2, 30, 1, 30]
+    spice.insrti(iList, testCell)
     assert [x for x in testCell] == [1, 2, 30]
 
 
