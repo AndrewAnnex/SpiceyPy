@@ -1196,6 +1196,19 @@ def test_ekacld():
 
 
 def test_ekacli():
+    # spice.kclear()
+    # ekpath = cwd + "/exampleekacli.ek"
+    # if spice.exists(ekpath):
+    # os.remove(ekpath)
+    # handle = spice.ekopn(ekpath, "Test EK", 100)
+    # segno, recptrs = spice.ekifld(handle, "TESTEKACLI", 1, 9, 255, ["ORDER_ID"], 201,
+    #                               ["DATATYPE = INTEGER, INDEXED = TRUE"])
+    # spice.ekacli(handle, segno, "order_id", [0, 1, 2, 3], [100, 100], [False, False, False, False], recptrs, [0, 1, 2, 3, 4, 5, 6, 7, 8])
+    # spice.ekffld(handle, segno, recptrs)
+    # spice.ekcls(handle)
+    # spice.kclear()
+    # if spice.exists(ekpath):
+    #     os.remove(ekpath)
     assert 1
 
 

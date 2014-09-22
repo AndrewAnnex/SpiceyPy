@@ -1203,8 +1203,8 @@ def ekifld(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls):
     handle = ctypes.c_int(handle)
     recptrs = stypes.emptyIntVector(nrows)
     tabnam = stypes.stringToCharP(tabnam)
-    cnames = stypes.listToCharArrayPtr(cnames, xLen=ncols, yLen=cnmlen)
-    decls = stypes.listToCharArrayPtr(decls, xLen=ncols, yLen=declen)
+    cnames = stypes.listToCharArrayPtr(cnames)  # , xLen=ncols, yLen=cnmlen)
+    decls = stypes.listToCharArrayPtr(decls)  #, xLen=ncols, yLen=declen)
     ncols = ctypes.c_int(ncols)
     nrows = ctypes.c_int(nrows)
     cnmlen = ctypes.c_int(cnmlen)
@@ -1635,7 +1635,7 @@ def frmnam(frcode, lenout=125):
     return stypes.toPythonString(frname)
 
 
-def ftncls(unit):
+def ftncls(unit):  # pragma: no cover
     #Todo: close ftncls
     unit = ctypes.c_int(unit)
     libspice.ftncls_c(unit)
