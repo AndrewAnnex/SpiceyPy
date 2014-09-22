@@ -120,7 +120,7 @@ def move_to_root_directory():
 
 
 def cleanup():
-    # Delete the extra files created by this file
+    # Delete the extra files created by this install script
     os.chdir(lib_dir)
     currentDir = os.getcwd()
     cleanupList = [file for file in os.listdir(currentDir) if file.endswith('.o') or file.endswith('.so')]
@@ -141,9 +141,9 @@ try:
     move_to_root_directory()
     setup(
         name='SpiceyPy',
-        version='0.5.2',
+        version='0.5.3',
         description='A Python Wrapper for the NAIF CSPICE Toolkit using ctypes',
-        author='Apollo117',
+        author='Andrew Annex',
         packages=['SpiceyPy'],
         tests_require=['pytest'],
         cmdclass={'test': PyTest},
