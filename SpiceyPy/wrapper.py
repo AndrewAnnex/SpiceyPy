@@ -999,7 +999,6 @@ def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     nvals = ctypes.c_int(nvals)
     vallen = ctypes.c_int(vallen)
     cvals = stypes.listToCharArrayPtr(cvals)
-    # ctypes.cast(stypes.listtocharvector(cvals), ctypes.c_void_p())  #this may not work
     isnull = ctypes.c_bool(isnull)
     libspice.ekacec_c(handle, segno, recno, column, nvals, vallen, cvals, isnull)
     pass
@@ -1074,7 +1073,6 @@ def ekacli(handle, segno, column, ivals, entszs, nlflgs, rcptrs, wkindx):
 
 
 def ekappr(handle, segno):
-    #Todo: test ekappr
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int()
@@ -1082,19 +1080,19 @@ def ekappr(handle, segno):
     return recno.value
 
 
-def ekbseg(handle, tabnam, ncols, cnames, decls, **kwargs):
-    if 'cnmlen' in kwargs:
-        cnmlen = kwargs['cnmlen']
-    else:
-        cnmlen = len(max(cnames, key=len)) + 1
-    if 'declen' in kwargs:
-        declen = kwargs['declen']
-    else:
-        declen = len(max(decls, key=len)) + 1
-    if 'ncols' in kwargs:
-        ncols = kwargs['ncols']
-    else:
-        ncols = len(cnames)
+def ekbseg(handle, tabnam, ncols, cnmlen, cnames, declen, decls):
+    # if 'cnmlen' in kwargs:
+    # cnmlen = kwargs['cnmlen']
+    # else:
+    #     cnmlen = len(max(cnames, key=len)) + 1
+    # if 'declen' in kwargs:
+    #     declen = kwargs['declen']
+    # else:
+    #     declen = len(max(decls, key=len)) + 1
+    # if 'ncols' in kwargs:
+    #     ncols = kwargs['ncols']
+    # else:
+    #     ncols = len(cnames)
     handle = ctypes.c_int(handle)
     tabnam = stypes.stringToCharP(tabnam)
     cnmlen = ctypes.c_int(cnmlen)
@@ -1107,8 +1105,7 @@ def ekbseg(handle, tabnam, ncols, cnames, decls, **kwargs):
 
 
 def ekccnt(table):
-    #Todo: test ekccnt
-    table = stypes.listtocharvector(table)
+    table = stypes.stringToCharP(table)
     ccount = ctypes.c_int()
     libspice.ekccnt_c(table, ctypes.byref(ccount))
     return ccount.value
@@ -1126,7 +1123,6 @@ def ekcii(table, cindex, lenout):
 
 
 def ekcls(handle):
-    #Todo: test ekcls
     handle = ctypes.c_int(handle)
     libspice.ekcls_c(handle)
     pass
@@ -1244,7 +1240,6 @@ def eknseg(handle):
 
 
 def ekntab():
-    #Todo: test ekntab
     n = ctypes.c_int()
     libspice.ekntab_c(ctypes.byref(n))
     return n.value
@@ -1348,12 +1343,11 @@ def ekssum(handle, segno):
 
 
 def ektnam(n, lenout):
-    #Todo: test ektnam
     n = ctypes.c_int(n)
     lenout = ctypes.c_int(lenout)
     table = stypes.stringToCharP(lenout)
     libspice.ektnam_c(n, lenout, table)
-    return stypes.toPythonString(table.value)
+    return stypes.toPythonString(table)
 
 
 def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
