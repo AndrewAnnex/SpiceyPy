@@ -120,7 +120,7 @@ def listToCharArray(inList, xLen=None, yLen=None):
     if not yLen:
         yLen = len(inList)
     if not xLen:
-        xLen = max(len(s) for s in inList)
+        xLen = max(len(s) for s in inList) + 1
     if isinstance(xLen, c_int):
         xLen = xLen.value
     if isinstance(yLen, c_int):
@@ -133,7 +133,7 @@ def listToCharArrayPtr(inList, xLen=None, yLen=None):
     if not yLen:
         yLen = len(inList)
     if not xLen:
-        xLen = max(len(s) for s in inList)
+        xLen = max(len(s) for s in inList) + 1
     if isinstance(xLen, c_int):
         xLen = xLen.value
     if isinstance(yLen, c_int):
