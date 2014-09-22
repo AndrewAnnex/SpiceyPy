@@ -1240,7 +1240,6 @@ def eknseg(handle):
 
 
 def ekntab():
-    #Todo: test ekntab
     n = ctypes.c_int()
     libspice.ekntab_c(ctypes.byref(n))
     return n.value
@@ -1344,12 +1343,11 @@ def ekssum(handle, segno):
 
 
 def ektnam(n, lenout):
-    #Todo: test ektnam
     n = ctypes.c_int(n)
     lenout = ctypes.c_int(lenout)
     table = stypes.stringToCharP(lenout)
     libspice.ektnam_c(n, lenout, table)
-    return stypes.toPythonString(table.value)
+    return stypes.toPythonString(table)
 
 
 def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
