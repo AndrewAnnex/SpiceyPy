@@ -30,8 +30,8 @@ Any changes can be easily shared by submitting a pull request.
 
 ### Citing SpiceyPy
 
-If SpiceyPy helps lead to a scientific publication, please consider citing SpiceyPy along with the SPICE toolkit.  
-The citation information for SPICE can be found on the NAIF website and please contact the author of this git repository for further information regarding citing SpiceyPy itself.
+If SpiceyPy helps lead to a scientific publication, please consider citing the SPICE toolkit, and listing SpiceyPy in the acknowledgments.  
+The citation information for SPICE can be found on the NAIF website and please contact the author of this git repository for further information regarding SpiceyPy itself.
 
 ### Design Goals
 - [x] Majorly complete coverage of all existing CSPICE commands, within reason.
