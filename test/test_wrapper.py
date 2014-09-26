@@ -1415,20 +1415,25 @@ def test_ekfind():
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
-    segno, rcptrs = spice.ekifld(handle, "test_table_ekfind", 1, 10, 200, ["c1"], 200,
+    segno, rcptrs = spice.ekifld(handle, "test_table_ekfind", 1, 10, 200, ["cc1"], 200,
                                  ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
-    spice.ekacli(handle, segno, "c1", [1, 2], [1], [False, False], rcptrs, [1])
+    spice.ekacli(handle, segno, "cc1", [1, 2], [1], [False, False], rcptrs, [1])
     spice.ekffld(handle, segno, rcptrs)
     spice.ekcls(handle)
     spice.kclear()
     spice.furnsh(ekpath)
-    nmrows, error, errmsg = spice.ekfind("SELECT C1 FROM TEST_TABLE_EKFIND WHERE C1 > 0", 100)
+    nmrows, error, errmsg = spice.ekfind("SELECT CC1 FROM TEST_TABLE_EKFIND WHERE CC1 > 0", 100)
     assert nmrows == 2
     assert not error
     spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)
     assert not spice.exists(ekpath)
+
+
+def test_ekfind_stess():
+    for i in range(10):
+        test_ekfind()
 
 
 def test_ekgc():
