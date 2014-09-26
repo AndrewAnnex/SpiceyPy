@@ -1135,7 +1135,7 @@ def ekffld(handle, segno, rcptrs):
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     rcptrs = stypes.toIntVector(rcptrs)
-    libspice.ekffld_c(handle, segno, rcptrs)
+    libspice.ekffld_c(handle, segno, ctypes.cast(rcptrs, ctypes.POINTER(ctypes.c_int)))
     pass
 
 
@@ -1188,14 +1188,14 @@ def ekgi(selidx, row, element):
 
 def ekifld(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls):
     handle = ctypes.c_int(handle)
-    recptrs = stypes.emptyIntVector(nrows)
     tabnam = stypes.stringToCharP(tabnam)
-    cnames = stypes.listToCharArrayPtr(cnames)
-    decls = stypes.listToCharArrayPtr(decls)
     ncols = ctypes.c_int(ncols)
     nrows = ctypes.c_int(nrows)
     cnmlen = ctypes.c_int(cnmlen)
+    cnames = stypes.listToCharArray(cnames)
     declen = ctypes.c_int(declen)
+    recptrs = stypes.emptyIntVector(nrows)
+    decls = stypes.listToCharArray(decls)
     segno = ctypes.c_int()
     libspice.ekifld_c(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls, ctypes.byref(segno), recptrs)
     return segno.value, stypes.vectorToList(recptrs)
