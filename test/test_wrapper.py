@@ -1592,7 +1592,25 @@ def test_ekssum():
 
 
 def test_ektnam():
-    assert 1
+    spice.kclear()
+    ekpath = cwd + "/example_ektnam.ek"
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    handle = spice.ekopn(ekpath, ekpath, 0)
+    segno = spice.ekbseg(handle, "TEST_TABLE_EKTNAM", 1, 10, ["c1"], 200,
+                         ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
+    recno = spice.ekappr(handle, segno)
+    spice.ekacei(handle, segno, recno, "c1", 2, [1, 2], False)
+    spice.ekcls(handle)
+    spice.kclear()
+    spice.furnsh(ekpath)
+    assert spice.ekntab() == 1
+    assert spice.ektnam(0, 100) == "TEST_TABLE_EKTNAM"
+    assert spice.ekccnt("TEST_TABLE_EKTNAM") == 1
+    spice.kclear()
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    assert not spice.exists(ekpath)
 
 
 def test_ekucec():
@@ -1608,7 +1626,19 @@ def test_ekucei():
 
 
 def test_ekuef():
-    assert 1
+    spice.kclear()
+    ekpath = cwd + "/example_ekuef.ek"
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    handle = spice.ekopn(ekpath, ekpath, 80)
+    spice.ekcls(handle)
+    assert spice.exists(ekpath)
+    testhandle = spice.ekopr(ekpath)
+    assert testhandle is not None
+    spice.ekuef(testhandle)
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    spice.kclear()
 
 
 def test_el2cgv():
