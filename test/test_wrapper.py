@@ -1227,15 +1227,59 @@ def test_ekacei():
 
 
 def test_ekaclc():
-    assert 1
+    spice.kclear()
+    ekpath = cwd + "/example_ekaclc.ek"
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    handle = spice.ekopn(ekpath, ekpath, 0)
+    segno, rcptrs = spice.ekifld(handle, "test_table_ekaclc", 1, 10, 200, ["c1"], 200,
+                                 ["DATATYPE = CHARACTER*(*), NULLS_OK = TRUE"])
+    spice.ekaclc(handle, segno, "c1", 10, ["1.0", "2.0"], [1], [False, False], rcptrs, [1])
+    spice.ekffld(handle, segno, rcptrs)
+    spice.ekcls(handle)
+    spice.kclear()
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    assert not spice.exists(ekpath)
 
 
 def test_ekacld():
-    assert 1
+    spice.kclear()
+    ekpath = cwd + "/example_ekacld.ek"
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    handle = spice.ekopn(ekpath, ekpath, 0)
+    segno, rcptrs = spice.ekifld(handle, "test_table_ekacld", 1, 10, 200, ["c1"], 200,
+                                 ["DATATYPE = DOUBLE PRECISION, NULLS_OK = TRUE"])
+    spice.ekacld(handle, segno, "c1", [1.0, 2.0], [1], [False, False], rcptrs, [1])
+    spice.ekffld(handle, segno, rcptrs)
+    spice.ekcls(handle)
+    spice.kclear()
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    assert not spice.exists(ekpath)
 
 
 def test_ekacli():
-    assert 1
+    spice.kclear()
+    ekpath = cwd + "/example_ekacli.ek"
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    handle = spice.ekopn(ekpath, ekpath, 0)
+    segno, rcptrs = spice.ekifld(handle, "test_table_ekacli", 1, 10, 200, ["c1"], 200,
+                                 ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
+    spice.ekacli(handle, segno, "c1", [1, 2], [1], [False, False], rcptrs, [1])
+    spice.ekffld(handle, segno, rcptrs)
+    spice.ekcls(handle)
+    spice.kclear()
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    assert not spice.exists(ekpath)
+
+
+def test_ekacli_stress():
+    for i in range(10):
+        test_ekacli()
 
 
 def test_ekappr():
@@ -1324,7 +1368,26 @@ def test_ekdelr():
 
 
 def test_ekffld():
-    assert 1
+    # same as test_ekacli
+    spice.kclear()
+    ekpath = cwd + "/example_ekffld.ek"
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    handle = spice.ekopn(ekpath, ekpath, 0)
+    segno, rcptrs = spice.ekifld(handle, "test_table_ekffld", 1, 10, 200, ["c1"], 200,
+                                 ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
+    spice.ekacli(handle, segno, "c1", [1, 2], [1], [False, False], rcptrs, [1])
+    spice.ekffld(handle, segno, rcptrs)
+    spice.ekcls(handle)
+    spice.kclear()
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    assert not spice.exists(ekpath)
+
+
+def test_ekffld_stress():
+    for i in range(10):
+        test_ekffld()
 
 
 def test_ekfind():
@@ -1344,7 +1407,21 @@ def test_ekgi():
 
 
 def test_ekifld():
-    assert 1
+    # Same as test_ekacli
+    spice.kclear()
+    ekpath = cwd + "/example_ekifld.ek"
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    handle = spice.ekopn(ekpath, ekpath, 0)
+    segno, rcptrs = spice.ekifld(handle, "test_table_ekifld", 1, 10, 200, ["c1"], 200,
+                                 ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
+    spice.ekacli(handle, segno, "c1", [1, 2], [1], [False, False], rcptrs, [1])
+    spice.ekffld(handle, segno, rcptrs)
+    spice.ekcls(handle)
+    spice.kclear()
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    assert not spice.exists(ekpath)
 
 
 def test_ekinsr():
