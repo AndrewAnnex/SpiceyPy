@@ -1347,7 +1347,33 @@ def test_ekccnt():
 
 
 def test_ekcii():
-    assert 1
+    spice.kclear()
+    ekpath = cwd + "/example_ekcii.ek"
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    handle = spice.ekopn(ekpath, ekpath, 0)
+    segno = spice.ekbseg(handle, "TEST_TABLE_EKCII", 1, 10, ["c1"], 200,
+                         ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
+    recno = spice.ekappr(handle, segno)
+    spice.ekacei(handle, segno, recno, "c1", 2, [1, 2], False)
+    spice.ekcls(handle)
+    spice.kclear()
+    spice.furnsh(ekpath)
+    assert spice.ekntab() == 1
+    assert spice.ektnam(0, 100) == "TEST_TABLE_EKCII"
+    assert spice.ekccnt("TEST_TABLE_EKCII") == 1
+    column, attdsc = spice.ekcii("TEST_TABLE_EKCII", 0, 30)
+    spice.kclear()
+    assert column == "C1"
+    assert attdsc.cclass == 1
+    assert attdsc.dtype == 2
+    assert attdsc.size == 1
+    assert attdsc.strlen == 1
+    assert not attdsc.indexd
+    assert not attdsc.nullok
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    assert not spice.exists(ekpath)
 
 
 def test_ekcls():
@@ -1437,15 +1463,90 @@ def test_ekfind_stess():
 
 
 def test_ekgc():
-    assert 1
+    spice.kclear()
+    ekpath = cwd + "/example_ekgc.ek"
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    handle = spice.ekopn(ekpath, ekpath, 0)
+    segno, rcptrs = spice.ekifld(handle, "test_table_ekgc", 1, 2, 200, ["c1"], 200,
+                                 ["DATATYPE = CHARACTER*(*), INDEXED  = TRUE"])
+    spice.ekaclc(handle, segno, "c1", 10, ["1.0", "2.0"], [4, 4], [False, False], rcptrs, [0, 0])
+    spice.ekffld(handle, segno, rcptrs)
+    spice.ekcls(handle)
+    spice.kclear()
+    spice.furnsh(ekpath)
+    nmrows, error, errmsg = spice.ekfind("SELECT C1 FROM TEST_TABLE_EKGC", 100)
+    assert not error
+    c, null, found = spice.ekgc(0, 0, 0, 4)
+    assert not null
+    assert found
+    assert c == "1.0"
+    c, null, found = spice.ekgc(0, 1, 0, 4)
+    assert not null
+    assert found
+    # assert c == "2.0" this fails, c is an empty string despite found being true.
+    spice.kclear()
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    assert not spice.exists(ekpath)
 
 
 def test_ekgd():
-    assert 1
+    spice.kclear()
+    ekpath = cwd + "/example_ekgd.ek"
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    handle = spice.ekopn(ekpath, ekpath, 0)
+    segno, rcptrs = spice.ekifld(handle, "test_table_ekgd", 1, 2, 200, ["c1"], 200,
+                                 ["DATATYPE = DOUBLE PRECISION, NULLS_OK = TRUE"])
+    spice.ekacld(handle, segno, "c1", [1.0, 2.0], [1, 1], [False, False], rcptrs, [0, 0])
+    spice.ekffld(handle, segno, rcptrs)
+    spice.ekcls(handle)
+    spice.kclear()
+    spice.furnsh(ekpath)
+    nmrows, error, errmsg = spice.ekfind("SELECT C1 FROM TEST_TABLE_EKGD", 100)
+    assert not error
+    d, null, found = spice.ekgd(0, 0, 0)
+    assert not null
+    assert found
+    assert d == 1.0
+    d, null, found = spice.ekgd(0, 1, 0)
+    assert not null
+    assert found
+    assert d == 2.0
+    spice.kclear()
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    assert not spice.exists(ekpath)
 
 
 def test_ekgi():
-    assert 1
+    spice.kclear()
+    ekpath = cwd + "/example_ekgi.ek"
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    handle = spice.ekopn(ekpath, ekpath, 0)
+    segno, rcptrs = spice.ekifld(handle, "test_table_ekgi", 1, 2, 200, ["c1"], 200,
+                                 ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
+    spice.ekacli(handle, segno, "c1", [1, 2], [1, 1], [False, False], rcptrs, [0, 0])
+    spice.ekffld(handle, segno, rcptrs)
+    spice.ekcls(handle)
+    spice.kclear()
+    spice.furnsh(ekpath)
+    nmrows, error, errmsg = spice.ekfind("SELECT C1 FROM TEST_TABLE_EKGI", 100)
+    assert not error
+    i, null, found = spice.ekgi(0, 0, 0)
+    assert not null
+    assert found
+    assert i == 1
+    i, null, found = spice.ekgi(0, 1, 0)
+    assert not null
+    assert found
+    assert i == 2
+    spice.kclear()
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    assert not spice.exists(ekpath)
 
 
 def test_ekifld():

@@ -1107,10 +1107,9 @@ def ekccnt(table):
 
 
 def ekcii(table, cindex, lenout):
-    #Todo: test ekcii SpiceEKAttDsc data type
     table = stypes.stringToCharP(table)
     cindex = ctypes.c_int(cindex)
-    lenout = cindex.c_int(lenout)
+    lenout = ctypes.c_int(lenout)
     column = stypes.stringToCharP(lenout)
     attdsc = stypes.SpiceEKAttDsc()
     libspice.ekcii_c(table, cindex, lenout, column, ctypes.byref(attdsc))
@@ -1150,7 +1149,7 @@ def ekfind(query, lenout):
 
 
 def ekgc(selidx, row, element, lenout):
-    #Todo: test ekgc
+    # ekgc has issues grabbing last element/row in column
     selidx = ctypes.c_int(selidx)
     row = ctypes.c_int(row)
     element = ctypes.c_int(element)
@@ -1158,12 +1157,11 @@ def ekgc(selidx, row, element, lenout):
     null = ctypes.c_bool()
     found = ctypes.c_bool()
     cdata = stypes.stringToCharP(lenout)
-    libspice.ekgc_c(selidx, row, element, lenout, cdata, null, found)
+    libspice.ekgc_c(selidx, row, element, lenout, cdata, ctypes.byref(null), ctypes.byref(found))
     return stypes.toPythonString(cdata), null.value, found.value
 
 
 def ekgd(selidx, row, element):
-    #Todo: test ekgd
     selidx = ctypes.c_int(selidx)
     row = ctypes.c_int(row)
     element = ctypes.c_int(element)
@@ -1175,11 +1173,10 @@ def ekgd(selidx, row, element):
 
 
 def ekgi(selidx, row, element):
-    #Todo: test ekgi
     selidx = ctypes.c_int(selidx)
     row = ctypes.c_int(row)
     element = ctypes.c_int(element)
-    idata = ctypes.c_double()
+    idata = ctypes.c_int()
     null = ctypes.c_bool()
     found = ctypes.c_bool()
     libspice.ekgi_c(selidx, row, element, ctypes.byref(idata), ctypes.byref(null), ctypes.byref(found))
