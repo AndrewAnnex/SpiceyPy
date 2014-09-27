@@ -12,9 +12,9 @@ Please visit the NAIF website listed earlier for more details.
 
 ### Travis and Coveralls Status
 
-[![Build Status](https://travis-ci.org/Apollo117/SpiceyPy.svg?style=flat?branch=master)](https://travis-ci.org/Apollo117/SpiceyPy)
-[![Coverage Status](https://img.shields.io/coveralls/Apollo117/SpiceyPy.svg?)](https://coveralls.io/r/Apollo117/SpiceyPy?branch=master)  
-A secondary list (non-maintained) of what functions have been wrapped can be found [here](https://github.com/Apollo117/SpiceyPy/wiki/Wrapper-Completion).  
+[![Build Status](https://travis-ci.org/AndrewAnnex/SpiceyPy.svg?style=flat?branch=master)](https://travis-ci.org/AndrewAnnex/SpiceyPy)
+[![Coverage Status](https://img.shields.io/coveralls/AndrewAnnex/SpiceyPy.svg?)](https://coveralls.io/r/AndrewAnnex/SpiceyPy?branch=master) 
+A secondary list (non-maintained) of what functions have been wrapped can be found [here](https://github.com/AndrewAnnex/SpiceyPy/wiki/Wrapper-Completion).  
 A majority of SPICE functions have written wrappers along with tests mainly derived from the CSPICE documentation.  
 A small number of functions have no wrapper functions of any kind due to lack of necessity, they are labeled as "Skipped".   
 The rest of the functions generally have written wrapper functions but remain untested, mostly due to lack of SPICE documentation (the EK kernel functions are one example of this).  

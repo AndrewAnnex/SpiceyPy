@@ -1,4 +1,4 @@
-__author__ = 'Apollo117'
+__author__ = 'AndrewAnnex'
 from ctypes import CDLL, POINTER, c_bool, c_int, c_double, c_char, c_char_p, c_void_p
 import os
 

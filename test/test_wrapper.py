@@ -1,4 +1,4 @@
-__author__ = 'Apollo117'
+__author__ = 'AndrewAnnex'
 import pytest
 
 import SpiceyPy as spice

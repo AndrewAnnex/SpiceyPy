@@ -1,4 +1,4 @@
-__author__ = 'Apollo117'
+__author__ = 'AndrewAnnex'
 
 import os
 from six.moves import urllib

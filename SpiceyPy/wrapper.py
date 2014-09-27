@@ -1,4 +1,4 @@
-__author__ = 'Apollo117'
+__author__ = 'AndrewAnnex'
 # wrapper.py, a weak wrapper for libspice.py, here is where all the important ctypes setup and returning occurs.
 
 import ctypes

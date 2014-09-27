@@ -1,5 +1,5 @@
 # Collection of supporting functions for wrapper functions
-__author__ = 'Apollo117'
+__author__ = 'AndrewAnnex'
 from ctypes import c_char_p, c_bool, c_int, c_double, c_char, c_void_p, sizeof, \
     POINTER, pointer, Array, create_string_buffer, create_unicode_buffer, cast, Structure, \
     CFUNCTYPE, string_at

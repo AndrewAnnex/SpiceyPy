@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-__author__ = 'Apollo117'
+__author__ = 'AndrewAnnex'
 
 # Sources: mostly from DaRasch, spiceminer/getcspice.py,
 # with edits as needed for python2/3 compatibility

@@ -1,4 +1,4 @@
-__author__ = 'Apollo117'
+__author__ = 'AndrewAnnex'
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
 import sys
