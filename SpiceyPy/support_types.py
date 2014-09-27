@@ -358,13 +358,37 @@ class SpiceEKExprClass(c_int):
 
 class SpiceEKAttDsc(Structure):
     _fields_ = [
-        ('cclass', c_int),
-        ('dtype', SpiceEKDataType),
-        ('strlen', c_int),
-        ('size', c_int),
-        ('indexd', c_bool),
-        ('nullok', c_bool)
+        ('_cclass', c_int),
+        ('_dtype', SpiceEKDataType),
+        ('_strlen', c_int),
+        ('_size', c_int),
+        ('_indexd', c_bool),
+        ('_nullok', c_bool)
     ]
+
+    @property
+    def cclass(self):
+        return self._cclass
+
+    @property
+    def dtype(self):
+        return self._dtype.value
+
+    @property
+    def strlen(self):
+        return self._strlen
+
+    @property
+    def size(self):
+        return self._size
+
+    @property
+    def indexd(self):
+        return self._indexd
+
+    @property
+    def nullok(self):
+        return self._nullok
 
     def __str__(self):
         return '<SpiceEKAttDsc cclass = %s, dtype = %s, strlen = %s, size = %s, indexd = %s, nullok = %s >' % \
