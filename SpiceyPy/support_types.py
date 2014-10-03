@@ -90,7 +90,7 @@ def vectorToList(x):
     elif isinstance(x[0], float):
         return numpy.fromiter(x, numpy.float64, count=len(x))
     elif isinstance(x[0].value, bytes):
-        return [bytes.decode(y.value) for y in x]
+        return [toPythonString(y) for y in x]
 
 
 def matrixToList(x):
@@ -397,12 +397,32 @@ class SpiceEKAttDsc(Structure):
 
 class SpiceEKSegSum(Structure):
     _fields_ = [
-        ('tabnam', c_char * 65),
-        ('nrows', c_int),
-        ('ncols', c_int),
-        ('cnames', (c_char * 100) * 33),
-        ('cdescrs', c_char * 100)
+        ('_tabnam', c_char * 65),
+        ('_nrows', c_int),
+        ('_ncols', c_int),
+        ('_cnames', (c_char * 100) * 33),
+        ('_cdescrs', SpiceEKAttDsc * 100)
     ]
+
+    @property
+    def tabnam(self):
+        return toPythonString(self._tabnam)
+
+    @property
+    def nrows(self):
+        return self._nrows
+
+    @property
+    def ncols(self):
+        return self._ncols
+
+    @property
+    def cnames(self):
+        return vectorToList(self._cnames)[0:self.ncols]
+
+    @property
+    def cdescrs(self):
+        return self._cdescrs[0:self.ncols]
 
     def __str__(self):
         return '<SpiceEKSegSum tabnam = %s, nrows = %s, ncols = %s, cnames = %s, cdescrs = %s >' % (self.tabnam, self.nrows, self.ncols, self.cnames, self.cdescrs)

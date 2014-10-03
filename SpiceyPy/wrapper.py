@@ -1314,14 +1314,13 @@ def ekrcei(handle, segno, recno, column):
     recno = ctypes.c_int(recno)
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int()
-    ivals = ctypes.POINTER(ctypes.c_int)  # array of length nvals
+    ivals = ctypes.pointer(ctypes.c_int)  # array of length nvals
     isnull = ctypes.c_bool()
-    libspice.ekrcei_c(handle, segno, recno, column, ctypes.byref(nvals), ctypes.byref(ivals), ctypes.byref(isnull))
+    libspice.ekrcei_c(handle, segno, recno, column, ctypes.byref(nvals), ivals, ctypes.byref(isnull))
     return nvals.value, stypes.vectorToList(ivals), isnull.value
 
 
 def ekssum(handle, segno):
-    #Todo: test ekssum and spiceEKSegSum type
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     segsum = stypes.SpiceEKSegSum()

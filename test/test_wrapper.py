@@ -1686,10 +1686,47 @@ def test_ekrced():
 
 def test_ekrcei():
     assert 1
+    # spice.kclear()
+    # ekpath = cwd + "/example_ekrcei.ek"
+    # if spice.exists(ekpath):
+    # os.remove(ekpath)
+    # handle = spice.ekopn(ekpath, ekpath, 0)
+    # segno, rcptrs = spice.ekifld(handle, "test_table_ekrcei", 1, 2, 200, ["c1"], 200,
+    #                              ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
+    # spice.ekacli(handle, segno, "c1", [1, 2], [1, 1], [False, False], rcptrs, [0, 0])
+    # spice.ekffld(handle, segno, rcptrs)
+    # nvals, ivals, isnull = spice.ekrcei(handle, 0, 0, "C1")
+    # spice.ekcls(handle)
+    # spice.kclear()
+    # if spice.exists(ekpath):
+    #     os.remove(ekpath)
+    # assert not spice.exists(ekpath)
 
 
 def test_ekssum():
-    assert 1
+    spice.kclear()
+    ekpath = cwd + "/example_ekssum.ek"
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    handle = spice.ekopn(ekpath, ekpath, 0)
+    segno, rcptrs = spice.ekifld(handle, "test_table_ekssum", 1, 2, 200, ["c1"], 200,
+                                 ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
+    spice.ekacli(handle, segno, "c1", [1, 2], [1, 1], [False, False], rcptrs, [0, 0])
+    spice.ekffld(handle, segno, rcptrs)
+    segsum = spice.ekssum(handle, segno)
+    assert segsum.ncols == 1
+    assert segsum.nrows == 2
+    assert segsum.cnames == ["C1"]
+    assert segsum.tabnam == "TEST_TABLE_EKSSUM"
+    c1descr = segsum.cdescrs[0]
+    assert c1descr.dtype == 2
+    assert c1descr.indexd is False
+    # assert c1descr.null == True, for some reason this is actually false, SpikeEKAttDsc may not be working correctly
+    spice.ekcls(handle)
+    spice.kclear()
+    if spice.exists(ekpath):
+        os.remove(ekpath)
+    assert not spice.exists(ekpath)
 
 
 def test_ektnam():
