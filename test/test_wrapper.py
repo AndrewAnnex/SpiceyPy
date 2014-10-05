@@ -2112,11 +2112,12 @@ def test_getmsg():
 
 
 def test_gfbail():
-    assert 1
+    assert not spice.gfbail()
 
 
 def test_gfclrh():
-    assert 1
+    spice.gfclrh()
+    assert not spice.gfbail()
 
 
 def test_gfdist():

@@ -1723,12 +1723,10 @@ def getmsg(option, lenout):
 
 
 def gfbail():
-    #todo: test gfbail. funny name
     return libspice.gfbail_c()
 
 
 def gfclrh():
-    #Todo: test gfclrh
     libspice.gfclrh_c()
     pass
 
@@ -1999,7 +1997,10 @@ def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
     libspice.gftfov_c(inst, target, tshape, tframe, abcorr, obsrvr, step, ctypes.byref(cnfine), ctypes.byref(result))
 
 
-#gfuds has cell types and more
+# gfudb has call backs
+
+
+#gfuds has call backs
 
 
 def gipool(name, start, room):
@@ -3054,7 +3055,6 @@ def qcktrc(tracelen):
 
 
 def qdq2av(q, dq):
-    #Todo: test qdq2av
     q = stypes.toDoubleVector(q)
     dq = stypes.toDoubleVector(dq)
     vout = stypes.emptyDoubleVector(3)
