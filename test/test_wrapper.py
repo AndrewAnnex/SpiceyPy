@@ -6,16 +6,16 @@ import numpy as np
 import numpy.testing as npt
 import os
 cwd = os.path.realpath(os.path.dirname(__file__))
-_testKernelPath = cwd + "/testKernels.txt"
-_extraTestVoyagerKernel = cwd + "/vg200022.tsc"
-_testPckPath = cwd + "/pck00010.tpc"
-_spkEarthPck = cwd + "/earth_720101_070426.bpc"
-_spkEarthFk = cwd + "/earthstns_itrf93_050714.bsp"
-_spkEarthTf = cwd + "/earth_topo_050714.tf"
-_spkMGSTi = cwd + "/mgs_moc_v20.ti"
-_spkMgsSclk = cwd + "/mgs_sclkscet_00061.tsc"
-_spkMgsSpk = cwd + "/mgs_crus.bsp"
-_spk = cwd + "/de421.bsp"
+_testKernelPath = os.path.join(cwd, "testKernels.txt")
+_extraTestVoyagerKernel = os.path.join(cwd, "vg200022.tsc")
+_testPckPath = os.path.join(cwd, "pck00010.tpc")
+_spkEarthPck = os.path.join(cwd, "earth_720101_070426.bpc")
+_spkEarthFk = os.path.join(cwd, "earthstns_itrf93_050714.bsp")
+_spkEarthTf = os.path.join(cwd, "earth_topo_050714.tf")
+_spkMGSTi = os.path.join(cwd, "mgs_moc_v20.ti")
+_spkMgsSclk = os.path.join(cwd, "mgs_sclkscet_00061.tsc")
+_spkMgsSpk = os.path.join(cwd, "mgs_crus.bsp")
+_spk = os.path.join(cwd, "de421.bsp")
 
 
 def test_appndc():
@@ -305,7 +305,7 @@ def test_cidfrm():
 def test_ckcls():
     # Spice crashes if ckcls detects nothing written to ck1
     spice.kclear()
-    CK1 = cwd + "/ckopenkernel.bc"
+    CK1 = os.path.join(cwd, "ckopenkernel.bc")
     if spice.exists(CK1):
         os.remove(CK1)
     IFNAME = "Test CK type 1 segment created by cspice_ckw01"
@@ -345,7 +345,7 @@ def test_ckobj():
 def test_ckopn():
     # Spice crashes if ckcls detects nothing written to ck1
     spice.kclear()
-    CK1 = cwd + "/ckopenkernel.bc"
+    CK1 = os.path.join(cwd, "ckopenkernel.bc")
     if spice.exists(CK1):
         os.remove(CK1)
     IFNAME = "Test CK type 1 segment created by cspice_ckw01"
@@ -368,7 +368,7 @@ def test_ckupf():
 
 def test_ckw01():
     spice.kclear()
-    CK1 = cwd + "/type1.bc"
+    CK1 = os.path.join(cwd, "type1.bc")
     if spice.exists(CK1):
         os.remove(CK1)
     INST = -77701
@@ -411,7 +411,7 @@ def test_ckw01():
 
 def test_ckw02():
     spice.kclear()
-    CK2 = cwd + "/type2.bc"
+    CK2 = os.path.join(cwd, "type2.bc")
     if spice.exists(CK2):
         os.remove(CK2)
     INST = -77702
@@ -456,7 +456,7 @@ def test_ckw02():
 
 def test_ckw03():
     spice.kclear()
-    CK3 = cwd + "/type3.bc"
+    CK3 = os.path.join(cwd, "type3.bc")
     if spice.exists(CK3):
         os.remove(CK3)
     MAXREC = 201
@@ -616,7 +616,7 @@ def test_dafac():
 
 def test_dafbbs():
     spice.kclear()
-    handle = spice.dafopr(cwd + "/de421.bsp")
+    handle = spice.dafopr(os.path.join(cwd, "de421.bsp"))
     spice.dafbbs(handle)
     found = spice.daffpa()
     assert found
@@ -626,7 +626,7 @@ def test_dafbbs():
 
 def test_dafbfs():
     spice.kclear()
-    handle = spice.dafopr(cwd + "/de421.bsp")
+    handle = spice.dafopr(os.path.join(cwd, "de421.bsp"))
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
@@ -636,7 +636,7 @@ def test_dafbfs():
 
 def test_dafcls():
     spice.kclear()
-    handle = spice.dafopr(cwd + "/de421.bsp")
+    handle = spice.dafopr(os.path.join(cwd, "de421.bsp"))
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
@@ -646,7 +646,7 @@ def test_dafcls():
 
 def test_dafcs():
     spice.kclear()
-    handle = spice.dafopr(cwd + "/de421.bsp")
+    handle = spice.dafopr(os.path.join(cwd, "de421.bsp"))
     spice.dafbbs(handle)
     spice.dafcs(handle)
     found = spice.daffpa()
@@ -661,7 +661,7 @@ def test_dafdc():
 
 def test_dafec():
     spice.kclear()
-    handle = spice.dafopr(cwd + "/de421.bsp")
+    handle = spice.dafopr(os.path.join(cwd, "de421.bsp"))
     n, buffer, done = spice.dafec(handle, 15, 80)
     assert n == 15
     assert buffer == ['; de421.bsp LOG FILE', ';', '; Created 2008-02-12/11:33:34.00.', ';', '; BEGIN NIOSPK COMMANDS',
@@ -676,7 +676,7 @@ def test_dafec():
 
 def test_daffna():
     spice.kclear()
-    handle = spice.dafopr(cwd + "/de421.bsp")
+    handle = spice.dafopr(os.path.join(cwd, "de421.bsp"))
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
@@ -686,7 +686,7 @@ def test_daffna():
 
 def test_daffpa():
     spice.kclear()
-    handle = spice.dafopr(cwd + "/de421.bsp")
+    handle = spice.dafopr(os.path.join(cwd, "de421.bsp"))
     spice.dafbbs(handle)
     found = spice.daffpa()
     assert found
@@ -697,7 +697,7 @@ def test_daffpa():
 def test_dafgda():
     # not a very good test...
     spice.kclear()
-    handle = spice.dafopr(cwd + "/de421.bsp")
+    handle = spice.dafopr(os.path.join(cwd, "de421.bsp"))
     elements = spice.dafgda(handle, 20, 21)
     assert elements == [0.0]
     spice.dafcls(handle)
@@ -706,7 +706,7 @@ def test_dafgda():
 
 def test_dafgh():
     spice.kclear()
-    handle = spice.dafopr(cwd + "/de421.bsp")
+    handle = spice.dafopr(os.path.join(cwd, "de421.bsp"))
     spice.dafbbs(handle)
     spice.dafcs(handle)
     searchHandle = spice.dafgh()
@@ -717,7 +717,7 @@ def test_dafgh():
 
 def test_dafgn():
     spice.kclear()
-    handle = spice.dafopr(cwd + "/de421.bsp")
+    handle = spice.dafopr(os.path.join(cwd, "de421.bsp"))
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
@@ -731,7 +731,7 @@ def test_dafgn():
 
 def test_dafgs():
     spice.kclear()
-    handle = spice.dafopr(cwd + "/de421.bsp")
+    handle = spice.dafopr(os.path.join(cwd, "de421.bsp"))
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
@@ -753,7 +753,7 @@ def test_dafgsr():
 
 def test_dafopr():
     spice.kclear()
-    handle = spice.dafopr(cwd + "/de421.bsp")
+    handle = spice.dafopr(os.path.join(cwd, "de421.bsp"))
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
@@ -763,7 +763,7 @@ def test_dafopr():
 
 def test_dafopw():
     spice.kclear()
-    handle = spice.dafopw(cwd + "/de421.bsp")
+    handle = spice.dafopw(os.path.join(cwd, "de421.bsp"))
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
@@ -781,7 +781,7 @@ def test_dafrda():
 
 def test_dafrfr():
     spice.kclear()
-    handle = spice.dafopr(cwd + "/de421.bsp")
+    handle = spice.dafopr(os.path.join(cwd, "de421.bsp"))
     nd, ni, ifname, fward, bward, free = spice.dafrfr(handle, 61)
     spice.dafcls(handle)
     assert nd == 2
@@ -798,7 +798,7 @@ def test_dafrs():
 
 def test_dafus():
     spice.kclear()
-    handle = spice.dafopr(cwd + "/de421.bsp")
+    handle = spice.dafopr(os.path.join(cwd, "de421.bsp"))
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
@@ -1177,7 +1177,7 @@ def test_edterm():
 
 def test_ekacec():
     spice.kclear()
-    ekpath = cwd + "/example_ekacec.ek"
+    ekpath = os.path.join(cwd, "example_ekacec.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1194,7 +1194,7 @@ def test_ekacec():
 
 def test_ekaced():
     spice.kclear()
-    ekpath = cwd + "/example_ekaced.ek"
+    ekpath = os.path.join(cwd, "example_ekaced.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1211,7 +1211,7 @@ def test_ekaced():
 
 def test_ekacei():
     spice.kclear()
-    ekpath = cwd + "/example_ekacei.ek"
+    ekpath = os.path.join(cwd, "example_ekacei.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1228,7 +1228,7 @@ def test_ekacei():
 
 def test_ekaclc():
     spice.kclear()
-    ekpath = cwd + "/example_ekaclc.ek"
+    ekpath = os.path.join(cwd, "example_ekaclc.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1245,7 +1245,7 @@ def test_ekaclc():
 
 def test_ekacld():
     spice.kclear()
-    ekpath = cwd + "/example_ekacld.ek"
+    ekpath = os.path.join(cwd, "example_ekacld.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1262,7 +1262,7 @@ def test_ekacld():
 
 def test_ekacli():
     spice.kclear()
-    ekpath = cwd + "/example_ekacli.ek"
+    ekpath = os.path.join(cwd, "example_ekacli.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1284,7 +1284,7 @@ def test_ekacli_stress():
 
 def test_ekappr():
     spice.kclear()
-    ekpath = cwd + "/example_ekappr.ek"
+    ekpath = os.path.join(cwd, "example_ekappr.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1300,7 +1300,7 @@ def test_ekappr():
 
 
 def test_ekbseg():
-    ekpath = cwd + "/example_ekbseg.ek"
+    ekpath = os.path.join(cwd, "example_ekbseg.ek")
     spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)
@@ -1326,7 +1326,7 @@ def test_ekbseg_stress():
 
 def test_ekccnt():
     spice.kclear()
-    ekpath = cwd + "/example_ekccnt.ek"
+    ekpath = os.path.join(cwd, "example_ekccnt.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1348,7 +1348,7 @@ def test_ekccnt():
 
 def test_ekcii():
     spice.kclear()
-    ekpath = cwd + "/example_ekcii.ek"
+    ekpath = os.path.join(cwd, "example_ekcii.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1378,7 +1378,7 @@ def test_ekcii():
 
 def test_ekcls():
     spice.kclear()  # same as ekopn test
-    ekpath = cwd + "/example_ekcls.ek"
+    ekpath = os.path.join(cwd, "example_ekcls.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 80)
@@ -1391,7 +1391,7 @@ def test_ekcls():
 
 def test_ekdelr():
     spice.kclear()
-    ekpath = cwd + "/example_ekdelr.ek"
+    ekpath = os.path.join(cwd, "example_ekdelr.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1415,7 +1415,7 @@ def test_ekdelr_stress():
 def test_ekffld():
     # same as test_ekacli
     spice.kclear()
-    ekpath = cwd + "/example_ekffld.ek"
+    ekpath = os.path.join(cwd, "example_ekffld.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1437,7 +1437,7 @@ def test_ekffld_stress():
 
 def test_ekfind():
     spice.kclear()
-    ekpath = cwd + "/example_ekfind.ek"
+    ekpath = os.path.join(cwd, "example_ekfind.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1464,7 +1464,7 @@ def test_ekfind_stess():
 
 def test_ekgc():
     spice.kclear()
-    ekpath = cwd + "/example_ekgc.ek"
+    ekpath = os.path.join(cwd, "example_ekgc.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1493,7 +1493,7 @@ def test_ekgc():
 
 def test_ekgd():
     spice.kclear()
-    ekpath = cwd + "/example_ekgd.ek"
+    ekpath = os.path.join(cwd, "example_ekgd.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1522,7 +1522,7 @@ def test_ekgd():
 
 def test_ekgi():
     spice.kclear()
-    ekpath = cwd + "/example_ekgi.ek"
+    ekpath = os.path.join(cwd, "example_ekgi.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1552,7 +1552,7 @@ def test_ekgi():
 def test_ekifld():
     # Same as test_ekacli
     spice.kclear()
-    ekpath = cwd + "/example_ekifld.ek"
+    ekpath = os.path.join(cwd, "example_ekifld.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1573,7 +1573,7 @@ def test_ekinsr():
 
 def test_eklef():
     spice.kclear()
-    ekpath = cwd + "/example_eklef.ek"
+    ekpath = os.path.join(cwd, "example_eklef.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1596,7 +1596,7 @@ def test_eknelt():
 
 def test_eknseg():
     spice.kclear()
-    ekpath = cwd + "/example_eknseg.ek"
+    ekpath = os.path.join(cwd, "example_eknseg.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1621,7 +1621,7 @@ def test_ekntab():
 
 def test_ekopn():
     spice.kclear()
-    ekpath = cwd + "/example_ek.ek"
+    ekpath = os.path.join(cwd, "example_ek.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 80)
@@ -1634,7 +1634,7 @@ def test_ekopn():
 
 def test_ekopr():
     spice.kclear()
-    ekpath = cwd + "/example_ekopr.ek"
+    ekpath = os.path.join(cwd, "example_ekopr.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 80)
@@ -1658,7 +1658,7 @@ def test_ekops():
 
 def test_ekopw():
     spice.kclear()
-    ekpath = cwd + "/example_ekopw.ek"
+    ekpath = os.path.join(cwd, "example_ekopw.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 80)
@@ -1687,7 +1687,7 @@ def test_ekrced():
 def test_ekrcei():
     assert 1
     # spice.kclear()
-    # ekpath = cwd + "/example_ekrcei.ek"
+    # ekpath = os.path.join(cwd, "example_ekrcei.ek")
     # if spice.exists(ekpath):
     # os.remove(ekpath)
     # handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1705,7 +1705,7 @@ def test_ekrcei():
 
 def test_ekssum():
     spice.kclear()
-    ekpath = cwd + "/example_ekssum.ek"
+    ekpath = os.path.join(cwd, "example_ekssum.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1731,7 +1731,7 @@ def test_ekssum():
 
 def test_ektnam():
     spice.kclear()
-    ekpath = cwd + "/example_ektnam.ek"
+    ekpath = os.path.join(cwd, "example_ektnam.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 0)
@@ -1765,7 +1765,7 @@ def test_ekucei():
 
 def test_ekuef():
     spice.kclear()
-    ekpath = cwd + "/example_ekuef.ek"
+    ekpath = os.path.join(cwd, "example_ekuef.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 80)
@@ -2071,7 +2071,7 @@ def test_getelm():
 
 
 def test_getfat():
-    arch, outtype = spice.getfat(cwd + '/naif0010.tls')
+    arch, outtype = spice.getfat(os.path.join(cwd, 'naif0010.tls'))
     assert arch == "KPL"
     assert outtype == "LSK"
 
@@ -4144,7 +4144,7 @@ def test_spk14a():
                       2.0302, 2.0303, 3.0101, 3.0102, 3.0103, 3.0201, 3.0202, 3.0203,
                       3.0301, 3.0302, 3.0303, 4.0101, 4.0102, 4.0103, 4.0201, 4.0202,
                       4.0203, 4.0301, 4.0302, 4.0303]
-    spk14 = cwd + "/test14.bsp"
+    spk14 = os.path.join(cwd, "test14.bsp")
     if spice.exists(spk14):
         os.remove(spk14)
     spice.kclear()
@@ -4174,7 +4174,7 @@ def test_spk14b():
                       2.0302, 2.0303, 3.0101, 3.0102, 3.0103, 3.0201, 3.0202, 3.0203,
                       3.0301, 3.0302, 3.0303, 4.0101, 4.0102, 4.0103, 4.0201, 4.0202,
                       4.0203, 4.0301, 4.0302, 4.0303]
-    spk14 = cwd + "/test14.bsp"
+    spk14 = os.path.join(cwd, "test14.bsp")
     if spice.exists(spk14):
         os.remove(spk14)
     spice.kclear()
@@ -4199,7 +4199,7 @@ def test_spk14e():
                       2.0302, 2.0303, 3.0101, 3.0102, 3.0103, 3.0201, 3.0202, 3.0203,
                       3.0301, 3.0302, 3.0303, 4.0101, 4.0102, 4.0103, 4.0201, 4.0202,
                       4.0203, 4.0301, 4.0302, 4.0303]
-    spk14 = cwd + "/test14.bsp"
+    spk14 = os.path.join(cwd, "test14.bsp")
     if spice.exists(spk14):
         os.remove(spk14)
     spice.kclear()
@@ -4282,7 +4282,7 @@ def test_spkaps():
 
 def test_spkcls():
     # Same as test_spkw02
-    SPK2 = cwd + "/test2.bsp"
+    SPK2 = os.path.join(cwd, "test2.bsp")
     if spice.exists(SPK2):
         os.remove(SPK2)
     spice.kclear()
@@ -4494,7 +4494,7 @@ def test_spkopa():
 
 def test_spkopn():
     # Same as test_spkw02
-    SPK2 = cwd + "/test2.bsp"
+    SPK2 = os.path.join(cwd, "test2.bsp")
     if spice.exists(SPK2):
         os.remove(SPK2)
     spice.kclear()
@@ -4597,7 +4597,7 @@ def test_spkuef():
 
 
 def test_spkw02():
-    SPK2 = cwd + "/test2.bsp"
+    SPK2 = os.path.join(cwd, "test2.bsp")
     if spice.exists(SPK2):
         os.remove(SPK2)
     spice.kclear()
@@ -4622,7 +4622,7 @@ def test_spkw02():
 
 
 def test_spkw03():
-    SPK3 = cwd + "/test3.bsp"
+    SPK3 = os.path.join(cwd, "test3.bsp")
     if spice.exists(SPK3):
         os.remove(SPK3)
     spice.kclear()
@@ -4650,7 +4650,7 @@ def test_spkw03():
 
 
 def test_spkw05():
-    SPK5 = cwd + "/test5.bsp"
+    SPK5 = os.path.join(cwd, "test5.bsp")
     if spice.exists(SPK5):
         os.remove(SPK5)
     spice.kclear()
@@ -4680,7 +4680,7 @@ def test_spkw05():
 
 
 def test_spkw08():
-    SPK8 = cwd + "/test8.bsp"
+    SPK8 = os.path.join(cwd, "test8.bsp")
     if spice.exists(SPK8):
         os.remove(SPK8)
     spice.kclear()
@@ -4711,7 +4711,7 @@ def test_spkw08():
 
 
 def test_spkw09():
-    SPK9 = cwd + "/test9.bsp"
+    SPK9 = os.path.join(cwd, "test9.bsp")
     if spice.exists(SPK9):
         os.remove(SPK9)
     spice.kclear()
@@ -4741,7 +4741,7 @@ def test_spkw09():
 
 
 def test_spkw10():
-    SPK10 = cwd + "/test10.bsp"
+    SPK10 = os.path.join(cwd, "test10.bsp")
     spice.kclear()
     tle = ['1 18123U 87 53  A 87324.61041692 -.00000023  00000-0 -75103-5 0 00675',
            '2 18123  98.8296 152.0074 0014950 168.7820 191.3688 14.12912554 21686',
@@ -4786,7 +4786,7 @@ def test_spkw10():
 
 
 def test_spkw12():
-    SPK12 = cwd + "/test12.bsp"
+    SPK12 = os.path.join(cwd, "test12.bsp")
     if spice.exists(SPK12):
         os.remove(SPK12)
     spice.kclear()
@@ -4817,7 +4817,7 @@ def test_spkw12():
 
 
 def test_spkw13():
-    SPK13 = cwd + "/test13.bsp"
+    SPK13 = os.path.join(cwd, "test13.bsp")
     if spice.exists(SPK13):
         os.remove(SPK13)
     spice.kclear()
