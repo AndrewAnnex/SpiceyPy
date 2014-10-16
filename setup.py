@@ -8,9 +8,8 @@ import os
 import subprocess
 
 
-module_name = os.path.basename(os.getcwd())
 # Get current working directory
-root_dir = os.path.dirname(__file__)
+root_dir = os.path.dirname(os.path.realpath(__file__))
 # Make the directory path for cspice
 cspice_dir = os.path.join(root_dir, 'cspice')
 # Make the directory path for cspice/lib
@@ -113,7 +112,7 @@ def build_library():
 
 def move_to_root_directory():
     try:
-        os.rename(cspice_dir+'/lib/spice.so', os.path.join(root_dir, 'SpiceyPy', 'spice.so'))
+        os.rename(os.path.join(cspice_dir, 'lib', 'spice.so'), os.path.join(root_dir, 'SpiceyPy', 'spice.so'))
 
     except FileNotFoundError:
         sys.exit('spice.so file not found, what happend?')
