@@ -2078,7 +2078,7 @@ def test_getfat():
 
 def test_getfov():
     spice.kclear()
-    kernel = '{0}/getfov_test.ti'.format(cwd)
+    kernel = os.path.join(cwd, 'getfov_test.ti')
     if spice.exists(kernel):
         os.remove(kernel)
     with open(kernel, 'w') as kernelFile:
@@ -2336,7 +2336,7 @@ def test_gfsep():
 
 def test_gfsntc():
     spice.kclear()
-    kernel = '{0}/gfnstc_test.tf'.format(cwd)
+    kernel = os.path.join(cwd, 'gfnstc_test.tf')
     if spice.exists(kernel):
         os.remove(kernel)
     with open(kernel, 'w') as kernelFile:
@@ -2833,7 +2833,7 @@ def test_ldpool():
                '                     30, @1996-JAN-1',
                '                     31, @1997-JUL-1',
                '                     32, @1999-JAN-1 )']
-    kernel = '{0}/ldpool_test.tls'.format(cwd)
+    kernel = os.path.join(cwd, 'ldpool_test.tls')
     if spice.exists(kernel):
         os.remove(kernel)
     with open(kernel, 'w') as kernelFile:
@@ -4903,7 +4903,7 @@ def test_stelab():
 
 def test_stpool():
     spice.kclear()
-    kernel = '{0}/stpool_t.ker'.format(cwd)
+    kernel = os.path.join(cwd, 'stpool_t.ker')
     if spice.exists(kernel):
         os.remove(kernel)
     with open(kernel, 'w') as kernelFile:
