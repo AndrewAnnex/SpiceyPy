@@ -4048,7 +4048,7 @@ def test_sdiff():
     assert [x for x in c] == [1, 2, 3, 4]
 
 
-def test_set():
+def test_set_c():
     a = spice.stypes.SPICEINT_CELL(8)
     b = spice.stypes.SPICEINT_CELL(8)
     c = spice.stypes.SPICEINT_CELL(8)
@@ -4060,14 +4060,14 @@ def test_set():
     spice.insrti(3, b)
     spice.insrti(1, c)
     spice.insrti(3, c)
-    assert spice.set(b, "=", c)
-    assert spice.set(a, "<>", c)
-    assert spice.set(b, "<=", c)
-    assert not spice.set(b, "<", c)
-    assert spice.set(c, ">=", b)
-    assert spice.set(a, ">", b)
-    assert spice.set(b, "&", c)
-    assert not spice.set(a, "~", a)
+    assert spice.set_c(b, "=", c)
+    assert spice.set_c(a, "<>", c)
+    assert spice.set_c(b, "<=", c)
+    assert not spice.set_c(b, "<", c)
+    assert spice.set_c(c, ">=", b)
+    assert spice.set_c(a, ">", b)
+    assert spice.set_c(b, "&", c)
+    assert not spice.set_c(a, "~", a)
 
 
 def test_setmsg():
