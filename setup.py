@@ -141,16 +141,27 @@ try:
     setup(
         name='SpiceyPy',
         version='0.5.3',
-        description='A Python Wrapper for the NAIF CSPICE Toolkit using ctypes',
+        description='A Python Wrapper for the NAIF CSPICE Toolkit made using ctypes',
+        url='https://github.com/AndrewAnnex/SpiceyPy',
         author='Andrew Annex',
         packages=['SpiceyPy'],
-        tests_require=['pytest'],
+        tests_require=['pytest', 'numpy', 'six'],
         cmdclass={'test': PyTest},
         test_suite='test.test_wrapper.py',
         requires=['numpy', 'pytest', 'coveralls', 'coverage', 'six'],
         package_data={'SpiceyPy': ['*.so']},
         include_package_data=True,
         zip_safe=False,
+        classifiers=[
+            "Development Status :: 4 - Beta",
+            "Natural Language :: English",
+            "Topic :: Scientific/Engineering",
+            "Programming Language :: Python :: 2.7",
+            "Programming Language :: Python :: 3.3",
+            "Programming Language :: Python :: 3.4",
+            "Operating System :: MacOS :: MacOS X",
+            "Operating System :: POSIX :: Linux"
+        ],
         extras_require={
             'testing': ['pytest'],
         }
