@@ -76,6 +76,7 @@ def axisar(axis, angle):
     :param angle: Rotation angle, in radians.
     :type angle: float
     :return: Rotation matrix corresponding to axis and angle.
+    :rtype numpy array ((3, 3))
     """
     axis = stypes.toDoubleVector(axis)
     angle = ctypes.c_double(angle)
@@ -92,7 +93,7 @@ def b1900():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/b1900_c.html
 
-    :return: The Julian Date corresponding to Besselian Date 1900.0.
+    :return: The Julian Date corresponding to Besselian Date 1900.0. :rtype : float
     """
     return libspice.b1900_c()
 
@@ -101,7 +102,7 @@ def b1950():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/b1950_c.html
 
-    :return: The Julian Date corresponding to Besselian Date 1950.0.
+    :return: The Julian Date corresponding to Besselian Date 1950.0. :rtype : float
     """
     return libspice.b1950_c()
 
@@ -116,7 +117,7 @@ def badkpv(caller, name, comp, insize, divby, intype):
     :param insize: Expected size of the kernel pool variable.
     :param divby: A divisor of the size of the kernel pool variable.
     :param intype: Expected type of the kernel pool variable
-    :return: returns false if the kernel pool variable is OK.
+    :return: returns false if the kernel pool variable is OK. :rtype: bool
     """
     caller = stypes.stringToCharP(caller)
     name = stypes.stringToCharP(name)
@@ -133,7 +134,7 @@ def bltfrm(frmcls, outSize=126):
 
     :param frmcls: Frame class.
     :param outSize: Optional size for return cell.
-    :return: Set (SpiceCell) of ID codes of frames of the specified class.
+    :return: Set (SpiceCell) of ID codes of frames of the specified class. :rtype : SpiceINTCell
     """
     frmcls = ctypes.c_int(frmcls)
     outcell = stypes.SPICEINT_CELL(outSize)
@@ -143,12 +144,12 @@ def bltfrm(frmcls, outSize=126):
 
 def bodc2n(code, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/bodc2n_c.html
 
 
-    :param code:
-    :param lenout:
-    :return:
+    :param code: Integer ID code to be translated into a name.
+    :param lenout: Maximum length of output name.
+    :return: If found: A common name for the body identified by code. Else: None
     """
     code = ctypes.c_int(code)
     name = stypes.stringToCharP(" " * lenout)
@@ -163,12 +164,12 @@ def bodc2n(code, lenout):
 
 def bodc2s(code, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/bodc2s_c.html
 
 
-    :param code:
-    :param lenout:
-    :return:
+    :param code: Integer ID code to translate to a string.
+    :param lenout: Maximum length of output name.
+    :return: String corresponding to 'code'. :rtype: str
     """
     code = ctypes.c_int(code)
     name = stypes.stringToCharP(" " * lenout)
@@ -179,11 +180,11 @@ def bodc2s(code, lenout):
 
 def boddef(name, code):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/boddef_c.html
 
 
-    :param name:
-    :param code:
+    :param name: Common name of some body.
+    :param code: Integer code for that body.
     """
     name = stypes.stringToCharP(name)
     code = ctypes.c_int(code)
@@ -193,11 +194,11 @@ def boddef(name, code):
 
 def bodfnd(body, item):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/bodfnd_c.html
 
-    :param body:
-    :param item:
-    :return:
+    :param body: ID code of body.
+    :param item: Item to find ("RADII", "NUT_AMP_RA", etc.).
+    :return: :rtype: bool
     """
     body = ctypes.c_int(body)
     item = stypes.stringToCharP(item)
@@ -206,10 +207,10 @@ def bodfnd(body, item):
 
 def bodn2c(name):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/bodn2c_c.html
 
-    :param name:
-    :return: :rtype:
+    :param name: Body name to be translated into a SPICE ID code.
+    :return: SPICE integer ID code for the named body. :rtype: int
     """
     name = stypes.stringToCharP(name)
     code = ctypes.c_int(0)
@@ -223,10 +224,10 @@ def bodn2c(name):
 
 def bods2c(name):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/bods2c_c.html
 
-    :param name:
-    :return: :rtype:
+    :param name: String to be translated to an ID code.
+    :return: Integer ID code corresponding to `name'. :rtype: int
     """
     name = stypes.stringToCharP(name)
     code = ctypes.c_int(0)
@@ -240,12 +241,12 @@ def bods2c(name):
 
 def bodvar(body, item, dim):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/bodvar_c.html
 
-    :param body:
-    :param item:
-    :param dim:
-    :return: :rtype:
+    :param body: ID code of body.
+    :param item: Item for which values are desired. ("RADII", "NUT_PREC_ANGLES", etc. )
+    :param dim: Number of values returned.
+    :return: values :rtype: numpy array
     """
     body = ctypes.c_int(body)
     dim = ctypes.c_int(dim)
@@ -257,12 +258,12 @@ def bodvar(body, item, dim):
 
 def bodvcd(bodyid, item, maxn):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/bodvcd_c.html
 
-    :param bodyid:
-    :param item:
-    :param maxn:
-    :return: :rtype:
+    :param bodyid: Body ID code.
+    :param item: Item for which values are desired. ("RADII", "NUT_PREC_ANGLES", etc. )
+    :param maxn: Maximum number of values that may be returned.
+    :return: tuple of (dim, values) :rtype: tuple
     """
     bodyid = ctypes.c_int(bodyid)
     item = stypes.stringToCharP(item)
@@ -275,12 +276,12 @@ def bodvcd(bodyid, item, maxn):
 
 def bodvrd(bodynm, item, maxn):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/bodvrd_c.html
 
-    :param bodynm:
-    :param item:
-    :param maxn:
-    :return: :rtype:
+    :param bodynm: Body name.
+    :param item: Item for which values are desired. ("RADII", "NUT_PREC_ANGLES", etc. )
+    :param maxn: Maximum number of values that may be returned.
+    :return: tuple of (dim, values) :rtype: tuple
     """
     bodynm = stypes.stringToCharP(bodynm)
     item = stypes.stringToCharP(item)
@@ -293,12 +294,12 @@ def bodvrd(bodynm, item, maxn):
 
 def brcktd(number, end1, end2):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/brcktd_c.html
 
-    :param number:
-    :param end1:
-    :param end2:
-    :return: :rtype:
+    :param number: Number to be bracketed.
+    :param end1: One of the bracketing endpoints for number.
+    :param end2: The other bracketing endpoint for number.
+    :return: value within an interval :rtype: float
     """
     number = ctypes.c_double(number)
     end1 = ctypes.c_double(end1)
@@ -308,12 +309,12 @@ def brcktd(number, end1, end2):
 
 def brckti(number, end1, end2):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/brckti_c.html
 
-    :param number:
-    :param end1:
-    :param end2:
-    :return: :rtype:
+    :param number: Number to be bracketed.
+    :param end1: One of the bracketing endpoints for number.
+    :param end2: The other bracketing endpoint for number.
+    :return: value within an interval :rtype: int
     """
     number = ctypes.c_int(number)
     end1 = ctypes.c_int(end1)
@@ -323,14 +324,14 @@ def brckti(number, end1, end2):
 
 def bschoc(value, ndim, lenvals, array, order):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/bschoc_c.html
 
-    :param value:
-    :param ndim:
-    :param lenvals:
-    :param array:
-    :param order:
-    :return: :rtype:
+    :param value: Key value to be found in array.
+    :param ndim: Dimension of array.
+    :param lenvals: String length.
+    :param array: Character string array to search.
+    :param order: Order vector.
+    :return: index :rtype: int
     """
     value = stypes.stringToCharP(value)
     ndim = ctypes.c_int(ndim)
@@ -342,13 +343,13 @@ def bschoc(value, ndim, lenvals, array, order):
 
 def bschoi(value, ndim, array, order):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/bschoi_c.html
 
-    :param value:
-    :param ndim:
-    :param array:
-    :param order:
-    :return: :rtype:
+    :param value: Key value to be found in array.
+    :param ndim: Dimension of array.
+    :param array: Integer array to search.
+    :param order: Order vector.
+    :return: index :rtype: int
     """
     value = ctypes.c_int(value)
     ndim = ctypes.c_int(ndim)
@@ -359,13 +360,13 @@ def bschoi(value, ndim, array, order):
 
 def bsrchc(value, ndim, lenvals, array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/bsrchc_c.html
 
-    :param value:
-    :param ndim:
-    :param lenvals:
-    :param array:
-    :return: :rtype:
+    :param value: Key value to be found in array.
+    :param ndim: Dimension of array.
+    :param lenvals: String length.
+    :param array: Character string array to search.
+    :return: index :rtype: int
     """
     value = stypes.stringToCharP(value)
     ndim = ctypes.c_int(ndim)
@@ -376,12 +377,12 @@ def bsrchc(value, ndim, lenvals, array):
 
 def bsrchd(value, ndim, array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/bsrchd_c.html
 
-    :param value:
-    :param ndim:
-    :param array:
-    :return: :rtype:
+    :param value: Value to find in array.
+    :param ndim: Dimension of array.
+    :param array: Array to be searched.
+    :return: index :rtype: int
     """
     value = ctypes.c_double(value)
     ndim = ctypes.c_int(ndim)
@@ -391,12 +392,12 @@ def bsrchd(value, ndim, array):
 
 def bsrchi(value, ndim, array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/bsrchi_c.html
 
-    :param value:
-    :param ndim:
-    :param array:
-    :return: :rtype:
+    :param value: Value to find in array.
+    :param ndim: Dimension of array.
+    :param array: Array to be searched.
+    :return: index :rtype: int
     """
     value = ctypes.c_int(value)
     ndim = ctypes.c_int(ndim)
@@ -409,7 +410,7 @@ def bsrchi(value, ndim, array):
 
 def card(cell):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/card_c.html
 
     :param cell:
     :return: :rtype:
@@ -419,7 +420,7 @@ def card(cell):
 
 def ccifrm(frclss, clssid, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ccifrm_c.html
 
 
     :param frclss:
@@ -443,7 +444,7 @@ def ccifrm(frclss, clssid, lenout):
 
 def cgv2el(center, vec1, vec2):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cgv2el_c.html
 
 
     :param center:
@@ -461,7 +462,7 @@ def cgv2el(center, vec1, vec2):
 
 def chkin(module):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/chkin_c.html
 
 
     :param module:
@@ -473,7 +474,7 @@ def chkin(module):
 
 def chkout(module):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/chkout_c.html
 
 
     :param module:
@@ -485,7 +486,7 @@ def chkout(module):
 
 def cidfrm(cent, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cidfrm_c.html
 
 
     :param cent:
@@ -506,7 +507,7 @@ def cidfrm(cent, lenout):
 
 def ckcls(handle):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckcls_c.html
 
 
     :param handle:
@@ -519,7 +520,7 @@ def ckcls(handle):
 def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
     #Todo: test ckcov
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckcov_c.html
 
     :param ck:
     :param idcode:
@@ -547,7 +548,7 @@ def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
 def ckgp(inst, sclkdp, tol, ref):
     #Todo: test ckgp
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckgp_c.html
 
     :param inst:
     :param sclkdp:
@@ -569,7 +570,7 @@ def ckgp(inst, sclkdp, tol, ref):
 def ckgpav(inst, sclkdp, tol, ref):
     #Todo: test ckgpav
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckgpav_c.html
 
     :param inst:
     :param sclkdp:
@@ -592,7 +593,7 @@ def ckgpav(inst, sclkdp, tol, ref):
 def cklpf(filename):
     #Todo: test cklpf
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cklpf_c.html
 
     :param filename:
     :return: :rtype:
@@ -606,7 +607,7 @@ def cklpf(filename):
 def ckobj(ck, ids):
     #Todo: test ckobj
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckobj_c.html
 
     :param ck:
     :param ids:
@@ -624,7 +625,7 @@ def ckobj(ck, ids):
 
 def ckopn(filename, ifname, ncomch):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckopn_c.html
 
 
     :param filename:
@@ -643,7 +644,7 @@ def ckopn(filename, ifname, ncomch):
 def ckupf(handle):
     #Todo: test ckupf
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckupf_c.html
 
     :param handle:
     """
@@ -654,7 +655,7 @@ def ckupf(handle):
 
 def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats, avvs):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckw01_c.html
 
 
     :param handle:
@@ -686,7 +687,7 @@ def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
 
 def ckw02(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats, avvs, rates):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckw02_c.html
 
 
     :param handle:
@@ -720,7 +721,7 @@ def ckw02(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats, av
 
 def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats, avvs, nints, starts):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckw03_c.html
 
 
     :param handle:
@@ -759,7 +760,7 @@ def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
 
 def clight():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/clight_c.html
 
 
 
@@ -770,7 +771,7 @@ def clight():
 
 def clpool():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/clpool_c.html
 
 
 
@@ -782,7 +783,7 @@ def clpool():
 def cmprss(delim, n, instr, lenout=None):
     # automatically determine lenout (cannot be more than instr)
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cmprss_c.html
 
     :param delim:
     :param n:
@@ -802,7 +803,7 @@ def cmprss(delim, n, instr, lenout=None):
 
 def cnmfrm(cname, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cnmfrm_c.html
 
 
     :param cname:
@@ -823,7 +824,7 @@ def cnmfrm(cname, lenout):
 
 def conics(elts, et):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/conics_c.html
 
 
     :param elts:
@@ -839,7 +840,7 @@ def conics(elts, et):
 
 def convrt(x, inunit, outunit):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/convrt_c.html
 
 
     :param x:
@@ -857,7 +858,7 @@ def convrt(x, inunit, outunit):
 
 def copy(cell):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/copy_c.html
 
 
     :param cell:
@@ -879,7 +880,7 @@ def copy(cell):
 
 def cpos(string, chars, start):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cpos_c.html
 
 
     :param string:
@@ -895,7 +896,7 @@ def cpos(string, chars, start):
 
 def cposr(string, chars, start):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cposr_c.html
 
 
     :param string:
@@ -912,7 +913,7 @@ def cposr(string, chars, start):
 def cvpool(agent):
     #Todo: test cvpool
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cvpool_c.html
 
     :param agent:
     :return: :rtype:
@@ -925,7 +926,7 @@ def cvpool(agent):
 
 def cyllat(r, lonc, z):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cyllat_c.html
 
 
     :param r:
@@ -945,7 +946,7 @@ def cyllat(r, lonc, z):
 
 def cylrec(r, lon, z):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cylrec_c.html
 
 
     :param r:
@@ -963,7 +964,7 @@ def cylrec(r, lon, z):
 
 def cylsph(r, lonc, z):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cylsph_c.html
 
 
     :param r:
