@@ -983,12 +983,12 @@ def cylsph(r, lonc, z):
 def dafac(handle, n, lenvals, buffer):
     #Todo: test dafac
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafac_c.html
 
-    :param handle:
-    :param n:
-    :param lenvals:
-    :param buffer:
+    :param handle: handle of a DAF opened with write access.
+    :param n: Number of comments to put into the comment area.
+    :param lenvals: Length of elements
+    :param buffer: Buffer of comments to put into the comment area.
     """
     handle = ctypes.c_int(handle)
     buffer = stypes.listToCharArrayPtr(buffer)
@@ -1000,7 +1000,7 @@ def dafac(handle, n, lenvals, buffer):
 
 def dafbbs(handle):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafbbs_c.html
 
 
     :param handle:
@@ -1012,7 +1012,7 @@ def dafbbs(handle):
 
 def dafbfs(handle):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafbfs_c.html
 
 
     :param handle:
@@ -1024,7 +1024,7 @@ def dafbfs(handle):
 
 def dafcls(handle):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafcls_c.html
 
 
     :param handle:
@@ -1036,7 +1036,7 @@ def dafcls(handle):
 
 def dafcs(handle):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafcs_c.html
 
 
     :param handle:
@@ -1049,6 +1049,7 @@ def dafcs(handle):
 def dafdc(handle):
     #Todo: test dafdc
     """
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafdc_c.html
 
     :param handle:
     """
@@ -1059,7 +1060,7 @@ def dafdc(handle):
 
 def dafec(handle, bufsiz, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafec_c.html
 
 
     :param handle:
@@ -1079,7 +1080,7 @@ def dafec(handle, bufsiz, lenout):
 
 def daffna():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/daffna_c.html
 
 
 
@@ -1092,7 +1093,7 @@ def daffna():
 
 def daffpa():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/daffpa_c.html
 
 
 
@@ -1105,7 +1106,7 @@ def daffpa():
 
 def dafgda(handle, begin, end):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgda_c.html
 
 
     :param handle:
@@ -1123,7 +1124,7 @@ def dafgda(handle, begin, end):
 
 def dafgh():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgh_c.html
 
 
 
@@ -1136,7 +1137,7 @@ def dafgh():
 
 def dafgn(lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgn_c.html
 
 
     :param lenout:
@@ -1151,6 +1152,7 @@ def dafgn(lenout):
 def dafgs(n=125):
     # The 125 may be a hard set, I got strange errors that occasionally happend without it
     """
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgs_c.html
 
     :param n:
     :return: :rtype:
@@ -1164,7 +1166,7 @@ def dafgs(n=125):
 def dafgsr(handle, recno, begin, end):
     #Todo test dafgsr
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgsr_c.html
 
     :param handle:
     :param recno:
@@ -1184,7 +1186,7 @@ def dafgsr(handle, recno, begin, end):
 
 def dafopr(fname):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafopr_c.html
 
 
     :param fname:
@@ -1198,7 +1200,7 @@ def dafopr(fname):
 
 def dafopw(fname):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafopw_c.html
 
 
     :param fname:
@@ -1213,7 +1215,7 @@ def dafopw(fname):
 def dafps(nd, ni, dc, ic):
     #Todo: test dafps
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafps_c.html
 
     :param nd:
     :param ni:
@@ -1233,7 +1235,7 @@ def dafps(nd, ni, dc, ic):
 def dafrda(handle, begin, end):
     #Todo: test dafrda
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafrda_c.html
 
     :param handle:
     :param begin:
@@ -1250,7 +1252,7 @@ def dafrda(handle, begin, end):
 
 def dafrfr(handle, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafrfr_c.html
 
 
     :param handle:
@@ -1272,7 +1274,7 @@ def dafrfr(handle, lenout):
 def dafrs(insum):
     #Todo: test dafrs
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafrs_c.html
 
     :param insum:
     """
@@ -1283,7 +1285,7 @@ def dafrs(insum):
 
 def dafus(insum, nd, ni):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafus_c.html
 
 
     :param insum:
@@ -1303,7 +1305,7 @@ def dafus(insum, nd, ni):
 def dasac(handle, n, buflen, buffer):
     #Todo: test dasac
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasac_c.html
 
     :param handle:
     :param n:
@@ -1322,7 +1324,7 @@ def dasac(handle, n, buflen, buffer):
 def dascls(handle):
     #Todo: test dafdc
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dascls_c.html
 
     :param handle:
     """
@@ -1334,7 +1336,7 @@ def dascls(handle):
 def dasec(handle, bufsiz, buflen):
     #Todo: test dasec
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasec_c.html
 
     :param handle:
     :param bufsiz:
@@ -1354,7 +1356,7 @@ def dasec(handle, bufsiz, buflen):
 def dasopr(fname):
     #Todo: test dasopr
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasopr_c.html
 
     :param fname:
     """
@@ -1365,7 +1367,7 @@ def dasopr(fname):
 
 def dcyldr(x, y, z):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dcyldr_c.html
 
 
     :param x:
@@ -1383,7 +1385,7 @@ def dcyldr(x, y, z):
 
 def deltet(epoch, eptype):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/deltet_c.html
 
 
     :param epoch:
@@ -1399,7 +1401,7 @@ def deltet(epoch, eptype):
 
 def det(m1):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/det_c.html
 
 
     :param m1:
@@ -1411,7 +1413,7 @@ def det(m1):
 
 def dgeodr(x, y, z, re, f):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dgeodr_c.html
 
 
     :param x:
@@ -1433,7 +1435,7 @@ def dgeodr(x, y, z, re, f):
 
 def diags2(symmat):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/diags2_c.html
 
 
     :param symmat:
@@ -1448,7 +1450,7 @@ def diags2(symmat):
 
 def diff(a, b):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/diff_c.html
 
 
     :param a:
@@ -1473,7 +1475,7 @@ def diff(a, b):
 
 def dlatdr(x, y, z):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlatdr_c.html
 
 
     :param x:
@@ -1491,7 +1493,7 @@ def dlatdr(x, y, z):
 
 def dp2hx(number, lenout=None):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dp2hx_c.html
 
 
     :param number:
@@ -1510,7 +1512,7 @@ def dp2hx(number, lenout=None):
 
 def dpgrdr(body, x, y, z, re, f):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dpgrdr_c.html
 
 
     :param body:
@@ -1534,7 +1536,7 @@ def dpgrdr(body, x, y, z, re, f):
 
 def dpmax():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dpmax_c.html
 
 
 
@@ -1545,7 +1547,7 @@ def dpmax():
 
 def dpmin():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dpmin_c.html
 
 
 
@@ -1556,7 +1558,7 @@ def dpmin():
 
 def dpr():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dpr_c.html
 
 
 
@@ -1567,7 +1569,7 @@ def dpr():
 
 def drdcyl(r, lon, z):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/drdcyl_c.html
 
 
     :param r:
@@ -1585,7 +1587,7 @@ def drdcyl(r, lon, z):
 
 def drdgeo(lon, lat, alt, re, f):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/drdgeo_c.html
 
 
     :param lon:
@@ -1607,7 +1609,7 @@ def drdgeo(lon, lat, alt, re, f):
 
 def drdlat(r, lon, lat):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/drdlat_c.html
 
 
     :param r:
@@ -1625,7 +1627,7 @@ def drdlat(r, lon, lat):
 
 def drdpgr(body, lon, lat, alt, re, f):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/drdpgr_c.html
 
 
     :param body:
@@ -1649,7 +1651,7 @@ def drdpgr(body, lon, lat, alt, re, f):
 
 def drdsph(r, colat, lon):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/drdsph_c.html
 
 
     :param r:
@@ -1667,7 +1669,7 @@ def drdsph(r, colat, lon):
 
 def dsphdr(x, y, z):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dsphdr_c.html
 
 
     :param x:
@@ -1685,7 +1687,7 @@ def dsphdr(x, y, z):
 
 def dtpool(name):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dtpool_c.html
 
 
     :param name:
@@ -1701,7 +1703,7 @@ def dtpool(name):
 
 def ducrss(s1, s2):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ducrss_c.html
 
 
     :param s1:
@@ -1718,7 +1720,7 @@ def ducrss(s1, s2):
 
 def dvcrss(s1, s2):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dvcrss_c.html
 
 
     :param s1:
@@ -1735,7 +1737,7 @@ def dvcrss(s1, s2):
 
 def dvdot(s1, s2):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dvdot_c.html
 
 
     :param s1:
@@ -1750,7 +1752,7 @@ def dvdot(s1, s2):
 
 def dvhat(s1):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dvhat_c.html
 
 
     :param s1:
@@ -1765,7 +1767,7 @@ def dvhat(s1):
 
 def dvnorm(state):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dvnorm_c.html
 
 
     :param state:
@@ -1778,7 +1780,7 @@ def dvnorm(state):
 
 def dvpool(name):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dvpool_c.html
 
 
     :param name:
@@ -1790,7 +1792,7 @@ def dvpool(name):
 
 def dvsep(s1, s2):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dvsep_c.html
 
 
     :param s1:
@@ -1808,7 +1810,7 @@ def dvsep(s1, s2):
 
 def edlimb(a, b, c, viewpt):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/edlimb_c.html
 
 
     :param a:
@@ -1828,7 +1830,7 @@ def edlimb(a, b, c, viewpt):
 
 def edterm(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/edterm_c.html
 
 
     :param trmtyp:
@@ -1858,7 +1860,7 @@ def edterm(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts):
 
 def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekacec_c.html
 
 
     :param handle:
@@ -1884,7 +1886,7 @@ def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
 
 def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekaced_c.html
 
 
     :param handle:
@@ -1908,7 +1910,7 @@ def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
 
 def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekacei_c.html
 
 
     :param handle:
@@ -1931,7 +1933,7 @@ def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
 
 def ekaclc(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs, wkindx):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekaclc_c.html
 
 
     :param handle:
@@ -1960,7 +1962,7 @@ def ekaclc(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs, wkindx)
 
 def ekacld(handle, segno, column, dvals, entszs, nlflgs, rcptrs, wkindx):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekacld_c.html
 
 
     :param handle:
@@ -1987,7 +1989,7 @@ def ekacld(handle, segno, column, dvals, entszs, nlflgs, rcptrs, wkindx):
 
 def ekacli(handle, segno, column, ivals, entszs, nlflgs, rcptrs, wkindx):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekacli_c.html
 
 
     :param handle:
@@ -2014,7 +2016,7 @@ def ekacli(handle, segno, column, ivals, entszs, nlflgs, rcptrs, wkindx):
 
 def ekappr(handle, segno):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekappr_c.html
 
 
     :param handle:
@@ -2042,6 +2044,7 @@ def ekbseg(handle, tabnam, ncols, cnmlen, cnames, declen, decls):
     # else:
     #     ncols = len(cnames)
     """
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekbseg_c.html
 
     :param handle:
     :param tabnam:
@@ -2065,7 +2068,7 @@ def ekbseg(handle, tabnam, ncols, cnmlen, cnames, declen, decls):
 
 def ekccnt(table):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekccnt_c.html
 
 
     :param table:
@@ -2079,7 +2082,7 @@ def ekccnt(table):
 
 def ekcii(table, cindex, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekcii_c.html
 
 
     :param table:
@@ -2098,7 +2101,7 @@ def ekcii(table, cindex, lenout):
 
 def ekcls(handle):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekcls_c.html
 
 
     :param handle:
@@ -2110,7 +2113,7 @@ def ekcls(handle):
 
 def ekdelr(handle, segno, recno):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekdelr_c.html
 
 
     :param handle:
@@ -2126,7 +2129,7 @@ def ekdelr(handle, segno, recno):
 
 def ekffld(handle, segno, rcptrs):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekffld_c.html
 
 
     :param handle:
@@ -2142,7 +2145,7 @@ def ekffld(handle, segno, rcptrs):
 
 def ekfind(query, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekfind_c.html
 
 
     :param query:
@@ -2161,6 +2164,7 @@ def ekfind(query, lenout):
 def ekgc(selidx, row, element, lenout):
     # ekgc has issues grabbing last element/row in column
     """
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekgc_c.html
 
     :param selidx:
     :param row:
@@ -2181,7 +2185,7 @@ def ekgc(selidx, row, element, lenout):
 
 def ekgd(selidx, row, element):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekgd_c.html
 
 
     :param selidx:
@@ -2201,7 +2205,7 @@ def ekgd(selidx, row, element):
 
 def ekgi(selidx, row, element):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekgi_c.html
 
 
     :param selidx:
@@ -2221,7 +2225,7 @@ def ekgi(selidx, row, element):
 
 def ekifld(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekifld_c.html
 
 
     :param handle:
@@ -2251,6 +2255,7 @@ def ekifld(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls):
 def ekinsr(handle, segno, recno):
     #Todo: test ekinsr
     """
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekinsr_c.html
 
     :param handle:
     :param segno:
@@ -2265,7 +2270,7 @@ def ekinsr(handle, segno, recno):
 
 def eklef(fname):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eklef_c.html
 
 
     :param fname:
@@ -2280,6 +2285,7 @@ def eklef(fname):
 def eknelt(selidx, row):
     #Todo: test eknelt
     """
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eknelt_c.html
 
     :param selidx:
     :param row:
@@ -2292,7 +2298,7 @@ def eknelt(selidx, row):
 
 def eknseg(handle):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eknseg_c.html
 
 
     :param handle:
@@ -2304,7 +2310,7 @@ def eknseg(handle):
 
 def ekntab():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekntab_c.html
 
 
 
@@ -2317,7 +2323,7 @@ def ekntab():
 
 def ekopn(fname, ifname, ncomch):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekopn_c.html
 
 
     :param fname:
@@ -2335,7 +2341,7 @@ def ekopn(fname, ifname, ncomch):
 
 def ekopr(fname):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekopr_c.html
 
 
     :param fname:
@@ -2349,7 +2355,7 @@ def ekopr(fname):
 
 def ekops():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekops_c.html
 
 
 
@@ -2362,7 +2368,7 @@ def ekops():
 
 def ekopw(fname):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekopw_c.html
 
 
     :param fname:
@@ -2377,7 +2383,7 @@ def ekopw(fname):
 def ekpsel(query, msglen, tablen, collen):
     #Todo: test ekpsel
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekpsel_c.html
 
     :param query:
     :param msglen:
@@ -2405,7 +2411,7 @@ def ekpsel(query, msglen, tablen, collen):
 def ekrcec(handle, segno, recno, column, lenout, nelts=3):
     #Todo: test ekrcec , possible new way to get back 2d char arrays
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekrcec_c.html
 
     :param handle:
     :param segno:
@@ -2430,7 +2436,7 @@ def ekrcec(handle, segno, recno, column, lenout, nelts=3):
 def ekrced(handle, segno, recno, column):
     #Todo: test ekrced
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekrced_c.html
 
     :param handle:
     :param segno:
@@ -2452,7 +2458,7 @@ def ekrced(handle, segno, recno, column):
 def ekrcei(handle, segno, recno, column):
     #Todo: test ekrcei
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekrcei_c.html
 
     :param handle:
     :param segno:
@@ -2473,7 +2479,7 @@ def ekrcei(handle, segno, recno, column):
 
 def ekssum(handle, segno):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekssum_c.html
 
 
     :param handle:
@@ -2489,7 +2495,7 @@ def ekssum(handle, segno):
 
 def ektnam(n, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ektnam_c.html
 
 
     :param n:
@@ -2506,6 +2512,7 @@ def ektnam(n, lenout):
 def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     #Todo: test ekucec
     """
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekucec_c.html
 
     :param handle:
     :param segno:
@@ -2531,7 +2538,7 @@ def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
 def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
     #Todo: test ekucei
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekuced_c.html
 
     :param handle:
     :param segno:
@@ -2555,7 +2562,7 @@ def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
 def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
     #Todo: test ekucei
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekucei_c.html
 
     :param handle:
     :param segno:
@@ -2578,7 +2585,7 @@ def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
 
 def ekuef(handle):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekuef_c.html
 
 
     :param handle:
@@ -2590,7 +2597,7 @@ def ekuef(handle):
 
 def el2cgv(ellipse):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/el2cgv_c.html
 
 
     :param ellipse:
@@ -2606,7 +2613,7 @@ def el2cgv(ellipse):
 
 def elemc(item, inset):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/elemc_c.html
 
 
     :param item:
@@ -2620,7 +2627,7 @@ def elemc(item, inset):
 
 def elemd(item, inset):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/elemd_c.html
 
 
     :param item:
@@ -2635,7 +2642,7 @@ def elemd(item, inset):
 
 def elemi(item, inset):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/elemi_c.html
 
 
     :param item:
@@ -2650,7 +2657,7 @@ def elemi(item, inset):
 
 def eqncpv(et, epoch, eqel, rapol, decpol):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eqncpv_c.html
 
 
     :param et:
@@ -2672,7 +2679,7 @@ def eqncpv(et, epoch, eqel, rapol, decpol):
 
 def eqstr(a, b):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eqstr_c.html
 
 
     :param a:
@@ -2684,7 +2691,7 @@ def eqstr(a, b):
 
 def erract(op, lenout, action=None):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/erract_c.html
 
 
     :param op:
@@ -2704,7 +2711,7 @@ def erract(op, lenout, action=None):
 
 def errch(marker, string):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/errch_c.html
 
 
     :param marker:
@@ -2718,7 +2725,7 @@ def errch(marker, string):
 
 def errdev(op, lenout, device):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/errdev_c.html
 
 
     :param op:
@@ -2736,7 +2743,7 @@ def errdev(op, lenout, device):
 
 def errdp(marker, number):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/errdp_c.html
 
 
     :param marker:
@@ -2750,7 +2757,7 @@ def errdp(marker, number):
 
 def errint(marker, number):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/errint_c.html
 
 
     :param marker:
@@ -2764,7 +2771,7 @@ def errint(marker, number):
 
 def errprt(op, lenout, inlist):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/errprt_c.html
 
 
     :param op:
@@ -2782,7 +2789,7 @@ def errprt(op, lenout, inlist):
 
 def esrchc(value, array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/esrchc_c.html
 
 
     :param value:
@@ -2798,7 +2805,7 @@ def esrchc(value, array):
 
 def et2lst(et, body, lon, typein, timlen, ampmlen):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/et2lst_c.html
 
 
     :param et:
@@ -2827,7 +2834,7 @@ def et2lst(et, body, lon, typein, timlen, ampmlen):
 
 def et2utc(et, formatStr, prec, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/et2utc_c.html
 
 
     :param et:
@@ -2847,7 +2854,7 @@ def et2utc(et, formatStr, prec, lenout):
 
 def etcal(et, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/etcal_c.html
 
 
     :param et:
@@ -2863,7 +2870,7 @@ def etcal(et, lenout):
 
 def eul2m(angle3, angle2, angle1, axis3, axis2, axis1):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eul2m_c.html
 
 
     :param angle3:
@@ -2887,7 +2894,7 @@ def eul2m(angle3, angle2, angle1, axis3, axis2, axis1):
 
 def eul2xf(eulang, axisa, axisb, axisc):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eul2xf_c.html
 
 
     :param eulang:
@@ -2908,7 +2915,7 @@ def eul2xf(eulang, axisa, axisb, axisc):
 
 def exists(fname):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/exists_c.html
 
 
     :param fname:
@@ -2920,7 +2927,7 @@ def exists(fname):
 
 def expool(name):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/expool_c.html
 
 
     :param name:
