@@ -2944,28 +2944,26 @@ def expool(name):
 
 
 def failed():
-    """
+    """ True if an error condition has been signalled via sigerr_c.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/failed_c.html
 
-
-
-    :return: :rtype:
+    :return: a boolean :rtype: bool
     """
     return libspice.failed_c()
 
 
 def fovray(inst, raydir, rframe, abcorr, observer, et):
     # Unsure if et is returned or not (I vs I/O)
-    """
+    """ Determine if a specified ray is within the field-of-view (FOV) of a specified instrument at a given time.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/fovray_c.html
 
-    :param inst:
-    :param raydir:
-    :param rframe:
-    :param abcorr:
-    :param observer:
-    :param et:
-    :return: :rtype:
+    :param inst: Name or ID code string of the instrument. :type inst: str
+    :param raydir: Ray's direction vector. :type raydir: list[3]
+    :param rframe: Body-fixed, body-centered frame for target body. :type rframe: str
+    :param abcorr: Aberration correction flag. :type abcorr: str
+    :param observer: Name or ID code string of the observer. :type observer: str
+    :param et: Time of the observation (seconds past J2000). :type et: float
+    :return: Visibility flag :rtype: bool
     """
     inst = stypes.stringToCharP(inst)
     raydir = stypes.toDoubleVector(raydir)
@@ -2980,17 +2978,17 @@ def fovray(inst, raydir, rframe, abcorr, observer, et):
 
 def fovtrg(inst, target, tshape, tframe, abcorr, observer, et):
     # Unsure if et is returned or not (I vs I/O)
-    """
+    """ Determine if a specified ephemeris object is within the field-of-view (FOV) of a specified instrument at a given time.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/fovtrg_c.html
 
-    :param inst:
-    :param target:
-    :param tshape:
-    :param tframe:
-    :param abcorr:
-    :param observer:
-    :param et:
-    :return: :rtype:
+    :param inst: Name or ID code string of the instrument. :type inst: str
+    :param target: Name or ID code string of the target. :type target: str
+    :param tshape: Type of shape model used for the target.
+    :param tframe: Body-fixed, body-centered frame for target body.
+    :param abcorr: Aberration correction flag. :type abcorr: str
+    :param observer: Name or ID code string of the observer. :type observer: str
+    :param et: Time of the observation (seconds past J2000). :type et: float
+    :return: Visibility flag :rtype: bool
     """
     inst = stypes.stringToCharP(inst)
     target = stypes.stringToCharP(target)
@@ -3008,9 +3006,8 @@ def frame(x):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/frame_c.html
 
-
-    :param x:
-    :return: :rtype:
+    :param x: Input vector. A parallel unit vector on output. :type x: list[3]
+    :return: a tuple of 3 list[3] :rtype: tuple
     """
     x = stypes.toDoubleVector(x)
     y = stypes.emptyDoubleVector(3)
@@ -3023,9 +3020,8 @@ def frinfo(frcode):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/frinfo_c.html
 
-
-    :param frcode:
-    :return: :rtype:
+    :param frcode: the idcode for some frame :type frcode: int
+    :return: a tuple of attributes associated with the frame :rtype: tuple
     """
     frcode = ctypes.c_int(frcode)
     cent = ctypes.c_int()
@@ -3037,13 +3033,12 @@ def frinfo(frcode):
 
 
 def frmnam(frcode, lenout=125):
-    """
+    """ Retrieve the name of a reference frame associated with a SPICE ID code.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/frmnam_c.html
 
-
-    :param frcode:
-    :param lenout:
-    :return: :rtype:
+    :param frcode: an integer code for a reference frame :type frcode: int
+    :param lenout: Maximum length of output string. : type lenout: int
+    :return: the name associated with the reference frame. :rtype: str
     """
     frcode = ctypes.c_int(frcode)
     lenout = ctypes.c_int(lenout)
@@ -3054,10 +3049,10 @@ def frmnam(frcode, lenout=125):
 
 def ftncls(unit):
     #Todo: close ftncls
-    """
+    """ Close a file designated by a Fortran-style integer logical unit.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ftncls_c.html
 
-    :param unit:
+    :param unit: Fortran-style logical unit. :type unit: int
     """
     unit = ctypes.c_int(unit)
     libspice.ftncls_c(unit)
@@ -3065,11 +3060,10 @@ def ftncls(unit):
 
 
 def furnsh(path):
-    """
+    """ Load one or more SPICE kernels into a program.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/furnsh_c.html
 
-
-    :param path:
+    :param path: one or more paths to kernels :type path: str or list of str
     """
     if isinstance(path, list):
         for p in path:
@@ -4187,9 +4181,7 @@ def j1900():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j1900_c.html
 
-
-
-    :return: :rtype:
+    :return: Julian Date of 1899 DEC 31 12:00:00 :rtype: float
     """
     return libspice.j1900_c()
 
@@ -4198,9 +4190,7 @@ def j1950():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j1950_c.html
 
-
-
-    :return: :rtype:
+    :return: Julian Date of 1950 JAN 01 00:00:00 :rtype: float
     """
     return libspice.j1950_c()
 
@@ -4209,9 +4199,7 @@ def j2000():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j2000_c.html
 
-
-
-    :return: :rtype:
+    :return: Julian Date of 2000 JAN 01 12:00:00 :rtype: float
     """
     return libspice.j2000_c()
 
@@ -4220,9 +4208,7 @@ def j2100():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j2100_c.html
 
-
-
-    :return: :rtype:
+    :return: Julian Date of 2100 JAN 01 12:00:00 :rtype: float
     """
     return libspice.j2100_c()
 
@@ -4231,9 +4217,7 @@ def jyear():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/jyear_c.html
 
-
-
-    :return: :rtype:
+    :return: number of seconds in a julian year :rtype: float
     """
     return libspice.jyear_c()
 ########################################################################################################################
