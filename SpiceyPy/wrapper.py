@@ -2983,8 +2983,8 @@ def fovtrg(inst, target, tshape, tframe, abcorr, observer, et):
 
     :param inst: Name or ID code string of the instrument. :type inst: str
     :param target: Name or ID code string of the target. :type target: str
-    :param tshape: Type of shape model used for the target.
-    :param tframe: Body-fixed, body-centered frame for target body.
+    :param tshape: Type of shape model used for the target. :type tshape: str
+    :param tframe: Body-fixed, body-centered frame for target body. :type tframe: str
     :param abcorr: Aberration correction flag. :type abcorr: str
     :param observer: Name or ID code string of the observer. :type observer: str
     :param et: Time of the observation (seconds past J2000). :type et: float
@@ -4744,15 +4744,14 @@ def lxqstr(string, qchar, first):
 
 
 def m2eul(r, axis3, axis2, axis1):
-    """
+    """ Factor a rotation matrix as a product of three rotations about specified coordinate axes.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/m2eul_c.html
 
-
-    :param r:
-    :param axis3:
-    :param axis2:
-    :param axis1:
-    :return: :rtype:
+    :param r: A rotation matrix to be factored :type r: list[3][3]
+    :param axis3: third rotation axes. :type axis3: int
+    :param axis2: second rotation axes. :type axis2: int
+    :param axis1: first rotation axes. :type axis1: int
+    :return: Third, second, and first Euler angles, in radians. :rtype: tuple
     """
     r = stypes.listtodoublematrix(r)
     axis3 = ctypes.c_int(axis3)
@@ -4766,12 +4765,11 @@ def m2eul(r, axis3, axis2, axis1):
 
 
 def m2q(r):
-    """
+    """ Find a unit quaternion corresponding to a specified rotation matrix.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/m2q_c.html
 
-
-    :param r:
-    :return: :rtype:
+    :param r: A rotation matrix to be factored :type r: list[3][3]
+    :return: A unit quaternion representing 'r' :rtype: list[4]
     """
     r = stypes.listtodoublematrix(r)
     q = stypes.emptyDoubleVector(4)
@@ -4780,15 +4778,14 @@ def m2q(r):
 
 
 def matchi(string, templ, wstr, wchr):
-    """
+    """ Determine whether a string is matched by a template containing wild cards.  The pattern comparison is case-insensitive.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/matchi_c.html
 
-
-    :param string:
-    :param templ:
-    :param wstr:
-    :param wchr:
-    :return: :rtype:
+    :param string: String to be tested. :type string: str
+    :param templ: Template (with wild cards) to test against string. :type templ: str
+    :param wstr: Wild string token. :type wstr: str of length 1
+    :param wchr: Wild character token. :type wchr: str of length 1
+    :return: The function returns True if string matches templ, else False :rtype: bool
     """
     string = stypes.stringToCharP(string)
     templ = stypes.stringToCharP(templ)
@@ -4799,13 +4796,14 @@ def matchi(string, templ, wstr, wchr):
 
 def matchw(string, templ, wstr, wchr):
     # ctypes.c_char(wstr.encode(encoding='UTF-8')
-    """
+    """ Determine whether a string is matched by a template containing wild cards.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/matchw_c.html
-    :param string:
-    :param templ:
-    :param wstr:
-    :param wchr:
-    :return: :rtype:
+
+    :param string: String to be tested. :type string: str
+    :param templ: Template (with wild cards) to test against string. :type templ: str
+    :param wstr: Wild string token. :type wstr: str of length 1
+    :param wchr: Wild character token. :type wchr: str of length 1
+    :return: The function returns True if string matches templ, else False :rtype: bool
     """
     string = stypes.stringToCharP(string)
     templ = stypes.stringToCharP(templ)
@@ -4821,12 +4819,11 @@ def matchw(string, templ, wstr, wchr):
 
 
 def mequ(m1):
-    """
+    """ Set one double precision 3x3 matrix equal to another.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mequ_c.html
 
-
-    :param m1:
-    :return: :rtype:
+    :param m1: input matrix. :type m1: list[3][3]
+    :return: Output matrix equal to m1. :rtype: list[3][3]
     """
     m1 = stypes.listtodoublematrix(m1)
     mout = stypes.emptyDoubleMatrix()
@@ -4835,14 +4832,13 @@ def mequ(m1):
 
 
 def mequg(m1, nr, nc):
-    """
+    """ Set one double precision matrix of arbitrary size equal to another.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mequg_c.html
 
-
-    :param m1:
-    :param nr:
-    :param nc:
-    :return: :rtype:
+    :param m1: Input matrix. :type m1: list[*][*]
+    :param nr: Row dimension of m1. :type nr: int
+    :param nc: Column dimension of m1. :type nc: int
+    :return: Output matrix equal to m1 :rtype: list[*][*]
     """
     m1 = stypes.listtodoublematrix(m1, x=nc, y=nr)
     mout = stypes.emptyDoubleMatrix(x=nc, y=nr)
@@ -4859,13 +4855,12 @@ def mequg(m1, nr, nc):
 
 
 def mtxm(m1, m2):
-    """
+    """ Multiply the transpose of a 3x3 matrix and a 3x3 matrix.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mtxm_c.html
 
-
-    :param m1:
-    :param m2:
-    :return: :rtype:
+    :param m1: 3x3 double precision matrix. :type m1: list[3][3]
+    :param m2: 3x3 double precision matrix. :type m2: list[3][3]
+    :return: The produce m1 transpose times m2. :rtype: list[3][3]
     """
     m1 = stypes.listtodoublematrix(m1)
     m2 = stypes.listtodoublematrix(m2)
@@ -4875,16 +4870,15 @@ def mtxm(m1, m2):
 
 
 def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
-    """
+    """ Multiply the transpose of a matrix with another matrix, both of arbitrary size.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mtxmg_c.html
 
-
-    :param m1:
-    :param m2:
-    :param ncol1:
-    :param nr1r2:
-    :param ncol2:
-    :return: :rtype:
+    :param m1: nr1r2 X ncol1 double precision matrix. :type m1: list[*][*]
+    :param m2: nr1r2 X ncol2 double precision matrix. :type m2: list[*][*]
+    :param ncol1: Column dimension of m1 and row dimension of mout. :type ncol1: int
+    :param nr1r2: Row dimension of m1 and m2. :type nr1r2: int
+    :param ncol2: Column dimension of m2. :type ncol2: int
+    :return: Transpose of m1 times m2. :rtype: list[*][*]
     """
     m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nr1r2)
     m2 = stypes.listtodoublematrix(m2, x=ncol2, y=nr1r2)
@@ -4897,13 +4891,12 @@ def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
 
 
 def mtxv(m1, vin):
-    """
+    """ Multiplies the transpose of a 3x3 matrix on the left with a vector on the right.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mtxv_c.html
 
-
-    :param m1:
-    :param vin:
-    :return: :rtype:
+    :param m1: 3x3 double precision matrix. :type m1: list[3][3]
+    :param vin: 3-dimensional double precision vector. :type vin: list[3]
+    :return: 3-dimensional double precision vector. :rtype: list[3]
     """
     m1 = stypes.listtodoublematrix(m1)
     vin = stypes.toDoubleVector(vin)
@@ -4913,15 +4906,14 @@ def mtxv(m1, vin):
 
 
 def mtxvg(m1, v2, ncol1, nr1r2):
-    """
+    """ Multiply the transpose of a matrix and a vector of arbitrary size.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mtxvg_c.html
 
-
-    :param m1:
-    :param v2:
-    :param ncol1:
-    :param nr1r2:
-    :return: :rtype:
+    :param m1: Left-hand matrix to be multiplied. :type m1: list[*][*]
+    :param v2: Right-hand vector to be multiplied. :type v2: list[*]
+    :param ncol1: Column dimension of m1 and length of vout. :type ncol1: int
+    :param nr1r2: Row dimension of m1 and length of v2. :type nr1r2: int
+    :return: Product vector m1 transpose * v2. :rtype: list[*]
     """
     m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nr1r2)
     v2 = stypes.toDoubleVector(v2)
@@ -4933,13 +4925,12 @@ def mtxvg(m1, v2, ncol1, nr1r2):
 
 
 def mxm(m1, m2):
-    """
+    """ Multiply two 3x3 matrices.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxm_c.html
 
-
-    :param m1:
-    :param m2:
-    :return: :rtype:
+    :param m1: 3x3 double precision matrix. :type m1: list[3][3]
+    :param m2: 3x3 double precision matrix. :type m2: list[3][3]
+    :return: 3x3 double precision matrix. :rtype: list[3][3]
     """
     m1 = stypes.listtodoublematrix(m1)
     m2 = stypes.listtodoublematrix(m2)
@@ -4949,16 +4940,15 @@ def mxm(m1, m2):
 
 
 def mxmg(m1, m2, nrow1, ncol1, ncol2):
-    """
+    """ Multiply two double precision matrices of arbitrary size.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxmg_c.html
 
-
-    :param m1:
-    :param m2:
-    :param nrow1:
-    :param ncol1:
-    :param ncol2:
-    :return: :rtype:
+    :param m1: nrow1 X ncol1 double precision matrix. :type m1: list[*][*]
+    :param m2: ncol1 X ncol2 double precision matrix. :type m2: list[*][*]
+    :param nrow1: Row dimension of m1 :type nrow1: int
+    :param ncol1: Column dimension of m1 and row dimension of m2. :type ncol1: int
+    :param ncol2: Column dimension of m2 :type ncol2: int
+    :return: nrow1 X ncol2 double precision matrix. :rtype: list[*][*]
     """
     m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nrow1)
     m2 = stypes.listtodoublematrix(m2, x=ncol2, y=ncol1)
@@ -4971,13 +4961,12 @@ def mxmg(m1, m2, nrow1, ncol1, ncol2):
 
 
 def mxmt(m1, m2):
-    """
+    """ Multiply a 3x3 matrix and the transpose of another 3x3 matrix.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxmt_c.html
 
-
-    :param m1:
-    :param m2:
-    :return: :rtype:
+    :param m1: 3x3 double precision matrix. :type m1: list[3][3]
+    :param m2: 3x3 double precision matrix. :type m2: list[3][3]
+    :return: The product m1 times m2 transpose. :rtype: float
     """
     m1 = stypes.listtodoublematrix(m1)
     m2 = stypes.listtodoublematrix(m2)
@@ -4987,16 +4976,15 @@ def mxmt(m1, m2):
 
 
 def mxmtg(m1, m2, nrow1, nc1c2, nrow2):
-    """
+    """  Multiply a matrix and the transpose of a matrix, both of arbitrary size.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxmtg_c.html
 
-
-    :param m1:
-    :param m2:
-    :param nrow1:
-    :param nc1c2:
-    :param nrow2:
-    :return: :rtype:
+    :param m1: Left-hand matrix to be multiplied. :type m1: list[*][*]
+    :param m2: Right-hand matrix whose transpose is to be multiplied :type m2: list[*][*]
+    :param nrow1: Row dimension of m1 and row dimension of mout. :type nrow1: int
+    :param nc1c2: Column dimension of m1 and column dimension of m2. :type nc1c2: int
+    :param nrow2: Row dimension of m2 and column dimension of mout. :type nrow2: int
+    :return: Product matrix. :rtype: list[*][*]
     """
     m1 = stypes.listtodoublematrix(m1, x=nc1c2, y=nrow1)
     m2 = stypes.listtodoublematrix(m2, x=nc1c2, y=nrow2)
@@ -5009,13 +4997,12 @@ def mxmtg(m1, m2, nrow1, nc1c2, nrow2):
 
 
 def mxv(m1, vin):
-    """
+    """ Multiply a 3x3 double precision matrix with a 3-dimensional double precision vector.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxv_c.html
 
-
-    :param m1:
-    :param vin:
-    :return: :rtype:
+    :param m1:  3x3 double precision matrix. :type m1: list[3][3]
+    :param vin: 3-dimensional double precision vector. :type vin: list[3]
+    :return: 3-dimensional double precision vector. :rtype: list[3]
     """
     m1 = stypes.listtodoublematrix(m1)
     vin = stypes.toDoubleVector(vin)
@@ -5025,15 +5012,14 @@ def mxv(m1, vin):
 
 
 def mxvg(m1, v2, nrow1, nc1r2):
-    """
+    """ Multiply a matrix and a vector of arbitrary size.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxvg_c.html
 
-
-    :param m1:
-    :param v2:
-    :param nrow1:
-    :param nc1r2:
-    :return: :rtype:
+    :param m1: Left-hand matrix to be multiplied. :type m1: list[*][*]
+    :param v2: Right-hand vector to be multiplied. :type v2: list[*]
+    :param nrow1: Row dimension of m1 and length of vout. :type nrow1: int
+    :param nc1r2: Column dimension of m1 and length of v2. :type nc1c2: int
+    :return: Product vector m1*v2 :rtype: list[*]
     """
     m1 = stypes.listtodoublematrix(m1, x=nc1r2, y=nrow1)
     v2 = stypes.toDoubleVector(v2)
@@ -5048,12 +5034,11 @@ def mxvg(m1, v2, nrow1, nc1r2):
 
 
 def namfrm(frname):
-    """
+    """ Look up the frame ID code associated with a string.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/namfrm_c.html
 
-
-    :param frname:
-    :return: :rtype:
+    :param frname: The name of some reference frameThe name of some reference frame. :type frname: str
+    :return: The SPICE ID code of the frame. :rtype: int
     """
     frname = stypes.stringToCharP(frname)
     frcode = ctypes.c_int()
@@ -5062,14 +5047,13 @@ def namfrm(frname):
 
 
 def ncpos(string, chars, start):
-    """
+    """ Find the first occurrence in a string of a character NOT belonging to a collection of characters, starting at a specified location searching forward.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ncpos_c.html
 
-
-    :param string:
-    :param chars:
-    :param start:
-    :return: :rtype:
+    :param string: Any character string. :type string: str
+    :param chars: A collection of characters. :type chars: str
+    :param start: Position to begin looking for one not in chars. :type start: int
+    :return: index :rtype: int
     """
     string = stypes.stringToCharP(string)
     chars = stypes.stringToCharP(chars)
@@ -5078,14 +5062,13 @@ def ncpos(string, chars, start):
 
 
 def ncposr(string, chars, start):
-    """
+    """ Find the first occurrence in a string of a character NOT belonging to a collection of characters, starting at a specified location, searching in reverse.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ncposr_c.html
 
-
-    :param string:
-    :param chars:
-    :param start:
-    :return: :rtype:
+    :param string: Any character string. :type string: str
+    :param chars:  A collection of characters. :type chars: str
+    :param start: Position to begin looking for one of chars. :type start: int
+    :return: index :rtype: int
     """
     string = stypes.stringToCharP(string)
     chars = stypes.stringToCharP(chars)
@@ -5094,15 +5077,15 @@ def ncposr(string, chars, start):
 
 
 def nearpt(positn, a, b, c):
-    """
+    """ locates the point on the surface of an ellipsoid that is nearest to a specified position. It also returns the altitude of the position above the ellipsoid.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/nearpt_c.html
 
 
-    :param positn:
-    :param a:
-    :param b:
-    :param c:
-    :return: :rtype:
+    :param positn: Position of a point in bodyfixed frame. :type positn: list[3]
+    :param a: Length of semi-axis parallel to x-axis. :type a: float
+    :param b: Length of semi-axis parallel to y-axis. :type b: float
+    :param c: Length on semi-axis parallel to z-axis. :type c: float
+    :return: Point on the ellipsoid closest to positn,  Altitude of positn above the ellipsoid. :rtype: tuple
     """
     positn = stypes.toDoubleVector(positn)
     a = ctypes.c_double(a)
@@ -5115,16 +5098,15 @@ def nearpt(positn, a, b, c):
 
 
 def npedln(a, b, c, linept, linedr):
-    """
+    """ Find nearest point on a triaxial ellipsoid to a specified line and the distance from the ellipsoid to the line.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/npedln_c.html
 
-
-    :param a:
-    :param b:
-    :param c:
-    :param linept:
-    :param linedr:
-    :return: :rtype:
+    :param a: Length of ellipsoid's semi-axis in the x direction :type a: float
+    :param b: Length of ellipsoid's semi-axis in the y direction :type b: float
+    :param c: Length of ellipsoid's semi-axis in the z direction :type c: float
+    :param linept: Length of ellipsoid's semi-axis in the z direction :type linept: list[3]
+    :param linedr: Direction vector of line :type linedr: list[3]
+    :return: Nearest point on ellipsoid to line, Distance of ellipsoid from line :rtype: tuple
     """
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
@@ -5138,13 +5120,14 @@ def npedln(a, b, c, linept, linedr):
 
 
 def npelpt(point, ellips):
-    """
+    """ Find the nearest point on an ellipse to a specified point, both
+   in three-dimensional space, and find the distance between the
+   ellipse and the point.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/npelpt_c.html
 
-
-    :param point:
-    :param ellips:
-    :return: :rtype:
+    :param point: Point whose distance to an ellipse is to be found. :type point: list[3]
+    :param ellips: An ellipse. :type ellips: stypes.Ellipse
+    :return: Nearest point on ellipsoid to line, Distance of ellipsoid from line :rtype: tuple
     """
     assert(isinstance(ellips, stypes.Ellipse))
     point = stypes.toDoubleVector(point)
@@ -5155,14 +5138,13 @@ def npelpt(point, ellips):
 
 
 def nplnpt(linpt, lindir, point):
-    """
+    """ Find the nearest point on a line to a specified point, and find the distance between the two points.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/nplnpt_c.html
 
-
-    :param linpt:
-    :param lindir:
-    :param point:
-    :return: :rtype:
+    :param linpt: Point on a line :type linpt: list[3]
+    :param lindir: line's direction vector :type lindir: list[3]
+    :param point: A second point.  :type point: list[3]
+    :return: Nearest point on the line to point, Distance between point and pnear :rtype: tuple
     """
     linpt = stypes.toDoubleVector(linpt)
     lindir = stypes.toDoubleVector(lindir)
@@ -5174,13 +5156,12 @@ def nplnpt(linpt, lindir, point):
 
 
 def nvc2pl(normal, constant):
-    """
+    """ Make a plane from a normal vector and a constant.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/nvc2pl_c.html
 
-
-    :param normal:
-    :param constant:
-    :return: :rtype:
+    :param normal: A normal vector defining a plane. :type normal: list[3]
+    :param constant: A constant defining a plane. :type constant: float
+    :return: plane :rtype: stypes.Plane
     """
     plane = stypes.Plane()
     normal = stypes.toDoubleVector(normal)
@@ -5190,13 +5171,12 @@ def nvc2pl(normal, constant):
 
 
 def nvp2pl(normal, point):
-    """
+    """ Make a plane from a normal vector and a point.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/nvp2pl_c.html
 
-
-    :param normal:
-    :param point:
-    :return: :rtype:
+    :param normal: A normal vector defining a plane. :type normal: list[3]
+    :param point: A point defining a plane. :type point: list[3]
+    :return: plane :rtype: stypes.Plane
     """
     normal = stypes.toDoubleVector(normal)
     point = stypes.toDoubleVector(point)
