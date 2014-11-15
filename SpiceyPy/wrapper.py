@@ -9410,12 +9410,11 @@ def xf2eul(xform, axisa, axisb, axisc):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xf2eul_c.html
 
-
-    :param xform:
-    :param axisa:
-    :param axisb:
-    :param axisc:
-    :return: :rtype:
+    :param xform: state transformation matrix :type xform: list[6][6]
+    :param axisa: Axis A of the Euler angle factorization. :type axisa: int
+    :param axisb: Axis B of the Euler angle factorization. :type axisb: int
+    :param axisc: Axis C of the Euler angle factorization. :type axisc: int
+    :return: (eulang, unique) :rtype: tuple
     """
     xform = stypes.listtodoublematrix(xform, x=6, y=6)
     axisa = ctypes.c_int(axisa)
@@ -9428,12 +9427,11 @@ def xf2eul(xform, axisa, axisb, axisc):
 
 
 def xf2rav(xform):
-    """
+    """ This routine determines the rotation matrix and angular velocity of the rotation from a state transformation matrix.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xf2rav_c.html
 
-
-    :param xform:
-    :return: :rtype:
+    :param xform: state transformation matrix :type xform: list[6][6]
+    :return: (rotation associated with xform, angular velocity associated with xform) :rtype: tuple
     """
     xform = stypes.listtodoublematrix(xform, x=6, y=6)
     rot = stypes.emptyDoubleMatrix()
@@ -9443,15 +9441,14 @@ def xf2rav(xform):
 
 
 def xfmsta(input_state, input_coord_sys, output_coord_sys, body):
-    """
+    """  Transform a state between coordinate systems.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xfmsta_c.html
 
-
-    :param input_state:
-    :param input_coord_sys:
-    :param output_coord_sys:
-    :param body:
-    :return: :rtype:
+    :param input_state: Input state. :type input_state: list[6]
+    :param input_coord_sys: Current (input) coordinate system. :type input_coord_sys: str
+    :param output_coord_sys: Desired (output) coordinate system. :type output_coord_sys: str
+    :param body:Name or NAIF ID of body with which coordinates are associated (if applicable). :type body: str
+    :return: Converted output state :rtype: list[6]
     """
     input_state = stypes.toDoubleVector(input_state)
     input_coord_sys = stypes.stringToCharP(input_coord_sys)
@@ -9463,12 +9460,11 @@ def xfmsta(input_state, input_coord_sys, output_coord_sys, body):
 
 
 def xpose(m):
-    """
+    """ Transpose a 3x3 matrix
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xpose_c.html
 
-
-    :param m:
-    :return: :rtype:
+    :param m: Matrix to be transposed :type m: list[3][3]
+    :return: Transposed matrix :rtype: list[3][3]
     """
     m = stypes.toDoubleMatrix(m)
     mout = stypes.emptyDoubleMatrix(x=3, y=3)
@@ -9477,12 +9473,11 @@ def xpose(m):
 
 
 def xpose6(m):
-    """
+    """ Transpose a 6x6 matrix
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xpose6_c.html
 
-
-    :param m:
-    :return: :rtype:
+    :param m: Matrix to be transposed :type m: list[6][6]
+    :return: Transposed matrix :rtype: list[6][6]
     """
     m = stypes.toDoubleMatrix(m)
     mout = stypes.emptyDoubleMatrix(x=6, y=6)
@@ -9491,14 +9486,13 @@ def xpose6(m):
 
 
 def xposeg(matrix, nrow, ncol):
-    """
+    """ Transpose a matrix of arbitrary size (in place, the matrix need not be square).
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xposeg_c.html
 
-
-    :param matrix:
-    :param nrow:
-    :param ncol:
-    :return: :rtype:
+    :param matrix: Matrix to be transposed :type matrix: list[*][*]
+    :param nrow: Number of rows of input matrix. :type nrow: int
+    :param ncol: Number of columns of input matrix :type ncol: int
+    :return: Transposed matrix :rtype: list[*][*]
     """
     matrix = stypes.listtodoublematrix(matrix, x=ncol, y=nrow)
     mout = stypes.emptyDoubleMatrix(x=ncol, y=nrow)
