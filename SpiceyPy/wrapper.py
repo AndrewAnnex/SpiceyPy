@@ -8490,13 +8490,12 @@ def utc2et(utcstr):
 
 
 def vadd(v1, v2):
-    """
+    """ Add two 3 dimensional vectors.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vadd_c.html
 
-
-    :param v1:
-    :param v2:
-    :return: :rtype:
+    :param v1: First vector to be added. :type v1: list[3]
+    :param v2: Second vector to be added. :type v2: list[3]
+    :return: v1+v2 :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8506,14 +8505,13 @@ def vadd(v1, v2):
 
 
 def vaddg(v1, v2, ndim):
-    """
+    """ Add two n-dimensional vectors
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vaddg_c.html
 
-
-    :param v1:
-    :param v2:
-    :param ndim:
-    :return: :rtype:
+    :param v1: First vector to be added. :type v1: list[ndim]
+    :param v2: Second vector to be added. :type v2: list[ndim]
+    :param ndim: Dimension of v1 and v2. :type ndim: int
+    :return: v1+v2 :rtype: list[ndim]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8524,14 +8522,13 @@ def vaddg(v1, v2, ndim):
 
 
 def valid(insize, n, inset):
-    """
+    """ Create a valid CSPICE set from a CSPICE Cell of any data type.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/valid_c.html
 
-
-    :param insize:
-    :param n:
-    :param inset:
-    :return: :rtype:
+    :param insize: Size (maximum cardinality) of the set. :type insize: int
+    :param n: Initial no. of (possibly non-distinct) elements. :type n: int
+    :param inset: Set to be validated.
+    :return: validated set :rtype: support_types.SpiceCell
     """
     assert isinstance(inset, stypes.SpiceCell)
     insize = ctypes.c_int(insize)
@@ -8541,13 +8538,12 @@ def valid(insize, n, inset):
 
 
 def vcrss(v1, v2):
-    """
+    """ Compute the cross product of two 3-dimensional vectors.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vcrss_c.html
 
-
-    :param v1:
-    :param v2:
-    :return: :rtype:
+    :param v1: Left hand vector for cross product. :type v1: list[3]
+    :param v2: Right hand vector for cross product. :type v2: list[3]
+    :return: Cross product v1 x v2. :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8557,13 +8553,12 @@ def vcrss(v1, v2):
 
 
 def vdist(v1, v2):
-    """
+    """ Return the distance between two three-dimensional vectors.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdist_c.html
 
-
-    :param v1:
-    :param v2:
-    :return: :rtype:
+    :param v1: First vector in the dot product. :type v1: list[3]
+    :param v2: Second vector in the dot product. :type v2: list[3]
+    :return: the distance between v1 and v2 :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8571,14 +8566,13 @@ def vdist(v1, v2):
 
 
 def vdistg(v1, v2, ndim):
-    """
+    """ Return the distance between two vectors of arbitrary dimension.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdistg_c.html
 
-
-    :param v1:
-    :param v2:
-    :param ndim:
-    :return: :rtype:
+    :param v1: ndim-dimensional double precision vector. :type v1: list[ndim]
+    :param v2: ndim-dimensional double precision vector. :type v2: list[ndim]
+    :param ndim: Dimension of v1 and v2. :type ndim: int
+    :return: the distance between v1 and v2 :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8587,13 +8581,12 @@ def vdistg(v1, v2, ndim):
 
 
 def vdot(v1, v2):
-    """
+    """ Compute the dot product of two double precision, 3-dimensional vectors.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdot_c.html
 
-
-    :param v1:
-    :param v2:
-    :return: :rtype:
+    :param v1: First vector in the dot product. :type v1: list[3]
+    :param v2: Second vector in the dot product. :type v2: list[3]
+    :return: dot product of v1 and v2. :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8601,14 +8594,13 @@ def vdot(v1, v2):
 
 
 def vdotg(v1, v2, ndim):
-    """
+    """ Compute the dot product of two double precision vectors of arbitrary dimension.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdotg_c.html
 
-
-    :param v1:
-    :param v2:
-    :param ndim:
-    :return: :rtype:
+    :param v1: First vector in the dot product. :type v1: list[ndim]
+    :param v2: Second vector in the dot product. :type v2: list[ndim]
+    :param ndim: Dimension of v1 and v2. :type ndim: int
+    :return: dot product of v1 and v2. :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8617,12 +8609,11 @@ def vdotg(v1, v2, ndim):
 
 
 def vequ(v1):
-    """
+    """ Make one double precision 3-dimensional vector equal to another.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vequ_c.html
 
-
-    :param v1:
-    :return: :rtype:
+    :param v1: 3-dimensional double precision vector. :type v1: list[3]
+    :return: 3-dimensional double precision vector set equal to vin. :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.emptyDoubleVector(3)
@@ -8631,13 +8622,12 @@ def vequ(v1):
 
 
 def vequg(v1, ndim):
-    """
+    """ Make one double precision vector of arbitrary dimension equal to another.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vequg_c.html
 
-
-    :param v1:
-    :param ndim:
-    :return: :rtype:
+    :param v1: ndim-dimensional double precision vector. :type v1: list[ndim]
+    :param ndim: Dimension of vin (and also vout). :type ndim: int
+    :return: ndim-dimensional double precision vector set equal to vin. :rtype: list[ndim]
     """
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.emptyDoubleVector(ndim)
@@ -8647,12 +8637,11 @@ def vequg(v1, ndim):
 
 
 def vhat(v1):
-    """
+    """ Find the unit vector along a double precision 3-dimensional vector.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vhat_c.html
 
-
-    :param v1:
-    :return: :rtype:
+    :param v1: Vector to be unitized. :type v1: list[3]
+    :return: Unit vector v1 / |v1|. :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.emptyDoubleVector(3)
@@ -8661,13 +8650,12 @@ def vhat(v1):
 
 
 def vhatg(v1, ndim):
-    """
+    """ Find the unit vector along a double precision vector of arbitrary dimension.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vhatg_c.html
 
-
-    :param v1:
-    :param ndim:
-    :return: :rtype:
+    :param v1: Vector to be normalized. :type v1: list[ndim]
+    :param ndim: Dimension of v1 (and also vout). :type ndim: int
+    :return: Unit vector v1 / |v1|. :rtype: list[ndim]
     """
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.emptyDoubleVector(ndim)
@@ -8677,15 +8665,14 @@ def vhatg(v1, ndim):
 
 
 def vlcom(a, v1, b, v2):
-    """
+    """ Compute a vector linear combination of two double precision, 3-dimensional vectors.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vlcom_c.html
 
-
-    :param a:
-    :param v1:
-    :param b:
-    :param v2:
-    :return: :rtype:
+    :param a: Coefficient of v1 :type a: float
+    :param v1: Vector in 3-space :type v1: list[3]
+    :param b: Coefficient of v2 :type b: float
+    :param v2: Vector in 3-space :type v2: list[3]
+    :return: Linear Vector Combination a*v1 + b*v2 :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8697,17 +8684,17 @@ def vlcom(a, v1, b, v2):
 
 
 def vlcom3(a, v1, b, v2, c, v3):
-    """
+    """ This subroutine computes the vector linear combination
+        a*v1 + b*v2 + c*v3 of double precision, 3-dimensional vectors.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vlcom3_c.html
 
-
-    :param a:
-    :param v1:
-    :param b:
-    :param v2:
-    :param c:
-    :param v3:
-    :return: :rtype:
+    :param a: Coefficient of v1 :type a: float
+    :param v1: Vector in 3-space :type v1: list[3]
+    :param b: Coefficient of v2 :type b: float
+    :param v2: Vector in 3-space :type v2: list[3]
+    :param c: Coefficient of v3 :type c: float
+    :param v3: Vector in 3-space :type v3: list[3]
+    :return: Linear Vector Combination a*v1 + b*v2 + c*v3 :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8721,16 +8708,15 @@ def vlcom3(a, v1, b, v2, c, v3):
 
 
 def vlcomg(n, a, v1, b, v2):
-    """
+    """ Compute a vector linear combination of two double precision vectors of arbitrary dimension.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vlcomg_c.html
 
-
-    :param n:
-    :param a:
-    :param v1:
-    :param b:
-    :param v2:
-    :return: :rtype:
+    :param n: Dimension of vector space :type n: int
+    :param a: Coefficient of v1 :type a: float
+    :param v1: Vector in n-space :type v1: list[n]
+    :param b: Coefficient of v2 :type b: float
+    :param v2: Vector in n-space :type v2: list[n]
+    :return:  Linear Vector Combination a*v1 + b*v2 :rtype: list[n]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8743,13 +8729,12 @@ def vlcomg(n, a, v1, b, v2):
 
 
 def vminug(vin, ndim):
-    """
+    """ Negate a double precision vector of arbitrary dimension.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vminug_c.html
 
-
-    :param vin:
-    :param ndim:
-    :return: :rtype:
+    :param vin: ndim-dimensional double precision vector to be negated. :type vin: list[*]
+    :param ndim: Dimension of vin. :type ndim: int
+    :return: ndim-dimensional double precision vector equal to -vin. :rtype: list[ndim]
     """
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(ndim)
@@ -8759,12 +8744,11 @@ def vminug(vin, ndim):
 
 
 def vminus(vin):
-    """
+    """ Negate a double precision 3-dimensional vector.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vminus_c.html
 
-
-    :param vin:
-    :return: :rtype:
+    :param vin: Vector to be negated. :type vin: list[3]
+    :return: Negated vector -v1. :rtype: list[3]
     """
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(3)
@@ -8773,25 +8757,23 @@ def vminus(vin):
 
 
 def vnorm(v):
-    """
+    """ Compute the magnitude of a double precision, 3-dimensional vector.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vnorm_c.html
 
-
-    :param v:
-    :return: :rtype:
+    :param v: Vector whose magnitude is to be found. :type v: list[3]
+    :return: magnitude of v calculated in a numerically stable way :rtype: float
     """
     v = stypes.toDoubleVector(v)
     return libspice.vnorm_c(v)
 
 
 def vnormg(v, ndim):
-    """
+    """ Compute the magnitude of a double precision vector of arbitrary dimension.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vnormg_c.html
 
-
-    :param v:
-    :param ndim:
-    :return: :rtype:
+    :param v: Vector whose magnitude is to be found. :type v: list[*]
+    :param ndim: Dimension of v :type ndim: int
+    :return: magnitude of v calculated in a numerically stable way :rtype: float
     """
     v = stypes.toDoubleVector(v)
     ndim = ctypes.c_int(ndim)
@@ -8799,14 +8781,13 @@ def vnormg(v, ndim):
 
 
 def vpack(x, y, z):
-    """
+    """ Pack three scalar components into a vector.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vpack_c.html
 
-
-    :param x:
-    :param y:
-    :param z:
-    :return: :rtype:
+    :param x: first scalar component :type x: float
+    :param y: second scalar component :type y: float
+    :param z: third scalar component :type z: float
+    :return: Equivalent 3-vector. :rtype: list[3]
     """
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
@@ -8817,13 +8798,13 @@ def vpack(x, y, z):
 
 
 def vperp(a, b):
-    """
+    """ Find the component of a vector that is perpendicular to a second
+        vector.  All vectors are 3-dimensional.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vperp_c.html
 
-
-    :param a:
-    :param b:
-    :return: :rtype:
+    :param a: The vector whose orthogonal component is sought. :type a: list[3]
+    :param b: The vector used as the orthogonal reference. :type b: list[3]
+    :return: The component of a orthogonal to b. :rtype: list[3]
     """
     a = stypes.toDoubleVector(a)
     b = stypes.toDoubleVector(b)
@@ -8833,13 +8814,12 @@ def vperp(a, b):
 
 
 def vprjp(vin, plane):
-    """
+    """ Project a vector onto a specified plane, orthogonally.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vprjp_c.html
 
-
-    :param vin:
-    :param plane:
-    :return: :rtype:
+    :param vin: The projected vector. :type vin: list[3]
+    :param plane: Plane containing vin. :type projpl: support_types.Plane
+    :return: Vector resulting from projection. :rtype: list[3]
     """
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(3)
@@ -8848,14 +8828,14 @@ def vprjp(vin, plane):
 
 
 def vprjpi(vin, projpl, invpl):
-    """
+    """ Find the vector in a specified plane that maps to a specified
+        vector in another plane under orthogonal projection.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vprjpi_c.html
 
-
-    :param vin:
-    :param projpl:
-    :param invpl:
-    :return: :rtype:
+    :param vin: The projected vector. :type vin: list[3]
+    :param projpl: Plane containing vin. :type projpl: support_types.Plane
+    :param invpl: Plane containing inverse image of vin. :type invpl: support_types.Plane
+    :return: (Inverse projection of vin, success) :rtype: tuple
     """
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(3)
@@ -8868,13 +8848,12 @@ def vprjpi(vin, projpl, invpl):
 
 
 def vproj(a, b):
-    """
+    """ find the projection of one vector onto another vector.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vproj_c.html
 
-
-    :param a:
-    :param b:
-    :return: :rtype:
+    :param a: The vector to be projected. :type a: list[3]
+    :param b: The vector onto which a is to be projected. :type b: list[3]
+    :return: The projection of a onto b. :rtype: list[3]
     """
     a = stypes.toDoubleVector(a)
     b = stypes.toDoubleVector(b)
@@ -8884,13 +8863,12 @@ def vproj(a, b):
 
 
 def vrel(v1, v2):
-    """
+    """ Return the relative difference between two 3-dimensional vectors.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vrel_c.html
 
-
-    :param v1:
-    :param v2:
-    :return: :rtype:
+    :param v1: First vector :type v1: list[3]
+    :param v2: Second vector :type v2: list[3]
+    :return: the relative difference between v1 and v2. :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8898,14 +8876,14 @@ def vrel(v1, v2):
 
 
 def vrelg(v1, v2, ndim):
-    """
+    """ Return the relative difference between two vectors of general dimension.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vrelg_c.html
 
 
-    :param v1:
-    :param v2:
-    :param ndim:
-    :return: :rtype:
+    :param v1: First vector :type v1: list[*]
+    :param v2: Second vector :type v2: list[*]
+    :param ndim:  Dimension of v1 and v2. :type ndim: int
+    :return: the relative difference between v1 and v2. :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8916,13 +8894,13 @@ def vrelg(v1, v2, ndim):
 def vrotv(v, axis, theta):
     #Tested, but clarly some rounding issues exist (0 as 6.123*10^-17, etc)
     # halfpi is not exactly reprentable in IEEE 754 notation,
-    """
+    """ Rotate a vector about a specified axis vector by a specified angle and return the rotated vector.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vrotv_c.html
 
-    :param v:
-    :param axis:
-    :param theta:
-    :return: :rtype:
+    :param v: Vector to be rotated. :type v: list[3]
+    :param axis: Axis of the rotation. :type axis: list[3]
+    :param theta: Angle of rotation (radians). :type theta: float
+    :return: Result of rotating v about axis by theta :rtype: list[3]
     """
     v = stypes.toDoubleVector(v)
     axis = stypes.toDoubleVector(axis)
@@ -8933,13 +8911,12 @@ def vrotv(v, axis, theta):
 
 
 def vscl(s, v1):
-    """
+    """ Multiply a scalar and a 3-dimensional double precision vector.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vscl_c.html
 
-
-    :param s:
-    :param v1:
-    :return: :rtype:
+    :param s: Scalar to multiply a vector :type s: float
+    :param v1: Vector to be multiplied :type v1: list[3]
+    :return: Product vector, s*v1. :rtype: list[3]
     """
     s = ctypes.c_double(s)
     v1 = stypes.toDoubleVector(v1)
@@ -8949,14 +8926,13 @@ def vscl(s, v1):
 
 
 def vsclg(s, v1, ndim):
-    """
+    """ Multiply a scalar and a double precision vector of arbitrary dimension.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsclg_c.html
 
-
-    :param s:
-    :param v1:
-    :param ndim:
-    :return: :rtype:
+    :param s: Scalar to multiply a vector :type s: float
+    :param v1: Vector to be multiplied :type v1: list[*]
+    :param ndim: Dimension of v1 :type ndim: int
+    :return: Product vector, s*v1. :rtype: list[*]
     """
     s = ctypes.c_double(s)
     v1 = stypes.toDoubleVector(v1)
@@ -8967,13 +8943,14 @@ def vsclg(s, v1, ndim):
 
 
 def vsep(v1, v2):
-    """
+    """  Find the separation angle in radians between two double
+         precision, 3-dimensional vectors.  This angle is defined as zero
+         if either vector is zero.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsep_c.html
 
-
-    :param v1:
-    :param v2:
-    :return: :rtype:
+    :param v1: First vector :type v1: list[3]
+    :param v2: Second vector :type v2: list[3]
+    :return: separation angle in radians :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8981,14 +8958,16 @@ def vsep(v1, v2):
 
 
 def vsepg(v1, v2, ndim):
-    """
+    """ find the separation angle in radians between two double
+        precision vectors of arbitrary dimension. This angle is defined
+        as zero if either vector is zero.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsepg_c.html
 
 
-    :param v1:
-    :param v2:
-    :param ndim:
-    :return: :rtype:
+    :param v1: First vector :type v1: list[*]
+    :param v2: Second vector :type v2: list[*]
+    :param ndim: The number of elements in v1 and v2. :type ndim: int
+    :return: separation angle in radians :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8997,13 +8976,12 @@ def vsepg(v1, v2, ndim):
 
 
 def vsub(v1, v2):
-    """
+    """  Compute the difference between two 3-dimensional, double precision vectors.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsub_c.html
 
-
-    :param v1:
-    :param v2:
-    :return: :rtype:
+    :param v1: First vector (minuend). :type v1: list[3]
+    :param v2: Second vector (subtrahend). :type v2: list[3]
+    :return: Difference vector, v1 - v2. :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -9013,14 +8991,13 @@ def vsub(v1, v2):
 
 
 def vsubg(v1, v2, ndim):
-    """
+    """ Compute the difference between two double precision vectors of arbitrary dimension.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsubg_c.html
 
-
-    :param v1:
-    :param v2:
-    :param ndim:
-    :return: :rtype:
+    :param v1: First vector (minuend). :type v1: list[*]
+    :param v2: Second vector (subtrahend). :type v2: list[*]
+    :param ndim: Dimension of v1, v2, and vout. :type ndim: int
+    :return: Difference vector, v1 - v2. :rtype: list[*]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -9031,14 +9008,13 @@ def vsubg(v1, v2, ndim):
 
 
 def vtmv(v1, matrix, v2):
-    """
+    """ Multiply the transpose of a 3-dimensional column vector a 3x3 matrix, and a 3-dimensional column vector.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vtmv_c.html
 
-
-    :param v1:
-    :param matrix:
-    :param v2:
-    :return: :rtype:
+    :param v1: 3 dimensional double precision column vector. :type v1: list[3]
+    :param matrix: 3x3 double precision matrix. :type matrix: list[3][3]
+    :param v2: 3 dimensional double precision column vector. :type v2: list[3]
+    :return: the result of (v1**t * matrix * v2 ). :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     matrix = stypes.listtodoublematrix(matrix)
@@ -9047,16 +9023,15 @@ def vtmv(v1, matrix, v2):
 
 
 def vtmvg(v1, matrix, v2, nrow, ncol):
-    """
+    """ Multiply the transpose of a n-dimensional column vector a nxm matrix, and a m-dimensional column vector.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vtmvg_c.html
 
-
-    :param v1:
-    :param matrix:
-    :param v2:
-    :param nrow:
-    :param ncol:
-    :return: :rtype:
+    :param v1: n-dimensional double precision column vector. :type v1: list[*]
+    :param matrix: nxm double precision matrix. :type matrix: list[*][*]
+    :param v2: m-dimensional double porecision column vector. :type v2: list[*]
+    :param nrow: Number of rows in matrix (number of rows in v1.) :type nrow: int
+    :param ncol: Number of columns in matrix (number of rows in v2.) :type ncol: int
+    :return: the result of (v1**t * matrix * v2 ) :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     matrix = stypes.listtodoublematrix(matrix, x=ncol, y=nrow)
@@ -9067,12 +9042,11 @@ def vtmvg(v1, matrix, v2, nrow, ncol):
 
 
 def vupack(v):
-    """
+    """ Unpack three scalar components from a vector.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vupack_c.html
 
-
-    :param v:
-    :return: :rtype:
+    :param v: Vector :type v: list[3]
+    :return: (x, y, z) :rtype: tuple
     """
     v1 = stypes.toDoubleVector(v)
     x = ctypes.c_double()
@@ -9083,25 +9057,23 @@ def vupack(v):
 
 
 def vzero(v):
-    """
+    """ Indicate whether a 3-vector is the zero vector
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vzero_c.html
 
-
-    :param v:
-    :return: :rtype:
+    :param v: Vector to be tested :type v: list[3]
+    :return: true if and only if v is the zero vector :rtype: bool
     """
     v = stypes.toDoubleVector(v)
     return libspice.vzero_c(v)
 
 
 def vzerog(v, ndim):
-    """
+    """ Indicate whether a general-dimensional vector is the zero vector.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vzerog_c.html
 
-
-    :param v:
-    :param ndim:
-    :return: :rtype:
+    :param v: Vector to be tested :type v: list[*]
+    :param ndim: Dimension of v :type ndim: int
+    :return: true if and only if v is the zero vector :rtype: bool
     """
     v = stypes.toDoubleVector(v)
     ndim = ctypes.c_int(ndim)
