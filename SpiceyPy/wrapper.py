@@ -8658,7 +8658,7 @@ def vhat(v1):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vhat_c.html
 
     :param v1: Vector to be unitized. :type v1: list[3]
-    :return: Unit vector v / |v|. :rtype: list[3]
+    :return: Unit vector v / abs(v). :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.emptyDoubleVector(3)
@@ -8673,7 +8673,7 @@ def vhatg(v1, ndim):
 
     :param v1: Vector to be normalized. :type v1: list[ndim]
     :param ndim: Dimension of v1 (and also vout). :type ndim: int
-    :return: Unit vector v / |v|. :rtype: list[ndim]
+    :return: Unit vector v / abs(v). :rtype: list[ndim]
     """
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.emptyDoubleVector(ndim)
@@ -8704,8 +8704,9 @@ def vlcom(a, v1, b, v2):
 
 
 def vlcom3(a, v1, b, v2, c, v3):
-    """ This subroutine computes the vector linear combination
-        a*v1 + b*v2 + c*v3 of double precision, 3-dimensional vectors.
+    """
+    This subroutine computes the vector linear combination
+    a*v1 + b*v2 + c*v3 of double precision, 3-dimensional vectors.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vlcom3_c.html
 
     :param a: Coefficient of v1 :type a: float
@@ -8728,7 +8729,8 @@ def vlcom3(a, v1, b, v2, c, v3):
 
 
 def vlcomg(n, a, v1, b, v2):
-    """ Compute a vector linear combination of two double precision vectors of arbitrary dimension.
+    """
+    Compute a vector linear combination of two double precision vectors of arbitrary dimension.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vlcomg_c.html
 
     :param n: Dimension of vector space :type n: int
@@ -8818,8 +8820,9 @@ def vpack(x, y, z):
 
 
 def vperp(a, b):
-    """ Find the component of a vector that is perpendicular to a second
-        vector.  All vectors are 3-dimensional.
+    """
+    Find the component of a vector that is perpendicular to a second
+    vector.  All vectors are 3-dimensional.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vperp_c.html
 
     :param a: The vector whose orthogonal component is sought. :type a: list[3]
