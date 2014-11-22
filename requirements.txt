@@ -1,0 +1,5 @@
+numpy>=1.8.0
+six>=1.7.3
+pytest>=2.6.2
+coverage>=3.7.1
+coveralls>=0.4.2
