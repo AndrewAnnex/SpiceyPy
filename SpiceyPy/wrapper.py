@@ -223,8 +223,8 @@ def bods2c(name):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/bods2c_c.html
 
-    :param name: String to be translated to an ID code.
-    :return: Integer ID code corresponding to `name'. :rtype: int
+    :param name: String to be translated to an ID code. :type name: str
+    :return: Integer ID code corresponding to name. :rtype: int
     """
     name = stypes.stringToCharP(name)
     code = ctypes.c_int(0)
@@ -522,10 +522,10 @@ def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
     :param ck: Name of CK file.
     :param idcode: ID code of object.
     :param needav: Flag indicating whether angular velocity is needed.
-    :param level: Coverage level:  "SEGMENT" OR "INTERVAL".
+    :param level: Coverage level:  (SEGMENT OR INTERVAL)
     :param tol: Tolerance in ticks.
     :param timsys: Time system used to represent coverage.
-    :param cover: Window giving coverage for `idcode'.
+    :param cover: Window giving coverage for idcode.
     :return: :rtype: SpiceDOUBLECell
     """
     ck = stypes.stringToCharP(ck)
@@ -2941,7 +2941,8 @@ def expool(name):
 
 
 def failed():
-    """ True if an error condition has been signalled via sigerr_c.
+    """
+    True if an error condition has been signalled via sigerr_c.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/failed_c.html
 
     :return: a boolean :rtype: bool
@@ -2951,7 +2952,8 @@ def failed():
 
 def fovray(inst, raydir, rframe, abcorr, observer, et):
     # Unsure if et is returned or not (I vs I/O)
-    """ Determine if a specified ray is within the field-of-view (FOV) of a specified instrument at a given time.
+    """
+    Determine if a specified ray is within the field-of-view (FOV) of a specified instrument at a given time.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/fovray_c.html
 
     :param inst: Name or ID code string of the instrument. :type inst: str
@@ -2975,7 +2977,8 @@ def fovray(inst, raydir, rframe, abcorr, observer, et):
 
 def fovtrg(inst, target, tshape, tframe, abcorr, observer, et):
     # Unsure if et is returned or not (I vs I/O)
-    """ Determine if a specified ephemeris object is within the field-of-view (FOV) of a specified instrument at a given time.
+    """
+    Determine if a specified ephemeris object is within the field-of-view (FOV) of a specified instrument at a given time.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/fovtrg_c.html
 
     :param inst: Name or ID code string of the instrument. :type inst: str
@@ -3030,11 +3033,12 @@ def frinfo(frcode):
 
 
 def frmnam(frcode, lenout=125):
-    """ Retrieve the name of a reference frame associated with a SPICE ID code.
+    """
+    Retrieve the name of a reference frame associated with a SPICE ID code.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/frmnam_c.html
 
     :param frcode: an integer code for a reference frame :type frcode: int
-    :param lenout: Maximum length of output string. : type lenout: int
+    :param lenout: Maximum length of output string. :type lenout: int
     :return: the name associated with the reference frame. :rtype: str
     """
     frcode = ctypes.c_int(frcode)
@@ -3045,8 +3049,8 @@ def frmnam(frcode, lenout=125):
 
 
 def ftncls(unit):
-    #Todo: close ftncls
-    """ Close a file designated by a Fortran-style integer logical unit.
+    """
+    Close a file designated by a Fortran-style integer logical unit.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ftncls_c.html
 
     :param unit: Fortran-style logical unit. :type unit: int
@@ -3057,7 +3061,8 @@ def ftncls(unit):
 
 
 def furnsh(path):
-    """ Load one or more SPICE kernels into a program.
+    """
+    Load one or more SPICE kernels into a program.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/furnsh_c.html
 
     :param path: one or more paths to kernels :type path: str or list of str
@@ -4741,7 +4746,9 @@ def lxqstr(string, qchar, first):
 
 
 def m2eul(r, axis3, axis2, axis1):
-    """ Factor a rotation matrix as a product of three rotations about specified coordinate axes.
+    """
+    Factor a rotation matrix as a product of three rotations
+    about specified coordinate axes.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/m2eul_c.html
 
     :param r: A rotation matrix to be factored :type r: list[3][3]
@@ -4762,11 +4769,12 @@ def m2eul(r, axis3, axis2, axis1):
 
 
 def m2q(r):
-    """ Find a unit quaternion corresponding to a specified rotation matrix.
+    """
+    Find a unit quaternion corresponding to a specified rotation matrix.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/m2q_c.html
 
     :param r: A rotation matrix to be factored :type r: list[3][3]
-    :return: A unit quaternion representing 'r' :rtype: list[4]
+    :return: A unit quaternion representing the rotation matrix :rtype: list[4]
     """
     r = stypes.listtodoublematrix(r)
     q = stypes.emptyDoubleVector(4)
@@ -4775,7 +4783,9 @@ def m2q(r):
 
 
 def matchi(string, templ, wstr, wchr):
-    """ Determine whether a string is matched by a template containing wild cards.  The pattern comparison is case-insensitive.
+    """
+    Determine whether a string is matched by a template containing wild cards.
+    The pattern comparison is case-insensitive.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/matchi_c.html
 
     :param string: String to be tested. :type string: str
@@ -4793,7 +4803,8 @@ def matchi(string, templ, wstr, wchr):
 
 def matchw(string, templ, wstr, wchr):
     # ctypes.c_char(wstr.encode(encoding='UTF-8')
-    """ Determine whether a string is matched by a template containing wild cards.
+    """
+    Determine whether a string is matched by a template containing wild cards.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/matchw_c.html
 
     :param string: String to be tested. :type string: str
@@ -4816,7 +4827,8 @@ def matchw(string, templ, wstr, wchr):
 
 
 def mequ(m1):
-    """ Set one double precision 3x3 matrix equal to another.
+    """
+    Set one double precision 3x3 matrix equal to another.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mequ_c.html
 
     :param m1: input matrix. :type m1: list[3][3]
@@ -4829,7 +4841,8 @@ def mequ(m1):
 
 
 def mequg(m1, nr, nc):
-    """ Set one double precision matrix of arbitrary size equal to another.
+    """
+    Set one double precision matrix of arbitrary size equal to another.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mequg_c.html
 
     :param m1: Input matrix. :type m1: list[*][*]
@@ -4852,7 +4865,8 @@ def mequg(m1, nr, nc):
 
 
 def mtxm(m1, m2):
-    """ Multiply the transpose of a 3x3 matrix and a 3x3 matrix.
+    """
+    Multiply the transpose of a 3x3 matrix and a 3x3 matrix.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mtxm_c.html
 
     :param m1: 3x3 double precision matrix. :type m1: list[3][3]
@@ -4867,7 +4881,8 @@ def mtxm(m1, m2):
 
 
 def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
-    """ Multiply the transpose of a matrix with another matrix, both of arbitrary size.
+    """
+    Multiply the transpose of a matrix with another matrix, both of arbitrary size.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mtxmg_c.html
 
     :param m1: nr1r2 X ncol1 double precision matrix. :type m1: list[*][*]
@@ -4888,7 +4903,8 @@ def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
 
 
 def mtxv(m1, vin):
-    """ Multiplies the transpose of a 3x3 matrix on the left with a vector on the right.
+    """
+    Multiplies the transpose of a 3x3 matrix on the left with a vector on the right.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mtxv_c.html
 
     :param m1: 3x3 double precision matrix. :type m1: list[3][3]
@@ -4903,7 +4919,8 @@ def mtxv(m1, vin):
 
 
 def mtxvg(m1, v2, ncol1, nr1r2):
-    """ Multiply the transpose of a matrix and a vector of arbitrary size.
+    """
+    Multiply the transpose of a matrix and a vector of arbitrary size.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mtxvg_c.html
 
     :param m1: Left-hand matrix to be multiplied. :type m1: list[*][*]
@@ -4922,7 +4939,8 @@ def mtxvg(m1, v2, ncol1, nr1r2):
 
 
 def mxm(m1, m2):
-    """ Multiply two 3x3 matrices.
+    """
+    Multiply two 3x3 matrices.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxm_c.html
 
     :param m1: 3x3 double precision matrix. :type m1: list[3][3]
@@ -4937,7 +4955,8 @@ def mxm(m1, m2):
 
 
 def mxmg(m1, m2, nrow1, ncol1, ncol2):
-    """ Multiply two double precision matrices of arbitrary size.
+    """
+    Multiply two double precision matrices of arbitrary size.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxmg_c.html
 
     :param m1: nrow1 X ncol1 double precision matrix. :type m1: list[*][*]
@@ -4958,7 +4977,8 @@ def mxmg(m1, m2, nrow1, ncol1, ncol2):
 
 
 def mxmt(m1, m2):
-    """ Multiply a 3x3 matrix and the transpose of another 3x3 matrix.
+    """
+    Multiply a 3x3 matrix and the transpose of another 3x3 matrix.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxmt_c.html
 
     :param m1: 3x3 double precision matrix. :type m1: list[3][3]
@@ -5117,9 +5137,10 @@ def npedln(a, b, c, linept, linedr):
 
 
 def npelpt(point, ellips):
-    """ Find the nearest point on an ellipse to a specified point, both
-   in three-dimensional space, and find the distance between the
-   ellipse and the point.
+    """
+    Find the nearest point on an ellipse to a specified point, both
+    in three-dimensional space, and find the distance between the
+    ellipse and the point.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/npelpt_c.html
 
     :param point: Point whose distance to an ellipse is to be found. :type point: list[3]
@@ -7240,7 +7261,6 @@ def spkpos(targ, et, ref, abcorr, obs):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpos_c.html
 
-
     :param targ:
     :param et:
     :param ref:
@@ -7268,7 +7288,6 @@ def spkpos(targ, et, ref, abcorr, obs):
 def spkpvn(handle, descr, et):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpvn_c.html
-
 
     :param handle:
     :param descr:
@@ -8634,11 +8653,12 @@ def vequg(v1, ndim):
 
 
 def vhat(v1):
-    """ Find the unit vector along a double precision 3-dimensional vector.
+    """
+    Find the unit vector along a double precision 3-dimensional vector.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vhat_c.html
 
     :param v1: Vector to be unitized. :type v1: list[3]
-    :return: Unit vector v1 / |v1|. :rtype: list[3]
+    :return: Unit vector v / |v|. :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.emptyDoubleVector(3)
@@ -8647,12 +8667,13 @@ def vhat(v1):
 
 
 def vhatg(v1, ndim):
-    """ Find the unit vector along a double precision vector of arbitrary dimension.
+    """
+    Find the unit vector along a double precision vector of arbitrary dimension.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vhatg_c.html
 
     :param v1: Vector to be normalized. :type v1: list[ndim]
     :param ndim: Dimension of v1 (and also vout). :type ndim: int
-    :return: Unit vector v1 / |v1|. :rtype: list[ndim]
+    :return: Unit vector v / |v|. :rtype: list[ndim]
     """
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.emptyDoubleVector(ndim)
@@ -8662,14 +8683,16 @@ def vhatg(v1, ndim):
 
 
 def vlcom(a, v1, b, v2):
-    """ Compute a vector linear combination of two double precision, 3-dimensional vectors.
+    """
+    Compute a vector linear combination of two double precision,
+    3-dimensional vectors.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vlcom_c.html
 
     :param a: Coefficient of v1 :type a: float
     :param v1: Vector in 3-space :type v1: list[3]
     :param b: Coefficient of v2 :type b: float
     :param v2: Vector in 3-space :type v2: list[3]
-    :return: Linear Vector Combination a*v1 + b*v2 :rtype: list[3]
+    :return: Linear Vector Combination a*v1 + b*v2. :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8825,8 +8848,9 @@ def vprjp(vin, plane):
 
 
 def vprjpi(vin, projpl, invpl):
-    """ Find the vector in a specified plane that maps to a specified
-        vector in another plane under orthogonal projection.
+    """
+    Find the vector in a specified plane that maps to a specified
+    vector in another plane under orthogonal projection.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vprjpi_c.html
 
     :param vin: The projected vector. :type vin: list[3]
@@ -8940,9 +8964,10 @@ def vsclg(s, v1, ndim):
 
 
 def vsep(v1, v2):
-    """  Find the separation angle in radians between two double
-         precision, 3-dimensional vectors.  This angle is defined as zero
-         if either vector is zero.
+    """
+    Find the separation angle in radians between two double
+    precision, 3-dimensional vectors.  This angle is defined as zero
+    if either vector is zero.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsep_c.html
 
     :param v1: First vector :type v1: list[3]
@@ -8955,11 +8980,11 @@ def vsep(v1, v2):
 
 
 def vsepg(v1, v2, ndim):
-    """ find the separation angle in radians between two double
-        precision vectors of arbitrary dimension. This angle is defined
-        as zero if either vector is zero.
+    """
+    Find the separation angle in radians between two double
+    precision vectors of arbitrary dimension. This angle is defined
+    as zero if either vector is zero.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsepg_c.html
-
 
     :param v1: First vector :type v1: list[*]
     :param v2: Second vector :type v2: list[*]
@@ -9410,13 +9435,14 @@ def xf2rav(xform):
 
 
 def xfmsta(input_state, input_coord_sys, output_coord_sys, body):
-    """  Transform a state between coordinate systems.
+    """
+    Transform a state between coordinate systems.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xfmsta_c.html
 
     :param input_state: Input state. :type input_state: list[6]
     :param input_coord_sys: Current (input) coordinate system. :type input_coord_sys: str
     :param output_coord_sys: Desired (output) coordinate system. :type output_coord_sys: str
-    :param body:Name or NAIF ID of body with which coordinates are associated (if applicable). :type body: str
+    :param body: Name or NAIF ID of body with which coordinates are associated (if applicable). :type body: str
     :return: Converted output state :rtype: list[6]
     """
     input_state = stypes.toDoubleVector(input_state)
