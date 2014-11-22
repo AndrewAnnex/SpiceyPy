@@ -983,12 +983,12 @@ def cylsph(r, lonc, z):
 def dafac(handle, n, lenvals, buffer):
     #Todo: test dafac
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafac_c.html
 
-    :param handle:
-    :param n:
-    :param lenvals:
-    :param buffer:
+    :param handle: handle of a DAF opened with write access.
+    :param n: Number of comments to put into the comment area.
+    :param lenvals: Length of elements
+    :param buffer: Buffer of comments to put into the comment area.
     """
     handle = ctypes.c_int(handle)
     buffer = stypes.listToCharArrayPtr(buffer)
@@ -1000,7 +1000,7 @@ def dafac(handle, n, lenvals, buffer):
 
 def dafbbs(handle):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafbbs_c.html
 
 
     :param handle:
@@ -1012,7 +1012,7 @@ def dafbbs(handle):
 
 def dafbfs(handle):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafbfs_c.html
 
 
     :param handle:
@@ -1024,7 +1024,7 @@ def dafbfs(handle):
 
 def dafcls(handle):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafcls_c.html
 
 
     :param handle:
@@ -1036,7 +1036,7 @@ def dafcls(handle):
 
 def dafcs(handle):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafcs_c.html
 
 
     :param handle:
@@ -1049,6 +1049,7 @@ def dafcs(handle):
 def dafdc(handle):
     #Todo: test dafdc
     """
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafdc_c.html
 
     :param handle:
     """
@@ -1059,7 +1060,7 @@ def dafdc(handle):
 
 def dafec(handle, bufsiz, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafec_c.html
 
 
     :param handle:
@@ -1079,7 +1080,7 @@ def dafec(handle, bufsiz, lenout):
 
 def daffna():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/daffna_c.html
 
 
 
@@ -1092,7 +1093,7 @@ def daffna():
 
 def daffpa():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/daffpa_c.html
 
 
 
@@ -1105,7 +1106,7 @@ def daffpa():
 
 def dafgda(handle, begin, end):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgda_c.html
 
 
     :param handle:
@@ -1123,7 +1124,7 @@ def dafgda(handle, begin, end):
 
 def dafgh():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgh_c.html
 
 
 
@@ -1136,7 +1137,7 @@ def dafgh():
 
 def dafgn(lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgn_c.html
 
 
     :param lenout:
@@ -1151,6 +1152,7 @@ def dafgn(lenout):
 def dafgs(n=125):
     # The 125 may be a hard set, I got strange errors that occasionally happend without it
     """
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgs_c.html
 
     :param n:
     :return: :rtype:
@@ -1164,7 +1166,7 @@ def dafgs(n=125):
 def dafgsr(handle, recno, begin, end):
     #Todo test dafgsr
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgsr_c.html
 
     :param handle:
     :param recno:
@@ -1184,7 +1186,7 @@ def dafgsr(handle, recno, begin, end):
 
 def dafopr(fname):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafopr_c.html
 
 
     :param fname:
@@ -1198,7 +1200,7 @@ def dafopr(fname):
 
 def dafopw(fname):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafopw_c.html
 
 
     :param fname:
@@ -1213,7 +1215,7 @@ def dafopw(fname):
 def dafps(nd, ni, dc, ic):
     #Todo: test dafps
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafps_c.html
 
     :param nd:
     :param ni:
@@ -1233,7 +1235,7 @@ def dafps(nd, ni, dc, ic):
 def dafrda(handle, begin, end):
     #Todo: test dafrda
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafrda_c.html
 
     :param handle:
     :param begin:
@@ -1250,7 +1252,7 @@ def dafrda(handle, begin, end):
 
 def dafrfr(handle, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafrfr_c.html
 
 
     :param handle:
@@ -1272,7 +1274,7 @@ def dafrfr(handle, lenout):
 def dafrs(insum):
     #Todo: test dafrs
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafrs_c.html
 
     :param insum:
     """
@@ -1283,7 +1285,7 @@ def dafrs(insum):
 
 def dafus(insum, nd, ni):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafus_c.html
 
 
     :param insum:
@@ -1303,7 +1305,7 @@ def dafus(insum, nd, ni):
 def dasac(handle, n, buflen, buffer):
     #Todo: test dasac
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasac_c.html
 
     :param handle:
     :param n:
@@ -1322,7 +1324,7 @@ def dasac(handle, n, buflen, buffer):
 def dascls(handle):
     #Todo: test dafdc
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dascls_c.html
 
     :param handle:
     """
@@ -1334,7 +1336,7 @@ def dascls(handle):
 def dasec(handle, bufsiz, buflen):
     #Todo: test dasec
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasec_c.html
 
     :param handle:
     :param bufsiz:
@@ -1354,7 +1356,7 @@ def dasec(handle, bufsiz, buflen):
 def dasopr(fname):
     #Todo: test dasopr
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasopr_c.html
 
     :param fname:
     """
@@ -1365,7 +1367,7 @@ def dasopr(fname):
 
 def dcyldr(x, y, z):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dcyldr_c.html
 
 
     :param x:
@@ -1383,7 +1385,7 @@ def dcyldr(x, y, z):
 
 def deltet(epoch, eptype):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/deltet_c.html
 
 
     :param epoch:
@@ -1399,7 +1401,7 @@ def deltet(epoch, eptype):
 
 def det(m1):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/det_c.html
 
 
     :param m1:
@@ -1411,7 +1413,7 @@ def det(m1):
 
 def dgeodr(x, y, z, re, f):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dgeodr_c.html
 
 
     :param x:
@@ -1433,7 +1435,7 @@ def dgeodr(x, y, z, re, f):
 
 def diags2(symmat):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/diags2_c.html
 
 
     :param symmat:
@@ -1448,7 +1450,7 @@ def diags2(symmat):
 
 def diff(a, b):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/diff_c.html
 
 
     :param a:
@@ -1473,7 +1475,7 @@ def diff(a, b):
 
 def dlatdr(x, y, z):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlatdr_c.html
 
 
     :param x:
@@ -1491,7 +1493,7 @@ def dlatdr(x, y, z):
 
 def dp2hx(number, lenout=None):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dp2hx_c.html
 
 
     :param number:
@@ -1510,7 +1512,7 @@ def dp2hx(number, lenout=None):
 
 def dpgrdr(body, x, y, z, re, f):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dpgrdr_c.html
 
 
     :param body:
@@ -1534,7 +1536,7 @@ def dpgrdr(body, x, y, z, re, f):
 
 def dpmax():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dpmax_c.html
 
 
 
@@ -1545,7 +1547,7 @@ def dpmax():
 
 def dpmin():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dpmin_c.html
 
 
 
@@ -1556,7 +1558,7 @@ def dpmin():
 
 def dpr():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dpr_c.html
 
 
 
@@ -1567,7 +1569,7 @@ def dpr():
 
 def drdcyl(r, lon, z):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/drdcyl_c.html
 
 
     :param r:
@@ -1585,7 +1587,7 @@ def drdcyl(r, lon, z):
 
 def drdgeo(lon, lat, alt, re, f):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/drdgeo_c.html
 
 
     :param lon:
@@ -1607,7 +1609,7 @@ def drdgeo(lon, lat, alt, re, f):
 
 def drdlat(r, lon, lat):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/drdlat_c.html
 
 
     :param r:
@@ -1625,7 +1627,7 @@ def drdlat(r, lon, lat):
 
 def drdpgr(body, lon, lat, alt, re, f):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/drdpgr_c.html
 
 
     :param body:
@@ -1649,7 +1651,7 @@ def drdpgr(body, lon, lat, alt, re, f):
 
 def drdsph(r, colat, lon):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/drdsph_c.html
 
 
     :param r:
@@ -1667,7 +1669,7 @@ def drdsph(r, colat, lon):
 
 def dsphdr(x, y, z):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dsphdr_c.html
 
 
     :param x:
@@ -1685,7 +1687,7 @@ def dsphdr(x, y, z):
 
 def dtpool(name):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dtpool_c.html
 
 
     :param name:
@@ -1701,7 +1703,7 @@ def dtpool(name):
 
 def ducrss(s1, s2):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ducrss_c.html
 
 
     :param s1:
@@ -1718,7 +1720,7 @@ def ducrss(s1, s2):
 
 def dvcrss(s1, s2):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dvcrss_c.html
 
 
     :param s1:
@@ -1735,7 +1737,7 @@ def dvcrss(s1, s2):
 
 def dvdot(s1, s2):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dvdot_c.html
 
 
     :param s1:
@@ -1750,7 +1752,7 @@ def dvdot(s1, s2):
 
 def dvhat(s1):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dvhat_c.html
 
 
     :param s1:
@@ -1765,7 +1767,7 @@ def dvhat(s1):
 
 def dvnorm(state):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dvnorm_c.html
 
 
     :param state:
@@ -1778,7 +1780,7 @@ def dvnorm(state):
 
 def dvpool(name):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dvpool_c.html
 
 
     :param name:
@@ -1790,7 +1792,7 @@ def dvpool(name):
 
 def dvsep(s1, s2):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dvsep_c.html
 
 
     :param s1:
@@ -1808,7 +1810,7 @@ def dvsep(s1, s2):
 
 def edlimb(a, b, c, viewpt):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/edlimb_c.html
 
 
     :param a:
@@ -1828,7 +1830,7 @@ def edlimb(a, b, c, viewpt):
 
 def edterm(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/edterm_c.html
 
 
     :param trmtyp:
@@ -1858,7 +1860,7 @@ def edterm(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts):
 
 def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekacec_c.html
 
 
     :param handle:
@@ -1884,7 +1886,7 @@ def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
 
 def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekaced_c.html
 
 
     :param handle:
@@ -1908,7 +1910,7 @@ def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
 
 def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekacei_c.html
 
 
     :param handle:
@@ -1931,7 +1933,7 @@ def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
 
 def ekaclc(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs, wkindx):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekaclc_c.html
 
 
     :param handle:
@@ -1960,7 +1962,7 @@ def ekaclc(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs, wkindx)
 
 def ekacld(handle, segno, column, dvals, entszs, nlflgs, rcptrs, wkindx):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekacld_c.html
 
 
     :param handle:
@@ -1987,7 +1989,7 @@ def ekacld(handle, segno, column, dvals, entszs, nlflgs, rcptrs, wkindx):
 
 def ekacli(handle, segno, column, ivals, entszs, nlflgs, rcptrs, wkindx):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekacli_c.html
 
 
     :param handle:
@@ -2014,7 +2016,7 @@ def ekacli(handle, segno, column, ivals, entszs, nlflgs, rcptrs, wkindx):
 
 def ekappr(handle, segno):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekappr_c.html
 
 
     :param handle:
@@ -2042,6 +2044,7 @@ def ekbseg(handle, tabnam, ncols, cnmlen, cnames, declen, decls):
     # else:
     #     ncols = len(cnames)
     """
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekbseg_c.html
 
     :param handle:
     :param tabnam:
@@ -2065,7 +2068,7 @@ def ekbseg(handle, tabnam, ncols, cnmlen, cnames, declen, decls):
 
 def ekccnt(table):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekccnt_c.html
 
 
     :param table:
@@ -2079,7 +2082,7 @@ def ekccnt(table):
 
 def ekcii(table, cindex, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekcii_c.html
 
 
     :param table:
@@ -2098,7 +2101,7 @@ def ekcii(table, cindex, lenout):
 
 def ekcls(handle):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekcls_c.html
 
 
     :param handle:
@@ -2110,7 +2113,7 @@ def ekcls(handle):
 
 def ekdelr(handle, segno, recno):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekdelr_c.html
 
 
     :param handle:
@@ -2126,7 +2129,7 @@ def ekdelr(handle, segno, recno):
 
 def ekffld(handle, segno, rcptrs):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekffld_c.html
 
 
     :param handle:
@@ -2142,7 +2145,7 @@ def ekffld(handle, segno, rcptrs):
 
 def ekfind(query, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekfind_c.html
 
 
     :param query:
@@ -2161,6 +2164,7 @@ def ekfind(query, lenout):
 def ekgc(selidx, row, element, lenout):
     # ekgc has issues grabbing last element/row in column
     """
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekgc_c.html
 
     :param selidx:
     :param row:
@@ -2181,7 +2185,7 @@ def ekgc(selidx, row, element, lenout):
 
 def ekgd(selidx, row, element):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekgd_c.html
 
 
     :param selidx:
@@ -2201,7 +2205,7 @@ def ekgd(selidx, row, element):
 
 def ekgi(selidx, row, element):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekgi_c.html
 
 
     :param selidx:
@@ -2221,7 +2225,7 @@ def ekgi(selidx, row, element):
 
 def ekifld(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekifld_c.html
 
 
     :param handle:
@@ -2251,6 +2255,7 @@ def ekifld(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls):
 def ekinsr(handle, segno, recno):
     #Todo: test ekinsr
     """
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekinsr_c.html
 
     :param handle:
     :param segno:
@@ -2265,7 +2270,7 @@ def ekinsr(handle, segno, recno):
 
 def eklef(fname):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eklef_c.html
 
 
     :param fname:
@@ -2280,6 +2285,7 @@ def eklef(fname):
 def eknelt(selidx, row):
     #Todo: test eknelt
     """
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eknelt_c.html
 
     :param selidx:
     :param row:
@@ -2292,7 +2298,7 @@ def eknelt(selidx, row):
 
 def eknseg(handle):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eknseg_c.html
 
 
     :param handle:
@@ -2304,7 +2310,7 @@ def eknseg(handle):
 
 def ekntab():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekntab_c.html
 
 
 
@@ -2317,7 +2323,7 @@ def ekntab():
 
 def ekopn(fname, ifname, ncomch):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekopn_c.html
 
 
     :param fname:
@@ -2335,7 +2341,7 @@ def ekopn(fname, ifname, ncomch):
 
 def ekopr(fname):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekopr_c.html
 
 
     :param fname:
@@ -2349,7 +2355,7 @@ def ekopr(fname):
 
 def ekops():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekops_c.html
 
 
 
@@ -2362,7 +2368,7 @@ def ekops():
 
 def ekopw(fname):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekopw_c.html
 
 
     :param fname:
@@ -2377,7 +2383,7 @@ def ekopw(fname):
 def ekpsel(query, msglen, tablen, collen):
     #Todo: test ekpsel
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekpsel_c.html
 
     :param query:
     :param msglen:
@@ -2405,7 +2411,7 @@ def ekpsel(query, msglen, tablen, collen):
 def ekrcec(handle, segno, recno, column, lenout, nelts=3):
     #Todo: test ekrcec , possible new way to get back 2d char arrays
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekrcec_c.html
 
     :param handle:
     :param segno:
@@ -2430,7 +2436,7 @@ def ekrcec(handle, segno, recno, column, lenout, nelts=3):
 def ekrced(handle, segno, recno, column):
     #Todo: test ekrced
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekrced_c.html
 
     :param handle:
     :param segno:
@@ -2452,7 +2458,7 @@ def ekrced(handle, segno, recno, column):
 def ekrcei(handle, segno, recno, column):
     #Todo: test ekrcei
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekrcei_c.html
 
     :param handle:
     :param segno:
@@ -2473,7 +2479,7 @@ def ekrcei(handle, segno, recno, column):
 
 def ekssum(handle, segno):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekssum_c.html
 
 
     :param handle:
@@ -2489,7 +2495,7 @@ def ekssum(handle, segno):
 
 def ektnam(n, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ektnam_c.html
 
 
     :param n:
@@ -2506,6 +2512,7 @@ def ektnam(n, lenout):
 def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     #Todo: test ekucec
     """
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekucec_c.html
 
     :param handle:
     :param segno:
@@ -2531,7 +2538,7 @@ def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
 def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
     #Todo: test ekucei
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekuced_c.html
 
     :param handle:
     :param segno:
@@ -2555,7 +2562,7 @@ def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
 def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
     #Todo: test ekucei
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekucei_c.html
 
     :param handle:
     :param segno:
@@ -2578,7 +2585,7 @@ def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
 
 def ekuef(handle):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekuef_c.html
 
 
     :param handle:
@@ -2590,7 +2597,7 @@ def ekuef(handle):
 
 def el2cgv(ellipse):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/el2cgv_c.html
 
 
     :param ellipse:
@@ -2606,7 +2613,7 @@ def el2cgv(ellipse):
 
 def elemc(item, inset):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/elemc_c.html
 
 
     :param item:
@@ -2620,7 +2627,7 @@ def elemc(item, inset):
 
 def elemd(item, inset):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/elemd_c.html
 
 
     :param item:
@@ -2635,7 +2642,7 @@ def elemd(item, inset):
 
 def elemi(item, inset):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/elemi_c.html
 
 
     :param item:
@@ -2650,7 +2657,7 @@ def elemi(item, inset):
 
 def eqncpv(et, epoch, eqel, rapol, decpol):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eqncpv_c.html
 
 
     :param et:
@@ -2672,7 +2679,7 @@ def eqncpv(et, epoch, eqel, rapol, decpol):
 
 def eqstr(a, b):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eqstr_c.html
 
 
     :param a:
@@ -2684,7 +2691,7 @@ def eqstr(a, b):
 
 def erract(op, lenout, action=None):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/erract_c.html
 
 
     :param op:
@@ -2704,7 +2711,7 @@ def erract(op, lenout, action=None):
 
 def errch(marker, string):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/errch_c.html
 
 
     :param marker:
@@ -2718,7 +2725,7 @@ def errch(marker, string):
 
 def errdev(op, lenout, device):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/errdev_c.html
 
 
     :param op:
@@ -2736,7 +2743,7 @@ def errdev(op, lenout, device):
 
 def errdp(marker, number):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/errdp_c.html
 
 
     :param marker:
@@ -2750,7 +2757,7 @@ def errdp(marker, number):
 
 def errint(marker, number):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/errint_c.html
 
 
     :param marker:
@@ -2764,7 +2771,7 @@ def errint(marker, number):
 
 def errprt(op, lenout, inlist):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/errprt_c.html
 
 
     :param op:
@@ -2782,7 +2789,7 @@ def errprt(op, lenout, inlist):
 
 def esrchc(value, array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/esrchc_c.html
 
 
     :param value:
@@ -2798,7 +2805,7 @@ def esrchc(value, array):
 
 def et2lst(et, body, lon, typein, timlen, ampmlen):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/et2lst_c.html
 
 
     :param et:
@@ -2827,7 +2834,7 @@ def et2lst(et, body, lon, typein, timlen, ampmlen):
 
 def et2utc(et, formatStr, prec, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/et2utc_c.html
 
 
     :param et:
@@ -2847,7 +2854,7 @@ def et2utc(et, formatStr, prec, lenout):
 
 def etcal(et, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/etcal_c.html
 
 
     :param et:
@@ -2863,7 +2870,7 @@ def etcal(et, lenout):
 
 def eul2m(angle3, angle2, angle1, axis3, axis2, axis1):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eul2m_c.html
 
 
     :param angle3:
@@ -2887,7 +2894,7 @@ def eul2m(angle3, angle2, angle1, axis3, axis2, axis1):
 
 def eul2xf(eulang, axisa, axisb, axisc):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eul2xf_c.html
 
 
     :param eulang:
@@ -2908,7 +2915,7 @@ def eul2xf(eulang, axisa, axisb, axisc):
 
 def exists(fname):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/exists_c.html
 
 
     :param fname:
@@ -2920,7 +2927,7 @@ def exists(fname):
 
 def expool(name):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/expool_c.html
 
 
     :param name:
@@ -2937,28 +2944,26 @@ def expool(name):
 
 
 def failed():
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ True if an error condition has been signalled via sigerr_c.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/failed_c.html
 
-
-
-    :return: :rtype:
+    :return: a boolean :rtype: bool
     """
     return libspice.failed_c()
 
 
 def fovray(inst, raydir, rframe, abcorr, observer, et):
     # Unsure if et is returned or not (I vs I/O)
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Determine if a specified ray is within the field-of-view (FOV) of a specified instrument at a given time.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/fovray_c.html
 
-    :param inst:
-    :param raydir:
-    :param rframe:
-    :param abcorr:
-    :param observer:
-    :param et:
-    :return: :rtype:
+    :param inst: Name or ID code string of the instrument. :type inst: str
+    :param raydir: Ray's direction vector. :type raydir: list[3]
+    :param rframe: Body-fixed, body-centered frame for target body. :type rframe: str
+    :param abcorr: Aberration correction flag. :type abcorr: str
+    :param observer: Name or ID code string of the observer. :type observer: str
+    :param et: Time of the observation (seconds past J2000). :type et: float
+    :return: Visibility flag :rtype: bool
     """
     inst = stypes.stringToCharP(inst)
     raydir = stypes.toDoubleVector(raydir)
@@ -2973,17 +2978,17 @@ def fovray(inst, raydir, rframe, abcorr, observer, et):
 
 def fovtrg(inst, target, tshape, tframe, abcorr, observer, et):
     # Unsure if et is returned or not (I vs I/O)
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Determine if a specified ephemeris object is within the field-of-view (FOV) of a specified instrument at a given time.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/fovtrg_c.html
 
-    :param inst:
-    :param target:
-    :param tshape:
-    :param tframe:
-    :param abcorr:
-    :param observer:
-    :param et:
-    :return: :rtype:
+    :param inst: Name or ID code string of the instrument. :type inst: str
+    :param target: Name or ID code string of the target. :type target: str
+    :param tshape: Type of shape model used for the target. :type tshape: str
+    :param tframe: Body-fixed, body-centered frame for target body. :type tframe: str
+    :param abcorr: Aberration correction flag. :type abcorr: str
+    :param observer: Name or ID code string of the observer. :type observer: str
+    :param et: Time of the observation (seconds past J2000). :type et: float
+    :return: Visibility flag :rtype: bool
     """
     inst = stypes.stringToCharP(inst)
     target = stypes.stringToCharP(target)
@@ -2999,11 +3004,10 @@ def fovtrg(inst, target, tshape, tframe, abcorr, observer, et):
 
 def frame(x):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/frame_c.html
 
-
-    :param x:
-    :return: :rtype:
+    :param x: Input vector. A parallel unit vector on output. :type x: list[3]
+    :return: a tuple of 3 list[3] :rtype: tuple
     """
     x = stypes.toDoubleVector(x)
     y = stypes.emptyDoubleVector(3)
@@ -3014,11 +3018,10 @@ def frame(x):
 
 def frinfo(frcode):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/frinfo_c.html
 
-
-    :param frcode:
-    :return: :rtype:
+    :param frcode: the idcode for some frame :type frcode: int
+    :return: a tuple of attributes associated with the frame :rtype: tuple
     """
     frcode = ctypes.c_int(frcode)
     cent = ctypes.c_int()
@@ -3030,13 +3033,12 @@ def frinfo(frcode):
 
 
 def frmnam(frcode, lenout=125):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Retrieve the name of a reference frame associated with a SPICE ID code.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/frmnam_c.html
 
-
-    :param frcode:
-    :param lenout:
-    :return: :rtype:
+    :param frcode: an integer code for a reference frame :type frcode: int
+    :param lenout: Maximum length of output string. : type lenout: int
+    :return: the name associated with the reference frame. :rtype: str
     """
     frcode = ctypes.c_int(frcode)
     lenout = ctypes.c_int(lenout)
@@ -3047,10 +3049,10 @@ def frmnam(frcode, lenout=125):
 
 def ftncls(unit):
     #Todo: close ftncls
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Close a file designated by a Fortran-style integer logical unit.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ftncls_c.html
 
-    :param unit:
+    :param unit: Fortran-style logical unit. :type unit: int
     """
     unit = ctypes.c_int(unit)
     libspice.ftncls_c(unit)
@@ -3058,11 +3060,10 @@ def ftncls(unit):
 
 
 def furnsh(path):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Load one or more SPICE kernels into a program.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/furnsh_c.html
 
-
-    :param path:
+    :param path: one or more paths to kernels :type path: str or list of str
     """
     if isinstance(path, list):
         for p in path:
@@ -3078,7 +3079,7 @@ def furnsh(path):
 
 def gcpool(name, start, room, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gcpool_c.html
 
 
     :param name:
@@ -3103,7 +3104,7 @@ def gcpool(name, start, room, lenout):
 
 def gdpool(name, start, room):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gdpool_c.html
 
 
     :param name:
@@ -3127,7 +3128,7 @@ def gdpool(name, start, room):
 
 def georec(lon, lat, alt, re, f):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/georec_c.html
 
 
     :param lon:
@@ -3152,7 +3153,7 @@ def georec(lon, lat, alt, re, f):
 
 def getelm(frstyr, lineln, lines):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/getelm_c.html
 
 
     :param frstyr:
@@ -3171,7 +3172,7 @@ def getelm(frstyr, lineln, lines):
 
 def getfat(file):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/getfat_c.html
 
 
     :param file:
@@ -3188,7 +3189,7 @@ def getfat(file):
 
 def getfov(instid, room, shapelen, framelen):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/getfov_c.html
 
 
     :param instid:
@@ -3213,7 +3214,7 @@ def getfov(instid, room, shapelen, framelen):
 
 def getmsg(option, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/getmsg_c.html
 
 
     :param option:
@@ -3229,7 +3230,7 @@ def getmsg(option, lenout):
 
 def gfbail():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfbail_c.html
 
 
 
@@ -3240,7 +3241,7 @@ def gfbail():
 
 def gfclrh():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfclrh_c.html
 
 
 
@@ -3251,7 +3252,7 @@ def gfclrh():
 
 def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls, cnfine, result):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfdist_c.html
 
 
     :param target:
@@ -3293,7 +3294,7 @@ def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls, cnfine
 def gfinth(sigcode):
     #Todo: test gfinth
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfinth_c.html
 
     :param sigcode:
     """
@@ -3307,7 +3308,7 @@ def gfinth(sigcode):
 
 def gfoclt(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr, step, cnfine, result):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfoclt_c.html
 
 
     :param occtyp:
@@ -3343,7 +3344,7 @@ def gfoclt(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr, 
 
 def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine, result):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfpa_c.html
 
 
     :param target:
@@ -3378,7 +3379,7 @@ def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals,
 
 def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval, adjust, step, nintvals, cnfine, result):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfposc_c.html
 
 
     :param target:
@@ -3418,7 +3419,7 @@ def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval, adjus
 def gfrefn(t1, t2, s1, s2):
     #Todo: test gfrefn
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfrefn_c.html
 
     :param t1:
     :param t2:
@@ -3438,7 +3439,7 @@ def gfrefn(t1, t2, s1, s2):
 def gfrepf():
     #Todo: test gfrepf
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfrepf_c.html
 
 
     """
@@ -3449,7 +3450,7 @@ def gfrepf():
 def gfrepi(window, begmss, endmss):
     #Todo: test gfrepi
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfrepi_c.html
 
     :param window:
     :param begmss:
@@ -3466,7 +3467,7 @@ def gfrepi(window, begmss, endmss):
 def gfrepu(ivbeg, ivend, time):
     #Todo: test gfrepu
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfrepu_c.html
 
     :param ivbeg:
     :param ivend:
@@ -3482,7 +3483,7 @@ def gfrepu(ivbeg, ivend, time):
 def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result):
     #Todo: test gfrfov
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfrfov_c.html
 
     :param inst:
     :param raydir:
@@ -3508,7 +3509,7 @@ def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result):
 
 def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine, result):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfrr_c.html
 
 
     :param target:
@@ -3540,7 +3541,7 @@ def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine,
 
 def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine, result):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfsep_c.html
 
 
     :param targ1:
@@ -3584,7 +3585,7 @@ def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr, rela
 def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord, relate, refval, adjust, step, nintvals,
            cnfine, result):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfsntc_c.html
 
 
     :param target:
@@ -3629,7 +3630,7 @@ def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord, re
 
 def gfsstp(step):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfsstp_c.html
 
 
     :param step:
@@ -3641,7 +3642,7 @@ def gfsstp(step):
 
 def gfstep(time):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfstep_c.html
 
 
     :param time:
@@ -3655,7 +3656,7 @@ def gfstep(time):
 
 def gfstol(value):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfstol_c.html
 
 
     :param value:
@@ -3668,7 +3669,7 @@ def gfstol(value):
 def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate, refval, adjust, step, nintvals, cnfine,
            result):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfsubc_c.html
 
 
     :param target:
@@ -3709,7 +3710,7 @@ def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate, refval
 def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
     #Todo: test gftfov
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gftfov_c.html
 
     :param inst:
     :param target:
@@ -3740,7 +3741,7 @@ def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
 
 def gipool(name, start, room):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gipool_c.html
 
 
     :param name:
@@ -3763,7 +3764,7 @@ def gipool(name, start, room):
 
 def gnpool(name, start, room, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gnpool_c.html
 
 
     :param name:
@@ -3789,7 +3790,7 @@ def gnpool(name, start, room, lenout):
 
 def halfpi():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/halfpi_c.html
 
 
 
@@ -3800,7 +3801,7 @@ def halfpi():
 
 def hx2dp(string):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/hx2dp_c.html
 
 
     :param string:
@@ -3824,7 +3825,7 @@ def hx2dp(string):
 
 def ident():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ident_c.html
 
 
 
@@ -3837,7 +3838,7 @@ def ident():
 
 def illum(target, et, abcorr, obsrvr, spoint):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/illum_c.html
 
 
     :param target:
@@ -3861,7 +3862,7 @@ def illum(target, et, abcorr, obsrvr, spoint):
 
 def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ilumin_c.html
 
 
     :param method:
@@ -3892,7 +3893,7 @@ def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
 
 def inedpl(a, b, c, plane):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/inedpl_c.html
 
 
     :param a:
@@ -3916,7 +3917,7 @@ def inedpl(a, b, c, plane):
 
 def inelpl(ellips, plane):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/inelpl_c.html
 
 
     :param ellips:
@@ -3934,7 +3935,7 @@ def inelpl(ellips, plane):
 
 def inrypl(vertex, direct, plane):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/inrypl_c.html
 
 
     :param vertex:
@@ -3953,7 +3954,7 @@ def inrypl(vertex, direct, plane):
 
 def insrtc(item, inset):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/insrtc_c.html
 
 
     :param item:
@@ -3971,7 +3972,7 @@ def insrtc(item, inset):
 
 def insrtd(item, inset):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/insrtd_c.html
 
 
     :param item:
@@ -3989,7 +3990,7 @@ def insrtd(item, inset):
 
 def insrti(item, inset):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/insrti_c.html
 
 
     :param item:
@@ -4007,7 +4008,7 @@ def insrti(item, inset):
 
 def inter(a, b):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/inter_c.html
 
 
     :param a:
@@ -4032,7 +4033,7 @@ def inter(a, b):
 
 def intmax():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/intmax_c.html
 
 
 
@@ -4043,7 +4044,7 @@ def intmax():
 
 def intmin():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/intmin_c.html
 
 
 
@@ -4054,7 +4055,7 @@ def intmin():
 
 def invert(m):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/invert_c.html
 
 
     :param m:
@@ -4069,7 +4070,7 @@ def invert(m):
 def invort(m):
     #Todo: test invort
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/invort_c.html
 
     :param m:
     :return: :rtype:
@@ -4082,7 +4083,7 @@ def invort(m):
 
 def isordv(array, n):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/isordv_c.html
 
 
     :param array:
@@ -4096,7 +4097,7 @@ def isordv(array, n):
 
 def isrchc(value, ndim, lenvals, array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/isrchc_c.html
 
 
     :param value:
@@ -4114,7 +4115,7 @@ def isrchc(value, ndim, lenvals, array):
 
 def isrchd(value, ndim, array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/isrchd_c.html
 
 
     :param value:
@@ -4130,7 +4131,7 @@ def isrchd(value, ndim, array):
 
 def isrchi(value, ndim, array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/isrchi_c.html
 
 
     :param value:
@@ -4146,7 +4147,7 @@ def isrchi(value, ndim, array):
 
 def isrot(m, ntol, dtol):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/isrot_c.html
 
 
     :param m:
@@ -4162,7 +4163,7 @@ def isrot(m, ntol, dtol):
 
 def iswhsp(string):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/iswhsp_c.html
 
 
     :param string:
@@ -4178,55 +4179,45 @@ def iswhsp(string):
 
 def j1900():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j1900_c.html
 
-
-
-    :return: :rtype:
+    :return: Julian Date of 1899 DEC 31 12:00:00 :rtype: float
     """
     return libspice.j1900_c()
 
 
 def j1950():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j1950_c.html
 
-
-
-    :return: :rtype:
+    :return: Julian Date of 1950 JAN 01 00:00:00 :rtype: float
     """
     return libspice.j1950_c()
 
 
 def j2000():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j2000_c.html
 
-
-
-    :return: :rtype:
+    :return: Julian Date of 2000 JAN 01 12:00:00 :rtype: float
     """
     return libspice.j2000_c()
 
 
 def j2100():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j2100_c.html
 
-
-
-    :return: :rtype:
+    :return: Julian Date of 2100 JAN 01 12:00:00 :rtype: float
     """
     return libspice.j2100_c()
 
 
 def jyear():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/jyear_c.html
 
-
-
-    :return: :rtype:
+    :return: number of seconds in a julian year :rtype: float
     """
     return libspice.jyear_c()
 ########################################################################################################################
@@ -4235,7 +4226,7 @@ def jyear():
 
 def kclear():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/kclear_c.html
 
 
 
@@ -4246,7 +4237,7 @@ def kclear():
 
 def kdata(which, kind, fillen, typlen, srclen):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/kdata_c.html
 
 
     :param which:
@@ -4272,7 +4263,7 @@ def kdata(which, kind, fillen, typlen, srclen):
 
 def kinfo(file, typlen, srclen):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/kinfo_c.html
 
 
     :param file:
@@ -4293,7 +4284,7 @@ def kinfo(file, typlen, srclen):
 
 def kplfrm(frmcls, cell_size=1000):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/kplfrm_c.html
 
 
     :param frmcls:
@@ -4308,7 +4299,7 @@ def kplfrm(frmcls, cell_size=1000):
 
 def ktotal(kind):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ktotal_c.html
 
 
     :param kind:
@@ -4322,7 +4313,7 @@ def ktotal(kind):
 
 def kxtrct(keywd, termlen, terms, nterms, stringlen, substrlen, instring):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/kxtrct_c.html
 
 
     :param keywd:
@@ -4354,7 +4345,7 @@ def kxtrct(keywd, termlen, terms, nterms, stringlen, substrlen, instring):
 
 def lastnb(string):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lastnb_c.html
 
 
     :param string:
@@ -4366,7 +4357,7 @@ def lastnb(string):
 
 def latcyl(radius, lon, lat):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/latcyl_c.html
 
 
     :param radius:
@@ -4386,7 +4377,7 @@ def latcyl(radius, lon, lat):
 
 def latrec(radius, longitude, latitude):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/latrec_c.html
 
 
     :param radius:
@@ -4404,7 +4395,7 @@ def latrec(radius, longitude, latitude):
 
 def latsph(radius, lon, lat):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/latsph_c.html
 
 
     :param radius:
@@ -4424,7 +4415,7 @@ def latsph(radius, lon, lat):
 
 def lcase(instr, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lcase_c.html
 
 
     :param instr:
@@ -4440,7 +4431,7 @@ def lcase(instr, lenout):
 
 def ldpool(filename):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ldpool_c.html
 
 
     :param filename:
@@ -4452,7 +4443,7 @@ def ldpool(filename):
 
 def lmpool(cvals):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lmpool_c.html
 
 
     :param cvals:
@@ -4466,7 +4457,7 @@ def lmpool(cvals):
 
 def lparse(inlist, delim, nmax):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lparse_c.html
 
 
     :param inlist:
@@ -4486,7 +4477,7 @@ def lparse(inlist, delim, nmax):
 
 def lparsm(inlist, delims, nmax, lenout=None):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lparsm_c.html
 
 
     :param inlist:
@@ -4508,7 +4499,7 @@ def lparsm(inlist, delims, nmax, lenout=None):
 
 def lparss(inlist, delims, NMAX=20, LENGTH=50):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lparss_c.html
 
 
     :param inlist:
@@ -4526,7 +4517,7 @@ def lparss(inlist, delims, NMAX=20, LENGTH=50):
 
 def lspcn(body, et, abcorr):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lspcn_c.html
 
 
     :param body:
@@ -4542,7 +4533,7 @@ def lspcn(body, et, abcorr):
 
 def ltime(etobs, obs, direct, targ):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ltime_c.html
 
 
     :param etobs:
@@ -4563,7 +4554,7 @@ def ltime(etobs, obs, direct, targ):
 
 def lstlec(string, n, lenvals, array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lstlec_c.html
 
 
     :param string:
@@ -4581,7 +4572,7 @@ def lstlec(string, n, lenvals, array):
 
 def lstled(x, n, array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lstled_c.html
 
 
     :param x:
@@ -4597,7 +4588,7 @@ def lstled(x, n, array):
 
 def lstlei(x, n, array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lstlei_c.html
 
 
     :param x:
@@ -4613,7 +4604,7 @@ def lstlei(x, n, array):
 
 def lstltc(string, n, lenvals, array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lstltc_c.html
 
 
     :param string:
@@ -4631,7 +4622,7 @@ def lstltc(string, n, lenvals, array):
 
 def lstltd(x, n, array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lstltd_c.html
 
 
     :param x:
@@ -4647,7 +4638,7 @@ def lstltd(x, n, array):
 
 def lstlti(x, n, array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lstlti_c.html
 
 
     :param x:
@@ -4663,7 +4654,7 @@ def lstlti(x, n, array):
 
 def lx4dec(string, first):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lx4dec_c.html
 
 
     :param string:
@@ -4680,7 +4671,7 @@ def lx4dec(string, first):
 
 def lx4num(string, first):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lx4num_c.html
 
 
     :param string:
@@ -4697,7 +4688,7 @@ def lx4num(string, first):
 
 def lx4sgn(string, first):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lx4sgn_c.html
 
 
     :param string:
@@ -4714,7 +4705,7 @@ def lx4sgn(string, first):
 
 def lx4uns(string, first):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lx4uns_c.html
 
 
     :param string:
@@ -4731,7 +4722,7 @@ def lx4uns(string, first):
 
 def lxqstr(string, qchar, first):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lxqstr_c.html
 
 
     :param string:
@@ -4753,15 +4744,14 @@ def lxqstr(string, qchar, first):
 
 
 def m2eul(r, axis3, axis2, axis1):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Factor a rotation matrix as a product of three rotations about specified coordinate axes.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/m2eul_c.html
 
-
-    :param r:
-    :param axis3:
-    :param axis2:
-    :param axis1:
-    :return: :rtype:
+    :param r: A rotation matrix to be factored :type r: list[3][3]
+    :param axis3: third rotation axes. :type axis3: int
+    :param axis2: second rotation axes. :type axis2: int
+    :param axis1: first rotation axes. :type axis1: int
+    :return: Third, second, and first Euler angles, in radians. :rtype: tuple
     """
     r = stypes.listtodoublematrix(r)
     axis3 = ctypes.c_int(axis3)
@@ -4775,12 +4765,11 @@ def m2eul(r, axis3, axis2, axis1):
 
 
 def m2q(r):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Find a unit quaternion corresponding to a specified rotation matrix.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/m2q_c.html
 
-
-    :param r:
-    :return: :rtype:
+    :param r: A rotation matrix to be factored :type r: list[3][3]
+    :return: A unit quaternion representing 'r' :rtype: list[4]
     """
     r = stypes.listtodoublematrix(r)
     q = stypes.emptyDoubleVector(4)
@@ -4789,15 +4778,14 @@ def m2q(r):
 
 
 def matchi(string, templ, wstr, wchr):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Determine whether a string is matched by a template containing wild cards.  The pattern comparison is case-insensitive.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/matchi_c.html
 
-
-    :param string:
-    :param templ:
-    :param wstr:
-    :param wchr:
-    :return: :rtype:
+    :param string: String to be tested. :type string: str
+    :param templ: Template (with wild cards) to test against string. :type templ: str
+    :param wstr: Wild string token. :type wstr: str of length 1
+    :param wchr: Wild character token. :type wchr: str of length 1
+    :return: The function returns True if string matches templ, else False :rtype: bool
     """
     string = stypes.stringToCharP(string)
     templ = stypes.stringToCharP(templ)
@@ -4808,13 +4796,14 @@ def matchi(string, templ, wstr, wchr):
 
 def matchw(string, templ, wstr, wchr):
     # ctypes.c_char(wstr.encode(encoding='UTF-8')
-    """
+    """ Determine whether a string is matched by a template containing wild cards.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/matchw_c.html
 
-    :param string:
-    :param templ:
-    :param wstr:
-    :param wchr:
-    :return: :rtype:
+    :param string: String to be tested. :type string: str
+    :param templ: Template (with wild cards) to test against string. :type templ: str
+    :param wstr: Wild string token. :type wstr: str of length 1
+    :param wchr: Wild character token. :type wchr: str of length 1
+    :return: The function returns True if string matches templ, else False :rtype: bool
     """
     string = stypes.stringToCharP(string)
     templ = stypes.stringToCharP(templ)
@@ -4830,12 +4819,11 @@ def matchw(string, templ, wstr, wchr):
 
 
 def mequ(m1):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Set one double precision 3x3 matrix equal to another.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mequ_c.html
 
-
-    :param m1:
-    :return: :rtype:
+    :param m1: input matrix. :type m1: list[3][3]
+    :return: Output matrix equal to m1. :rtype: list[3][3]
     """
     m1 = stypes.listtodoublematrix(m1)
     mout = stypes.emptyDoubleMatrix()
@@ -4844,14 +4832,13 @@ def mequ(m1):
 
 
 def mequg(m1, nr, nc):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Set one double precision matrix of arbitrary size equal to another.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mequg_c.html
 
-
-    :param m1:
-    :param nr:
-    :param nc:
-    :return: :rtype:
+    :param m1: Input matrix. :type m1: list[*][*]
+    :param nr: Row dimension of m1. :type nr: int
+    :param nc: Column dimension of m1. :type nc: int
+    :return: Output matrix equal to m1 :rtype: list[*][*]
     """
     m1 = stypes.listtodoublematrix(m1, x=nc, y=nr)
     mout = stypes.emptyDoubleMatrix(x=nc, y=nr)
@@ -4868,13 +4855,12 @@ def mequg(m1, nr, nc):
 
 
 def mtxm(m1, m2):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Multiply the transpose of a 3x3 matrix and a 3x3 matrix.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mtxm_c.html
 
-
-    :param m1:
-    :param m2:
-    :return: :rtype:
+    :param m1: 3x3 double precision matrix. :type m1: list[3][3]
+    :param m2: 3x3 double precision matrix. :type m2: list[3][3]
+    :return: The produce m1 transpose times m2. :rtype: list[3][3]
     """
     m1 = stypes.listtodoublematrix(m1)
     m2 = stypes.listtodoublematrix(m2)
@@ -4884,16 +4870,15 @@ def mtxm(m1, m2):
 
 
 def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Multiply the transpose of a matrix with another matrix, both of arbitrary size.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mtxmg_c.html
 
-
-    :param m1:
-    :param m2:
-    :param ncol1:
-    :param nr1r2:
-    :param ncol2:
-    :return: :rtype:
+    :param m1: nr1r2 X ncol1 double precision matrix. :type m1: list[*][*]
+    :param m2: nr1r2 X ncol2 double precision matrix. :type m2: list[*][*]
+    :param ncol1: Column dimension of m1 and row dimension of mout. :type ncol1: int
+    :param nr1r2: Row dimension of m1 and m2. :type nr1r2: int
+    :param ncol2: Column dimension of m2. :type ncol2: int
+    :return: Transpose of m1 times m2. :rtype: list[*][*]
     """
     m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nr1r2)
     m2 = stypes.listtodoublematrix(m2, x=ncol2, y=nr1r2)
@@ -4906,13 +4891,12 @@ def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
 
 
 def mtxv(m1, vin):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Multiplies the transpose of a 3x3 matrix on the left with a vector on the right.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mtxv_c.html
 
-
-    :param m1:
-    :param vin:
-    :return: :rtype:
+    :param m1: 3x3 double precision matrix. :type m1: list[3][3]
+    :param vin: 3-dimensional double precision vector. :type vin: list[3]
+    :return: 3-dimensional double precision vector. :rtype: list[3]
     """
     m1 = stypes.listtodoublematrix(m1)
     vin = stypes.toDoubleVector(vin)
@@ -4922,15 +4906,14 @@ def mtxv(m1, vin):
 
 
 def mtxvg(m1, v2, ncol1, nr1r2):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Multiply the transpose of a matrix and a vector of arbitrary size.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mtxvg_c.html
 
-
-    :param m1:
-    :param v2:
-    :param ncol1:
-    :param nr1r2:
-    :return: :rtype:
+    :param m1: Left-hand matrix to be multiplied. :type m1: list[*][*]
+    :param v2: Right-hand vector to be multiplied. :type v2: list[*]
+    :param ncol1: Column dimension of m1 and length of vout. :type ncol1: int
+    :param nr1r2: Row dimension of m1 and length of v2. :type nr1r2: int
+    :return: Product vector m1 transpose * v2. :rtype: list[*]
     """
     m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nr1r2)
     v2 = stypes.toDoubleVector(v2)
@@ -4942,13 +4925,12 @@ def mtxvg(m1, v2, ncol1, nr1r2):
 
 
 def mxm(m1, m2):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Multiply two 3x3 matrices.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxm_c.html
 
-
-    :param m1:
-    :param m2:
-    :return: :rtype:
+    :param m1: 3x3 double precision matrix. :type m1: list[3][3]
+    :param m2: 3x3 double precision matrix. :type m2: list[3][3]
+    :return: 3x3 double precision matrix. :rtype: list[3][3]
     """
     m1 = stypes.listtodoublematrix(m1)
     m2 = stypes.listtodoublematrix(m2)
@@ -4958,16 +4940,15 @@ def mxm(m1, m2):
 
 
 def mxmg(m1, m2, nrow1, ncol1, ncol2):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Multiply two double precision matrices of arbitrary size.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxmg_c.html
 
-
-    :param m1:
-    :param m2:
-    :param nrow1:
-    :param ncol1:
-    :param ncol2:
-    :return: :rtype:
+    :param m1: nrow1 X ncol1 double precision matrix. :type m1: list[*][*]
+    :param m2: ncol1 X ncol2 double precision matrix. :type m2: list[*][*]
+    :param nrow1: Row dimension of m1 :type nrow1: int
+    :param ncol1: Column dimension of m1 and row dimension of m2. :type ncol1: int
+    :param ncol2: Column dimension of m2 :type ncol2: int
+    :return: nrow1 X ncol2 double precision matrix. :rtype: list[*][*]
     """
     m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nrow1)
     m2 = stypes.listtodoublematrix(m2, x=ncol2, y=ncol1)
@@ -4980,13 +4961,12 @@ def mxmg(m1, m2, nrow1, ncol1, ncol2):
 
 
 def mxmt(m1, m2):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Multiply a 3x3 matrix and the transpose of another 3x3 matrix.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxmt_c.html
 
-
-    :param m1:
-    :param m2:
-    :return: :rtype:
+    :param m1: 3x3 double precision matrix. :type m1: list[3][3]
+    :param m2: 3x3 double precision matrix. :type m2: list[3][3]
+    :return: The product m1 times m2 transpose. :rtype: float
     """
     m1 = stypes.listtodoublematrix(m1)
     m2 = stypes.listtodoublematrix(m2)
@@ -4996,16 +4976,15 @@ def mxmt(m1, m2):
 
 
 def mxmtg(m1, m2, nrow1, nc1c2, nrow2):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """  Multiply a matrix and the transpose of a matrix, both of arbitrary size.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxmtg_c.html
 
-
-    :param m1:
-    :param m2:
-    :param nrow1:
-    :param nc1c2:
-    :param nrow2:
-    :return: :rtype:
+    :param m1: Left-hand matrix to be multiplied. :type m1: list[*][*]
+    :param m2: Right-hand matrix whose transpose is to be multiplied :type m2: list[*][*]
+    :param nrow1: Row dimension of m1 and row dimension of mout. :type nrow1: int
+    :param nc1c2: Column dimension of m1 and column dimension of m2. :type nc1c2: int
+    :param nrow2: Row dimension of m2 and column dimension of mout. :type nrow2: int
+    :return: Product matrix. :rtype: list[*][*]
     """
     m1 = stypes.listtodoublematrix(m1, x=nc1c2, y=nrow1)
     m2 = stypes.listtodoublematrix(m2, x=nc1c2, y=nrow2)
@@ -5018,13 +4997,12 @@ def mxmtg(m1, m2, nrow1, nc1c2, nrow2):
 
 
 def mxv(m1, vin):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Multiply a 3x3 double precision matrix with a 3-dimensional double precision vector.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxv_c.html
 
-
-    :param m1:
-    :param vin:
-    :return: :rtype:
+    :param m1:  3x3 double precision matrix. :type m1: list[3][3]
+    :param vin: 3-dimensional double precision vector. :type vin: list[3]
+    :return: 3-dimensional double precision vector. :rtype: list[3]
     """
     m1 = stypes.listtodoublematrix(m1)
     vin = stypes.toDoubleVector(vin)
@@ -5034,15 +5012,14 @@ def mxv(m1, vin):
 
 
 def mxvg(m1, v2, nrow1, nc1r2):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Multiply a matrix and a vector of arbitrary size.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxvg_c.html
 
-
-    :param m1:
-    :param v2:
-    :param nrow1:
-    :param nc1r2:
-    :return: :rtype:
+    :param m1: Left-hand matrix to be multiplied. :type m1: list[*][*]
+    :param v2: Right-hand vector to be multiplied. :type v2: list[*]
+    :param nrow1: Row dimension of m1 and length of vout. :type nrow1: int
+    :param nc1r2: Column dimension of m1 and length of v2. :type nc1c2: int
+    :return: Product vector m1*v2 :rtype: list[*]
     """
     m1 = stypes.listtodoublematrix(m1, x=nc1r2, y=nrow1)
     v2 = stypes.toDoubleVector(v2)
@@ -5057,12 +5034,11 @@ def mxvg(m1, v2, nrow1, nc1r2):
 
 
 def namfrm(frname):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Look up the frame ID code associated with a string.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/namfrm_c.html
 
-
-    :param frname:
-    :return: :rtype:
+    :param frname: The name of some reference frameThe name of some reference frame. :type frname: str
+    :return: The SPICE ID code of the frame. :rtype: int
     """
     frname = stypes.stringToCharP(frname)
     frcode = ctypes.c_int()
@@ -5071,14 +5047,13 @@ def namfrm(frname):
 
 
 def ncpos(string, chars, start):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Find the first occurrence in a string of a character NOT belonging to a collection of characters, starting at a specified location searching forward.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ncpos_c.html
 
-
-    :param string:
-    :param chars:
-    :param start:
-    :return: :rtype:
+    :param string: Any character string. :type string: str
+    :param chars: A collection of characters. :type chars: str
+    :param start: Position to begin looking for one not in chars. :type start: int
+    :return: index :rtype: int
     """
     string = stypes.stringToCharP(string)
     chars = stypes.stringToCharP(chars)
@@ -5087,14 +5062,13 @@ def ncpos(string, chars, start):
 
 
 def ncposr(string, chars, start):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Find the first occurrence in a string of a character NOT belonging to a collection of characters, starting at a specified location, searching in reverse.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ncposr_c.html
 
-
-    :param string:
-    :param chars:
-    :param start:
-    :return: :rtype:
+    :param string: Any character string. :type string: str
+    :param chars:  A collection of characters. :type chars: str
+    :param start: Position to begin looking for one of chars. :type start: int
+    :return: index :rtype: int
     """
     string = stypes.stringToCharP(string)
     chars = stypes.stringToCharP(chars)
@@ -5103,15 +5077,15 @@ def ncposr(string, chars, start):
 
 
 def nearpt(positn, a, b, c):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ locates the point on the surface of an ellipsoid that is nearest to a specified position. It also returns the altitude of the position above the ellipsoid.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/nearpt_c.html
 
 
-    :param positn:
-    :param a:
-    :param b:
-    :param c:
-    :return: :rtype:
+    :param positn: Position of a point in bodyfixed frame. :type positn: list[3]
+    :param a: Length of semi-axis parallel to x-axis. :type a: float
+    :param b: Length of semi-axis parallel to y-axis. :type b: float
+    :param c: Length on semi-axis parallel to z-axis. :type c: float
+    :return: Point on the ellipsoid closest to positn,  Altitude of positn above the ellipsoid. :rtype: tuple
     """
     positn = stypes.toDoubleVector(positn)
     a = ctypes.c_double(a)
@@ -5124,16 +5098,15 @@ def nearpt(positn, a, b, c):
 
 
 def npedln(a, b, c, linept, linedr):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Find nearest point on a triaxial ellipsoid to a specified line and the distance from the ellipsoid to the line.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/npedln_c.html
 
-
-    :param a:
-    :param b:
-    :param c:
-    :param linept:
-    :param linedr:
-    :return: :rtype:
+    :param a: Length of ellipsoid's semi-axis in the x direction :type a: float
+    :param b: Length of ellipsoid's semi-axis in the y direction :type b: float
+    :param c: Length of ellipsoid's semi-axis in the z direction :type c: float
+    :param linept: Length of ellipsoid's semi-axis in the z direction :type linept: list[3]
+    :param linedr: Direction vector of line :type linedr: list[3]
+    :return: Nearest point on ellipsoid to line, Distance of ellipsoid from line :rtype: tuple
     """
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
@@ -5147,13 +5120,14 @@ def npedln(a, b, c, linept, linedr):
 
 
 def npelpt(point, ellips):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Find the nearest point on an ellipse to a specified point, both
+   in three-dimensional space, and find the distance between the
+   ellipse and the point.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/npelpt_c.html
 
-
-    :param point:
-    :param ellips:
-    :return: :rtype:
+    :param point: Point whose distance to an ellipse is to be found. :type point: list[3]
+    :param ellips: An ellipse. :type ellips: stypes.Ellipse
+    :return: Nearest point on ellipsoid to line, Distance of ellipsoid from line :rtype: tuple
     """
     assert(isinstance(ellips, stypes.Ellipse))
     point = stypes.toDoubleVector(point)
@@ -5164,14 +5138,13 @@ def npelpt(point, ellips):
 
 
 def nplnpt(linpt, lindir, point):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Find the nearest point on a line to a specified point, and find the distance between the two points.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/nplnpt_c.html
 
-
-    :param linpt:
-    :param lindir:
-    :param point:
-    :return: :rtype:
+    :param linpt: Point on a line :type linpt: list[3]
+    :param lindir: line's direction vector :type lindir: list[3]
+    :param point: A second point.  :type point: list[3]
+    :return: Nearest point on the line to point, Distance between point and pnear :rtype: tuple
     """
     linpt = stypes.toDoubleVector(linpt)
     lindir = stypes.toDoubleVector(lindir)
@@ -5183,13 +5156,12 @@ def nplnpt(linpt, lindir, point):
 
 
 def nvc2pl(normal, constant):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Make a plane from a normal vector and a constant.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/nvc2pl_c.html
 
-
-    :param normal:
-    :param constant:
-    :return: :rtype:
+    :param normal: A normal vector defining a plane. :type normal: list[3]
+    :param constant: A constant defining a plane. :type constant: float
+    :return: plane :rtype: stypes.Plane
     """
     plane = stypes.Plane()
     normal = stypes.toDoubleVector(normal)
@@ -5199,13 +5171,12 @@ def nvc2pl(normal, constant):
 
 
 def nvp2pl(normal, point):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Make a plane from a normal vector and a point.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/nvp2pl_c.html
 
-
-    :param normal:
-    :param point:
-    :return: :rtype:
+    :param normal: A normal vector defining a plane. :type normal: list[3]
+    :param point: A point defining a plane. :type point: list[3]
+    :return: plane :rtype: stypes.Plane
     """
     normal = stypes.toDoubleVector(normal)
     point = stypes.toDoubleVector(point)
@@ -5219,7 +5190,7 @@ def nvp2pl(normal, point):
 
 def occult(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer, et):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/occult_c.html
 
 
     :param target1:
@@ -5250,7 +5221,7 @@ def occult(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer, e
 def ordc(item, inset):
     #Todo: test ordc
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ordc_c.html
 
     :param item:
     :param inset:
@@ -5265,7 +5236,7 @@ def ordc(item, inset):
 
 def ordd(item, inset):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ordd_c.html
 
 
     :param item:
@@ -5280,7 +5251,7 @@ def ordd(item, inset):
 
 def ordi(item, inset):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ordi_c.html
 
 
     :param item:
@@ -5296,7 +5267,7 @@ def ordi(item, inset):
 
 def orderc(array, ndim=None):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/orderc_c.html
 
 
     :param array:
@@ -5316,7 +5287,7 @@ def orderc(array, ndim=None):
 
 def orderd(array, ndim=None):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/orderd_c.html
 
 
     :param array:
@@ -5335,7 +5306,7 @@ def orderd(array, ndim=None):
 
 def orderi(array, ndim=None):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/orderi_c.html
 
 
     :param array:
@@ -5354,7 +5325,7 @@ def orderi(array, ndim=None):
 
 def oscelt(state, et, mu):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/oscelt_c.html
 
 
     :param state:
@@ -5375,7 +5346,7 @@ def oscelt(state, et, mu):
 
 def pckcov(pck, idcode, cover):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pckcov_c.html
 
 
     :param pck:
@@ -5391,7 +5362,7 @@ def pckcov(pck, idcode, cover):
 
 def pckfrm(pck, ids):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pckfrm_c.html
 
 
     :param pck:
@@ -5405,7 +5376,7 @@ def pckfrm(pck, ids):
 
 def pcklof(filename):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pcklof_c.html
 
 
     :param filename:
@@ -5419,7 +5390,7 @@ def pcklof(filename):
 
 def pckuof(handle):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pckuof_c.html
 
 
     :param handle:
@@ -5431,7 +5402,7 @@ def pckuof(handle):
 
 def pcpool(name, cvals):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pcpool_c.html
 
 
     :param name:
@@ -5446,7 +5417,7 @@ def pcpool(name, cvals):
 
 def pdpool(name, dvals):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pdpool_c.html
 
 
     :param name:
@@ -5460,7 +5431,7 @@ def pdpool(name, dvals):
 
 def pgrrec(body, lon, lat, alt, re, f):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pgrrec_c.html
 
 
     :param body:
@@ -5484,7 +5455,7 @@ def pgrrec(body, lon, lat, alt, re, f):
 
 def phaseq(et, target, illmn, obsrvr, abcorr):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/phaseq_c.html
 
 
     :param et:
@@ -5504,7 +5475,7 @@ def phaseq(et, target, illmn, obsrvr, abcorr):
 
 def pi():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pi_c.html
 
 
 
@@ -5515,7 +5486,7 @@ def pi():
 
 def pipool(name, ivals):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pipool_c.html
 
 
     :param name:
@@ -5529,7 +5500,7 @@ def pipool(name, ivals):
 
 def pjelpl(elin, plane):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pjelpl_c.html
 
 
     :param elin:
@@ -5546,7 +5517,7 @@ def pjelpl(elin, plane):
 def pl2nvc(plane):
     #Works! we have working planes!
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pl2nvc_c.html
 
     :param plane:
     :return: :rtype:
@@ -5560,7 +5531,7 @@ def pl2nvc(plane):
 
 def pl2nvp(plane):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pl2nvp_c.html
 
 
     :param plane:
@@ -5575,7 +5546,7 @@ def pl2nvp(plane):
 
 def pl2psv(plane):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pl2psv_c.html
 
 
     :param plane:
@@ -5591,7 +5562,7 @@ def pl2psv(plane):
 
 def pos(string, substr, start):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pos_c.html
 
 
     :param string:
@@ -5607,7 +5578,7 @@ def pos(string, substr, start):
 
 def posr(string, substr, start):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/posr_c.html
 
 
     :param string:
@@ -5626,7 +5597,7 @@ def posr(string, substr, start):
 
 def prop2b(gm, pvinit, dt):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/prop2b_c.html
 
 
     :param gm:
@@ -5644,7 +5615,7 @@ def prop2b(gm, pvinit, dt):
 
 def prsdp(string):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/prsdp_c.html
 
 
     :param string:
@@ -5658,7 +5629,7 @@ def prsdp(string):
 
 def prsint(string):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/prsint_c.html
 
 
     :param string:
@@ -5672,7 +5643,7 @@ def prsint(string):
 
 def psv2pl(point, span1, span2):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/psv2pl_c.html
 
 
     :param point:
@@ -5693,7 +5664,7 @@ def psv2pl(point, span1, span2):
 
 def pxform(fromstr, tostr, et):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pxform_c.html
 
 
     :param fromstr:
@@ -5711,7 +5682,7 @@ def pxform(fromstr, tostr, et):
 
 def pxfrm2(frame_from, frame_to, etfrom, etto):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pxfrm2_c.html
 
 
     :param frame_from:
@@ -5734,7 +5705,7 @@ def pxfrm2(frame_from, frame_to, etfrom, etto):
 
 def q2m(q):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/q2m_c.html
 
 
     :param q:
@@ -5748,7 +5719,7 @@ def q2m(q):
 
 def qcktrc(tracelen):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/qcktrc_c.html
 
 
     :param tracelen:
@@ -5762,7 +5733,7 @@ def qcktrc(tracelen):
 
 def qdq2av(q, dq):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/qdq2av_c.html
 
 
     :param q:
@@ -5778,7 +5749,7 @@ def qdq2av(q, dq):
 
 def qxq(q1, q2):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/qxq_c.html
 
 
     :param q1:
@@ -5797,7 +5768,7 @@ def qxq(q1, q2):
 
 def radrec(inrange, re, dec):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/radrec_c.html
 
 
     :param inrange:
@@ -5815,7 +5786,7 @@ def radrec(inrange, re, dec):
 
 def rav2xf(rot, av):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/rav2xf_c.html
 
 
     :param rot:
@@ -5831,7 +5802,7 @@ def rav2xf(rot, av):
 
 def raxisa(matrix):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/raxisa_c.html
 
 
     :param matrix:
@@ -5846,7 +5817,7 @@ def raxisa(matrix):
 
 def rdtext(file, lenout):  # pragma: no cover
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/rdtext_c.html
 
     :param file:
     :param lenout:
@@ -5862,7 +5833,7 @@ def rdtext(file, lenout):  # pragma: no cover
 
 def reccyl(rectan):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/reccyl_c.html
 
 
     :param rectan:
@@ -5878,7 +5849,7 @@ def reccyl(rectan):
 
 def reclat(rectan):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/reclat_c.html
 
 
     :param rectan:
@@ -5894,7 +5865,7 @@ def reclat(rectan):
 
 def recgeo(rectan, re, f):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/recgeo_c.html
 
 
     :param rectan:
@@ -5914,7 +5885,7 @@ def recgeo(rectan, re, f):
 
 def recpgr(body, rectan, re, f):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/recpgr_c.html
 
 
     :param body:
@@ -5936,7 +5907,7 @@ def recpgr(body, rectan, re, f):
 
 def recrad(rectan):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/recrad_c.html
 
 
     :param rectan:
@@ -5952,7 +5923,7 @@ def recrad(rectan):
 
 def recsph(rectan):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/recrad_c.html
 
 
     :param rectan:
@@ -5969,7 +5940,7 @@ def recsph(rectan):
 def removc(item, inset):
     #Todo: test removc
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/removc_c.html
 
     :param item:
     :param inset:
@@ -5982,7 +5953,7 @@ def removc(item, inset):
 
 def removd(item, inset):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/removd_c.html
 
 
     :param item:
@@ -5996,7 +5967,7 @@ def removd(item, inset):
 
 def removi(item, inset):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/removi_c.html
 
 
     :param item:
@@ -6010,7 +5981,7 @@ def removi(item, inset):
 
 def reordc(iorder, ndim, lenvals, array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/reordc_c.html
 
 
     :param iorder:
@@ -6029,7 +6000,7 @@ def reordc(iorder, ndim, lenvals, array):
 
 def reordd(iorder, ndim, array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/reordd_c.html
 
 
     :param iorder:
@@ -6046,7 +6017,7 @@ def reordd(iorder, ndim, array):
 
 def reordi(iorder, ndim, array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/reordi_c.html
 
 
     :param iorder:
@@ -6063,7 +6034,7 @@ def reordi(iorder, ndim, array):
 
 def reordl(iorder, ndim, array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/reordl_c.html
 
 
     :param iorder:
@@ -6080,7 +6051,7 @@ def reordl(iorder, ndim, array):
 
 def repmc(instr, marker, value, lenout=None):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/repmc_c.html
 
 
     :param instr:
@@ -6101,7 +6072,7 @@ def repmc(instr, marker, value, lenout=None):
 
 def repmct(instr, marker, value, repcase, lenout=None):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/repmc_c.html
 
 
     :param instr:
@@ -6124,7 +6095,7 @@ def repmct(instr, marker, value, repcase, lenout=None):
 
 def repmd(instr, marker, value, sigdig):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/repmd_c.html
 
 
     :param instr:
@@ -6145,7 +6116,7 @@ def repmd(instr, marker, value, sigdig):
 
 def repmf(instr, marker, value, sigdig, informat, lenout=None):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/repmf_c.html
 
 
     :param instr:
@@ -6170,7 +6141,7 @@ def repmf(instr, marker, value, sigdig, informat, lenout=None):
 
 def repmi(instr, marker, value, lenout=None):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/repmi_c.html
 
 
     :param instr:
@@ -6191,7 +6162,7 @@ def repmi(instr, marker, value, lenout=None):
 
 def repmot(instr, marker, value, repcase, lenout=None):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/repmot_c.html
 
 
     :param instr:
@@ -6214,7 +6185,7 @@ def repmot(instr, marker, value, repcase, lenout=None):
 
 def reset():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/reset_c.html
 
 
 
@@ -6225,7 +6196,7 @@ def reset():
 
 def return_c():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/return_c.html
 
 
 
@@ -6236,7 +6207,7 @@ def return_c():
 
 def rotate(angle, iaxis):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/rotate_c.html
 
 
     :param angle:
@@ -6252,7 +6223,7 @@ def rotate(angle, iaxis):
 
 def rotmat(m1, angle, iaxis):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/rotmat_c.html
 
 
     :param m1:
@@ -6270,7 +6241,7 @@ def rotmat(m1, angle, iaxis):
 
 def rotvec(v1, angle, iaxis):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/rotvec_c.html
 
 
     :param v1:
@@ -6288,7 +6259,7 @@ def rotvec(v1, angle, iaxis):
 
 def rpd():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/rpd_c.html
 
 
 
@@ -6299,7 +6270,7 @@ def rpd():
 
 def rquad(a, b, c):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/rquad_c.html
 
 
     :param a:
@@ -6321,7 +6292,7 @@ def rquad(a, b, c):
 
 def saelgv(vec1, vec2):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/saelgv_c.html
 
 
     :param vec1:
@@ -6338,7 +6309,7 @@ def saelgv(vec1, vec2):
 
 def scard(incard, cell):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scard_c.html
 
 
     :param incard:
@@ -6354,7 +6325,7 @@ def scard(incard, cell):
 def scdecd(sc, sclkdp, lenout, MXPART=None):
     #todo: figure out how to use mxpart, and test scdecd
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scdecd_c.html
 
     :param sc:
     :param sclkdp:
@@ -6372,7 +6343,7 @@ def scdecd(sc, sclkdp, lenout, MXPART=None):
 
 def sce2c(sc, et):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sce2c_c.html
 
 
     :param sc:
@@ -6388,7 +6359,7 @@ def sce2c(sc, et):
 
 def sce2s(sc, et, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sce2s_c.html
 
 
     :param sc:
@@ -6406,7 +6377,7 @@ def sce2s(sc, et, lenout):
 
 def sce2t(sc, et):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sce2t_c.html
 
 
     :param sc:
@@ -6422,7 +6393,7 @@ def sce2t(sc, et):
 
 def scencd(sc, sclkch, MXPART=None):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scencd_c.html
 
 
     :param sc:
@@ -6439,7 +6410,7 @@ def scencd(sc, sclkch, MXPART=None):
 
 def scfmt(sc, ticks, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scfmt_c.html
 
 
     :param sc:
@@ -6457,7 +6428,7 @@ def scfmt(sc, ticks, lenout):
 
 def scpart(sc):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scpart_c.html
 
 
     :param sc:
@@ -6473,7 +6444,7 @@ def scpart(sc):
 
 def scs2e(sc, sclkch):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scs2e_c.html
 
 
     :param sc:
@@ -6489,7 +6460,7 @@ def scs2e(sc, sclkch):
 
 def sct2e(sc, sclkdp):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sct2e_c.html
 
 
     :param sc:
@@ -6505,7 +6476,7 @@ def sct2e(sc, sclkdp):
 
 def sctiks(sc, clkstr):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sctiks_c.html
 
 
     :param sc:
@@ -6521,7 +6492,7 @@ def sctiks(sc, clkstr):
 
 def sdiff(a, b):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sdiff_c.html
 
 
     :param a:
@@ -6546,7 +6517,7 @@ def sdiff(a, b):
 
 def set_c(a, op, b):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/set_c.html
 
     :param a:
     :type a:
@@ -6567,7 +6538,7 @@ def set_c(a, op, b):
 
 def setmsg(message):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/setmsg_c.html
 
 
     :param message:
@@ -6580,7 +6551,7 @@ def setmsg(message):
 def shellc(ndim, lenvals, array):
     #This works! looks like this is a mutable 2d char array
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/shellc_c.html
 
     :param ndim:
     :param lenvals:
@@ -6597,7 +6568,7 @@ def shellc(ndim, lenvals, array):
 def shelld(ndim, array):
     # Works!, use this as example for "I/O" parameters
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/shelld_c.html
 
     :param ndim:
     :param array:
@@ -6612,7 +6583,7 @@ def shelld(ndim, array):
 def shelli(ndim, array):
     # Works!, use this as example for "I/O" parameters
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/shelli_c.html
 
     :param ndim:
     :param array:
@@ -6626,7 +6597,7 @@ def shelli(ndim, array):
 
 def sigerr(message):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sigerr_c.html
 
 
     :param message:
@@ -6638,7 +6609,7 @@ def sigerr(message):
 
 def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sincpt_c.html
 
 
     :param method:
@@ -6669,7 +6640,7 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
 
 def size(cell):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/size_c.html
 
 
     :param cell:
@@ -6681,7 +6652,7 @@ def size(cell):
 
 def spd():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spd_c.html
 
 
 
@@ -6692,7 +6663,7 @@ def spd():
 
 def sphcyl(radius, colat, slon):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sphcyl_c.html
 
 
     :param radius:
@@ -6712,7 +6683,7 @@ def sphcyl(radius, colat, slon):
 
 def sphlat(r, colat, lons):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sphlat_c.html
 
 
     :param r:
@@ -6732,7 +6703,7 @@ def sphlat(r, colat, lons):
 
 def sphrec(r, colat, lon):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sphrec_c.html
 
 
     :param r:
@@ -6750,7 +6721,7 @@ def sphrec(r, colat, lon):
 
 def spkacs(targ, et, ref, abcorr, obs):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkacs_c.html
 
 
     :param targ:
@@ -6774,7 +6745,7 @@ def spkacs(targ, et, ref, abcorr, obs):
 
 def spkapo(targ, et, ref, sobs, abcorr):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkapo_c.html
 
 
     :param targ:
@@ -6797,7 +6768,7 @@ def spkapo(targ, et, ref, sobs, abcorr):
 
 def spkapp(targ, et, ref, sobs, abcorr):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkapp_c.html
 
 
     :param targ:
@@ -6820,7 +6791,7 @@ def spkapp(targ, et, ref, sobs, abcorr):
 
 def spkaps(targ, et, ref, abcorr, stobs, accobs):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkaps_c.html
 
 
     :param targ:
@@ -6846,7 +6817,7 @@ def spkaps(targ, et, ref, abcorr, stobs, accobs):
 
 def spk14a(handle, ncsets, coeffs, epochs):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spk14a_c.html
 
 
     :param handle:
@@ -6864,7 +6835,7 @@ def spk14a(handle, ncsets, coeffs, epochs):
 
 def spk14b(handle, segid, body, center, framename, first, last, chbdeg):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spk14b_c.html
 
 
     :param handle:
@@ -6890,7 +6861,7 @@ def spk14b(handle, segid, body, center, framename, first, last, chbdeg):
 
 def spk14e(handle):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spk14e_c.html
 
 
     :param handle:
@@ -6902,7 +6873,7 @@ def spk14e(handle):
 
 def spkcls(handle):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcls_c.html
 
 
     :param handle:
@@ -6914,7 +6885,7 @@ def spkcls(handle):
 
 def spkcov(spk, idcode, cover):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcov_c.html
 
 
     :param spk:
@@ -6930,7 +6901,7 @@ def spkcov(spk, idcode, cover):
 
 def spkcpo(target, et, outref, refloc, abcorr, obspos, obsctr, obsref):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpo_c.html
 
 
     :param target:
@@ -6959,7 +6930,7 @@ def spkcpo(target, et, outref, refloc, abcorr, obspos, obsctr, obsref):
 
 def spkcpt(trgpos, trgctr, trgref, et, outref, refloc, abcorr, obsrvr):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpt_c.html
 
 
     :param trgpos:
@@ -6988,7 +6959,7 @@ def spkcpt(trgpos, trgctr, trgref, et, outref, refloc, abcorr, obsrvr):
 
 def spkcvo(target, et, outref, refloc, abcorr, obssta, obsepc, obsct, obsref):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvo_c.html
 
 
     :param target:
@@ -7019,7 +6990,7 @@ def spkcvo(target, et, outref, refloc, abcorr, obssta, obsepc, obsct, obsref):
 
 def spkcvt(trgsta, trgepc, trgctr, trgref, et, outref, refloc, abcorr, obsrvr):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvt_c.html
 
 
     :param trgsta:
@@ -7050,7 +7021,7 @@ def spkcvt(trgsta, trgepc, trgctr, trgref, et, outref, refloc, abcorr, obsrvr):
 
 def spkez(targ, et, ref, abcorr, obs):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkez_c.html
 
 
     :param targ:
@@ -7073,7 +7044,7 @@ def spkez(targ, et, ref, abcorr, obs):
 
 def spkezp(targ, et, ref, abcorr, obs):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkezp_c.html
 
 
     :param targ:
@@ -7096,7 +7067,7 @@ def spkezp(targ, et, ref, abcorr, obs):
 
 def spkezr(targ, et, ref, abcorr, obs):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkezr_c.html
 
 
     :param targ:
@@ -7119,7 +7090,7 @@ def spkezr(targ, et, ref, abcorr, obs):
 
 def spkgeo(targ, et, ref, obs):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkgeo_c.html
 
 
     :param targ:
@@ -7140,7 +7111,7 @@ def spkgeo(targ, et, ref, obs):
 
 def spkgps(targ, et, ref, obs):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkgps_c.html
 
 
     :param targ:
@@ -7161,7 +7132,7 @@ def spkgps(targ, et, ref, obs):
 
 def spklef(filename):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spklef_c.html
 
 
     :param filename:
@@ -7175,7 +7146,7 @@ def spklef(filename):
 
 def spkltc(targ, et, ref, abcorr, stobs):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkltc_c.html
 
 
     :param targ:
@@ -7200,7 +7171,7 @@ def spkltc(targ, et, ref, abcorr, stobs):
 
 def spkobj(spk, ids):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkobj_c.html
 
 
     :param spk:
@@ -7215,7 +7186,7 @@ def spkobj(spk, ids):
 def spkopa(filename):
     #Todo: test spkopa
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkopa_c.html
 
     :param filename:
     :return: :rtype:
@@ -7228,7 +7199,7 @@ def spkopa(filename):
 
 def spkopn(filename, ifname, ncomch):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkopn_c.html
 
 
     :param filename:
@@ -7247,7 +7218,7 @@ def spkopn(filename, ifname, ncomch):
 def spkpds(body, center, framestr, typenum, first, last):
     #Todo: test spkpds
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpds_c.html
 
     :param body:
     :param center:
@@ -7270,7 +7241,7 @@ def spkpds(body, center, framestr, typenum, first, last):
 
 def spkpos(targ, et, ref, abcorr, obs):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpos_c.html
 
 
     :param targ:
@@ -7299,7 +7270,7 @@ def spkpos(targ, et, ref, abcorr, obs):
 
 def spkpvn(handle, descr, et):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpvn_c.html
 
 
     :param handle:
@@ -7320,7 +7291,7 @@ def spkpvn(handle, descr, et):
 def spksfs(body, et, idlen):
     # spksfs has a Parameter SIDLEN, sounds like an optional but is that possible?
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spksfs_c.html
 
     :param body:
     :param et:
@@ -7344,7 +7315,7 @@ def spksfs(body, et, idlen):
 def spkssb(targ, et, ref):
     #Todo: test spkssb
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkssb_c.html
 
     :param targ:
     :param et:
@@ -7362,7 +7333,7 @@ def spkssb(targ, et, ref):
 def spksub(handle, descr, identin, begin, end, newh):
     #Todo: test spksub
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spksub_c.html
 
     :param handle:
     :param descr:
@@ -7385,7 +7356,7 @@ def spksub(handle, descr, identin, begin, end, newh):
 def spkuds(descr):
     #Todo: test spkuds
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkuds_c.html
 
     :param descr:
     :return: :rtype:
@@ -7407,7 +7378,7 @@ def spkuds(descr):
 def spkuef(handle):
     #Todo: test spkuef
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkuef_c.html
 
     :param handle:
     """
@@ -7418,7 +7389,7 @@ def spkuef(handle):
 
 def spkw02(handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, btime):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw02_c.html
 
 
     :param handle:
@@ -7452,7 +7423,7 @@ def spkw02(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
 
 def spkw03(handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, btime):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw03_c.html
 
 
     :param handle:
@@ -7487,7 +7458,7 @@ def spkw03(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
 def spkw05(handle, body, center, inframe, first, last, segid, gm, n, states, epochs):
     # see libspice args for solution to array[][N] problem
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw05_c.html
 
     :param handle:
     :param body:
@@ -7519,7 +7490,7 @@ def spkw05(handle, body, center, inframe, first, last, segid, gm, n, states, epo
 def spkw08(handle, body, center, inframe, first, last, segid, degree, n, states, epoch1, step):
     # see libspice args for solution to array[][N] problem
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw08_c.html
 
     :param handle:
     :param body:
@@ -7552,7 +7523,7 @@ def spkw08(handle, body, center, inframe, first, last, segid, degree, n, states,
 
 def spkw09(handle, body, center, inframe, first, last, segid, degree, n, states, epochs):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw09_c.html
 
 
     :param handle:
@@ -7584,7 +7555,7 @@ def spkw09(handle, body, center, inframe, first, last, segid, degree, n, states,
 
 def spkw10(handle, body, center, inframe, first, last, segid, consts, n, elems, epochs):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw10_c.html
 
 
     :param handle:
@@ -7616,7 +7587,7 @@ def spkw10(handle, body, center, inframe, first, last, segid, consts, n, elems, 
 
 def spkw12(handle, body, center, inframe, first, last, segid, degree, n, states, epoch0, step):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw12_c.html
 
 
     :param handle:
@@ -7650,7 +7621,7 @@ def spkw12(handle, body, center, inframe, first, last, segid, degree, n, states,
 
 def spkw13(handle, body, center, inframe, first, last, segid, degree, n, states, epochs):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw13_c.html
 
 
     :param handle:
@@ -7683,7 +7654,7 @@ def spkw13(handle, body, center, inframe, first, last, segid, degree, n, states,
 def spkw15(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p, ecc, j2flg, pv, gm, j2, radius):
     #Todo: test spkw15
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw15_c.html
 
     :param handle:
     :param body:
@@ -7727,7 +7698,7 @@ def spkw15(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p, 
 def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel, rapol, decpol):
     #Todo: test spkw17
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw17_c.html
 
     :param handle:
     :param body:
@@ -7761,7 +7732,7 @@ def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel, rapol
 
 def srfrec(body, longitude, latitude):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfrec_c.html
 
 
     :param body:
@@ -7781,7 +7752,7 @@ def srfrec(body, longitude, latitude):
 
 def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfxpt_c.html
 
 
     :param method:
@@ -7814,7 +7785,7 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
 
 def ssize(newsize, cell):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ssize_c.html
 
 
     :param newsize:
@@ -7829,7 +7800,7 @@ def ssize(newsize, cell):
 
 def stelab(pobj, vobs):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/stelab_c.html
 
 
     :param pobj:
@@ -7845,7 +7816,7 @@ def stelab(pobj, vobs):
 
 def stpool(item, nth, contin, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/stpool_c.html
 
 
     :param item:
@@ -7867,7 +7838,7 @@ def stpool(item, nth, contin, lenout):
 
 def str2et(time):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/str2et_c.html
 
 
     :param time:
@@ -7883,7 +7854,7 @@ def str2et(time):
 
 def subpnt(method, target, et, fixref, abcorr, obsrvr):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subpnt_c.html
 
 
     :param method:
@@ -7909,7 +7880,7 @@ def subpnt(method, target, et, fixref, abcorr, obsrvr):
 
 def subpt(method, target, et, abcorr, obsrvr):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subpt_c.html
 
 
     :param method:
@@ -7934,7 +7905,7 @@ def subpt(method, target, et, abcorr, obsrvr):
 
 def subslr(method, target, et, fixref, abcorr, obsrvr):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subslr_c.html
 
 
     :param method:
@@ -7960,7 +7931,7 @@ def subslr(method, target, et, fixref, abcorr, obsrvr):
 
 def subsol(method, target, et, abcorr, obsrvr):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subsol_c.html
 
 
     :param method:
@@ -7982,7 +7953,7 @@ def subsol(method, target, et, abcorr, obsrvr):
 
 def sumad(array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sumad_c.html
 
 
     :param array:
@@ -7995,7 +7966,7 @@ def sumad(array):
 
 def sumai(array):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sumai_c.html
 
 
     :param array:
@@ -8008,7 +7979,7 @@ def sumai(array):
 
 def surfnm(a, b, c, point):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/surfnm_c.html
 
 
     :param a:
@@ -8028,7 +7999,7 @@ def surfnm(a, b, c, point):
 
 def surfpt(positn, u, a, b, c):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/surfpt_c.html
 
 
     :param positn:
@@ -8054,7 +8025,7 @@ def surfpt(positn, u, a, b, c):
 
 def surfpv(stvrtx, stdir, a, b, c):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/surfpv_c.html
 
 
     :param stvrtx:
@@ -8078,7 +8049,7 @@ def surfpv(stvrtx, stdir, a, b, c):
 def swpool(agent, nnames, lenvals, names):
     #Todo: test swpool
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/swpool_c.html
 
     :param agent:
     :param nnames:
@@ -8095,7 +8066,7 @@ def swpool(agent, nnames, lenvals, names):
 
 def sxform(instring, tostring, et):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sxform_c.html
 
 
     :param instring:
@@ -8115,7 +8086,7 @@ def sxform(instring, tostring, et):
 
 def szpool(name):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/szpool_c.html
 
 
     :param name:
@@ -8137,7 +8108,7 @@ def szpool(name):
 
 def timdef(action, item, lenout, value=None):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/timdef_c.html
 
 
     :param action:
@@ -8159,7 +8130,7 @@ def timdef(action, item, lenout, value=None):
 
 def timout(et, pictur, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/timout_c.html
 
 
     :param et:
@@ -8179,7 +8150,7 @@ def timout(et, pictur, lenout):
 
 def tipbod(ref, body, et):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tipbod_c.html
 
 
     :param ref:
@@ -8197,7 +8168,7 @@ def tipbod(ref, body, et):
 
 def tisbod(ref, body, et):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tisbod_c.html
 
 
     :param ref:
@@ -8215,7 +8186,7 @@ def tisbod(ref, body, et):
 
 def tkvrsn(item):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tkvrsn_c.html
 
 
     :param item:
@@ -8227,7 +8198,7 @@ def tkvrsn(item):
 
 def tparse(instring, lenout):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tparse_c.html
 
 
     :param instring:
@@ -8244,7 +8215,7 @@ def tparse(instring, lenout):
 
 def tpictr(sample, lenout, lenerr):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tpictr_c.html
 
 
     :param sample:
@@ -8264,7 +8235,7 @@ def tpictr(sample, lenout, lenerr):
 
 def trace(matrix):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/trace_c.html
 
 
     :param matrix:
@@ -8276,7 +8247,7 @@ def trace(matrix):
 
 def trcnam(index, namlen):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/trcnam_c.html
 
 
     :param index:
@@ -8292,7 +8263,7 @@ def trcnam(index, namlen):
 
 def trcdep():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/trcdep_c.html
 
 
 
@@ -8306,7 +8277,7 @@ def trcdep():
 def trcoff():
     #Todo: test trcoff
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/trcoff_c.html
 
 
     """
@@ -8317,7 +8288,7 @@ def trcoff():
 def tsetyr(year):
     #Todo: test tsetyr
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tsetyr_c.html
 
     :param year:
     """
@@ -8328,7 +8299,7 @@ def tsetyr(year):
 
 def twopi():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/twopi_c.html
 
 
 
@@ -8339,7 +8310,7 @@ def twopi():
 
 def twovec(axdef, indexa, plndef, indexp):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/twovec_c.html
 
 
     :param axdef:
@@ -8359,7 +8330,7 @@ def twovec(axdef, indexa, plndef, indexp):
 
 def tyear():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tyear_c.html
 
 
 
@@ -8373,7 +8344,7 @@ def tyear():
 
 def ucase(inchar, lenout=None):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ucase_c.html
 
 
     :param inchar:
@@ -8391,7 +8362,7 @@ def ucase(inchar, lenout=None):
 
 def ucrss(v1, v2):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ucrss_c.html
 
 
     :param v1:
@@ -8416,7 +8387,7 @@ def ucrss(v1, v2):
 
 def union(a, b):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/union_c.html
 
 
     :param a:
@@ -8441,7 +8412,7 @@ def union(a, b):
 
 def unitim(epoch, insys, outsys):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unitim_c.html
 
 
     :param epoch:
@@ -8457,7 +8428,7 @@ def unitim(epoch, insys, outsys):
 
 def unload(filename):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unload_c.html
 
 
     :param filename:
@@ -8472,7 +8443,7 @@ def unload(filename):
 
 def unorm(v1):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unorm_c.html
 
 
     :param v1:
@@ -8487,7 +8458,7 @@ def unorm(v1):
 
 def unormg(v1, ndim):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unormg_c.html
 
 
     :param v1:
@@ -8504,7 +8475,7 @@ def unormg(v1, ndim):
 
 def utc2et(utcstr):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/utc2et_c.html
 
 
     :param utcstr:
@@ -8519,13 +8490,12 @@ def utc2et(utcstr):
 
 
 def vadd(v1, v2):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Add two 3 dimensional vectors.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vadd_c.html
 
-
-    :param v1:
-    :param v2:
-    :return: :rtype:
+    :param v1: First vector to be added. :type v1: list[3]
+    :param v2: Second vector to be added. :type v2: list[3]
+    :return: v1+v2 :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8535,14 +8505,13 @@ def vadd(v1, v2):
 
 
 def vaddg(v1, v2, ndim):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Add two n-dimensional vectors
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vaddg_c.html
 
-
-    :param v1:
-    :param v2:
-    :param ndim:
-    :return: :rtype:
+    :param v1: First vector to be added. :type v1: list[ndim]
+    :param v2: Second vector to be added. :type v2: list[ndim]
+    :param ndim: Dimension of v1 and v2. :type ndim: int
+    :return: v1+v2 :rtype: list[ndim]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8553,14 +8522,13 @@ def vaddg(v1, v2, ndim):
 
 
 def valid(insize, n, inset):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Create a valid CSPICE set from a CSPICE Cell of any data type.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/valid_c.html
 
-
-    :param insize:
-    :param n:
-    :param inset:
-    :return: :rtype:
+    :param insize: Size (maximum cardinality) of the set. :type insize: int
+    :param n: Initial no. of (possibly non-distinct) elements. :type n: int
+    :param inset: Set to be validated.
+    :return: validated set :rtype: support_types.SpiceCell
     """
     assert isinstance(inset, stypes.SpiceCell)
     insize = ctypes.c_int(insize)
@@ -8570,13 +8538,12 @@ def valid(insize, n, inset):
 
 
 def vcrss(v1, v2):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Compute the cross product of two 3-dimensional vectors.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vcrss_c.html
 
-
-    :param v1:
-    :param v2:
-    :return: :rtype:
+    :param v1: Left hand vector for cross product. :type v1: list[3]
+    :param v2: Right hand vector for cross product. :type v2: list[3]
+    :return: Cross product v1 x v2. :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8586,13 +8553,12 @@ def vcrss(v1, v2):
 
 
 def vdist(v1, v2):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Return the distance between two three-dimensional vectors.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdist_c.html
 
-
-    :param v1:
-    :param v2:
-    :return: :rtype:
+    :param v1: First vector in the dot product. :type v1: list[3]
+    :param v2: Second vector in the dot product. :type v2: list[3]
+    :return: the distance between v1 and v2 :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8600,14 +8566,13 @@ def vdist(v1, v2):
 
 
 def vdistg(v1, v2, ndim):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Return the distance between two vectors of arbitrary dimension.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdistg_c.html
 
-
-    :param v1:
-    :param v2:
-    :param ndim:
-    :return: :rtype:
+    :param v1: ndim-dimensional double precision vector. :type v1: list[ndim]
+    :param v2: ndim-dimensional double precision vector. :type v2: list[ndim]
+    :param ndim: Dimension of v1 and v2. :type ndim: int
+    :return: the distance between v1 and v2 :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8616,13 +8581,12 @@ def vdistg(v1, v2, ndim):
 
 
 def vdot(v1, v2):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Compute the dot product of two double precision, 3-dimensional vectors.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdot_c.html
 
-
-    :param v1:
-    :param v2:
-    :return: :rtype:
+    :param v1: First vector in the dot product. :type v1: list[3]
+    :param v2: Second vector in the dot product. :type v2: list[3]
+    :return: dot product of v1 and v2. :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8630,14 +8594,13 @@ def vdot(v1, v2):
 
 
 def vdotg(v1, v2, ndim):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Compute the dot product of two double precision vectors of arbitrary dimension.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdotg_c.html
 
-
-    :param v1:
-    :param v2:
-    :param ndim:
-    :return: :rtype:
+    :param v1: First vector in the dot product. :type v1: list[ndim]
+    :param v2: Second vector in the dot product. :type v2: list[ndim]
+    :param ndim: Dimension of v1 and v2. :type ndim: int
+    :return: dot product of v1 and v2. :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8646,12 +8609,11 @@ def vdotg(v1, v2, ndim):
 
 
 def vequ(v1):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Make one double precision 3-dimensional vector equal to another.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vequ_c.html
 
-
-    :param v1:
-    :return: :rtype:
+    :param v1: 3-dimensional double precision vector. :type v1: list[3]
+    :return: 3-dimensional double precision vector set equal to vin. :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.emptyDoubleVector(3)
@@ -8660,13 +8622,12 @@ def vequ(v1):
 
 
 def vequg(v1, ndim):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Make one double precision vector of arbitrary dimension equal to another.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vequg_c.html
 
-
-    :param v1:
-    :param ndim:
-    :return: :rtype:
+    :param v1: ndim-dimensional double precision vector. :type v1: list[ndim]
+    :param ndim: Dimension of vin (and also vout). :type ndim: int
+    :return: ndim-dimensional double precision vector set equal to vin. :rtype: list[ndim]
     """
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.emptyDoubleVector(ndim)
@@ -8676,12 +8637,11 @@ def vequg(v1, ndim):
 
 
 def vhat(v1):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Find the unit vector along a double precision 3-dimensional vector.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vhat_c.html
 
-
-    :param v1:
-    :return: :rtype:
+    :param v1: Vector to be unitized. :type v1: list[3]
+    :return: Unit vector v1 / |v1|. :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.emptyDoubleVector(3)
@@ -8690,13 +8650,12 @@ def vhat(v1):
 
 
 def vhatg(v1, ndim):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Find the unit vector along a double precision vector of arbitrary dimension.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vhatg_c.html
 
-
-    :param v1:
-    :param ndim:
-    :return: :rtype:
+    :param v1: Vector to be normalized. :type v1: list[ndim]
+    :param ndim: Dimension of v1 (and also vout). :type ndim: int
+    :return: Unit vector v1 / |v1|. :rtype: list[ndim]
     """
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.emptyDoubleVector(ndim)
@@ -8706,15 +8665,14 @@ def vhatg(v1, ndim):
 
 
 def vlcom(a, v1, b, v2):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Compute a vector linear combination of two double precision, 3-dimensional vectors.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vlcom_c.html
 
-
-    :param a:
-    :param v1:
-    :param b:
-    :param v2:
-    :return: :rtype:
+    :param a: Coefficient of v1 :type a: float
+    :param v1: Vector in 3-space :type v1: list[3]
+    :param b: Coefficient of v2 :type b: float
+    :param v2: Vector in 3-space :type v2: list[3]
+    :return: Linear Vector Combination a*v1 + b*v2 :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8726,17 +8684,17 @@ def vlcom(a, v1, b, v2):
 
 
 def vlcom3(a, v1, b, v2, c, v3):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ This subroutine computes the vector linear combination
+        a*v1 + b*v2 + c*v3 of double precision, 3-dimensional vectors.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vlcom3_c.html
 
-
-    :param a:
-    :param v1:
-    :param b:
-    :param v2:
-    :param c:
-    :param v3:
-    :return: :rtype:
+    :param a: Coefficient of v1 :type a: float
+    :param v1: Vector in 3-space :type v1: list[3]
+    :param b: Coefficient of v2 :type b: float
+    :param v2: Vector in 3-space :type v2: list[3]
+    :param c: Coefficient of v3 :type c: float
+    :param v3: Vector in 3-space :type v3: list[3]
+    :return: Linear Vector Combination a*v1 + b*v2 + c*v3 :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8750,16 +8708,15 @@ def vlcom3(a, v1, b, v2, c, v3):
 
 
 def vlcomg(n, a, v1, b, v2):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Compute a vector linear combination of two double precision vectors of arbitrary dimension.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vlcomg_c.html
 
-
-    :param n:
-    :param a:
-    :param v1:
-    :param b:
-    :param v2:
-    :return: :rtype:
+    :param n: Dimension of vector space :type n: int
+    :param a: Coefficient of v1 :type a: float
+    :param v1: Vector in n-space :type v1: list[n]
+    :param b: Coefficient of v2 :type b: float
+    :param v2: Vector in n-space :type v2: list[n]
+    :return:  Linear Vector Combination a*v1 + b*v2 :rtype: list[n]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8772,13 +8729,12 @@ def vlcomg(n, a, v1, b, v2):
 
 
 def vminug(vin, ndim):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Negate a double precision vector of arbitrary dimension.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vminug_c.html
 
-
-    :param vin:
-    :param ndim:
-    :return: :rtype:
+    :param vin: ndim-dimensional double precision vector to be negated. :type vin: list[*]
+    :param ndim: Dimension of vin. :type ndim: int
+    :return: ndim-dimensional double precision vector equal to -vin. :rtype: list[ndim]
     """
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(ndim)
@@ -8788,12 +8744,11 @@ def vminug(vin, ndim):
 
 
 def vminus(vin):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Negate a double precision 3-dimensional vector.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vminus_c.html
 
-
-    :param vin:
-    :return: :rtype:
+    :param vin: Vector to be negated. :type vin: list[3]
+    :return: Negated vector -v1. :rtype: list[3]
     """
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(3)
@@ -8802,25 +8757,23 @@ def vminus(vin):
 
 
 def vnorm(v):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Compute the magnitude of a double precision, 3-dimensional vector.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vnorm_c.html
 
-
-    :param v:
-    :return: :rtype:
+    :param v: Vector whose magnitude is to be found. :type v: list[3]
+    :return: magnitude of v calculated in a numerically stable way :rtype: float
     """
     v = stypes.toDoubleVector(v)
     return libspice.vnorm_c(v)
 
 
 def vnormg(v, ndim):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Compute the magnitude of a double precision vector of arbitrary dimension.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vnormg_c.html
 
-
-    :param v:
-    :param ndim:
-    :return: :rtype:
+    :param v: Vector whose magnitude is to be found. :type v: list[*]
+    :param ndim: Dimension of v :type ndim: int
+    :return: magnitude of v calculated in a numerically stable way :rtype: float
     """
     v = stypes.toDoubleVector(v)
     ndim = ctypes.c_int(ndim)
@@ -8828,14 +8781,13 @@ def vnormg(v, ndim):
 
 
 def vpack(x, y, z):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Pack three scalar components into a vector.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vpack_c.html
 
-
-    :param x:
-    :param y:
-    :param z:
-    :return: :rtype:
+    :param x: first scalar component :type x: float
+    :param y: second scalar component :type y: float
+    :param z: third scalar component :type z: float
+    :return: Equivalent 3-vector. :rtype: list[3]
     """
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
@@ -8846,13 +8798,13 @@ def vpack(x, y, z):
 
 
 def vperp(a, b):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Find the component of a vector that is perpendicular to a second
+        vector.  All vectors are 3-dimensional.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vperp_c.html
 
-
-    :param a:
-    :param b:
-    :return: :rtype:
+    :param a: The vector whose orthogonal component is sought. :type a: list[3]
+    :param b: The vector used as the orthogonal reference. :type b: list[3]
+    :return: The component of a orthogonal to b. :rtype: list[3]
     """
     a = stypes.toDoubleVector(a)
     b = stypes.toDoubleVector(b)
@@ -8862,13 +8814,12 @@ def vperp(a, b):
 
 
 def vprjp(vin, plane):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Project a vector onto a specified plane, orthogonally.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vprjp_c.html
 
-
-    :param vin:
-    :param plane:
-    :return: :rtype:
+    :param vin: The projected vector. :type vin: list[3]
+    :param plane: Plane containing vin. :type projpl: support_types.Plane
+    :return: Vector resulting from projection. :rtype: list[3]
     """
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(3)
@@ -8877,14 +8828,14 @@ def vprjp(vin, plane):
 
 
 def vprjpi(vin, projpl, invpl):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Find the vector in a specified plane that maps to a specified
+        vector in another plane under orthogonal projection.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vprjpi_c.html
 
-
-    :param vin:
-    :param projpl:
-    :param invpl:
-    :return: :rtype:
+    :param vin: The projected vector. :type vin: list[3]
+    :param projpl: Plane containing vin. :type projpl: support_types.Plane
+    :param invpl: Plane containing inverse image of vin. :type invpl: support_types.Plane
+    :return: (Inverse projection of vin, success) :rtype: tuple
     """
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(3)
@@ -8897,13 +8848,12 @@ def vprjpi(vin, projpl, invpl):
 
 
 def vproj(a, b):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ find the projection of one vector onto another vector.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vproj_c.html
 
-
-    :param a:
-    :param b:
-    :return: :rtype:
+    :param a: The vector to be projected. :type a: list[3]
+    :param b: The vector onto which a is to be projected. :type b: list[3]
+    :return: The projection of a onto b. :rtype: list[3]
     """
     a = stypes.toDoubleVector(a)
     b = stypes.toDoubleVector(b)
@@ -8913,13 +8863,12 @@ def vproj(a, b):
 
 
 def vrel(v1, v2):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Return the relative difference between two 3-dimensional vectors.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vrel_c.html
 
-
-    :param v1:
-    :param v2:
-    :return: :rtype:
+    :param v1: First vector :type v1: list[3]
+    :param v2: Second vector :type v2: list[3]
+    :return: the relative difference between v1 and v2. :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8927,14 +8876,14 @@ def vrel(v1, v2):
 
 
 def vrelg(v1, v2, ndim):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Return the relative difference between two vectors of general dimension.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vrelg_c.html
 
 
-    :param v1:
-    :param v2:
-    :param ndim:
-    :return: :rtype:
+    :param v1: First vector :type v1: list[*]
+    :param v2: Second vector :type v2: list[*]
+    :param ndim:  Dimension of v1 and v2. :type ndim: int
+    :return: the relative difference between v1 and v2. :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8945,13 +8894,13 @@ def vrelg(v1, v2, ndim):
 def vrotv(v, axis, theta):
     #Tested, but clarly some rounding issues exist (0 as 6.123*10^-17, etc)
     # halfpi is not exactly reprentable in IEEE 754 notation,
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Rotate a vector about a specified axis vector by a specified angle and return the rotated vector.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vrotv_c.html
 
-    :param v:
-    :param axis:
-    :param theta:
-    :return: :rtype:
+    :param v: Vector to be rotated. :type v: list[3]
+    :param axis: Axis of the rotation. :type axis: list[3]
+    :param theta: Angle of rotation (radians). :type theta: float
+    :return: Result of rotating v about axis by theta :rtype: list[3]
     """
     v = stypes.toDoubleVector(v)
     axis = stypes.toDoubleVector(axis)
@@ -8962,13 +8911,12 @@ def vrotv(v, axis, theta):
 
 
 def vscl(s, v1):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Multiply a scalar and a 3-dimensional double precision vector.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vscl_c.html
 
-
-    :param s:
-    :param v1:
-    :return: :rtype:
+    :param s: Scalar to multiply a vector :type s: float
+    :param v1: Vector to be multiplied :type v1: list[3]
+    :return: Product vector, s*v1. :rtype: list[3]
     """
     s = ctypes.c_double(s)
     v1 = stypes.toDoubleVector(v1)
@@ -8978,14 +8926,13 @@ def vscl(s, v1):
 
 
 def vsclg(s, v1, ndim):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Multiply a scalar and a double precision vector of arbitrary dimension.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsclg_c.html
 
-
-    :param s:
-    :param v1:
-    :param ndim:
-    :return: :rtype:
+    :param s: Scalar to multiply a vector :type s: float
+    :param v1: Vector to be multiplied :type v1: list[*]
+    :param ndim: Dimension of v1 :type ndim: int
+    :return: Product vector, s*v1. :rtype: list[*]
     """
     s = ctypes.c_double(s)
     v1 = stypes.toDoubleVector(v1)
@@ -8996,13 +8943,14 @@ def vsclg(s, v1, ndim):
 
 
 def vsep(v1, v2):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """  Find the separation angle in radians between two double
+         precision, 3-dimensional vectors.  This angle is defined as zero
+         if either vector is zero.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsep_c.html
 
-
-    :param v1:
-    :param v2:
-    :return: :rtype:
+    :param v1: First vector :type v1: list[3]
+    :param v2: Second vector :type v2: list[3]
+    :return: separation angle in radians :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -9010,14 +8958,16 @@ def vsep(v1, v2):
 
 
 def vsepg(v1, v2, ndim):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ find the separation angle in radians between two double
+        precision vectors of arbitrary dimension. This angle is defined
+        as zero if either vector is zero.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsepg_c.html
 
 
-    :param v1:
-    :param v2:
-    :param ndim:
-    :return: :rtype:
+    :param v1: First vector :type v1: list[*]
+    :param v2: Second vector :type v2: list[*]
+    :param ndim: The number of elements in v1 and v2. :type ndim: int
+    :return: separation angle in radians :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -9026,13 +8976,12 @@ def vsepg(v1, v2, ndim):
 
 
 def vsub(v1, v2):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """  Compute the difference between two 3-dimensional, double precision vectors.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsub_c.html
 
-
-    :param v1:
-    :param v2:
-    :return: :rtype:
+    :param v1: First vector (minuend). :type v1: list[3]
+    :param v2: Second vector (subtrahend). :type v2: list[3]
+    :return: Difference vector, v1 - v2. :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -9042,14 +8991,13 @@ def vsub(v1, v2):
 
 
 def vsubg(v1, v2, ndim):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Compute the difference between two double precision vectors of arbitrary dimension.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsubg_c.html
 
-
-    :param v1:
-    :param v2:
-    :param ndim:
-    :return: :rtype:
+    :param v1: First vector (minuend). :type v1: list[*]
+    :param v2: Second vector (subtrahend). :type v2: list[*]
+    :param ndim: Dimension of v1, v2, and vout. :type ndim: int
+    :return: Difference vector, v1 - v2. :rtype: list[*]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -9060,14 +9008,13 @@ def vsubg(v1, v2, ndim):
 
 
 def vtmv(v1, matrix, v2):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Multiply the transpose of a 3-dimensional column vector a 3x3 matrix, and a 3-dimensional column vector.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vtmv_c.html
 
-
-    :param v1:
-    :param matrix:
-    :param v2:
-    :return: :rtype:
+    :param v1: 3 dimensional double precision column vector. :type v1: list[3]
+    :param matrix: 3x3 double precision matrix. :type matrix: list[3][3]
+    :param v2: 3 dimensional double precision column vector. :type v2: list[3]
+    :return: the result of (v1**t * matrix * v2 ). :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     matrix = stypes.listtodoublematrix(matrix)
@@ -9076,16 +9023,15 @@ def vtmv(v1, matrix, v2):
 
 
 def vtmvg(v1, matrix, v2, nrow, ncol):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Multiply the transpose of a n-dimensional column vector a nxm matrix, and a m-dimensional column vector.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vtmvg_c.html
 
-
-    :param v1:
-    :param matrix:
-    :param v2:
-    :param nrow:
-    :param ncol:
-    :return: :rtype:
+    :param v1: n-dimensional double precision column vector. :type v1: list[*]
+    :param matrix: nxm double precision matrix. :type matrix: list[*][*]
+    :param v2: m-dimensional double porecision column vector. :type v2: list[*]
+    :param nrow: Number of rows in matrix (number of rows in v1.) :type nrow: int
+    :param ncol: Number of columns in matrix (number of rows in v2.) :type ncol: int
+    :return: the result of (v1**t * matrix * v2 ) :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     matrix = stypes.listtodoublematrix(matrix, x=ncol, y=nrow)
@@ -9096,12 +9042,11 @@ def vtmvg(v1, matrix, v2, nrow, ncol):
 
 
 def vupack(v):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Unpack three scalar components from a vector.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vupack_c.html
 
-
-    :param v:
-    :return: :rtype:
+    :param v: Vector :type v: list[3]
+    :return: (x, y, z) :rtype: tuple
     """
     v1 = stypes.toDoubleVector(v)
     x = ctypes.c_double()
@@ -9112,25 +9057,23 @@ def vupack(v):
 
 
 def vzero(v):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Indicate whether a 3-vector is the zero vector
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vzero_c.html
 
-
-    :param v:
-    :return: :rtype:
+    :param v: Vector to be tested :type v: list[3]
+    :return: true if and only if v is the zero vector :rtype: bool
     """
     v = stypes.toDoubleVector(v)
     return libspice.vzero_c(v)
 
 
 def vzerog(v, ndim):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Indicate whether a general-dimensional vector is the zero vector.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vzerog_c.html
 
-
-    :param v:
-    :param ndim:
-    :return: :rtype:
+    :param v: Vector to be tested :type v: list[*]
+    :param ndim: Dimension of v :type ndim: int
+    :return: true if and only if v is the zero vector :rtype: bool
     """
     v = stypes.toDoubleVector(v)
     ndim = ctypes.c_int(ndim)
@@ -9142,7 +9085,7 @@ def vzerog(v, ndim):
 
 def wncard(window):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wncard_c.html
 
 
     :param window:
@@ -9154,7 +9097,7 @@ def wncard(window):
 
 def wncomd(left, right, window):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wncomd_c.html
 
 
     :param left:
@@ -9173,7 +9116,7 @@ def wncomd(left, right, window):
 
 def wncond(left, right, window):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wncond_c.html
 
 
     :param left:
@@ -9191,7 +9134,7 @@ def wncond(left, right, window):
 
 def wndifd(a, b):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wndifd_c.html
 
 
     :param a:
@@ -9209,7 +9152,7 @@ def wndifd(a, b):
 
 def wnelmd(point, window):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnelmd_c.html
 
 
     :param point:
@@ -9224,7 +9167,7 @@ def wnelmd(point, window):
 
 def wnexpd(left, right, window):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnexpd_c.html
 
 
     :param left:
@@ -9242,7 +9185,7 @@ def wnexpd(left, right, window):
 
 def wnextd(side, window):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnextd_c.html
 
 
     :param side:
@@ -9259,7 +9202,7 @@ def wnextd(side, window):
 
 def wnfetd(window, n):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnfetd_c.html
 
 
     :param window:
@@ -9277,7 +9220,7 @@ def wnfetd(window, n):
 
 def wnfild(small, window):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnfild_c.html
 
 
     :param small:
@@ -9293,7 +9236,7 @@ def wnfild(small, window):
 
 def wnfltd(small, window):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnfltd_c.html
 
 
     :param small:
@@ -9309,7 +9252,7 @@ def wnfltd(small, window):
 
 def wnincd(left, right, window):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnincd_c.html
 
 
     :param left:
@@ -9326,7 +9269,7 @@ def wnincd(left, right, window):
 
 def wninsd(left, right, window):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wninsd_c.html
 
 
     :param left:
@@ -9342,7 +9285,7 @@ def wninsd(left, right, window):
 
 def wnintd(a, b):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnintd_c.html
 
 
     :param a:
@@ -9360,7 +9303,7 @@ def wnintd(a, b):
 
 def wnreld(a, op, b):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnreld_c.html
 
 
     :param a:
@@ -9379,7 +9322,7 @@ def wnreld(a, op, b):
 
 def wnsumd(window):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnsumd_c.html
 
 
     :param window:
@@ -9398,7 +9341,7 @@ def wnsumd(window):
 
 def wnunid(a, b):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnunid_c.html
 
 
     :param a:
@@ -9416,7 +9359,7 @@ def wnunid(a, b):
 
 def wnvald(insize, n, window):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnvald_c.html
 
 
     :param insize:
@@ -9437,14 +9380,13 @@ def wnvald(insize, n, window):
 
 def xf2eul(xform, axisa, axisb, axisc):
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xf2eul_c.html
 
-
-    :param xform:
-    :param axisa:
-    :param axisb:
-    :param axisc:
-    :return: :rtype:
+    :param xform: state transformation matrix :type xform: list[6][6]
+    :param axisa: Axis A of the Euler angle factorization. :type axisa: int
+    :param axisb: Axis B of the Euler angle factorization. :type axisb: int
+    :param axisc: Axis C of the Euler angle factorization. :type axisc: int
+    :return: (eulang, unique) :rtype: tuple
     """
     xform = stypes.listtodoublematrix(xform, x=6, y=6)
     axisa = ctypes.c_int(axisa)
@@ -9457,12 +9399,11 @@ def xf2eul(xform, axisa, axisb, axisc):
 
 
 def xf2rav(xform):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ This routine determines the rotation matrix and angular velocity of the rotation from a state transformation matrix.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xf2rav_c.html
 
-
-    :param xform:
-    :return: :rtype:
+    :param xform: state transformation matrix :type xform: list[6][6]
+    :return: (rotation associated with xform, angular velocity associated with xform) :rtype: tuple
     """
     xform = stypes.listtodoublematrix(xform, x=6, y=6)
     rot = stypes.emptyDoubleMatrix()
@@ -9472,15 +9413,14 @@ def xf2rav(xform):
 
 
 def xfmsta(input_state, input_coord_sys, output_coord_sys, body):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """  Transform a state between coordinate systems.
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xfmsta_c.html
 
-
-    :param input_state:
-    :param input_coord_sys:
-    :param output_coord_sys:
-    :param body:
-    :return: :rtype:
+    :param input_state: Input state. :type input_state: list[6]
+    :param input_coord_sys: Current (input) coordinate system. :type input_coord_sys: str
+    :param output_coord_sys: Desired (output) coordinate system. :type output_coord_sys: str
+    :param body:Name or NAIF ID of body with which coordinates are associated (if applicable). :type body: str
+    :return: Converted output state :rtype: list[6]
     """
     input_state = stypes.toDoubleVector(input_state)
     input_coord_sys = stypes.stringToCharP(input_coord_sys)
@@ -9492,12 +9432,11 @@ def xfmsta(input_state, input_coord_sys, output_coord_sys, body):
 
 
 def xpose(m):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Transpose a 3x3 matrix
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xpose_c.html
 
-
-    :param m:
-    :return: :rtype:
+    :param m: Matrix to be transposed :type m: list[3][3]
+    :return: Transposed matrix :rtype: list[3][3]
     """
     m = stypes.toDoubleMatrix(m)
     mout = stypes.emptyDoubleMatrix(x=3, y=3)
@@ -9506,12 +9445,11 @@ def xpose(m):
 
 
 def xpose6(m):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Transpose a 6x6 matrix
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xpose6_c.html
 
-
-    :param m:
-    :return: :rtype:
+    :param m: Matrix to be transposed :type m: list[6][6]
+    :return: Transposed matrix :rtype: list[6][6]
     """
     m = stypes.toDoubleMatrix(m)
     mout = stypes.emptyDoubleMatrix(x=6, y=6)
@@ -9520,14 +9458,13 @@ def xpose6(m):
 
 
 def xposeg(matrix, nrow, ncol):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/
+    """ Transpose a matrix of arbitrary size (in place, the matrix need not be square).
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xposeg_c.html
 
-
-    :param matrix:
-    :param nrow:
-    :param ncol:
-    :return: :rtype:
+    :param matrix: Matrix to be transposed :type matrix: list[*][*]
+    :param nrow: Number of rows of input matrix. :type nrow: int
+    :param ncol: Number of columns of input matrix :type ncol: int
+    :return: Transposed matrix :rtype: list[*][*]
     """
     matrix = stypes.listtodoublematrix(matrix, x=ncol, y=nrow)
     mout = stypes.emptyDoubleMatrix(x=ncol, y=nrow)
