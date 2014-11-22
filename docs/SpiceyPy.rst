@@ -10,7 +10,7 @@ SpiceyPy.libspice module
 .. automodule:: SpiceyPy.libspice
 :members:
         :undoc-members:
-            :show-inheritance:
+        :show-inheritance:
 
 SpiceyPy.support_types module
 -----------------------------
@@ -18,7 +18,7 @@ SpiceyPy.support_types module
 .. automodule:: SpiceyPy.support_types
 :members:
         :undoc-members:
-            :show-inheritance:
+        :show-inheritance:
 
 SpiceyPy.wrapper module
 -----------------------
@@ -26,7 +26,7 @@ SpiceyPy.wrapper module
 .. automodule:: SpiceyPy.wrapper
 :members:
         :undoc-members:
-            :show-inheritance:
+        :show-inheritance:
 
 
 Module contents
@@ -35,4 +35,4 @@ Module contents
 .. automodule:: SpiceyPy
 :members:
         :undoc-members:
-            :show-inheritance:
+        :show-inheritance:
