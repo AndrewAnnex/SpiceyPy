@@ -20,6 +20,14 @@ A small number of functions have no wrapper functions of any kind due to lack of
 The rest of the functions generally have written wrapper functions but remain untested, mostly due to lack of SPICE documentation (the EK kernel functions are one example of this).  
 Functions that utilize call-backs have not been wrapped or tested yet, although ctypes does support call-backs so they will be revisited.  
 If you encounter an error with a function please report it or write up a PR to fix it, with ctypes it is easy! 
+
+### Documentation
+ 
+[![Documentation Status](https://readthedocs.org/projects/spiceypy/badge/?version=master)](https://readthedocs.org/projects/spiceypy/?badge=master)  
+The documentation for SpiceyPy is intentionally abridged so as to utalize the excellent [documentation provided by the NAIF.](http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/index.html)  
+Please refer to C and IDL documentation available on the NAIF website for in-depth explainations. 
+The SpiceyPy docs are available at: [spiceypy.readthedocs.org](spiceypy.readthedocs.org) .   
+Each function has a link to the corresponding C function in the NAIF docs at a minimum.
  
 ### How to Help
 
