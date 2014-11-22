@@ -25,7 +25,7 @@ If you encounter an error with a function please report it or write up a PR to f
  
 [![Documentation Status](https://readthedocs.org/projects/spiceypy/badge/?version=master)](https://readthedocs.org/projects/spiceypy/?badge=master) 
  
-**The SpiceyPy docs are available at: [spiceypy.readthedocs.org](spiceypy.readthedocs.org).**
+**The SpiceyPy docs are available at: [spiceypy.readthedocs.org](http://spiceypy.readthedocs.org).**
  
 The documentation for SpiceyPy is intentionally abridged so as to utilize the excellent [documentation provided by the NAIF.](http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/index.html)  
 Please refer to C and IDL documentation available on the NAIF website for in-depth explanations. 
