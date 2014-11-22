@@ -1,7 +1,23 @@
 .DS_Store
 .DS_Store?
-.o
-.so
+*.o
 .tar
 .gz
 .zip
+*.pyc
+*.so
+
+# Spice Kernels
+*.bsp
+*.bpc
+*.ek
+*.tpc
+*.tsc
+*.tf
+*.tls
+
+# Test meta kernels
+test/*.txt
+
+# Pycharm specific things
+.idea/

@@ -71,12 +71,9 @@ def axisar(axis, angle):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/axisar_c.html
 
-    :param axis: Rotation axis.
-    :type axis: 3 Element vector (list, tuple, numpy array)
-    :param angle: Rotation angle, in radians.
-    :type angle: float
-    :return: Rotation matrix corresponding to axis and angle.
-    :rtype numpy array ((3, 3))
+    :param axis: Rotation axis. :type axis: 3 Element vector (list, tuple, numpy array)
+    :param angle: Rotation angle, in radians. :type angle: float
+    :return: Rotation matrix corresponding to axis and angle. :rtype: numpy array ((3, 3))
     """
     axis = stypes.toDoubleVector(axis)
     angle = ctypes.c_double(angle)
