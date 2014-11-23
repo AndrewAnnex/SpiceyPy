@@ -4,9 +4,9 @@ Welcome to SpiceyPy's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 4
+:maxdepth: 2
 
-   SpiceyPy
+       SpiceyPy
 
 
 Indices and tables
