@@ -9,9 +9,9 @@ SpiceyPy.wrapper module
 -----------------------
 
 .. automodule:: SpiceyPy.wrapper
-:members:
-        :undoc-members:
-        :show-inheritance:
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 SpiceyPy.libspice module
 ------------------------
