@@ -4347,10 +4347,12 @@ def kxtrct(keywd, termlen, terms, nterms, stringlen, substrlen, instring):
 
 def lastnb(string):
     """
+    Return the zero based index of the last non-blank character in
+    a character string.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lastnb_c.html
 
-
-    :param string:
+    :param string: Input character string. :type string: str
     :return: :rtype:
     """
     string = stypes.stringToCharP(string)
@@ -4359,13 +4361,14 @@ def lastnb(string):
 
 def latcyl(radius, lon, lat):
     """
+    Convert from latitudinal coordinates to cylindrical coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/latcyl_c.html
 
-
-    :param radius:
-    :param lon:
-    :param lat:
-    :return: :rtype:
+    :param radius: Distance of a point from the origin. :type radius:
+    :param lon: Angle of the point from the XZ plane in radians.
+    :param lat: Angle of the point from the XY plane in radians.
+    :return: (r, lonc, z) :rtype: tuple
     """
     radius = ctypes.c_double(radius)
     lon = ctypes.c_double(lon)
@@ -4379,13 +4382,14 @@ def latcyl(radius, lon, lat):
 
 def latrec(radius, longitude, latitude):
     """
+    Convert from latitudinal coordinates to rectangular coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/latrec_c.html
 
-
-    :param radius:
-    :param longitude:
-    :param latitude:
-    :return: :rtype:
+    :param radius: Distance of a point from the origin. :type radius: float
+    :param longitude: Longitude of point in radians. :type longitude: float
+    :param latitude: Latitude of point in radians. :type latitude: float
+    :return: Rectangular coordinates of the point. :rtype: list[3]
     """
     radius = ctypes.c_double(radius)
     longitude = ctypes.c_double(longitude)
@@ -4397,13 +4401,14 @@ def latrec(radius, longitude, latitude):
 
 def latsph(radius, lon, lat):
     """
+    Convert from latitudinal coordinates to spherical coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/latsph_c.html
 
-
-    :param radius:
-    :param lon:
-    :param lat:
-    :return: :rtype:
+    :param radius: Distance of a point from the origin.
+    :param lon: Angle of the point from the XZ plane in radians.
+    :param lat: Angle of the point from the XY plane in radians.
+    :return: (rho colat, lons) :rtype: tuple
     """
     radius = ctypes.c_double(radius)
     lon = ctypes.c_double(lon)
@@ -4417,12 +4422,13 @@ def latsph(radius, lon, lat):
 
 def lcase(instr, lenout):
     """
+    Convert the characters in a string to lowercase.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lcase_c.html
 
-
-    :param instr:
-    :param lenout:
-    :return: :rtype:
+    :param instr: Input string. :type instr: str
+    :param lenout: Maximum length of output string. :type lenout: int
+    :return: Output string, all lowercase. :rtype: str
     """
     instr = stypes.stringToCharP(instr)
     lenout = ctypes.c_int(lenout)
@@ -4433,10 +4439,12 @@ def lcase(instr, lenout):
 
 def ldpool(filename):
     """
+    Load the variables contained in a NAIF ASCII kernel file into the
+    kernel pool.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ldpool_c.html
 
-
-    :param filename:
+    :param filename: Name of the kernel file. :type filename: str
     """
     filename = stypes.stringToCharP(filename)
     libspice.ldpool_c(filename)
@@ -4445,10 +4453,11 @@ def ldpool(filename):
 
 def lmpool(cvals):
     """
+    Load the variables contained in an internal buffer into the
+    kernel pool.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lmpool_c.html
 
-
-    :param cvals:
+    :param cvals: list of strings  :type cvals: list
     """
     lenvals = ctypes.c_int(len(max(cvals, key=len)) + 1)
     n = ctypes.c_int(len(cvals))
@@ -4459,13 +4468,14 @@ def lmpool(cvals):
 
 def lparse(inlist, delim, nmax):
     """
+    Parse a list of items delimited by a single character.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lparse_c.html
 
-
-    :param inlist:
-    :param delim:
-    :param nmax:
-    :return: :rtype:
+    :param inlist: List of items delimited by delim. :type inlist: list of strings
+    :param delim: Single character used to delimit items. :type delim: str
+    :param nmax: Maximum number of items to return. :type nmax: int
+    :return: Items in the list, left justified. :rtype: list of strings
     """
     delim = stypes.stringToCharP(delim)
     lenout = ctypes.c_int(len(inlist))
@@ -4479,14 +4489,15 @@ def lparse(inlist, delim, nmax):
 
 def lparsm(inlist, delims, nmax, lenout=None):
     """
+    Parse a list of items separated by multiple delimiters.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lparsm_c.html
 
-
-    :param inlist:
-    :param delims:
-    :param nmax:
-    :param lenout:
-    :return: :rtype:
+    :param inlist: List of items delimited by delims. :type inlist: list of strings
+    :param delims: Single characters which delimit items. :type delim: str
+    :param nmax: Maximum number of items to return. :type nmax: int
+    :param lenout: Optional Length of strings in item array. :type lenout: int
+    :return: Items in the list, left justified. :rtype: list of strings
     """
     if lenout is None:
         lenout = ctypes.c_int(len(inlist) + 1)
@@ -4501,14 +4512,16 @@ def lparsm(inlist, delims, nmax, lenout=None):
 
 def lparss(inlist, delims, NMAX=20, LENGTH=50):
     """
+    Parse a list of items separated by multiple delimiters, placing the
+    resulting items into a set.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lparss_c.html
 
-
-    :param inlist:
-    :param delims:
-    :param NMAX:
-    :param LENGTH:
-    :return: :rtype:
+    :param inlist: List of items delimited by delims. :type inlist:
+    :param delims: Single characters which delimit items. :type delims: str
+    :param NMAX: Optional nmax of spice set. :type NMAX: int
+    :param LENGTH: Optional length of strings in spice set :type LENGTH: int
+    :return:  Set containing items in the list, left justified. :rtype:
     """
     inlist = stypes.stringToCharP(inlist)
     delims = stypes.stringToCharP(delims)
@@ -4519,13 +4532,15 @@ def lparss(inlist, delims, NMAX=20, LENGTH=50):
 
 def lspcn(body, et, abcorr):
     """
+    Compute L_s, the planetocentric longitude of the sun, as seen
+    from a specified body.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lspcn_c.html
 
-
-    :param body:
-    :param et:
-    :param abcorr:
-    :return: :rtype:
+    :param body: Name of central body. :type body: str
+    :param et: Epoch in seconds past J2000 TDB. :type et: float
+    :param abcorr: Aberration correction. :type abcorr: str
+    :return: planetocentric longitude of the sun :rtype: float
     """
     body = stypes.stringToCharP(body)
     et = ctypes.c_double(et)
@@ -4533,16 +4548,135 @@ def lspcn(body, et, abcorr):
     return libspice.lspcn_c(body, et, abcorr)
 
 
+def lstlec(string, n, lenvals, array):
+    """
+    Given a character string and an ordered array of character
+    strings, find the index of the largest array element less than
+    or equal to the given string.
+
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lstlec_c.html
+
+    :param string: Upper bound value to search against. :type string: str
+    :param n: Number elements in array. :type n: int
+    :param lenvals: String length. :type lenvals: int
+    :param array: Array of possible lower bounds. :type array: List
+    :return: index of the last element of array that is lexically less than or equal to string. :rtype: int
+    """
+    string = stypes.stringToCharP(string)
+    array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=n)
+    n = ctypes.c_int(n)
+    lenvals = ctypes.c_int(lenvals)
+    return libspice.lstlec_c(string, n, lenvals, array)
+
+
+def lstled(x, n, array):
+    """
+    Given a number x and an array of non-decreasing floats,
+    find the index of the largest array element less than or equal to x.
+
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lstled_c.html
+
+    :param x: Value to search against. :type x: float
+    :param n: Number elements in array. :type n: int
+    :param array: Array of possible lower bounds :type array: List
+    :return: index of the last element of array that is less than or equal to x. :rtype: int
+    """
+    array = stypes.toDoubleVector(array)
+    x = ctypes.c_double(x)
+    n = ctypes.c_int(n)
+    return libspice.lstled_c(x, n, array)
+
+
+def lstlei(x, n, array):
+    """
+    Given a number x and an array of non-decreasing ints,
+    find the index of the largest array element less than or equal to x.
+
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lstlei_c.html
+
+    :param x: Value to search against. :type x: int
+    :param n: Number elements in array. :type n: int
+    :param array: Array of possible lower bounds :type array: List
+    :return: index of the last element of array that is less than or equal to x. :rtype: int
+
+    """
+    array = stypes.toIntVector(array)
+    x = ctypes.c_int(x)
+    n = ctypes.c_int(n)
+    return libspice.lstlei_c(x, n, array)
+
+
+def lstltc(string, n, lenvals, array):
+    """
+    Given a character string and an ordered array of character
+    strings, find the index of the largest array element less than
+    the given string.
+
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lstltc_c.html
+
+    :param string: Upper bound value to search against. :type string: int
+    :param n: Number elements in array. :type n: int
+    :param lenvals: String length. :type lenvals: int
+    :param array: Array of possible lower bounds :type array: List
+    :return: index of the last element of array that is lexically less than string. :rtype: int
+    """
+    string = stypes.stringToCharP(string)
+    array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=n)
+    n = ctypes.c_int(n)
+    lenvals = ctypes.c_int(lenvals)
+    return libspice.lstltc_c(string, n, lenvals, array)
+
+
+def lstltd(x, n, array):
+    """
+    Given a number x and an array of non-decreasing floats,
+    find the index of the largest array element less than x.
+
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lstltd_c.html
+
+    :param x: Value to search against :type x: float
+    :param n: Number elements in array :type n: int
+    :param array: Array of possible lower bounds :type array: List
+    :return: index of the last element of array that is less than x. :rtype: int
+    """
+    array = stypes.toDoubleVector(array)
+    x = ctypes.c_double(x)
+    n = ctypes.c_int(n)
+    return libspice.lstltd_c(x, n, array)
+
+
+def lstlti(x, n, array):
+    """
+    Given a number x and an array of non-decreasing int,
+    find the index of the largest array element less than x.
+
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lstlti_c.html
+
+    :param x: Value to search against :type x: int
+    :param n: Number elements in array :type n: int
+    :param array: Array of possible lower bounds :type array: List
+    :return: index of the last element of array that is less than x. :rtype: int
+    """
+    array = stypes.toIntVector(array)
+    x = ctypes.c_int(x)
+    n = ctypes.c_int(n)
+    return libspice.lstlti_c(x, n, array)
+
+
 def ltime(etobs, obs, direct, targ):
     """
+    This routine computes the transmit (or receive) time
+    of a signal at a specified target, given the receive
+    (or transmit) time at a specified observer. The elapsed
+    time between transmit and receive is also returned.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ltime_c.html
 
-
-    :param etobs:
-    :param obs:
-    :param direct:
-    :param targ:
-    :return: :rtype:
+    :param etobs: Epoch of a signal at some observer :type etobs: float
+    :param obs: NAIF ID of some observer :type obs: int
+    :param direct: Direction the signal travels ( "->" or "<-" ) :type direct: str
+    :param targ: NAIF ID of the target object :type targ: int
+    :return: epoch and time :rtype: tuple
     """
     etobs = ctypes.c_double(etobs)
     obs = ctypes.c_int(obs)
@@ -4554,114 +4688,16 @@ def ltime(etobs, obs, direct, targ):
     return ettarg.value, elapsd.value
 
 
-def lstlec(string, n, lenvals, array):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lstlec_c.html
-
-
-    :param string:
-    :param n:
-    :param lenvals:
-    :param array:
-    :return: :rtype:
-    """
-    string = stypes.stringToCharP(string)
-    array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=n)
-    n = ctypes.c_int(n)
-    lenvals = ctypes.c_int(lenvals)
-    return libspice.lstlec_c(string, n, lenvals, array)
-
-
-def lstled(x, n, array):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lstled_c.html
-
-
-    :param x:
-    :param n:
-    :param array:
-    :return: :rtype:
-    """
-    array = stypes.toDoubleVector(array)
-    x = ctypes.c_double(x)
-    n = ctypes.c_int(n)
-    return libspice.lstled_c(x, n, array)
-
-
-def lstlei(x, n, array):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lstlei_c.html
-
-
-    :param x:
-    :param n:
-    :param array:
-    :return: :rtype:
-    """
-    array = stypes.toIntVector(array)
-    x = ctypes.c_int(x)
-    n = ctypes.c_int(n)
-    return libspice.lstlei_c(x, n, array)
-
-
-def lstltc(string, n, lenvals, array):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lstltc_c.html
-
-
-    :param string:
-    :param n:
-    :param lenvals:
-    :param array:
-    :return: :rtype:
-    """
-    string = stypes.stringToCharP(string)
-    array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=n)
-    n = ctypes.c_int(n)
-    lenvals = ctypes.c_int(lenvals)
-    return libspice.lstltc_c(string, n, lenvals, array)
-
-
-def lstltd(x, n, array):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lstltd_c.html
-
-
-    :param x:
-    :param n:
-    :param array:
-    :return: :rtype:
-    """
-    array = stypes.toDoubleVector(array)
-    x = ctypes.c_double(x)
-    n = ctypes.c_int(n)
-    return libspice.lstltd_c(x, n, array)
-
-
-def lstlti(x, n, array):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lstlti_c.html
-
-
-    :param x:
-    :param n:
-    :param array:
-    :return: :rtype:
-    """
-    array = stypes.toIntVector(array)
-    x = ctypes.c_int(x)
-    n = ctypes.c_int(n)
-    return libspice.lstlti_c(x, n, array)
-
-
 def lx4dec(string, first):
     """
+    Scan a string from a specified starting position for the
+    end of a decimal number.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lx4dec_c.html
 
-
-    :param string:
-    :param first:
-    :return: :rtype:
+    :param string: Any character string. :type string: str
+    :param first: First character to scan from in string. :type first: int
+    :return: last and nchar :rtype: tuple
     """
     string = stypes.stringToCharP(string)
     first = ctypes.c_int(first)
@@ -4673,12 +4709,14 @@ def lx4dec(string, first):
 
 def lx4num(string, first):
     """
+    Scan a string from a specified starting position for the
+    end of a number.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lx4num_c.html
 
-
-    :param string:
-    :param first:
-    :return: :rtype:
+    :param string: Any character string. :type string: str
+    :param first: First character to scan from in string. :type first: int
+    :return: last and nchar :rtype: tuple
     """
     string = stypes.stringToCharP(string)
     first = ctypes.c_int(first)
@@ -4690,12 +4728,14 @@ def lx4num(string, first):
 
 def lx4sgn(string, first):
     """
+    Scan a string from a specified starting position for the
+    end of a signed integer.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lx4sgn_c.html
 
-
-    :param string:
-    :param first:
-    :return: :rtype:
+    :param string: Any character string. :type string: str
+    :param first: First character to scan from in string. :type first: int
+    :return: last and nchar :rtype: tuple
     """
     string = stypes.stringToCharP(string)
     first = ctypes.c_int(first)
@@ -4707,12 +4747,14 @@ def lx4sgn(string, first):
 
 def lx4uns(string, first):
     """
+    Scan a string from a specified starting position for the
+    end of an unsigned integer.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lx4uns_c.html
 
-
-    :param string:
-    :param first:
-    :return: :rtype:
+    :param string: Any character string. :type string: str
+    :param first: First character to scan from in string. :type first: int
+    :return: last and nchar :rtype: tuple
     """
     string = stypes.stringToCharP(string)
     first = ctypes.c_int(first)
@@ -4724,13 +4766,14 @@ def lx4uns(string, first):
 
 def lxqstr(string, qchar, first):
     """
+    Lex (scan) a quoted string.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lxqstr_c.html
 
-
-    :param string:
-    :param qchar:
-    :param first:
-    :return: :rtype:
+    :param string: String to be scanned. :type string: str
+    :param qchar: Quote delimiter character. :type qchar: char (string of one char)
+    :param first: Character position at which to start scanning. :type first: int
+    :return: last and nchar :rtype: tuple
     """
     string = stypes.stringToCharP(string)
     qchar = ctypes.c_char(qchar.encode(encoding = 'UTF-8'))
