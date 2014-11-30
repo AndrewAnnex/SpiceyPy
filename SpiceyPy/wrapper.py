@@ -73,7 +73,8 @@ def axisar(axis, angle):
 
     :param axis: Rotation axis. :type axis: 3 Element vector (list, tuple, numpy array)
     :param angle: Rotation angle, in radians. :type angle: float
-    :return: Rotation matrix corresponding to axis and angle. :rtype: numpy array ((3, 3))
+    :return: Rotation matrix corresponding to axis and angle.
+    :rtype: numpy array ((3, 3))
     """
     axis = stypes.toDoubleVector(axis)
     angle = ctypes.c_double(angle)
@@ -90,7 +91,8 @@ def b1900():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/b1900_c.html
 
-    :return: The Julian Date corresponding to Besselian Date 1900.0. :rtype : float
+    :return: The Julian Date corresponding to Besselian Date 1900.0.
+    :rtype: float
     """
     return libspice.b1900_c()
 
@@ -99,7 +101,8 @@ def b1950():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/b1950_c.html
 
-    :return: The Julian Date corresponding to Besselian Date 1950.0. :rtype : float
+    :return: The Julian Date corresponding to Besselian Date 1950.0.
+    :rtype: float
     """
     return libspice.b1950_c()
 
@@ -114,7 +117,8 @@ def badkpv(caller, name, comp, insize, divby, intype):
     :param insize: Expected size of the kernel pool variable.
     :param divby: A divisor of the size of the kernel pool variable.
     :param intype: Expected type of the kernel pool variable
-    :return: returns false if the kernel pool variable is OK. :rtype: bool
+    :return: returns false if the kernel pool variable is OK.
+    :rtype: bool
     """
     caller = stypes.stringToCharP(caller)
     name = stypes.stringToCharP(name)
@@ -131,7 +135,8 @@ def bltfrm(frmcls, outSize=126):
 
     :param frmcls: Frame class.
     :param outSize: Optional size for return cell.
-    :return: Set (SpiceCell) of ID codes of frames of the specified class. :rtype : SpiceINTCell
+    :return: Set (SpiceCell) of ID codes of frames of the specified class.
+    :rtype: SpiceINTCell
     """
     frmcls = ctypes.c_int(frmcls)
     outcell = stypes.SPICEINT_CELL(outSize)
@@ -166,7 +171,8 @@ def bodc2s(code, lenout):
 
     :param code: Integer ID code to translate to a string.
     :param lenout: Maximum length of output name.
-    :return: String corresponding to 'code'. :rtype: str
+    :return: String corresponding to 'code'.
+    :rtype: str
     """
     code = ctypes.c_int(code)
     name = stypes.stringToCharP(" " * lenout)
@@ -207,7 +213,8 @@ def bodn2c(name):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/bodn2c_c.html
 
     :param name: Body name to be translated into a SPICE ID code.
-    :return: SPICE integer ID code for the named body. :rtype: int
+    :return: SPICE integer ID code for the named body.
+    :rtype: int
     """
     name = stypes.stringToCharP(name)
     code = ctypes.c_int(0)
@@ -224,7 +231,8 @@ def bods2c(name):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/bods2c_c.html
 
     :param name: String to be translated to an ID code. :type name: str
-    :return: Integer ID code corresponding to name. :rtype: int
+    :return: Integer ID code corresponding to name.
+    :rtype: int
     """
     name = stypes.stringToCharP(name)
     code = ctypes.c_int(0)
@@ -243,7 +251,8 @@ def bodvar(body, item, dim):
     :param body: ID code of body.
     :param item: Item for which values are desired. ("RADII", "NUT_PREC_ANGLES", etc. )
     :param dim: Number of values returned.
-    :return: values :rtype: numpy array
+    :return: values
+    :rtype: numpy array
     """
     body = ctypes.c_int(body)
     dim = ctypes.c_int(dim)
@@ -260,7 +269,8 @@ def bodvcd(bodyid, item, maxn):
     :param bodyid: Body ID code.
     :param item: Item for which values are desired. ("RADII", "NUT_PREC_ANGLES", etc. )
     :param maxn: Maximum number of values that may be returned.
-    :return: tuple of (dim, values) :rtype: tuple
+    :return: tuple of (dim, values)
+    :rtype: tuple
     """
     bodyid = ctypes.c_int(bodyid)
     item = stypes.stringToCharP(item)
@@ -278,7 +288,8 @@ def bodvrd(bodynm, item, maxn):
     :param bodynm: Body name.
     :param item: Item for which values are desired. ("RADII", "NUT_PREC_ANGLES", etc. )
     :param maxn: Maximum number of values that may be returned.
-    :return: tuple of (dim, values) :rtype: tuple
+    :return: tuple of (dim, values)
+    :rtype: tuple
     """
     bodynm = stypes.stringToCharP(bodynm)
     item = stypes.stringToCharP(item)
@@ -296,7 +307,8 @@ def brcktd(number, end1, end2):
     :param number: Number to be bracketed.
     :param end1: One of the bracketing endpoints for number.
     :param end2: The other bracketing endpoint for number.
-    :return: value within an interval :rtype: float
+    :return: value within an interval
+    :rtype: float
     """
     number = ctypes.c_double(number)
     end1 = ctypes.c_double(end1)
@@ -311,7 +323,8 @@ def brckti(number, end1, end2):
     :param number: Number to be bracketed.
     :param end1: One of the bracketing endpoints for number.
     :param end2: The other bracketing endpoint for number.
-    :return: value within an interval :rtype: int
+    :return: value within an interval
+    :rtype: int
     """
     number = ctypes.c_int(number)
     end1 = ctypes.c_int(end1)
@@ -328,7 +341,8 @@ def bschoc(value, ndim, lenvals, array, order):
     :param lenvals: String length.
     :param array: Character string array to search.
     :param order: Order vector.
-    :return: index :rtype: int
+    :return: index
+    :rtype: int
     """
     value = stypes.stringToCharP(value)
     ndim = ctypes.c_int(ndim)
@@ -346,7 +360,8 @@ def bschoi(value, ndim, array, order):
     :param ndim: Dimension of array.
     :param array: Integer array to search.
     :param order: Order vector.
-    :return: index :rtype: int
+    :return: index
+    :rtype: int
     """
     value = ctypes.c_int(value)
     ndim = ctypes.c_int(ndim)
@@ -363,7 +378,8 @@ def bsrchc(value, ndim, lenvals, array):
     :param ndim: Dimension of array.
     :param lenvals: String length.
     :param array: Character string array to search.
-    :return: index :rtype: int
+    :return: index
+    :rtype: int
     """
     value = stypes.stringToCharP(value)
     ndim = ctypes.c_int(ndim)
@@ -379,7 +395,8 @@ def bsrchd(value, ndim, array):
     :param value: Value to find in array.
     :param ndim: Dimension of array.
     :param array: Array to be searched.
-    :return: index :rtype: int
+    :return: index
+    :rtype: int
     """
     value = ctypes.c_double(value)
     ndim = ctypes.c_int(ndim)
@@ -394,7 +411,8 @@ def bsrchi(value, ndim, array):
     :param value: Value to find in array.
     :param ndim: Dimension of array.
     :param array: Array to be searched.
-    :return: index :rtype: int
+    :return: index
+    :rtype: int
     """
     value = ctypes.c_int(value)
     ndim = ctypes.c_int(ndim)
@@ -410,7 +428,8 @@ def card(cell):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/card_c.html
 
     :param cell: Input cell.
-    :return: Cardinality :rtype: int
+    :return: Cardinality
+    :rtype: int
     """
     return libspice.card_c(ctypes.byref(cell))
 
@@ -423,7 +442,8 @@ def ccifrm(frclss, clssid, lenout):
     :param frclss: Class of frame.
     :param clssid: Class ID of frame.
     :param lenout: Maximum length of output string.
-    :return: :rtype: tuple or None
+    :return:
+    :rtype: tuple or None
     """
     frclss = ctypes.c_int(frclss)
     clssid = ctypes.c_int(clssid)
@@ -447,7 +467,8 @@ def cgv2el(center, vec1, vec2):
     :param center: Center Vector
     :param vec1: Vector 1
     :param vec2: Vector 2
-    :return: Ellipse :rtype: stypes.Ellipse
+    :return: Ellipse
+    :rtype: stypes.Ellipse
     """
     center = stypes.toDoubleVector(center)
     vec1 = stypes.toDoubleVector(vec1)
@@ -488,7 +509,8 @@ def cidfrm(cent, lenout):
 
     :param cent: An object to associate a frame with.
     :param lenout: Available space in output string frname.
-    :return: :rtype: tuple or None
+    :return:
+    :rtype: tuple or None
     """
     cent = ctypes.c_int(cent)
     lenout = ctypes.c_int(lenout)
@@ -526,7 +548,8 @@ def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
     :param tol: Tolerance in ticks.
     :param timsys: Time system used to represent coverage.
     :param cover: Window giving coverage for idcode.
-    :return: :rtype: SpiceDOUBLECell
+    :return:
+    :rtype: SpiceDOUBLECell
     """
     ck = stypes.stringToCharP(ck)
     idcode = ctypes.c_int(idcode)
@@ -574,7 +597,8 @@ def ckgpav(inst, sclkdp, tol, ref):
     :param sclkdp:
     :param tol:
     :param ref:
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     inst = ctypes.c_int(inst)
     sclkdp = ctypes.c_double(sclkdp)
@@ -609,7 +633,8 @@ def ckobj(ck, ids=None):
 
     :param ck: Name of CK file.
     :param ids: Optional user provided spicecell.
-    :return: Set of ID codes of objects in CK file. :rtype: SpiceINTCell
+    :return: Set of ID codes of objects in CK file.
+    :rtype: SpiceINTCell
     """
     assert isinstance(ck, str)
     ck = stypes.stringToCharP(ck)
@@ -629,7 +654,7 @@ def ckopn(filename, ifname, ncomch):
     :param filename: The name of the CK file to be opened.
     :param ifname: The internal filename for the CK.
     :param ncomch: The number of characters to reserve for comments.
-    :return: :rtype:
+    :return::rtype:
     """
     filename = stypes.stringToCharP(filename)
     ifname = stypes.stringToCharP(ifname)
@@ -759,7 +784,8 @@ def clight():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/clight_c.html
 
-    :return: The function returns the speed of light in vacuo (km/sec). :rtype: float
+    :return: The function returns the speed of light in vacuo (km/sec).
+    :rtype: float
     """
     return libspice.clight_c()
 
@@ -782,7 +808,8 @@ def cmprss(delim, n, instr, lenout=None):
     :param n: Maximum consecutive occurrences of delim.
     :param instr: Input string.
     :param lenout: Available space in output string.
-    :return: :rtype: str
+    :return:
+    :rtype: str
     """
     if lenout is None:
         lenout = ctypes.c_int(len(instr) + 1)
@@ -800,7 +827,8 @@ def cnmfrm(cname, lenout):
 
     :param cname: Name of the object to find a frame for.
     :param lenout: Maximum length available for frame name.
-    :return: :rtype: tuple
+    :return:
+    :rtype: tuple
     """
     lenout = ctypes.c_int(lenout)
     frname = stypes.stringToCharP(lenout)
@@ -821,7 +849,8 @@ def conics(elts, et):
 
     :param elts: Conic elements.
     :param et: Input time.
-    :return: State of orbiting body at et. :rtype:
+    :return: State of orbiting body at et.
+    :rtype:
     """
     elts = stypes.toDoubleVector(elts)
     et = ctypes.c_double(et)
@@ -854,7 +883,9 @@ def copy(cell):
 
 
     :param cell: Cell to be copied.
-    :return: New cell :rtype: :raise NotImplementedError:
+    :return: New cell
+    :rtype:
+    :raise NotImplementedError:
     """
     assert isinstance(cell, stypes.SpiceCell)
     assert cell.dtype == 0 or cell.dtype == 1 or cell.dtype == 2
@@ -878,7 +909,8 @@ def cpos(string, chars, start):
     :param string: Any character string.
     :param chars: A collection of characters.
     :param start: Position to begin looking for one of chars.
-    :return: index :rtype: int
+    :return: index
+    :rtype: int
     """
     string = stypes.stringToCharP(string)
     chars = stypes.stringToCharP(chars)
@@ -894,7 +926,8 @@ def cposr(string, chars, start):
     :param string: Any character string.
     :param chars: A collection of characters.
     :param start: Position to begin looking for one of chars.
-    :return: index :rtype: int
+    :return: index
+    :rtype: int
     """
     string = stypes.stringToCharP(string)
     chars = stypes.stringToCharP(chars)
@@ -908,7 +941,8 @@ def cvpool(agent):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cvpool_c.html
 
     :param agent: Name of the agent to check for notices.
-    :return: :rtype: bool
+    :return:
+    :rtype: bool
     """
     agent = stypes.stringToCharP(agent)
     update = ctypes.c_bool()
@@ -924,7 +958,8 @@ def cyllat(r, lonc, z):
     :param r: Distance of point from z axis.
     :param lonc: Cylindrical angle of point from XZ plane(radians).
     :param z: Height of point above XY plane.
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     r = ctypes.c_double(r)
     lonc = ctypes.c_double(lonc)
@@ -944,7 +979,8 @@ def cylrec(r, lon, z):
     :param r: Distance of a point from z axis.
     :param lon: Angle (radians) of a point from xZ plane.
     :param z: Height of a point above xY plane.
-    :return: Rectangular coordinates of the point. :rtype:
+    :return: Rectangular coordinates of the point.
+    :rtype:
     """
     r = ctypes.c_double(r)
     lon = ctypes.c_double(lon)
@@ -962,7 +998,8 @@ def cylsph(r, lonc, z):
     :param r: Rectangular coordinates of the point.
     :param lonc: Angle (radians) of point from XZ plane.
     :param z: Height of point above XY plane.
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     r = ctypes.c_double(r)
     lonc = ctypes.c_double(lonc)
@@ -1063,7 +1100,8 @@ def dafec(handle, bufsiz, lenout):
     :param handle:
     :param bufsiz:
     :param lenout:
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     handle = ctypes.c_int(handle)
     buffer = stypes.charvector(bufsiz, lenout)
@@ -1081,7 +1119,8 @@ def daffna():
 
 
 
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     found = ctypes.c_bool()
     libspice.daffna_c(ctypes.byref(found))
@@ -1093,8 +1132,8 @@ def daffpa():
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/daffpa_c.html
 
 
-
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     found = ctypes.c_bool()
     libspice.daffpa_c(ctypes.byref(found))
@@ -1109,7 +1148,8 @@ def dafgda(handle, begin, end):
     :param handle:
     :param begin:
     :param end:
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     handle = ctypes.c_int(handle)
     data = stypes.emptyDoubleVector(abs(end - begin))
@@ -1125,7 +1165,8 @@ def dafgh():
 
 
 
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     outvalue = ctypes.c_int()
     libspice.dafgh_c(ctypes.byref(outvalue))
@@ -1138,7 +1179,8 @@ def dafgn(lenout):
 
 
     :param lenout:
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     lenout = ctypes.c_int(lenout)
     name = stypes.stringToCharP(lenout)
@@ -1152,7 +1194,8 @@ def dafgs(n=125):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgs_c.html
 
     :param n:
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     retarray = stypes.emptyDoubleVector(125)
     # libspice.dafgs_c(ctypes.cast(retarray, ctypes.POINTER(ctypes.c_double)))
@@ -1169,7 +1212,8 @@ def dafgsr(handle, recno, begin, end):
     :param recno:
     :param begin:
     :param end:
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     handle = ctypes.c_int(handle)
     recno = ctypes.c_int(recno)
@@ -1187,7 +1231,8 @@ def dafopr(fname):
 
 
     :param fname:
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
@@ -1201,7 +1246,8 @@ def dafopw(fname):
 
 
     :param fname:
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
@@ -1218,7 +1264,8 @@ def dafps(nd, ni, dc, ic):
     :param ni:
     :param dc:
     :param ic:
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     dc = stypes.toDoubleVector(dc)
     ic = stypes.toIntVector(ic)
@@ -1237,7 +1284,8 @@ def dafrda(handle, begin, end):
     :param handle:
     :param begin:
     :param end:
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     handle = ctypes.c_int(handle)
     begin = ctypes.c_int(begin)
@@ -1254,7 +1302,8 @@ def dafrfr(handle, lenout):
 
     :param handle:
     :param lenout:
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     handle = ctypes.c_int(handle)
     lenout = ctypes.c_int(lenout)
@@ -2945,7 +2994,8 @@ def failed():
     True if an error condition has been signalled via sigerr_c.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/failed_c.html
 
-    :return: a boolean :rtype: bool
+    :return: a boolean
+    :rtype: bool
     """
     return libspice.failed_c()
 
@@ -2962,7 +3012,8 @@ def fovray(inst, raydir, rframe, abcorr, observer, et):
     :param abcorr: Aberration correction flag. :type abcorr: str
     :param observer: Name or ID code string of the observer. :type observer: str
     :param et: Time of the observation (seconds past J2000). :type et: float
-    :return: Visibility flag :rtype: bool
+    :return: Visibility flag
+    :rtype: bool
     """
     inst = stypes.stringToCharP(inst)
     raydir = stypes.toDoubleVector(raydir)
@@ -2988,7 +3039,8 @@ def fovtrg(inst, target, tshape, tframe, abcorr, observer, et):
     :param abcorr: Aberration correction flag. :type abcorr: str
     :param observer: Name or ID code string of the observer. :type observer: str
     :param et: Time of the observation (seconds past J2000). :type et: float
-    :return: Visibility flag :rtype: bool
+    :return: Visibility flag
+    :rtype: bool
     """
     inst = stypes.stringToCharP(inst)
     target = stypes.stringToCharP(target)
@@ -3007,7 +3059,8 @@ def frame(x):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/frame_c.html
 
     :param x: Input vector. A parallel unit vector on output. :type x: list[3]
-    :return: a tuple of 3 list[3] :rtype: tuple
+    :return: a tuple of 3 list[3]
+    :rtype: tuple
     """
     x = stypes.toDoubleVector(x)
     y = stypes.emptyDoubleVector(3)
@@ -3021,7 +3074,8 @@ def frinfo(frcode):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/frinfo_c.html
 
     :param frcode: the idcode for some frame :type frcode: int
-    :return: a tuple of attributes associated with the frame :rtype: tuple
+    :return: a tuple of attributes associated with the frame
+    :rtype: tuple
     """
     frcode = ctypes.c_int(frcode)
     cent = ctypes.c_int()
@@ -3039,7 +3093,8 @@ def frmnam(frcode, lenout=125):
 
     :param frcode: an integer code for a reference frame :type frcode: int
     :param lenout: Maximum length of output string. :type lenout: int
-    :return: the name associated with the reference frame. :rtype: str
+    :return: the name associated with the reference frame.
+    :rtype: str
     """
     frcode = ctypes.c_int(frcode)
     lenout = ctypes.c_int(lenout)
@@ -4183,7 +4238,8 @@ def j1900():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j1900_c.html
 
-    :return: Julian Date of 1899 DEC 31 12:00:00 :rtype: float
+    :return: Julian Date of 1899 DEC 31 12:00:00
+    :rtype: float
     """
     return libspice.j1900_c()
 
@@ -4192,7 +4248,8 @@ def j1950():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j1950_c.html
 
-    :return: Julian Date of 1950 JAN 01 00:00:00 :rtype: float
+    :return: Julian Date of 1950 JAN 01 00:00:00
+    :rtype: float
     """
     return libspice.j1950_c()
 
@@ -4201,7 +4258,8 @@ def j2000():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j2000_c.html
 
-    :return: Julian Date of 2000 JAN 01 12:00:00 :rtype: float
+    :return: Julian Date of 2000 JAN 01 12:00:00
+    :rtype: float
     """
     return libspice.j2000_c()
 
@@ -4210,7 +4268,8 @@ def j2100():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j2100_c.html
 
-    :return: Julian Date of 2100 JAN 01 12:00:00 :rtype: float
+    :return: Julian Date of 2100 JAN 01 12:00:00
+    :rtype: float
     """
     return libspice.j2100_c()
 
@@ -4219,7 +4278,8 @@ def jyear():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/jyear_c.html
 
-    :return: number of seconds in a julian year :rtype: float
+    :return: number of seconds in a julian year
+    :rtype: float
     """
     return libspice.jyear_c()
 ########################################################################################################################
@@ -4368,7 +4428,8 @@ def latcyl(radius, lon, lat):
     :param radius: Distance of a point from the origin. :type radius:
     :param lon: Angle of the point from the XZ plane in radians.
     :param lat: Angle of the point from the XY plane in radians.
-    :return: (r, lonc, z) :rtype: tuple
+    :return: (r, lonc, z)
+    :rtype: tuple
     """
     radius = ctypes.c_double(radius)
     lon = ctypes.c_double(lon)
@@ -4389,7 +4450,8 @@ def latrec(radius, longitude, latitude):
     :param radius: Distance of a point from the origin. :type radius: float
     :param longitude: Longitude of point in radians. :type longitude: float
     :param latitude: Latitude of point in radians. :type latitude: float
-    :return: Rectangular coordinates of the point. :rtype: list[3]
+    :return: Rectangular coordinates of the point.
+    :rtype: list[3]
     """
     radius = ctypes.c_double(radius)
     longitude = ctypes.c_double(longitude)
@@ -4408,7 +4470,8 @@ def latsph(radius, lon, lat):
     :param radius: Distance of a point from the origin.
     :param lon: Angle of the point from the XZ plane in radians.
     :param lat: Angle of the point from the XY plane in radians.
-    :return: (rho colat, lons) :rtype: tuple
+    :return: (rho colat, lons)
+    :rtype: tuple
     """
     radius = ctypes.c_double(radius)
     lon = ctypes.c_double(lon)
@@ -4428,7 +4491,8 @@ def lcase(instr, lenout):
 
     :param instr: Input string. :type instr: str
     :param lenout: Maximum length of output string. :type lenout: int
-    :return: Output string, all lowercase. :rtype: str
+    :return: Output string, all lowercase.
+    :rtype: str
     """
     instr = stypes.stringToCharP(instr)
     lenout = ctypes.c_int(lenout)
@@ -4475,7 +4539,8 @@ def lparse(inlist, delim, nmax):
     :param inlist: List of items delimited by delim. :type inlist: list of strings
     :param delim: Single character used to delimit items. :type delim: str
     :param nmax: Maximum number of items to return. :type nmax: int
-    :return: Items in the list, left justified. :rtype: list of strings
+    :return: Items in the list, left justified.
+    :rtype: list of strings
     """
     delim = stypes.stringToCharP(delim)
     lenout = ctypes.c_int(len(inlist))
@@ -4497,7 +4562,8 @@ def lparsm(inlist, delims, nmax, lenout=None):
     :param delims: Single characters which delimit items. :type delim: str
     :param nmax: Maximum number of items to return. :type nmax: int
     :param lenout: Optional Length of strings in item array. :type lenout: int
-    :return: Items in the list, left justified. :rtype: list of strings
+    :return: Items in the list, left justified.
+    :rtype: list of strings
     """
     if lenout is None:
         lenout = ctypes.c_int(len(inlist) + 1)
@@ -4521,7 +4587,8 @@ def lparss(inlist, delims, NMAX=20, LENGTH=50):
     :param delims: Single characters which delimit items. :type delims: str
     :param NMAX: Optional nmax of spice set. :type NMAX: int
     :param LENGTH: Optional length of strings in spice set :type LENGTH: int
-    :return:  Set containing items in the list, left justified. :rtype:
+    :return:  Set containing items in the list, left justified.
+    :rtype:
     """
     inlist = stypes.stringToCharP(inlist)
     delims = stypes.stringToCharP(delims)
@@ -4540,7 +4607,8 @@ def lspcn(body, et, abcorr):
     :param body: Name of central body. :type body: str
     :param et: Epoch in seconds past J2000 TDB. :type et: float
     :param abcorr: Aberration correction. :type abcorr: str
-    :return: planetocentric longitude of the sun :rtype: float
+    :return: planetocentric longitude of the sun
+    :rtype: float
     """
     body = stypes.stringToCharP(body)
     et = ctypes.c_double(et)
@@ -4579,7 +4647,8 @@ def lstled(x, n, array):
     :param x: Value to search against. :type x: float
     :param n: Number elements in array. :type n: int
     :param array: Array of possible lower bounds :type array: List
-    :return: index of the last element of array that is less than or equal to x. :rtype: int
+    :return: index of the last element of array that is less than or equal to x.
+    :rtype: int
     """
     array = stypes.toDoubleVector(array)
     x = ctypes.c_double(x)
@@ -4618,7 +4687,8 @@ def lstltc(string, n, lenvals, array):
     :param n: Number elements in array. :type n: int
     :param lenvals: String length. :type lenvals: int
     :param array: Array of possible lower bounds :type array: List
-    :return: index of the last element of array that is lexically less than string. :rtype: int
+    :return: index of the last element of array that is lexically less than string.
+    :rtype: int
     """
     string = stypes.stringToCharP(string)
     array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=n)
@@ -4655,7 +4725,8 @@ def lstlti(x, n, array):
     :param x: Value to search against :type x: int
     :param n: Number elements in array :type n: int
     :param array: Array of possible lower bounds :type array: List
-    :return: index of the last element of array that is less than x. :rtype: int
+    :return: index of the last element of array that is less than x.
+    :rtype: int
     """
     array = stypes.toIntVector(array)
     x = ctypes.c_int(x)
@@ -4676,7 +4747,8 @@ def ltime(etobs, obs, direct, targ):
     :param obs: NAIF ID of some observer :type obs: int
     :param direct: Direction the signal travels ( "->" or "<-" ) :type direct: str
     :param targ: NAIF ID of the target object :type targ: int
-    :return: epoch and time :rtype: tuple
+    :return: epoch and time
+    :rtype: tuple
     """
     etobs = ctypes.c_double(etobs)
     obs = ctypes.c_int(obs)
@@ -4697,7 +4769,8 @@ def lx4dec(string, first):
 
     :param string: Any character string. :type string: str
     :param first: First character to scan from in string. :type first: int
-    :return: last and nchar :rtype: tuple
+    :return: last and nchar
+    :rtype: tuple
     """
     string = stypes.stringToCharP(string)
     first = ctypes.c_int(first)
@@ -4716,7 +4789,8 @@ def lx4num(string, first):
 
     :param string: Any character string. :type string: str
     :param first: First character to scan from in string. :type first: int
-    :return: last and nchar :rtype: tuple
+    :return: last and nchar
+    :rtype: tuple
     """
     string = stypes.stringToCharP(string)
     first = ctypes.c_int(first)
@@ -4735,7 +4809,8 @@ def lx4sgn(string, first):
 
     :param string: Any character string. :type string: str
     :param first: First character to scan from in string. :type first: int
-    :return: last and nchar :rtype: tuple
+    :return: last and nchar
+    :rtype: tuple
     """
     string = stypes.stringToCharP(string)
     first = ctypes.c_int(first)
@@ -4754,7 +4829,8 @@ def lx4uns(string, first):
 
     :param string: Any character string. :type string: str
     :param first: First character to scan from in string. :type first: int
-    :return: last and nchar :rtype: tuple
+    :return: last and nchar
+    :rtype: tuple
     """
     string = stypes.stringToCharP(string)
     first = ctypes.c_int(first)
@@ -4773,7 +4849,8 @@ def lxqstr(string, qchar, first):
     :param string: String to be scanned. :type string: str
     :param qchar: Quote delimiter character. :type qchar: char (string of one char)
     :param first: Character position at which to start scanning. :type first: int
-    :return: last and nchar :rtype: tuple
+    :return: last and nchar
+    :rtype: tuple
     """
     string = stypes.stringToCharP(string)
     qchar = ctypes.c_char(qchar.encode(encoding = 'UTF-8'))
@@ -4798,7 +4875,8 @@ def m2eul(r, axis3, axis2, axis1):
     :param axis3: third rotation axes. :type axis3: int
     :param axis2: second rotation axes. :type axis2: int
     :param axis1: first rotation axes. :type axis1: int
-    :return: Third, second, and first Euler angles, in radians. :rtype: tuple
+    :return: Third, second, and first Euler angles, in radians.
+    :rtype: tuple
     """
     r = stypes.listtodoublematrix(r)
     axis3 = ctypes.c_int(axis3)
@@ -4817,7 +4895,8 @@ def m2q(r):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/m2q_c.html
 
     :param r: A rotation matrix to be factored :type r: list[3][3]
-    :return: A unit quaternion representing the rotation matrix :rtype: list[4]
+    :return: A unit quaternion representing the rotation matrix
+    :rtype: list[4]
     """
     r = stypes.listtodoublematrix(r)
     q = stypes.emptyDoubleVector(4)
@@ -4835,7 +4914,8 @@ def matchi(string, templ, wstr, wchr):
     :param templ: Template (with wild cards) to test against string. :type templ: str
     :param wstr: Wild string token. :type wstr: str of length 1
     :param wchr: Wild character token. :type wchr: str of length 1
-    :return: The function returns True if string matches templ, else False :rtype: bool
+    :return: The function returns True if string matches templ, else False
+    :rtype: bool
     """
     string = stypes.stringToCharP(string)
     templ = stypes.stringToCharP(templ)
@@ -4854,7 +4934,8 @@ def matchw(string, templ, wstr, wchr):
     :param templ: Template (with wild cards) to test against string. :type templ: str
     :param wstr: Wild string token. :type wstr: str of length 1
     :param wchr: Wild character token. :type wchr: str of length 1
-    :return: The function returns True if string matches templ, else False :rtype: bool
+    :return: The function returns True if string matches templ, else False
+    :rtype: bool
     """
     string = stypes.stringToCharP(string)
     templ = stypes.stringToCharP(templ)
@@ -4875,7 +4956,8 @@ def mequ(m1):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mequ_c.html
 
     :param m1: input matrix. :type m1: list[3][3]
-    :return: Output matrix equal to m1. :rtype: list[3][3]
+    :return: Output matrix equal to m1.
+    :rtype: list[3][3]
     """
     m1 = stypes.listtodoublematrix(m1)
     mout = stypes.emptyDoubleMatrix()
@@ -4891,7 +4973,8 @@ def mequg(m1, nr, nc):
     :param m1: Input matrix. :type m1: list[*][*]
     :param nr: Row dimension of m1. :type nr: int
     :param nc: Column dimension of m1. :type nc: int
-    :return: Output matrix equal to m1 :rtype: list[*][*]
+    :return: Output matrix equal to m1
+    :rtype: list[*][*]
     """
     m1 = stypes.listtodoublematrix(m1, x=nc, y=nr)
     mout = stypes.emptyDoubleMatrix(x=nc, y=nr)
@@ -4914,7 +4997,8 @@ def mtxm(m1, m2):
 
     :param m1: 3x3 double precision matrix. :type m1: list[3][3]
     :param m2: 3x3 double precision matrix. :type m2: list[3][3]
-    :return: The produce m1 transpose times m2. :rtype: list[3][3]
+    :return: The produce m1 transpose times m2.
+    :rtype: list[3][3]
     """
     m1 = stypes.listtodoublematrix(m1)
     m2 = stypes.listtodoublematrix(m2)
@@ -4933,7 +5017,8 @@ def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
     :param ncol1: Column dimension of m1 and row dimension of mout. :type ncol1: int
     :param nr1r2: Row dimension of m1 and m2. :type nr1r2: int
     :param ncol2: Column dimension of m2. :type ncol2: int
-    :return: Transpose of m1 times m2. :rtype: list[*][*]
+    :return: Transpose of m1 times m2.
+    :rtype: list[*][*]
     """
     m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nr1r2)
     m2 = stypes.listtodoublematrix(m2, x=ncol2, y=nr1r2)
@@ -4952,7 +5037,8 @@ def mtxv(m1, vin):
 
     :param m1: 3x3 double precision matrix. :type m1: list[3][3]
     :param vin: 3-dimensional double precision vector. :type vin: list[3]
-    :return: 3-dimensional double precision vector. :rtype: list[3]
+    :return: 3-dimensional double precision vector.
+    :rtype: list[3]
     """
     m1 = stypes.listtodoublematrix(m1)
     vin = stypes.toDoubleVector(vin)
@@ -4970,7 +5056,8 @@ def mtxvg(m1, v2, ncol1, nr1r2):
     :param v2: Right-hand vector to be multiplied. :type v2: list[*]
     :param ncol1: Column dimension of m1 and length of vout. :type ncol1: int
     :param nr1r2: Row dimension of m1 and length of v2. :type nr1r2: int
-    :return: Product vector m1 transpose * v2. :rtype: list[*]
+    :return: Product vector m1 transpose * v2.
+    :rtype: list[*]
     """
     m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nr1r2)
     v2 = stypes.toDoubleVector(v2)
@@ -4988,7 +5075,8 @@ def mxm(m1, m2):
 
     :param m1: 3x3 double precision matrix. :type m1: list[3][3]
     :param m2: 3x3 double precision matrix. :type m2: list[3][3]
-    :return: 3x3 double precision matrix. :rtype: list[3][3]
+    :return: 3x3 double precision matrix.
+    :rtype: list[3][3]
     """
     m1 = stypes.listtodoublematrix(m1)
     m2 = stypes.listtodoublematrix(m2)
@@ -5007,7 +5095,8 @@ def mxmg(m1, m2, nrow1, ncol1, ncol2):
     :param nrow1: Row dimension of m1 :type nrow1: int
     :param ncol1: Column dimension of m1 and row dimension of m2. :type ncol1: int
     :param ncol2: Column dimension of m2 :type ncol2: int
-    :return: nrow1 X ncol2 double precision matrix. :rtype: list[*][*]
+    :return: nrow1 X ncol2 double precision matrix.
+    :rtype: list[*][*]
     """
     m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nrow1)
     m2 = stypes.listtodoublematrix(m2, x=ncol2, y=ncol1)
@@ -5026,7 +5115,8 @@ def mxmt(m1, m2):
 
     :param m1: 3x3 double precision matrix. :type m1: list[3][3]
     :param m2: 3x3 double precision matrix. :type m2: list[3][3]
-    :return: The product m1 times m2 transpose. :rtype: float
+    :return: The product m1 times m2 transpose.
+    :rtype: float
     """
     m1 = stypes.listtodoublematrix(m1)
     m2 = stypes.listtodoublematrix(m2)
@@ -5044,7 +5134,8 @@ def mxmtg(m1, m2, nrow1, nc1c2, nrow2):
     :param nrow1: Row dimension of m1 and row dimension of mout. :type nrow1: int
     :param nc1c2: Column dimension of m1 and column dimension of m2. :type nc1c2: int
     :param nrow2: Row dimension of m2 and column dimension of mout. :type nrow2: int
-    :return: Product matrix. :rtype: list[*][*]
+    :return: Product matrix.
+    :rtype: list[*][*]
     """
     m1 = stypes.listtodoublematrix(m1, x=nc1c2, y=nrow1)
     m2 = stypes.listtodoublematrix(m2, x=nc1c2, y=nrow2)
@@ -5062,7 +5153,8 @@ def mxv(m1, vin):
 
     :param m1:  3x3 double precision matrix. :type m1: list[3][3]
     :param vin: 3-dimensional double precision vector. :type vin: list[3]
-    :return: 3-dimensional double precision vector. :rtype: list[3]
+    :return: 3-dimensional double precision vector.
+    :rtype: list[3]
     """
     m1 = stypes.listtodoublematrix(m1)
     vin = stypes.toDoubleVector(vin)
@@ -5079,7 +5171,8 @@ def mxvg(m1, v2, nrow1, nc1r2):
     :param v2: Right-hand vector to be multiplied. :type v2: list[*]
     :param nrow1: Row dimension of m1 and length of vout. :type nrow1: int
     :param nc1r2: Column dimension of m1 and length of v2. :type nc1c2: int
-    :return: Product vector m1*v2 :rtype: list[*]
+    :return: Product vector m1*v2
+    :rtype: list[*]
     """
     m1 = stypes.listtodoublematrix(m1, x=nc1r2, y=nrow1)
     v2 = stypes.toDoubleVector(v2)
@@ -5098,7 +5191,8 @@ def namfrm(frname):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/namfrm_c.html
 
     :param frname: The name of some reference frameThe name of some reference frame. :type frname: str
-    :return: The SPICE ID code of the frame. :rtype: int
+    :return: The SPICE ID code of the frame.
+    :rtype: int
     """
     frname = stypes.stringToCharP(frname)
     frcode = ctypes.c_int()
@@ -5113,7 +5207,8 @@ def ncpos(string, chars, start):
     :param string: Any character string. :type string: str
     :param chars: A collection of characters. :type chars: str
     :param start: Position to begin looking for one not in chars. :type start: int
-    :return: index :rtype: int
+    :return: index
+    :rtype: int
     """
     string = stypes.stringToCharP(string)
     chars = stypes.stringToCharP(chars)
@@ -5128,7 +5223,8 @@ def ncposr(string, chars, start):
     :param string: Any character string. :type string: str
     :param chars:  A collection of characters. :type chars: str
     :param start: Position to begin looking for one of chars. :type start: int
-    :return: index :rtype: int
+    :return: index
+    :rtype: int
     """
     string = stypes.stringToCharP(string)
     chars = stypes.stringToCharP(chars)
@@ -5140,12 +5236,12 @@ def nearpt(positn, a, b, c):
     """ locates the point on the surface of an ellipsoid that is nearest to a specified position. It also returns the altitude of the position above the ellipsoid.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/nearpt_c.html
 
-
     :param positn: Position of a point in bodyfixed frame. :type positn: list[3]
     :param a: Length of semi-axis parallel to x-axis. :type a: float
     :param b: Length of semi-axis parallel to y-axis. :type b: float
     :param c: Length on semi-axis parallel to z-axis. :type c: float
-    :return: Point on the ellipsoid closest to positn,  Altitude of positn above the ellipsoid. :rtype: tuple
+    :return: Point on the ellipsoid closest to positn,  Altitude of positn above the ellipsoid.
+    :rtype: tuple
     """
     positn = stypes.toDoubleVector(positn)
     a = ctypes.c_double(a)
@@ -5166,7 +5262,8 @@ def npedln(a, b, c, linept, linedr):
     :param c: Length of ellipsoid's semi-axis in the z direction :type c: float
     :param linept: Length of ellipsoid's semi-axis in the z direction :type linept: list[3]
     :param linedr: Direction vector of line :type linedr: list[3]
-    :return: Nearest point on ellipsoid to line, Distance of ellipsoid from line :rtype: tuple
+    :return: Nearest point on ellipsoid to line, Distance of ellipsoid from line
+    :rtype: tuple
     """
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
@@ -5188,7 +5285,8 @@ def npelpt(point, ellips):
 
     :param point: Point whose distance to an ellipse is to be found. :type point: list[3]
     :param ellips: An ellipse. :type ellips: stypes.Ellipse
-    :return: Nearest point on ellipsoid to line, Distance of ellipsoid from line :rtype: tuple
+    :return: Nearest point on ellipsoid to line, Distance of ellipsoid from line
+    :rtype: tuple
     """
     assert(isinstance(ellips, stypes.Ellipse))
     point = stypes.toDoubleVector(point)
@@ -5205,7 +5303,8 @@ def nplnpt(linpt, lindir, point):
     :param linpt: Point on a line :type linpt: list[3]
     :param lindir: line's direction vector :type lindir: list[3]
     :param point: A second point.  :type point: list[3]
-    :return: Nearest point on the line to point, Distance between point and pnear :rtype: tuple
+    :return: Nearest point on the line to point, Distance between point and pnear
+    :rtype: tuple
     """
     linpt = stypes.toDoubleVector(linpt)
     lindir = stypes.toDoubleVector(lindir)
@@ -5222,7 +5321,8 @@ def nvc2pl(normal, constant):
 
     :param normal: A normal vector defining a plane. :type normal: list[3]
     :param constant: A constant defining a plane. :type constant: float
-    :return: plane :rtype: stypes.Plane
+    :return: plane
+    :rtype: stypes.Plane
     """
     plane = stypes.Plane()
     normal = stypes.toDoubleVector(normal)
@@ -5237,7 +5337,8 @@ def nvp2pl(normal, point):
 
     :param normal: A normal vector defining a plane. :type normal: list[3]
     :param point: A point defining a plane. :type point: list[3]
-    :return: plane :rtype: stypes.Plane
+    :return: plane
+    :rtype: stypes.Plane
     """
     normal = stypes.toDoubleVector(normal)
     point = stypes.toDoubleVector(point)
@@ -8563,7 +8664,8 @@ def vadd(v1, v2):
 
     :param v1: First vector to be added. :type v1: list[3]
     :param v2: Second vector to be added. :type v2: list[3]
-    :return: v1+v2 :rtype: list[3]
+    :return: v1+v2
+    :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8579,7 +8681,8 @@ def vaddg(v1, v2, ndim):
     :param v1: First vector to be added. :type v1: list[ndim]
     :param v2: Second vector to be added. :type v2: list[ndim]
     :param ndim: Dimension of v1 and v2. :type ndim: int
-    :return: v1+v2 :rtype: list[ndim]
+    :return: v1+v2
+    :rtype: list[ndim]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8596,7 +8699,8 @@ def valid(insize, n, inset):
     :param insize: Size (maximum cardinality) of the set. :type insize: int
     :param n: Initial no. of (possibly non-distinct) elements. :type n: int
     :param inset: Set to be validated.
-    :return: validated set :rtype: support_types.SpiceCell
+    :return: validated set
+    :rtype: support_types.SpiceCell
     """
     assert isinstance(inset, stypes.SpiceCell)
     insize = ctypes.c_int(insize)
@@ -8611,7 +8715,8 @@ def vcrss(v1, v2):
 
     :param v1: Left hand vector for cross product. :type v1: list[3]
     :param v2: Right hand vector for cross product. :type v2: list[3]
-    :return: Cross product v1 x v2. :rtype: list[3]
+    :return: Cross product v1 x v2.
+    :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8626,7 +8731,8 @@ def vdist(v1, v2):
 
     :param v1: First vector in the dot product. :type v1: list[3]
     :param v2: Second vector in the dot product. :type v2: list[3]
-    :return: the distance between v1 and v2 :rtype: float
+    :return: the distance between v1 and v2
+    :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8640,7 +8746,8 @@ def vdistg(v1, v2, ndim):
     :param v1: ndim-dimensional double precision vector. :type v1: list[ndim]
     :param v2: ndim-dimensional double precision vector. :type v2: list[ndim]
     :param ndim: Dimension of v1 and v2. :type ndim: int
-    :return: the distance between v1 and v2 :rtype: float
+    :return: the distance between v1 and v2
+    :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8654,7 +8761,8 @@ def vdot(v1, v2):
 
     :param v1: First vector in the dot product. :type v1: list[3]
     :param v2: Second vector in the dot product. :type v2: list[3]
-    :return: dot product of v1 and v2. :rtype: float
+    :return: dot product of v1 and v2.
+    :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8668,7 +8776,8 @@ def vdotg(v1, v2, ndim):
     :param v1: First vector in the dot product. :type v1: list[ndim]
     :param v2: Second vector in the dot product. :type v2: list[ndim]
     :param ndim: Dimension of v1 and v2. :type ndim: int
-    :return: dot product of v1 and v2. :rtype: float
+    :return: dot product of v1 and v2.
+    :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8681,7 +8790,8 @@ def vequ(v1):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vequ_c.html
 
     :param v1: 3-dimensional double precision vector. :type v1: list[3]
-    :return: 3-dimensional double precision vector set equal to vin. :rtype: list[3]
+    :return: 3-dimensional double precision vector set equal to vin.
+    :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.emptyDoubleVector(3)
@@ -8695,7 +8805,8 @@ def vequg(v1, ndim):
 
     :param v1: ndim-dimensional double precision vector. :type v1: list[ndim]
     :param ndim: Dimension of vin (and also vout). :type ndim: int
-    :return: ndim-dimensional double precision vector set equal to vin. :rtype: list[ndim]
+    :return: ndim-dimensional double precision vector set equal to vin.
+    :rtype: list[ndim]
     """
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.emptyDoubleVector(ndim)
@@ -8710,7 +8821,8 @@ def vhat(v1):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vhat_c.html
 
     :param v1: Vector to be unitized. :type v1: list[3]
-    :return: Unit vector v / abs(v). :rtype: list[3]
+    :return: Unit vector v / abs(v).
+    :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.emptyDoubleVector(3)
@@ -8725,7 +8837,8 @@ def vhatg(v1, ndim):
 
     :param v1: Vector to be normalized. :type v1: list[ndim]
     :param ndim: Dimension of v1 (and also vout). :type ndim: int
-    :return: Unit vector v / abs(v). :rtype: list[ndim]
+    :return: Unit vector v / abs(v).
+    :rtype: list[ndim]
     """
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.emptyDoubleVector(ndim)
@@ -8744,7 +8857,8 @@ def vlcom(a, v1, b, v2):
     :param v1: Vector in 3-space :type v1: list[3]
     :param b: Coefficient of v2 :type b: float
     :param v2: Vector in 3-space :type v2: list[3]
-    :return: Linear Vector Combination a*v1 + b*v2. :rtype: list[3]
+    :return: Linear Vector Combination a*v1 + b*v2.
+    :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8767,7 +8881,8 @@ def vlcom3(a, v1, b, v2, c, v3):
     :param v2: Vector in 3-space :type v2: list[3]
     :param c: Coefficient of v3 :type c: float
     :param v3: Vector in 3-space :type v3: list[3]
-    :return: Linear Vector Combination a*v1 + b*v2 + c*v3 :rtype: list[3]
+    :return: Linear Vector Combination a*v1 + b*v2 + c*v3
+    :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8790,7 +8905,8 @@ def vlcomg(n, a, v1, b, v2):
     :param v1: Vector in n-space :type v1: list[n]
     :param b: Coefficient of v2 :type b: float
     :param v2: Vector in n-space :type v2: list[n]
-    :return:  Linear Vector Combination a*v1 + b*v2 :rtype: list[n]
+    :return:  Linear Vector Combination a*v1 + b*v2
+    :rtype: list[n]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8808,7 +8924,8 @@ def vminug(vin, ndim):
 
     :param vin: ndim-dimensional double precision vector to be negated. :type vin: list[*]
     :param ndim: Dimension of vin. :type ndim: int
-    :return: ndim-dimensional double precision vector equal to -vin. :rtype: list[ndim]
+    :return: ndim-dimensional double precision vector equal to -vin.
+    :rtype: list[ndim]
     """
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(ndim)
@@ -8822,7 +8939,8 @@ def vminus(vin):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vminus_c.html
 
     :param vin: Vector to be negated. :type vin: list[3]
-    :return: Negated vector -v1. :rtype: list[3]
+    :return: Negated vector -v1.
+    :rtype: list[3]
     """
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(3)
@@ -8835,7 +8953,8 @@ def vnorm(v):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vnorm_c.html
 
     :param v: Vector whose magnitude is to be found. :type v: list[3]
-    :return: magnitude of v calculated in a numerically stable way :rtype: float
+    :return: magnitude of v calculated in a numerically stable way
+    :rtype: float
     """
     v = stypes.toDoubleVector(v)
     return libspice.vnorm_c(v)
@@ -8847,7 +8966,8 @@ def vnormg(v, ndim):
 
     :param v: Vector whose magnitude is to be found. :type v: list[*]
     :param ndim: Dimension of v :type ndim: int
-    :return: magnitude of v calculated in a numerically stable way :rtype: float
+    :return: magnitude of v calculated in a numerically stable way
+    :rtype: float
     """
     v = stypes.toDoubleVector(v)
     ndim = ctypes.c_int(ndim)
@@ -8861,7 +8981,8 @@ def vpack(x, y, z):
     :param x: first scalar component :type x: float
     :param y: second scalar component :type y: float
     :param z: third scalar component :type z: float
-    :return: Equivalent 3-vector. :rtype: list[3]
+    :return: Equivalent 3-vector.
+    :rtype: list[3]
     """
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
@@ -8879,7 +9000,8 @@ def vperp(a, b):
 
     :param a: The vector whose orthogonal component is sought. :type a: list[3]
     :param b: The vector used as the orthogonal reference. :type b: list[3]
-    :return: The component of a orthogonal to b. :rtype: list[3]
+    :return: The component of a orthogonal to b.
+    :rtype: list[3]
     """
     a = stypes.toDoubleVector(a)
     b = stypes.toDoubleVector(b)
@@ -8894,7 +9016,8 @@ def vprjp(vin, plane):
 
     :param vin: The projected vector. :type vin: list[3]
     :param plane: Plane containing vin. :type projpl: support_types.Plane
-    :return: Vector resulting from projection. :rtype: list[3]
+    :return: Vector resulting from projection.
+    :rtype: list[3]
     """
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(3)
@@ -8911,7 +9034,8 @@ def vprjpi(vin, projpl, invpl):
     :param vin: The projected vector. :type vin: list[3]
     :param projpl: Plane containing vin. :type projpl: support_types.Plane
     :param invpl: Plane containing inverse image of vin. :type invpl: support_types.Plane
-    :return: (Inverse projection of vin, success) :rtype: tuple
+    :return: (Inverse projection of vin, success)
+    :rtype: tuple
     """
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(3)
@@ -8929,7 +9053,8 @@ def vproj(a, b):
 
     :param a: The vector to be projected. :type a: list[3]
     :param b: The vector onto which a is to be projected. :type b: list[3]
-    :return: The projection of a onto b. :rtype: list[3]
+    :return: The projection of a onto b.
+    :rtype: list[3]
     """
     a = stypes.toDoubleVector(a)
     b = stypes.toDoubleVector(b)
@@ -8944,7 +9069,8 @@ def vrel(v1, v2):
 
     :param v1: First vector :type v1: list[3]
     :param v2: Second vector :type v2: list[3]
-    :return: the relative difference between v1 and v2. :rtype: float
+    :return: the relative difference between v1 and v2.
+    :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8955,11 +9081,11 @@ def vrelg(v1, v2, ndim):
     """ Return the relative difference between two vectors of general dimension.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vrelg_c.html
 
-
     :param v1: First vector :type v1: list[*]
     :param v2: Second vector :type v2: list[*]
     :param ndim:  Dimension of v1 and v2. :type ndim: int
-    :return: the relative difference between v1 and v2. :rtype: float
+    :return: the relative difference between v1 and v2.
+    :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8976,7 +9102,8 @@ def vrotv(v, axis, theta):
     :param v: Vector to be rotated. :type v: list[3]
     :param axis: Axis of the rotation. :type axis: list[3]
     :param theta: Angle of rotation (radians). :type theta: float
-    :return: Result of rotating v about axis by theta :rtype: list[3]
+    :return: Result of rotating v about axis by theta
+    :rtype: list[3]
     """
     v = stypes.toDoubleVector(v)
     axis = stypes.toDoubleVector(axis)
@@ -8992,7 +9119,8 @@ def vscl(s, v1):
 
     :param s: Scalar to multiply a vector :type s: float
     :param v1: Vector to be multiplied :type v1: list[3]
-    :return: Product vector, s*v1. :rtype: list[3]
+    :return: Product vector, s*v1.
+    :rtype: list[3]
     """
     s = ctypes.c_double(s)
     v1 = stypes.toDoubleVector(v1)
@@ -9008,7 +9136,8 @@ def vsclg(s, v1, ndim):
     :param s: Scalar to multiply a vector :type s: float
     :param v1: Vector to be multiplied :type v1: list[*]
     :param ndim: Dimension of v1 :type ndim: int
-    :return: Product vector, s*v1. :rtype: list[*]
+    :return: Product vector, s*v1.
+    :rtype: list[*]
     """
     s = ctypes.c_double(s)
     v1 = stypes.toDoubleVector(v1)
@@ -9027,7 +9156,8 @@ def vsep(v1, v2):
 
     :param v1: First vector :type v1: list[3]
     :param v2: Second vector :type v2: list[3]
-    :return: separation angle in radians :rtype: float
+    :return: separation angle in radians
+    :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -9044,7 +9174,8 @@ def vsepg(v1, v2, ndim):
     :param v1: First vector :type v1: list[*]
     :param v2: Second vector :type v2: list[*]
     :param ndim: The number of elements in v1 and v2. :type ndim: int
-    :return: separation angle in radians :rtype: float
+    :return: separation angle in radians
+    :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -9058,7 +9189,8 @@ def vsub(v1, v2):
 
     :param v1: First vector (minuend). :type v1: list[3]
     :param v2: Second vector (subtrahend). :type v2: list[3]
-    :return: Difference vector, v1 - v2. :rtype: list[3]
+    :return: Difference vector, v1 - v2.
+    :rtype: list[3]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -9074,7 +9206,8 @@ def vsubg(v1, v2, ndim):
     :param v1: First vector (minuend). :type v1: list[*]
     :param v2: Second vector (subtrahend). :type v2: list[*]
     :param ndim: Dimension of v1, v2, and vout. :type ndim: int
-    :return: Difference vector, v1 - v2. :rtype: list[*]
+    :return: Difference vector, v1 - v2.
+    :rtype: list[*]
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -9091,7 +9224,8 @@ def vtmv(v1, matrix, v2):
     :param v1: 3 dimensional double precision column vector. :type v1: list[3]
     :param matrix: 3x3 double precision matrix. :type matrix: list[3][3]
     :param v2: 3 dimensional double precision column vector. :type v2: list[3]
-    :return: the result of (v1**t * matrix * v2 ). :rtype: float
+    :return: the result of (v1**t * matrix * v2 ).
+    :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     matrix = stypes.listtodoublematrix(matrix)
@@ -9108,7 +9242,8 @@ def vtmvg(v1, matrix, v2, nrow, ncol):
     :param v2: m-dimensional double porecision column vector. :type v2: list[*]
     :param nrow: Number of rows in matrix (number of rows in v1.) :type nrow: int
     :param ncol: Number of columns in matrix (number of rows in v2.) :type ncol: int
-    :return: the result of (v1**t * matrix * v2 ) :rtype: float
+    :return: the result of (v1**t * matrix * v2 )
+    :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
     matrix = stypes.listtodoublematrix(matrix, x=ncol, y=nrow)
@@ -9123,7 +9258,8 @@ def vupack(v):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vupack_c.html
 
     :param v: Vector :type v: list[3]
-    :return: (x, y, z) :rtype: tuple
+    :return: (x, y, z)
+    :rtype: tuple
     """
     v1 = stypes.toDoubleVector(v)
     x = ctypes.c_double()
@@ -9138,7 +9274,8 @@ def vzero(v):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vzero_c.html
 
     :param v: Vector to be tested :type v: list[3]
-    :return: true if and only if v is the zero vector :rtype: bool
+    :return: true if and only if v is the zero vector
+    :rtype: bool
     """
     v = stypes.toDoubleVector(v)
     return libspice.vzero_c(v)
@@ -9150,7 +9287,8 @@ def vzerog(v, ndim):
 
     :param v: Vector to be tested :type v: list[*]
     :param ndim: Dimension of v :type ndim: int
-    :return: true if and only if v is the zero vector :rtype: bool
+    :return: true if and only if v is the zero vector
+    :rtype: bool
     """
     v = stypes.toDoubleVector(v)
     ndim = ctypes.c_int(ndim)
@@ -9463,7 +9601,8 @@ def xf2eul(xform, axisa, axisb, axisc):
     :param axisa: Axis A of the Euler angle factorization. :type axisa: int
     :param axisb: Axis B of the Euler angle factorization. :type axisb: int
     :param axisc: Axis C of the Euler angle factorization. :type axisc: int
-    :return: (eulang, unique) :rtype: tuple
+    :return: (eulang, unique)
+    :rtype: tuple
     """
     xform = stypes.listtodoublematrix(xform, x=6, y=6)
     axisa = ctypes.c_int(axisa)
@@ -9480,7 +9619,8 @@ def xf2rav(xform):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xf2rav_c.html
 
     :param xform: state transformation matrix :type xform: list[6][6]
-    :return: (rotation associated with xform, angular velocity associated with xform) :rtype: tuple
+    :return: (rotation associated with xform, angular velocity associated with xform)
+    :rtype: tuple
     """
     xform = stypes.listtodoublematrix(xform, x=6, y=6)
     rot = stypes.emptyDoubleMatrix()
@@ -9498,7 +9638,8 @@ def xfmsta(input_state, input_coord_sys, output_coord_sys, body):
     :param input_coord_sys: Current (input) coordinate system. :type input_coord_sys: str
     :param output_coord_sys: Desired (output) coordinate system. :type output_coord_sys: str
     :param body: Name or NAIF ID of body with which coordinates are associated (if applicable). :type body: str
-    :return: Converted output state :rtype: list[6]
+    :return: Converted output state
+    :rtype: list[6]
     """
     input_state = stypes.toDoubleVector(input_state)
     input_coord_sys = stypes.stringToCharP(input_coord_sys)
@@ -9514,7 +9655,8 @@ def xpose(m):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xpose_c.html
 
     :param m: Matrix to be transposed :type m: list[3][3]
-    :return: Transposed matrix :rtype: list[3][3]
+    :return: Transposed matrix
+    :rtype: list[3][3]
     """
     m = stypes.toDoubleMatrix(m)
     mout = stypes.emptyDoubleMatrix(x=3, y=3)
@@ -9527,7 +9669,8 @@ def xpose6(m):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xpose6_c.html
 
     :param m: Matrix to be transposed :type m: list[6][6]
-    :return: Transposed matrix :rtype: list[6][6]
+    :return: Transposed matrix
+    :rtype: list[6][6]
     """
     m = stypes.toDoubleMatrix(m)
     mout = stypes.emptyDoubleMatrix(x=6, y=6)
@@ -9542,7 +9685,8 @@ def xposeg(matrix, nrow, ncol):
     :param matrix: Matrix to be transposed :type matrix: list[*][*]
     :param nrow: Number of rows of input matrix. :type nrow: int
     :param ncol: Number of columns of input matrix :type ncol: int
-    :return: Transposed matrix :rtype: list[*][*]
+    :return: Transposed matrix
+    :rtype: list[*][*]
     """
     matrix = stypes.listtodoublematrix(matrix, x=ncol, y=nrow)
     mout = stypes.emptyDoubleMatrix(x=ncol, y=nrow)
