@@ -5766,11 +5766,13 @@ def pxfrm2(frame_from, frame_to, etfrom, etto):
 
 def q2m(q):
     """
+    Find the rotation matrix corresponding to a specified unit quaternion.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/q2m_c.html
 
-
-    :param q:
-    :return: :rtype:
+    :param q: A unit quaternion. :type q: list[4]
+    :return: A rotation matrix corresponding to q
+    :rtype: list[3][3]
     """
     q = stypes.toDoubleVector(q)
     mout = stypes.emptyDoubleMatrix()
@@ -5780,11 +5782,13 @@ def q2m(q):
 
 def qcktrc(tracelen):
     """
+    Return a string containing a traceback.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/qcktrc_c.html
 
-
-    :param tracelen:
-    :return: :rtype:
+    :param tracelen: Maximum length of output traceback string. :type tracelen: int
+    :return: A traceback string.
+    :rtype: str
     """
     tracestr = stypes.stringToCharP(tracelen)
     tracelen = ctypes.c_int(tracelen)
@@ -5794,12 +5798,15 @@ def qcktrc(tracelen):
 
 def qdq2av(q, dq):
     """
+    Derive angular velocity from a unit quaternion and its derivative
+    with respect to time.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/qdq2av_c.html
 
-
-    :param q:
-    :param dq:
-    :return: :rtype:
+    :param q: Unit SPICE quaternion. :type q: List[4]
+    :param dq: Derivative of q with respect to time :type dq: List[4]
+    :return: Angular velocity defined by q and dq.
+    :rtype: List[3]
     """
     q = stypes.toDoubleVector(q)
     dq = stypes.toDoubleVector(dq)
@@ -5810,12 +5817,14 @@ def qdq2av(q, dq):
 
 def qxq(q1, q2):
     """
+    Multiply two quaternions.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/qxq_c.html
 
-
-    :param q1:
-    :param q2:
-    :return: :rtype:
+    :param q1: First SPICE quaternion. :type q1: List[4]
+    :param q2: Second SPICE quaternion. :type q2: List[4]
+    :return: Product of q1 and q2.
+    :rtype: List[4]
     """
     q1 = stypes.toDoubleVector(q1)
     q2 = stypes.toDoubleVector(q2)
