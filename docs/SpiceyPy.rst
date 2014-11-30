@@ -1,10 +1,6 @@
 SpiceyPy package
 ================
 
-Submodules
-----------
-
-
 SpiceyPy.wrapper module
 -----------------------
 
@@ -25,14 +21,6 @@ SpiceyPy.support_types module
 -----------------------------
 
 .. automodule:: SpiceyPy.support_types
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: SpiceyPy
     :members:
     :undoc-members:
     :show-inheritance:

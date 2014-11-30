@@ -452,7 +452,8 @@ def ccifrm(frclss, clssid, lenout):
     frname = stypes.stringToCharP(lenout)
     center = ctypes.c_int()
     found = ctypes.c_bool()
-    libspice.ccifrm_c(frclss, clssid, lenout, ctypes.byref(frcode), frname, ctypes.byref(center), ctypes.byref(found))
+    libspice.ccifrm_c(frclss, clssid, lenout, ctypes.byref(frcode), frname,
+                      ctypes.byref(center), ctypes.byref(found))
     if found.value:
         return frcode.value, stypes.toPythonString(frname), center.value,
     else:
@@ -517,7 +518,8 @@ def cidfrm(cent, lenout):
     frcode = ctypes.c_int()
     frname = stypes.stringToCharP(lenout)
     found = ctypes.c_bool()
-    libspice.cidfrm_c(cent, lenout, ctypes.byref(frcode), frname, ctypes.byref(found))
+    libspice.cidfrm_c(cent, lenout, ctypes.byref(frcode), frname,
+                      ctypes.byref(found))
     if found.value:
         return frcode.value, stypes.toPythonString(frname)
     else:
@@ -537,7 +539,7 @@ def ckcls(handle):
 
 
 def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
-    #Todo: test ckcov
+    # Todo: test ckcov
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckcov_c.html
 
@@ -561,12 +563,13 @@ def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
         cover = stypes.SPICEDOUBLE_CELL(2000)
     assert isinstance(cover, stypes.SpiceCell)
     assert cover.dtype == 1
-    libspice.ckcov_c(ck, idcode, needav, level, tol, timsys, ctypes.byref(cover))
+    libspice.ckcov_c(ck, idcode, needav, level, tol, timsys,
+                     ctypes.byref(cover))
     return cover
 
 
 def ckgp(inst, sclkdp, tol, ref):
-    #Todo: test ckgp
+    # Todo: test ckgp
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckgp_c.html
 
@@ -584,12 +587,13 @@ def ckgp(inst, sclkdp, tol, ref):
     cmat = stypes.emptyDoubleMatrix()
     clkout = ctypes.c_double()
     found = ctypes.c_bool()
-    libspice.ckgp_c(inst, sclkdp, tol, ref, cmat, ctypes.byref(clkout), ctypes.byref(found))
+    libspice.ckgp_c(inst, sclkdp, tol, ref, cmat, ctypes.byref(clkout),
+                    ctypes.byref(found))
     return stypes.matrixToList(cmat), clkout.value, found.value
 
 
 def ckgpav(inst, sclkdp, tol, ref):
-    #Todo: test ckgpav
+    # Todo: test ckgpav
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckgpav_c.html
 
@@ -608,12 +612,14 @@ def ckgpav(inst, sclkdp, tol, ref):
     av = stypes.emptyDoubleVector(3)
     clkout = ctypes.c_double()
     found = ctypes.c_bool()
-    libspice.ckgpav_c(inst, sclkdp, tol, ref, cmat, av, ctypes.byref(clkout), ctypes.byref(found))
-    return stypes.matrixToList(cmat), stypes.vectorToList(av), clkout.value, found.value
+    libspice.ckgpav_c(inst, sclkdp, tol, ref, cmat, av, ctypes.byref(clkout),
+                      ctypes.byref(found))
+    return stypes.matrixToList(cmat), stypes.vectorToList(
+        av), clkout.value, found.value
 
 
 def cklpf(filename):
-    #Todo: test cklpf
+    # Todo: test cklpf
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cklpf_c.html
 
@@ -627,7 +633,7 @@ def cklpf(filename):
 
 
 def ckobj(ck, ids=None):
-    #Todo: test ckobj
+    # Todo: test ckobj
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckobj_c.html
 
@@ -665,7 +671,7 @@ def ckopn(filename, ifname, ncomch):
 
 
 def ckupf(handle):
-    #Todo: test ckupf
+    # Todo: test ckupf
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckupf_c.html
 
@@ -676,7 +682,8 @@ def ckupf(handle):
     pass
 
 
-def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats, avvs):
+def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
+          avvs):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckw01_c.html
 
@@ -704,11 +711,13 @@ def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
     quats = stypes.toDoubleMatrix(quats)
     avvs = stypes.toDoubleMatrix(avvs)
     nrec = ctypes.c_int(nrec)
-    libspice.ckw01_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats, avvs)
+    libspice.ckw01_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec,
+                     sclkdp, quats, avvs)
     pass
 
 
-def ckw02(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats, avvs, rates):
+def ckw02(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats,
+          avvs, rates):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckw02_c.html
 
@@ -738,11 +747,13 @@ def ckw02(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats, av
     quats = stypes.toDoubleMatrix(quats)
     avvs = stypes.toDoubleMatrix(avvs)
     nrec = ctypes.c_int(nrec)
-    libspice.ckw02_c(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats, avvs, rates)
+    libspice.ckw02_c(handle, begtim, endtim, inst, ref, segid, nrec, start,
+                     stop, quats, avvs, rates)
     pass
 
 
-def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats, avvs, nints, starts):
+def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
+          avvs, nints, starts):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckw03_c.html
 
@@ -773,7 +784,8 @@ def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
     nrec = ctypes.c_int(nrec)
     starts = stypes.toDoubleVector(starts)
     nints = ctypes.c_int(nints)
-    libspice.ckw03_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats, avvs, nints, starts)
+    libspice.ckw03_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec,
+                     sclkdp, quats, avvs, nints, starts)
     pass
 
 
@@ -835,7 +847,8 @@ def cnmfrm(cname, lenout):
     cname = stypes.stringToCharP(cname)
     found = ctypes.c_bool()
     frcode = ctypes.c_int()
-    libspice.cnmfrm_c(cname, lenout, ctypes.byref(frcode), frname, ctypes.byref(found))
+    libspice.cnmfrm_c(cname, lenout, ctypes.byref(frcode), frname,
+                      ctypes.byref(found))
     if found.value:
         return frcode.value, stypes.toPythonString(frname)
     else:
@@ -885,7 +898,6 @@ def copy(cell):
     :param cell: Cell to be copied.
     :return: New cell
     :rtype:
-    :raise NotImplementedError:
     """
     assert isinstance(cell, stypes.SpiceCell)
     assert cell.dtype == 0 or cell.dtype == 1 or cell.dtype == 2
@@ -936,7 +948,7 @@ def cposr(string, chars, start):
 
 
 def cvpool(agent):
-    #Todo: test cvpool
+    # Todo: test cvpool
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cvpool_c.html
 
@@ -967,7 +979,8 @@ def cyllat(r, lonc, z):
     radius = ctypes.c_double()
     lon = ctypes.c_double()
     lat = ctypes.c_double()
-    libspice.cyllat_c(r, lonc, z, ctypes.byref(radius), ctypes.byref(lon), ctypes.byref(lat))
+    libspice.cyllat_c(r, lonc, z, ctypes.byref(radius), ctypes.byref(lon),
+                      ctypes.byref(lat))
     return radius.value, lon.value, lat.value
 
 
@@ -1007,7 +1020,8 @@ def cylsph(r, lonc, z):
     radius = ctypes.c_double()
     colat = ctypes.c_double()
     lon = ctypes.c_double()
-    libspice.cyllat_c(r, lonc, z, ctypes.byref(radius), ctypes.byref(colat), ctypes.byref(lon))
+    libspice.cyllat_c(r, lonc, z, ctypes.byref(radius), ctypes.byref(colat),
+                      ctypes.byref(lon))
     return radius.value, colat.value, lon.value
 
 
@@ -1015,7 +1029,7 @@ def cylsph(r, lonc, z):
 # D
 
 def dafac(handle, n, lenvals, buffer):
-    #Todo: test dafac
+    # Todo: test dafac
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafac_c.html
 
@@ -1081,7 +1095,7 @@ def dafcs(handle):
 
 
 def dafdc(handle):
-    #Todo: test dafdc
+    # Todo: test dafdc
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafdc_c.html
 
@@ -1109,7 +1123,8 @@ def dafec(handle, bufsiz, lenout):
     lenout = ctypes.c_int(lenout)
     n = ctypes.c_int()
     done = ctypes.c_bool()
-    libspice.dafec_c(handle, bufsiz, lenout, ctypes.byref(n), ctypes.byref(buffer), ctypes.byref(done))
+    libspice.dafec_c(handle, bufsiz, lenout, ctypes.byref(n),
+                     ctypes.byref(buffer), ctypes.byref(done))
     return n.value, stypes.vectorToList(buffer), done.value
 
 
@@ -1204,7 +1219,7 @@ def dafgs(n=125):
 
 
 def dafgsr(handle, recno, begin, end):
-    #Todo test dafgsr
+    # Todo test dafgsr
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgsr_c.html
 
@@ -1221,7 +1236,8 @@ def dafgsr(handle, recno, begin, end):
     end = ctypes.c_int(end)
     data = ctypes.c_double()
     found = ctypes.c_bool()
-    libspice.dafgsr_c(handle, recno, begin, end, ctypes.byref(data), ctypes.byref(found))
+    libspice.dafgsr_c(handle, recno, begin, end, ctypes.byref(data),
+                      ctypes.byref(found))
     return data.value, found.value
 
 
@@ -1256,7 +1272,7 @@ def dafopw(fname):
 
 
 def dafps(nd, ni, dc, ic):
-    #Todo: test dafps
+    # Todo: test dafps
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafps_c.html
 
@@ -1272,12 +1288,13 @@ def dafps(nd, ni, dc, ic):
     outsum = stypes.emptyDoubleVector(nd + ni)
     nd = ctypes.c_int(nd)
     ni = ctypes.c_int(ni)
-    libspice.dafps_c(nd, ni, ctypes.byref(dc), ctypes.byref(ic), ctypes.byref(outsum))
+    libspice.dafps_c(nd, ni, ctypes.byref(dc), ctypes.byref(ic),
+                     ctypes.byref(outsum))
     return stypes.vectorToList(outsum)
 
 
 def dafrda(handle, begin, end):
-    #Todo: test dafrda
+    # Todo: test dafrda
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafrda_c.html
 
@@ -1313,12 +1330,15 @@ def dafrfr(handle, lenout):
     fward = ctypes.c_int()
     bward = ctypes.c_int()
     free = ctypes.c_int()
-    libspice.dafrfr_c(handle, lenout, ctypes.byref(nd), ctypes.byref(ni), ifname, ctypes.byref(fward), ctypes.byref(bward), ctypes.byref(free))
-    return nd.value, ni.value, stypes.toPythonString(ifname), fward.value, bward.value, free.value
+    libspice.dafrfr_c(handle, lenout, ctypes.byref(nd), ctypes.byref(ni),
+                      ifname, ctypes.byref(fward), ctypes.byref(bward),
+                      ctypes.byref(free))
+    return nd.value, ni.value, stypes.toPythonString(
+        ifname), fward.value, bward.value, free.value
 
 
 def dafrs(insum):
-    #Todo: test dafrs
+    # Todo: test dafrs
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafrs_c.html
 
@@ -1349,7 +1369,7 @@ def dafus(insum, nd, ni):
 
 
 def dasac(handle, n, buflen, buffer):
-    #Todo: test dasac
+    # Todo: test dasac
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasac_c.html
 
@@ -1368,7 +1388,7 @@ def dasac(handle, n, buflen, buffer):
 
 
 def dascls(handle):
-    #Todo: test dafdc
+    # Todo: test dafdc
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dascls_c.html
 
@@ -1380,7 +1400,7 @@ def dascls(handle):
 
 
 def dasec(handle, bufsiz, buflen):
-    #Todo: test dasec
+    # Todo: test dasec
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasec_c.html
 
@@ -1395,12 +1415,13 @@ def dasec(handle, bufsiz, buflen):
     buflen = ctypes.c_int(buflen)
     n = ctypes.c_int()
     done = ctypes.c_bool()
-    libspice.dafec_c(handle, bufsiz, buflen, ctypes.byref(n), ctypes.byref(buffer), ctypes.byref(done))
+    libspice.dafec_c(handle, bufsiz, buflen, ctypes.byref(n),
+                     ctypes.byref(buffer), ctypes.byref(done))
     return n.value, stypes.vectorToList(buffer), done.value
 
 
 def dasopr(fname):
-    #Todo: test dasopr
+    # Todo: test dasopr
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasopr_c.html
 
@@ -1436,7 +1457,8 @@ def deltet(epoch, eptype):
 
     :param epoch:
     :param eptype:
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     epoch = ctypes.c_double(epoch)
     eptype = stypes.stringToCharP(eptype)
@@ -1467,7 +1489,8 @@ def dgeodr(x, y, z, re, f):
     :param z:
     :param re:
     :param f:
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
@@ -1501,7 +1524,8 @@ def diff(a, b):
 
     :param a:
     :param b:
-    :return: :rtype: :raise NotImplementedError:
+    :return:
+    :rtype:
     """
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
@@ -1527,7 +1551,8 @@ def dlatdr(x, y, z):
     :param x:
     :param y:
     :param z:
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
@@ -1544,7 +1569,8 @@ def dp2hx(number, lenout=None):
 
     :param number:
     :param lenout:
-    :return: :rtype:
+    :return:
+    :rtype:
     """
     if lenout is None:
         lenout = 255
@@ -1743,7 +1769,8 @@ def dtpool(name):
     found = ctypes.c_bool()
     n = ctypes.c_int()
     typeout = ctypes.c_char()
-    libspice.dtpool_c(name, ctypes.byref(found), ctypes.byref(n), ctypes.byref(typeout))
+    libspice.dtpool_c(name, ctypes.byref(found), ctypes.byref(n),
+                      ctypes.byref(typeout))
     return found.value, n.value, stypes.toPythonString(typeout.value)
 
 
@@ -1850,6 +1877,7 @@ def dvsep(s1, s2):
     s2 = stypes.toDoubleVector(s2)
     return libspice.dvsep_c(s1, s2)
 
+
 ########################################################################################################################
 # E
 
@@ -1900,8 +1928,10 @@ def edterm(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts):
     obspos = stypes.emptyDoubleVector(3)
     trmpts = stypes.emptyDoubleMatrix(x=3, y=npts)
     npts = ctypes.c_int(npts)
-    libspice.edterm_c(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts, ctypes.byref(trgepc), obspos, trmpts)
-    return trgepc.value, stypes.vectorToList(obspos), stypes.matrixToList(trmpts)
+    libspice.edterm_c(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts,
+                      ctypes.byref(trgepc), obspos, trmpts)
+    return trgepc.value, stypes.vectorToList(obspos), stypes.matrixToList(
+        trmpts)
 
 
 def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
@@ -1926,7 +1956,8 @@ def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     vallen = ctypes.c_int(vallen)
     cvals = stypes.listToCharArrayPtr(cvals)
     isnull = ctypes.c_bool(isnull)
-    libspice.ekacec_c(handle, segno, recno, column, nvals, vallen, cvals, isnull)
+    libspice.ekacec_c(handle, segno, recno, column, nvals, vallen, cvals,
+                      isnull)
     pass
 
 
@@ -1977,7 +2008,8 @@ def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
     libspice.ekacei_c(handle, segno, recno, column, nvals, ivals, isnull)
 
 
-def ekaclc(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs, wkindx):
+def ekaclc(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs,
+           wkindx):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekaclc_c.html
 
@@ -2002,7 +2034,8 @@ def ekaclc(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs, wkindx)
     nlflgs = stypes.toBoolVector(nlflgs)
     rcptrs = stypes.toIntVector(rcptrs)
     wkindx = stypes.toIntVector(wkindx)
-    libspice.ekaclc_c(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs, wkindx)
+    libspice.ekaclc_c(handle, segno, column, vallen, cvals, entszs, nlflgs,
+                      rcptrs, wkindx)
     return stypes.vectorToList(wkindx)
 
 
@@ -2029,7 +2062,8 @@ def ekacld(handle, segno, column, dvals, entszs, nlflgs, rcptrs, wkindx):
     nlflgs = stypes.toBoolVector(nlflgs)
     rcptrs = stypes.toIntVector(rcptrs)
     wkindx = stypes.toIntVector(wkindx)
-    libspice.ekacld_c(handle, segno, column, dvals, entszs, nlflgs, rcptrs, wkindx)
+    libspice.ekacld_c(handle, segno, column, dvals, entszs, nlflgs, rcptrs,
+                      wkindx)
     return stypes.vectorToList(wkindx)
 
 
@@ -2056,7 +2090,8 @@ def ekacli(handle, segno, column, ivals, entszs, nlflgs, rcptrs, wkindx):
     nlflgs = stypes.toBoolVector(nlflgs)
     rcptrs = stypes.toIntVector(rcptrs)
     wkindx = stypes.toIntVector(wkindx)
-    libspice.ekacli_c(handle, segno, column, ivals, entszs, nlflgs, rcptrs, wkindx)
+    libspice.ekacli_c(handle, segno, column, ivals, entszs, nlflgs, rcptrs,
+                      wkindx)
     return stypes.vectorToList(wkindx)
 
 
@@ -2080,7 +2115,7 @@ def ekbseg(handle, tabnam, ncols, cnmlen, cnames, declen, decls):
     # if 'cnmlen' in kwargs:
     # cnmlen = kwargs['cnmlen']
     # else:
-    #     cnmlen = len(max(cnames, key=len)) + 1
+    # cnmlen = len(max(cnames, key=len)) + 1
     # if 'declen' in kwargs:
     #     declen = kwargs['declen']
     # else:
@@ -2108,7 +2143,8 @@ def ekbseg(handle, tabnam, ncols, cnmlen, cnames, declen, decls):
     declen = ctypes.c_int(declen)
     decls = stypes.listToCharArray(decls)
     segno = ctypes.c_int()
-    libspice.ekbseg_c(handle, tabnam, ncols, cnmlen, cnames, declen, decls, ctypes.byref(segno))
+    libspice.ekbseg_c(handle, tabnam, ncols, cnmlen, cnames, declen, decls,
+                      ctypes.byref(segno))
     return segno.value
 
 
@@ -2185,7 +2221,8 @@ def ekffld(handle, segno, rcptrs):
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     rcptrs = stypes.toIntVector(rcptrs)
-    libspice.ekffld_c(handle, segno, ctypes.cast(rcptrs, ctypes.POINTER(ctypes.c_int)))
+    libspice.ekffld_c(handle, segno,
+                      ctypes.cast(rcptrs, ctypes.POINTER(ctypes.c_int)))
     pass
 
 
@@ -2203,7 +2240,8 @@ def ekfind(query, lenout):
     nmrows = ctypes.c_int()
     error = ctypes.c_bool()
     errmsg = stypes.stringToCharP(lenout)
-    libspice.ekfind_c(query, lenout, ctypes.byref(nmrows), ctypes.byref(error), errmsg)
+    libspice.ekfind_c(query, lenout, ctypes.byref(nmrows), ctypes.byref(error),
+                      errmsg)
     return nmrows.value, error.value, stypes.toPythonString(errmsg)
 
 
@@ -2225,7 +2263,8 @@ def ekgc(selidx, row, element, lenout):
     null = ctypes.c_bool()
     found = ctypes.c_bool()
     cdata = stypes.stringToCharP(lenout)
-    libspice.ekgc_c(selidx, row, element, lenout, cdata, ctypes.byref(null), ctypes.byref(found))
+    libspice.ekgc_c(selidx, row, element, lenout, cdata, ctypes.byref(null),
+                    ctypes.byref(found))
     return stypes.toPythonString(cdata), null.value, found.value
 
 
@@ -2245,7 +2284,8 @@ def ekgd(selidx, row, element):
     ddata = ctypes.c_double()
     null = ctypes.c_bool()
     found = ctypes.c_bool()
-    libspice.ekgd_c(selidx, row, element, ctypes.byref(ddata), ctypes.byref(null), ctypes.byref(found))
+    libspice.ekgd_c(selidx, row, element, ctypes.byref(ddata),
+                    ctypes.byref(null), ctypes.byref(found))
     return ddata.value, null.value, found.value
 
 
@@ -2265,7 +2305,8 @@ def ekgi(selidx, row, element):
     idata = ctypes.c_int()
     null = ctypes.c_bool()
     found = ctypes.c_bool()
-    libspice.ekgi_c(selidx, row, element, ctypes.byref(idata), ctypes.byref(null), ctypes.byref(found))
+    libspice.ekgi_c(selidx, row, element, ctypes.byref(idata),
+                    ctypes.byref(null), ctypes.byref(found))
     return idata.value, null.value, found.value
 
 
@@ -2294,12 +2335,13 @@ def ekifld(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls):
     recptrs = stypes.emptyIntVector(nrows)
     decls = stypes.listToCharArray(decls)
     segno = ctypes.c_int()
-    libspice.ekifld_c(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls, ctypes.byref(segno), recptrs)
+    libspice.ekifld_c(handle, tabnam, ncols, nrows, cnmlen, cnames, declen,
+                      decls, ctypes.byref(segno), recptrs)
     return segno.value, stypes.vectorToList(recptrs)
 
 
 def ekinsr(handle, segno, recno):
-    #Todo: test ekinsr
+    # Todo: test ekinsr
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekinsr_c.html
 
@@ -2329,7 +2371,7 @@ def eklef(fname):
 
 
 def eknelt(selidx, row):
-    #Todo: test eknelt
+    # Todo: test eknelt
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eknelt_c.html
 
@@ -2427,7 +2469,7 @@ def ekopw(fname):
 
 
 def ekpsel(query, msglen, tablen, collen):
-    #Todo: test ekpsel
+    # Todo: test ekpsel
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekpsel_c.html
 
@@ -2450,12 +2492,18 @@ def ekpsel(query, msglen, tablen, collen):
     cols = stypes.charvector(100, 65)
     error = ctypes.c_bool()
     errmsg = stypes.stringToCharP(msglen)
-    libspice.ekpsel_c(query, msglen, tablen, collen, ctypes.byref(n), ctypes.byref(xbegs), ctypes.byref(xends), ctypes.byref(xtypes), ctypes.byref(xclass), ctypes.byref(tabs), ctypes.byref(cols), ctypes.byref(error), ctypes.byref(errmsg))
-    return n.value, xbegs.value, xends.value, xtypes.value, xclass.value, stypes.vectorToList(tabs), stypes.vectorToList(cols), error.value, stypes.toPythonString(errmsg)
+    libspice.ekpsel_c(query, msglen, tablen, collen, ctypes.byref(n),
+                      ctypes.byref(xbegs), ctypes.byref(xends),
+                      ctypes.byref(xtypes), ctypes.byref(xclass),
+                      ctypes.byref(tabs), ctypes.byref(cols),
+                      ctypes.byref(error), ctypes.byref(errmsg))
+    return n.value, xbegs.value, xends.value, xtypes.value, xclass.value, stypes.vectorToList(
+        tabs), stypes.vectorToList(cols), error.value, stypes.toPythonString(
+        errmsg)
 
 
 def ekrcec(handle, segno, recno, column, lenout, nelts=3):
-    #Todo: test ekrcec , possible new way to get back 2d char arrays
+    # Todo: test ekrcec , possible new way to get back 2d char arrays
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekrcec_c.html
 
@@ -2475,12 +2523,13 @@ def ekrcec(handle, segno, recno, column, lenout, nelts=3):
     nvals = ctypes.c_int()
     cvals = stypes.charvector(ndim=nelts, lenvals=lenout)
     isnull = ctypes.c_bool()
-    libspice.ekrcec_c(handle, segno, recno, column, lenout, ctypes.byref(nvals), ctypes.byref(cvals), ctypes.byref(isnull))
+    libspice.ekrcec_c(handle, segno, recno, column, lenout, ctypes.byref(nvals),
+                      ctypes.byref(cvals), ctypes.byref(isnull))
     return nvals.value, stypes.vectorToList(cvals), isnull.value
 
 
 def ekrced(handle, segno, recno, column):
-    #Todo: test ekrced
+    # Todo: test ekrced
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekrced_c.html
 
@@ -2497,12 +2546,13 @@ def ekrced(handle, segno, recno, column):
     nvals = ctypes.c_int()
     dvals = ctypes.POINTER(ctypes.c_double)  # array of length nvals
     isnull = ctypes.c_bool()
-    libspice.ekrced_c(handle, segno, recno, column, ctypes.byref(nvals), ctypes.byref(dvals), ctypes.byref(isnull))
+    libspice.ekrced_c(handle, segno, recno, column, ctypes.byref(nvals),
+                      ctypes.byref(dvals), ctypes.byref(isnull))
     return nvals.value, stypes.vectorToList(dvals), isnull.value
 
 
 def ekrcei(handle, segno, recno, column):
-    #Todo: test ekrcei
+    # Todo: test ekrcei
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekrcei_c.html
 
@@ -2519,7 +2569,8 @@ def ekrcei(handle, segno, recno, column):
     nvals = ctypes.c_int()
     ivals = ctypes.pointer(ctypes.c_int)  # array of length nvals
     isnull = ctypes.c_bool()
-    libspice.ekrcei_c(handle, segno, recno, column, ctypes.byref(nvals), ivals, ctypes.byref(isnull))
+    libspice.ekrcei_c(handle, segno, recno, column, ctypes.byref(nvals), ivals,
+                      ctypes.byref(isnull))
     return nvals.value, stypes.vectorToList(ivals), isnull.value
 
 
@@ -2556,7 +2607,7 @@ def ektnam(n, lenout):
 
 
 def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
-    #Todo: test ekucec
+    # Todo: test ekucec
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekucec_c.html
 
@@ -2577,12 +2628,13 @@ def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     vallen = ctypes.c_int(vallen)
     isnull = ctypes.c_bool(isnull)
     cvals = stypes.listToCharArrayPtr(cvals, xLen=vallen, yLen=nvals)
-    libspice.ekucec_c(handle, segno, recno, column, nvals, vallen, cvals, isnull)
+    libspice.ekucec_c(handle, segno, recno, column, nvals, vallen, cvals,
+                      isnull)
     pass
 
 
 def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
-    #Todo: test ekucei
+    # Todo: test ekucei
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekuced_c.html
 
@@ -2601,12 +2653,13 @@ def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
     nvals = ctypes.c_int(nvals)
     isnull = ctypes.c_bool(isnull)
     dvals = stypes.toDoubleVector(dvals)
-    libspice.ekuced_c(handle, segno, recno, column, nvals, ctypes.byref(dvals), isnull)
+    libspice.ekuced_c(handle, segno, recno, column, nvals, ctypes.byref(dvals),
+                      isnull)
     pass
 
 
 def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
-    #Todo: test ekucei
+    # Todo: test ekucei
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekucei_c.html
 
@@ -2625,7 +2678,8 @@ def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
     nvals = ctypes.c_int(nvals)
     isnull = ctypes.c_bool(isnull)
     ivals = stypes.toIntVector(ivals)
-    libspice.ekucei_c(handle, segno, recno, column, nvals, ctypes.byref(ivals), isnull)
+    libspice.ekucei_c(handle, segno, recno, column, nvals, ctypes.byref(ivals),
+                      isnull)
     pass
 
 
@@ -2649,12 +2703,13 @@ def el2cgv(ellipse):
     :param ellipse:
     :return: :rtype:
     """
-    assert(isinstance(ellipse, stypes.Ellipse))
+    assert (isinstance(ellipse, stypes.Ellipse))
     center = stypes.emptyDoubleVector(3)
     smajor = stypes.emptyDoubleVector(3)
     sminor = stypes.emptyDoubleVector(3)
     libspice.el2cgv_c(ctypes.byref(ellipse), center, smajor, sminor)
-    return stypes.vectorToList(center), stypes.vectorToList(smajor), stypes.vectorToList(sminor)
+    return stypes.vectorToList(center), stypes.vectorToList(
+        smajor), stypes.vectorToList(sminor)
 
 
 def elemc(item, inset):
@@ -2874,8 +2929,10 @@ def et2lst(et, body, lon, typein, timlen, ampmlen):
     time = stypes.stringToCharP(timlen)
     ampm = stypes.stringToCharP(ampmlen)
     libspice.et2lst_c(et, body, lon, typein, timlen, ampmlen,
-                    ctypes.byref(hr), ctypes.byref(mn), ctypes.byref(sc), time, ampm)
-    return hr.value, mn.value, sc.value, stypes.toPythonString(time), stypes.toPythonString(ampm)
+                      ctypes.byref(hr), ctypes.byref(mn), ctypes.byref(sc),
+                      time, ampm)
+    return hr.value, mn.value, sc.value, stypes.toPythonString(
+        time), stypes.toPythonString(ampm)
 
 
 def et2utc(et, formatStr, prec, lenout):
@@ -2992,6 +3049,7 @@ def expool(name):
 def failed():
     """
     True if an error condition has been signalled via sigerr_c.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/failed_c.html
 
     :return: a boolean
@@ -3003,7 +3061,9 @@ def failed():
 def fovray(inst, raydir, rframe, abcorr, observer, et):
     # Unsure if et is returned or not (I vs I/O)
     """
-    Determine if a specified ray is within the field-of-view (FOV) of a specified instrument at a given time.
+    Determine if a specified ray is within the field-of-view (FOV) of a
+    specified instrument at a given time.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/fovray_c.html
 
     :param inst: Name or ID code string of the instrument. :type inst: str
@@ -3022,7 +3082,8 @@ def fovray(inst, raydir, rframe, abcorr, observer, et):
     observer = stypes.stringToCharP(observer)
     et = ctypes.c_double(et)
     visible = ctypes.c_bool()
-    libspice.fovray_c(inst, raydir, rframe, abcorr, observer, ctypes.byref(et), ctypes.byref(visible))
+    libspice.fovray_c(inst, raydir, rframe, abcorr, observer, ctypes.byref(et),
+                      ctypes.byref(visible))
     return visible.value
 
 
@@ -3050,7 +3111,8 @@ def fovtrg(inst, target, tshape, tframe, abcorr, observer, et):
     observer = stypes.stringToCharP(observer)
     et = ctypes.c_double(et)
     visible = ctypes.c_bool()
-    libspice.fovtrg_c(inst, target, tshape, tframe, abcorr, observer, ctypes.byref(et), ctypes.byref(visible))
+    libspice.fovtrg_c(inst, target, tshape, tframe, abcorr, observer,
+                      ctypes.byref(et), ctypes.byref(visible))
     return visible.value
 
 
@@ -3066,7 +3128,8 @@ def frame(x):
     y = stypes.emptyDoubleVector(3)
     z = stypes.emptyDoubleVector(3)
     libspice.frame_c(x, y, z)
-    return stypes.vectorToList(x), stypes.vectorToList(y), stypes.vectorToList(z)
+    return stypes.vectorToList(x), stypes.vectorToList(y), stypes.vectorToList(
+        z)
 
 
 def frinfo(frcode):
@@ -3082,13 +3145,15 @@ def frinfo(frcode):
     frclss = ctypes.c_int()
     clssid = ctypes.c_int()
     found = ctypes.c_bool()
-    libspice.frinfo_c(frcode, ctypes.byref(cent), ctypes.byref(frclss), ctypes.byref(clssid), ctypes.byref(found))
+    libspice.frinfo_c(frcode, ctypes.byref(cent), ctypes.byref(frclss),
+                      ctypes.byref(clssid), ctypes.byref(found))
     return cent.value, frclss.value, clssid.value, found.value
 
 
 def frmnam(frcode, lenout=125):
     """
     Retrieve the name of a reference frame associated with a SPICE ID code.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/frmnam_c.html
 
     :param frcode: an integer code for a reference frame :type frcode: int
@@ -3106,6 +3171,7 @@ def frmnam(frcode, lenout=125):
 def ftncls(unit):
     """
     Close a file designated by a Fortran-style integer logical unit.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ftncls_c.html
 
     :param unit: Fortran-style logical unit. :type unit: int
@@ -3118,6 +3184,7 @@ def ftncls(unit):
 def furnsh(path):
     """
     Load one or more SPICE kernels into a program.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/furnsh_c.html
 
     :param path: one or more paths to kernels :type path: str or list of str
@@ -3129,6 +3196,7 @@ def furnsh(path):
         path = stypes.stringToCharP(path)
         libspice.furnsh_c(path)
     pass
+
 
 ########################################################################################################################
 # G
@@ -3152,7 +3220,8 @@ def gcpool(name, start, room, lenout):
     n = ctypes.c_int()
     cvals = stypes.emptyCharArray(lenout, room)
     found = ctypes.c_bool()
-    libspice.gcpool_c(name, start, room, lenout, ctypes.byref(n), ctypes.byref(cvals), ctypes.byref(found))
+    libspice.gcpool_c(name, start, room, lenout, ctypes.byref(n),
+                      ctypes.byref(cvals), ctypes.byref(found))
     if found.value:
         return [stypes.toPythonString(x.value) for x in cvals[0:n.value]]
     else:
@@ -3176,7 +3245,8 @@ def gdpool(name, start, room):
     n = ctypes.c_int()
     found = ctypes.c_bool()
     libspice.gdpool_c(name, start, room, ctypes.byref(n),
-                      ctypes.cast(values, ctypes.POINTER(ctypes.c_double)), ctypes.byref(found))
+                      ctypes.cast(values, ctypes.POINTER(ctypes.c_double)),
+                      ctypes.byref(found))
     if found.value:
         return stypes.vectorToList(values)[0:n.value]
     else:
@@ -3264,8 +3334,10 @@ def getfov(instid, room, shapelen, framelen):
     n = ctypes.c_int()
     bounds = stypes.emptyDoubleMatrix(x=3, y=room)
     room = ctypes.c_int(room)
-    libspice.getfov_c(instid, room, shapelen, framelen, shape, framen, bsight, ctypes.byref(n), bounds)
-    return stypes.toPythonString(shape), stypes.toPythonString(framen), stypes.vectorToList(
+    libspice.getfov_c(instid, room, shapelen, framelen, shape, framen, bsight,
+                      ctypes.byref(n), bounds)
+    return stypes.toPythonString(shape), stypes.toPythonString(
+        framen), stypes.vectorToList(
         bsight), n.value, stypes.matrixToList(bounds)[0:n.value]
 
 
@@ -3307,7 +3379,8 @@ def gfclrh():
     pass
 
 
-def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls, cnfine, result):
+def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls,
+           cnfine, result):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfdist_c.html
 
@@ -3339,7 +3412,7 @@ def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls, cnfine
                       step, nintvls, ctypes.byref(cnfine), ctypes.byref(result))
 
 
-#gdevnt  callbacks? cells
+# gdevnt  callbacks? cells
 
 
 #gffove  callbacks? cells
@@ -3363,7 +3436,8 @@ def gfinth(sigcode):
 #gfocce  callbacks? cells
 
 
-def gfoclt(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr, step, cnfine, result):
+def gfoclt(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr,
+           step, cnfine, result):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfoclt_c.html
 
@@ -3396,10 +3470,12 @@ def gfoclt(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr, 
     obsrvr = stypes.stringToCharP(obsrvr)
     step = ctypes.c_double(step)
     libspice.gfoclt_c(occtyp, front, fshape, fframe, back, bshape, bframe,
-                      abcorr, obsrvr, step, ctypes.byref(cnfine), ctypes.byref(result))
+                      abcorr, obsrvr, step, ctypes.byref(cnfine),
+                      ctypes.byref(result))
 
 
-def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine, result):
+def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals,
+         cnfine, result):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfpa_c.html
 
@@ -3430,11 +3506,13 @@ def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals,
     step = ctypes.c_double(step)
     nintvals = ctypes.c_int(nintvals)
     libspice.gfpa_c(target, illmin, abcorr, obsrvr, relate, refval,
-                    adjust, step, nintvals, ctypes.byref(cnfine), ctypes.byref(result))
+                    adjust, step, nintvals, ctypes.byref(cnfine),
+                    ctypes.byref(result))
     pass
 
 
-def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval, adjust, step, nintvals, cnfine, result):
+def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval,
+           adjust, step, nintvals, cnfine, result):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfposc_c.html
 
@@ -3469,7 +3547,8 @@ def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval, adjus
     step = ctypes.c_double(step)
     nintvals = ctypes.c_int(nintvals)
     libspice.gfposc_c(target, inframe, abcorr, obsrvr, crdsys, coord,
-                      relate, refval, adjust, step, nintvals, ctypes.byref(cnfine), ctypes.byref(result))
+                      relate, refval, adjust, step, nintvals,
+                      ctypes.byref(cnfine), ctypes.byref(result))
     pass
 
 
@@ -3561,10 +3640,12 @@ def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result):
     abcorr = stypes.stringToCharP(abcorr)
     obsrvr = stypes.stringToCharP(obsrvr)
     step = ctypes.c_double(step)
-    libspice.gfrfov_c(inst, raydir, rframe, abcorr, obsrvr, step, ctypes.byref(cnfine), ctypes.byref(result))
+    libspice.gfrfov_c(inst, raydir, rframe, abcorr, obsrvr, step,
+                      ctypes.byref(cnfine), ctypes.byref(result))
 
 
-def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine, result):
+def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine,
+         result):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfrr_c.html
 
@@ -3593,10 +3674,12 @@ def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine,
     step = ctypes.c_double(step)
     nintvals = ctypes.c_int(nintvals)
     libspice.gfrr_c(target, abcorr, obsrvr, relate, refval,
-                    adjust, step, nintvals, ctypes.byref(cnfine), ctypes.byref(result))
+                    adjust, step, nintvals, ctypes.byref(cnfine),
+                    ctypes.byref(result))
 
 
-def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine, result):
+def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr,
+          relate, refval, adjust, step, nintvals, cnfine, result):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfsep_c.html
 
@@ -3639,7 +3722,8 @@ def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr, rela
                      ctypes.byref(cnfine), ctypes.byref(result))
 
 
-def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord, relate, refval, adjust, step, nintvals,
+def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord,
+           relate, refval, adjust, step, nintvals,
            cnfine, result):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfsntc_c.html
@@ -3682,7 +3766,8 @@ def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord, re
     nintvals = ctypes.c_int(nintvals)
     libspice.gfsntc_c(target, fixref, method, abcorr, obsrvr,
                       dref, dvec, crdsys, coord, relate, refval,
-                      adjust, step, nintvals, ctypes.byref(cnfine), ctypes.byref(result))
+                      adjust, step, nintvals, ctypes.byref(cnfine),
+                      ctypes.byref(result))
 
 
 def gfsstp(step):
@@ -3723,7 +3808,8 @@ def gfstol(value):
     pass
 
 
-def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate, refval, adjust, step, nintvals, cnfine,
+def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate,
+           refval, adjust, step, nintvals, cnfine,
            result):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfsubc_c.html
@@ -3761,7 +3847,8 @@ def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate, refval
     step = ctypes.c_double(step)
     nintvals = ctypes.c_int(nintvals)
     libspice.gfsubc_c(target, fixref, method, abcorr, obsrvr, crdsys,
-                      coord, relate, refval, adjust, step, nintvals, ctypes.byref(cnfine), ctypes.byref(result))
+                      coord, relate, refval, adjust, step, nintvals,
+                      ctypes.byref(cnfine), ctypes.byref(result))
 
 
 def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
@@ -3787,7 +3874,8 @@ def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
     obsrvr = stypes.stringToCharP(obsrvr)
     step = ctypes.c_double(step)
     result = stypes.SPICEDOUBLE_CELL(cnfine.size)
-    libspice.gftfov_c(inst, target, tshape, tframe, abcorr, obsrvr, step, ctypes.byref(cnfine), ctypes.byref(result))
+    libspice.gftfov_c(inst, target, tshape, tframe, abcorr, obsrvr, step,
+                      ctypes.byref(cnfine), ctypes.byref(result))
 
 
 # gfudb has call backs
@@ -3812,7 +3900,8 @@ def gipool(name, start, room):
     room = ctypes.c_int(room)
     n = ctypes.c_int()
     found = ctypes.c_bool()
-    libspice.gipool_c(name, start, room, ctypes.byref(n), ivals, ctypes.byref(found))
+    libspice.gipool_c(name, start, room, ctypes.byref(n), ivals,
+                      ctypes.byref(found))
     if found.value:
         return stypes.vectorToList(ivals)[0:n.value]
     else:
@@ -3837,7 +3926,8 @@ def gnpool(name, start, room, lenout):
     lenout = ctypes.c_int(lenout)
     n = ctypes.c_int()
     found = ctypes.c_bool()
-    libspice.gnpool_c(name, start, room, lenout, ctypes.byref(n), kvars, ctypes.byref(found))
+    libspice.gnpool_c(name, start, room, lenout, ctypes.byref(n), kvars,
+                      ctypes.byref(found))
     return stypes.vectorToList(kvars)[0:n.value], found.value
 
 
@@ -3869,7 +3959,8 @@ def hx2dp(string):
     errmsg = stypes.stringToCharP(lenout)
     number = ctypes.c_double()
     error = ctypes.c_bool()
-    libspice.hx2dp_c(string, lenout, ctypes.byref(number), ctypes.byref(error), errmsg)
+    libspice.hx2dp_c(string, lenout, ctypes.byref(number), ctypes.byref(error),
+                     errmsg)
     if not error.value:
         return number.value
     else:
@@ -3913,7 +4004,8 @@ def illum(target, et, abcorr, obsrvr, spoint):
     phase = ctypes.c_double(0)
     solar = ctypes.c_double(0)
     emissn = ctypes.c_double(0)
-    libspice.illum_c(target, et, abcorr, obsrvr, spoint, ctypes.byref(phase), ctypes.byref(solar), ctypes.byref(emissn))
+    libspice.illum_c(target, et, abcorr, obsrvr, spoint, ctypes.byref(phase),
+                     ctypes.byref(solar), ctypes.byref(emissn))
     return phase.value, solar.value, emissn.value
 
 
@@ -3943,9 +4035,12 @@ def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
     phase = ctypes.c_double(0)
     solar = ctypes.c_double(0)
     emissn = ctypes.c_double(0)
-    libspice.ilumin_c(method, target, et, fixref, abcorr, obsrvr, spoint, ctypes.byref(trgepc),
-              srfvec, ctypes.byref(phase), ctypes.byref(solar), ctypes.byref(emissn))
-    return trgepc.value, stypes.vectorToList(srfvec), phase.value, solar.value, emissn.value
+    libspice.ilumin_c(method, target, et, fixref, abcorr, obsrvr, spoint,
+                      ctypes.byref(trgepc),
+                      srfvec, ctypes.byref(phase), ctypes.byref(solar),
+                      ctypes.byref(emissn))
+    return trgepc.value, stypes.vectorToList(
+        srfvec), phase.value, solar.value, emissn.value
 
 
 def inedpl(a, b, c, plane):
@@ -3965,7 +4060,8 @@ def inedpl(a, b, c, plane):
     b = ctypes.c_double(b)
     c = ctypes.c_double(c)
     found = ctypes.c_bool()
-    libspice.inedpl_c(a, b, c, ctypes.byref(plane), ctypes.byref(ellipse), ctypes.byref(found))
+    libspice.inedpl_c(a, b, c, ctypes.byref(plane), ctypes.byref(ellipse),
+                      ctypes.byref(found))
     if found.value:
         return ellipse
     else:
@@ -3981,12 +4077,13 @@ def inelpl(ellips, plane):
     :param plane:
     :return: :rtype:
     """
-    assert(isinstance(plane, stypes.Plane))
-    assert(isinstance(ellips, stypes.Ellipse))
+    assert (isinstance(plane, stypes.Plane))
+    assert (isinstance(ellips, stypes.Ellipse))
     nxpts = ctypes.c_int()
     xpt1 = stypes.emptyDoubleVector(3)
     xpt2 = stypes.emptyDoubleVector(3)
-    libspice.inelpl_c(ctypes.byref(ellips), ctypes.byref(plane), ctypes.byref(nxpts), xpt1, xpt2)
+    libspice.inelpl_c(ctypes.byref(ellips), ctypes.byref(plane),
+                      ctypes.byref(nxpts), xpt1, xpt2)
     return nxpts.value, stypes.vectorToList(xpt1), stypes.vectorToList(xpt2)
 
 
@@ -4000,12 +4097,13 @@ def inrypl(vertex, direct, plane):
     :param plane:
     :return: :rtype:
     """
-    assert(isinstance(plane, stypes.Plane))
+    assert (isinstance(plane, stypes.Plane))
     vertex = stypes.toDoubleVector(vertex)
     direct = stypes.toDoubleVector(direct)
     nxpts = ctypes.c_int()
     xpt = stypes.emptyDoubleVector(3)
-    libspice.inrypl_c(vertex, direct, ctypes.byref(plane), ctypes.byref(nxpts), xpt)
+    libspice.inrypl_c(vertex, direct, ctypes.byref(plane), ctypes.byref(nxpts),
+                      xpt)
     return nxpts.value, stypes.vectorToList(xpt)
 
 
@@ -4070,7 +4168,8 @@ def inter(a, b):
 
     :param a:
     :param b:
-    :return: :rtype: :raise NotImplementedError:
+    :return:
+    :rtype:
     """
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
@@ -4282,6 +4381,8 @@ def jyear():
     :rtype: float
     """
     return libspice.jyear_c()
+
+
 ########################################################################################################################
 # K
 
@@ -4319,8 +4420,10 @@ def kdata(which, kind, fillen, typlen, srclen):
     source = stypes.stringToCharP(srclen)
     handle = ctypes.c_int()
     found = ctypes.c_bool()
-    libspice.kdata_c(which, kind, fillen, typlen, srclen, file, filtyp, source, ctypes.byref(handle), ctypes.byref(found))
-    return stypes.toPythonString(file), stypes.toPythonString(filtyp), stypes.toPythonString(source), handle.value, found.value
+    libspice.kdata_c(which, kind, fillen, typlen, srclen, file, filtyp, source,
+                     ctypes.byref(handle), ctypes.byref(found))
+    return stypes.toPythonString(file), stypes.toPythonString(
+        filtyp), stypes.toPythonString(source), handle.value, found.value
 
 
 def kinfo(file, typlen, srclen):
@@ -4340,8 +4443,10 @@ def kinfo(file, typlen, srclen):
     source = stypes.stringToCharP(" " * srclen.value)
     handle = ctypes.c_int()
     found = ctypes.c_bool()
-    libspice.kinfo_c(file, typlen, srclen, filtyp, source, ctypes.byref(handle), ctypes.byref(found))
-    return stypes.toPythonString(filtyp), stypes.toPythonString(source), handle.value, found.value
+    libspice.kinfo_c(file, typlen, srclen, filtyp, source, ctypes.byref(handle),
+                     ctypes.byref(found))
+    return stypes.toPythonString(filtyp), stypes.toPythonString(
+        source), handle.value, found.value
 
 
 def kplfrm(frmcls, cell_size=1000):
@@ -4397,8 +4502,10 @@ def kxtrct(keywd, termlen, terms, nterms, stringlen, substrlen, instring):
     substrlen = ctypes.c_int(substrlen)
     found = ctypes.c_bool()
     libspice.kxtrct_c(keywd, termlen, ctypes.byref(terms), nterms,
-                      stringlen, substrlen, instring, ctypes.byref(found), substr)
-    return stypes.toPythonString(instring), found.value, stypes.toPythonString(substr)
+                      stringlen, substrlen, instring, ctypes.byref(found),
+                      substr)
+    return stypes.toPythonString(instring), found.value, stypes.toPythonString(
+        substr)
 
 
 ########################################################################################################################
@@ -4437,7 +4544,8 @@ def latcyl(radius, lon, lat):
     r = ctypes.c_double()
     lonc = ctypes.c_double()
     z = ctypes.c_double()
-    libspice.latcyl_c(radius, lon, lat, ctypes.byref(r), ctypes.byref(lonc), ctypes.byref(z))
+    libspice.latcyl_c(radius, lon, lat, ctypes.byref(r), ctypes.byref(lonc),
+                      ctypes.byref(z))
     return r.value, lonc.value, z.value
 
 
@@ -4479,7 +4587,8 @@ def latsph(radius, lon, lat):
     rho = ctypes.c_double()
     colat = ctypes.c_double()
     lons = ctypes.c_double()
-    libspice.latsph_c(radius, lon, lat, ctypes.byref(rho), ctypes.byref(colat), ctypes.byref(lons))
+    libspice.latsph_c(radius, lon, lat, ctypes.byref(rho), ctypes.byref(colat),
+                      ctypes.byref(lons))
     return rho.value, colat.value, lons.value
 
 
@@ -4519,6 +4628,7 @@ def lmpool(cvals):
     """
     Load the variables contained in an internal buffer into the
     kernel pool.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lmpool_c.html
 
     :param cvals: list of strings  :type cvals: list
@@ -4548,7 +4658,8 @@ def lparse(inlist, delim, nmax):
     nmax = ctypes.c_int(nmax)
     items = stypes.emptyCharArray(lenout, nmax)
     n = ctypes.c_int()
-    libspice.lparse_c(inlist, delim, nmax, lenout, ctypes.byref(n), ctypes.byref(items))
+    libspice.lparse_c(inlist, delim, nmax, lenout, ctypes.byref(n),
+                      ctypes.byref(items))
     return [stypes.toPythonString(x.value) for x in items[0:n.value]]
 
 
@@ -4756,7 +4867,8 @@ def ltime(etobs, obs, direct, targ):
     targ = ctypes.c_int(targ)
     ettarg = ctypes.c_double()
     elapsd = ctypes.c_double()
-    libspice.ltime_c(etobs, obs, direct, targ, ctypes.byref(ettarg), ctypes.byref(elapsd))
+    libspice.ltime_c(etobs, obs, direct, targ, ctypes.byref(ettarg),
+                     ctypes.byref(elapsd))
     return ettarg.value, elapsd.value
 
 
@@ -4853,11 +4965,12 @@ def lxqstr(string, qchar, first):
     :rtype: tuple
     """
     string = stypes.stringToCharP(string)
-    qchar = ctypes.c_char(qchar.encode(encoding = 'UTF-8'))
+    qchar = ctypes.c_char(qchar.encode(encoding='UTF-8'))
     first = ctypes.c_int(first)
     last = ctypes.c_int()
     nchar = ctypes.c_int()
-    libspice.lxqstr_c(string, qchar, first, ctypes.byref(last), ctypes.byref(nchar))
+    libspice.lxqstr_c(string, qchar, first, ctypes.byref(last),
+                      ctypes.byref(nchar))
     return last.value, nchar.value
 
 
@@ -4869,6 +4982,7 @@ def m2eul(r, axis3, axis2, axis1):
     """
     Factor a rotation matrix as a product of three rotations
     about specified coordinate axes.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/m2eul_c.html
 
     :param r: A rotation matrix to be factored :type r: list[3][3]
@@ -4885,13 +4999,15 @@ def m2eul(r, axis3, axis2, axis1):
     angle3 = ctypes.c_double()
     angle2 = ctypes.c_double()
     angle1 = ctypes.c_double()
-    libspice.m2eul_c(r, axis3, axis2, axis1, ctypes.byref(angle3), ctypes.byref(angle2), ctypes.byref(angle1))
+    libspice.m2eul_c(r, axis3, axis2, axis1, ctypes.byref(angle3),
+                     ctypes.byref(angle2), ctypes.byref(angle1))
     return angle3.value, angle2.value, angle1.value
 
 
 def m2q(r):
     """
     Find a unit quaternion corresponding to a specified rotation matrix.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/m2q_c.html
 
     :param r: A rotation matrix to be factored :type r: list[3][3]
@@ -4908,6 +5024,7 @@ def matchi(string, templ, wstr, wchr):
     """
     Determine whether a string is matched by a template containing wild cards.
     The pattern comparison is case-insensitive.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/matchi_c.html
 
     :param string: String to be tested. :type string: str
@@ -4919,8 +5036,8 @@ def matchi(string, templ, wstr, wchr):
     """
     string = stypes.stringToCharP(string)
     templ = stypes.stringToCharP(templ)
-    wstr = ctypes.c_char(wstr.encode(encoding = 'UTF-8'))
-    wchr = ctypes.c_char(wchr.encode(encoding = 'UTF-8'))
+    wstr = ctypes.c_char(wstr.encode(encoding='UTF-8'))
+    wchr = ctypes.c_char(wchr.encode(encoding='UTF-8'))
     return libspice.matchi_c(string, templ, wstr, wchr)
 
 
@@ -4928,6 +5045,7 @@ def matchw(string, templ, wstr, wchr):
     # ctypes.c_char(wstr.encode(encoding='UTF-8')
     """
     Determine whether a string is matched by a template containing wild cards.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/matchw_c.html
 
     :param string: String to be tested. :type string: str
@@ -4939,8 +5057,8 @@ def matchw(string, templ, wstr, wchr):
     """
     string = stypes.stringToCharP(string)
     templ = stypes.stringToCharP(templ)
-    wstr = ctypes.c_char(wstr.encode(encoding = 'UTF-8'))
-    wchr = ctypes.c_char(wchr.encode(encoding = 'UTF-8'))
+    wstr = ctypes.c_char(wstr.encode(encoding='UTF-8'))
+    wchr = ctypes.c_char(wchr.encode(encoding='UTF-8'))
     return libspice.matchw_c(string, templ, wstr, wchr)
 
 
@@ -4953,6 +5071,7 @@ def matchw(string, templ, wstr, wchr):
 def mequ(m1):
     """
     Set one double precision 3x3 matrix equal to another.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mequ_c.html
 
     :param m1: input matrix. :type m1: list[3][3]
@@ -4968,6 +5087,7 @@ def mequ(m1):
 def mequg(m1, nr, nc):
     """
     Set one double precision matrix of arbitrary size equal to another.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mequg_c.html
 
     :param m1: Input matrix. :type m1: list[*][*]
@@ -4993,6 +5113,7 @@ def mequg(m1, nr, nc):
 def mtxm(m1, m2):
     """
     Multiply the transpose of a 3x3 matrix and a 3x3 matrix.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mtxm_c.html
 
     :param m1: 3x3 double precision matrix. :type m1: list[3][3]
@@ -5009,7 +5130,9 @@ def mtxm(m1, m2):
 
 def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
     """
-    Multiply the transpose of a matrix with another matrix, both of arbitrary size.
+    Multiply the transpose of a matrix with
+    another matrix, both of arbitrary size.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mtxmg_c.html
 
     :param m1: nr1r2 X ncol1 double precision matrix. :type m1: list[*][*]
@@ -5032,7 +5155,9 @@ def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
 
 def mtxv(m1, vin):
     """
-    Multiplies the transpose of a 3x3 matrix on the left with a vector on the right.
+    Multiplies the transpose of a 3x3 matrix
+    on the left with a vector on the right.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mtxv_c.html
 
     :param m1: 3x3 double precision matrix. :type m1: list[3][3]
@@ -5049,7 +5174,9 @@ def mtxv(m1, vin):
 
 def mtxvg(m1, v2, ncol1, nr1r2):
     """
-    Multiply the transpose of a matrix and a vector of arbitrary size.
+    Multiply the transpose of a matrix and
+    a vector of arbitrary size.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mtxvg_c.html
 
     :param m1: Left-hand matrix to be multiplied. :type m1: list[*][*]
@@ -5071,6 +5198,7 @@ def mtxvg(m1, v2, ncol1, nr1r2):
 def mxm(m1, m2):
     """
     Multiply two 3x3 matrices.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxm_c.html
 
     :param m1: 3x3 double precision matrix. :type m1: list[3][3]
@@ -5088,6 +5216,7 @@ def mxm(m1, m2):
 def mxmg(m1, m2, nrow1, ncol1, ncol2):
     """
     Multiply two double precision matrices of arbitrary size.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxmg_c.html
 
     :param m1: nrow1 X ncol1 double precision matrix. :type m1: list[*][*]
@@ -5111,6 +5240,7 @@ def mxmg(m1, m2, nrow1, ncol1, ncol2):
 def mxmt(m1, m2):
     """
     Multiply a 3x3 matrix and the transpose of another 3x3 matrix.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxmt_c.html
 
     :param m1: 3x3 double precision matrix. :type m1: list[3][3]
@@ -5126,7 +5256,9 @@ def mxmt(m1, m2):
 
 
 def mxmtg(m1, m2, nrow1, nc1c2, nrow2):
-    """  Multiply a matrix and the transpose of a matrix, both of arbitrary size.
+    """
+    Multiply a matrix and the transpose of a matrix, both of arbitrary size.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxmtg_c.html
 
     :param m1: Left-hand matrix to be multiplied. :type m1: list[*][*]
@@ -5148,7 +5280,10 @@ def mxmtg(m1, m2, nrow1, nc1c2, nrow2):
 
 
 def mxv(m1, vin):
-    """ Multiply a 3x3 double precision matrix with a 3-dimensional double precision vector.
+    """
+    Multiply a 3x3 double precision matrix with a
+    3-dimensional double precision vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxv_c.html
 
     :param m1:  3x3 double precision matrix. :type m1: list[3][3]
@@ -5164,7 +5299,9 @@ def mxv(m1, vin):
 
 
 def mxvg(m1, v2, nrow1, nc1r2):
-    """ Multiply a matrix and a vector of arbitrary size.
+    """
+    Multiply a matrix and a vector of arbitrary size.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mxvg_c.html
 
     :param m1: Left-hand matrix to be multiplied. :type m1: list[*][*]
@@ -5182,12 +5319,15 @@ def mxvg(m1, v2, nrow1, nc1r2):
     libspice.mxvg_c(m1, v2, nrow1, nc1r2, vout)
     return stypes.vectorToList(vout)
 
+
 ########################################################################################################################
 # N
 
 
 def namfrm(frname):
-    """ Look up the frame ID code associated with a string.
+    """
+    Look up the frame ID code associated with a string.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/namfrm_c.html
 
     :param frname: The name of some reference frameThe name of some reference frame. :type frname: str
@@ -5201,7 +5341,11 @@ def namfrm(frname):
 
 
 def ncpos(string, chars, start):
-    """ Find the first occurrence in a string of a character NOT belonging to a collection of characters, starting at a specified location searching forward.
+    """
+    Find the first occurrence in a string of a character NOT belonging
+    to a collection of characters, starting at a specified
+    location searching forward.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ncpos_c.html
 
     :param string: Any character string. :type string: str
@@ -5288,7 +5432,7 @@ def npelpt(point, ellips):
     :return: Nearest point on ellipsoid to line, Distance of ellipsoid from line
     :rtype: tuple
     """
-    assert(isinstance(ellips, stypes.Ellipse))
+    assert (isinstance(ellips, stypes.Ellipse))
     point = stypes.toDoubleVector(point)
     pnear = stypes.emptyDoubleVector(3)
     dist = ctypes.c_double()
@@ -5316,7 +5460,9 @@ def nplnpt(linpt, lindir, point):
 
 
 def nvc2pl(normal, constant):
-    """ Make a plane from a normal vector and a constant.
+    """
+    Make a plane from a normal vector and a constant.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/nvc2pl_c.html
 
     :param normal: A normal vector defining a plane. :type normal: list[3]
@@ -5332,7 +5478,9 @@ def nvc2pl(normal, constant):
 
 
 def nvp2pl(normal, point):
-    """ Make a plane from a normal vector and a point.
+    """
+    Make a plane from a normal vector and a point.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/nvp2pl_c.html
 
     :param normal: A normal vector defining a plane. :type normal: list[3]
@@ -5350,7 +5498,8 @@ def nvp2pl(normal, point):
 ########################################################################################################################
 # O
 
-def occult(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer, et):
+def occult(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer,
+           et):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/occult_c.html
 
@@ -5376,7 +5525,8 @@ def occult(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer, e
     observer = stypes.stringToCharP(observer)
     et = ctypes.c_double(et)
     occult_code = ctypes.c_int()
-    libspice.occult_c(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer, et, ctypes.byref(occult_code))
+    libspice.occult_c(target1, shape1, frame1, target2, shape2, frame2, abcorr,
+                      observer, et, ctypes.byref(occult_code))
     return occult_code.value
 
 
@@ -5501,6 +5651,7 @@ def oscelt(state, et, mu):
     elts = stypes.emptyDoubleVector(8)
     libspice.oscelt_c(state, et, mu, elts)
     return stypes.vectorToList(elts)
+
 
 ########################################################################################################################
 # P
@@ -5669,10 +5820,11 @@ def pjelpl(elin, plane):
     :param plane:
     :return: :rtype:
     """
-    assert(isinstance(elin, stypes.Ellipse))
-    assert(isinstance(plane, stypes.Plane))
+    assert (isinstance(elin, stypes.Ellipse))
+    assert (isinstance(plane, stypes.Plane))
     elout = stypes.Ellipse()
-    libspice.pjelpl_c(ctypes.byref(elin), ctypes.byref(plane), ctypes.byref(elout))
+    libspice.pjelpl_c(ctypes.byref(elin), ctypes.byref(plane),
+                      ctypes.byref(elout))
     return elout
 
 
@@ -5684,7 +5836,7 @@ def pl2nvc(plane):
     :param plane:
     :return: :rtype:
     """
-    assert(isinstance(plane, stypes.Plane))
+    assert (isinstance(plane, stypes.Plane))
     normal = stypes.emptyDoubleVector(3)
     constant = ctypes.c_double()
     libspice.pl2nvc_c(ctypes.byref(plane), normal, ctypes.byref(constant))
@@ -5699,7 +5851,7 @@ def pl2nvp(plane):
     :param plane:
     :return: :rtype:
     """
-    assert(isinstance(plane, stypes.Plane))
+    assert (isinstance(plane, stypes.Plane))
     normal = stypes.emptyDoubleVector(3)
     point = stypes.emptyDoubleVector(3)
     libspice.pl2nvp_c(ctypes.byref(plane), normal, point)
@@ -5719,7 +5871,8 @@ def pl2psv(plane):
     span1 = stypes.emptyDoubleVector(3)
     span2 = stypes.emptyDoubleVector(3)
     libspice.pl2psv_c(ctypes.byref(plane), point, span1, span2)
-    return stypes.vectorToList(point), stypes.vectorToList(span1), stypes.vectorToList(span2)
+    return stypes.vectorToList(point), stypes.vectorToList(
+        span1), stypes.vectorToList(span2)
 
 
 def pos(string, substr, start):
@@ -5861,6 +6014,7 @@ def pxfrm2(frame_from, frame_to, etfrom, etto):
     libspice.pxfrm2_c(frame_from, frame_to, etfrom, etto, outmatrix)
     return stypes.matrixToList(outmatrix)
 
+
 ########################################################################################################################
 # Q
 
@@ -5932,6 +6086,7 @@ def qxq(q1, q2):
     vout = stypes.emptyDoubleVector(4)
     libspice.qxq_c(q1, q2, vout)
     return stypes.vectorToList(vout)
+
 
 ########################################################################################################################
 # R
@@ -6014,7 +6169,8 @@ def reccyl(rectan):
     radius = ctypes.c_double(0)
     lon = ctypes.c_double(0)
     z = ctypes.c_double(0)
-    libspice.reccyl_c(rectan, ctypes.byref(radius), ctypes.byref(lon), ctypes.byref(z))
+    libspice.reccyl_c(rectan, ctypes.byref(radius), ctypes.byref(lon),
+                      ctypes.byref(z))
     return radius.value, lon.value, z.value
 
 
@@ -6030,7 +6186,8 @@ def reclat(rectan):
     radius = ctypes.c_double(0)
     longitude = ctypes.c_double(0)
     latitude = ctypes.c_double(0)
-    libspice.reclat_c(rectan, ctypes.byref(radius), ctypes.byref(longitude), ctypes.byref(latitude))
+    libspice.reclat_c(rectan, ctypes.byref(radius), ctypes.byref(longitude),
+                      ctypes.byref(latitude))
     return radius.value, longitude.value, latitude.value
 
 
@@ -6050,7 +6207,8 @@ def recgeo(rectan, re, f):
     longitude = ctypes.c_double(0)
     latitude = ctypes.c_double(0)
     alt = ctypes.c_double(0)
-    libspice.recgeo_c(rectan, re, f, ctypes.byref(longitude), ctypes.byref(latitude), ctypes.byref(alt))
+    libspice.recgeo_c(rectan, re, f, ctypes.byref(longitude),
+                      ctypes.byref(latitude), ctypes.byref(alt))
     return longitude.value, latitude.value, alt.value
 
 
@@ -6072,7 +6230,8 @@ def recpgr(body, rectan, re, f):
     lon = ctypes.c_double()
     lat = ctypes.c_double()
     alt = ctypes.c_double()
-    libspice.recpgr_c(body, rectan, re, f, ctypes.byref(lon), ctypes.byref(lat), ctypes.byref(alt))
+    libspice.recpgr_c(body, rectan, re, f, ctypes.byref(lon), ctypes.byref(lat),
+                      ctypes.byref(alt))
     return lon.value, lat.value, alt.value
 
 
@@ -6088,7 +6247,8 @@ def recrad(rectan):
     outrange = ctypes.c_double()
     ra = ctypes.c_double()
     dec = ctypes.c_double()
-    libspice.recrad_c(rectan, ctypes.byref(outrange), ctypes.byref(ra), ctypes.byref(dec))
+    libspice.recrad_c(rectan, ctypes.byref(outrange), ctypes.byref(ra),
+                      ctypes.byref(dec))
     return outrange.value, ra.value, dec.value
 
 
@@ -6104,7 +6264,8 @@ def recsph(rectan):
     r = ctypes.c_double()
     colat = ctypes.c_double()
     lon = ctypes.c_double()
-    libspice.recsph_c(rectan, ctypes.byref(r), ctypes.byref(colat), ctypes.byref(lon))
+    libspice.recsph_c(rectan, ctypes.byref(r), ctypes.byref(colat),
+                      ctypes.byref(lon))
     return r.value, colat.value, lon.value
 
 
@@ -6457,6 +6618,7 @@ def rquad(a, b, c):
     libspice.rquad_c(a, b, c, root1, root2)
     return stypes.vectorToList(root1), stypes.vectorToList(root2)
 
+
 ########################################################################################################################
 # S
 
@@ -6610,7 +6772,8 @@ def scpart(sc):
     pstart = stypes.emptyDoubleVector(9999)
     pstop = stypes.emptyDoubleVector(9999)
     libspice.scpart_c(sc, nparts, pstart, pstop)
-    return stypes.vectorToList(pstart)[0:nparts.value], stypes.vectorToList(pstop)[0:nparts.value]
+    return stypes.vectorToList(pstart)[0:nparts.value], stypes.vectorToList(
+        pstop)[0:nparts.value]
 
 
 def scs2e(sc, sclkch):
@@ -6668,7 +6831,8 @@ def sdiff(a, b):
 
     :param a:
     :param b:
-    :return: :rtype: :raise NotImplementedError:
+    :return:
+    :rtype:
     """
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
@@ -6805,8 +6969,10 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
     trgepc = ctypes.c_double(0)
     srfvec = stypes.emptyDoubleVector(3)
     found = ctypes.c_bool(0)
-    libspice.sincpt_c(method, target, et, fixref, abcorr, obsrvr, dref, dvec, spoint, ctypes.byref(trgepc), srfvec, ctypes.byref(found))
-    return stypes.vectorToList(spoint), trgepc.value, stypes.vectorToList(srfvec), found.value
+    libspice.sincpt_c(method, target, et, fixref, abcorr, obsrvr, dref, dvec,
+                      spoint, ctypes.byref(trgepc), srfvec, ctypes.byref(found))
+    return stypes.vectorToList(spoint), trgepc.value, stypes.vectorToList(
+        srfvec), found.value
 
 
 def size(cell):
@@ -6848,7 +7014,8 @@ def sphcyl(radius, colat, slon):
     r = ctypes.c_double()
     lon = ctypes.c_double()
     z = ctypes.c_double()
-    libspice.sphcyl_c(radius, colat, slon, ctypes.byref(r), ctypes.byref(lon), ctypes.byref(z))
+    libspice.sphcyl_c(radius, colat, slon, ctypes.byref(r), ctypes.byref(lon),
+                      ctypes.byref(z))
     return r.value, lon.value, z.value
 
 
@@ -6868,7 +7035,8 @@ def sphlat(r, colat, lons):
     radius = ctypes.c_double()
     lon = ctypes.c_double()
     lat = ctypes.c_double()
-    libspice.sphcyl_c(r, colat, lons, ctypes.byref(radius), ctypes.byref(lon), ctypes.byref(lat))
+    libspice.sphcyl_c(r, colat, lons, ctypes.byref(radius), ctypes.byref(lon),
+                      ctypes.byref(lat))
     return radius.value, lon.value, lat.value
 
 
@@ -6910,7 +7078,8 @@ def spkacs(targ, et, ref, abcorr, obs):
     starg = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
     dlt = ctypes.c_double()
-    libspice.spkacs_c(targ, et, ref, abcorr, obs, starg, ctypes.byref(lt), ctypes.byref(dlt))
+    libspice.spkacs_c(targ, et, ref, abcorr, obs, starg, ctypes.byref(lt),
+                      ctypes.byref(dlt))
     return stypes.vectorToList(starg), lt.value, dlt.value
 
 
@@ -6982,7 +7151,8 @@ def spkaps(targ, et, ref, abcorr, stobs, accobs):
     starg = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
     dlt = ctypes.c_double()
-    libspice.spkaps_c(targ, et, ref, abcorr, stobs, accobs, starg, ctypes.byref(lt), ctypes.byref(dlt))
+    libspice.spkaps_c(targ, et, ref, abcorr, stobs, accobs, starg,
+                      ctypes.byref(lt), ctypes.byref(dlt))
     return stypes.vectorToList(starg), lt.value, dlt.value
 
 
@@ -7026,7 +7196,8 @@ def spk14b(handle, segid, body, center, framename, first, last, chbdeg):
     first = ctypes.c_double(first)
     last = ctypes.c_double(last)
     chbdeg = ctypes.c_int(chbdeg)
-    libspice.spk14b_c(handle, segid, body, center, framename, first, last, chbdeg)
+    libspice.spk14b_c(handle, segid, body, center, framename, first, last,
+                      chbdeg)
     pass
 
 
@@ -7095,7 +7266,8 @@ def spkcpo(target, et, outref, refloc, abcorr, obspos, obsctr, obsref):
     obsref = stypes.stringToCharP(obsref)
     state = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
-    libspice.spkcpo_c(target, et, outref, refloc, abcorr, obspos, obsctr, obsref, state, ctypes.byref(lt))
+    libspice.spkcpo_c(target, et, outref, refloc, abcorr, obspos, obsctr,
+                      obsref, state, ctypes.byref(lt))
     return stypes.vectorToList(state), lt.value
 
 
@@ -7124,7 +7296,8 @@ def spkcpt(trgpos, trgctr, trgref, et, outref, refloc, abcorr, obsrvr):
     obsrvr = stypes.stringToCharP(obsrvr)
     state = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
-    libspice.spkcpt_c(trgpos, trgctr, trgref, et, outref, refloc, abcorr, obsrvr, state, ctypes.byref(lt))
+    libspice.spkcpt_c(trgpos, trgctr, trgref, et, outref, refloc, abcorr,
+                      obsrvr, state, ctypes.byref(lt))
     return stypes.vectorToList(state), lt.value
 
 
@@ -7155,7 +7328,8 @@ def spkcvo(target, et, outref, refloc, abcorr, obssta, obsepc, obsct, obsref):
     obsref = stypes.stringToCharP(obsref)
     state = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
-    libspice.spkcvo_c(target, et, outref, refloc, abcorr, obssta, obsepc, obsct, obsref, state, ctypes.byref(lt))
+    libspice.spkcvo_c(target, et, outref, refloc, abcorr, obssta, obsepc, obsct,
+                      obsref, state, ctypes.byref(lt))
     return stypes.vectorToList(state), lt.value
 
 
@@ -7186,7 +7360,8 @@ def spkcvt(trgsta, trgepc, trgctr, trgref, et, outref, refloc, abcorr, obsrvr):
     obsrvr = stypes.stringToCharP(obsrvr)
     state = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
-    libspice.spkcvt_c(trgpos, trgepc, trgctr, trgref, et, outref, refloc, abcorr, obsrvr, state, ctypes.byref(lt))
+    libspice.spkcvt_c(trgpos, trgepc, trgctr, trgref, et, outref, refloc,
+                      abcorr, obsrvr, state, ctypes.byref(lt))
     return stypes.vectorToList(state), lt.value
 
 
@@ -7336,7 +7511,8 @@ def spkltc(targ, et, ref, abcorr, stobs):
     starg = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
     dlt = ctypes.c_double()
-    libspice.spkltc_c(targ, et, ref, abcorr, stobs, starg, ctypes.byref(lt), ctypes.byref(dlt))
+    libspice.spkltc_c(targ, et, ref, abcorr, stobs, starg, ctypes.byref(lt),
+                      ctypes.byref(dlt))
     return stypes.vectorToList(starg), lt.value, dlt.value
 
 
@@ -7426,7 +7602,8 @@ def spkpos(targ, et, ref, abcorr, obs):
         positions = numpy.zeros((vlen, 3), dtype=numpy.float)
         times = numpy.zeros(vlen, dtype=numpy.float)
         for (index, time) in enumerate(et):
-            positions[index], times[index] = spkpos(targ, time, ref, abcorr, obs)
+            positions[index], times[index] = spkpos(targ, time, ref, abcorr,
+                                                    obs)
         return positions, times
     targ = stypes.stringToCharP(targ)
     ref = stypes.stringToCharP(ref)
@@ -7453,7 +7630,8 @@ def spkpvn(handle, descr, et):
     ref = ctypes.c_int()
     state = stypes.emptyDoubleVector(6)
     center = ctypes.c_int()
-    libspice.spkpvn_c(handle, descr, et, ctypes.byref(ref), state, ctypes.byref(center))
+    libspice.spkpvn_c(handle, descr, et, ctypes.byref(ref), state,
+                      ctypes.byref(center))
     return ref.value, stypes.vectorToList(state), center.value
 
 
@@ -7474,9 +7652,11 @@ def spksfs(body, et, idlen):
     descr = stypes.emptyDoubleVector(5)
     identstring = stypes.stringToCharP(idlen)
     found = ctypes.c_bool()
-    libspice.spksfs_c(body, et, idlen, ctypes.byref(handle), descr, identstring, ctypes.byref(found))
+    libspice.spksfs_c(body, et, idlen, ctypes.byref(handle), descr, identstring,
+                      ctypes.byref(found))
     if found.value:
-        return handle.value, stypes.vectorToList(descr), stypes.toPythonString(identstring)
+        return handle.value, stypes.vectorToList(descr), stypes.toPythonString(
+            identstring)
     else:
         return None
 
@@ -7540,7 +7720,10 @@ def spkuds(descr):
     last = ctypes.c_double()
     begin = ctypes.c_int()
     end = ctypes.c_int()
-    libspice.spkuds_c(descr, ctypes.byref(body), ctypes.byref(center), ctypes.byref(framenum), ctypes.byref(typenum), ctypes.byref(first), ctypes.byref(last), ctypes.byref(begin), ctypes.byref(end))
+    libspice.spkuds_c(descr, ctypes.byref(body), ctypes.byref(center),
+                      ctypes.byref(framenum), ctypes.byref(typenum),
+                      ctypes.byref(first), ctypes.byref(last),
+                      ctypes.byref(begin), ctypes.byref(end))
     return body.value, center.value, framenum.value, typenum.value, first.value, last.value, begin.value, end.value
 
 
@@ -7556,7 +7739,8 @@ def spkuef(handle):
     pass
 
 
-def spkw02(handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, btime):
+def spkw02(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
+           cdata, btime):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw02_c.html
 
@@ -7586,11 +7770,13 @@ def spkw02(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
     polydg = ctypes.c_int(polydg)
     cdata = stypes.toDoubleVector(cdata)
     btime = ctypes.c_double(btime)
-    libspice.spkw02_c(handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, btime)
+    libspice.spkw02_c(handle, body, center, inframe, first, last, segid, intlen,
+                      n, polydg, cdata, btime)
     pass
 
 
-def spkw03(handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, btime):
+def spkw03(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
+           cdata, btime):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw03_c.html
 
@@ -7620,11 +7806,13 @@ def spkw03(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
     polydg = ctypes.c_int(polydg)
     cdata = stypes.toDoubleVector(cdata)
     btime = ctypes.c_double(btime)
-    libspice.spkw03_c(handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, btime)
+    libspice.spkw03_c(handle, body, center, inframe, first, last, segid, intlen,
+                      n, polydg, cdata, btime)
     pass
 
 
-def spkw05(handle, body, center, inframe, first, last, segid, gm, n, states, epochs):
+def spkw05(handle, body, center, inframe, first, last, segid, gm, n, states,
+           epochs):
     # see libspice args for solution to array[][N] problem
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw05_c.html
@@ -7652,11 +7840,13 @@ def spkw05(handle, body, center, inframe, first, last, segid, gm, n, states, epo
     n = ctypes.c_int(n)
     states = stypes.toDoubleMatrix(states)
     epochs = stypes.toDoubleVector(epochs)
-    libspice.spkw05_c(handle, body, center, inframe, first, last, segid, gm, n, states, epochs)
+    libspice.spkw05_c(handle, body, center, inframe, first, last, segid, gm, n,
+                      states, epochs)
     pass
 
 
-def spkw08(handle, body, center, inframe, first, last, segid, degree, n, states, epoch1, step):
+def spkw08(handle, body, center, inframe, first, last, segid, degree, n, states,
+           epoch1, step):
     # see libspice args for solution to array[][N] problem
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw08_c.html
@@ -7686,11 +7876,13 @@ def spkw08(handle, body, center, inframe, first, last, segid, degree, n, states,
     states = stypes.toDoubleMatrix(states)  # X by 6 array
     epoch1 = ctypes.c_double(epoch1)
     step = ctypes.c_double(step)
-    libspice.spkw08_c(handle, body, center, inframe, first, last, segid, degree, n, states, epoch1, step)
+    libspice.spkw08_c(handle, body, center, inframe, first, last, segid, degree,
+                      n, states, epoch1, step)
     pass
 
 
-def spkw09(handle, body, center, inframe, first, last, segid, degree, n, states, epochs):
+def spkw09(handle, body, center, inframe, first, last, segid, degree, n, states,
+           epochs):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw09_c.html
 
@@ -7718,11 +7910,13 @@ def spkw09(handle, body, center, inframe, first, last, segid, degree, n, states,
     n = ctypes.c_int(n)
     states = stypes.toDoubleMatrix(states)  # X by 6 array
     epochs = stypes.toDoubleVector(epochs)
-    libspice.spkw09_c(handle, body, center, inframe, first, last, segid, degree, n, states, epochs)
+    libspice.spkw09_c(handle, body, center, inframe, first, last, segid, degree,
+                      n, states, epochs)
     pass
 
 
-def spkw10(handle, body, center, inframe, first, last, segid, consts, n, elems, epochs):
+def spkw10(handle, body, center, inframe, first, last, segid, consts, n, elems,
+           epochs):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw10_c.html
 
@@ -7750,11 +7944,13 @@ def spkw10(handle, body, center, inframe, first, last, segid, consts, n, elems, 
     n = ctypes.c_int(n)
     elems = stypes.toDoubleVector(elems)
     epochs = stypes.toDoubleVector(epochs)
-    libspice.spkw10_c(handle, body, center, inframe, first, last, segid, consts, n, elems, epochs)
+    libspice.spkw10_c(handle, body, center, inframe, first, last, segid, consts,
+                      n, elems, epochs)
     pass
 
 
-def spkw12(handle, body, center, inframe, first, last, segid, degree, n, states, epoch0, step):
+def spkw12(handle, body, center, inframe, first, last, segid, degree, n, states,
+           epoch0, step):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw12_c.html
 
@@ -7784,11 +7980,13 @@ def spkw12(handle, body, center, inframe, first, last, segid, degree, n, states,
     states = stypes.toDoubleMatrix(states)  # X by 6 array
     epoch0 = ctypes.c_double(epoch0)
     step = ctypes.c_double(step)
-    libspice.spkw12_c(handle, body, center, inframe, first, last, segid, degree, n, states, epoch0, step)
+    libspice.spkw12_c(handle, body, center, inframe, first, last, segid, degree,
+                      n, states, epoch0, step)
     pass
 
 
-def spkw13(handle, body, center, inframe, first, last, segid, degree, n, states, epochs):
+def spkw13(handle, body, center, inframe, first, last, segid, degree, n, states,
+           epochs):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw13_c.html
 
@@ -7816,11 +8014,13 @@ def spkw13(handle, body, center, inframe, first, last, segid, degree, n, states,
     n = ctypes.c_int(n)
     states = stypes.toDoubleMatrix(states)  # X by 6 array
     epochs = stypes.toDoubleVector(epochs)
-    libspice.spkw13_c(handle, body, center, inframe, first, last, segid, degree, n, states, epochs)
+    libspice.spkw13_c(handle, body, center, inframe, first, last, segid, degree,
+                      n, states, epochs)
     pass
 
 
-def spkw15(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p, ecc, j2flg, pv, gm, j2, radius):
+def spkw15(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p,
+           ecc, j2flg, pv, gm, j2, radius):
     #Todo: test spkw15
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw15_c.html
@@ -7860,11 +8060,13 @@ def spkw15(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p, 
     gm = ctypes.c_double(gm)
     j2 = ctypes.c_double(j2)
     radius = ctypes.c_double(radius)
-    libspice.spkw15_c(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p, ecc, j2flg, pv, gm, j2, radius)
+    libspice.spkw15_c(handle, body, center, inframe, first, last, segid, epoch,
+                      tp, pa, p, ecc, j2flg, pv, gm, j2, radius)
     pass
 
 
-def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel, rapol, decpol):
+def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel,
+           rapol, decpol):
     #Todo: test spkw17
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw17_c.html
@@ -7892,7 +8094,8 @@ def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel, rapol
     eqel = stypes.toDoubleVector(eqel)
     rapol = ctypes.c_double(rapol)
     decpol = ctypes.c_double(decpol)
-    libspice.spkw17_c(handle, body, center, inframe, first, last, segid, epoch, eqel, rapol, decpol)
+    libspice.spkw17_c(handle, body, center, inframe, first, last, segid, epoch,
+                      eqel, rapol, decpol)
     pass
 
 
@@ -7910,7 +8113,8 @@ def srfrec(body, longitude, latitude):
     :return: :rtype:
     """
     if hasattr(longitude, "__iter__") and hasattr(latitude, "__iter__"):
-        return numpy.array([srfrec(body, lon, lat) for lon, lat in zip(longitude, latitude)])
+        return numpy.array(
+            [srfrec(body, lon, lat) for lon, lat in zip(longitude, latitude)])
     body = ctypes.c_int(body)
     longitude = ctypes.c_double(longitude)
     latitude = ctypes.c_double(latitude)
@@ -7934,7 +8138,8 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
     :return: :rtype:
     """
     if hasattr(et, "__iter__"):
-        return numpy.array([srfxpt(method, target, t, abcorr, obsrvr, dref, dvec) for t in et])
+        return numpy.array(
+            [srfxpt(method, target, t, abcorr, obsrvr, dref, dvec) for t in et])
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
@@ -7948,8 +8153,11 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
     obspos = stypes.emptyDoubleVector(3)
     found = ctypes.c_bool()
     libspice.srfxpt_c(method, target, et, abcorr, obsrvr, dref, dvec,
-                      spoint, ctypes.byref(dist), ctypes.byref(trgepc), obspos, ctypes.byref(found))
-    return stypes.vectorToList(spoint), dist.value, trgepc.value, stypes.vectorToList(obspos), found.value
+                      spoint, ctypes.byref(dist), ctypes.byref(trgepc), obspos,
+                      ctypes.byref(found))
+    return stypes.vectorToList(
+        spoint), dist.value, trgepc.value, stypes.vectorToList(
+        obspos), found.value
 
 
 def ssize(newsize, cell):
@@ -8001,7 +8209,8 @@ def stpool(item, nth, contin, lenout):
     lenout = ctypes.c_int(lenout)
     found = ctypes.c_bool()
     sizet = ctypes.c_int()
-    libspice.stpool_c(item, nth, contin, lenout, strout, ctypes.byref(sizet), ctypes.byref(found))
+    libspice.stpool_c(item, nth, contin, lenout, strout, ctypes.byref(sizet),
+                      ctypes.byref(found))
     return stypes.toPythonString(strout), sizet.value, found.value
 
 
@@ -8043,8 +8252,10 @@ def subpnt(method, target, et, fixref, abcorr, obsrvr):
     spoint = stypes.emptyDoubleVector(3)
     trgepc = ctypes.c_double(0)
     srfvec = stypes.emptyDoubleVector(3)
-    libspice.subpnt_c(method, target, et, fixref, abcorr, obsrvr, spoint, ctypes.byref(trgepc), srfvec)
-    return stypes.vectorToList(spoint), trgepc.value, stypes.vectorToList(srfvec)
+    libspice.subpnt_c(method, target, et, fixref, abcorr, obsrvr, spoint,
+                      ctypes.byref(trgepc), srfvec)
+    return stypes.vectorToList(spoint), trgepc.value, stypes.vectorToList(
+        srfvec)
 
 
 def subpt(method, target, et, abcorr, obsrvr):
@@ -8060,7 +8271,8 @@ def subpt(method, target, et, abcorr, obsrvr):
     :return: :rtype:
     """
     if hasattr(et, "__iter__"):
-        return numpy.array([subpt(method, target, t, abcorr, obsrvr) for t in et])
+        return numpy.array(
+            [subpt(method, target, t, abcorr, obsrvr) for t in et])
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
@@ -8068,7 +8280,8 @@ def subpt(method, target, et, abcorr, obsrvr):
     obsrvr = stypes.stringToCharP(obsrvr)
     spoint = stypes.emptyDoubleVector(3)
     alt = ctypes.c_double()
-    libspice.subpt_c(method, target, et, abcorr, obsrvr, spoint, ctypes.byref(alt))
+    libspice.subpt_c(method, target, et, abcorr, obsrvr, spoint,
+                     ctypes.byref(alt))
     return stypes.vectorToList(spoint), alt.value
 
 
@@ -8094,8 +8307,10 @@ def subslr(method, target, et, fixref, abcorr, obsrvr):
     spoint = stypes.emptyDoubleVector(3)
     trgepc = ctypes.c_double(0)
     srfvec = stypes.emptyDoubleVector(3)
-    libspice.subslr_c(method, target, et, fixref, abcorr, obsrvr, spoint, ctypes.byref(trgepc), srfvec)
-    return stypes.vectorToList(spoint), trgepc.value, stypes.vectorToList(srfvec)
+    libspice.subslr_c(method, target, et, fixref, abcorr, obsrvr, spoint,
+                      ctypes.byref(trgepc), srfvec)
+    return stypes.vectorToList(spoint), trgepc.value, stypes.vectorToList(
+        srfvec)
 
 
 def subsol(method, target, et, abcorr, obsrvr):
@@ -8399,7 +8614,8 @@ def tpictr(sample, lenout, lenerr):
     lenerr = ctypes.c_int(lenerr)
     ok = ctypes.c_bool()
     libspice.tpictr_c(sample, lenout, lenerr, pictur, ctypes.byref(ok), errmsg)
-    return stypes.toPythonString(pictur), ok.value, stypes.toPythonString(errmsg)
+    return stypes.toPythonString(pictur), ok.value, stypes.toPythonString(
+        errmsg)
 
 
 def trace(matrix):
@@ -8561,7 +8777,8 @@ def union(a, b):
 
     :param a:
     :param b:
-    :return: :rtype: :raise NotImplementedError:
+    :return:
+    :rtype:
     """
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
@@ -8654,6 +8871,8 @@ def utc2et(utcstr):
     et = ctypes.c_double()
     libspice.utc2et_c(utcstr, ctypes.byref(et))
     return et.value
+
+
 ########################################################################################################################
 # V
 
@@ -8693,7 +8912,9 @@ def vaddg(v1, v2, ndim):
 
 
 def valid(insize, n, inset):
-    """ Create a valid CSPICE set from a CSPICE Cell of any data type.
+    """
+    Create a valid CSPICE set from a CSPICE Cell of any data type.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/valid_c.html
 
     :param insize: Size (maximum cardinality) of the set. :type insize: int
@@ -8710,7 +8931,9 @@ def valid(insize, n, inset):
 
 
 def vcrss(v1, v2):
-    """ Compute the cross product of two 3-dimensional vectors.
+    """
+    Compute the cross product of two 3-dimensional vectors.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vcrss_c.html
 
     :param v1: Left hand vector for cross product. :type v1: list[3]
@@ -8726,7 +8949,9 @@ def vcrss(v1, v2):
 
 
 def vdist(v1, v2):
-    """ Return the distance between two three-dimensional vectors.
+    """
+    Return the distance between two three-dimensional vectors.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdist_c.html
 
     :param v1: First vector in the dot product. :type v1: list[3]
@@ -8740,7 +8965,9 @@ def vdist(v1, v2):
 
 
 def vdistg(v1, v2, ndim):
-    """ Return the distance between two vectors of arbitrary dimension.
+    """
+    Return the distance between two vectors of arbitrary dimension.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdistg_c.html
 
     :param v1: ndim-dimensional double precision vector. :type v1: list[ndim]
@@ -8756,7 +8983,9 @@ def vdistg(v1, v2, ndim):
 
 
 def vdot(v1, v2):
-    """ Compute the dot product of two double precision, 3-dimensional vectors.
+    """
+    Compute the dot product of two double precision, 3-dimensional vectors.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdot_c.html
 
     :param v1: First vector in the dot product. :type v1: list[3]
@@ -8770,7 +8999,10 @@ def vdot(v1, v2):
 
 
 def vdotg(v1, v2, ndim):
-    """ Compute the dot product of two double precision vectors of arbitrary dimension.
+    """
+    Compute the dot product of two double precision vectors of
+    arbitrary dimension.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdotg_c.html
 
     :param v1: First vector in the dot product. :type v1: list[ndim]
@@ -8786,7 +9018,9 @@ def vdotg(v1, v2, ndim):
 
 
 def vequ(v1):
-    """ Make one double precision 3-dimensional vector equal to another.
+    """
+    Make one double precision 3-dimensional vector equal to another.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vequ_c.html
 
     :param v1: 3-dimensional double precision vector. :type v1: list[3]
@@ -8800,7 +9034,9 @@ def vequ(v1):
 
 
 def vequg(v1, ndim):
-    """ Make one double precision vector of arbitrary dimension equal to another.
+    """
+    Make one double precision vector of arbitrary dimension equal to another.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vequg_c.html
 
     :param v1: ndim-dimensional double precision vector. :type v1: list[ndim]
@@ -8818,6 +9054,7 @@ def vequg(v1, ndim):
 def vhat(v1):
     """
     Find the unit vector along a double precision 3-dimensional vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vhat_c.html
 
     :param v1: Vector to be unitized. :type v1: list[3]
@@ -8833,6 +9070,7 @@ def vhat(v1):
 def vhatg(v1, ndim):
     """
     Find the unit vector along a double precision vector of arbitrary dimension.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vhatg_c.html
 
     :param v1: Vector to be normalized. :type v1: list[ndim]
@@ -8851,6 +9089,7 @@ def vlcom(a, v1, b, v2):
     """
     Compute a vector linear combination of two double precision,
     3-dimensional vectors.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vlcom_c.html
 
     :param a: Coefficient of v1 :type a: float
@@ -8873,6 +9112,7 @@ def vlcom3(a, v1, b, v2, c, v3):
     """
     This subroutine computes the vector linear combination
     a*v1 + b*v2 + c*v3 of double precision, 3-dimensional vectors.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vlcom3_c.html
 
     :param a: Coefficient of v1 :type a: float
@@ -8897,7 +9137,9 @@ def vlcom3(a, v1, b, v2, c, v3):
 
 def vlcomg(n, a, v1, b, v2):
     """
-    Compute a vector linear combination of two double precision vectors of arbitrary dimension.
+    Compute a vector linear combination of two double precision
+    vectors of arbitrary dimension.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vlcomg_c.html
 
     :param n: Dimension of vector space :type n: int
@@ -8919,7 +9161,9 @@ def vlcomg(n, a, v1, b, v2):
 
 
 def vminug(vin, ndim):
-    """ Negate a double precision vector of arbitrary dimension.
+    """
+    Negate a double precision vector of arbitrary dimension.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vminug_c.html
 
     :param vin: ndim-dimensional double precision vector to be negated. :type vin: list[*]
@@ -8935,7 +9179,9 @@ def vminug(vin, ndim):
 
 
 def vminus(vin):
-    """ Negate a double precision 3-dimensional vector.
+    """
+    Negate a double precision 3-dimensional vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vminus_c.html
 
     :param vin: Vector to be negated. :type vin: list[3]
@@ -8949,7 +9195,9 @@ def vminus(vin):
 
 
 def vnorm(v):
-    """ Compute the magnitude of a double precision, 3-dimensional vector.
+    """
+    Compute the magnitude of a double precision, 3-dimensional vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vnorm_c.html
 
     :param v: Vector whose magnitude is to be found. :type v: list[3]
@@ -8961,7 +9209,9 @@ def vnorm(v):
 
 
 def vnormg(v, ndim):
-    """ Compute the magnitude of a double precision vector of arbitrary dimension.
+    """
+    Compute the magnitude of a double precision vector of arbitrary dimension.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vnormg_c.html
 
     :param v: Vector whose magnitude is to be found. :type v: list[*]
@@ -8975,7 +9225,9 @@ def vnormg(v, ndim):
 
 
 def vpack(x, y, z):
-    """ Pack three scalar components into a vector.
+    """
+    Pack three scalar components into a vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vpack_c.html
 
     :param x: first scalar component :type x: float
@@ -8995,7 +9247,8 @@ def vpack(x, y, z):
 def vperp(a, b):
     """
     Find the component of a vector that is perpendicular to a second
-    vector.  All vectors are 3-dimensional.
+    vector. All vectors are 3-dimensional.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vperp_c.html
 
     :param a: The vector whose orthogonal component is sought. :type a: list[3]
@@ -9011,7 +9264,9 @@ def vperp(a, b):
 
 
 def vprjp(vin, plane):
-    """ Project a vector onto a specified plane, orthogonally.
+    """
+    Project a vector onto a specified plane, orthogonally.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vprjp_c.html
 
     :param vin: The projected vector. :type vin: list[3]
@@ -9029,6 +9284,7 @@ def vprjpi(vin, projpl, invpl):
     """
     Find the vector in a specified plane that maps to a specified
     vector in another plane under orthogonal projection.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vprjpi_c.html
 
     :param vin: The projected vector. :type vin: list[3]
@@ -9040,7 +9296,8 @@ def vprjpi(vin, projpl, invpl):
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(3)
     found = ctypes.c_bool()
-    libspice.vprjpi_c(vin, ctypes.byref(projpl), ctypes.byref(invpl), vout, ctypes.byref(found))
+    libspice.vprjpi_c(vin, ctypes.byref(projpl), ctypes.byref(invpl), vout,
+                      ctypes.byref(found))
     if found.value:
         return stypes.vectorToList(vout)
     else:
@@ -9048,7 +9305,9 @@ def vprjpi(vin, projpl, invpl):
 
 
 def vproj(a, b):
-    """ find the projection of one vector onto another vector.
+    """
+    Find the projection of one vector onto another vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vproj_c.html
 
     :param a: The vector to be projected. :type a: list[3]
@@ -9064,7 +9323,9 @@ def vproj(a, b):
 
 
 def vrel(v1, v2):
-    """ Return the relative difference between two 3-dimensional vectors.
+    """
+    Return the relative difference between two 3-dimensional vectors.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vrel_c.html
 
     :param v1: First vector :type v1: list[3]
@@ -9078,7 +9339,9 @@ def vrel(v1, v2):
 
 
 def vrelg(v1, v2, ndim):
-    """ Return the relative difference between two vectors of general dimension.
+    """
+    Return the relative difference between two vectors of general dimension.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vrelg_c.html
 
     :param v1: First vector :type v1: list[*]
@@ -9094,9 +9357,10 @@ def vrelg(v1, v2, ndim):
 
 
 def vrotv(v, axis, theta):
-    #Tested, but clarly some rounding issues exist (0 as 6.123*10^-17, etc)
-    # halfpi is not exactly reprentable in IEEE 754 notation,
-    """ Rotate a vector about a specified axis vector by a specified angle and return the rotated vector.
+    """
+    Rotate a vector about a specified axis vector by a
+    specified angle and return the rotated vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vrotv_c.html
 
     :param v: Vector to be rotated. :type v: list[3]
@@ -9114,7 +9378,9 @@ def vrotv(v, axis, theta):
 
 
 def vscl(s, v1):
-    """ Multiply a scalar and a 3-dimensional double precision vector.
+    """
+    Multiply a scalar and a 3-dimensional double precision vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vscl_c.html
 
     :param s: Scalar to multiply a vector :type s: float
@@ -9130,7 +9396,9 @@ def vscl(s, v1):
 
 
 def vsclg(s, v1, ndim):
-    """ Multiply a scalar and a double precision vector of arbitrary dimension.
+    """
+    Multiply a scalar and a double precision vector of arbitrary dimension.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsclg_c.html
 
     :param s: Scalar to multiply a vector :type s: float
@@ -9150,8 +9418,9 @@ def vsclg(s, v1, ndim):
 def vsep(v1, v2):
     """
     Find the separation angle in radians between two double
-    precision, 3-dimensional vectors.  This angle is defined as zero
+    precision, 3-dimensional vectors. This angle is defined as zero
     if either vector is zero.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsep_c.html
 
     :param v1: First vector :type v1: list[3]
@@ -9169,6 +9438,7 @@ def vsepg(v1, v2, ndim):
     Find the separation angle in radians between two double
     precision vectors of arbitrary dimension. This angle is defined
     as zero if either vector is zero.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsepg_c.html
 
     :param v1: First vector :type v1: list[*]
@@ -9184,7 +9454,10 @@ def vsepg(v1, v2, ndim):
 
 
 def vsub(v1, v2):
-    """  Compute the difference between two 3-dimensional, double precision vectors.
+    """
+    Compute the difference between two 3-dimensional,
+    double precision vectors.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsub_c.html
 
     :param v1: First vector (minuend). :type v1: list[3]
@@ -9200,7 +9473,10 @@ def vsub(v1, v2):
 
 
 def vsubg(v1, v2, ndim):
-    """ Compute the difference between two double precision vectors of arbitrary dimension.
+    """
+    Compute the difference between two double precision
+    vectors of arbitrary dimension.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsubg_c.html
 
     :param v1: First vector (minuend). :type v1: list[*]
@@ -9218,7 +9494,10 @@ def vsubg(v1, v2, ndim):
 
 
 def vtmv(v1, matrix, v2):
-    """ Multiply the transpose of a 3-dimensional column vector a 3x3 matrix, and a 3-dimensional column vector.
+    """
+    Multiply the transpose of a 3-dimensional column vector
+    a 3x3 matrix, and a 3-dimensional column vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vtmv_c.html
 
     :param v1: 3 dimensional double precision column vector. :type v1: list[3]
@@ -9234,7 +9513,11 @@ def vtmv(v1, matrix, v2):
 
 
 def vtmvg(v1, matrix, v2, nrow, ncol):
-    """ Multiply the transpose of a n-dimensional column vector a nxm matrix, and a m-dimensional column vector.
+    """
+    Multiply the transpose of a n-dimensional
+    column vector a nxm matrix,
+    and a m-dimensional column vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vtmvg_c.html
 
     :param v1: n-dimensional double precision column vector. :type v1: list[*]
@@ -9254,7 +9537,9 @@ def vtmvg(v1, matrix, v2, nrow, ncol):
 
 
 def vupack(v):
-    """ Unpack three scalar components from a vector.
+    """
+    Unpack three scalar components from a vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vupack_c.html
 
     :param v: Vector :type v: list[3]
@@ -9270,7 +9555,9 @@ def vupack(v):
 
 
 def vzero(v):
-    """ Indicate whether a 3-vector is the zero vector
+    """
+    Indicate whether a 3-vector is the zero vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vzero_c.html
 
     :param v: Vector to be tested :type v: list[3]
@@ -9282,7 +9569,9 @@ def vzero(v):
 
 
 def vzerog(v, ndim):
-    """ Indicate whether a general-dimensional vector is the zero vector.
+    """
+    Indicate whether a general-dimensional vector is the zero vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vzerog_c.html
 
     :param v: Vector to be tested :type v: list[*]
@@ -9293,6 +9582,7 @@ def vzerog(v, ndim):
     v = stypes.toDoubleVector(v)
     ndim = ctypes.c_int(ndim)
     return libspice.vzerog_c(v, ndim)
+
 
 ########################################################################################################################
 # W
@@ -9429,7 +9719,8 @@ def wnfetd(window, n):
     n = ctypes.c_int(n)
     left = ctypes.c_double()
     right = ctypes.c_double()
-    libspice.wnfetd_c(ctypes.byref(window), n, ctypes.byref(left), ctypes.byref(right))
+    libspice.wnfetd_c(ctypes.byref(window), n, ctypes.byref(left),
+                      ctypes.byref(right))
     return left.value, right.value
 
 
@@ -9550,7 +9841,9 @@ def wnsumd(window):
     stddev = ctypes.c_double()
     shortest = ctypes.c_int()
     longest = ctypes.c_int()
-    libspice.wnsumd_c(ctypes.byref(window), ctypes.byref(meas), ctypes.byref(avg), ctypes.byref(stddev), ctypes.byref(shortest), ctypes.byref(longest))
+    libspice.wnsumd_c(ctypes.byref(window), ctypes.byref(meas),
+                      ctypes.byref(avg), ctypes.byref(stddev),
+                      ctypes.byref(shortest), ctypes.byref(longest))
     return meas.value, avg.value, stddev.value, shortest.value, longest.value
 
 
@@ -9567,7 +9860,7 @@ def wnunid(a, b):
     assert b.dtype == 1
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == 1
-    c = stypes.SpiceCell.double(b.size+a.size)
+    c = stypes.SpiceCell.double(b.size + a.size)
     libspice.wnunid_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
     return c
 
@@ -9632,6 +9925,7 @@ def xf2rav(xform):
 def xfmsta(input_state, input_coord_sys, output_coord_sys, body):
     """
     Transform a state between coordinate systems.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xfmsta_c.html
 
     :param input_state: Input state. :type input_state: list[6]
@@ -9646,7 +9940,8 @@ def xfmsta(input_state, input_coord_sys, output_coord_sys, body):
     output_coord_sys = stypes.stringToCharP(output_coord_sys)
     body = stypes.stringToCharP(body)
     output_state = stypes.emptyDoubleVector(6)
-    libspice.xfmsta_c(input_state, input_coord_sys, output_coord_sys, body, output_state)
+    libspice.xfmsta_c(input_state, input_coord_sys, output_coord_sys, body,
+                      output_state)
     return stypes.vectorToList(output_state)
 
 
@@ -9679,7 +9974,10 @@ def xpose6(m):
 
 
 def xposeg(matrix, nrow, ncol):
-    """ Transpose a matrix of arbitrary size (in place, the matrix need not be square).
+    """
+    Transpose a matrix of arbitrary size
+    in place, the matrix need not be square.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xposeg_c.html
 
     :param matrix: Matrix to be transposed :type matrix: list[*][*]
