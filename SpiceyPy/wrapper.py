@@ -5501,19 +5501,22 @@ def nvp2pl(normal, point):
 def occult(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer,
            et):
     """
+    Determines the occultation condition (not occulted, partially,
+    etc.) of one target relative to another target as seen by
+    an observer at a given time.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/occult_c.html
 
-
-    :param target1:
-    :param shape1:
-    :param frame1:
-    :param target2:
-    :param shape2:
-    :param frame2:
-    :param abcorr:
-    :param observer:
-    :param et:
-    :return: :rtype:
+    :param target1: Name or ID of first target. :type target1: str
+    :param shape1: Type of shape model used for first target. :type shape1: str
+    :param frame1: Body-fixed, body-centered frame for first body. :type frame1: str
+    :param target2: Name or ID of second target. :type target2: str
+    :param shape2: Type of shape model used for second target. :type shape2: str
+    :param frame2: Body-fixed, body-centered frame for second body. :type frame2: str
+    :param abcorr: Aberration correction flag. :type abcorr: str
+    :param observer: Name or ID of the observer. :type observer: str
+    :param et: Time of the observation (seconds past J2000). :type et: float
+    :return: Occultation identification code. :rtype: int
     """
     target1 = stypes.stringToCharP(target1)
     shape1 = stypes.stringToCharP(shape1)
@@ -5531,13 +5534,16 @@ def occult(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer,
 
 
 def ordc(item, inset):
-    #Todo: test ordc
     """
+    The function returns the ordinal position of any given item in a
+    character set.  If the item does not appear in the set, the function
+    returns -1.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ordc_c.html
 
-    :param item:
-    :param inset:
-    :return: :rtype:
+    :param item: An item to locate within a set. :type item: str
+    :param inset: A set to search for a given item. :type inset: SpiceCharCell
+    :return: the ordinal position of item within the set :rtype: int
     """
     assert isinstance(inset, stypes.SpiceCell)
     assert inset.is_char()
@@ -5548,12 +5554,15 @@ def ordc(item, inset):
 
 def ordd(item, inset):
     """
+    The function returns the ordinal position of any given item in a
+    double precision set.  If the item does not appear in the set, the
+    function returns -1.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ordd_c.html
 
-
-    :param item:
-    :param inset:
-    :return: :rtype:
+    :param item: An item to locate within a set. :type item: float
+    :param inset: A set to search for a given item. :type inset: SpiceDoubleCell
+    :return: the ordinal position of item within the set :rtype: int
     """
     assert isinstance(inset, stypes.SpiceCell)
     assert inset.is_double()
@@ -5563,12 +5572,15 @@ def ordd(item, inset):
 
 def ordi(item, inset):
     """
+    The function returns the ordinal position of any given item in an
+    integer set.  If the item does not appear in the set, the function
+    returns -1.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ordi_c.html
 
-
-    :param item:
-    :param inset:
-    :return: :rtype:
+    :param item: An item to locate within a set. :type item: int
+    :param inset: A set to search for a given item. :type inset: SpiceIntCell
+    :return: the ordinal position of item within the set :rtype: int
     """
     assert isinstance(inset, stypes.SpiceCell)
     assert inset.is_int()
@@ -5579,12 +5591,13 @@ def ordi(item, inset):
 
 def orderc(array, ndim=None):
     """
+    Determine the order of elements in an array of character strings.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/orderc_c.html
 
-
-    :param array:
-    :param ndim:
-    :return: :rtype:
+    :param array: Input array. :type array: Array of strings.
+    :param ndim: Optional Length of input array :type ndim: int
+    :return: Order vector for array. :rtype: array of ints
     """
     if ndim is None:
         ndim = ctypes.c_int(len(array))
@@ -5599,12 +5612,13 @@ def orderc(array, ndim=None):
 
 def orderd(array, ndim=None):
     """
+    Determine the order of elements in a double precision array.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/orderd_c.html
 
-
-    :param array:
-    :param ndim:
-    :return: :rtype:
+    :param array: Input array. :type array: Array of floats.
+    :param ndim: Optional Length of input array :type ndim: int
+    :return: Order vector for array. :rtype: array of ints
     """
     if ndim is None:
         ndim = ctypes.c_int(len(array))
@@ -5618,12 +5632,13 @@ def orderd(array, ndim=None):
 
 def orderi(array, ndim=None):
     """
+    Determine the order of elements in an integer array.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/orderi_c.html
 
-
-    :param array:
-    :param ndim:
-    :return: :rtype:
+    :param array: Input array. :type array: Array of ints.
+    :param ndim: Optional Length of input array :type ndim: int
+    :return: Order vector for array. :rtype: array of ints
     """
     if ndim is None:
         ndim = ctypes.c_int(len(array))
@@ -5637,13 +5652,16 @@ def orderi(array, ndim=None):
 
 def oscelt(state, et, mu):
     """
+    Determine the set of osculating conic orbital elements that
+    corresponds to the state (position, velocity) of a body at
+    some epoch.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/oscelt_c.html
 
-
-    :param state:
-    :param et:
-    :param mu:
-    :return: :rtype:
+    :param state: State of body at epoch of elements. :type state: Float Array of 6 elements.
+    :param et: Epoch of elements. :type et: float
+    :param mu: Gravitational parameter (GM) of primary body. :type mu: float
+    :return: Equivalent conic elements :rtype: Float Array of 8 elements.
     """
     state = stypes.toDoubleVector(state)
     et = ctypes.c_double(et)
