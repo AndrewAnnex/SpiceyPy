@@ -5516,7 +5516,8 @@ def occult(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer,
     :param abcorr: Aberration correction flag. :type abcorr: str
     :param observer: Name or ID of the observer. :type observer: str
     :param et: Time of the observation (seconds past J2000). :type et: float
-    :return: Occultation identification code. :rtype: int
+    :return: Occultation identification code.
+    :rtype: int
     """
     target1 = stypes.stringToCharP(target1)
     shape1 = stypes.stringToCharP(shape1)
@@ -5543,7 +5544,8 @@ def ordc(item, inset):
 
     :param item: An item to locate within a set. :type item: str
     :param inset: A set to search for a given item. :type inset: SpiceCharCell
-    :return: the ordinal position of item within the set :rtype: int
+    :return: the ordinal position of item within the set
+    :rtype: int
     """
     assert isinstance(inset, stypes.SpiceCell)
     assert inset.is_char()
@@ -5562,7 +5564,8 @@ def ordd(item, inset):
 
     :param item: An item to locate within a set. :type item: float
     :param inset: A set to search for a given item. :type inset: SpiceDoubleCell
-    :return: the ordinal position of item within the set :rtype: int
+    :return: the ordinal position of item within the set
+    :rtype: int
     """
     assert isinstance(inset, stypes.SpiceCell)
     assert inset.is_double()
@@ -5580,7 +5583,8 @@ def ordi(item, inset):
 
     :param item: An item to locate within a set. :type item: int
     :param inset: A set to search for a given item. :type inset: SpiceIntCell
-    :return: the ordinal position of item within the set :rtype: int
+    :return: the ordinal position of item within the set
+    :rtype: int
     """
     assert isinstance(inset, stypes.SpiceCell)
     assert inset.is_int()
@@ -5597,7 +5601,8 @@ def orderc(array, ndim=None):
 
     :param array: Input array. :type array: Array of strings.
     :param ndim: Optional Length of input array :type ndim: int
-    :return: Order vector for array. :rtype: array of ints
+    :return: Order vector for array.
+    :rtype: array of ints
     """
     if ndim is None:
         ndim = ctypes.c_int(len(array))
@@ -5618,7 +5623,8 @@ def orderd(array, ndim=None):
 
     :param array: Input array. :type array: Array of floats.
     :param ndim: Optional Length of input array :type ndim: int
-    :return: Order vector for array. :rtype: array of ints
+    :return: Order vector for array.
+    :rtype: array of ints
     """
     if ndim is None:
         ndim = ctypes.c_int(len(array))
@@ -5638,7 +5644,8 @@ def orderi(array, ndim=None):
 
     :param array: Input array. :type array: Array of ints.
     :param ndim: Optional Length of input array :type ndim: int
-    :return: Order vector for array. :rtype: array of ints
+    :return: Order vector for array.
+    :rtype: array of ints
     """
     if ndim is None:
         ndim = ctypes.c_int(len(array))
@@ -5661,7 +5668,8 @@ def oscelt(state, et, mu):
     :param state: State of body at epoch of elements. :type state: Float Array of 6 elements.
     :param et: Epoch of elements. :type et: float
     :param mu: Gravitational parameter (GM) of primary body. :type mu: float
-    :return: Equivalent conic elements :rtype: Float Array of 8 elements.
+    :return: Equivalent conic elements
+    :rtype: Float Array of 8 elements.
     """
     state = stypes.toDoubleVector(state)
     et = ctypes.c_double(et)
@@ -5677,12 +5685,14 @@ def oscelt(state, et, mu):
 
 def pckcov(pck, idcode, cover):
     """
+    Find the coverage window for a specified reference frame in a
+    specified binary PCK file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pckcov_c.html
 
-
-    :param pck:
-    :param idcode:
-    :param cover:
+    :param pck: Name of PCK file. :type pck: str
+    :param idcode: Class ID code of PCK reference frame. :type idcode: int
+    :param cover: Window giving coverage in pck for idcode. :type cover: SpiceCell
     """
     pck = stypes.stringToCharP(pck)
     idcode = ctypes.c_int(idcode)
@@ -5693,11 +5703,13 @@ def pckcov(pck, idcode, cover):
 
 def pckfrm(pck, ids):
     """
+    Find the set of reference frame class ID codes of all frames
+    in a specified binary PCK file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pckfrm_c.html
 
-
-    :param pck:
-    :param ids:
+    :param pck: Name of PCK file. :type pck: str
+    :param ids: Set of frame class ID codes of frames in PCK file. :type ids: SpiceCell
     """
     pck = stypes.stringToCharP(pck)
     assert isinstance(ids, stypes.SpiceCell)
@@ -5707,11 +5719,15 @@ def pckfrm(pck, ids):
 
 def pcklof(filename):
     """
+    Load a binary PCK file for use by the readers.  Return the
+    handle of the loaded file which is used by other PCK routines to
+    refer to the file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pcklof_c.html
 
-
-    :param filename:
-    :return: :rtype:
+    :param filename: Name of the file to be loaded. :type filename: str
+    :return: Loaded file's handle.
+    :rtype: int
     """
     filename = stypes.stringToCharP(filename)
     handle = ctypes.c_int()
@@ -5721,10 +5737,12 @@ def pcklof(filename):
 
 def pckuof(handle):
     """
+    Unload a binary PCK file so that it will no longer be searched by
+    the readers.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pckuof_c.html
 
-
-    :param handle:
+    :param handle: Handle of PCK file to be unloaded :type handle: int
     """
     handle = ctypes.c_int(handle)
     libspice.pckuof_c(handle)
@@ -5733,11 +5751,14 @@ def pckuof(handle):
 
 def pcpool(name, cvals):
     """
+    This entry point provides toolkit programmers a method for
+    programmatically inserting character data into the
+    kernel pool.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pcpool_c.html
 
-
-    :param name:
-    :param cvals:
+    :param name: The kernel pool name to associate with cvals. :type name: str
+    :param cvals: An array of strings to insert into the kernel pool. :type cvals: Array of str
     """
     name = stypes.stringToCharP(name)
     lenvals = ctypes.c_int(len(max(cvals, key=len)) + 1)
@@ -5748,11 +5769,14 @@ def pcpool(name, cvals):
 
 def pdpool(name, dvals):
     """
+    This entry point provides toolkit programmers a method for
+    programmatically inserting double precision data into the
+    kernel pool.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pdpool_c.html
 
-
-    :param name:
-    :param dvals:
+    :param name: The kernel pool name to associate with dvals. :type name: str
+    :param dvals: An array of values to insert into the kernel pool. :type dvals: SpiceCell
     """
     name = stypes.stringToCharP(name)
     n = ctypes.c_int(len(dvals))
@@ -5762,16 +5786,18 @@ def pdpool(name, dvals):
 
 def pgrrec(body, lon, lat, alt, re, f):
     """
+    Convert planetographic coordinates to rectangular coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pgrrec_c.html
 
-
-    :param body:
-    :param lon:
-    :param lat:
-    :param alt:
-    :param re:
-    :param f:
-    :return: :rtype:
+    :param body: Body with which coordinate system is associated. :type body: str
+    :param lon: Planetographic longitude of a point (radians). :type lon: float
+    :param lat: Planetographic latitude of a point (radians). :type lat: float
+    :param alt: Altitude of a point above reference spheroid. :type alt: float
+    :param re: Equatorial radius of the reference spheroid. :type re: float
+    :param f: Flattening coefficient. :type f: float
+    :return: Rectangular coordinates of the point.
+    :rtype: 3-Element Array of floats.
     """
     body = stypes.stringToCharP(body)
     lon = ctypes.c_double(lon)
@@ -5786,15 +5812,18 @@ def pgrrec(body, lon, lat, alt, re, f):
 
 def phaseq(et, target, illmn, obsrvr, abcorr):
     """
+    Compute the apparent phase angle for a target, observer,
+    illuminator set of ephemeris objects.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/phaseq_c.html
 
-
-    :param et:
-    :param target:
-    :param illmn:
-    :param obsrvr:
-    :param abcorr:
-    :return: :rtype:
+    :param et: Ephemeris seconds past J2000 TDB. :type et: float
+    :param target: Target body name. :type target: str
+    :param illmn: Illuminating body name. :type illmn: str
+    :param obsrvr: Observer body. :type obsrvr: str
+    :param abcorr: Aberration correction flag. :type abcorr: str
+    :return: Value of phase angle.
+    :rtype: float
     """
     et = ctypes.c_double(et)
     target = stypes.stringToCharP(target)
@@ -5806,22 +5835,26 @@ def phaseq(et, target, illmn, obsrvr, abcorr):
 
 def pi():
     """
+    Return the value of pi (the ratio of the circumference of
+    a circle to its diameter).
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pi_c.html
 
-
-
-    :return: :rtype:
+    :return: value of pi.
+    :rtype: float
     """
     return libspice.pi_c()
 
 
 def pipool(name, ivals):
     """
+    This entry point provides toolkit programmers a method for
+    programmatically inserting integer data into the kernel pool.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pipool_c.html
 
-
-    :param name:
-    :param ivals:
+    :param name: The kernel pool name to associate with values. :type name: str
+    :param ivals: An array of integers to insert into the pool. :type ivals: Array of ints
     """
     name = stypes.stringToCharP(name)
     n = ctypes.c_int(len(ivals))
@@ -5831,12 +5864,14 @@ def pipool(name, ivals):
 
 def pjelpl(elin, plane):
     """
+    Project an ellipse onto a plane, orthogonally.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pjelpl_c.html
 
-
-    :param elin:
-    :param plane:
-    :return: :rtype:
+    :param elin: A SPICE ellipse to be projected. :type elin: supporttypes.Ellipse
+    :param plane: A plane onto which elin is to be projected. :type plane: supporttypes.Plane
+    :return: A SPICE ellipse resulting from the projection.
+    :rtype: supporttypes.Ellipse
     """
     assert (isinstance(elin, stypes.Ellipse))
     assert (isinstance(plane, stypes.Plane))
@@ -5847,12 +5882,14 @@ def pjelpl(elin, plane):
 
 
 def pl2nvc(plane):
-    #Works! we have working planes!
     """
+    Return a unit normal vector and constant that define a specified plane.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pl2nvc_c.html
 
-    :param plane:
-    :return: :rtype:
+    :param plane: A SPICE plane. :type plane: supporttypes.Plane
+    :return: A normal vector and constant defining the geometric plane represented by plane.
+    :rtype: tuple
     """
     assert (isinstance(plane, stypes.Plane))
     normal = stypes.emptyDoubleVector(3)
@@ -5863,11 +5900,14 @@ def pl2nvc(plane):
 
 def pl2nvp(plane):
     """
+    Return a unit normal vector and point that define a specified plane.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pl2nvp_c.html
 
 
-    :param plane:
-    :return: :rtype:
+    :param plane: A SPICE plane. :type plane: supporttypes.Plane
+    :return: A unit normal vector and point that define plane.
+    :rtype: tuple
     """
     assert (isinstance(plane, stypes.Plane))
     normal = stypes.emptyDoubleVector(3)
@@ -5878,11 +5918,14 @@ def pl2nvp(plane):
 
 def pl2psv(plane):
     """
+    Return a point and two orthogonal spanning vectors that generate
+    a specified plane.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pl2psv_c.html
 
-
-    :param plane:
-    :return: :rtype:
+    :param plane: A SPICE plane. :type plane: supporttypes.Plane
+    :return: A point in the input plane and two vectors spanning the input plane.
+    :rtype: tuple
     """
     assert (isinstance(plane, stypes.Plane))
     point = stypes.emptyDoubleVector(3)
@@ -5895,13 +5938,16 @@ def pl2psv(plane):
 
 def pos(string, substr, start):
     """
+    Find the first occurrence in a string of a substring, starting at
+    a specified location, searching forward.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pos_c.html
 
-
-    :param string:
-    :param substr:
-    :param start:
-    :return: :rtype:
+    :param string: Any character string. :type string: str
+    :param substr: Substring to locate in the character string. :type substr: str
+    :param start: Position to begin looking for substr in string. :type int
+    :return: The index of the first occurrence of substr in string at or following index start.
+    :rtype: int
     """
     string = stypes.stringToCharP(string)
     substr = stypes.stringToCharP(substr)
@@ -5911,13 +5957,16 @@ def pos(string, substr, start):
 
 def posr(string, substr, start):
     """
+    Find the first occurrence in a string of a substring, starting at
+    a specified location, searching backward.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/posr_c.html
 
-
-    :param string:
-    :param substr:
-    :param start:
-    :return: :rtype:
+    :param string: Any character string. :type string: str
+    :param substr: Substring to locate in the character string. :type substr: str
+    :param start: Position to begin looking for substr in string. :type int
+    :return: The index of the last occurrence of substr in string at or preceding index start.
+    :rtype: int
     """
     string = stypes.stringToCharP(string)
     substr = stypes.stringToCharP(substr)
@@ -5930,13 +5979,17 @@ def posr(string, substr, start):
 
 def prop2b(gm, pvinit, dt):
     """
+    Given a central mass and the state of massless body at time t_0,
+    this routine determines the state as predicted by a two-body
+    force model at time t_0 + dt.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/prop2b_c.html
 
-
-    :param gm:
-    :param pvinit:
-    :param dt:
-    :return: :rtype:
+    :param gm: Gravity of the central mass. :type gm: float
+    :param pvinit: Initial state from which to propagate a state. :type pvinit: 6-Element Array of Floats
+    :param dt: Time offset from initial state to propagate to. :type dt: float
+    :return: The propagated state.
+    :rtype: 6-Element Array of Floats
     """
     gm = ctypes.c_double(gm)
     pvinit = stypes.toDoubleVector(pvinit)
@@ -5948,11 +6001,13 @@ def prop2b(gm, pvinit, dt):
 
 def prsdp(string):
     """
+    Parse a string as a double precision number, encapsulating error handling.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/prsdp_c.html
 
-
-    :param string:
-    :return: :rtype:
+    :param string: String representing a d.p. number. :type string: str
+    :return: D.p. value obtained by parsing string.
+    :rtype: float
     """
     string = stypes.stringToCharP(string)
     dpval = ctypes.c_double()
@@ -5962,11 +6017,13 @@ def prsdp(string):
 
 def prsint(string):
     """
+    Parse a string as an integer, encapsulating error handling.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/prsint_c.html
 
-
-    :param string:
-    :return: :rtype:
+    :param string: String representing an integer. :type string: str
+    :return: Integer value obtained by parsing string.
+    :rtype: int
     """
     string = stypes.stringToCharP(string)
     intval = ctypes.c_int()
@@ -5976,13 +6033,15 @@ def prsint(string):
 
 def psv2pl(point, span1, span2):
     """
+    Make a CSPICE plane from a point and two spanning vectors.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/psv2pl_c.html
 
-
-    :param point:
-    :param span1:
-    :param span2:
-    :return: :rtype:
+    :param point: A Point. :type point: 3-Element Array of Floats
+    :param span1: First Spanning vector. :type span1: 3-Element Array of Floats
+    :param span2: Second Spanning vector. :type span2: 3-Element Array of Floats
+    :return: A SPICE plane.
+    :rtype: supportypes.Plane
     """
     point = stypes.toDoubleVector(point)
     span1 = stypes.toDoubleVector(span1)
@@ -5997,13 +6056,16 @@ def psv2pl(point, span1, span2):
 
 def pxform(fromstr, tostr, et):
     """
+    Return the matrix that transforms position vectors from one
+    specified frame to another at a specified epoch.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pxform_c.html
 
-
-    :param fromstr:
-    :param tostr:
-    :param et:
-    :return: :rtype:
+    :param fromstr: Name of the frame to transform from. :type fromstr: str
+    :param tostr: Name of the frame to transform to. :type tostr: str
+    :param et: Epoch of the rotation matrix. :type et: float
+    :return: A rotation matrix.
+    :rtype: 3x3 Element Array of floats
     """
     et = ctypes.c_double(et)
     tostr = stypes.stringToCharP(tostr)
@@ -6015,14 +6077,18 @@ def pxform(fromstr, tostr, et):
 
 def pxfrm2(frame_from, frame_to, etfrom, etto):
     """
+    Return the 3x3 matrix that transforms position vectors from one
+    specified frame at a specified epoch to another specified
+    frame at another specified epoch.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pxfrm2_c.html
 
-
-    :param frame_from:
-    :param frame_to:
-    :param etfrom:
-    :param etto:
-    :return: :rtype:
+    :param frame_from: Name of the frame to transform from. :type frame_from: str
+    :param frame_to: Name of the frame to transform to. :type frame_to: str
+    :param etfrom: Evaluation time of frame_from. :type etfrom: float
+    :param etto: Evaluation time of frame_to. :type etto: float
+    :return: A position transformation matrix from frame_from to frame_to
+    :rtype: 3x3 Element Array of floats
     """
     frame_from = stypes.stringToCharP(frame_from)
     frame_to = stypes.stringToCharP(frame_to)
