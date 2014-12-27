@@ -3937,22 +3937,28 @@ def gnpool(name, start, room, lenout):
 
 def halfpi():
     """
+    Return half the value of pi (the ratio of the circumference of
+    a circle to its diameter).
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/halfpi_c.html
 
-
-
-    :return: :rtype:
+    :return: Half the value of pi.
+    :rtype: float
     """
     return libspice.halfpi_c()
 
 
 def hx2dp(string):
     """
+    Convert a string representing a double precision number in a
+    base 16 scientific notation into its equivalent double
+    precision number.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/hx2dp_c.html
 
-
-    :param string:
-    :return: :rtype:
+    :param string: Hex form string to convert to double precision. :type string: str
+    :return: Double precision value to be returned, Or Error Message.
+    :rtype: float or str
     """
     string = stypes.stringToCharP(string)
     lenout = ctypes.c_int(80)
@@ -3973,11 +3979,12 @@ def hx2dp(string):
 
 def ident():
     """
+    This routine returns the 3x3 identity matrix.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ident_c.html
 
-
-
-    :return: :rtype:
+    :return: The 3x3 identity matrix.
+    :rtype: 3x3-Element Array of Floats
     """
     matrix = stypes.emptyDoubleMatrix()
     libspice.ident_c(matrix)
@@ -3986,15 +3993,22 @@ def ident():
 
 def illum(target, et, abcorr, obsrvr, spoint):
     """
+    Deprecated: This routine has been superseded by the CSPICE
+    routine ilumin. This routine is supported for purposes of
+    backward compatibility only.
+
+    Find the illumination angles at a specified surface point of a
+    target body.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/illum_c.html
 
-
-    :param target:
-    :param et:
-    :param abcorr:
-    :param obsrvr:
-    :param spoint:
-    :return: :rtype:
+    :param target: Name of target body. :type target: str
+    :param et: Epoch in ephemeris seconds past J2000. :type et: float
+    :param abcorr: Desired aberration correction. :type abcorr: str
+    :param obsrvr: Name of observing body. :type obsrvr: str
+    :param spoint: Body-fixed coordinates of a target surface point. :type spoint: 3-Element Array of Floats
+    :return: Phase angle, Solar incidence angle, and Emission angle at the surface point.
+    :rtype: tuple
     """
     target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
@@ -4011,17 +4025,24 @@ def illum(target, et, abcorr, obsrvr, spoint):
 
 def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
     """
+    Find the illumination angles (phase, solar incidence, and
+    emission) at a specified surface point of a target body.
+
+    This routine supersedes illum.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ilumin_c.html
 
-
-    :param method:
-    :param target:
-    :param et:
-    :param fixref:
-    :param abcorr:
-    :param obsrvr:
-    :param spoint:
-    :return: :rtype:
+    :param method: Computation method. :type method: str
+    :param target: Name of target body. :type target: str
+    :param et: Epoch in ephemeris seconds past J2000. :type et: float
+    :param fixref: Body-fixed, body-centered target body frame. :type fixref: str
+    :param abcorr: Desired aberration correction. :type abcorr: str
+    :param obsrvr: Name of observing body. :type obsrvr: str
+    :param spoint: Body-fixed coordinates of a target surface point. :type spoint: 3-Element Array of Floats
+    :return: Target surface point epoch, Vector from observer to target
+     surface point, Phase angle, Solar incidence angle, and Emission
+     angle at the surface point.
+    :rtype: tuple
     """
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
@@ -4045,14 +4066,16 @@ def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
 
 def inedpl(a, b, c, plane):
     """
+    Find the intersection of a triaxial ellipsoid and a plane.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/inedpl_c.html
 
-
-    :param a:
-    :param b:
-    :param c:
-    :param plane:
-    :return: :rtype:
+    :param a: Length of ellipsoid semi-axis lying on the x-axis. :type a: float
+    :param b: Length of ellipsoid semi-axis lying on the y-axis. :type b: float
+    :param c: Length of ellipsoid semi-axis lying on the z-axis. :type c: float
+    :param plane: Plane that intersects ellipsoid :type plane: stypes.Plane
+    :return: Intersection ellipse
+    :rtype: stypes.Ellipse, or None
     """
     assert (isinstance(plane, stypes.Plane))
     ellipse = stypes.Ellipse()
@@ -4070,12 +4093,14 @@ def inedpl(a, b, c, plane):
 
 def inelpl(ellips, plane):
     """
+    Find the intersection of an ellipse and a plane.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/inelpl_c.html
 
-
-    :param ellips:
-    :param plane:
-    :return: :rtype:
+    :param ellips: A SPICE ellipse. :type plane: stypes.Ellipse
+    :param plane: A SPICE plane. :type plane: stypes.Plane
+    :return: Number of intersection points of plane and ellipse, Point 1, Point 2
+    :rtype: tuple
     """
     assert (isinstance(plane, stypes.Plane))
     assert (isinstance(ellips, stypes.Ellipse))
@@ -4089,13 +4114,15 @@ def inelpl(ellips, plane):
 
 def inrypl(vertex, direct, plane):
     """
+    Find the intersection of a ray and a plane.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/inrypl_c.html
 
-
-    :param vertex:
-    :param direct:
-    :param plane:
-    :return: :rtype:
+    :param vertex: Vertex vector of ray. :type vertex: 3-Element Array of Floats
+    :param direct: Direction vector of ray. :type direct: 3-Element Array of Floats
+    :param plane: A SPICE plane. :type plane: stypes.Plane
+    :return: Number of intersection points of ray and plane, Intersection point, if nxpts = 1.
+    :rtype: tuple
     """
     assert (isinstance(plane, stypes.Plane))
     vertex = stypes.toDoubleVector(vertex)
@@ -4109,11 +4136,12 @@ def inrypl(vertex, direct, plane):
 
 def insrtc(item, inset):
     """
+    Insert an item into a character set.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/insrtc_c.html
 
-
-    :param item:
-    :param inset:
+    :param item: Item to be inserted. :type item: str or list of str
+    :param inset: Insertion set. :type inset: stypes.SpiceCell
     """
     assert isinstance(inset, stypes.SpiceCell)
     if isinstance(item, list):
@@ -4127,11 +4155,12 @@ def insrtc(item, inset):
 
 def insrtd(item, inset):
     """
+    Insert an item into a double precision set.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/insrtd_c.html
 
-
-    :param item:
-    :param inset:
+    :param item: Item to be inserted. :type item: float or list of floats
+    :param inset: Insertion set. :type inset: stypes.SpiceCell
     """
     assert isinstance(inset, stypes.SpiceCell)
     if hasattr(item, "__iter__"):
@@ -4145,11 +4174,12 @@ def insrtd(item, inset):
 
 def insrti(item, inset):
     """
+    Insert an item into an integer set.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/insrti_c.html
 
-
-    :param item:
-    :param inset:
+    :param item: Item to be inserted. :type item: int or list of ints
+    :param inset: Insertion set. :type inset: stypes.SpiceCell
     """
     assert isinstance(inset, stypes.SpiceCell)
     if hasattr(item, "__iter__"):
@@ -4163,13 +4193,14 @@ def insrti(item, inset):
 
 def inter(a, b):
     """
+    Intersect two sets of any data type to form a third set.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/inter_c.html
 
-
-    :param a:
-    :param b:
-    :return:
-    :rtype:
+    :param a: First input set. :type a: stypes.SpiceCell
+    :param b: Second input set. :type b: stypes.SpiceCell
+    :return: Intersection of a and b.
+    :rtype: stypes.SpiceCell
     """
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
@@ -4189,33 +4220,39 @@ def inter(a, b):
 
 def intmax():
     """
+    Return the value of the largest (positive) number representable
+    in a int variable.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/intmax_c.html
 
-
-
-    :return: :rtype:
+    :return: The largest (positive) number representablein a Int variable.
+    :rtype: int
     """
     return libspice.intmax_c()
 
 
 def intmin():
     """
+    Return the value of the smallest (negative) number representable
+    in a SpiceInt variable.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/intmin_c.html
 
-
-
-    :return: :rtype:
+    :return: The smallest (negative) number representablein a Int variable.
+    :rtype: int
     """
     return libspice.intmin_c()
 
 
 def invert(m):
     """
+    Generate the inverse of a 3x3 matrix.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/invert_c.html
 
-
-    :param m:
-    :return: :rtype:
+    :param m: Matrix to be inverted. :type m: 3x3-Element Array of Floats
+    :return: Inverted matrix (m1)^-1
+    :rtype: 3x3-Element Array of Floats
     """
     m = stypes.listtodoublematrix(m)
     mout = stypes.emptyDoubleMatrix()
@@ -4224,12 +4261,16 @@ def invert(m):
 
 
 def invort(m):
-    #Todo: test invort
     """
+    Given a matrix, construct the matrix whose rows are the
+    columns of the first divided by the length squared of the
+    the corresponding columns of the input matrix.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/invort_c.html
 
-    :param m:
-    :return: :rtype:
+    :param m: A 3x3 Matrix. :type m: 3x3-Element Array of Floats
+    :return: m after transposition and scaling of rows.
+    :rtype: 3x3-Element Array of Floats
     """
     m = stypes.listtodoublematrix(m)
     mout = stypes.emptyDoubleMatrix()
@@ -4239,12 +4280,15 @@ def invort(m):
 
 def isordv(array, n):
     """
+    Determine whether an array of n items contains the integers
+    0 through n-1.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/isordv_c.html
 
-
-    :param array:
-    :param n:
-    :return: :rtype:
+    :param array: Array of integers. :type array: Array of ints
+    :param n: Number of integers in array. :type n: int
+    :return: The function returns True if the array contains the integers 0 through n-1, otherwise it returns False.
+    :rtype: bool
     """
     array = stypes.toIntVector(array)
     n = ctypes.c_int(n)
@@ -4253,14 +4297,18 @@ def isordv(array, n):
 
 def isrchc(value, ndim, lenvals, array):
     """
+    Search for a given value within a character string array. Return
+    the index of the first matching array entry, or -1 if the key
+    value was not found.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/isrchc_c.html
 
-
-    :param value:
-    :param ndim:
-    :param lenvals:
-    :param array:
-    :return: :rtype:
+    :param value: Key value to be found in array. :type value: str
+    :param ndim: Dimension of array. :type ndim: int
+    :param lenvals: String length. :type lenvals: int
+    :param array: Character string array to search. :type array: Array of str
+    :return: The index of the first matching array element or -1 if the value is not found.
+    :rtype: int
     """
     value = stypes.stringToCharP(value)
     array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=ndim)
@@ -4271,13 +4319,17 @@ def isrchc(value, ndim, lenvals, array):
 
 def isrchd(value, ndim, array):
     """
+    Search for a given value within a double precision array. Return
+    the index of the first matching array entry, or -1 if the key value
+    was not found.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/isrchd_c.html
 
-
-    :param value:
-    :param ndim:
-    :param array:
-    :return: :rtype:
+    :param value: Key value to be found in array. :type value: float
+    :param ndim: Dimension of array. :type ndim: int
+    :param array: Double Precision array to search. :type array: Array of Floats
+    :return: The index of the first matching array element or -1 if the value is not found.
+    :rtype: int
     """
     value = ctypes.c_double(value)
     ndim = ctypes.c_int(ndim)
@@ -4287,13 +4339,17 @@ def isrchd(value, ndim, array):
 
 def isrchi(value, ndim, array):
     """
+    Search for a given value within an integer array. Return
+    the index of the first matching array entry, or -1 if the key
+    value was not found.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/isrchi_c.html
 
-
-    :param value:
-    :param ndim:
-    :param array:
-    :return: :rtype:
+    :param value: Key value to be found in array. :type value: int
+    :param ndim: Dimension of array. :type ndim: int
+    :param array: Integer array to search. :type array: Array of Ints
+    :return: The index of the first matching array element or -1 if the value is not found.
+    :rtype: int
     """
     value = ctypes.c_int(value)
     ndim = ctypes.c_int(ndim)
@@ -4303,13 +4359,16 @@ def isrchi(value, ndim, array):
 
 def isrot(m, ntol, dtol):
     """
+    Indicate whether a 3x3 matrix is a rotation matrix.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/isrot_c.html
 
-
-    :param m:
-    :param ntol:
-    :param dtol:
-    :return: :rtype:
+    :param m: A matrix to be tested. :type m: 3x3-Element Array of Floats
+    :param ntol: Tolerance for the norms of the columns of m. :type ntol: float
+    :param dtol: Tolerance for the determinant of a matrix whose columns
+     are the unitized columns of m. :type dtol: float
+    :return: True if and only if m is a rotation matrix.
+    :rtype: bool
     """
     m = stypes.listtodoublematrix(m)
     ntol = ctypes.c_double(ntol)
@@ -4319,11 +4378,15 @@ def isrot(m, ntol, dtol):
 
 def iswhsp(string):
     """
+    Return a boolean value indicating whether a string contains
+    only white space characters.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/iswhsp_c.html
 
-
-    :param string:
-    :return: :rtype:
+    :param string: String to be tested. :type string: str
+    :return: the boolean value True if the string is empty or contains
+     only white space characters; otherwise it returns the value False.
+    :rtype: bool
     """
     string = stypes.stringToCharP(string)
     return libspice.iswhsp_c(string)
