@@ -4452,9 +4452,11 @@ def jyear():
 
 def kclear():
     """
+    Clear the KEEPER subsystem: unload all kernels, clear the kernel
+    pool, and re-initialize the subsystem. Existing watches on kernel
+    variables are retained.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/kclear_c.html
-
-
 
     """
     libspice.kclear_c()
@@ -4463,15 +4465,20 @@ def kclear():
 
 def kdata(which, kind, fillen, typlen, srclen):
     """
+    Return data for the nth kernel that is among a list of specified
+    kernel types.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/kdata_c.html
 
-
-    :param which:
-    :param kind:
-    :param fillen:
-    :param typlen:
-    :param srclen:
-    :return: :rtype:
+    :param which: Index of kernel to fetch from the list of kernels. :type which: int
+    :param kind: The kind of kernel to which fetches are limited. :type kind: str
+    :param fillen: Available space in output file string. :type fillen: int
+    :param typlen: Available space in output kernel type string. :type typlen: int
+    :param srclen: Available space in output source string. :type srclen: int
+    :return: The name of the kernel file, The type of the kernel,
+             Name of the source file used to load file, The handle attached to file,
+             True if the specified file could be located
+    :rtype: tuple
     """
     which = ctypes.c_int(which)
     kind = stypes.stringToCharP(kind)
@@ -4491,13 +4498,16 @@ def kdata(which, kind, fillen, typlen, srclen):
 
 def kinfo(file, typlen, srclen):
     """
+    Return information about a loaded kernel specified by name.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/kinfo_c.html
 
-
-    :param file:
-    :param typlen:
-    :param srclen:
-    :return: :rtype:
+    :param file: Name of a kernel to fetch information for :type file: str
+    :param typlen: Available space in output kernel type string. :type typlen: int
+    :param srclen: Available space in output source string. :type srclen: int
+    :return: The type of the kernel, Name of the source file used to load file,
+             The handle attached to file, True if the specified file could be located
+    :rtype: tuple
     """
     typlen = ctypes.c_int(typlen)
     srclen = ctypes.c_int(srclen)
@@ -4514,12 +4524,15 @@ def kinfo(file, typlen, srclen):
 
 def kplfrm(frmcls, cell_size=1000):
     """
+    Return a SPICE set containing the frame IDs of all reference
+    frames of a given class having specifications in the kernel pool.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/kplfrm_c.html
 
-
-    :param frmcls:
-    :param cell_size:
-    :return: :rtype:
+    :param frmcls: Frame class. :type frmcls: int
+    :param cell_size: Optional size of the cell, default is 1000. :type cell_size: int
+    :return: Set of ID codes of frames of the specified class.
+    :rtype: stypes.SPICEINT_CELL
     """
     frmcls = ctypes.c_int(frmcls)
     idset = stypes.SPICEINT_CELL(cell_size)
@@ -4529,11 +4542,14 @@ def kplfrm(frmcls, cell_size=1000):
 
 def ktotal(kind):
     """
+    Return the current number of kernels that have been loaded
+    via the KEEPER interface that are of a specified type.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ktotal_c.html
 
-
-    :param kind:
-    :return: :rtype:
+    :param kind: A list of kinds of kernels to count. :type kind: str
+    :return: The number of kernels of type kind.
+    :rtype: int
     """
     kind = stypes.stringToCharP(kind)
     count = ctypes.c_int()
@@ -4543,17 +4559,22 @@ def ktotal(kind):
 
 def kxtrct(keywd, termlen, terms, nterms, stringlen, substrlen, instring):
     """
+    Locate a keyword in a string and extract the substring from
+    the beginning of the first word following the keyword to the
+    beginning of the first subsequent recognized terminator of a list.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/kxtrct_c.html
 
-
-    :param keywd:
-    :param termlen:
-    :param terms:
-    :param nterms:
-    :param stringlen:
-    :param substrlen:
-    :param instring:
-    :return: :rtype:
+    :param keywd: Word that marks the beginning of text of interest. :type keywd: str
+    :param termlen: Length of strings in string array term. :type termlen: int
+    :param terms: Set of words, any of which marks the end of text. :type terms: Array of str
+    :param nterms: Number of terms. :type nterms: int
+    :param stringlen: Available space in argument string. :type stringlen: int
+    :param substrlen: Available space in output substring. :type substrlen: int
+    :param instring: String containing a sequence of words. :type instring: str
+    :return: String containing a sequence of words, True if the keyword is found in the string,
+             String from end of keywd to beginning of first terms item found.
+    :rtype: tuple
     """
     keywd = stypes.stringToCharP(keywd)
     termlen = ctypes.c_int(termlen)
