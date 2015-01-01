@@ -9758,11 +9758,14 @@ def vzerog(v, ndim):
 
 def wncard(window):
     """
+    Return the cardinality (number of intervals) of a double
+    precision window.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wncard_c.html
 
-
-    :param window:
-    :return: :rtype:
+    :param window: Input window :type window: stypes.SpiceCell
+    :return: the cardinality of the input window.
+    :rtype: int
     """
     assert isinstance(window, stypes.SpiceCell)
     return libspice.wncard_c(window)
@@ -9770,13 +9773,16 @@ def wncard(window):
 
 def wncomd(left, right, window):
     """
+    Determine the complement of a double precision window with
+    respect to a specified interval.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wncomd_c.html
 
-
-    :param left:
-    :param right:
-    :param window:
-    :return: :rtype:
+    :param left: left endpoints of complement interval. :type left: float
+    :param right: right endpoints of complement interval. :type right: float
+    :param window: Input window :type window: stypes.SpiceCell
+    :return: Complement of window with respect to left and right.
+    :rtype: stypes.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
@@ -9789,13 +9795,15 @@ def wncomd(left, right, window):
 
 def wncond(left, right, window):
     """
+    Contract each of the intervals of a double precision window.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wncond_c.html
 
-
-    :param left:
-    :param right:
-    :param window:
-    :return: :rtype:
+    :param left: Amount added to each left endpoint. :type left: float
+    :param right: Amount subtracted from each right endpoint. :type right: float
+    :param window: Window to be contracted :type window: stypes.SpiceCell
+    :return: Contracted Window.
+    :rtype: stypes.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
@@ -9807,12 +9815,15 @@ def wncond(left, right, window):
 
 def wndifd(a, b):
     """
+    Place the difference of two double precision windows into
+    a third window.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wndifd_c.html
 
-
-    :param a:
-    :param b:
-    :return: :rtype:
+    :param a: Input window A. :type a: stypes.SpiceCell
+    :param b: Input window B. :type b: stypes.SpiceCell
+    :return: Difference of a and b.
+    :rtype: stypes.SpiceCell
     """
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
@@ -9825,12 +9836,15 @@ def wndifd(a, b):
 
 def wnelmd(point, window):
     """
+    Determine whether a point is an element of a double precision
+    window.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnelmd_c.html
 
-
-    :param point:
-    :param window:
-    :return: :rtype:
+    :param point: Input point. :type point: float
+    :param window: Input window :type window: stypes.SpiceCell
+    :return: returns True if point is an element of window.
+    :rtype: bool
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
@@ -9840,13 +9854,15 @@ def wnelmd(point, window):
 
 def wnexpd(left, right, window):
     """
+    Expand each of the intervals of a double precision window.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnexpd_c.html
 
-
-    :param left:
-    :param right:
-    :param window:
-    :return: :rtype:
+    :param left: Amount subtracted from each left endpoint. :type left: float
+    :param right: Amount added to each right endpoint. :type right: float
+    :param window: Window to be expanded. :type window: stypes.SpiceCell
+    :return: Expanded Window.
+    :rtype: stypes.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
@@ -9858,12 +9874,15 @@ def wnexpd(left, right, window):
 
 def wnextd(side, window):
     """
+    Extract the left or right endpoints from a double precision
+    window.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnextd_c.html
 
-
-    :param side:
-    :param window:
-    :return: :rtype:
+    :param side: Extract left "L" or right "R" endpoints. :type side: str
+    :param window: Window to be extracted. :type window: stypes.SpiceCell
+    :return: Extracted Window.
+    :rtype: stypes.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
@@ -9875,12 +9894,14 @@ def wnextd(side, window):
 
 def wnfetd(window, n):
     """
+    Fetch a particular interval from a double precision window.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnfetd_c.html
 
-
-    :param window:
-    :param n:
-    :return: :rtype:
+    :param window: Input window :type window: stypes.SpiceCell
+    :param n: Index of interval to be fetched. :type n: int
+    :return: Left, right endpoints of the nth interval.
+    :rtype: tuple
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
@@ -9894,12 +9915,14 @@ def wnfetd(window, n):
 
 def wnfild(small, window):
     """
+    Fill small gaps between adjacent intervals of a double precision window.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnfild_c.html
 
-
-    :param small:
-    :param window:
-    :return: :rtype:
+    :param small: Limiting measure of small gaps. :type small: float
+    :param window: Window to be filled :type window: stypes.SpiceCell
+    :return: Filled Window.
+    :rtype: stypes.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
@@ -9910,12 +9933,14 @@ def wnfild(small, window):
 
 def wnfltd(small, window):
     """
+    Filter (remove) small intervals from a double precision window.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnfltd_c.html
 
-
-    :param small:
-    :param window:
-    :return: :rtype:
+    :param small: Limiting measure of small intervals. :type small: float
+    :param window: Window to be filtered. :type window: stypes.SpiceCell
+    :return: Filtered Window.
+    :rtype: stypes.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
@@ -9926,13 +9951,16 @@ def wnfltd(small, window):
 
 def wnincd(left, right, window):
     """
+    Determine whether an interval is included in a double precision window.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnincd_c.html
 
-
-    :param left:
-    :param right:
-    :param window:
-    :return: :rtype:
+    :param left: Left interval :type left: float
+    :param right: Right interval :type right: float
+    :param window: Input window :type window: stypes.SpiceCell
+    :return: Returns True if the input interval is included in
+    ---is a subset of some interval in--- window.
+    :rtype: bool
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
@@ -9943,12 +9971,13 @@ def wnincd(left, right, window):
 
 def wninsd(left, right, window):
     """
+    Insert an interval into a double precision window.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wninsd_c.html
 
-
-    :param left:
-    :param right:
-    :param window:
+    :param left: Left endpoints of new interval. :type left: float
+    :param right: Right endpoints of new interval. :type right: float
+    :param window: Input window. :type window: stypes.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
@@ -9959,12 +9988,16 @@ def wninsd(left, right, window):
 
 def wnintd(a, b):
     """
+    Place the intersection of two double precision windows into
+    a third window.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnintd_c.html
 
 
-    :param a:
-    :param b:
-    :return: :rtype:
+    :param a: Input window A. :type a: stypes.SpiceCell
+    :param b: Input window B. :type b: stypes.SpiceCell
+    :return: Intersection of a and b.
+    :rtype: stypes.SpiceCell
     """
     assert isinstance(a, stypes.SpiceCell)
     assert b.dtype == 1
@@ -9977,13 +10010,15 @@ def wnintd(a, b):
 
 def wnreld(a, op, b):
     """
+    Compare two double precision windows.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnreld_c.html
 
-
-    :param a:
-    :param op:
-    :param b:
-    :return: :rtype:
+    :param a: First window. :type a: stypes.SpiceCell
+    :param op: Comparison operator. :type op: str
+    :param b: Second window. :type b: stypes.SpiceCell
+    :return: The result of comparison: a (op) b.
+    :rtype: bool
     """
     assert isinstance(a, stypes.SpiceCell)
     assert b.dtype == 1
@@ -9996,11 +10031,14 @@ def wnreld(a, op, b):
 
 def wnsumd(window):
     """
+    Summarize the contents of a double precision window.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnsumd_c.html
 
-
-    :param window:
-    :return: :rtype:
+    :param window: Window to be summarized. :type window: stypes.SpiceCell
+    :return: Total measure of intervals in window, Average measure, Standard deviation,
+             Location of shortest interval, Location of longest interval.
+    :rtype: tuple
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
@@ -10017,12 +10055,14 @@ def wnsumd(window):
 
 def wnunid(a, b):
     """
+    Place the union of two double precision windows into a third window.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnunid_c.html
 
-
-    :param a:
-    :param b:
-    :return: :rtype:
+    :param a: Input window A. :type a: stypes.SpiceCell
+    :param b: Input window B. :type b: stypes.SpiceCell
+    :return: Union of a and b.
+    :rtype: stypes.SpiceCell
     """
     assert isinstance(a, stypes.SpiceCell)
     assert b.dtype == 1
@@ -10035,13 +10075,16 @@ def wnunid(a, b):
 
 def wnvald(insize, n, window):
     """
+    Form a valid double precision window from the contents
+    of a window array.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnvald_c.html
 
-
-    :param insize:
-    :param n:
-    :param window:
-    :return: :rtype:
+    :param insize: Size of window. :type insize: int
+    :param n: Original number of endpoints. :type n: int
+    :param window: Input window. :type window: stypes.SpiceCell
+    :return: The union of the intervals in the input cell.
+    :rtype: stypes.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
