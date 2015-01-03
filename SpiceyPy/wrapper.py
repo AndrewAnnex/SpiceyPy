@@ -8660,14 +8660,16 @@ def szpool(name):
 
 def timdef(action, item, lenout, value=None):
     """
+    Set and retrieve the defaults associated with calendar input strings.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/timdef_c.html
 
-
-    :param action:
-    :param item:
-    :param lenout:
-    :param value:
-    :return: :rtype:
+    :param action: the kind of action to take "SET" or "GET". :type action: str
+    :param item: the default item of interest. :type item: str
+    :param lenout: the length of list for output. :type lenout: int
+    :param value: the optional string used if action is "SET" :type value: str
+    :return: the value associated with the default item.
+    :rtype: str
     """
     action = stypes.stringToCharP(action)
     item = stypes.stringToCharP(item)
@@ -8682,13 +8684,17 @@ def timdef(action, item, lenout, value=None):
 
 def timout(et, pictur, lenout):
     """
+    This vectorized routine converts an input epoch represented in TDB seconds
+    past the TDB epoch of J2000 to a character string formatted to
+    the specifications of a user's format picture.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/timout_c.html
 
-
-    :param et:
-    :param pictur:
-    :param lenout:
-    :return: :rtype:
+    :param et: An epoch in seconds past the ephemeris epoch J2000. :type N-Element Array of Floats or Float
+    :param pictur: A format specification for the output string. :type pictur: str
+    :param lenout: The length of the output string plus 1. :type lenout: int
+    :return: A string representation of the input epoch.
+    :rtype: str or array of str
     """
     if hasattr(et, "__iter__"):
         return numpy.array([timout(t, pictur, lenout) for t in et])
@@ -8702,13 +8708,17 @@ def timout(et, pictur, lenout):
 
 def tipbod(ref, body, et):
     """
+    Return a 3x3 matrix that transforms positions in inertial
+    coordinates to positions in body-equator-and-prime-meridian
+    coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tipbod_c.html
 
-
-    :param ref:
-    :param body:
-    :param et:
-    :return: :rtype:
+    :param ref: ID of inertial reference frame to transform from. :type ref: str
+    :param body: ID code of body. :type body: int
+    :param et: Epoch of transformation. :type et: float
+    :return: Transformation (position), inertial to prime meridian.
+    :rtype: 3x3-Element Array of floats.
     """
     ref = stypes.stringToCharP(ref)
     body = ctypes.c_int(body)
@@ -8720,13 +8730,16 @@ def tipbod(ref, body, et):
 
 def tisbod(ref, body, et):
     """
+    Return a 6x6 matrix that transforms states in inertial coordinates to
+    states in body-equator-and-prime-meridian coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tisbod_c.html
 
-
-    :param ref:
-    :param body:
-    :param et:
-    :return: :rtype:
+    :param ref: ID of inertial reference frame to transform from. :type ref: str
+    :param body: ID code of body. :type body: int
+    :param et: Epoch of transformation. :type et: float
+    :return: Transformation (state), inertial to prime meridian.
+    :rtype: 6x6-Element Array of floats.
     """
     ref = stypes.stringToCharP(ref)
     body = ctypes.c_int(body)
@@ -8738,11 +8751,14 @@ def tisbod(ref, body, et):
 
 def tkvrsn(item):
     """
+    Given an item such as the Toolkit or an entry point name, return
+    the latest version string.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tkvrsn_c.html
 
-
-    :param item:
-    :return: :rtype:
+    :param item: Item for which a version string is desired. :type item: str
+    :return: the latest version string.
+    :rtype: str
     """
     item = stypes.stringToCharP(item)
     return stypes.toPythonString(libspice.tkvrsn_c(item))
@@ -8750,12 +8766,15 @@ def tkvrsn(item):
 
 def tparse(instring, lenout):
     """
+    Parse a time string and return seconds past the J2000
+    epoch on a formal calendar.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tparse_c.html
 
-
-    :param instring:
-    :param lenout:
-    :return: :rtype:
+    :param instring: Input time string, UTC. :type instring: str
+    :param lenout: Available space in output error message string. :type lenout: int
+    :return: Equivalent UTC seconds past J2000, Descriptive error message.
+    :rtype: tuple
     """
     errmsg = stypes.stringToCharP(lenout)
     lenout = ctypes.c_int(lenout)
@@ -8767,13 +8786,16 @@ def tparse(instring, lenout):
 
 def tpictr(sample, lenout, lenerr):
     """
+    Given a sample time string, create a time format picture
+    suitable for use by the routine timout.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tpictr_c.html
 
-
-    :param sample:
-    :param lenout:
-    :param lenerr:
-    :return: :rtype:
+    :param sample: A sample time string. :type sample: str
+    :param lenout: The length for the output picture string. :type lenout: int
+    :param lenerr: The length for the output error string. :type lenerr: int
+    :return: A format picture that describes sample, Flag indicating whether sample parsed successfully, Diagnostic returned if sample cannot be parsed
+    :rtype: tuple
     """
     sample = stypes.stringToCharP(sample)
     pictur = stypes.stringToCharP(lenout)
@@ -8788,24 +8810,44 @@ def tpictr(sample, lenout, lenerr):
 
 def trace(matrix):
     """
+    Return the trace of a 3x3 matrix.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/trace_c.html
 
-
-    :param matrix:
-    :return: :rtype:
+    :param matrix: 3x3 matrix of double precision numbers. :type matrix: 3x3-Element Array of floats.
+    :return: The trace of matrix.
+    :rtype: float
     """
     matrix = stypes.toDoubleMatrix(matrix)
     return libspice.trace_c(matrix)
 
 
+def trcdep():
+    """
+    Return the number of modules in the traceback representation.
+
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/trcdep_c.html
+
+    :return: The number of modules in the traceback.
+    :rtype: int
+    """
+    depth = ctypes.c_int()
+    libspice.trcdep_c(ctypes.byref(depth))
+    return depth.value
+
+
 def trcnam(index, namlen):
     """
+    Return the name of the module having the specified position in
+    the trace representation. The first module to check in is at
+    index 0.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/trcnam_c.html
 
-
-    :param index:
-    :param namlen:
-    :return: :rtype:
+    :param index: The position of the requested module name. :type index: int
+    :param namlen: Available space in output name string. :type namlen: int
+    :return: The name at position index in the traceback.
+    :rtype: str
     """
     index = ctypes.c_int(index)
     name = stypes.stringToCharP(namlen)
@@ -8814,24 +8856,12 @@ def trcnam(index, namlen):
     return stypes.toPythonString(name)
 
 
-def trcdep():
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/trcdep_c.html
-
-
-
-    :return: :rtype:
-    """
-    depth = ctypes.c_int()
-    libspice.trcdep_c(ctypes.byref(depth))
-    return depth.value
-
-
 def trcoff():
     #Todo: test trcoff
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/trcoff_c.html
+    Disable tracing.
 
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/trcoff_c.html
 
     """
     libspice.trcoff_c()
@@ -8841,9 +8871,11 @@ def trcoff():
 def tsetyr(year):
     #Todo: test tsetyr
     """
+    Set the lower bound on the 100 year range.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tsetyr_c.html
 
-    :param year:
+    :param year: Lower bound on the 100 year interval of expansion :type year: int
     """
     year = ctypes.c_int(year)
     libspice.tsetyr_c(year)
@@ -8852,25 +8884,31 @@ def tsetyr(year):
 
 def twopi():
     """
+    Return twice the value of pi
+    (the ratio of the circumference of a circle to its diameter).
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/twopi_c.html
 
-
-
-    :return: :rtype:
+    :return: Twice the value of pi.
+    :rtype: float
     """
     return libspice.twopi_c()
 
 
 def twovec(axdef, indexa, plndef, indexp):
     """
+    Find the transformation to the right-handed frame having a
+    given vector as a specified axis and having a second given
+    vector lying in a specified coordinate plane.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/twovec_c.html
 
-
-    :param axdef:
-    :param indexa:
-    :param plndef:
-    :param indexp:
-    :return: :rtype:
+    :param axdef: Vector defining a principal axis. :type axdef: 3-Element Array of floats.
+    :param indexa: Principal axis number of axdef (X=1, Y=2, Z=3). :type indexa: int
+    :param plndef: Vector defining (with axdef) a principal plane. :type plndef: 3-Element Array of floats.
+    :param indexp: Second axis number (with indexa) of principal plane. :type indexp: int
+    :return: Output rotation matrix.
+    :rtype: 3x3-Element Array of floats.
     """
     axdef = stypes.toDoubleVector(axdef)
     indexa = ctypes.c_int(indexa)
@@ -8883,11 +8921,12 @@ def twovec(axdef, indexa, plndef, indexp):
 
 def tyear():
     """
+    Return the number of seconds in a tropical year.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tyear_c.html
 
-
-
-    :return: :rtype:
+    :return: The number of seconds in a tropical year.
+    :rtype: float
     """
     return libspice.tyear_c()
 
@@ -8897,12 +8936,14 @@ def tyear():
 
 def ucase(inchar, lenout=None):
     """
+    Convert the characters in a string to uppercase.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ucase_c.html
 
-
-    :param inchar:
-    :param lenout:
-    :return: :rtype:
+    :param inchar: Input string. :type inchar: str
+    :param lenout: Optional Maximum length of output string. :type lenout: int
+    :return: Output string, all uppercase.
+    :rtype: str
     """
     if lenout is None:
         lenout = len(inchar) + 1
@@ -8915,12 +8956,14 @@ def ucase(inchar, lenout=None):
 
 def ucrss(v1, v2):
     """
+    Compute the normalized cross product of two 3-vectors.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ucrss_c.html
 
-
-    :param v1:
-    :param v2:
-    :return: :rtype:
+    :param v1: Left vector for cross product. :type v1: 3-Element Array of Floats
+    :param v2: Right vector for cross product. :type v2: 3-Element Array of Floats
+    :return: Normalized cross product v1xv2 / abs(v1xv2).
+    :rtype: Array of Floats
     """
     v1 = stypes.toDoubleVector(v1)
     v2 = stypes.toDoubleVector(v2)
@@ -8940,13 +8983,14 @@ def ucrss(v1, v2):
 
 def union(a, b):
     """
+    Compute the union of two sets of any data type to form a third set.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/union_c.html
 
-
-    :param a:
-    :param b:
-    :return:
-    :rtype:
+    :param a: First input set. :type a: stypes.SpiceCell
+    :param b: Second input set. :type b: stypes.SpiceCell
+    :return: Union of a and b.
+    :rtype: stypes.SpiceCell
     """
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
@@ -8966,13 +9010,16 @@ def union(a, b):
 
 def unitim(epoch, insys, outsys):
     """
+    Transform time from one uniform scale to another.  The uniform
+    time scales are TAI, TDT, TDB, ET, JED, JDTDB, JDTDT.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unitim_c.html
 
-
-    :param epoch:
-    :param insys:
-    :param outsys:
-    :return: :rtype:
+    :param epoch: An epoch to be converted. :type epoch: float
+    :param insys: The time scale associated with the input epoch. :type insys: str
+    :param outsys: The time scale associated with the function value. :type outsys: str
+    :return: the float in outsys that is equivalent to the epoch on the insys time scale.
+    :rtype: float
     """
     epoch = ctypes.c_double(epoch)
     insys = stypes.stringToCharP(insys)
@@ -8982,10 +9029,11 @@ def unitim(epoch, insys, outsys):
 
 def unload(filename):
     """
+    Unload a SPICE kernel.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unload_c.html
 
-
-    :param filename:
+    :param filename: The name of a kernel to unload. :type filename: str
     """
     if isinstance(filename, list):
         for f in filename:
@@ -8997,11 +9045,13 @@ def unload(filename):
 
 def unorm(v1):
     """
+    Normalize a double precision 3-vector and return its magnitude.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unorm_c.html
 
-
-    :param v1:
-    :return: :rtype:
+    :param v1: Vector to be normalized. :type v1: 3-Element Array of Floats
+    :return: Unit vector of v1, Magnitude of v1.
+    :rtype: tuple
     """
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.emptyDoubleVector(3)
@@ -9012,12 +9062,15 @@ def unorm(v1):
 
 def unormg(v1, ndim):
     """
+    Normalize a double precision vector of arbitrary dimension and
+    return its magnitude.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unormg_c.html
 
-
-    :param v1:
-    :param ndim:
-    :return: :rtype:
+    :param v1: Vector to be normalized. :type v1: N-Element Array of Floats
+    :param ndim: This is the dimension of v1 and vout. :type ndim: int
+    :return: Unit vector of v1, Magnitude of v1.
+    :rtype: tuple
     """
     v1 = stypes.toDoubleVector(v1)
     vout = stypes.emptyDoubleVector(ndim)
@@ -9029,11 +9082,14 @@ def unormg(v1, ndim):
 
 def utc2et(utcstr):
     """
+    Convert an input time from Calendar or Julian Date format, UTC,
+    to ephemeris seconds past J2000.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/utc2et_c.html
 
-
-    :param utcstr:
-    :return: :rtype:
+    :param utcstr: Input time string, UTC. :type utcstr: str
+    :return: Output epoch, ephemeris seconds past J2000.
+    :rtype: float
     """
     utcstr = stypes.stringToCharP(utcstr)
     et = ctypes.c_double()
