@@ -6262,13 +6262,16 @@ def qxq(q1, q2):
 
 def radrec(inrange, re, dec):
     """
+    Convert from range, right ascension, and declination to rectangular
+    coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/radrec_c.html
 
-
-    :param inrange:
-    :param re:
-    :param dec:
-    :return: :rtype:
+    :param inrange: Distance of a point from the origin. :type inrange: float
+    :param re: Right ascension of point in radians. :type re: float
+    :param dec: Declination of point in radians. :type dec: float
+    :return: Rectangular coordinates of the point.
+    :rtype: 3-Element Array of Floats.
     """
     inrange = ctypes.c_double(inrange)
     re = ctypes.c_double(re)
@@ -6280,12 +6283,16 @@ def radrec(inrange, re, dec):
 
 def rav2xf(rot, av):
     """
+    This routine determines a state transformation matrix
+    from a rotation matrix and the angular velocity of the
+    rotation.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/rav2xf_c.html
 
-
-    :param rot:
-    :param av:
-    :return: :rtype:
+    :param rot: Rotation matrix. :type rot: 3x3-Element Array of Floats.
+    :param av: Angular velocity vector. :type av: 3-Element Array of Floats.
+    :return: State transformation associated with rot and av.
+    :rtype: 6x6-Element Array of Floats
     """
     rot = stypes.toDoubleMatrix(rot)
     av = stypes.toDoubleVector(av)
@@ -6296,11 +6303,14 @@ def rav2xf(rot, av):
 
 def raxisa(matrix):
     """
+    Compute the axis of the rotation given by an input matrix
+    and the angle of the rotation about that axis.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/raxisa_c.html
 
-
-    :param matrix:
-    :return: :rtype:
+    :param matrix: Rotation matrix. :type matrix: 3x3-Element Array of Floats.
+    :return: Axis of the rotation, Angle through which the rotation is performed
+    :rtype: tuple
     """
     matrix = stypes.listtodoublematrix(matrix)
     axis = stypes.emptyDoubleVector(3)
@@ -6311,11 +6321,14 @@ def raxisa(matrix):
 
 def rdtext(file, lenout):  # pragma: no cover
     """
+    Read the next line of text from a text file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/rdtext_c.html
 
-    :param file:
-    :param lenout:
-    :return: :rtype:
+    :param file: Name of text file. :type file: str
+    :param lenout: Available room in output line. :type lenout: int
+    :return: Next line from the text file, End-of-file indicator
+    :rtype: tuple
     """
     file = stypes.stringToCharP(file)
     line = stypes.stringToCharP(lenout)
@@ -6327,11 +6340,13 @@ def rdtext(file, lenout):  # pragma: no cover
 
 def reccyl(rectan):
     """
+    Convert from rectangular to cylindrical coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/reccyl_c.html
 
-
-    :param rectan:
-    :return: :rtype:
+    :param rectan: Rectangular coordinates of a point. :type rectan: 3-Element Array of Floats.
+    :return: Distance from z axis, Angle (radians) from xZ plane, Height above xY plane.
+    :rtype: tuple
     """
     rectan = stypes.toDoubleVector(rectan)
     radius = ctypes.c_double(0)
@@ -6342,32 +6357,17 @@ def reccyl(rectan):
     return radius.value, lon.value, z.value
 
 
-def reclat(rectan):
-    """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/reclat_c.html
-
-
-    :param rectan:
-    :return: :rtype:
-    """
-    rectan = stypes.toDoubleVector(rectan)
-    radius = ctypes.c_double(0)
-    longitude = ctypes.c_double(0)
-    latitude = ctypes.c_double(0)
-    libspice.reclat_c(rectan, ctypes.byref(radius), ctypes.byref(longitude),
-                      ctypes.byref(latitude))
-    return radius.value, longitude.value, latitude.value
-
-
 def recgeo(rectan, re, f):
     """
+    Convert from rectangular coordinates to geodetic coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/recgeo_c.html
 
-
-    :param rectan:
-    :param re:
-    :param f:
-    :return: :rtype:
+    :param rectan: Rectangular coordinates of a point. :type rectan: 3-Element Array of Floats.
+    :param re: Equatorial radius of the reference spheroid. :type re: float
+    :param f: Flattening coefficient. :type f: float
+    :return: Geodetic longitude (radians), Geodetic latitude (radians), Altitude above reference spheroid
+    :rtype: tuple
     """
     rectan = stypes.toDoubleVector(rectan)
     re = ctypes.c_double(re)
@@ -6380,16 +6380,37 @@ def recgeo(rectan, re, f):
     return longitude.value, latitude.value, alt.value
 
 
+def reclat(rectan):
+    """
+    Convert from rectangular coordinates to latitudinal coordinates.
+
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/reclat_c.html
+
+    :param rectan: Rectangular coordinates of a point. :type rectan: 3-Element Array of Floats.
+    :return: Distance from the origin, Longitude in radians, Latitude in radians
+    :rtype: tuple
+    """
+    rectan = stypes.toDoubleVector(rectan)
+    radius = ctypes.c_double(0)
+    longitude = ctypes.c_double(0)
+    latitude = ctypes.c_double(0)
+    libspice.reclat_c(rectan, ctypes.byref(radius), ctypes.byref(longitude),
+                      ctypes.byref(latitude))
+    return radius.value, longitude.value, latitude.value
+
+
 def recpgr(body, rectan, re, f):
     """
+    Convert rectangular coordinates to planetographic coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/recpgr_c.html
 
-
-    :param body:
-    :param rectan:
-    :param re:
-    :param f:
-    :return: :rtype:
+    :param body: Body with which coordinate system is associated. :type body: str
+    :param rectan: Rectangular coordinates of a point. :type rectan: 3-Element Array of Floats.
+    :param re: Equatorial radius of the reference spheroid. :type re: float
+    :param f: Flattening coefficient. :type f: float
+    :return: Planetographic longitude (radians), Planetographic latitude (radians), Altitude above reference spheroid
+    :rtype: tuple
     """
     body = stypes.stringToCharP(body)
     rectan = stypes.toDoubleVector(rectan)
@@ -6405,11 +6426,13 @@ def recpgr(body, rectan, re, f):
 
 def recrad(rectan):
     """
+    Convert rectangular coordinates to range, right ascension, and declination.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/recrad_c.html
 
-
-    :param rectan:
-    :return: :rtype:
+    :param rectan: Rectangular coordinates of a point. :type rectan: 3-Element Array of Floats.
+    :return: Distance of the point from the origin, Right ascension in radians, Declination in radians
+    :rtype: tuple
     """
     rectan = stypes.toDoubleVector(rectan)
     outrange = ctypes.c_double()
@@ -6422,11 +6445,13 @@ def recrad(rectan):
 
 def recsph(rectan):
     """
+    Convert from rectangular coordinates to spherical coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/recrad_c.html
 
-
-    :param rectan:
-    :return: :rtype:
+    :param rectan: Rectangular coordinates of a point. :type rectan: 3-Element Array of Floats.
+    :return: Distance from the origin, Angle from the positive Z-axis, Longitude in radians.
+    :rtype: tuple
     """
     rectan = stypes.toDoubleVector(rectan)
     r = ctypes.c_double()
@@ -6438,14 +6463,16 @@ def recsph(rectan):
 
 
 def removc(item, inset):
-    #Todo: test removc
     """
+    Remove an item from a character set.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/removc_c.html
 
-    :param item:
-    :param inset:
+    :param item: Item to be removed. :type item: str
+    :param inset: Set to be updated: :type inset: SpiceyPy.support_types.SpiceCell
     """
     assert isinstance(inset, stypes.SpiceCell)
+    assert inset.dtype == 0
     item = stypes.stringToCharP(item)
     libspice.removc_c(item, ctypes.byref(inset))
     pass
@@ -6453,13 +6480,15 @@ def removc(item, inset):
 
 def removd(item, inset):
     """
+    Remove an item from a double precision set.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/removd_c.html
 
-
-    :param item:
-    :param inset:
+    :param item: Item to be removed. :type item: float
+    :param inset: Set to be updated: :type inset: SpiceyPy.support_types.SpiceCell
     """
     assert isinstance(inset, stypes.SpiceCell)
+    assert inset.dtype == 1
     item = ctypes.c_double(item)
     libspice.removd_c(item, ctypes.byref(inset))
     pass
@@ -6467,13 +6496,15 @@ def removd(item, inset):
 
 def removi(item, inset):
     """
+    Remove an item from an integer set.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/removi_c.html
 
-
-    :param item:
-    :param inset:
+    :param item: Item to be removed. :type item: int
+    :param inset: Set to be updated: :type inset: SpiceyPy.support_types.SpiceCell
     """
     assert isinstance(inset, stypes.SpiceCell)
+    assert inset.dtype == 2
     item = ctypes.c_int(item)
     libspice.removi_c(item, ctypes.byref(inset))
     pass
@@ -6481,14 +6512,17 @@ def removi(item, inset):
 
 def reordc(iorder, ndim, lenvals, array):
     """
+    Re-order the elements of an array of character strings
+    according to a given order vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/reordc_c.html
 
-
-    :param iorder:
-    :param ndim:
-    :param lenvals:
-    :param array:
-    :return: :rtype:
+    :param iorder: Order vector to be used to re-order array. :type iorder: N-Element Array of ints.
+    :param ndim: Dimension of array. :type ndim: int
+    :param lenvals: String length. :type lenvals: int
+    :param array: Array to be re-ordered. :type array: N-Element Array of strs.
+    :return: Re-ordered Array.
+    :rtype: N-Element Array of strs.
     """
     iorder = stypes.toIntVector(iorder)
     array = stypes.listToCharArray(array)
@@ -6500,13 +6534,16 @@ def reordc(iorder, ndim, lenvals, array):
 
 def reordd(iorder, ndim, array):
     """
+    Re-order the elements of a double precision array according to
+    a given order vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/reordd_c.html
 
-
-    :param iorder:
-    :param ndim:
-    :param array:
-    :return: :rtype:
+    :param iorder: Order vector to be used to re-order array. :type iorder: N-Element Array of ints.
+    :param ndim: Dimension of array. :type ndim: int
+    :param array: Array to be re-ordered. :type array: N-Element Array of floats.
+    :return: Re-ordered Array.
+    :rtype: N-Element Array of floats
     """
     iorder = stypes.toIntVector(iorder)
     ndim = ctypes.c_int(ndim)
@@ -6517,13 +6554,16 @@ def reordd(iorder, ndim, array):
 
 def reordi(iorder, ndim, array):
     """
+    Re-order the elements of an integer array according to
+    a given order vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/reordi_c.html
 
-
-    :param iorder:
-    :param ndim:
-    :param array:
-    :return: :rtype:
+    :param iorder: Order vector to be used to re-order array. :type iorder: N-Element Array of ints.
+    :param ndim: Dimension of array. :type ndim: int
+    :param array: Array to be re-ordered. :type array: N-Element Array of ints.
+    :return: Re-ordered Array.
+    :rtype: N-Element Array of ints
     """
     iorder = stypes.toIntVector(iorder)
     ndim = ctypes.c_int(ndim)
@@ -6534,13 +6574,16 @@ def reordi(iorder, ndim, array):
 
 def reordl(iorder, ndim, array):
     """
+    Re-order the elements of a logical (Boolean) array according to
+    a given order vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/reordl_c.html
 
-
-    :param iorder:
-    :param ndim:
-    :param array:
-    :return: :rtype:
+    :param iorder: Order vector to be used to re-order array. :type iorder: N-Element Array of ints.
+    :param ndim: Dimension of array. :type ndim: int
+    :param array: Array to be re-ordered. :type array: N-Element Array of ints.
+    :return: Re-ordered Array.
+    :rtype: N-Element Array of bools
     """
     iorder = stypes.toIntVector(iorder)
     ndim = ctypes.c_int(ndim)
@@ -6551,14 +6594,16 @@ def reordl(iorder, ndim, array):
 
 def repmc(instr, marker, value, lenout=None):
     """
+    Replace a marker with a character string.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/repmc_c.html
 
-
-    :param instr:
-    :param marker:
-    :param value:
-    :param lenout:
-    :return: :rtype:
+    :param instr: Input string. :type instr: str
+    :param marker: Marker to be replaced. :type marker: str
+    :param value: Replacement value. :type value: str
+    :param lenout: Optional available space in output string :type lenout: int
+    :return: Output string.
+    :rtype: str
     """
     if lenout is None:
         lenout = ctypes.c_int(len(instr) + len(value) + len(marker) + 15)
@@ -6572,15 +6617,18 @@ def repmc(instr, marker, value, lenout=None):
 
 def repmct(instr, marker, value, repcase, lenout=None):
     """
+    Replace a marker with the text representation of a
+    cardinal number.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/repmc_c.html
 
-
-    :param instr:
-    :param marker:
-    :param value:
-    :param repcase:
-    :param lenout:
-    :return: :rtype:
+    :param instr: Input string. :type instr: str
+    :param marker: Marker to be replaced. :type marker: str
+    :param value: Replacement value. :type value: int
+    :param repcase: Case of replacement text. :type repcase: str
+    :param lenout: Optional available space in output string :type lenout: int
+    :return: Output string.
+    :rtype: str
     """
     if lenout is None:
         lenout = ctypes.c_int(len(instr) + len(marker) + 15)
@@ -6595,14 +6643,16 @@ def repmct(instr, marker, value, repcase, lenout=None):
 
 def repmd(instr, marker, value, sigdig):
     """
+    Replace a marker with a double precision number.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/repmd_c.html
 
-
-    :param instr:
-    :param marker:
-    :param value:
-    :param sigdig:
-    :return: :rtype:
+    :param instr: Input string. :type instr: str
+    :param marker: Marker to be replaced. :type marker: str
+    :param value: Replacement value. :type value: float
+    :param sigdig: Significant digits in replacement text. :type sigdig: int
+    :return: Output string.
+    :rtype: str
     """
     lenout = ctypes.c_int(len(instr) + len(marker) + 15)
     instr = stypes.stringToCharP(instr)
@@ -6616,16 +6666,18 @@ def repmd(instr, marker, value, sigdig):
 
 def repmf(instr, marker, value, sigdig, informat, lenout=None):
     """
+    Replace a marker in a string with a formatted double precision value.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/repmf_c.html
 
-
-    :param instr:
-    :param marker:
-    :param value:
-    :param sigdig:
-    :param informat:
-    :param lenout:
-    :return: :rtype:
+    :param instr: Input string. :type instr: str
+    :param marker: Marker to be replaced. :type marker: str
+    :param value: Replacement value. :type value: float
+    :param sigdig: Significant digits in replacement text. :type sigdig: int
+    :param informat: Format 'E' or 'F'. :type informat: str
+    :param lenout: Optional available space in output string. :type lenout: int
+    :return: Output string.
+    :rtype: str
     """
     if lenout is None:
         lenout = ctypes.c_int(len(instr) + len(marker) + 15)
@@ -6641,14 +6693,16 @@ def repmf(instr, marker, value, sigdig, informat, lenout=None):
 
 def repmi(instr, marker, value, lenout=None):
     """
+    Replace a marker with an integer.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/repmi_c.html
 
-
-    :param instr:
-    :param marker:
-    :param value:
-    :param lenout:
-    :return: :rtype:
+    :param instr: Input string. :type instr: str
+    :param marker: Marker to be replaced. :type marker: str
+    :param value: Replacement value. :type value: int
+    :param lenout: Optional available space in output string. :type lenout: int
+    :return: Output string.
+    :rtype: str
     """
     if lenout is None:
         lenout = ctypes.c_int(len(instr) + len(marker) + 15)
@@ -6662,15 +6716,17 @@ def repmi(instr, marker, value, lenout=None):
 
 def repmot(instr, marker, value, repcase, lenout=None):
     """
+    Replace a marker with the text representation of an ordinal number.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/repmot_c.html
 
-
-    :param instr:
-    :param marker:
-    :param value:
-    :param repcase:
-    :param lenout:
-    :return: :rtype:
+    :param instr: Input string. :type instr: str
+    :param marker: Marker to be replaced. :type marker: str
+    :param value: Replacement value. :type value: int
+    :param repcase: Case of replacement text. :type repcase: str
+    :param lenout: Optional available space in output string. :type lenout: int
+    :return: Output string.
+    :rtype: str
     """
     if lenout is None:
         lenout = ctypes.c_int(len(instr) + len(marker) + 15)
@@ -6685,9 +6741,11 @@ def repmot(instr, marker, value, repcase, lenout=None):
 
 def reset():
     """
+    Reset the SPICE error status to a value of "no error."
+    As a result, the status routine, failed, will return a value
+    of False
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/reset_c.html
-
-
 
     """
     libspice.reset_c()
@@ -6696,23 +6754,28 @@ def reset():
 
 def return_c():
     """
+    True if SPICE routines should return immediately upon entry.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/return_c.html
 
-
-
-    :return: :rtype:
+    :return: True if SPICE routines should return immediately upon entry.
+    :rtype: bool
     """
     return libspice.return_c()
 
 
 def rotate(angle, iaxis):
     """
+    Calculate the 3x3 rotation matrix generated by a rotation
+    of a specified angle about a specified axis. This rotation
+    is thought of as rotating the coordinate system.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/rotate_c.html
 
-
-    :param angle:
-    :param iaxis:
-    :return: :rtype:
+    :param angle: Angle of rotation (radians). :type angle: float
+    :param iaxis: Axis of rotation X=1, Y=2, Z=3. :type iaxis: int
+    :return: Resulting rotation matrix
+    :rtype: 3x3-Element Array of floats.
     """
     angle = ctypes.c_double(angle)
     iaxis = ctypes.c_int(iaxis)
@@ -6723,13 +6786,17 @@ def rotate(angle, iaxis):
 
 def rotmat(m1, angle, iaxis):
     """
+    Rotmat applies a rotation of angle radians about axis iaxis to a
+    matrix. This rotation is thought of as rotating the coordinate
+    system.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/rotmat_c.html
 
-
-    :param m1:
-    :param angle:
-    :param iaxis:
-    :return: :rtype:
+    :param m1: Matrix to be rotated. :type m1: 3x3-Element Array of floats.
+    :param angle: Angle of rotation (radians). :type angle: float
+    :param iaxis: Axis of rotation X=1, Y=2, Z=3. :type iaxis: int
+    :return: Resulting rotated matrix.
+    :rtype: 3x3-Element Array of floats.
     """
     m1 = stypes.listtodoublematrix(m1)
     angle = ctypes.c_double(angle)
@@ -6741,13 +6808,17 @@ def rotmat(m1, angle, iaxis):
 
 def rotvec(v1, angle, iaxis):
     """
+    Transform a vector to a new coordinate system rotated by angle
+    radians about axis iaxis.  This transformation rotates v1 by
+    angle radians about the specified axis.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/rotvec_c.html
 
-
-    :param v1:
-    :param angle:
-    :param iaxis:
-    :return: :rtype:
+    :param v1: Vector whose coordinate system is to be rotated. :type v1: 3-Element Array of floats
+    :param angle: Angle of rotation (radians). :type angle: float
+    :param iaxis: Axis of rotation X=1, Y=2, Z=3. :type iaxis: int
+    :return: the vector expressed in the new coordinate system.
+    :rtype: 3-Element Array of floats.
     """
     v1 = stypes.toDoubleVector(v1)
     angle = ctypes.c_double(angle)
@@ -6759,24 +6830,27 @@ def rotvec(v1, angle, iaxis):
 
 def rpd():
     """
+    Return the number of radians per degree.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/rpd_c.html
 
-
-
-    :return: :rtype:
+    :return: The number of radians per degree, pi/180.
+    :rtype: float
     """
     return libspice.rpd_c()
 
 
 def rquad(a, b, c):
     """
+    Find the roots of a quadratic equation.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/rquad_c.html
 
-
-    :param a:
-    :param b:
-    :param c:
-    :return: :rtype:
+    :param a: Coefficient of quadratic term. :type a: float
+    :param b: Coefficient of linear term. :type b: float
+    :param c: Constant. :type c: float
+    :return: Root built from positive and negative discriminant term.
+    :rtype: tuple
     """
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
