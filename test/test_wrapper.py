@@ -2071,7 +2071,7 @@ def test_getelm():
 
 
 def test_getfat():
-    arch, outtype = spice.getfat(os.path.join(cwd, 'naif0010.tls'))
+    arch, outtype = spice.getfat(os.path.join(cwd, 'naif0011.tls'))
     assert arch == "KPL"
     assert outtype == "LSK"
 
