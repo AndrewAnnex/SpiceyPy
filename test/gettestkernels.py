@@ -3,7 +3,8 @@ __author__ = 'AndrewAnnex'
 import os
 from six.moves import urllib
 
-standardKernelList = ['pck00010.tpc', 'de421.bsp', 'gm_de431.tpc', 'naif0010.tls']
+standardKernelList = ['pck00010.tpc', 'de421.bsp', 'gm_de431.tpc',
+                      'naif0011.tls']
 cwd = os.path.realpath(os.path.dirname(__file__))
 
 
@@ -19,7 +20,7 @@ def getStandardKernels():
     kernelURLlist = ['http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/pck00010.tpc',
                      'http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/a_old_versions/de421.bsp',
                      'http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/gm_de431.tpc',
-                     'http://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0010.tls']
+                     'http://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0011.tls']
     for kernel in kernelURLlist:
         if not os.path.isfile(os.path.join(cwd, kernel.split('/')[-1])):
             getKernel(kernel)
