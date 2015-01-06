@@ -711,7 +711,7 @@ def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
     :param tol: Tolerance in ticks.
     :type tol: float
     :param timsys: Time system used to represent coverage.
-    :type timsys:str
+    :type timsys: str
     :param cover: Window giving coverage for idcode.
     :type cover: Optional SpiceCell
     :return: coverage window for a specified object in a specified CK file
@@ -1234,7 +1234,7 @@ def cvpool(agent):
 
     :param agent: Name of the agent to check for notices.
     :type agent: str
-    :return: True if variables for `agent' have been updated.
+    :return: True if variables for "agent" have been updated.
     :rtype: bool
     """
     agent = stypes.stringToCharP(agent)
@@ -6596,7 +6596,7 @@ def pos(string, substr, start):
     :param substr: Substring to locate in the character string. 
     :type substr: str
     :param start: Position to begin looking for substr in string. 
-    :type int
+    :type start: int
     :return: The index of the first occurrence of substr in string at or following index start.
     :rtype: int
     """
@@ -6618,7 +6618,7 @@ def posr(string, substr, start):
     :param substr: Substring to locate in the character string. 
     :type substr: str
     :param start: Position to begin looking for substr in string. 
-    :type int
+    :type start: int
     :return: The index of the last occurrence of substr in string at or preceding index start.
     :rtype: int
     """
@@ -9440,7 +9440,7 @@ def timout(et, pictur, lenout):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/timout_c.html
 
     :param et: An epoch in seconds past the ephemeris epoch J2000. 
-    :type N-Element Array of Floats or Float
+    :type et: N-Element Array of Floats or Float
     :param pictur: A format specification for the output string. 
     :type pictur: str
     :param lenout: The length of the output string plus 1. 
