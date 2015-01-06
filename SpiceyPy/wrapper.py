@@ -558,10 +558,14 @@ def bsrchi(value, ndim, array):
 
 def card(cell):
     """
+    Return the cardinality (current number of elements) in a
+    cell of any data type.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/card_c.html
 
     :param cell: Input cell.
-    :return: Cardinality
+    :type cell: SpiceyPy.support_types.SpiceCell
+    :return: the number of elements in a cell of any data type.
     :rtype: int
     """
     return libspice.card_c(ctypes.byref(cell))
@@ -569,13 +573,18 @@ def card(cell):
 
 def ccifrm(frclss, clssid, lenout):
     """
+    Return the frame name, frame ID, and center associated with
+    a given frame class and class ID.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ccifrm_c.html
 
-
     :param frclss: Class of frame.
+    :type frclss: int
     :param clssid: Class ID of frame.
+    :type clssid: int
     :param lenout: Maximum length of output string.
-    :return:
+    :type lenout: int
+    :return: the frame name, frame ID, and center.
     :rtype: tuple or None
     """
     frclss = ctypes.c_int(frclss)
@@ -595,14 +604,18 @@ def ccifrm(frclss, clssid, lenout):
 
 def cgv2el(center, vec1, vec2):
     """
+    Form a SPICE ellipse from a center vector and two generating vectors.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cgv2el_c.html
 
-
     :param center: Center Vector
+    :type center: 3-Element Array of floats
     :param vec1: Vector 1
+    :type vec1: 3-Element Array of floats
     :param vec2: Vector 2
+    :type vec2: 3-Element Array of floats
     :return: Ellipse
-    :rtype: stypes.Ellipse
+    :rtype: SpiceyPy.support_types.Ellipse
     """
     center = stypes.toDoubleVector(center)
     vec1 = stypes.toDoubleVector(vec1)
@@ -614,10 +627,12 @@ def cgv2el(center, vec1, vec2):
 
 def chkin(module):
     """
+    Inform the SPICE error handling mechanism of entry into a routine.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/chkin_c.html
 
-
     :param module: The name of the calling routine.
+    :type module: str
     """
     module = stypes.stringToCharP(module)
     libspice.chkin_c(module)
@@ -626,10 +641,12 @@ def chkin(module):
 
 def chkout(module):
     """
+    Inform the SPICE error handling mechanism of exit from a routine.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/chkout_c.html
 
-
     :param module: The name of the calling routine.
+    :type module: str
     """
     module = stypes.stringToCharP(module)
     libspice.chkout_c(module)
@@ -638,12 +655,15 @@ def chkout(module):
 
 def cidfrm(cent, lenout):
     """
+    Retrieve frame ID code and name to associate with a frame center.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cidfrm_c.html
 
-
     :param cent: An object to associate a frame with.
+    :type cent: int
     :param lenout: Available space in output string frname.
-    :return:
+    :type lenout: int
+    :return: frame ID code and name to associate with a frame center.
     :rtype: tuple or None
     """
     cent = ctypes.c_int(cent)
@@ -661,10 +681,12 @@ def cidfrm(cent, lenout):
 
 def ckcls(handle):
     """
+    Close an open CK file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckcls_c.html
 
-
     :param handle: Handle of the CK file to be closed.
+    :type handle: int
     """
     handle = ctypes.c_int(handle)
     libspice.ckcls_c(handle)
@@ -674,17 +696,26 @@ def ckcls(handle):
 def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
     # Todo: test ckcov
     """
+    Find the coverage window for a specified object in a specified CK file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckcov_c.html
 
     :param ck: Name of CK file.
+    :type ck: str
     :param idcode: ID code of object.
+    :type idcode: int
     :param needav: Flag indicating whether angular velocity is needed.
+    :type needav: bool
     :param level: Coverage level:  (SEGMENT OR INTERVAL)
+    :type level: str
     :param tol: Tolerance in ticks.
+    :type tol: float
     :param timsys: Time system used to represent coverage.
+    :type timsys:str
     :param cover: Window giving coverage for idcode.
-    :return:
-    :rtype: SpiceDOUBLECell
+    :type cover: Optional SpiceCell
+    :return: coverage window for a specified object in a specified CK file
+    :rtype: SpiceyPy.support_types.SpiceCell
     """
     ck = stypes.stringToCharP(ck)
     idcode = ctypes.c_int(idcode)
@@ -704,13 +735,19 @@ def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
 def ckgp(inst, sclkdp, tol, ref):
     # Todo: test ckgp
     """
+    Get pointing (attitude) for a specified spacecraft clock time.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckgp_c.html
 
     :param inst: NAIF ID of instrument, spacecraft, or structure.
+    :type inst: int
     :param sclkdp: Encoded spacecraft clock time.
+    :type sclkdp: float
     :param tol: Time tolerance.
+    :type tol: float
     :param ref: Reference frame.
-    :return: (C-matrix pointing data, Output encoded spacecraft clock time, True when requested pointing is available)
+    :type ref: str
+    :return: C-matrix pointing data, Output encoded spacecraft clock time, True when requested pointing is available
     :rtype: tuple
     """
     inst = ctypes.c_int(inst)
@@ -728,14 +765,20 @@ def ckgp(inst, sclkdp, tol, ref):
 def ckgpav(inst, sclkdp, tol, ref):
     # Todo: test ckgpav
     """
+    Get pointing (attitude) and angular velocity for a specified spacecraft clock time.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckgpav_c.html
 
-    :param inst:
-    :param sclkdp:
-    :param tol:
-    :param ref:
-    :return:
-    :rtype:
+    :param inst: NAIF ID of instrument, spacecraft, or structure.
+    :type inst: int
+    :param sclkdp: Encoded spacecraft clock time.
+    :type sclkdp: float
+    :param tol: Time tolerance.
+    :type tol: float
+    :param ref: Reference frame.
+    :type ref: str
+    :return: C-matrix pointing data, Angular velocity vector, Output encoded spacecraft clock time, True when requested pointing is available.
+    :rtype: tuple
     """
     inst = ctypes.c_int(inst)
     sclkdp = ctypes.c_double(sclkdp)
@@ -754,10 +797,16 @@ def ckgpav(inst, sclkdp, tol, ref):
 def cklpf(filename):
     # Todo: test cklpf
     """
+    Load a CK pointing file for use by the CK readers.  Return that
+    file's handle, to be used by other CK routines to refer to the
+    file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cklpf_c.html
 
     :param filename: Name of the CK file to be loaded.
-    :return: Loaded file's handle :rtype: int
+    :type param: str
+    :return: Loaded file's handle.
+    :rtype: int
     """
     filename = stypes.stringToCharP(filename)
     handle = ctypes.c_int()
@@ -768,12 +817,16 @@ def cklpf(filename):
 def ckobj(ck, ids=None):
     # Todo: test ckobj
     """
+    Find the set of ID codes of all objects in a specified CK file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckobj_c.html
 
     :param ck: Name of CK file.
+    :type ck: str
     :param ids: Optional user provided spicecell.
+    :type ids: Optional SpiceyPy.support_types.SpiceCell
     :return: Set of ID codes of objects in CK file.
-    :rtype: SpiceINTCell
+    :rtype: SpiceyPy.support_types.SpiceCell
     """
     assert isinstance(ck, str)
     ck = stypes.stringToCharP(ck)
@@ -787,13 +840,18 @@ def ckobj(ck, ids=None):
 
 def ckopn(filename, ifname, ncomch):
     """
+    Open a new CK file, returning the handle of the opened file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckopn_c.html
 
     :param filename: The name of the CK file to be opened.
+    :type filename: str
     :param ifname: The internal filename for the CK.
+    :type ifname: str
     :param ncomch: The number of characters to reserve for comments.
-    :return:
-    :rtype:
+    :type ncomch: int
+    :return: The handle of the opened CK file.
+    :rtype: int
     """
     filename = stypes.stringToCharP(filename)
     ifname = stypes.stringToCharP(ifname)
@@ -806,9 +864,13 @@ def ckopn(filename, ifname, ncomch):
 def ckupf(handle):
     # Todo: test ckupf
     """
+    Unload a CK pointing file so that it will no longer be searched
+    by the readers.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckupf_c.html
 
     :param handle: Handle of CK file to be unloaded
+    :type handle: int
     """
     handle = ctypes.c_int(handle)
     libspice.ckupf_c(handle)
@@ -818,20 +880,32 @@ def ckupf(handle):
 def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
           avvs):
     """
+    Add a type 1 segment to a C-kernel.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckw01_c.html
 
-
     :param handle: Handle of an open CK file.
+    :type handle: int
     :param begtim: The beginning encoded SCLK of the segment.
+    :type begtim: float
     :param endtim: The ending encoded SCLK of the segment.
+    :type endtim: float
     :param inst: The NAIF instrument ID code.
+    :type inst: int
     :param ref: The reference frame of the segment.
+    :type ref: str
     :param avflag: True if the segment will contain angular velocity.
+    :type avflag: bool
     :param segid: Segment identifier.
+    :type segid: str
     :param nrec: Number of pointing records.
+    :type nrec: int
     :param sclkdp: Encoded SCLK times.
+    :type sclkdp: N-Element Array of floats.
     :param quats: Quaternions representing instrument pointing.
+    :type quats: Nx4-Element Array of floats.
     :param avvs: Angular velocity vectors.
+    :type avvs: Nx3-Element Array of floats.
     """
     handle = ctypes.c_int(handle)
     begtim = ctypes.c_double(begtim)
@@ -852,21 +926,34 @@ def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
 def ckw02(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats,
           avvs, rates):
     """
+    Write a type 2 segment to a C-kernel.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckw02_c.html
 
-
     :param handle: Handle of an open CK file.
+    :type handle: int
     :param begtim: The beginning encoded SCLK of the segment.
+    :type begtim: float
     :param endtim: The ending encoded SCLK of the segment.
+    :type endtim: float
     :param inst: The NAIF instrument ID code.
+    :type inst: int
     :param ref: The reference frame of the segment.
+    :type ref: str
     :param segid: Segment identifier.
+    :type segid: str
     :param nrec: Number of pointing records.
+    :type nrec: int
     :param start: Encoded SCLK interval start times.
+    :type start: N-Element Array of floats.
     :param stop: Encoded SCLK interval stop times.
+    :type stop: N-Element Array of floats.
     :param quats: Quaternions representing instrument pointing.
+    :type quats: Nx4-Element Array of floats.
     :param avvs: Angular velocity vectors.
+    :type avvs: Nx3-Element Array of floats.
     :param rates: Number of seconds per tick for each interval.
+    :type rates: N-Element Array of floats.
     """
     handle = ctypes.c_int(handle)
     begtim = ctypes.c_double(begtim)
@@ -888,21 +975,36 @@ def ckw02(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats,
 def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
           avvs, nints, starts):
     """
+    Add a type 3 segment to a C-kernel.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckw03_c.html
 
     :param handle: Handle of an open CK file.
+    :type handle: int
     :param begtim: The beginning encoded SCLK of the segment.
+    :type begtim: float
     :param endtim: The ending encoded SCLK of the segment.
+    :type endtim: float
     :param inst: The NAIF instrument ID code.
+    :type inst: int
     :param ref: The reference frame of the segment.
+    :type ref: str
     :param avflag: True if the segment will contain angular velocity.
+    :type avflag: bool
     :param segid: Segment identifier.
+    :type segid: str
     :param nrec: Number of pointing records.
+    :type nrec: int
     :param sclkdp: Encoded SCLK times.
+    :type sclkdp: N-Element Array of floats.
     :param quats: Quaternions representing instrument pointing.
+    :type quats: Nx4-Element Array of floats.
     :param avvs: Angular velocity vectors.
+    :type avvs: Nx3-Element Array of floats.
     :param nints: Number of intervals.
+    :type nints: int
     :param starts: Encoded SCLK interval start times.
+    :type starts: N-Element Array of floats.
     """
     handle = ctypes.c_int(handle)
     begtim = ctypes.c_double(begtim)
@@ -927,9 +1029,11 @@ def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
 
 def clight():
     """
+    Return the speed of light in a vacuum (IAU official value, in km/sec).
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/clight_c.html
 
-    :return: The function returns the speed of light in vacuo (km/sec).
+    :return: The function returns the speed of light in vacuum (km/sec).
     :rtype: float
     """
     return libspice.clight_c()
@@ -937,23 +1041,32 @@ def clight():
 
 def clpool():
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/clpool_c.html
+    Remove all variables from the kernel pool. Watches
+    on kernel variables are retained.
 
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/clpool_c.html
     """
     libspice.clpool_c()
     pass
 
 
 def cmprss(delim, n, instr, lenout=None):
-    # automatically determine lenout (cannot be more than instr)
     """
+    Compress a character string by removing occurrences of
+    more than N consecutive occurrences of a specified
+    character.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cmprss_c.html
 
     :param delim: Delimiter to be compressed.
+    :type delim: str
     :param n: Maximum consecutive occurrences of delim.
+    :type n: int
     :param instr: Input string.
-    :param lenout: Available space in output string.
-    :return:
+    :type instr: str
+    :param lenout: Optional available space in output string.
+    :type lenout: Optional int
+    :return: Compressed string.
     :rtype: str
     """
     if lenout is None:
@@ -968,12 +1081,16 @@ def cmprss(delim, n, instr, lenout=None):
 
 def cnmfrm(cname, lenout):
     """
+    Retrieve frame ID code and name to associate with an object.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cnmfrm_c.html
 
     :param cname: Name of the object to find a frame for.
+    :type cname: int
     :param lenout: Maximum length available for frame name.
-    :return:
-    :rtype: tuple
+    :type lenout: int
+    :return: The ID code of the frame associated with cname,  The name of the frame with ID frcode
+    :rtype: tuple or None
     """
     lenout = ctypes.c_int(lenout)
     frname = stypes.stringToCharP(lenout)
@@ -990,13 +1107,18 @@ def cnmfrm(cname, lenout):
 
 def conics(elts, et):
     """
+    Determine the state (position, velocity) of an orbiting body
+    from a set of elliptic, hyperbolic, or parabolic orbital
+    elements.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/conics_c.html
 
-
     :param elts: Conic elements.
+    :type elts: 8-Element Array of floats
     :param et: Input time.
+    :type et: float
     :return: State of orbiting body at et.
-    :rtype:
+    :rtype: 6-Element Array of floats
     """
     elts = stypes.toDoubleVector(elts)
     et = ctypes.c_double(et)
@@ -1007,13 +1129,20 @@ def conics(elts, et):
 
 def convrt(x, inunit, outunit):
     """
+    Take a measurement X, the units associated with
+    X, and units to which X should be converted; return Y
+    the value of the measurement in the output units.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/convrt_c.html
 
-
     :param x: Number representing a measurement in some units.
+    :type x: float
     :param inunit: The units in which x is measured.
+    :type inunit: str
     :param outunit: Desired units for the measurement.
-    :return: The measurment in the desired units. :rtype:
+    :type outunit: str
+    :return: The measurment in the desired units.
+    :rtype: float
     """
     x = ctypes.c_double(x)
     inunit = stypes.stringToCharP(inunit)
@@ -1025,12 +1154,15 @@ def convrt(x, inunit, outunit):
 
 def copy(cell):
     """
+    Copy the contents of a SpiceCell of any data type to another
+    cell of the same type.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/copy_c.html
 
-
     :param cell: Cell to be copied.
+    :type cell: SpiceyPy.support_types.SpiceCell
     :return: New cell
-    :rtype:
+    :rtype: SpiceyPy.support_types.SpiceCell
     """
     assert isinstance(cell, stypes.SpiceCell)
     assert cell.dtype == 0 or cell.dtype == 1 or cell.dtype == 2
@@ -1048,13 +1180,19 @@ def copy(cell):
 
 def cpos(string, chars, start):
     """
+    Find the first occurrence in a string of a character belonging
+    to a collection of characters, starting at a specified location,
+    searching forward.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cpos_c.html
 
-
     :param string: Any character string.
+    :type string: str
     :param chars: A collection of characters.
+    :type chars: str
     :param start: Position to begin looking for one of chars.
-    :return: index
+    :type start: int
+    :return: The index of the first character of str at or following index start that is in the collection chars.
     :rtype: int
     """
     string = stypes.stringToCharP(string)
@@ -1065,13 +1203,19 @@ def cpos(string, chars, start):
 
 def cposr(string, chars, start):
     """
+    Find the first occurrence in a string of a character belonging
+    to a collection of characters, starting at a specified location,
+    searching in reverse.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cposr_c.html
 
-
     :param string: Any character string.
+    :type string: str
     :param chars: A collection of characters.
+    :type chars: str
     :param start: Position to begin looking for one of chars.
-    :return: index
+    :type start: int
+    :return: The index of the last character of str at or before index start that is in the collection chars.
     :rtype: int
     """
     string = stypes.stringToCharP(string)
@@ -1083,10 +1227,14 @@ def cposr(string, chars, start):
 def cvpool(agent):
     # Todo: test cvpool
     """
+    Indicate whether or not any watched kernel variables that have a
+    specified agent on their notification list have been updated.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cvpool_c.html
 
     :param agent: Name of the agent to check for notices.
-    :return:
+    :type agent: str
+    :return: True if variables for `agent' have been updated.
     :rtype: bool
     """
     agent = stypes.stringToCharP(agent)
@@ -1097,14 +1245,18 @@ def cvpool(agent):
 
 def cyllat(r, lonc, z):
     """
+    Convert from cylindrical to latitudinal coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cyllat_c.html
 
-
     :param r: Distance of point from z axis.
+    :type r: float
     :param lonc: Cylindrical angle of point from XZ plane(radians).
+    :type lonc: float
     :param z: Height of point above XY plane.
-    :return:
-    :rtype:
+    :type z: float
+    :return: Distance, Longitude (radians), and Latitude of point (radians).
+    :rtype: tuple
     """
     r = ctypes.c_double(r)
     lonc = ctypes.c_double(lonc)
@@ -1119,14 +1271,18 @@ def cyllat(r, lonc, z):
 
 def cylrec(r, lon, z):
     """
+    Convert from cylindrical to rectangular coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cylrec_c.html
 
-
     :param r: Distance of a point from z axis.
+    :type r: float
     :param lon: Angle (radians) of a point from xZ plane.
+    :type lon: float
     :param z: Height of a point above xY plane.
+    :type z: float
     :return: Rectangular coordinates of the point.
-    :rtype:
+    :rtype: 3-Element Array of floats.
     """
     r = ctypes.c_double(r)
     lon = ctypes.c_double(lon)
@@ -1138,14 +1294,18 @@ def cylrec(r, lon, z):
 
 def cylsph(r, lonc, z):
     """
+    Convert from cylindrical to spherical coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cylsph_c.html
 
-
     :param r: Rectangular coordinates of the point.
+    :type r: float
     :param lonc: Angle (radians) of point from XZ plane.
+    :type lonc: float
     :param z: Height of point above XY plane.
-    :return:
-    :rtype:
+    :type z: float
+    :return: Distance of point from origin, Polar angle (co-latitude in radians) of point, Azimuthal angle (longitude) of point (radians).
+    :rtype: tuple
     """
     r = ctypes.c_double(r)
     lonc = ctypes.c_double(lonc)
