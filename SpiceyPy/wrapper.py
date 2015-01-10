@@ -1324,12 +1324,20 @@ def cylsph(r, lonc, z):
 def dafac(handle, n, lenvals, buffer):
     # Todo: test dafac
     """
+    Add comments from a buffer of character strings to the comment
+    area of a binary DAF file, appending them to any comments which
+    are already present in the file's comment area.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafac_c.html
 
     :param handle: handle of a DAF opened with write access.
+    :type handle: int
     :param n: Number of comments to put into the comment area.
+    :type n: int
     :param lenvals: Length of elements
+    :type lenvals: int
     :param buffer: Buffer of comments to put into the comment area.
+    :type buffer: N-Element Array of str
     """
     handle = ctypes.c_int(handle)
     buffer = stypes.listToCharArrayPtr(buffer)
@@ -1341,10 +1349,12 @@ def dafac(handle, n, lenvals, buffer):
 
 def dafbbs(handle):
     """
+    Begin a backward search for arrays in a DAF.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafbbs_c.html
 
-
-    :param handle:
+    :param handle: Handle of DAF to be searched.
+    :type handle: int
     """
     handle = ctypes.c_int(handle)
     libspice.dafbbs_c(handle)
@@ -1353,10 +1363,12 @@ def dafbbs(handle):
 
 def dafbfs(handle):
     """
+    Begin a forward search for arrays in a DAF.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafbfs_c.html
 
-
-    :param handle:
+    :param handle: Handle of file to be searched.
+    :type handle: int
     """
     handle = ctypes.c_int(handle)
     libspice.dafbfs_c(handle)
@@ -1365,10 +1377,12 @@ def dafbfs(handle):
 
 def dafcls(handle):
     """
+    Close the DAF associated with a given handle.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafcls_c.html
 
-
-    :param handle:
+    :param handle: Handle of DAF to be closed.
+    :type handle: int
     """
     handle = ctypes.c_int(handle)
     libspice.dafcls_c(handle)
@@ -1377,10 +1391,13 @@ def dafcls(handle):
 
 def dafcs(handle):
     """
+    Select a DAF that already has a search in progress as the
+    one to continue searching.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafcs_c.html
 
-
-    :param handle:
+    :param handle: Handle of DAF to continue searching.
+    :type handle: int
     """
     handle = ctypes.c_int(handle)
     libspice.dafcs_c(handle)
@@ -1390,9 +1407,12 @@ def dafcs(handle):
 def dafdc(handle):
     # Todo: test dafdc
     """
+    Delete the entire comment area of a specified DAF file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafdc_c.html
 
-    :param handle:
+    :param handle: The handle of a binary DAF opened for writing.
+    :type handle: int
     """
     handle = ctypes.c_int(handle)
     libspice.dafcc_c(handle)
@@ -1401,14 +1421,18 @@ def dafdc(handle):
 
 def dafec(handle, bufsiz, lenout):
     """
+    Extract comments from the comment area of a binary DAF.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafec_c.html
 
-
-    :param handle:
-    :param bufsiz:
-    :param lenout:
-    :return:
-    :rtype:
+    :param handle: Handle of binary DAF opened with read access.
+    :type handle: int
+    :param bufsiz: Maximum size, in lines, of buffer.
+    :type bufsiz: int
+    :param lenout: Length of strings in output buffer.
+    :type lenout: int
+    :return: Number of extracted comment lines, buffer where extracted comment lines are placed, Indicates whether all comments have been extracted.
+    :rtype: tuple
     """
     handle = ctypes.c_int(handle)
     buffer = stypes.charvector(bufsiz, lenout)
@@ -1423,12 +1447,12 @@ def dafec(handle, bufsiz, lenout):
 
 def daffna():
     """
+    Find the next (forward) array in the current DAF.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/daffna_c.html
 
-
-
-    :return:
-    :rtype:
+    :return: True if an array was found.
+    :rtype: bool
     """
     found = ctypes.c_bool()
     libspice.daffna_c(ctypes.byref(found))
@@ -1437,11 +1461,12 @@ def daffna():
 
 def daffpa():
     """
+    Find the previous (backward) array in the current DAF.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/daffpa_c.html
 
-
-    :return:
-    :rtype:
+    :return: True if an array was found.
+    :rtype: bool
     """
     found = ctypes.c_bool()
     libspice.daffpa_c(ctypes.byref(found))
@@ -1450,14 +1475,18 @@ def daffpa():
 
 def dafgda(handle, begin, end):
     """
+    Read the double precision data bounded by two addresses within a DAF.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgda_c.html
 
-
-    :param handle:
-    :param begin:
-    :param end:
-    :return:
-    :rtype:
+    :param handle: Handle of a DAF.
+    :type handle: int
+    :param begin: Initial address within file.
+    :type begin: int
+    :param end: Final address within file.
+    :type end: int
+    :return: Data contained between begin and end.
+    :rtype: N-Element Array of floats.
     """
     handle = ctypes.c_int(handle)
     data = stypes.emptyDoubleVector(abs(end - begin))
@@ -1469,12 +1498,12 @@ def dafgda(handle, begin, end):
 
 def dafgh():
     """
+    Return (get) the handle of the DAF currently being searched.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgh_c.html
 
-
-
-    :return:
-    :rtype:
+    :return: Handle for current DAF.
+    :rtype: int
     """
     outvalue = ctypes.c_int()
     libspice.dafgh_c(ctypes.byref(outvalue))
@@ -1483,12 +1512,14 @@ def dafgh():
 
 def dafgn(lenout):
     """
+    Return (get) the name for the current array in the current DAF.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgn_c.html
 
-
-    :param lenout:
-    :return:
-    :rtype:
+    :param lenout: Length of array name string.
+    :type lenout: int
+    :return: Name of current array.
+    :rtype: str
     """
     lenout = ctypes.c_int(lenout)
     name = stypes.stringToCharP(lenout)
@@ -1499,11 +1530,13 @@ def dafgn(lenout):
 def dafgs(n=125):
     # The 125 may be a hard set, I got strange errors that occasionally happend without it
     """
+    Return (get) the summary for the current array in the current DAF.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgs_c.html
 
-    :param n:
-    :return:
-    :rtype:
+    :param n: Optional length N for result Array.
+    :return: Summary for current array.
+    :rtype: N-Element Array of floats.
     """
     retarray = stypes.emptyDoubleVector(125)
     # libspice.dafgs_c(ctypes.cast(retarray, ctypes.POINTER(ctypes.c_double)))
@@ -1514,14 +1547,20 @@ def dafgs(n=125):
 def dafgsr(handle, recno, begin, end):
     # Todo test dafgsr
     """
+    Read a portion of the contents of a summary record in a DAF file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgsr_c.html
 
-    :param handle:
-    :param recno:
-    :param begin:
-    :param end:
-    :return:
-    :rtype:
+    :param handle: Handle of DAF.
+    :type handle: int
+    :param recno: Record number.
+    :type recno: int
+    :param begin: First word to read from record.
+    :type begin: int
+    :param end: Last word to read from record.
+    :type end: int
+    :return: Contents of record, True if record is found.
+    :rtype: tuple
     """
     handle = ctypes.c_int(handle)
     recno = ctypes.c_int(recno)
@@ -1536,12 +1575,14 @@ def dafgsr(handle, recno, begin, end):
 
 def dafopr(fname):
     """
+    Open a DAF for subsequent read requests.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafopr_c.html
 
-
-    :param fname:
-    :return:
-    :rtype:
+    :param fname: Name of DAF to be opened.
+    :type fname: str
+    :return: Handle assigned to DAF.
+    :rtype: int
     """
     fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
@@ -1551,12 +1592,14 @@ def dafopr(fname):
 
 def dafopw(fname):
     """
+    Open a DAF for subsequent write requests.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafopw_c.html
 
-
-    :param fname:
-    :return:
-    :rtype:
+    :param fname: Name of DAF to be opened.
+    :type fname: str
+    :return: Handle assigned to DAF.
+    :rtype: int
     """
     fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
@@ -1567,14 +1610,21 @@ def dafopw(fname):
 def dafps(nd, ni, dc, ic):
     # Todo: test dafps
     """
+    Pack (assemble) an array summary from its double precision and
+    integer components.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafps_c.html
 
-    :param nd:
-    :param ni:
-    :param dc:
-    :param ic:
-    :return:
-    :rtype:
+    :param nd: Number of double precision components.
+    :type nd: int
+    :param ni: Number of integer components.
+    :type ni: int
+    :param dc: Double precision components.
+    :type dc: N-Element Array of floats.
+    :param ic: Integer components.
+    :type ic:  N-Element Array of ints.
+    :return: Array summary.
+    :rtype: N-Element Array of floats.
     """
     dc = stypes.toDoubleVector(dc)
     ic = stypes.toIntVector(ic)
@@ -1589,13 +1639,22 @@ def dafps(nd, ni, dc, ic):
 def dafrda(handle, begin, end):
     # Todo: test dafrda
     """
+    Read the double precision data bounded by two addresses within a DAF.
+
+    Deprecated:  This routine has been superseded by :func:`dafgda` and
+    :func:`dafgsr`.  This routine is supported for purposes of backward
+    compatibility only.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafrda_c.html
 
-    :param handle:
-    :param begin:
-    :param end:
-    :return:
-    :rtype:
+    :param handle: Handle of a DAF.
+    :type handle: int
+    :param begin: Initial address within file.
+    :type begin: int
+    :param end: Final address within file.
+    :type end: int
+    :return: Data contained between begin and end.
+    :rtype: N-Element Array of floats.
     """
     handle = ctypes.c_int(handle)
     begin = ctypes.c_int(begin)
@@ -1607,13 +1666,21 @@ def dafrda(handle, begin, end):
 
 def dafrfr(handle, lenout):
     """
+    Read the contents of the file record of a DAF.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafrfr_c.html
 
 
-    :param handle:
-    :param lenout:
+    :param handle: Handle of an open DAF file.
+    :type handle: int
+    :param lenout: Available room in the output string
+    :type lenout: int
     :return:
-    :rtype:
+            Number of double precision components in summaries,
+            Number of integer components in summaries,
+            Internal file name, Forward list pointer,
+            Backward list pointer, Free address pointer.
+    :rtype: tuple
     """
     handle = ctypes.c_int(handle)
     lenout = ctypes.c_int(lenout)
@@ -1633,9 +1700,12 @@ def dafrfr(handle, lenout):
 def dafrs(insum):
     # Todo: test dafrs
     """
+    Change the summary for the current array in the current DAF.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafrs_c.html
 
-    :param insum:
+    :param insum: New summary for current array.
+    :type insum: N-Element Array of floats.
     """
     insum = stypes.toDoubleVector(insum)
     libspice.dafrs_c(ctypes.byref(insum))
@@ -1644,13 +1714,18 @@ def dafrs(insum):
 
 def dafus(insum, nd, ni):
     """
+    Unpack an array summary into its double precision and integer components.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafus_c.html
 
-
-    :param insum:
-    :param nd:
-    :param ni:
-    :return: :rtype:
+    :param insum: Array summary.
+    :type insum: N-Element Array of floats.
+    :param nd: Number of double precision components.
+    :type nd: int
+    :param ni: Number of integer components.
+    :type ni: int
+    :return: Double precision components, Integer components.
+    :rtype: tuple
     """
     insum = stypes.toDoubleVector(insum)
     dc = stypes.emptyDoubleVector(nd)
@@ -1664,12 +1739,20 @@ def dafus(insum, nd, ni):
 def dasac(handle, n, buflen, buffer):
     # Todo: test dasac
     """
+    Add comments from a buffer of character strings to the comment
+    area of a binary DAS file, appending them to any comments which
+    are already present in the file's comment area.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasac_c.html
 
-    :param handle:
-    :param n:
-    :param buflen:
-    :param buffer:
+    :param handle: DAS handle of a file opened with write access.
+    :type handle: int
+    :param n: Number of comments to put into the comment area.
+    :type n: int
+    :param buflen: Line length associated with buffer.
+    :type buflen: int
+    :param buffer: Buffer of lines to be put into the comment area.
+    :type buffer: Array of strs.
     :return: :rtype:
     """
     handle = ctypes.c_int(handle)
@@ -1683,9 +1766,12 @@ def dasac(handle, n, buflen, buffer):
 def dascls(handle):
     # Todo: test dafdc
     """
+    Close a DAS file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dascls_c.html
 
-    :param handle:
+    :param handle: Handle of an open DAS file.
+    :type handle: int
     """
     handle = ctypes.c_int(handle)
     libspice.dascls_c(handle)
@@ -1695,12 +1781,21 @@ def dascls(handle):
 def dasec(handle, bufsiz, buflen):
     # Todo: test dasec
     """
+    Extract comments from the comment area of a binary DAS file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasec_c.html
 
-    :param handle:
-    :param bufsiz:
-    :param buflen:
-    :return: :rtype:
+    :param handle: Handle of binary DAS file open with read access.
+    :type handle: int
+    :param bufsiz: Maximum size, in lines, of buffer.
+    :type bufsiz: int
+    :param buflen: Line length associated with buffer.
+    :type buflen: int
+    :return:
+            Number of comments extracted from the DAS file,
+            Buffer in which extracted comments are placed,
+            Indicates whether all comments have been extracted.
+    :rtype: tuple
     """
     handle = ctypes.c_int(handle)
     buffer = stypes.charvector(bufsiz, buflen)
@@ -1716,24 +1811,36 @@ def dasec(handle, bufsiz, buflen):
 def dasopr(fname):
     # Todo: test dasopr
     """
+    Open a DAS file for reading.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasopr_c.html
 
-    :param fname:
+    :param fname: Name of a DAS file to be opened.
+    :type fname: str
+    :return: Handle assigned to the opened DAS file.
+    :rtype: int
     """
     fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
     libspice.dasopr_c(fname, ctypes.byref(handle))
+    return handle.value
 
 
 def dcyldr(x, y, z):
     """
+    This routine computes the Jacobian of the transformation from
+    rectangular to cylindrical coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dcyldr_c.html
 
-
-    :param x:
-    :param y:
-    :param z:
-    :return: :rtype:
+    :param x: X-coordinate of point.
+    :type x: float
+    :param y: Y-coordinate of point.
+    :type y: float
+    :param z: Z-coordinate of point.
+    :type z: float
+    :return: Matrix of partial derivatives.
+    :rtype: 3x3-Element Array of Floats.
     """
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
@@ -1745,13 +1852,16 @@ def dcyldr(x, y, z):
 
 def deltet(epoch, eptype):
     """
+    Return the value of Delta ET (ET-UTC) for an input epoch.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/deltet_c.html
 
-
-    :param epoch:
-    :param eptype:
-    :return:
-    :rtype:
+    :param epoch: Input epoch (seconds past J2000).
+    :type epoch: float
+    :param eptype: Type of input epoch ("UTC" or "ET").
+    :type eptype: str
+    :return: Delta ET (ET-UTC) at input epoch.
+    :rtype: float
     """
     epoch = ctypes.c_double(epoch)
     eptype = stypes.stringToCharP(eptype)
@@ -1762,11 +1872,14 @@ def deltet(epoch, eptype):
 
 def det(m1):
     """
+    Compute the determinant of a double precision 3x3 matrix.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/det_c.html
 
-
-    :param m1:
-    :return: :rtype:
+    :param m1: Matrix whose determinant is to be found.
+    :type m1: 3x3-Element Array of Floats.
+    :return: The determinant of the matrix.
+    :rtype: float
     """
     m1 = stypes.listtodoublematrix(m1)
     return libspice.det_c(m1)
@@ -1774,16 +1887,23 @@ def det(m1):
 
 def dgeodr(x, y, z, re, f):
     """
+    This routine computes the Jacobian of the transformation from
+    rectangular to geodetic coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dgeodr_c.html
 
-
-    :param x:
-    :param y:
-    :param z:
-    :param re:
-    :param f:
-    :return:
-    :rtype:
+    :param x: X-coordinate of point.
+    :type x: float
+    :param y: Y-coordinate of point.
+    :type y: float
+    :param z: Z-coord
+    :type z: float
+    :param re: Equatorial radius of the reference spheroid.
+    :type re: float
+    :param f: Flattening coefficient.
+    :type f: float
+    :return: Matrix of partial derivatives.
+    :rtype: 3x3-Element Array of Floats.
     """
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
@@ -1797,11 +1917,14 @@ def dgeodr(x, y, z, re, f):
 
 def diags2(symmat):
     """
+    Diagonalize a symmetric 2x2 matrix.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/diags2_c.html
 
-
-    :param symmat:
-    :return: :rtype:
+    :param symmat: A symmetric 2x2 matrix.
+    :type symmat: 2x2-Element Array of Floats.
+    :return: A diagonal matrix similar to symmat, A rotation used as the similarity transformation.
+    :rtype: tuple
     """
     symmat = stypes.listtodoublematrix(symmat, x=2, y=2)
     diag = stypes.emptyDoubleMatrix(x=2, y=2)
@@ -1812,13 +1935,15 @@ def diags2(symmat):
 
 def diff(a, b):
     """
+    Take the difference of two sets of any data type to form a third set.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/diff_c.html
 
-
-    :param a:
-    :param b:
-    :return:
-    :rtype:
+    :param a: First input set.
+    :type a: SpiceyPy.support_types.SpiceCell
+    :param b: Second input set.
+    :type b: SpiceyPy.support_types.SpiceCell
+    :return: Difference of a and b.
+    :rtype: SpiceyPy.support_types.SpiceCell
     """
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
@@ -1838,14 +1963,19 @@ def diff(a, b):
 
 def dlatdr(x, y, z):
     """
+    This routine computes the Jacobian of the transformation from
+    rectangular to latitudinal coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlatdr_c.html
 
-
-    :param x:
-    :param y:
-    :param z:
-    :return:
-    :rtype:
+    :param x: X-coordinate of point.
+    :type x: float
+    :param y: Y-coordinate of point.
+    :type y: float
+    :param z: Z-coord
+    :type z: float
+    :return: Matrix of partial derivatives.
+    :rtype: 3x3-Element Array of Floats.
     """
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
@@ -1857,13 +1987,16 @@ def dlatdr(x, y, z):
 
 def dp2hx(number, lenout=None):
     """
+    Convert a double precision number to an equivalent character
+    string using base 16 "scientific notation."
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dp2hx_c.html
 
-
-    :param number:
-    :param lenout:
-    :return:
-    :rtype:
+    :param number: D.p. number to be converted.
+    :type number: float
+    :param lenout: Available space for output string.
+    :return: Equivalent character string, left justified.
+    :rtype: str
     """
     if lenout is None:
         lenout = 255
@@ -1877,16 +2010,25 @@ def dp2hx(number, lenout=None):
 
 def dpgrdr(body, x, y, z, re, f):
     """
+    This routine computes the Jacobian matrix of the transformation
+    from rectangular to planetographic coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dpgrdr_c.html
 
-
-    :param body:
-    :param x:
-    :param y:
-    :param z:
-    :param re:
-    :param f:
-    :return: :rtype:
+    :param body: Body with which coordinate system is associated.
+    :type body: str
+    :param x: X-coordinate of point.
+    :type x: float
+    :param y: Y-coordinate of point.
+    :type y: float
+    :param z: Z-coordinate of point.
+    :type z: float
+    :param re: Equatorial radius of the reference spheroid.
+    :type re: float
+    :param f: Flattening coefficient.
+    :type f: float
+    :return: Matrix of partial derivatives.
+    :rtype: 3x3-Element Array of Floats.
     """
     body = stypes.stringToCharP(body)
     x = ctypes.c_double(x)
@@ -1901,46 +2043,57 @@ def dpgrdr(body, x, y, z, re, f):
 
 def dpmax():
     """
+    Return the value of the largest (positive) number representable
+    in a double precision variable.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dpmax_c.html
 
-
-
-    :return: :rtype:
+    :return: The largest (positive) number representable in a double precision variable.
+    :rtype: float
     """
     return libspice.dpmax_c()
 
 
 def dpmin():
     """
+    Return the value of the smallest (negative) number representable
+    in a double precision variable.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dpmin_c.html
 
-
-
-    :return: :rtype:
+    :return: The smallest (negative) number that can be represented in a double precision variable.
+    :rtype: float
     """
     return libspice.dpmin_c()
 
 
 def dpr():
     """
+    Return the number of degrees per radian.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dpr_c.html
 
-
-
-    :return: :rtype:
+    :return: The number of degrees per radian.
+    :rtype: float
     """
     return libspice.dpr_c()
 
 
 def drdcyl(r, lon, z):
     """
+    This routine computes the Jacobian of the transformation from
+    cylindrical to rectangular coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/drdcyl_c.html
 
-
-    :param r:
-    :param lon:
-    :param z:
-    :return: :rtype:
+    :param r: Distance of a point from the origin.
+    :type r: float
+    :param lon: Angle of the point from the xz plane in radians.
+    :type lon: float
+    :param z: Height of the point above the xy plane.
+    :type z: float
+    :return: Matrix of partial derivatives.
+    :rtype: 3x3-Element Array of Floats.
     """
     r = ctypes.c_double(r)
     lon = ctypes.c_double(lon)
@@ -1952,15 +2105,23 @@ def drdcyl(r, lon, z):
 
 def drdgeo(lon, lat, alt, re, f):
     """
+    This routine computes the Jacobian of the transformation from
+    geodetic to rectangular coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/drdgeo_c.html
 
-
-    :param lon:
-    :param lat:
-    :param alt:
-    :param re:
-    :param f:
-    :return: :rtype:
+    :param lon: Geodetic longitude of point (radians).
+    :type lon: float
+    :param lat: Geodetic latitude of point (radians).
+    :type lat: float
+    :param alt: Altitude of point above the reference spheroid.
+    :type alt: float
+    :param re: Equatorial radius of the reference spheroid.
+    :type re: float
+    :param f: Flattening coefficient.
+    :type f: float
+    :return: Matrix of partial derivatives.
+    :rtype: 3x3-Element Array of Floats.
     """
     lon = ctypes.c_double(lon)
     lat = ctypes.c_double(lat)
@@ -1974,13 +2135,19 @@ def drdgeo(lon, lat, alt, re, f):
 
 def drdlat(r, lon, lat):
     """
+    Compute the Jacobian of the transformation from latitudinal to
+    rectangular coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/drdlat_c.html
 
-
-    :param r:
-    :param lon:
-    :param lat:
-    :return: :rtype:
+    :param r: Distance of a point from the origin.
+    :type r: float
+    :param lon: Angle of the point from the XZ plane in radians.
+    :type lon: float
+    :param lat: Angle of the point from the XY plane in radians.
+    :type lat: float
+    :return: Matrix of partial derivatives.
+    :rtype: 3x3-Element Array of Floats.
     """
     r = ctypes.c_double(r)
     lon = ctypes.c_double(lon)
@@ -1992,16 +2159,25 @@ def drdlat(r, lon, lat):
 
 def drdpgr(body, lon, lat, alt, re, f):
     """
+    This routine computes the Jacobian matrix of the transformation
+    from planetographic to rectangular coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/drdpgr_c.html
 
-
-    :param body:
-    :param lon:
-    :param lat:
-    :param alt:
-    :param re:
-    :param f:
-    :return: :rtype:
+    :param body: Body with which coordinate system is associated.
+    :type body: str
+    :param lon: Planetographic longitude of a point (radians).
+    :type lon: float
+    :param lat: Planetographic latitude of a point (radians).
+    :type lat: float
+    :param alt: Altitude of a point above reference spheroid.
+    :type alt: float
+    :param re: Equatorial radius of the reference spheroid.
+    :type re: float
+    :param f: Flattening coefficient.
+    :type f: float
+    :return: Matrix of partial derivatives.
+    :rtype: 3x3-Element Array of Floats.
     """
     body = stypes.stringToCharP(body)
     lon = ctypes.c_double(lon)
@@ -2016,13 +2192,19 @@ def drdpgr(body, lon, lat, alt, re, f):
 
 def drdsph(r, colat, lon):
     """
+    This routine computes the Jacobian of the transformation from
+    spherical to rectangular coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/drdsph_c.html
 
-
-    :param r:
-    :param colat:
-    :param lon:
-    :return: :rtype:
+    :param r: Distance of a point from the origin.
+    :type r: float
+    :param colat: Angle of the point from the positive z-axis.
+    :type colat: float
+    :param lon: Angle of the point from the xy plane.
+    :type lon: float
+    :return: Matrix of partial derivatives.
+    :rtype: 3x3-Element Array of Floats.
     """
     r = ctypes.c_double(r)
     colat = ctypes.c_double(colat)
@@ -2034,13 +2216,20 @@ def drdsph(r, colat, lon):
 
 def dsphdr(x, y, z):
     """
+    This routine computes the Jacobian of the transformation from
+    rectangular to spherical coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dsphdr_c.html
 
 
-    :param x:
-    :param y:
-    :param z:
-    :return: :rtype:
+    :param x: X-coordinate of point.
+    :type x: float
+    :param y: Y-coordinate of point.
+    :type y: float
+    :param z: Z-coordinate of point.
+    :type z: float
+    :return: Matrix of partial derivatives.
+    :rtype: 3x3-Element Array of Floats.
     """
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
@@ -2052,11 +2241,14 @@ def dsphdr(x, y, z):
 
 def dtpool(name):
     """
+    Return the data about a kernel pool variable.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dtpool_c.html
 
-
-    :param name:
-    :return: :rtype:
+    :param name: Name of the variable whose value is to be returned.
+    :type name: str
+    :return: True if variable is in pool, Number of values returned for name, Type of the variable "C", "N", or "X"
+    :rtype: tuple
     """
     name = stypes.stringToCharP(name)
     found = ctypes.c_bool()
@@ -2069,12 +2261,17 @@ def dtpool(name):
 
 def ducrss(s1, s2):
     """
+    Compute the unit vector parallel to the cross product of
+    two 3-dimensional vectors and the derivative of this unit vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ducrss_c.html
 
-
-    :param s1:
-    :param s2:
-    :return: :rtype:
+    :param s1: Left hand state for cross product and derivative.
+    :type s1: 6-Element Array of Floats.
+    :param s2: Right hand state for cross product and derivative.
+    :type s2: 6-Element Array of Floats.
+    :return: Unit vector and derivative of the cross product.
+    :rtype: 6-Element Array of Floats.
     """
     assert len(s1) is 6 and len(s2) is 6
     s1 = stypes.toDoubleVector(s1)
@@ -2086,12 +2283,17 @@ def ducrss(s1, s2):
 
 def dvcrss(s1, s2):
     """
+    Compute the cross product of two 3-dimensional vectors
+    and the derivative of this cross product.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dvcrss_c.html
 
-
-    :param s1:
-    :param s2:
-    :return: :rtype:
+    :param s1: Left hand state for cross product and derivative.
+    :type s1: 6-Element Array of Floats.
+    :param s2: Right hand state for cross product and derivative.
+    :type s2: 6-Element Array of Floats.
+    :return: State associated with cross product of positions.
+    :rtype: 6-Element Array of Floats.
     """
     assert len(s1) is 6 and len(s2) is 6
     s1 = stypes.toDoubleVector(s1)
@@ -2103,12 +2305,17 @@ def dvcrss(s1, s2):
 
 def dvdot(s1, s2):
     """
+    Compute the derivative of the dot product of two double
+    precision position vectors.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dvdot_c.html
 
-
-    :param s1:
-    :param s2:
-    :return: :rtype:
+    :param s1: First state vector in the dot product.
+    :type s1: 6-Element Array of Floats.
+    :param s2: Second state vector in the dot product.
+    :type s2: 6-Element Array of Floats.
+    :return: The derivative of the dot product.
+    :rtype: float
     """
     assert len(s1) is 6 and len(s2) is 6
     s1 = stypes.toDoubleVector(s1)
@@ -2118,11 +2325,15 @@ def dvdot(s1, s2):
 
 def dvhat(s1):
     """
+    Find the unit vector corresponding to a state vector and the
+    derivative of the unit vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dvhat_c.html
 
-
-    :param s1:
-    :return: :rtype:
+    :param s1: State to be normalized.
+    :type s1: 6-Element Array of Floats.
+    :return: Unit vector s1 / abs(s1), and its time derivative.
+    :rtype: 6-Element Array of Floats.
     """
     assert len(s1) is 6
     s1 = stypes.toDoubleVector(s1)
@@ -2133,11 +2344,14 @@ def dvhat(s1):
 
 def dvnorm(state):
     """
+    Function to calculate the derivative of the norm of a 3-vector.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dvnorm_c.html
 
-
-    :param state:
-    :return: :rtype:
+    :param state: A 6-vector composed of three coordinates and their derivatives.
+    :type state: 6-Element Array of Floats.
+    :return: The derivative of the norm of a 3-vector.
+    :rtype: float
     """
     assert len(state) is 6
     state = stypes.toDoubleVector(state)
@@ -2146,10 +2360,12 @@ def dvnorm(state):
 
 def dvpool(name):
     """
+    Delete a variable from the kernel pool.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dvpool_c.html
 
-
-    :param name:
+    :param name: Name of the kernel variable to be deleted.
+    :type name: str
     """
     name = stypes.stringToCharP(name)
     libspice.dvpool_c(name)
@@ -2158,12 +2374,17 @@ def dvpool(name):
 
 def dvsep(s1, s2):
     """
+    Calculate the time derivative of the separation angle between
+    two input states, S1 and S2.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dvsep_c.html
 
-
-    :param s1:
-    :param s2:
-    :return: :rtype:
+    :param s1: State vector of the first body.
+    :type s1: 6-Element Array of Floats.
+    :param s2: State vector of the second body.
+    :type s2: 6-Element Array of Floats.
+    :return: The time derivative of the angular separation between S1 and S2.
+    :rtype: float
     """
     assert len(s1) is 6 and len(s2) is 6
     s1 = stypes.toDoubleVector(s1)
