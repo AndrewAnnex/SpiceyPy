@@ -2398,14 +2398,20 @@ def dvsep(s1, s2):
 
 def edlimb(a, b, c, viewpt):
     """
+    Find the limb of a triaxial ellipsoid, viewed from a specified point.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/edlimb_c.html
 
-
-    :param a:
-    :param b:
-    :param c:
-    :param viewpt:
-    :return: :rtype:
+    :param a: Length of ellipsoid semi-axis lying on the x-axis.
+    :type a: float
+    :param b: Length of ellipsoid semi-axis lying on the y-axis.
+    :type b: float
+    :param c: Length of ellipsoid semi-axis lying on the z-axis.
+    :type c: float
+    :param viewpt: Location of viewing point.
+    :type viewpt: 3-Element Array of Floats.
+    :return: Limb of ellipsoid as seen from viewing point.
+    :rtype: SpiceyPy.support_types.Ellipse
     """
     limb = stypes.Ellipse()
     a = ctypes.c_double(a)
@@ -2418,18 +2424,30 @@ def edlimb(a, b, c, viewpt):
 
 def edterm(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts):
     """
+    Compute a set of points on the umbral or penumbral terminator of
+    a specified target body, where the target shape is modeled as an
+    ellipsoid.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/edterm_c.html
 
-
-    :param trmtyp:
-    :param source:
-    :param target:
-    :param et:
-    :param fixref:
-    :param abcorr:
-    :param obsrvr:
-    :param npts:
-    :return: :rtype:
+    :param trmtyp: Terminator type.
+    :type trmtyp: str
+    :param source: Light source.
+    :type source: str
+    :param target: Target body.
+    :type target: str
+    :param et: Observation epoch.
+    :type et: str
+    :param fixref: Body-fixed frame associated with target.
+    :type fixref: str
+    :param abcorr: Aberration correction.
+    :type abcorr: str
+    :param obsrvr: Observer.
+    :type obsrvr: str
+    :param npts: Number of points in terminator set.
+    :type npts: int
+    :return: Epoch associated with target center, Position of observer in body-fixed frame, Terminator point set.
+    :rtype: tuple
     """
     trmtyp = stypes.stringToCharP(trmtyp)
     source = stypes.stringToCharP(source)
@@ -2450,17 +2468,26 @@ def edterm(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts):
 
 def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     """
+    Add data to a character column in a specified EK record.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekacec_c.html
 
-
-    :param handle:
-    :param segno:
-    :param recno:
-    :param column:
-    :param nvals:
-    :param vallen:
-    :param cvals:
-    :param isnull:
+    :param handle: EK file handle.
+    :type handle: int
+    :param segno: Index of segment containing record.
+    :type segno: int
+    :param recno: Record to which data is to be added.
+    :type recno: int
+    :param column: Column name.
+    :type column: str
+    :param nvals: Number of values to add to column.
+    :type nvals: int
+    :param vallen: Declared length of character values.
+    :type vallen: int
+    :param cvals: Character values to add to column.
+    :type cvals: List of str.
+    :param isnull: Flag indicating whether column entry is null.
+    :type isnull: bool
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
@@ -2477,16 +2504,24 @@ def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
 
 def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
     """
+    Add data to an double precision column in a specified EK record.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekaced_c.html
 
-
-    :param handle:
-    :param segno:
-    :param recno:
-    :param column:
-    :param nvals:
-    :param dvals:
-    :param isnull:
+    :param handle: EK file handle.
+    :type handle: int
+    :param segno: Index of segment containing record.
+    :type segno: int
+    :param recno: Record to which data is to be added.
+    :type recno: int
+    :param column: Column name.
+    :type column: str
+    :param nvals: Number of values to add to column.
+    :type nvals: int
+    :param dvals: Double precision values to add to column.
+    :type dvals: N-Element Array of Floats.
+    :param isnull: Flag indicating whether column entry is null.
+    :type isnull: bool
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
@@ -2501,16 +2536,24 @@ def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
 
 def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
     """
+    Add data to an integer column in a specified EK record.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekacei_c.html
 
-
-    :param handle:
-    :param segno:
-    :param recno:
-    :param column:
-    :param nvals:
-    :param ivals:
-    :param isnull:
+    :param handle: EK file handle.
+    :type handle: int
+    :param segno: Index of segment containing record.
+    :type segno: int
+    :param recno: Record to which data is to be added.
+    :type recno: int
+    :param column: Column name.
+    :type column: str
+    :param nvals: Number of values to add to column.
+    :type nvals: int
+    :param ivals: Integer values to add to column.
+    :type ivals: N-Element Array of Ints.
+    :param isnull: Flag indicating whether column entry is null.
+    :type isnull: bool
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
@@ -2525,19 +2568,30 @@ def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
 def ekaclc(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs,
            wkindx):
     """
+    Add an entire character column to an EK segment.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekaclc_c.html
 
-
-    :param handle:
-    :param segno:
-    :param column:
-    :param vallen:
-    :param cvals:
-    :param entszs:
-    :param nlflgs:
-    :param rcptrs:
-    :param wkindx:
-    :return: :rtype:
+    :param handle: EK file handle.
+    :type handle: int
+    :param segno: Number of segment to add column to.
+    :type segno: int
+    :param column: Column name.
+    :type column: str
+    :param vallen: Length of character values.
+    :type vallen: int
+    :param cvals: Character values to add to column.
+    :type cvals: List of str.
+    :param entszs: Array of sizes of column entries.
+    :type entszs: N-Element Array of Ints.
+    :param nlflgs: Array of null flags for column entries.
+    :type nlflgs: N-Element Array of Bools.
+    :param rcptrs: Record pointers for segment.
+    :type rcptrs: N-Element Array of Ints.
+    :param wkindx: Work space for column index.
+    :type wkindx: N-Element Array of Ints.
+    :return: Work space for column index.
+    :rtype: N-Element Array of Ints.
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
@@ -2555,18 +2609,28 @@ def ekaclc(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs,
 
 def ekacld(handle, segno, column, dvals, entszs, nlflgs, rcptrs, wkindx):
     """
+    Add an entire double precision column to an EK segment.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekacld_c.html
 
-
-    :param handle:
-    :param segno:
-    :param column:
-    :param dvals:
-    :param entszs:
-    :param nlflgs:
-    :param rcptrs:
-    :param wkindx:
-    :return: :rtype:
+    :param handle: EK file handle.
+    :type handle: int
+    :param segno: Number of segment to add column to.
+    :type segno: int
+    :param column: Column name.
+    :type column: str
+    :param dvals: Double precision values to add to column.
+    :type dvals: N-Element Array of Floats.
+    :param entszs: Array of sizes of column entries.
+    :type entszs: N-Element Array of Ints.
+    :param nlflgs: Array of null flags for column entries.
+    :type nlflgs: N-Element Array of Bools.
+    :param rcptrs: Record pointers for segment.
+    :type rcptrs: N-Element Array of Ints.
+    :param wkindx: Work space for column index.
+    :type wkindx: N-Element Array of Ints.
+    :return: Work space for column index.
+    :rtype: N-Element Array of Ints.
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
@@ -2583,18 +2647,27 @@ def ekacld(handle, segno, column, dvals, entszs, nlflgs, rcptrs, wkindx):
 
 def ekacli(handle, segno, column, ivals, entszs, nlflgs, rcptrs, wkindx):
     """
+    Add an entire integer column to an EK segment.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekacli_c.html
 
-
-    :param handle:
-    :param segno:
-    :param column:
-    :param ivals:
-    :param entszs:
-    :param nlflgs:
-    :param rcptrs:
-    :param wkindx:
-    :return: :rtype:
+    :param handle: EK file handle.
+    :type handle: int
+    :param segno: Number of segment to add column to.
+    :type segno: int
+    :param column: Column name.
+    :type column: str
+    :param ivals: Integer values to add to column.
+    :type ivals: N-Element Array of Ints.
+    :type entszs: N-Element Array of Ints.
+    :param nlflgs: Array of null flags for column entries.
+    :type nlflgs: N-Element Array of Bools.
+    :param rcptrs: Record pointers for segment.
+    :type rcptrs: N-Element Array of Ints.
+    :param wkindx: Work space for column index.
+    :type wkindx: N-Element Array of Ints.
+    :return: Work space for column index.
+    :rtype: N-Element Array of Ints.
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
@@ -2611,12 +2684,16 @@ def ekacli(handle, segno, column, ivals, entszs, nlflgs, rcptrs, wkindx):
 
 def ekappr(handle, segno):
     """
+    Append a new, empty record at the end of a specified E-kernel segment.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekappr_c.html
 
-
-    :param handle:
-    :param segno:
-    :return: :rtype:
+    :param handle: File handle.
+    :type handle: int
+    :param segno: Segment number.
+    :type segno: int
+    :return: Number of appended record.
+    :rtype: int
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
@@ -2639,16 +2716,26 @@ def ekbseg(handle, tabnam, ncols, cnmlen, cnames, declen, decls):
     # else:
     #     ncols = len(cnames)
     """
+    Start a new segment in an E-kernel.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekbseg_c.html
 
-    :param handle:
-    :param tabnam:
-    :param ncols:
-    :param cnmlen:
-    :param cnames:
-    :param declen:
-    :param decls:
-    :return: :rtype:
+    :param handle: File handle.
+    :type handle: int
+    :param tabnam: Table name.
+    :type tabnam: str
+    :param ncols: Number of columns in the segment.
+    :type ncols: int
+    :param cnmlen: Length of names in in column name array.
+    :type cnmlen: int
+    :param cnames: Names of columns.
+    :type cnames: List of str.
+    :param declen: Length of declaration strings in declaration array.
+    :type declen: int
+    :param decls: Declarations of columns.
+    :type decls: List of str.
+    :return: Segment number.
+    :rtype: int
     """
     handle = ctypes.c_int(handle)
     tabnam = stypes.stringToCharP(tabnam)
@@ -2664,11 +2751,15 @@ def ekbseg(handle, tabnam, ncols, cnmlen, cnames, declen, decls):
 
 def ekccnt(table):
     """
+    Return the number of distinct columns in a specified,
+    currently loaded table.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekccnt_c.html
 
-
-    :param table:
-    :return: :rtype:
+    :param table: Name of table.
+    :type table: str
+    :return: Count of distinct, currently loaded columns.
+    :rtype: int
     """
     table = stypes.stringToCharP(table)
     ccount = ctypes.c_int()
@@ -2678,13 +2769,18 @@ def ekccnt(table):
 
 def ekcii(table, cindex, lenout):
     """
+    Return attribute information about a column belonging to a loaded
+    EK table, specifying the column by table and index.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekcii_c.html
 
-
-    :param table:
-    :param cindex:
-    :param lenout:
-    :return: :rtype:
+    :param table: Name of table containing column.
+    :type table: str
+    :param cindex: Index of column whose attributes are to be found.
+    :type cindex: int
+    :param lenout: Maximum allowed length of column name.
+    :return: Name of column, Column attribute descriptor.
+    :rtype: tuple
     """
     table = stypes.stringToCharP(table)
     cindex = ctypes.c_int(cindex)
@@ -2697,10 +2793,12 @@ def ekcii(table, cindex, lenout):
 
 def ekcls(handle):
     """
+    Close an E-kernel.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekcls_c.html
 
-
-    :param handle:
+    :param handle: EK file handle.
+    :type handle: int
     """
     handle = ctypes.c_int(handle)
     libspice.ekcls_c(handle)
@@ -2709,12 +2807,16 @@ def ekcls(handle):
 
 def ekdelr(handle, segno, recno):
     """
+    Delete a specified record from a specified E-kernel segment.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekdelr_c.html
 
-
-    :param handle:
-    :param segno:
-    :param recno:
+    :param handle: File handle.
+    :type handle: int
+    :param segno: Segment number.
+    :type segno: int
+    :param recno: Record number.
+    :type recno: int
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
@@ -2725,12 +2827,16 @@ def ekdelr(handle, segno, recno):
 
 def ekffld(handle, segno, rcptrs):
     """
+    Complete a fast write operation on a new E-kernel segment.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekffld_c.html
 
-
-    :param handle:
-    :param segno:
-    :param rcptrs:
+    :param handle: File handle.
+    :type handle: int
+    :param segno: Segment number.
+    :type segno: int
+    :param rcptrs: Record pointers.
+    :type rcptrs: N-Element Array of Ints.
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
@@ -2742,12 +2848,19 @@ def ekffld(handle, segno, rcptrs):
 
 def ekfind(query, lenout):
     """
+    Find E-kernel data that satisfy a set of constraints.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekfind_c.html
 
-
-    :param query:
-    :param lenout:
-    :return: :rtype:
+    :param query: Query specifying data to be found.
+    :type query: str
+    :param lenout: Declared length of output error message string.
+    :type lenout: int
+    :return:
+            Number of matching rows,
+            Flag indicating whether query parsed correctly,
+            Parse error description.
+    :rtype: tuple
     """
     query = stypes.stringToCharP(query)
     lenout = ctypes.c_int(lenout)
@@ -2762,13 +2875,24 @@ def ekfind(query, lenout):
 def ekgc(selidx, row, element, lenout):
     # ekgc has issues grabbing last element/row in column
     """
+    Return an element of an entry in a column of character type in a specified
+    row.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekgc_c.html
 
-    :param selidx:
-    :param row:
-    :param element:
-    :param lenout:
-    :return: :rtype:
+    :param selidx: Index of parent column in SELECT clause.
+    :type selidx: int
+    :param row: Row to fetch from.
+    :type row: int
+    :param element: Index of element, within column entry, to fetch.
+    :type element: int
+    :param lenout: Maximum length of column element.
+    :type lenout: int
+    :return:
+            Character string element of column entry,
+            Flag indicating whether column entry was null,
+            Flag indicating whether column was present in row.
+    :rtype: tuple
     """
     selidx = ctypes.c_int(selidx)
     row = ctypes.c_int(row)
@@ -2784,13 +2908,22 @@ def ekgc(selidx, row, element, lenout):
 
 def ekgd(selidx, row, element):
     """
+    Return an element of an entry in a column of double precision type in a
+    specified row.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekgd_c.html
 
-
-    :param selidx:
-    :param row:
-    :param element:
-    :return: :rtype:
+    :param selidx: Index of parent column in SELECT clause.
+    :type selidx: int
+    :param row: Row to fetch from.
+    :type row: int
+    :param element: Index of element, within column entry, to fetch.
+    :type element: int
+    :return:
+            Double precision element of column entry,
+            Flag indicating whether column entry was null,
+            Flag indicating whether column was present in row.
+    :rtype: tuple
     """
     selidx = ctypes.c_int(selidx)
     row = ctypes.c_int(row)
@@ -2805,13 +2938,22 @@ def ekgd(selidx, row, element):
 
 def ekgi(selidx, row, element):
     """
+    Return an element of an entry in a column of integer type in a specified
+    row.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekgi_c.html
 
-
-    :param selidx:
-    :param row:
-    :param element:
-    :return: :rtype:
+    :param selidx: Index of parent column in SELECT clause.
+    :type selidx: int
+    :param row: Row to fetch from.
+    :type row: int
+    :param element: Index of element, within column entry, to fetch.
+    :type element: int
+    :return:
+            Integer element of column entry,
+            Flag indicating whether column entry was null,
+            Flag indicating whether column was present in row.
+    :rtype: tuple
     """
     selidx = ctypes.c_int(selidx)
     row = ctypes.c_int(row)
@@ -2826,18 +2968,28 @@ def ekgi(selidx, row, element):
 
 def ekifld(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls):
     """
+    Initialize a new E-kernel segment to allow fast writing.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekifld_c.html
 
-
-    :param handle:
-    :param tabnam:
-    :param ncols:
-    :param nrows:
-    :param cnmlen:
-    :param cnames:
-    :param declen:
-    :param decls:
-    :return: :rtype:
+    :param handle: File handle.
+    :type handle: int
+    :param tabnam: Table name.
+    :type tabnam: str
+    :param ncols: Number of columns in the segment.
+    :type ncols: int
+    :param nrows: Number of rows in the segment.
+    :type nrows: int
+    :param cnmlen: Length of names in in column name array.
+    :type cnmlen: int
+    :param cnames: Names of columns.
+    :type cnames: List of str.
+    :param declen: Length of declaration strings in declaration array.
+    :type declen: int
+    :param decls: Declarations of columns.
+    :type decls: List of str.
+    :return: Segment number, Array of record pointers.
+    :rtype: tuple
     """
     handle = ctypes.c_int(handle)
     tabnam = stypes.stringToCharP(tabnam)
@@ -2857,11 +3009,17 @@ def ekifld(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls):
 def ekinsr(handle, segno, recno):
     # Todo: test ekinsr
     """
+    Add a new, empty record to a specified E-kernel segment at a specified
+    index.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekinsr_c.html
 
-    :param handle:
-    :param segno:
-    :param recno:
+    :param handle: File handle.
+    :type handle: int
+    :param segno: Segment number.
+    :type segno: int
+    :param recno: Record number.
+    :type recno: int
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
@@ -2872,11 +3030,14 @@ def ekinsr(handle, segno, recno):
 
 def eklef(fname):
     """
+    Load an EK file, making it accessible to the EK readers.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eklef_c.html
 
-
-    :param fname:
-    :return: :rtype:
+    :param fname: Name of EK file to load.
+    :type fname: str
+    :return: File handle of loaded EK file.
+    :rtype: int
     """
     fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
@@ -2887,11 +3048,17 @@ def eklef(fname):
 def eknelt(selidx, row):
     # Todo: test eknelt
     """
+    Return the number of elements in a specified column entry in
+    the current row.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eknelt_c.html
 
-    :param selidx:
-    :param row:
-    :return: :rtype:
+    :param selidx: Index of parent column in SELECT clause.
+    :type selidx: int
+    :param row: Row containing element.
+    :type row: int
+    :return: The number of elements in entry in current row.
+    :rtype: int
     """
     selidx = ctypes.c_int(selidx)
     row = ctypes.c_int(row)
@@ -2900,11 +3067,14 @@ def eknelt(selidx, row):
 
 def eknseg(handle):
     """
+    Return the number of segments in a specified EK.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eknseg_c.html
 
-
-    :param handle:
-    :return: :rtype:
+    :param handle: EK file handle.
+    :type handle: int
+    :return: The number of segments in the specified E-kernel.
+    :rtype: int
     """
     handle = ctypes.c_int(handle)
     return libspice.eknseg_c(handle)
@@ -2912,11 +3082,12 @@ def eknseg(handle):
 
 def ekntab():
     """
+    Return the number of loaded EK tables.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekntab_c.html
 
-
-
-    :return: :rtype:
+    :return: The number of loaded EK tables.
+    :rtype: int
     """
     n = ctypes.c_int(0)
     libspice.ekntab_c(ctypes.byref(n))
@@ -2925,13 +3096,18 @@ def ekntab():
 
 def ekopn(fname, ifname, ncomch):
     """
+    Open a new E-kernel file and prepare the file for writing.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekopn_c.html
 
-
-    :param fname:
-    :param ifname:
-    :param ncomch:
-    :return: :rtype:
+    :param fname: Name of EK file.
+    :type fname: str
+    :param ifname: Internal file name.
+    :type ifname: str
+    :param ncomch: The number of characters to reserve for comments.
+    :type ncomch: int
+    :return: Handle attached to new EK file.
+    :rtype: int
     """
     fname = stypes.stringToCharP(fname)
     ifname = stypes.stringToCharP(ifname)
@@ -2943,11 +3119,14 @@ def ekopn(fname, ifname, ncomch):
 
 def ekopr(fname):
     """
+    Open an existing E-kernel file for reading.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekopr_c.html
 
-
-    :param fname:
-    :return: :rtype:
+    :param fname: Name of EK file.
+    :type fname: str
+    :return: Handle attached to EK file.
+    :rtype: int
     """
     fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
@@ -2957,11 +3136,13 @@ def ekopr(fname):
 
 def ekops():
     """
+    Open a scratch (temporary) E-kernel file and prepare the file
+    for writing.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekops_c.html
 
-
-
-    :return: :rtype:
+    :return: Handle attached to new EK file.
+    :rtype: int
     """
     handle = ctypes.c_int()
     libspice.ekops_c(ctypes.byref(handle))
@@ -2970,11 +3151,14 @@ def ekops():
 
 def ekopw(fname):
     """
+    Open an existing E-kernel file for writing.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekopw_c.html
 
-
-    :param fname:
-    :return: :rtype:
+    :param fname: Name of EK file.
+    :type fname: str
+    :return: Handle attached to EK file.
+    :rtype: int
     """
     fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
@@ -2985,13 +3169,30 @@ def ekopw(fname):
 def ekpsel(query, msglen, tablen, collen):
     # Todo: test ekpsel
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekpsel_c.html
+    Parse the SELECT clause of an EK query, returning full particulars
+    concerning each selected item.
 
-    :param query:
-    :param msglen:
-    :param tablen:
-    :param collen:
-    :return: :rtype:
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekpsel_c.html
+    note: oddly docs at url are incomplete/incorrect.
+
+    :param query: EK query.
+    :type query: str
+    :param msglen: Available space in the output error message string.
+    :type msglen: int
+    :param tablen: UNKNOWN? Length of Table?
+    :type tablen: int
+    :param collen: UNKOWN? Length of Colunn?
+    :return:
+            Number of items in SELECT clause of query,
+            Begin positions of expressions in SELECT clause,
+            End positions of expressions in SELECT clause,
+            Data types of expressions,
+            Classes of expressions,
+            Names of tables qualifying SELECT columns,
+            Names of columns in SELECT clause of query,
+            Error flag,
+            Parse error message.
+    :rtype: tuple
     """
     query = stypes.stringToCharP(query)
     msglen = ctypes.c_int(msglen)
@@ -3019,15 +3220,27 @@ def ekpsel(query, msglen, tablen, collen):
 def ekrcec(handle, segno, recno, column, lenout, nelts=3):
     # Todo: test ekrcec , possible new way to get back 2d char arrays
     """
+    Read data from a character column in a specified EK record.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekrcec_c.html
 
-    :param handle:
-    :param segno:
-    :param recno:
-    :param column:
-    :param lenout:
-    :param nelts:
-    :return: :rtype:
+    :param handle: Handle attached to EK file.
+    :type handle: int
+    :param segno: Index of segment containing record.
+    :type segno: int
+    :param recno: Record from which data is to be read.
+    :type recno: int
+    :param column: Column name.
+    :type column: str
+    :param lenout: Maximum length of output strings.
+    :type lenout: int
+    :param nelts: ???
+    :type nelts: int
+    :return:
+            Number of values in column entry,
+            Character values in column entry,
+            Flag indicating whether column entry is null.
+    :rtype: tuple
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
@@ -3045,13 +3258,23 @@ def ekrcec(handle, segno, recno, column, lenout, nelts=3):
 def ekrced(handle, segno, recno, column):
     # Todo: test ekrced
     """
+    Read data from a double precision column in a specified EK record.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekrced_c.html
 
-    :param handle:
-    :param segno:
-    :param recno:
-    :param column:
-    :return: :rtype:
+    :param handle: Handle attached to EK file.
+    :type handle: int
+    :param segno: Index of segment containing record.
+    :type segno: int
+    :param recno: Record from which data is to be read.
+    :type recno: int
+    :param column: Column name.
+    :type column: str
+    :return:
+            Number of values in column entry,
+            Float values in column entry,
+            Flag indicating whether column entry is null.
+    :rtype: tuple
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
@@ -3068,13 +3291,23 @@ def ekrced(handle, segno, recno, column):
 def ekrcei(handle, segno, recno, column):
     # Todo: test ekrcei
     """
+    Read data from an integer column in a specified EK record.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekrcei_c.html
 
-    :param handle:
-    :param segno:
-    :param recno:
-    :param column:
-    :return: :rtype:
+    :param handle: Handle attached to EK file.
+    :type handle: int
+    :param segno: Index of segment containing record.
+    :type segno: int
+    :param recno: Record from which data is to be read.
+    :type recno: int
+    :param column: Column name.
+    :type column: str
+    :return:
+            Number of values in column entry,
+            Integer values in column entry,
+            Flag indicating whether column entry is null.
+    :rtype: tuple
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
@@ -3090,12 +3323,16 @@ def ekrcei(handle, segno, recno, column):
 
 def ekssum(handle, segno):
     """
+    Return summary information for a specified segment in a specified EK.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekssum_c.html
 
-
-    :param handle:
-    :param segno:
-    :return: :rtype:
+    :param handle: Handle of EK.
+    :type handle: int
+    :param segno: Number of segment to be summarized.
+    :type segno: int
+    :return: EK segment summary.
+    :rtype: SpicePy.support_types.SpiceEKSegSum
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
@@ -3106,12 +3343,16 @@ def ekssum(handle, segno):
 
 def ektnam(n, lenout):
     """
+    Return the name of a specified, loaded table.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ektnam_c.html
 
-
-    :param n:
-    :param lenout:
-    :return: :rtype:
+    :param n: Index of table.
+    :type n: int
+    :param lenout: Maximum table name length.
+    :type lenout: int
+    :return: Name of table.
+    :rtype: str
     """
     n = ctypes.c_int(n)
     lenout = ctypes.c_int(lenout)
@@ -3123,16 +3364,26 @@ def ektnam(n, lenout):
 def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     # Todo: test ekucec
     """
+    Update a character column entry in a specified EK record.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekucec_c.html
 
-    :param handle:
-    :param segno:
-    :param recno:
-    :param column:
-    :param nvals:
-    :param vallen:
-    :param cvals:
-    :param isnull:
+    :param handle: EK file handle.
+    :type handle: int
+    :param segno: Index of segment containing record.
+    :type segno: int
+    :param recno: Record to which data is to be updated.
+    :type recno: int
+    :param column: Column name.
+    :type column: str
+    :param nvals: Number of values in new column entry.
+    :type nvals: int
+    :param vallen: Declared length of character values.
+    :type vallen: int
+    :param cvals: Character values comprising new column entry.
+    :type cvals: List of str.
+    :param isnull: Flag indicating whether column entry is null.
+    :type isnull: bool
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
@@ -3150,15 +3401,24 @@ def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
 def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
     # Todo: test ekucei
     """
+    Update a double precision column entry in a specified EK record.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekuced_c.html
 
-    :param handle:
-    :param segno:
-    :param recno:
-    :param column:
-    :param nvals:
-    :param dvals:
-    :param isnull:
+    :param handle: EK file handle.
+    :type handle: int
+    :param segno: Index of segment containing record.
+    :type segno: int
+    :param recno: Record to which data is to be updated.
+    :type recno: int
+    :param column: Column name.
+    :type column: str
+    :param nvals: Number of values in new column entry.
+    :type nvals: int
+    :param dvals: Double precision values comprising new column entry.
+    :type dvals: N-Element Array of Floats.
+    :param isnull: Flag indicating whether column entry is null.
+    :type isnull: bool
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
@@ -3175,15 +3435,24 @@ def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
 def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
     # Todo: test ekucei
     """
+    Update an integer column entry in a specified EK record.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekucei_c.html
 
-    :param handle:
-    :param segno:
-    :param recno:
-    :param column:
-    :param nvals:
-    :param ivals:
-    :param isnull:
+    :param handle: EK file handle.
+    :type handle: int
+    :param segno: Index of segment containing record.
+    :type segno: int
+    :param recno: Record to which data is to be updated.
+    :type recno: int
+    :param column: Column name.
+    :type column: str
+    :param nvals: Number of values in new column entry.
+    :type nvals: int
+    :param ivals: Integer values comprising new column entry.
+    :type ivals: N-Element Array of Ints.
+    :param isnull: Flag indicating whether column entry is null.
+    :type isnull: bool
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
@@ -3199,10 +3468,14 @@ def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
 
 def ekuef(handle):
     """
+    Unload an EK file, making its contents inaccessible to the
+    EK reader routines, and clearing space in order to allow other
+    EK files to be loaded.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ekuef_c.html
 
-
-    :param handle:
+    :param handle: Handle of EK file.
+    :type handle: int
     """
     handle = ctypes.c_int(handle)
     libspice.ekuef_c(handle)
@@ -3211,11 +3484,16 @@ def ekuef(handle):
 
 def el2cgv(ellipse):
     """
+    Convert an ellipse to a center vector and two generating
+    vectors. The selected generating vectors are semi-axes of the
+    ellipse.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/el2cgv_c.html
 
-
-    :param ellipse:
-    :return: :rtype:
+    :param ellipse: An Ellipse
+    :type ellipse: SpiceyPy.support_types.Ellipse
+    :return: Center and semi-axes of ellipse.
+    :rtype: tuple
     """
     assert (isinstance(ellipse, stypes.Ellipse))
     center = stypes.emptyDoubleVector(3)
@@ -3228,12 +3506,16 @@ def el2cgv(ellipse):
 
 def elemc(item, inset):
     """
+    Determine whether an item is an element of a character set.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/elemc_c.html
 
-
-    :param item:
-    :param inset:
-    :return: :rtype:
+    :param item: Item to be tested.
+    :type item: str
+    :param inset: Set to be tested.
+    :type inset SpiceyPy.support_types.SpiceCell
+    :return: True if item is an element of set.
+    :rtype: bool
     """
     assert isinstance(inset, stypes.SpiceCell)
     item = stypes.stringToCharP(item)
@@ -3242,12 +3524,16 @@ def elemc(item, inset):
 
 def elemd(item, inset):
     """
+    Determine whether an item is an element of a double precision set.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/elemd_c.html
 
-
-    :param item:
-    :param inset:
-    :return: :rtype:
+    :param item: Item to be tested.
+    :type item: float
+    :param inset: Set to be tested.
+    :type inset SpiceyPy.support_types.SpiceCell
+    :return: True if item is an element of set.
+    :rtype: bool
     """
     assert isinstance(inset, stypes.SpiceCell)
     assert inset.dtype == 1
@@ -3257,12 +3543,16 @@ def elemd(item, inset):
 
 def elemi(item, inset):
     """
+    Determine whether an item is an element of an integer set.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/elemi_c.html
 
-
-    :param item:
-    :param inset:
-    :return: :rtype:
+    :param item: Item to be tested.
+    :type item: int
+    :param inset: Set to be tested.
+    :type inset SpiceyPy.support_types.SpiceCell
+    :return: True if item is an element of set.
+    :rtype: bool
     """
     assert isinstance(inset, stypes.SpiceCell)
     assert inset.dtype == 2
@@ -3272,15 +3562,24 @@ def elemi(item, inset):
 
 def eqncpv(et, epoch, eqel, rapol, decpol):
     """
+    Compute the state (position and velocity of an object whose
+    trajectory is described via equinoctial elements relative to some
+    fixed plane (usually the equatorial plane of some planet).
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eqncpv_c.html
 
-
-    :param et:
-    :param epoch:
-    :param eqel:
-    :param rapol:
-    :param decpol:
-    :return: :rtype:
+    :param et: Epoch in seconds past J2000 to find state.
+    :type et: float
+    :param epoch: Epoch of elements in seconds past J2000.
+    :type epoch: float
+    :param eqel: Array of equinoctial elements
+    :type eqel: 9-Element Array of Floats.
+    :param rapol: Right Ascension of the pole of the reference plane.
+    :type rapol: float
+    :param decpol: Declination of the pole of the reference plane.
+    :type decpol: float
+    :return: State of the object described by eqel.
+    :rtype: 6-Element Array of Floats.
     """
     et = ctypes.c_double(et)
     epoch = ctypes.c_double(epoch)
@@ -3294,25 +3593,35 @@ def eqncpv(et, epoch, eqel, rapol, decpol):
 
 def eqstr(a, b):
     """
+    Determine whether two strings are equivalent.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eqstr_c.html
 
-
-    :param a:
-    :param b:
-    :return: :rtype:
+    :param a: Arbitrary character string.
+    :type a: str
+    :param b: Arbitrary character string.
+    :type b: str
+    :return: True if A and B are equivalent.
+    :rtype: bool
     """
     return libspice.eqstr_c(stypes.stringToCharP(a), stypes.stringToCharP(b))
 
 
 def erract(op, lenout, action=None):
     """
+    Retrieve or set the default error action.
+    SpiceyPy sets the default error action to "report" on init.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/erract_c.html
 
-
-    :param op:
-    :param lenout:
-    :param action:
-    :return: :rtype:
+    :param op: peration, "GET" or "SET".
+    :type op: str
+    :param lenout: Length of list for output.
+    :type lenout: int
+    :param action: Error response action.
+    :type action: str
+    :return: Error response action.
+    :rtype: str
     """
     if action is None:
         action = ""
@@ -3326,11 +3635,15 @@ def erract(op, lenout, action=None):
 
 def errch(marker, string):
     """
+    Substitute a character string for the first occurrence of
+    a marker in the current long error message.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/errch_c.html
 
-
-    :param marker:
-    :param string:
+    :param marker: A substring of the error message to be replaced.
+    :type marker: str
+    :param string: The character string to substitute for marker.
+    :type string: str
     """
     marker = stypes.stringToCharP(marker)
     string = stypes.stringToCharP(string)
@@ -3340,13 +3653,18 @@ def errch(marker, string):
 
 def errdev(op, lenout, device):
     """
+    Retrieve or set the name of the current output device for error messages.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/errdev_c.html
 
-
-    :param op:
-    :param lenout:
-    :param device:
-    :return: :rtype:
+    :param op: The operation, "GET" or "SET".
+    :type op: str
+    :param lenout: Length of device for output.
+    :type lenout: int
+    :param device: The device name.
+    :type device: str
+    :return: The device name.
+    :rtype: str
     """
     lenout = ctypes.c_int(lenout)
     op = stypes.stringToCharP(op)
@@ -3358,11 +3676,15 @@ def errdev(op, lenout, device):
 
 def errdp(marker, number):
     """
+    Substitute a double precision number for the first occurrence of
+    a marker found in the current long error message.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/errdp_c.html
 
-
-    :param marker:
-    :param number:
+    :param marker: A substring of the error message to be replaced.
+    :type marker: str
+    :param number: The d.p. number to substitute for marker.
+    :type number: float
     """
     marker = stypes.stringToCharP(marker)
     number = ctypes.c_double(number)
@@ -3372,11 +3694,15 @@ def errdp(marker, number):
 
 def errint(marker, number):
     """
+    Substitute an integer for the first occurrence of a marker found
+    in the current long error message.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/errint_c.html
 
-
-    :param marker:
-    :param number:
+    :param marker: A substring of the error message to be replaced.
+    :type marker: str
+    :param number: The integer to substitute for marker.
+    :type number: int
     """
     marker = stypes.stringToCharP(marker)
     number = ctypes.c_int(number)
@@ -3386,13 +3712,19 @@ def errint(marker, number):
 
 def errprt(op, lenout, inlist):
     """
+    Retrieve or set the list of error message items to be output when an
+    error is detected.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/errprt_c.html
 
-
-    :param op:
-    :param lenout:
-    :param inlist:
-    :return: :rtype:
+    :param op: The operation, "GET" or "SET".
+    :type op: str
+    :param lenout: Length of list for output.
+    :type lenout: int
+    :param inlist: Specification of error messages to be output.
+    :type inlist: List of str.
+    :return: A list of error message items.
+    :rtype: List of str.
     """
     lenout = ctypes.c_int(lenout)
     op = stypes.stringToCharP(op)
@@ -3404,12 +3736,18 @@ def errprt(op, lenout, inlist):
 
 def esrchc(value, array):
     """
+    Search for a given value within a character string array.
+    Return the index of the first equivalent array entry, or -1
+    if no equivalent element is found.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/esrchc_c.html
 
-
-    :param value:
-    :param array:
-    :return: :rtype:
+    :param value: Key value to be found in array.
+    :type value: str
+    :param array: Character string array to search.
+    :type array: List of str.
+    :return: The index of the first array entry equivalent to value, or -1 if none is found.
+    :rtype: int
     """
     value = stypes.stringToCharP(value)
     ndim = ctypes.c_int(len(array))
@@ -3420,16 +3758,30 @@ def esrchc(value, array):
 
 def et2lst(et, body, lon, typein, timlen, ampmlen):
     """
+    Given an ephemeris epoch, compute the local solar time for
+    an object on the surface of a body at a specified longitude.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/et2lst_c.html
 
-
-    :param et:
-    :param body:
-    :param lon:
-    :param typein:
-    :param timlen:
-    :param ampmlen:
-    :return: :rtype:
+    :param et: Epoch in seconds past J2000 epoch.
+    :type et: float
+    :param body: ID-code of the body of interest.
+    :type body: int
+    :param lon: Longitude of surface point (RADIANS).
+    :type lon: float
+    :param typein: Type of longitude "PLANETOCENTRIC", etc.
+    :type typein: str
+    :param timlen: Available room in output time string.
+    :type timlen: int
+    :param ampmlen: Available room in output ampm string.
+    :type ampmlen: int
+    :return:
+            Local hour on a "24 hour" clock,
+            Minutes past the hour,
+            Seconds past the minute,
+            String giving local time on 24 hour clock,
+            String giving time on A.M. / P.M. scale.
+    :rtype: tuple
     """
     et = ctypes.c_double(et)
     body = ctypes.c_int(body)
@@ -3451,14 +3803,21 @@ def et2lst(et, body, lon, typein, timlen, ampmlen):
 
 def et2utc(et, formatStr, prec, lenout):
     """
+    Convert an input time from ephemeris seconds past J2000
+    to Calendar, Day-of-Year, or Julian Date format, UTC.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/et2utc_c.html
 
-
-    :param et:
-    :param formatStr:
-    :param prec:
-    :param lenout:
-    :return: :rtype:
+    :param et: Input epoch, given in ephemeris seconds past J2000.
+    :type et: float
+    :param formatStr: Format of output epoch.
+    :type formatStr: str
+    :param prec: Digits of precision in fractional seconds or days.
+    :type prec: int
+    :param lenout: The length of the output string plus 1.
+    :type lenout: int
+    :return: Output time string in UTC
+    :rtype: str
     """
     et = ctypes.c_double(et)
     prec = ctypes.c_int(prec)
@@ -3471,12 +3830,18 @@ def et2utc(et, formatStr, prec, lenout):
 
 def etcal(et, lenout):
     """
+    Convert from an ephemeris epoch measured in seconds past
+    the epoch of J2000 to a calendar string format using a
+    formal calendar free of leapseconds.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/etcal_c.html
 
-
-    :param et:
-    :param lenout:
-    :return: :rtype:
+    :param et: Ephemeris time measured in seconds past J2000.
+    :type et: float
+    :param lenout: Length of output string.
+    :type lenout: int
+    :return: A standard calendar representation of et.
+    :rtype: str
     """
     et = ctypes.c_double(et)
     lenout = ctypes.c_int(lenout)
@@ -3487,16 +3852,24 @@ def etcal(et, lenout):
 
 def eul2m(angle3, angle2, angle1, axis3, axis2, axis1):
     """
+    Construct a rotation matrix from a set of Euler angles.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eul2m_c.html
 
-
-    :param angle3:
-    :param angle2:
-    :param angle1:
-    :param axis3:
-    :param axis2:
-    :param axis1:
-    :return: :rtype:
+    :param angle3: Rotation angle about third rotation axis (radians).
+    :type angle3: float
+    :param angle2: Rotation angle about second rotation axis (radians).
+    :type angle2: float
+    :param angle1: Rotation angle about first rotation axis (radians).
+    :type angle1: float
+    :param axis3: Axis number of third rotation axis.
+    :type axis3: int
+    :param axis2: Axis number of second rotation axis.
+    :type axis2: int
+    :param axis1: Axis number of first rotation axis.]
+    :type axis1: int
+    :return: Product of the 3 rotations.
+    :rtype: 3x3-Element Array of Floats.
     """
     angle3 = ctypes.c_double(angle3)
     angle2 = ctypes.c_double(angle2)
@@ -3511,14 +3884,22 @@ def eul2m(angle3, angle2, angle1, axis3, axis2, axis1):
 
 def eul2xf(eulang, axisa, axisb, axisc):
     """
+    This routine computes a state transformation from an Euler angle
+    factorization of a rotation and the derivatives of those Euler
+    angles.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/eul2xf_c.html
 
-
-    :param eulang:
-    :param axisa:
-    :param axisb:
-    :param axisc:
-    :return: :rtype:
+    :param eulang: An array of Euler angles and their derivatives.
+    :type eulang: 6-Element Array of Floats.
+    :param axisa: Axis A of the Euler angle factorization.
+    :type axisa: int
+    :param axisb: Axis B of the Euler angle factorization.
+    :type axisb: int
+    :param axisc: Axis C of the Euler angle factorization.
+    :type axisc: int
+    :return: A state transformation matrix.
+    :rtype: 6x6-Element Array of Floats.
     """
     assert len(eulang) is 6
     eulang = stypes.toDoubleVector(eulang)
@@ -3532,11 +3913,13 @@ def eul2xf(eulang, axisa, axisb, axisc):
 
 def exists(fname):
     """
+    Determine whether a file exists.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/exists_c.html
 
-
-    :param fname:
-    :return: :rtype:
+    :param fname: Name of the file in question.
+    :return: True if the file exists, False otherwise.
+    :rtype: bool
     """
     fname = stypes.stringToCharP(fname)
     return libspice.exists_c(fname)
@@ -3544,11 +3927,14 @@ def exists(fname):
 
 def expool(name):
     """
+    Confirm the existence of a kernel variable in the kernel pool.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/expool_c.html
 
-
-    :param name:
-    :return: :rtype:
+    :param name: Name of the variable whose value is to be returned.
+    :type name: str
+    :return: True when the variable is in the pool.
+    :rtype: bool
     """
     name = stypes.stringToCharP(name)
     found = ctypes.c_bool()
@@ -5449,7 +5835,10 @@ def lstlec(string, n, lenvals, array):
     :type lenvals: int
     :param array: Array of possible lower bounds. 
     :type array: List
-    :return: index of the last element of array that is lexically less than or equal to string. :rtype: int
+    :return:
+            index of the last element of array that is
+            lexically less than or equal to string.
+    :rtype: int
     """
     string = stypes.stringToCharP(string)
     array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=n)
@@ -5493,8 +5882,8 @@ def lstlei(x, n, array):
     :type n: int
     :param array: Array of possible lower bounds 
     :type array: List
-    :return: index of the last element of array that is less than or equal to x. :rtype: int
-
+    :return: index of the last element of array that is less than or equal to x.
+    :rtype: int
     """
     array = stypes.toIntVector(array)
     x = ctypes.c_int(x)
@@ -5541,7 +5930,8 @@ def lstltd(x, n, array):
     :type n: int
     :param array: Array of possible lower bounds 
     :type array: List
-    :return: index of the last element of array that is less than x. :rtype: int
+    :return: index of the last element of array that is less than x.
+    :rtype: int
     """
     array = stypes.toDoubleVector(array)
     x = ctypes.c_double(x)
