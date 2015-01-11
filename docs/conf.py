@@ -215,7 +215,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'SpiceyPy.tex', 'SpiceyPy Documentation',
-   'Author', 'manual'),
+   'Andrew Annex', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -245,7 +245,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'spiceypy', 'SpiceyPy Documentation',
-     ['Author'], 1)
+     ['Andrew Annex'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -259,7 +259,8 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'SpiceyPy', 'SpiceyPy Documentation',
-   'Author', 'SpiceyPy', 'One line description of project.',
+   'Andrew Annex', 'SpiceyPy',
+   'The NASA JPL NAIF SPICE toolkit wrapper written in Python.',
    'Miscellaneous'),
 ]
 

@@ -3513,7 +3513,7 @@ def elemc(item, inset):
     :param item: Item to be tested.
     :type item: str
     :param inset: Set to be tested.
-    :type inset SpiceyPy.support_types.SpiceCell
+    :type inset: SpiceyPy.support_types.SpiceCell
     :return: True if item is an element of set.
     :rtype: bool
     """
@@ -3531,7 +3531,7 @@ def elemd(item, inset):
     :param item: Item to be tested.
     :type item: float
     :param inset: Set to be tested.
-    :type inset SpiceyPy.support_types.SpiceCell
+    :type inset: SpiceyPy.support_types.SpiceCell
     :return: True if item is an element of set.
     :rtype: bool
     """
@@ -3550,7 +3550,7 @@ def elemi(item, inset):
     :param item: Item to be tested.
     :type item: int
     :param inset: Set to be tested.
-    :type inset SpiceyPy.support_types.SpiceCell
+    :type inset: SpiceyPy.support_types.SpiceCell
     :return: True if item is an element of set.
     :rtype: bool
     """
