@@ -12,8 +12,8 @@ If you do not have git, you can also directly download
 the source code from the GitHub repo for SpiceyPy at
 `https://github.com/AndrewAnnex/SpiceyPy <https://github.com/AndrewAnnex/SpiceyPy>`_
 
-Next, to install the library by changing into the root
-directory of the project and then running::
+To install the library, simply change into the root
+directory of the project and then run::
 
     python setup.py install
 
