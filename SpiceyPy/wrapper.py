@@ -4123,14 +4123,20 @@ def furnsh(path):
 
 def gcpool(name, start, room, lenout):
     """
+    Return the character value of a kernel variable from the kernel pool.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gcpool_c.html
 
-
-    :param name:
-    :param start:
-    :param room:
-    :param lenout:
-    :return: :rtype:
+    :param name: Name of the variable whose value is to be returned.
+    :type name: str
+    :param start: Which component to start retrieving for name.
+    :type start: int
+    :param room: The largest number of values to return.
+    :type room: int
+    :param lenout: The length of the output string.
+    :type lenout: int
+    :return: Values associated with name.
+    :rtype: List of str or None.
     """
     name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
@@ -4149,13 +4155,18 @@ def gcpool(name, start, room, lenout):
 
 def gdpool(name, start, room):
     """
+    Return the d.p. value of a kernel variable from the kernel pool.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gdpool_c.html
 
-
-    :param name:
-    :param start:
-    :param room:
-    :return: :rtype:
+    :param name: Name of the variable whose value is to be returned.
+    :type name: str
+    :param start: Which component to start retrieving for name.
+    :type start: int
+    :param room: The largest number of values to return.
+    :type room: int
+    :return: Values associated with name.
+    :rtype: List of floats or None
     """
     name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
@@ -4174,15 +4185,22 @@ def gdpool(name, start, room):
 
 def georec(lon, lat, alt, re, f):
     """
+    Convert geodetic coordinates to rectangular coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/georec_c.html
 
-
-    :param lon:
-    :param lat:
-    :param alt:
-    :param re:
-    :param f:
-    :return: :rtype:
+    :param lon: Geodetic longitude of point (radians).
+    :type lon: float
+    :param lat: Geodetic latitude  of point (radians).
+    :type lat: float
+    :param alt: Altitude of point above the reference spheroid.
+    :type alt: float
+    :param re: Equatorial radius of the reference spheroid.
+    :type re: float
+    :param f: Flattening coefficient.
+    :type f: float
+    :return: Rectangular coordinates of point.
+    :rtype: 3-Element Array of Floats.
     """
     lon = ctypes.c_double(lon)
     lat = ctypes.c_double(lat)
@@ -4199,13 +4217,22 @@ def georec(lon, lat, alt, re, f):
 
 def getelm(frstyr, lineln, lines):
     """
+    Given a the "lines" of a two-line element set, parse the
+    lines and return the elements in units suitable for use
+    in SPICE software.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/getelm_c.html
 
-
-    :param frstyr:
-    :param lineln:
-    :param lines:
-    :return: :rtype:
+    :param frstyr: Year of earliest representable two-line elements.
+    :type frstyr: int
+    :param lineln: Length of strings in lines array.
+    :type lineln: int
+    :param lines: A pair of "lines" containing two-line elements.
+    :type lines: List of str
+    :return:
+            The epoch of the elements in seconds past J2000,
+            The elements converted to SPICE units.
+    :rtype: tuple
     """
     frstyr = ctypes.c_int(frstyr)
     lineln = ctypes.c_int(lineln)
@@ -4218,11 +4245,14 @@ def getelm(frstyr, lineln, lines):
 
 def getfat(file):
     """
+    Determine the file architecture and file type of most SPICE kernel files.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/getfat_c.html
 
-
-    :param file:
-    :return: :rtype:
+    :param file: The name of a file to be examined.
+    :type file: str
+    :return: The architecture of the kernel file, The type of the kernel file.
+    :rtype: tuple
     """
     file = stypes.stringToCharP(file)
     arclen = ctypes.c_int(4)
@@ -4235,14 +4265,26 @@ def getfat(file):
 
 def getfov(instid, room, shapelen, framelen):
     """
+    This routine returns the field-of-view (FOV) parameters for a
+    specified instrument.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/getfov_c.html
 
-
-    :param instid:
-    :param room:
-    :param shapelen:
-    :param framelen:
-    :return: :rtype:
+    :param instid: NAIF ID of an instrument.
+    :type instid: int
+    :param room: Maximum number of vectors that can be returned.
+    :type room: int
+    :param shapelen: Space available in the string shape.
+    :type shapelen: int
+    :param framelen: Space available in the string frame.
+    :type framelen: int
+    :return:
+            Instrument FOV shape,
+            Name of the frame in which FOV vectors are defined,
+            Boresight vector,
+            Number of boundary vectors returned,
+            FOV boundary vectors.
+    :rtype: tuple
     """
     instid = ctypes.c_int(instid)
     shape = stypes.stringToCharP(" " * shapelen)
@@ -4262,12 +4304,18 @@ def getfov(instid, room, shapelen, framelen):
 
 def getmsg(option, lenout):
     """
+    Retrieve the current short error message,
+    the explanation of the short error message, or the
+    long error message.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/getmsg_c.html
 
-
-    :param option:
-    :param lenout:
-    :return: :rtype:
+    :param option: Indicates type of error message.
+    :type option: str
+    :param lenout: Available space in the output string msg.
+    :type lenout: int
+    :return: The error message to be retrieved.
+    :rtype: str
     """
     option = stypes.stringToCharP(option)
     lenout = ctypes.c_int(lenout)
@@ -4278,20 +4326,22 @@ def getmsg(option, lenout):
 
 def gfbail():
     """
+    Indicate whether an interrupt signal (SIGINT) has been received.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfbail_c.html
 
-
-
-    :return: :rtype:
+    :return: True if an interrupt signal has been received by the GF handler.
+    :rtype: bool
     """
     return libspice.gfbail_c()
 
 
 def gfclrh():
     """
+    Clear the interrupt signal handler status, so that future calls
+    to :func:`gfbail` will indicate no interrupt was received.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfclrh_c.html
-
-
 
     """
     libspice.gfclrh_c()
@@ -4301,19 +4351,31 @@ def gfclrh():
 def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls,
            cnfine, result):
     """
+    Return the time window over which a specified constraint on
+    observer-target distance is met.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfdist_c.html
 
-
-    :param target:
-    :param abcorr:
-    :param obsrvr:
-    :param relate:
-    :param refval:
-    :param adjust:
-    :param step:
-    :param nintvls:
-    :param cnfine:
-    :param result:
+    :param target: Name of the target body.
+    :type target: str
+    :param abcorr: Aberration correction flag.
+    :type abcorr: str
+    :param obsrvr: Name of the observing body.
+    :type obsrvr: str
+    :param relate: Relational operator.
+    :type relate: str
+    :param refval: Reference value.
+    :type refval: float
+    :param adjust: Adjustment value for absolute extrema searches.
+    :type adjust: float
+    :param step: Step size used for locating extrema and roots.
+    :type step: float
+    :param nintvls: Workspace window interval count.
+    :type nintvls: int
+    :param cnfine: SPICE window to which the search is confined.
+    :type cnfine: SpiceyPy.support_types.SpiceCell
+    :param result: SPICE window containing results.
+    :type result: SpiceyPy.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -4334,7 +4396,7 @@ def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls,
 # gdevnt  callbacks? cells
 
 
-#gffove  callbacks? cells
+# gffove  callbacks? cells
 
 
 # gfilum
@@ -4343,9 +4405,14 @@ def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls,
 def gfinth(sigcode):
     #Todo: test gfinth
     """
+    Respond to the interrupt signal SIGINT: save an indication
+    that the signal has been received. This routine restores
+    itself as the handler for SIGINT.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfinth_c.html
 
-    :param sigcode:
+    :param sigcode: Interrupt signal ID code.
+    :type sigcode: int
     """
     sigcode = ctypes.c_int(sigcode)
     libspice.gfinth_c(sigcode)
@@ -4358,21 +4425,35 @@ def gfinth(sigcode):
 def gfoclt(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr,
            step, cnfine, result):
     """
+    Determine time intervals when an observer sees one target
+    occulted by, or in transit across, another.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfoclt_c.html
 
-
-    :param occtyp:
-    :param front:
-    :param fshape:
-    :param fframe:
-    :param back:
-    :param bshape:
-    :param bframe:
-    :param abcorr:
-    :param obsrvr:
-    :param step:
-    :param cnfine:
-    :param result:
+    :param occtyp: Type of occultation.
+    :type occtyp: str
+    :param front: Name of body occulting the other.
+    :type front: str
+    :param fshape: Type of shape model used for front body.
+    :type fshape: str
+    :param fframe: Body-fixed, body-centered frame for front body.
+    :type fframe: str
+    :param back: Name of body occulted by the other.
+    :type back: str
+    :param bshape: Type of shape model used for back body.
+    :type bshape: str
+    :param bframe: Body-fixed, body-centered frame for back body.
+    :type bframe: str
+    :param abcorr: Aberration correction flag.
+    :type abcorr: str
+    :param obsrvr: Name of the observing body.
+    :type obsrvr: str
+    :param step: Step size in seconds for finding occultation events.
+    :type step: float
+    :param cnfine: SPICE window to which the search is restricted.
+    :type cnfine: SpiceyPy.support_types.SpiceCell
+    :param result: SPICE window containing results.
+    :type result: SpiceyPy.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -4396,20 +4477,34 @@ def gfoclt(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr,
 def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals,
          cnfine, result):
     """
+    Determine time intervals for which a specified constraint
+    on the phase angle between an illumination source, a target,
+    and observer body centers is met.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfpa_c.html
 
-
-    :param target:
-    :param illmin:
-    :param abcorr:
-    :param obsrvr:
-    :param relate:
-    :param refval:
-    :param adjust:
-    :param step:
-    :param nintvals:
-    :param cnfine:
-    :param result:
+    :param target: Name of the target body.
+    :type target: str
+    :param illmin: Name of the illuminating body.
+    :type illmin: str
+    :param abcorr: Aberration correction flag.
+    :type abcorr: str
+    :param obsrvr: Name of the observing body.
+    :type obsrvr: str
+    :param relate: Relational operator.
+    :type relate: str
+    :param refval: Reference value.
+    :type refval: float
+    :param adjust: Adjustment value for absolute extrema searches.
+    :type adjust: float
+    :param step: Step size used for locating extrema and roots.
+    :type step: float
+    :param nintvals: Workspace window interval count.
+    :type nintvals: int
+    :param cnfine: SPICE window to which the search is restricted.
+    :type cnfine: SpiceyPy.support_types.SpiceCell
+    :param result: SPICE window containing results.
+    :type result: SpiceyPy.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -4433,22 +4528,37 @@ def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals,
 def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval,
            adjust, step, nintvals, cnfine, result):
     """
+    Determine time intervals for which a coordinate of an
+    observer-target position vector satisfies a numerical constraint.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfposc_c.html
 
-
-    :param target:
-    :param inframe:
-    :param abcorr:
-    :param obsrvr:
-    :param crdsys:
-    :param coord:
-    :param relate:
-    :param refval:
-    :param adjust:
-    :param step:
-    :param nintvals:
-    :param cnfine:
-    :param result:
+    :param target: Name of the target body.
+    :type target: str
+    :param inframe: Name of the reference frame for coordinate calculations.
+    :type inframe: str
+    :param abcorr: Aberration correction flag.
+    :type abcorr: str
+    :param obsrvr: Name of the observing body.
+    :type obsrvr: str
+    :param crdsys: Name of the coordinate system containing COORD
+    :type crdsys: str
+    :param coord: Name of the coordinate of interest
+    :type coord: str
+    :param relate: Relational operator.
+    :type relate: str
+    :param refval: Reference value.
+    :type refval: float
+    :param adjust: Adjustment value for absolute extrema searches.
+    :type adjust: float
+    :param step: Step size used for locating extrema and roots.
+    :type step: float
+    :param nintvals: Workspace window interval count.
+    :type nintvals: int
+    :param cnfine: SPICE window to which the search is restricted.
+    :type cnfine: SpiceyPy.support_types.SpiceCell
+    :param result: SPICE window containing results.
+    :type result: SpiceyPy.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -4474,13 +4584,21 @@ def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval,
 def gfrefn(t1, t2, s1, s2):
     #Todo: test gfrefn
     """
+    For those times when we can't do better, we use a bisection
+    method to find the next time at which to test for state change.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfrefn_c.html
 
-    :param t1:
-    :param t2:
-    :param s1:
-    :param s2:
-    :return: :rtype:
+    :param t1: One of two values bracketing a state change.
+    :type t1: float
+    :param t2: The other value that brackets a state change.
+    :type t2: float
+    :param s1: State at t1.
+    :type s1: bool
+    :param s2: State at t2.
+    :type s2: bool
+    :return: New value at which to check for transition.
+    :rtype: bool
     """
     t1 = ctypes.c_double(t1)
     t2 = ctypes.c_double(t2)
@@ -4494,8 +4612,9 @@ def gfrefn(t1, t2, s1, s2):
 def gfrepf():
     #Todo: test gfrepf
     """
-    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfrepf_c.html
+    Finish a GF progress report.
 
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfrepf_c.html
 
     """
     libspice.gfrepf_c()
@@ -4505,11 +4624,16 @@ def gfrepf():
 def gfrepi(window, begmss, endmss):
     #Todo: test gfrepi
     """
+    This entry point initializes a search progress report.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfrepi_c.html
 
-    :param window:
-    :param begmss:
-    :param endmss:
+    :param window: A window over which a job is to be performed.
+    :type window: SpiceyPy.support_types.SpiceCell
+    :param begmss: Beginning of the text portion of the output message.
+    :type begmss: str
+    :param endmss: End of the text portion of the output message.
+    :type endmss: str
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.is_double()
@@ -4522,11 +4646,17 @@ def gfrepi(window, begmss, endmss):
 def gfrepu(ivbeg, ivend, time):
     #Todo: test gfrepu
     """
+    This function tells the progress reporting system
+    how far a search has progressed.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfrepu_c.html
 
-    :param ivbeg:
-    :param ivend:
-    :param time:
+    :param ivbeg: Start time of work interval.
+    :type ivbeg: float
+    :param ivend: End time of work interval.
+    :type ivend: float
+    :param time: Current time being examined in the search process.
+    :type time: float
     """
     ivbeg = ctypes.c_double(ivbeg)
     ivend = ctypes.c_double(ivend)
@@ -4538,16 +4668,28 @@ def gfrepu(ivbeg, ivend, time):
 def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result):
     #Todo: test gfrfov
     """
+    Determine time intervals when a specified ray intersects the
+    space bounded by the field-of-view (FOV) of a specified
+    instrument.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfrfov_c.html
 
-    :param inst:
-    :param raydir:
-    :param rframe:
-    :param abcorr:
-    :param obsrvr:
-    :param step:
-    :param cnfine:
-    :param result:
+    :param inst: Name of the instrument.
+    :type inst: str
+    :param raydir: Ray's direction vector.
+    :type raydir: 3-Element Array of Float.
+    :param rframe: Reference frame of ray's direction vector.
+    :type rframe: str
+    :param abcorr: Aberration correction flag.
+    :type abcorr: str
+    :param obsrvr: Name of the observing body.
+    :type obsrvr: str
+    :param step: Step size in seconds for finding FOV events.
+    :type step: float
+    :param cnfine: SPICE window to which the search is restricted.
+    :type cnfine: SpiceyPy.support_types.SpiceCell
+    :param result: SPICE window containing results.
+    :type result: SpiceyPy.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -4566,19 +4708,31 @@ def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result):
 def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine,
          result):
     """
+    Determine time intervals for which a specified constraint
+    on the observer-target range rate is met.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfrr_c.html
 
-
-    :param target:
-    :param abcorr:
-    :param obsrvr:
-    :param relate:
-    :param refval:
-    :param adjust:
-    :param step:
-    :param nintvals:
-    :param cnfine:
-    :param result:
+    :param target: Name of the target body.
+    :type target: str
+    :param abcorr: Aberration correction flag.
+    :type abcorr: str
+    :param obsrvr: Name of the observing body.
+    :type obsrvr: str
+    :param relate: Relational operator.
+    :type relate: str
+    :param refval: Reference value.
+    :type refval: float
+    :param adjust: Adjustment value for absolute extrema searches.
+    :type adjust: float
+    :param step: Step size used for locating extrema and roots.
+    :type step: float
+    :param nintvals: Workspace window interval count.
+    :type nintvals: int
+    :param cnfine: SPICE window to which the search is restricted.
+    :type cnfine: SpiceyPy.support_types.SpiceCell
+    :param result: SPICE window containing results.
+    :type result: SpiceyPy.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -4600,24 +4754,42 @@ def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine,
 def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr,
           relate, refval, adjust, step, nintvals, cnfine, result):
     """
+    Determine time intervals when the angular separation between
+    the position vectors of two target bodies relative to an observer
+    satisfies a numerical relationship.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfsep_c.html
 
-
-    :param targ1:
-    :param shape1:
-    :param inframe1:
-    :param targ2:
-    :param shape2:
-    :param inframe2:
-    :param abcorr:
-    :param obsrvr:
-    :param relate:
-    :param refval:
-    :param adjust:
-    :param step:
-    :param nintvals:
-    :param cnfine:
-    :param result:
+    :param targ1: Name of first body.
+    :type targ1: str
+    :param shape1: Name of shape model describing the first body.
+    :type shape1: str
+    :param inframe1: The body-fixed reference frame of the first body.
+    :type inframe1: str
+    :param targ2: Name of second body.
+    :type targ2: str
+    :param shape2: Name of the shape model describing the second body.
+    :type shape2: str
+    :param inframe2: The body-fixed reference frame of the second body
+    :type inframe2: str
+    :param abcorr: Aberration correction flag
+    :type abcorr: str
+    :param obsrvr: Name of the observing body.
+    :type obsrvr: str
+    :param relate: Relational operator.
+    :type relate: str
+    :param refval: Reference value.
+    :type refval: float
+    :param adjust: Absolute extremum adjustment value.
+    :type adjust: float
+    :param step: Step size in seconds for finding angular separation events.
+    :type step: float
+    :param nintvals: Workspace window interval count.
+    :type nintvals: int
+    :param cnfine: SPICE window to which the search is restricted.
+    :type cnfine: SpiceyPy.support_types.SpiceCell
+    :param result: SPICE window containing results.
+    :type result: SpiceyPy.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -4645,25 +4817,43 @@ def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord,
            relate, refval, adjust, step, nintvals,
            cnfine, result):
     """
+    Determine time intervals for which a coordinate of an
+    surface intercept position vector satisfies a numerical constraint.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfsntc_c.html
 
-
-    :param target:
-    :param fixref:
-    :param method:
-    :param abcorr:
-    :param obsrvr:
-    :param dref:
-    :param dvec:
-    :param crdsys:
-    :param coord:
-    :param relate:
-    :param refval:
-    :param adjust:
-    :param step:
-    :param nintvals:
-    :param cnfine:
-    :param result:
+    :param target: Name of the target body.
+    :type target: str
+    :param fixref: Body fixed frame associated with the target.
+    :type fixref: str
+    :param method: Name of method type for surface intercept calculation.
+    :type method: str
+    :param abcorr: Aberration correction flag
+    :type abcorr: str
+    :param obsrvr: Name of the observing body.
+    :type obsrvr: str
+    :param dref: Reference frame of direction vector of dvec.
+    :type dref: str
+    :param dvec: Pointing direction vector from the observer.
+    :type dvec: 3-Element Array of Floats.
+    :param crdsys: Name of the coordinate system containing COORD.
+    :type crdsys: str
+    :param coord: Name of the coordinate of interest
+    :type coord: str
+    :param relate: Relational operator.
+    :type relate: str
+    :param refval: Reference value.
+    :type refval: float
+    :param adjust: Absolute extremum adjustment value.
+    :type adjust: float
+    :param step: Step size in seconds for finding angular separation events.
+    :type step: float
+    :param nintvals: Workspace window interval count.
+    :type nintvals: int
+    :param cnfine: SPICE window to which the search is restricted.
+    :type cnfine: SpiceyPy.support_types.SpiceCell
+    :param result: SPICE window containing results.
+    :type result: SpiceyPy.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -4691,10 +4881,12 @@ def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord,
 
 def gfsstp(step):
     """
+    Set the step size to be returned by :func:`gfstep`.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfsstp_c.html
 
-
-    :param step:
+    :param step: Time step to take.
+    :type step: float
     """
     step = ctypes.c_double(step)
     libspice.gfsstp_c(step)
@@ -4703,11 +4895,14 @@ def gfsstp(step):
 
 def gfstep(time):
     """
+    Return the time step set by the most recent call to :func:`gfsstp`.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfstep_c.html
 
-
-    :param time:
-    :return: :rtype:
+    :param time: Ignored ET value.
+    :type time: float
+    :return: Time step to take.
+    :rtype: float
     """
     time = ctypes.c_double(time)
     step = ctypes.c_double()
@@ -4717,10 +4912,12 @@ def gfstep(time):
 
 def gfstol(value):
     """
+    Override the default GF convergence value used in the high level GF routines.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfstol_c.html
 
-
-    :param value:
+    :param value: Double precision value returned or to store.
+    :type value: float
     """
     value = ctypes.c_double(value)
     libspice.gfstol_c(value)
@@ -4731,23 +4928,39 @@ def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate,
            refval, adjust, step, nintvals, cnfine,
            result):
     """
+    Determine time intervals for which a coordinate of an
+    subpoint position vector satisfies a numerical constraint.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfsubc_c.html
 
-
-    :param target:
-    :param fixref:
-    :param method:
-    :param abcorr:
-    :param obsrvr:
-    :param crdsys:
-    :param coord:
-    :param relate:
-    :param refval:
-    :param adjust:
-    :param step:
-    :param nintvals:
-    :param cnfine:
-    :param result:
+    :param target: Name of the target body.
+    :type target: str
+    :param fixref: Body fixed frame associated with the target.
+    :type fixref: str
+    :param method: Name of method type for subpoint calculation.
+    :type method: str
+    :param abcorr: Aberration correction flag
+    :type abcorr: str
+    :param obsrvr: Name of the observing body.
+    :type obsrvr: str
+    :param crdsys: Name of the coordinate system containing COORD.
+    :type crdsys: str
+    :param coord: Name of the coordinate of interest
+    :type coord: str
+    :param relate: Relational operator.
+    :type relate: str
+    :param refval: Reference value.
+    :type refval: float
+    :param adjust: Adjustment value for absolute extrema searches.
+    :type adjust: float
+    :param step: Step size used for locating extrema and roots.
+    :type step: float
+    :param nintvals: Workspace window interval count.
+    :type nintvals: int
+    :param cnfine: SPICE window to which the search is restricted.
+    :type cnfine: SpiceyPy.support_types.SpiceCell
+    :param result: SPICE window containing results.
+    :type result: SpiceyPy.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -4773,16 +4986,28 @@ def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate,
 def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
     #Todo: test gftfov
     """
+    Determine time intervals when a specified ephemeris object
+    intersects the space bounded by the field-of-view (FOV) of a
+    specified instrument.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gftfov_c.html
 
-    :param inst:
-    :param target:
-    :param tshape:
-    :param tframe:
-    :param abcorr:
-    :param obsrvr:
-    :param step:
-    :param cnfine:
+    :param inst: Name of the instrument.
+    :type inst: str
+    :param target: Name of the target body.
+    :type target: str
+    :param tshape: Type of shape model used for target body.
+    :type tshape: str
+    :param tframe: Body-fixed, body-centered frame for target body.
+    :type tframe: str
+    :param abcorr: Aberration correction flag.
+    :type abcorr: str
+    :param obsrvr: Name of the observing body.
+    :type obsrvr: str
+    :param step: Step size in seconds for finding FOV events.
+    :type step: float
+    :param cnfine: SPICE window to which the search is restricted.
+    :type cnfine: SpiceyPy.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -4805,13 +5030,18 @@ def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
 
 def gipool(name, start, room):
     """
+    Return the integer value of a kernel variable from the kernel pool.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gipool_c.html
 
-
-    :param name:
-    :param start:
-    :param room:
-    :return: :rtype:
+    :param name: Name of the variable whose value is to be returned.
+    :type name: str
+    :param start: Which component to start retrieving for name.
+    :type start: int
+    :param room: The largest number of values to return.
+    :type room: int
+    :return: Values associated with name.
+    :rtype: List of Ints or None
     """
     name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
@@ -4829,14 +5059,20 @@ def gipool(name, start, room):
 
 def gnpool(name, start, room, lenout):
     """
+    Return names of kernel variables matching a specified template.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gnpool_c.html
 
-
-    :param name:
-    :param start:
-    :param room:
-    :param lenout:
-    :return: :rtype:
+    :param name: Template that names should match.
+    :type name: str
+    :param start: Index of first matching name to retrieve.
+    :type start: int
+    :param room: The largest number of values to return.
+    :type room: int
+    :param lenout: Length of strings in output array kvars.
+    :type lenout: int
+    :return: Kernel pool variables whose names match name, found.
+    :rtype: tuple
     """
     name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
