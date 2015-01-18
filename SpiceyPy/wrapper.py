@@ -804,7 +804,7 @@ def cklpf(filename):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cklpf_c.html
 
     :param filename: Name of the CK file to be loaded.
-    :type param: str
+    :type filename: str
     :return: Loaded file's handle.
     :rtype: int
     """
@@ -5989,7 +5989,7 @@ def lparsm(inlist, delims, nmax, lenout=None):
     :param inlist: List of items delimited by delims. 
     :type inlist: list of strings
     :param delims: Single characters which delimit items. 
-    :type delim: str
+    :type delims: str
     :param nmax: Maximum number of items to return. 
     :type nmax: int
     :param lenout: Optional Length of strings in item array. 
@@ -6724,7 +6724,7 @@ def mxvg(m1, v2, nrow1, nc1r2):
     :param nrow1: Row dimension of m1 and length of vout. 
     :type nrow1: int
     :param nc1r2: Column dimension of m1 and length of v2. 
-    :type nc1c2: int
+    :type nc1r2: int
     :return: Product vector m1*v2
     :rtype: list[*]
     """
@@ -9568,11 +9568,15 @@ def spkgps(targ, et, ref, obs):
 
 def spklef(filename):
     """
+    Load an ephemeris file for use by the readers.  Return that file's
+    handle, to be used by other SPK routines to refer to the file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spklef_c.html
 
-
-    :param filename:
-    :return: :rtype:
+    :param filename: Name of the file to be loaded.
+    :type filename: str
+    :return: Loaded file's handle.
+    :rtype: int
     """
     filename = stypes.stringToCharP(filename)
     handle = ctypes.c_int()
@@ -9582,15 +9586,26 @@ def spklef(filename):
 
 def spkltc(targ, et, ref, abcorr, stobs):
     """
+    Return the state (position and velocity) of a target body
+    relative to an observer, optionally corrected for light time,
+    expressed relative to an inertial reference frame.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkltc_c.html
 
-
-    :param targ:
-    :param et:
-    :param ref:
-    :param abcorr:
-    :param stobs:
-    :return: :rtype:
+    :param targ: Target body.
+    :type targ: int
+    :param et: Observer epoch.
+    :type et: float
+    :param ref: Inertial reference frame of output state.
+    :type ref: str
+    :param abcorr: Aberration correction flag.
+    :type abcorr: str
+    :param stobs: State of the observer relative to the SSB.
+    :type stobs: 6-Element Array of Floats
+    :return:
+            One way light time between observer and target,
+            Derivative of light time with respect to time
+    :rtype: tuple
     """
     assert len(stobs) == 6
     targ = stypes.c_int(targ)
@@ -9608,11 +9623,14 @@ def spkltc(targ, et, ref, abcorr, stobs):
 
 def spkobj(spk, ids):
     """
+    Find the set of ID codes of all objects in a specified SPK file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkobj_c.html
 
-
-    :param spk:
-    :param ids:
+    :param spk: Name of SPK file.
+    :type spk: str
+    :param ids: Empty SpiceCell
+    :type ids: SpiceyPy.support_types.SpiceCell
     """
     spk = stypes.stringToCharP(spk)
     assert isinstance(ids, stypes.SpiceCell)
@@ -9623,10 +9641,14 @@ def spkobj(spk, ids):
 def spkopa(filename):
     #Todo: test spkopa
     """
+    Open an existing SPK file for subsequent write.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkopa_c.html
 
-    :param filename:
-    :return: :rtype:
+    :param filename: The name of an existing SPK file.
+    :type filename: str
+    :return: A handle attached to the SPK file opened to append.
+    :rtype: int
     """
     filename = stypes.stringToCharP(filename)
     handle = ctypes.c_int()
@@ -9636,13 +9658,18 @@ def spkopa(filename):
 
 def spkopn(filename, ifname, ncomch):
     """
+    Create a new SPK file, returning the handle of the opened file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkopn_c.html
 
-
-    :param filename:
-    :param ifname:
-    :param ncomch:
-    :return: :rtype:
+    :param filename: The name of the new SPK file to be created.
+    :type filename: str
+    :param ifname: The internal filename for the SPK file.
+    :type ifname: str
+    :param ncomch: The number of characters to reserve for comments.
+    :type ncomch: int
+    :return: The handle of the opened SPK file.
+    :rtype: int
     """
     filename = stypes.stringToCharP(filename)
     ifname = stypes.stringToCharP(ifname)
@@ -9655,15 +9682,25 @@ def spkopn(filename, ifname, ncomch):
 def spkpds(body, center, framestr, typenum, first, last):
     #Todo: test spkpds
     """
+    Perform routine error checks and if all check pass, pack the
+    descriptor for an SPK segment
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpds_c.html
 
-    :param body:
-    :param center:
-    :param framestr:
-    :param typenum:
-    :param first:
-    :param last:
-    :return: :rtype:
+    :param body: The NAIF ID code for the body of the segment.
+    :type body: int
+    :param center: The center of motion for body.
+    :type center: int
+    :param framestr: The frame for this segment.
+    :type framestr: str
+    :param typenum: The type of SPK segment to create.
+    :type typenum: int
+    :param first: The first epoch for which the segment is valid.
+    :type first: float
+    :param last: The last  epoch for which the segment is valid.
+    :type last: float
+    :return: An SPK segment descriptor.
+    :rtype: 5-Element Array of Floats
     """
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
@@ -9678,14 +9715,26 @@ def spkpds(body, center, framestr, typenum, first, last):
 
 def spkpos(targ, et, ref, abcorr, obs):
     """
+    Return the position of a target body relative to an observing
+    body, optionally corrected for light time (planetary aberration)
+    and stellar aberration.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpos_c.html
 
-    :param targ:
-    :param et:
-    :param ref:
-    :param abcorr:
-    :param obs:
-    :return: :rtype:
+    :param targ: Target body name.
+    :type targ: str
+    :param et: Observer epoch.
+    :type et: float or List of Floats
+    :param ref: Reference frame of output position vector.
+    :type ref: str
+    :param abcorr: Aberration correction flag.
+    :type abcorr: str
+    :param obs: Observing body name.
+    :type obs: str
+    :return:
+            Position of target,
+            One way light time between observer and target.
+    :rtype: tuple
     """
     if hasattr(et, "__iter__"):
         vlen = len(et)
@@ -9707,12 +9756,23 @@ def spkpos(targ, et, ref, abcorr, obs):
 
 def spkpvn(handle, descr, et):
     """
+    For a specified SPK segment and time, return the state (position and
+    velocity) of the segment's target body relative to its center of
+    motion.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpvn_c.html
 
-    :param handle:
-    :param descr:
-    :param et:
-    :return: :rtype:
+    :param handle: File handle.
+    :type handle: int
+    :param descr: Segment descriptor.
+    :type descr: 5-Element Array of Floats.
+    :param et: Evaluation epoch.
+    :type et: float
+    :return:
+            Segment reference frame ID code,
+            Output state vector,
+            Center of state.
+    :rtype: tuple
     """
     handle = ctypes.c_int(handle)
     descr = stypes.toDoubleVector(descr)
@@ -9728,12 +9788,23 @@ def spkpvn(handle, descr, et):
 def spksfs(body, et, idlen):
     # spksfs has a Parameter SIDLEN, sounds like an optional but is that possible?
     """
+    Search through loaded SPK files to find the highest-priority segment
+    applicable to the body and time specified.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spksfs_c.html
 
-    :param body:
-    :param et:
-    :param idlen:
-    :return: :rtype:
+    :param body: Body ID.
+    :type body: int
+    :param et: Ephemeris time.
+    :type et: float
+    :param idlen: Length of output segment ID string.
+    :type idlen: int
+    :return:
+            Handle of file containing the applicable segment,
+            Descriptor of the applicable segment,
+            Identifier of the applicable segment,
+            Indicates whether or not a segment was found.
+    :rtype: tuple
     """
     body = ctypes.c_int(body)
     et = ctypes.c_double(et)
@@ -9754,12 +9825,19 @@ def spksfs(body, et, idlen):
 def spkssb(targ, et, ref):
     #Todo: test spkssb
     """
+    Return the state (position and velocity) of a target body
+    relative to the solar system barycenter.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkssb_c.html
 
-    :param targ:
-    :param et:
-    :param ref:
-    :return: :rtype:
+    :param targ: Target body.
+    :type targ: int
+    :param et: Target epoch.
+    :type et: float
+    :param ref: Target reference frame.
+    :type ref: str
+    :return: State of target.
+    :rtype: 6-Element Array of Floats.
     """
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
@@ -9772,14 +9850,23 @@ def spkssb(targ, et, ref):
 def spksub(handle, descr, identin, begin, end, newh):
     #Todo: test spksub
     """
+    Extract a subset of the data in an SPK segment into a
+    separate segment.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spksub_c.html
 
-    :param handle:
-    :param descr:
-    :param identin:
-    :param begin:
-    :param end:
-    :param newh:
+    :param handle: Handle of source segment.
+    :type handle: int
+    :param descr: Descriptor of source segment.
+    :type descr: 5-Element Array of Floats
+    :param identin: Indentifier of source segment.
+    :type identin: str
+    :param begin: Beginning (initial epoch) of subset.
+    :type begin: int
+    :param end: End (fincal epoch) of subset.
+    :type end: int
+    :param newh: Handle of new segment.
+    :type newh: int
     """
     assert len(descr) is 5
     handle = ctypes.c_int(handle)
@@ -9795,10 +9882,22 @@ def spksub(handle, descr, identin, begin, end, newh):
 def spkuds(descr):
     #Todo: test spkuds
     """
+    Unpack the contents of an SPK segment descriptor.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkuds_c.html
 
-    :param descr:
-    :return: :rtype:
+    :param descr: An SPK segment descriptor.
+    :type descr: 5-Element Array of Floats.
+    :return:
+            The NAIF ID code for the body of the segment,
+            The center of motion for body,
+            The ID code for the frame of this segment,
+            The type of SPK segment,
+            The first epoch for which the segment is valid,
+            The last  epoch for which the segment is valid,
+            Beginning DAF address of the segment,
+            Ending DAF address of the segment.
+    :rtype: tuple
     """
     assert len(descr) is 5
     descr = stypes.toDoubleVector(descr)
@@ -9820,9 +9919,13 @@ def spkuds(descr):
 def spkuef(handle):
     #Todo: test spkuef
     """
+    Unload an ephemeris file so that it will no longer be searched by
+    the readers.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkuef_c.html
 
-    :param handle:
+    :param handle: Handle of file to be unloaded
+    :type handle: int
     """
     handle = ctypes.c_int(handle)
     libspice.spkuef_c(handle)
@@ -9832,21 +9935,34 @@ def spkuef(handle):
 def spkw02(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
            cdata, btime):
     """
+    Write a type 2 segment to an SPK file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw02_c.html
 
-
-    :param handle:
-    :param body:
-    :param center:
-    :param inframe:
-    :param first:
-    :param last:
-    :param segid:
-    :param intlen:
-    :param n:
-    :param polydg:
-    :param cdata:
-    :param btime:
+    :param handle: Handle of an SPK file open for writing.
+    :type handle: int
+    :param body: Body code for ephemeris object.
+    :type body: int
+    :param center: Body code for the center of motion of the body.
+    :type center: int
+    :param inframe: The reference frame of the states.
+    :type inframe: str
+    :param first: First valid time for which states can be computed.
+    :type first: float
+    :param last: Last valid time for which states can be computed.
+    :type last: float
+    :param segid: Segment identifier.
+    :type segid: str
+    :param intlen: Length of time covered by logical record.
+    :type intlen: float
+    :param n: Number of coefficient sets.
+    :type n: int
+    :param polydg: Chebyshev polynomial degree.
+    :type polydg: int
+    :param cdata: Array of Chebyshev coefficients.
+    :type cdata: N-Element Array of Floats.
+    :param btime: Begin time of first logical record.
+    :type btime: float
     """
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
@@ -9868,21 +9984,34 @@ def spkw02(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
 def spkw03(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
            cdata, btime):
     """
+    Write a type 3 segment to an SPK file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw03_c.html
 
-
-    :param handle:
-    :param body:
-    :param center:
-    :param inframe:
-    :param first:
-    :param last:
-    :param segid:
-    :param intlen:
-    :param n:
-    :param polydg:
-    :param cdata:
-    :param btime:
+    :param handle: Handle of SPK file open for writing.
+    :type handle: int
+    :param body: NAIF code for ephemeris object.
+    :type body: int
+    :param center: NAIF code for the center of motion of the body.
+    :type center: int
+    :param inframe: Reference frame name.
+    :type inframe: str
+    :param first: Start time of interval covered by segment.
+    :type first: float
+    :param last: End time of interval covered by segment.
+    :type last: float
+    :param segid: Segment identifier.
+    :type segid: str
+    :param intlen: Length of time covered by record.
+    :type intlen: float
+    :param n: Number of records in segment.
+    :type n: int
+    :param polydg: Chebyshev polynomial degree.
+    :type polydg: int
+    :param cdata: Array of Chebyshev coefficients.
+    :type cdata: N-Element Array of Floats
+    :param btime: Begin time of first record.
+    :type btime: float
     """
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
@@ -9905,19 +10034,34 @@ def spkw05(handle, body, center, inframe, first, last, segid, gm, n, states,
            epochs):
     # see libspice args for solution to array[][N] problem
     """
+    Write an SPK segment of type 5 given a time-ordered set of
+    discrete states and epochs, and the gravitational parameter
+    of a central body.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw05_c.html
 
-    :param handle:
-    :param body:
-    :param center:
-    :param inframe:
-    :param first:
-    :param last:
-    :param segid:
-    :param gm:
-    :param n:
-    :param states:
-    :param epochs:
+    :param handle: Handle of an SPK file open for writing.
+    :type handle: int
+    :param body: Body code for ephemeris object.
+    :type body: int
+    :param center: Body code for the center of motion of the body.
+    :type center: int
+    :param inframe: The reference frame of the states.
+    :type inframe: str
+    :param first: First valid time for which states can be computed.
+    :type first: float
+    :param last: Last valid time for which states can be computed.
+    :type last: float
+    :param segid: Segment identifier.
+    :type segid: str
+    :param gm: Gravitational parameter of central body.
+    :type gm: float
+    :param n: Number of states and epochs.
+    :type n: int
+    :param states: States.
+    :type states: Nx6-Element Array of Floats.
+    :param epochs: Epochs.
+    :type epochs: N-Element Array of Floats.
     """
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
@@ -9939,20 +10083,34 @@ def spkw08(handle, body, center, inframe, first, last, segid, degree, n, states,
            epoch1, step):
     # see libspice args for solution to array[][N] problem
     """
+    Write a type 8 segment to an SPK file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw08_c.html
 
-    :param handle:
-    :param body:
-    :param center:
-    :param inframe:
-    :param first:
-    :param last:
-    :param segid:
-    :param degree:
-    :param n:
-    :param states:
-    :param epoch1:
-    :param step:
+    :param handle: Handle of an SPK file open for writing.
+    :type handle: int
+    :param body: NAIF code for an ephemeris object.
+    :type body: int
+    :param center: NAIF code for center of motion of "body".
+    :type center: int
+    :param inframe: Reference frame name.
+    :type inframe: str
+    :param first: Start time of interval covered by segment.
+    :type first: float
+    :param last: End time of interval covered by segment.
+    :type last: float
+    :param segid: Segment identifier.
+    :type segid: str
+    :param degree: Degree of interpolating polynomials.
+    :type degree: int
+    :param n: Number of states.
+    :type n: int
+    :param states: Array of states.
+    :type states: Nx6-Element Array of Floats.
+    :param epoch1: Epoch of first state in states array.
+    :type epoch1: float
+    :param step: Time step separating epochs of states.
+    :type step: float
     """
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
@@ -9974,20 +10132,32 @@ def spkw08(handle, body, center, inframe, first, last, segid, degree, n, states,
 def spkw09(handle, body, center, inframe, first, last, segid, degree, n, states,
            epochs):
     """
+    Write a type 9 segment to an SPK file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw09_c.html
 
-
-    :param handle:
-    :param body:
-    :param center:
-    :param inframe:
-    :param first:
-    :param last:
-    :param segid:
-    :param degree:
-    :param n:
-    :param states:
-    :param epochs:
+    :param handle: Handle of an SPK file open for writing.
+    :type handle: int
+    :param body: NAIF code for an ephemeris object.
+    :type body: int
+    :param center: NAIF code for center of motion of "body".
+    :type center: int
+    :param inframe: Reference frame name.
+    :type inframe: str
+    :param first: Start time of interval covered by segment.
+    :type first: float
+    :param last: End time of interval covered by segment.
+    :type last: float
+    :param segid: Segment identifier.
+    :type segid: str
+    :param degree: Degree of interpolating polynomials.
+    :type degree: int
+    :param n: Number of states.
+    :type n: int
+    :param states: Array of states.
+    :type states: Nx6-Element Array of Floats.
+    :param epochs: Array of epochs corresponding to states.
+    :type epochs: N-Element Array of Floats.
     """
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
@@ -10008,20 +10178,33 @@ def spkw09(handle, body, center, inframe, first, last, segid, degree, n, states,
 def spkw10(handle, body, center, inframe, first, last, segid, consts, n, elems,
            epochs):
     """
+    Write an SPK type 10 segment to the DAF open and attached to
+    the input handle.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw10_c.html
 
-
-    :param handle:
-    :param body:
-    :param center:
-    :param inframe:
-    :param first:
-    :param last:
-    :param segid:
-    :param consts:
-    :param n:
-    :param elems:
-    :param epochs:
+    :param handle: The handle of a DAF file open for writing.
+    :type handle: int
+    :param body: The NAIF ID code for the body of the segment.
+    :type body: int
+    :param center: The center of motion for body.
+    :type center: int
+    :param inframe: The reference frame for this segment.
+    :type inframe: str
+    :param first: The first epoch for which the segment is valid.
+    :type first: float
+    :param last: The last  epoch for which the segment is valid.
+    :type last: float
+    :param segid: The string to use for segment identifier.
+    :type segid: str
+    :param consts: The array of geophysical constants for the segment.
+    :type consts: 8-Element Array of Floats
+    :param n: The number of element/epoch pairs to be stored.
+    :type n: int
+    :param elems: The collection of "two-line" element sets.
+    :type elems: N-Element Array of Floats.
+    :param epochs: The epochs associated with the element sets.
+    :type epochs: N-Element Array of Floats.
     """
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
@@ -10042,21 +10225,34 @@ def spkw10(handle, body, center, inframe, first, last, segid, consts, n, elems,
 def spkw12(handle, body, center, inframe, first, last, segid, degree, n, states,
            epoch0, step):
     """
+    Write a type 12 segment to an SPK file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw12_c.html
 
-
-    :param handle:
-    :param body:
-    :param center:
-    :param inframe:
-    :param first:
-    :param last:
-    :param segid:
-    :param degree:
-    :param n:
-    :param states:
-    :param epoch0:
-    :param step:
+    :param handle: Handle of an SPK file open for writing.
+    :type handle: int
+    :param body: NAIF code for an ephemeris object.
+    :type body: int
+    :param center: NAIF code for center of motion of body.
+    :type center: int
+    :param inframe: Reference frame name.
+    :type inframe: str
+    :param first: Start time of interval covered by segment.
+    :type first: float
+    :param last: End time of interval covered by segment.
+    :type last: float
+    :param segid: Segment identifier.
+    :type segid: str
+    :param degree: Degree of interpolating polynomials.
+    :type degree: int
+    :param n: Number of states.
+    :type n: int
+    :param states: Array of states.
+    :type states: Nx6-Element Array of Floats.
+    :param epoch0: Epoch of first state in states array.
+    :type epoch0: float
+    :param step: Time step separating epochs of states.
+    :type step: float
     """
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
@@ -10078,20 +10274,32 @@ def spkw12(handle, body, center, inframe, first, last, segid, degree, n, states,
 def spkw13(handle, body, center, inframe, first, last, segid, degree, n, states,
            epochs):
     """
+    Write a type 13 segment to an SPK file.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw13_c.html
 
-
-    :param handle:
-    :param body:
-    :param center:
-    :param inframe:
-    :param first:
-    :param last:
-    :param segid:
-    :param degree:
-    :param n:
-    :param states:
-    :param epochs:
+    :param handle: Handle of an SPK file open for writing.
+    :type handle: int
+    :param body: NAIF code for an ephemeris object.
+    :type body: int
+    :param center: NAIF code for center of motion of body.
+    :type center: int
+    :param inframe: Reference frame name.
+    :type inframe: str
+    :param first: Start time of interval covered by segment.
+    :type first: float
+    :param last: End time of interval covered by segment.
+    :type last: float
+    :param segid: Segment identifier.
+    :type segid: str
+    :param degree: Degree of interpolating polynomials.
+    :type degree: int
+    :param n: Number of states.
+    :type n: int
+    :param states: Array of states.
+    :type states: Nx6-Element Array of Floats.
+    :param epochs: Array of epochs corresponding to states.
+    :type epochs: N-Element Array of Floats.
     """
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
@@ -10113,25 +10321,44 @@ def spkw15(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p,
            ecc, j2flg, pv, gm, j2, radius):
     #Todo: test spkw15
     """
+    Write an SPK segment of type 15 given a type 15 data record.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw15_c.html
 
-    :param handle:
-    :param body:
-    :param center:
-    :param inframe:
-    :param first:
-    :param last:
-    :param segid:
-    :param epoch:
-    :param tp:
-    :param pa:
-    :param p:
-    :param ecc:
-    :param j2flg:
-    :param pv:
-    :param gm:
-    :param j2:
-    :param radius:
+    :param handle: Handle of an SPK file open for writing.
+    :type handle: int
+    :param body: Body code for ephemeris object.
+    :type body: int
+    :param center: Body code for the center of motion of the body.
+    :type center: int
+    :param inframe: The reference frame of the states.
+    :type inframe: str
+    :param first: First valid time for which states can be computed.
+    :type first: float
+    :param last: Last valid time for which states can be computed.
+    :type last: float
+    :param segid: Segment identifier.
+    :type segid: str
+    :param epoch: Epoch of the periapse.
+    :type epoch: float
+    :param tp: Trajectory pole vector.
+    :type tp: 3-Element Array of Floats.
+    :param pa: Periapsis vector.
+    :type pa: 3-Element Array of Floats
+    :param p: Semi-latus rectum.
+    :type p: float
+    :param ecc: Eccentricity.
+    :type ecc: float
+    :param j2flg: J2 processing flag.
+    :type j2flg: float
+    :param pv: Central body pole vector.
+    :type pv: float
+    :param gm: Central body GM.
+    :type gm: float
+    :param j2: Central body J2.
+    :type j2: float
+    :param radius: Equatorial radius of central body.
+    :type radius: float
     """
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
@@ -10159,19 +10386,32 @@ def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel,
            rapol, decpol):
     #Todo: test spkw17
     """
+    Write an SPK segment of type 17 given a type 17 data record.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw17_c.html
 
-    :param handle:
-    :param body:
-    :param center:
-    :param inframe:
-    :param first:
-    :param last:
-    :param segid:
-    :param epoch:
-    :param eqel:
-    :param rapol:
-    :param decpol:
+    :param handle: Handle of an SPK file open for writing.
+    :type handle: int
+    :param body: Body code for ephemeris object.
+    :type body: int
+    :param center: Body code for the center of motion of the body.
+    :type center: int
+    :param inframe: The reference frame of the states.
+    :type inframe: str
+    :param first: First valid time for which states can be computed.
+    :type first: float
+    :param last: Last valid time for which states can be computed.
+    :type last: float
+    :param segid: Segment identifier.
+    :type segid: str
+    :param epoch: Epoch of elements in seconds past J2000.
+    :type epoch: float
+    :param eqel: Array of equinoctial elements.
+    :type eqel: 9-Element Array of Floats.
+    :param rapol: Right Ascension of the pole of the reference plane.
+    :type rapol: float
+    :param decpol: Declination of the pole of the reference plane.
+    :type decpol: float
     """
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
@@ -10192,15 +10432,24 @@ def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel,
 #spkw18
 
 
+#spkw20
+
+
 def srfrec(body, longitude, latitude):
     """
+    Convert planetocentric latitude and longitude of a surface
+    point on a specified body to rectangular coordinates.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfrec_c.html
 
-
-    :param body:
-    :param longitude:
-    :param latitude:
-    :return: :rtype:
+    :param body: NAIF integer code of an extended body.
+    :type body: int
+    :param longitude: Longitude of point in radians.
+    :type longitude: float
+    :param latitude: Latitude of point in radians.
+    :type latitude: float
+    :return: Rectangular coordinates of the point.
+    :rtype: 3-Element Array of Floats
     """
     if hasattr(longitude, "__iter__") and hasattr(latitude, "__iter__"):
         return numpy.array(
@@ -10215,17 +10464,37 @@ def srfrec(body, longitude, latitude):
 
 def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
     """
+    Deprecated: This routine has been superseded by the CSPICE
+    routine :func:`sincpt`. This routine is supported for purposes of
+    backward compatibility only.
+
+    Given an observer and a direction vector defining a ray, compute the
+    surface intercept point of the ray on a target body at a specified
+    epoch, optionally corrected for light time and stellar aberration.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfxpt_c.html
 
-
-    :param method:
-    :param target:
-    :param et:
-    :param abcorr:
-    :param obsrvr:
-    :param dref:
-    :param dvec:
-    :return: :rtype:
+    :param method: Computation method.
+    :type method: str
+    :param target: Name of target body.
+    :type target: str
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :type et: float
+    :param abcorr: Aberration correction.
+    :type abcorr: str
+    :param obsrvr: Name of observing body.
+    :type obsrvr: str
+    :param dref: Reference frame of input direction vector.
+    :type dref: str
+    :param dvec: Ray's direction vector.
+    :type dvec: 3-Element Array of Floats.
+    :return:
+            Surface intercept point on the target body,
+            Distance from the observer to the intercept point,
+            Intercept epoch,
+            Observer position relative to target center,
+            Flag indicating whether intercept was found.
+    :rtype: tuple
     """
     if hasattr(et, "__iter__"):
         return numpy.array(
@@ -10252,12 +10521,16 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
 
 def ssize(newsize, cell):
     """
+    Set the size (maximum cardinality) of a CSPICE cell of any data type.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ssize_c.html
 
-
-    :param newsize:
-    :param cell:
-    :return: :rtype:
+    :param newsize: Size (maximum cardinality) of the cell.
+    :type newsize: int
+    :param cell: The cell.
+    :type cell: SpiceyPy.support_types.SpiceCell
+    :return: The updated cell.
+    :rtype: SpiceyPy.support_types.SpiceCell
     """
     assert isinstance(cell, stypes.SpiceCell)
     newsize = ctypes.c_int(newsize)
@@ -10267,12 +10540,21 @@ def ssize(newsize, cell):
 
 def stelab(pobj, vobs):
     """
+    Correct the apparent position of an object for stellar
+    aberration.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/stelab_c.html
 
-
-    :param pobj:
+    :param pobj: Position of an object with respect to the observer.
+    :type pobj: 3-Element Array of Floats.
     :param vobs:
-    :return: :rtype:
+                Velocity of the observer with respect
+                to the Solar System barycenter.
+    :type vobs: 3-Element Array of Floats.
+    :return:
+            Apparent position of the object with respect to
+            the observer, corrected for stellar aberration.
+    :rtype: 3-Element Array of Floats.
     """
     pobj = stypes.toDoubleVector(pobj)
     vobs = stypes.toDoubleVector(vobs)
@@ -10283,14 +10565,25 @@ def stelab(pobj, vobs):
 
 def stpool(item, nth, contin, lenout):
     """
+    Retrieve the nth string from the kernel pool variable, where the
+    string may be continued across several components of the kernel pool
+    variable.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/stpool_c.html
 
-
-    :param item:
-    :param nth:
-    :param contin:
-    :param lenout:
-    :return: :rtype:
+    :param item: Name of the kernel pool variable.
+    :type item: str
+    :param nth: Index of the full string to retrieve.
+    :type nth: int
+    :param contin: Character sequence used to indicate continuation.
+    :type contin: str
+    :param lenout: Available space in output string.
+    :type lenout: int
+    :return:
+            A full string concatenated across continuations,
+            The number of characters in the full string value,
+            Flag indicating success or failure of request.
+    :rtype: tuple
     """
     item = stypes.stringToCharP(item)
     contin = stypes.stringToCharP(contin)
@@ -10306,11 +10599,16 @@ def stpool(item, nth, contin, lenout):
 
 def str2et(time):
     """
+    Convert a string representing an epoch to a double precision
+    value representing the number of TDB seconds past the J2000
+    epoch corresponding to the input epoch.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/str2et_c.html
 
-
-    :param time:
-    :return: :rtype:
+    :param time: A string representing an epoch.
+    :type time: str
+    :return: The equivalent value in seconds past J2000, TDB.
+    :rtype: float
     """
     if isinstance(time, list):
         return numpy.array([str2et(t) for t in time])
@@ -10322,16 +10620,31 @@ def str2et(time):
 
 def subpnt(method, target, et, fixref, abcorr, obsrvr):
     """
+    Compute the rectangular coordinates of the sub-observer point on
+    a target body at a specified epoch, optionally corrected for
+    light time and stellar aberration.
+
+    This routine supersedes :func:`subpt`.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subpnt_c.html
 
-
-    :param method:
-    :param target:
-    :param et:
-    :param fixref:
-    :param abcorr:
-    :param obsrvr:
-    :return: :rtype:
+    :param method: Computation method.
+    :type method: str
+    :param target: Name of target body.
+    :type target: str
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :type et: float
+    :param fixref: Body-fixed, body-centered target body frame.
+    :type fixref: str
+    :param abcorr: Aberration correction.
+    :type abcorr: str
+    :param obsrvr: Name of observing body.
+    :type obsrvr: str
+    :return:
+            Sub-observer point on the target body,
+            Sub-observer point epoch,
+            Vector from observer to sub-observer point.
+    :rtype: tuple
     """
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
@@ -10350,15 +10663,33 @@ def subpnt(method, target, et, fixref, abcorr, obsrvr):
 
 def subpt(method, target, et, abcorr, obsrvr):
     """
+    Deprecated: This routine has been superseded by the CSPICE
+    routine :func:`subpnt`. This routine is supported for purposes of
+    backward compatibility only.
+
+    Compute the rectangular coordinates of the sub-observer point on
+    a target body at a particular epoch, optionally corrected for
+    planetary (light time) and stellar aberration.  Return these
+    coordinates expressed in the body-fixed frame associated with the
+    target body.  Also, return the observer's altitude above the
+    target body.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subpt_c.html
 
-
-    :param method:
-    :param target:
-    :param et:
-    :param abcorr:
-    :param obsrvr:
-    :return: :rtype:
+    :param method: Computation method.
+    :type method: str
+    :param target: Name of target body.
+    :type target: str
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :type et: float or N-Elment Array of Floats.
+    :param abcorr: Aberration correction.
+    :type abcorr: str
+    :param obsrvr: Name of observing body.
+    :type obsrvr: str
+    :return:
+            Sub-observer point on the target body,
+            Altitude of the observer above the target body.
+    :rtype: tuple
     """
     if hasattr(et, "__iter__"):
         return numpy.array(
@@ -10377,16 +10708,31 @@ def subpt(method, target, et, abcorr, obsrvr):
 
 def subslr(method, target, et, fixref, abcorr, obsrvr):
     """
+    Compute the rectangular coordinates of the sub-solar point on
+    a target body at a specified epoch, optionally corrected for
+    light time and stellar aberration.
+
+    This routine supersedes subsol_c.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subslr_c.html
 
-
-    :param method:
-    :param target:
-    :param et:
-    :param fixref:
-    :param abcorr:
-    :param obsrvr:
-    :return: :rtype:
+    :param method: Computation method.
+    :type method: str
+    :param target: Name of target body.
+    :type target: str
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :type et: float
+    :param fixref: Body-fixed, body-centered target body frame.
+    :type fixref: str
+    :param abcorr: Aberration correction.
+    :type abcorr: str
+    :param obsrvr: Name of observing body.
+    :type obsrvr: str
+    :return:
+            Sub-solar point on the target body,
+            Sub-solar point epoch,
+            Vector from observer to sub-solar point.
+    :rtype: tuple
     """
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
@@ -10405,15 +10751,29 @@ def subslr(method, target, et, fixref, abcorr, obsrvr):
 
 def subsol(method, target, et, abcorr, obsrvr):
     """
+    Deprecated: This routine has been superseded by the CSPICE
+    routine :func:`subslr`. This routine is supported for purposes of
+    backward compatibility only.
+
+    Determine the coordinates of the sub-solar point on a target
+    body as seen by a specified observer at a specified epoch,
+    optionally corrected for planetary (light time) and stellar
+    aberration.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subsol_c.html
 
-
-    :param method:
-    :param target:
-    :param et:
-    :param abcorr:
-    :param obsrvr:
-    :return: :rtype:
+    :param method: Computation method.
+    :type method: str
+    :param target: Name of target body.
+    :type target: str
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :type et: float
+    :param abcorr: Aberration correction.
+    :type abcorr: str
+    :param obsrvr: Name of observing body.
+    :type obsrvr: str
+    :return: Sub-solar point on the target body.
+    :rtype: 3-Element Array of Floats.
     """
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
@@ -10427,11 +10787,14 @@ def subsol(method, target, et, abcorr, obsrvr):
 
 def sumad(array):
     """
+    Return the sum of the elements of a double precision array.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sumad_c.html
 
-
-    :param array:
-    :return: :rtype:
+    :param array: Input Array.
+    :type array: N-Element Array of Floats.
+    :return: The sum of the array.
+    :rtype: float
     """
     n = ctypes.c_int(len(array))
     array = stypes.toDoubleVector(array)
@@ -10440,11 +10803,14 @@ def sumad(array):
 
 def sumai(array):
     """
+    Return the sum of the elements of an integer array.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sumai_c.html
 
-
-    :param array:
-    :return: :rtype:
+    :param array: Input Array.
+    :type array: N-Element Array of Ints.
+    :return: The sum of the array.
+    :rtype: int
     """
     n = ctypes.c_int(len(array))
     array = stypes.toIntVector(array)
@@ -10453,14 +10819,21 @@ def sumai(array):
 
 def surfnm(a, b, c, point):
     """
+    This routine computes the outward-pointing, unit normal vector
+    from a point on the surface of an ellipsoid.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/surfnm_c.html
 
-
-    :param a:
-    :param b:
-    :param c:
-    :param point:
-    :return: :rtype:
+    :param a: Length of the ellisoid semi-axis along the x-axis.
+    :type a: float
+    :param b: Length of the ellisoid semi-axis along the y-axis.
+    :type b: float
+    :param c: Length of the ellisoid semi-axis along the z-axis.
+    :type c: float
+    :param point: Body-fixed coordinates of a point on the ellipsoid'
+    :type point: 3-Element Array of Floats.
+    :return: Outward pointing unit normal to ellipsoid at point.
+    :rtype: 3-Element Array of Floats.
     """
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
@@ -10473,15 +10846,23 @@ def surfnm(a, b, c, point):
 
 def surfpt(positn, u, a, b, c):
     """
+    Determine the intersection of a line-of-sight vector with the
+    surface of an ellipsoid.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/surfpt_c.html
 
-
-    :param positn:
-    :param u:
-    :param a:
-    :param b:
-    :param c:
-    :return: :rtype:
+    :param positn: Position of the observer in body-fixed frame.
+    :type positn: 3-Element Array of Floats.
+    :param u: Vector from the observer in some direction.
+    :type u: 3-Element Array of Floats.
+    :param a: Length of the ellisoid semi-axis along the x-axis.
+    :type a: float
+    :param b: Length of the ellisoid semi-axis along the y-axis.
+    :type b: float
+    :param c: Length of the ellisoid semi-axis along the z-axis.
+    :type c: float
+    :return: Point on the ellipsoid pointed to by u.
+    :rtype: 3-Element Array of Floats or None
     """
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
@@ -10499,15 +10880,25 @@ def surfpt(positn, u, a, b, c):
 
 def surfpv(stvrtx, stdir, a, b, c):
     """
+    Find the state (position and velocity) of the surface intercept
+    defined by a specified ray, ray velocity, and ellipsoid.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/surfpv_c.html
 
-
-    :param stvrtx:
-    :param stdir:
-    :param a:
-    :param b:
-    :param c:
-    :return: :rtype:
+    :param stvrtx: State of ray's vertex.
+    :type stvrtx: 6-Element Array of Floats.
+    :param stdir: State of ray's direction vector.
+    :type stdir: 6-Element Array of Floats.
+    :param a: Length of the ellisoid semi-axis along the x-axis.
+    :type a: float
+    :param b: Length of the ellisoid semi-axis along the y-axis.
+    :type b: float
+    :param c: Length of the ellisoid semi-axis along the z-axis.
+    :type c: float
+    :return:
+            State of surface intercept,
+            Flag indicating whether intercept state was found.
+    :rtype: tuple
     """
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
@@ -10523,12 +10914,19 @@ def surfpv(stvrtx, stdir, a, b, c):
 def swpool(agent, nnames, lenvals, names):
     #Todo: test swpool
     """
+    Add a name to the list of agents to notify whenever a member of
+    a list of kernel variables is updated.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/swpool_c.html
 
-    :param agent:
-    :param nnames:
-    :param lenvals:
-    :param names:
+    :param agent: The name of an agent to be notified after updates.
+    :type agent: str
+    :param nnames: The number of variables to associate with agent.
+    :type nnames: int
+    :param lenvals: Length of strings in the names array.
+    :type lenvals: int
+    :param names: Variable names whose update causes the notice.
+    :type names: List of strs.
     """
     agent = stypes.stringToCharP(agent)
     nnames = ctypes.c_int(nnames)
@@ -10540,13 +10938,20 @@ def swpool(agent, nnames, lenvals, names):
 
 def sxform(instring, tostring, et):
     """
+    Return the state transformation matrix from one frame to
+    another at a specified epoch.
+
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sxform_c.html
 
 
-    :param instring:
-    :param tostring:
-    :param et:
-    :return: :rtype:
+    :param instring: Name of the frame to transform from.
+    :type instring: str
+    :param tostring: Name of the frame to transform to.
+    :type tostring: str
+    :param et: Epoch of the state transformation matrix.
+    :type et: float
+    :return: A state transformation matrix.
+    :rtype: 6x6-Element Array of Floats.
     """
     if hasattr(et, "__iter__"):
         return numpy.array([sxform(instring, tostring, t) for t in et])
@@ -11513,7 +11918,7 @@ def vprjp(vin, plane):
     :param vin: The projected vector. 
     :type vin: list[3]
     :param plane: Plane containing vin. 
-    :type projpl: support_types.Plane
+    :type plane: SpiceyPy.support_types.Plane
     :return: Vector resulting from projection.
     :rtype: list[3]
     """
