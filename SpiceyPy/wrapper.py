@@ -186,18 +186,17 @@ def bodc2n(code, lenout):
     :type code: int
     :param lenout: Maximum length of output name.
     :type lenout: int
-    :return: If found A common name for the body identified by code. Else None
-    :rtype: str or None
+    :return:
+            A common name for the body identified by code,
+            Found flag.
+    :rtype: tuple
     """
     code = ctypes.c_int(code)
     name = stypes.stringToCharP(" " * lenout)
     lenout = ctypes.c_int(lenout)
     found = ctypes.c_bool()
     libspice.bodc2n_c(code, lenout, name, ctypes.byref(found))
-    if found.value:
-        return stypes.toPythonString(name)
-    else:
-        return None
+    return stypes.toPythonString(name), found.value
 
 
 def bodc2s(code, lenout):
@@ -268,17 +267,16 @@ def bodn2c(name):
 
     :param name: Body name to be translated into a SPICE ID code.
     :type name: str
-    :return: SPICE integer ID code for the named body.
-    :rtype: int
+    :return:
+            SPICE integer ID code for the named body,
+            Found Flag.
+    :rtype: tuple
     """
     name = stypes.stringToCharP(name)
     code = ctypes.c_int(0)
     found = ctypes.c_bool(0)
     libspice.bodn2c_c(name, ctypes.byref(code), ctypes.byref(found))
-    if found.value:
-        return code.value
-    else:
-        return None
+    return  code.value, found.value
 
 
 def bods2c(name):
@@ -289,17 +287,16 @@ def bods2c(name):
 
     :param name: String to be translated to an ID code. 
     :type name: str
-    :return: Integer ID code corresponding to name.
-    :rtype: int
+    :return:
+            Integer ID code corresponding to name,
+            Found Flag.
+    :rtype: tuple
     """
     name = stypes.stringToCharP(name)
     code = ctypes.c_int(0)
     found = ctypes.c_bool(0)
     libspice.bods2c_c(name, ctypes.byref(code), ctypes.byref(found))
-    if found.value:
-        return code.value
-    else:
-        return None
+    return code.value, found.value
 
 
 def bodvar(body, item, dim):
@@ -592,8 +589,12 @@ def ccifrm(frclss, clssid, lenout):
     :type clssid: int
     :param lenout: Maximum length of output string.
     :type lenout: int
-    :return: the frame name, frame ID, and center.
-    :rtype: tuple or None
+    :return:
+            the frame name,
+            frame ID,
+            center,
+            and found.
+    :rtype: tuple
     """
     frclss = ctypes.c_int(frclss)
     clssid = ctypes.c_int(clssid)
@@ -604,10 +605,7 @@ def ccifrm(frclss, clssid, lenout):
     found = ctypes.c_bool()
     libspice.ccifrm_c(frclss, clssid, lenout, ctypes.byref(frcode), frname,
                       ctypes.byref(center), ctypes.byref(found))
-    if found.value:
-        return frcode.value, stypes.toPythonString(frname), center.value,
-    else:
-        return None
+    return frcode.value, stypes.toPythonString(frname), center.value, found.value
 
 
 def cgv2el(center, vec1, vec2):
@@ -671,8 +669,11 @@ def cidfrm(cent, lenout):
     :type cent: int
     :param lenout: Available space in output string frname.
     :type lenout: int
-    :return: frame ID code and name to associate with a frame center.
-    :rtype: tuple or None
+    :return:
+            frame ID code,
+            name to associate with a frame center,
+            Found Flag.
+    :rtype: tuple
     """
     cent = ctypes.c_int(cent)
     lenout = ctypes.c_int(lenout)
@@ -681,10 +682,7 @@ def cidfrm(cent, lenout):
     found = ctypes.c_bool()
     libspice.cidfrm_c(cent, lenout, ctypes.byref(frcode), frname,
                       ctypes.byref(found))
-    if found.value:
-        return frcode.value, stypes.toPythonString(frname)
-    else:
-        return None
+    return frcode.value, stypes.toPythonString(frname), found.value
 
 
 def ckcls(handle):
@@ -1107,8 +1105,9 @@ def cnmfrm(cname, lenout):
     :type lenout: int
     :return:
             The ID code of the frame associated with cname,
-            The name of the frame with ID frcode
-    :rtype: tuple or None
+            The name of the frame with ID frcode,
+            Found flag.
+    :rtype: tuple
     """
     lenout = ctypes.c_int(lenout)
     frname = stypes.stringToCharP(lenout)
@@ -1117,10 +1116,7 @@ def cnmfrm(cname, lenout):
     frcode = ctypes.c_int()
     libspice.cnmfrm_c(cname, lenout, ctypes.byref(frcode), frname,
                       ctypes.byref(found))
-    if found.value:
-        return frcode.value, stypes.toPythonString(frname)
-    else:
-        return None
+    return frcode.value, stypes.toPythonString(frname), found.value
 
 
 def conics(elts, et):
@@ -4181,8 +4177,10 @@ def gcpool(name, start, room, lenout):
     :type room: int
     :param lenout: The length of the output string.
     :type lenout: int
-    :return: Values associated with name.
-    :rtype: List of str or None.
+    :return:
+            Values associated with name,
+            Found flag.
+    :rtype: tuple
     """
     name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
@@ -4193,10 +4191,7 @@ def gcpool(name, start, room, lenout):
     found = ctypes.c_bool()
     libspice.gcpool_c(name, start, room, lenout, ctypes.byref(n),
                       ctypes.byref(cvals), ctypes.byref(found))
-    if found.value:
-        return [stypes.toPythonString(x.value) for x in cvals[0:n.value]]
-    else:
-        return None
+    return [stypes.toPythonString(x.value) for x in cvals[0:n.value]], found.value
 
 
 def gdpool(name, start, room):
@@ -4211,8 +4206,10 @@ def gdpool(name, start, room):
     :type start: int
     :param room: The largest number of values to return.
     :type room: int
-    :return: Values associated with name.
-    :rtype: List of floats or None
+    :return:
+            Values associated with name,
+            Found flag.
+    :rtype: tuple
     """
     name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
@@ -4223,10 +4220,7 @@ def gdpool(name, start, room):
     libspice.gdpool_c(name, start, room, ctypes.byref(n),
                       ctypes.cast(values, ctypes.POINTER(ctypes.c_double)),
                       ctypes.byref(found))
-    if found.value:
-        return stypes.vectorToList(values)[0:n.value]
-    else:
-        return None
+    return stypes.vectorToList(values)[0:n.value], found.value
 
 
 def georec(lon, lat, alt, re, f):
@@ -5087,8 +5081,10 @@ def gipool(name, start, room):
     :type start: int
     :param room: The largest number of values to return.
     :type room: int
-    :return: Values associated with name.
-    :rtype: List of Ints or None
+    :return:
+            Values associated with name,
+            Found Flag.
+    :rtype: tuple
     """
     name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
@@ -5098,10 +5094,7 @@ def gipool(name, start, room):
     found = ctypes.c_bool()
     libspice.gipool_c(name, start, room, ctypes.byref(n), ivals,
                       ctypes.byref(found))
-    if found.value:
-        return stypes.vectorToList(ivals)[0:n.value]
-    else:
-        return False
+    return stypes.vectorToList(ivals)[0:n.value], found.value
 
 
 def gnpool(name, start, room, lenout):
@@ -5296,8 +5289,10 @@ def inedpl(a, b, c, plane):
     :type c: float
     :param plane: Plane that intersects ellipsoid 
     :type plane: SpiceyPy.support_types.Plane
-    :return: Intersection ellipse
-    :rtype: SpiceyPy.support_types.Ellipse, or None
+    :return:
+            Intersection ellipse,
+            Found Flag.
+    :rtype: SpiceyPy.support_types.Ellipse, bool
     """
     assert (isinstance(plane, stypes.Plane))
     ellipse = stypes.Ellipse()
@@ -5307,10 +5302,7 @@ def inedpl(a, b, c, plane):
     found = ctypes.c_bool()
     libspice.inedpl_c(a, b, c, ctypes.byref(plane), ctypes.byref(ellipse),
                       ctypes.byref(found))
-    if found.value:
-        return ellipse
-    else:
-        return None
+    return ellipse, found.value
 
 
 def inelpl(ellips, plane):
@@ -9925,7 +9917,7 @@ def spksfs(body, et, idlen):
             Handle of file containing the applicable segment,
             Descriptor of the applicable segment,
             Identifier of the applicable segment,
-            Indicates whether or not a segment was found.
+            Found flag Indicates whether or not a segment was found.
     :rtype: tuple
     """
     body = ctypes.c_int(body)
@@ -9937,11 +9929,8 @@ def spksfs(body, et, idlen):
     found = ctypes.c_bool()
     libspice.spksfs_c(body, et, idlen, ctypes.byref(handle), descr, identstring,
                       ctypes.byref(found))
-    if found.value:
-        return handle.value, stypes.vectorToList(descr), stypes.toPythonString(
-            identstring)
-    else:
-        return None
+    return handle.value, stypes.vectorToList(descr),\
+           stypes.toPythonString(identstring), found.value
 
 
 def spkssb(targ, et, ref):
@@ -10984,8 +10973,10 @@ def surfpt(positn, u, a, b, c):
     :type b: float
     :param c: Length of the ellisoid semi-axis along the z-axis.
     :type c: float
-    :return: Point on the ellipsoid pointed to by u.
-    :rtype: 3-Element Array of Floats or None
+    :return:
+            Point on the ellipsoid pointed to by u,
+            Found Flag.
+    :rtype: 3-Element Array of Floats
     """
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
@@ -10995,10 +10986,7 @@ def surfpt(positn, u, a, b, c):
     point = stypes.emptyDoubleVector(3)
     found = ctypes.c_bool()
     libspice.surfpt_c(positn, u, a, b, c, point, ctypes.byref(found))
-    if found.value:
-        return stypes.vectorToList(point)
-    else:
-        return None
+    return stypes.vectorToList(point), found.value
 
 
 def surfpv(stvrtx, stdir, a, b, c):
@@ -11094,18 +11082,16 @@ def szpool(name):
 
     :param name: Name of the parameter to be returned.
     :type name: str
-    :return: Value of parameter specified by name.
+    :return:
+            Value of parameter specified by name,
+            Found Flag.
     :rtype: Int or None
     """
     name = stypes.stringToCharP(name)
     n = ctypes.c_int()
     found = ctypes.c_bool(0)
     libspice.szpool_c(name, ctypes.byref(n), ctypes.byref(found))
-    if found.value:
-        return n.value
-    else:
-        return False
-
+    return n.value, found.value
 
 ################################################################################
 # T
@@ -12077,10 +12063,7 @@ def vprjpi(vin, projpl, invpl):
     found = ctypes.c_bool()
     libspice.vprjpi_c(vin, ctypes.byref(projpl), ctypes.byref(invpl), vout,
                       ctypes.byref(found))
-    if found.value:
-        return stypes.vectorToList(vout)
-    else:
-        return None
+    return stypes.vectorToList(vout), found.value
 
 
 def vproj(a, b):

@@ -100,8 +100,8 @@ def test_bltfrm():
 def test_bodc2n():
     spice.kclear()
     spice.furnsh(_testKernelPath)
-    assert spice.bodc2n(399, 10) == "EARTH"
-    assert spice.bodc2n(0, 40) == "SOLAR SYSTEM BARYCENTER"
+    assert spice.bodc2n(399, 10) == ("EARTH", True)
+    assert spice.bodc2n(0, 40) == ("SOLAR SYSTEM BARYCENTER", True)
     spice.kclear()
 
 
@@ -116,7 +116,7 @@ def test_bodc2s():
 def test_boddef():
     spice.kclear()
     spice.boddef("Jebediah", 117)
-    assert spice.bodc2n(117, 10) == "Jebediah"
+    assert spice.bodc2n(117, 10) == ("Jebediah", True)
     spice.kclear()
 
 
@@ -130,16 +130,16 @@ def test_bodfnd():
 def test_bodn2c():
     spice.kclear()
     spice.furnsh(_testKernelPath)
-    assert spice.bodn2c("EARTH") == 399
-    assert spice.bodn2c("U.S.S. Enterprise") is None
+    assert spice.bodn2c("EARTH") == (399, True)
+    assert spice.bodn2c("U.S.S. Enterprise") == (0, False)
     spice.kclear()
 
 
 def test_bods2c():
     spice.kclear()
     spice.furnsh(_testKernelPath)
-    assert spice.bods2c("EARTH") == 399
-    assert spice.bods2c("U.S.S. Enterprise") is None
+    assert spice.bods2c("EARTH") == (399, True)
+    assert spice.bods2c("U.S.S. Enterprise") == (0, False)
     spice.kclear()
 
 
@@ -243,7 +243,7 @@ def test_card():
 
 
 def test_ccifrm():
-    frcode, frname, center = spice.ccifrm(2, 3000, 33)
+    frcode, frname, center, found = spice.ccifrm(2, 3000, 33)
     assert frname == "ITRF93"
     assert frcode == 13000
     assert center == 399
@@ -291,13 +291,13 @@ def test_chkout():
 
 
 def test_cidfrm():
-    frcode, frname = spice.cidfrm(501, 10)
+    frcode, frname, found = spice.cidfrm(501, 10)
     assert frcode == 10023
     assert frname == 'IAU_IO'
-    frcode, frname = spice.cidfrm(399, 10)
+    frcode, frname, found = spice.cidfrm(399, 10)
     assert frcode == 10013
     assert frname == 'IAU_EARTH'
-    frcode, frname = spice.cidfrm(301, 10)
+    frcode, frname, found = spice.cidfrm(301, 10)
     assert frcode == 10020
     assert frname == 'IAU_MOON'
 
@@ -506,12 +506,12 @@ def test_clight():
 def test_clpool():
     spice.kclear()
     spice.pdpool('TEST_VAR', [-666.0])
-    value = spice.gdpool('TEST_VAR', 0, 1)
+    value, found = spice.gdpool('TEST_VAR', 0, 1)
     assert len(value) == 1
     assert value[0] == -666.0
     spice.clpool()
-    found = spice.gdpool('TEST_VAR', 0, 1)
-    assert found is None
+    v, found = spice.gdpool('TEST_VAR', 0, 1)
+    assert found is False
     spice.kclear()
 
 
@@ -526,7 +526,7 @@ def test_cmprss():
 
 
 def test_cnmfrm():
-    ioFrcode, ioFrname = spice.cnmfrm('IO', 10)
+    ioFrcode, ioFrname, found = spice.cnmfrm('IO', 10)
     assert ioFrcode == 10023
     assert ioFrname == 'IAU_IO'
 
@@ -2026,7 +2026,7 @@ def test_gcpool():
     spice.kclear()
     data = [j + str(i) for i, j in enumerate(list(string.ascii_lowercase))]
     spice.pcpool('pcpool_test', data)
-    cvals = spice.gcpool('pcpool_test', 0, 30, 4)
+    cvals, found = spice.gcpool('pcpool_test', 0, 30, 4)
     assert data == cvals
     spice.kclear()
 
@@ -2036,7 +2036,7 @@ def test_gdpool():
     spice.kclear()
     data = np.arange(0.0, 10.0)
     spice.pdpool('pdpool_array', data)
-    dvals = spice.gdpool('pdpool_array', 0, 30)
+    dvals, found = spice.gdpool('pdpool_array', 0, 30)
     npt.assert_array_almost_equal(data, dvals)
     spice.kclear()
 
@@ -2433,7 +2433,8 @@ def test_gipool():
     spice.kclear()
     data = np.arange(0, 10)
     spice.pipool('pipool_array', data)
-    ivals = spice.gipool('pipool_array', 0, 50)
+    ivals, found = spice.gipool('pipool_array', 0, 50)
+    assert found
     npt.assert_array_almost_equal(data, ivals)
     spice.kclear()
 
@@ -2528,7 +2529,7 @@ def test_inedpl():
            pos[1] / radii[1] ** 2.0,
            pos[2] / radii[2] ** 2.0]
     plane = spice.nvc2pl(pos, 1.0)
-    term = spice.inedpl(radii[0], radii[1], radii[2], plane)
+    term, found = spice.inedpl(radii[0], radii[1], radii[2], plane)
     spice.kclear()
     expectedCenter = [0.21512031, 0.15544527, 0.067391641]
     expectedSMajor = [-3735.61161, 5169.70331, -9.7794273e-12]
@@ -3404,7 +3405,7 @@ def test_pcpool():
     spice.kclear()
     data = [j + str(i) for i, j in enumerate(list(string.ascii_lowercase))]
     spice.pcpool('pcpool_test', data)
-    cvals = spice.gcpool('pcpool_test', 0, 30, 4)
+    cvals, found = spice.gcpool('pcpool_test', 0, 30, 4)
     assert data == cvals
     spice.kclear()
 
@@ -3413,7 +3414,7 @@ def test_pdpool():
     spice.kclear()
     data = np.arange(0.0, 10.0)
     spice.pdpool('pdpool_array', data)
-    dvals = spice.gdpool('pdpool_array', 0, 30)
+    dvals, found = spice.gdpool('pdpool_array', 0, 30)
     npt.assert_array_almost_equal(data, dvals)
     spice.kclear()
 
@@ -3473,7 +3474,8 @@ def test_pipool():
     spice.kclear()
     data = np.arange(0, 10)
     spice.pipool('pipool_array', data)
-    ivals = spice.gipool('pipool_array', 0, 50)
+    ivals, found = spice.gipool('pipool_array', 0, 50)
+    assert found
     npt.assert_array_almost_equal(data, ivals)
     spice.kclear()
 
@@ -4551,7 +4553,7 @@ def test_spkpvn():
     spice.kclear()
     spice.furnsh(_testKernelPath)
     et = spice.str2et("2012 APR 27 00:00:00.000 TDB")
-    handle, descr, ident = spice.spksfs(5, et, 41)
+    handle, descr, ident, found = spice.spksfs(5, et, 41)
     refid, state, center = spice.spkpvn(handle, descr, et)
     expected_state = [464528993.98216486, 541513126.156852, 220785135.6246294,
                       -10.38685648307655, 7.953247007137424, 3.661858354313065]
@@ -4562,9 +4564,9 @@ def test_spkpvn():
 def test_spksfs():
     spice.kclear()
     spice.furnsh(_testKernelPath)
-    idcode = spice.bodn2c("PLUTO BARYCENTER")
+    idcode, found = spice.bodn2c("PLUTO BARYCENTER")
     et = spice.str2et("2011 FEB 18 UTC")
-    handle, descr, ident = spice.spksfs(idcode, et, 41)
+    handle, descr, ident, found = spice.spksfs(idcode, et, 41)
     assert ident == "DE-0421LE-0421"
     spice.kclear()
 
@@ -5047,7 +5049,7 @@ def test_surfnm():
 def test_surfpt():
     position = [2.0, 0.0, 0.0]
     u = [-1.0, 0.0, 0.0]
-    point = spice.surfpt(position, u, 1.0, 2.0, 3.0)
+    point, found = spice.surfpt(position, u, 1.0, 2.0, 3.0)
     npt.assert_array_almost_equal(point, [1.0, 0.0, 0.0])
 
 
@@ -5100,13 +5102,13 @@ def test_sxform_vectorized():
 
 
 def test_szpool():
-    assert spice.szpool("MAXVAR") == 26003
-    assert spice.szpool("MAXLEN") == 32
-    assert spice.szpool("MAXVAL") == 400000
-    assert spice.szpool("MXNOTE") == 130015
-    assert spice.szpool("MAXAGT") == 1000
-    assert spice.szpool("MAXCHR") == 80
-    assert spice.szpool("MAXLIN") == 15000
+    assert spice.szpool("MAXVAR") == (26003, True)
+    assert spice.szpool("MAXLEN") == (32, True)
+    assert spice.szpool("MAXVAL") == (400000, True)
+    assert spice.szpool("MXNOTE") == (130015, True)
+    assert spice.szpool("MAXAGT") == (1000, True)
+    assert spice.szpool("MAXCHR") == (80, True)
+    assert spice.szpool("MAXLIN") == (15000, True)
 
 
 def test_timdef():
@@ -5477,7 +5479,7 @@ def test_vprjpi():
     plane1 = spice.nvc2pl(norm1, con1)
     plane2 = spice.nvc2pl(norm2, con2)
     vec = [1.0, 1.0, 0.0]
-    result = spice.vprjpi(vec, plane1, plane2)
+    result, found = spice.vprjpi(vec, plane1, plane2)
     expected = [1.0, 1.0, -0.35]
     npt.assert_array_almost_equal(result, expected)
 
