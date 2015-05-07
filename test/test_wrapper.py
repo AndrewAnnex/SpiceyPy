@@ -1856,8 +1856,8 @@ def test_eqstr():
 
 
 def test_erract():
-    assert spice.erract("GET", 10, "") == "REPORT"
-    assert spice.erract("GET", 10) == "REPORT"
+    assert spice.erract("GET", 10, "") == "RETURN"
+    assert spice.erract("GET", 10) == "RETURN"
 
 
 def test_errch():
@@ -1870,7 +1870,7 @@ def test_errch():
 
 
 def test_errdev():
-    assert spice.errdev("GET", 10, "Screen") == "SCREEN"
+    assert spice.errdev("GET", 10, "Screen") == "NULL"
 
 
 def test_errdp():
@@ -1892,7 +1892,7 @@ def test_errint():
 
 
 def test_errprt():
-    assert spice.errprt("GET", 40, "ALL") == "SCREEN"
+    assert spice.errprt("GET", 40, "ALL") == "NULL"
 
 
 def test_esrchc():
@@ -2018,7 +2018,7 @@ def test_furnsh_vectorized():
     # 4 + 1 + 1 = 6
     assert spice.ktotal("ALL") == 6
     spice.kclear()
-    
+
 
 def test_gcpool():
     # same as pcpool test

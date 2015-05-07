@@ -8,6 +8,31 @@ import numpy
 from numpy import ctypeslib as numpc
 import six
 
+errorformat = """
+================================================================================
+
+Toolkit version: {tkvsn}
+
+{short} --
+{explain}
+{long}
+
+{traceback}
+
+================================================================================\
+"""
+
+class SpiceyError(Exception):
+    """
+    SpiceyError wraps CSPICE errors.
+    :type value: str
+    """
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return self.value
+
 
 def toDoubleVector(x):
     return DoubleArray.from_param(param=x)

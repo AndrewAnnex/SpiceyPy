@@ -6,12 +6,54 @@ __author__ = 'AndrewAnnex'
 import ctypes
 import SpiceyPy.support_types as stypes
 from SpiceyPy.libspice import libspice
+import functools
 import numpy
+
+################################################################################
+
+
+def checkForSpiceError(f):
+    """
+    Internal function to check
+    :param f:
+    :raise stypes.SpiceyError:
+    """
+    if failed():
+        errorparts = {
+            "tkvsn": tkvrsn("TOOLKIT").replace("CSPICE_", ""),
+            "short": getmsg("SHORT", 26),
+            "explain": getmsg("EXPLAIN", 100).strip(),
+            "long": getmsg("LONG", 321).strip(),
+            "traceback": qcktrc(200)}
+        msg = stypes.errorformat.format(**errorparts)
+        reset()
+        raise stypes.SpiceyError(msg)
+
+
+def spiceErrorCheck(f):
+    """
+    Decorator for SpiceyPy hooking into spice error system.
+    If an error is detected, an output simillar to outmsg_
+
+    :type f: builtins.function
+    :return:
+    :rtype:
+    """
+    @functools.wraps(f)
+    def with_errcheck(*args, **kwargs):
+        try:
+            res = f(*args, **kwargs)
+            checkForSpiceError(f)
+            return res
+        except:
+            raise
+    return with_errcheck
+
 
 ################################################################################
 # A
 
-
+@spiceErrorCheck
 def appndc(item, cell):
     """
     Append an item to a character cell.
@@ -33,6 +75,7 @@ def appndc(item, cell):
     pass
 
 
+@spiceErrorCheck
 def appndd(item, cell):
     """
     Append an item to a double precision cell.
@@ -54,6 +97,7 @@ def appndd(item, cell):
     pass
 
 
+@spiceErrorCheck
 def appndi(item, cell):
     """
     Append an item to an integer cell.
@@ -75,6 +119,7 @@ def appndi(item, cell):
     pass
 
 
+@spiceErrorCheck
 def axisar(axis, angle):
     """
     Construct a rotation matrix that rotates vectors by a specified
@@ -99,7 +144,7 @@ def axisar(axis, angle):
 ################################################################################
 # B
 
-
+@spiceErrorCheck
 def b1900():
     """
     Return the Julian Date corresponding to Besselian Date 1900.0.
@@ -112,6 +157,7 @@ def b1900():
     return libspice.b1900_c()
 
 
+@spiceErrorCheck
 def b1950():
     """
     Return the Julian Date corresponding to Besselian Date 1950.0.
@@ -124,6 +170,7 @@ def b1950():
     return libspice.b1950_c()
 
 
+@spiceErrorCheck
 def badkpv(caller, name, comp, insize, divby, intype):
     """
     Determine if a kernel pool variable is present and if so
@@ -155,6 +202,7 @@ def badkpv(caller, name, comp, insize, divby, intype):
     return libspice.badkpv_c(caller, name, comp, insize, divby, intype)
 
 
+@spiceErrorCheck
 def bltfrm(frmcls, outSize=126):
     """
     Return a SPICE set containing the frame IDs of all built-in frames
@@ -175,6 +223,7 @@ def bltfrm(frmcls, outSize=126):
     return outcell
 
 
+@spiceErrorCheck
 def bodc2n(code, lenout):
     """
     Translate the SPICE integer code of a body into a common name
@@ -199,6 +248,7 @@ def bodc2n(code, lenout):
     return stypes.toPythonString(name), found.value
 
 
+@spiceErrorCheck
 def bodc2s(code, lenout):
     """
     Translate a body ID code to either the corresponding name or if no
@@ -221,6 +271,7 @@ def bodc2s(code, lenout):
     return stypes.toPythonString(name)
 
 
+@spiceErrorCheck
 def boddef(name, code):
     """
     Define a body name/ID code pair for later translation via
@@ -239,6 +290,7 @@ def boddef(name, code):
     pass
 
 
+@spiceErrorCheck
 def bodfnd(body, item):
     """
     Determine whether values exist for some item for any body
@@ -258,6 +310,7 @@ def bodfnd(body, item):
     return libspice.bodfnd_c(body, item)
 
 
+@spiceErrorCheck
 def bodn2c(name):
     """
     Translate the name of a body or object to the corresponding SPICE
@@ -279,6 +332,7 @@ def bodn2c(name):
     return  code.value, found.value
 
 
+@spiceErrorCheck
 def bods2c(name):
     """
     Translate a string containing a body name or ID code to an integer code.
@@ -299,6 +353,7 @@ def bods2c(name):
     return code.value, found.value
 
 
+@spiceErrorCheck
 def bodvar(body, item, dim):
     """
     Deprecated: This routine has been superseded by :func:`bodvcd` and
@@ -328,6 +383,7 @@ def bodvar(body, item, dim):
     return stypes.vectorToList(values)
 
 
+@spiceErrorCheck
 def bodvcd(bodyid, item, maxn):
     """
     Fetch from the kernel pool the double precision values of an item
@@ -356,6 +412,7 @@ def bodvcd(bodyid, item, maxn):
     return dim.value, stypes.vectorToList(values)
 
 
+@spiceErrorCheck
 def bodvrd(bodynm, item, maxn):
     """
     Fetch from the kernel pool the double precision values
@@ -383,6 +440,7 @@ def bodvrd(bodynm, item, maxn):
     return dim.value, stypes.vectorToList(values)
 
 
+@spiceErrorCheck
 def brcktd(number, end1, end2):
     """
     Bracket a number. That is, given a number and an acceptable
@@ -407,6 +465,7 @@ def brcktd(number, end1, end2):
     return libspice.brcktd_c(number, end1, end2)
 
 
+@spiceErrorCheck
 def brckti(number, end1, end2):
     """
     Bracket a number. That is, given a number and an acceptable
@@ -431,6 +490,7 @@ def brckti(number, end1, end2):
     return libspice.brckti_c(number, end1, end2)
 
 
+@spiceErrorCheck
 def bschoc(value, ndim, lenvals, array, order):
     """
     Do a binary search for a given value within a character string array,
@@ -460,6 +520,7 @@ def bschoc(value, ndim, lenvals, array, order):
     return libspice.bschoc_c(value, ndim, lenvals, array, order)
 
 
+@spiceErrorCheck
 def bschoi(value, ndim, array, order):
     """
     Do a binary search for a given value within an integer array,
@@ -486,6 +547,7 @@ def bschoi(value, ndim, array, order):
     return libspice.bschoi_c(value, ndim, array, order)
 
 
+@spiceErrorCheck
 def bsrchc(value, ndim, lenvals, array):
     """
     Do a binary earch for a given value within a character string array.
@@ -512,6 +574,7 @@ def bsrchc(value, ndim, lenvals, array):
     return libspice.bsrchc_c(value, ndim, lenvals, array)
 
 
+@spiceErrorCheck
 def bsrchd(value, ndim, array):
     """
     Do a binary search for a key value within a double precision array,
@@ -535,6 +598,7 @@ def bsrchd(value, ndim, array):
     return libspice.bsrchd_c(value, ndim, array)
 
 
+@spiceErrorCheck
 def bsrchi(value, ndim, array):
     """
     Do a binary search for a key value within an integer array,
@@ -561,6 +625,7 @@ def bsrchi(value, ndim, array):
 ################################################################################
 # C
 
+@spiceErrorCheck
 def card(cell):
     """
     Return the cardinality (current number of elements) in a
@@ -576,6 +641,7 @@ def card(cell):
     return libspice.card_c(ctypes.byref(cell))
 
 
+@spiceErrorCheck
 def ccifrm(frclss, clssid, lenout):
     """
     Return the frame name, frame ID, and center associated with
@@ -608,6 +674,7 @@ def ccifrm(frclss, clssid, lenout):
     return frcode.value, stypes.toPythonString(frname), center.value, found.value
 
 
+@spiceErrorCheck
 def cgv2el(center, vec1, vec2):
     """
     Form a SPICE ellipse from a center vector and two generating vectors.
@@ -631,6 +698,7 @@ def cgv2el(center, vec1, vec2):
     return ellipse
 
 
+@spiceErrorCheck
 def chkin(module):
     """
     Inform the SPICE error handling mechanism of entry into a routine.
@@ -645,6 +713,7 @@ def chkin(module):
     pass
 
 
+@spiceErrorCheck
 def chkout(module):
     """
     Inform the SPICE error handling mechanism of exit from a routine.
@@ -659,6 +728,7 @@ def chkout(module):
     pass
 
 
+@spiceErrorCheck
 def cidfrm(cent, lenout):
     """
     Retrieve frame ID code and name to associate with a frame center.
@@ -685,6 +755,7 @@ def cidfrm(cent, lenout):
     return frcode.value, stypes.toPythonString(frname), found.value
 
 
+@spiceErrorCheck
 def ckcls(handle):
     """
     Close an open CK file.
@@ -699,6 +770,7 @@ def ckcls(handle):
     pass
 
 
+@spiceErrorCheck
 def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
     # Todo: test ckcov
     """
@@ -738,6 +810,7 @@ def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
     return cover
 
 
+@spiceErrorCheck
 def ckgp(inst, sclkdp, tol, ref):
     # Todo: test ckgp
     """
@@ -771,6 +844,7 @@ def ckgp(inst, sclkdp, tol, ref):
     return stypes.matrixToList(cmat), clkout.value, found.value
 
 
+@spiceErrorCheck
 def ckgpav(inst, sclkdp, tol, ref):
     # Todo: test ckgpav
     """
@@ -808,6 +882,7 @@ def ckgpav(inst, sclkdp, tol, ref):
         av), clkout.value, found.value
 
 
+@spiceErrorCheck
 def cklpf(filename):
     # Todo: test cklpf
     """
@@ -828,6 +903,7 @@ def cklpf(filename):
     return handle.value
 
 
+@spiceErrorCheck
 def ckobj(ck, ids=None):
     # Todo: test ckobj
     """
@@ -852,6 +928,7 @@ def ckobj(ck, ids=None):
     return ids
 
 
+@spiceErrorCheck
 def ckopn(filename, ifname, ncomch):
     """
     Open a new CK file, returning the handle of the opened file.
@@ -875,6 +952,7 @@ def ckopn(filename, ifname, ncomch):
     return handle.value
 
 
+@spiceErrorCheck
 def ckupf(handle):
     # Todo: test ckupf
     """
@@ -891,6 +969,7 @@ def ckupf(handle):
     pass
 
 
+@spiceErrorCheck
 def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
           avvs):
     """
@@ -937,6 +1016,7 @@ def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
     pass
 
 
+@spiceErrorCheck
 def ckw02(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats,
           avvs, rates):
     """
@@ -986,6 +1066,7 @@ def ckw02(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats,
     pass
 
 
+@spiceErrorCheck
 def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
           avvs, nints, starts):
     """
@@ -1041,6 +1122,7 @@ def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
 # ckw05, skipping, ck05subtype?
 
 
+@spiceErrorCheck
 def clight():
     """
     Return the speed of light in a vacuum (IAU official value, in km/sec).
@@ -1053,6 +1135,7 @@ def clight():
     return libspice.clight_c()
 
 
+@spiceErrorCheck
 def clpool():
     """
     Remove all variables from the kernel pool. Watches
@@ -1064,6 +1147,7 @@ def clpool():
     pass
 
 
+@spiceErrorCheck
 def cmprss(delim, n, instr, lenout=None):
     """
     Compress a character string by removing occurrences of
@@ -1093,6 +1177,7 @@ def cmprss(delim, n, instr, lenout=None):
     return stypes.toPythonString(output)
 
 
+@spiceErrorCheck
 def cnmfrm(cname, lenout):
     """
     Retrieve frame ID code and name to associate with an object.
@@ -1119,6 +1204,7 @@ def cnmfrm(cname, lenout):
     return frcode.value, stypes.toPythonString(frname), found.value
 
 
+@spiceErrorCheck
 def conics(elts, et):
     """
     Determine the state (position, velocity) of an orbiting body
@@ -1141,6 +1227,7 @@ def conics(elts, et):
     return stypes.vectorToList(state)
 
 
+@spiceErrorCheck
 def convrt(x, inunit, outunit):
     """
     Take a measurement X, the units associated with
@@ -1166,6 +1253,7 @@ def convrt(x, inunit, outunit):
     return y.value
 
 
+@spiceErrorCheck
 def copy(cell):
     """
     Copy the contents of a SpiceCell of any data type to another
@@ -1192,6 +1280,7 @@ def copy(cell):
     return newcopy
 
 
+@spiceErrorCheck
 def cpos(string, chars, start):
     """
     Find the first occurrence in a string of a character belonging
@@ -1217,6 +1306,7 @@ def cpos(string, chars, start):
     return libspice.cpos_c(string, chars, start)
 
 
+@spiceErrorCheck
 def cposr(string, chars, start):
     """
     Find the first occurrence in a string of a character belonging
@@ -1242,6 +1332,7 @@ def cposr(string, chars, start):
     return libspice.cposr_c(string, chars, start)
 
 
+@spiceErrorCheck
 def cvpool(agent):
     # Todo: test cvpool
     """
@@ -1261,6 +1352,7 @@ def cvpool(agent):
     return update.value
 
 
+@spiceErrorCheck
 def cyllat(r, lonc, z):
     """
     Convert from cylindrical to latitudinal coordinates.
@@ -1287,6 +1379,7 @@ def cyllat(r, lonc, z):
     return radius.value, lon.value, lat.value
 
 
+@spiceErrorCheck
 def cylrec(r, lon, z):
     """
     Convert from cylindrical to rectangular coordinates.
@@ -1310,6 +1403,7 @@ def cylrec(r, lon, z):
     return stypes.vectorToList(rectan)
 
 
+@spiceErrorCheck
 def cylsph(r, lonc, z):
     """
     Convert from cylindrical to spherical coordinates.
@@ -1342,6 +1436,7 @@ def cylsph(r, lonc, z):
 ################################################################################
 # D
 
+@spiceErrorCheck
 def dafac(handle, n, lenvals, buffer):
     # Todo: test dafac
     """
@@ -1368,6 +1463,7 @@ def dafac(handle, n, lenvals, buffer):
     pass
 
 
+@spiceErrorCheck
 def dafbbs(handle):
     """
     Begin a backward search for arrays in a DAF.
@@ -1382,6 +1478,7 @@ def dafbbs(handle):
     pass
 
 
+@spiceErrorCheck
 def dafbfs(handle):
     """
     Begin a forward search for arrays in a DAF.
@@ -1396,6 +1493,7 @@ def dafbfs(handle):
     pass
 
 
+@spiceErrorCheck
 def dafcls(handle):
     """
     Close the DAF associated with a given handle.
@@ -1410,6 +1508,7 @@ def dafcls(handle):
     pass
 
 
+@spiceErrorCheck
 def dafcs(handle):
     """
     Select a DAF that already has a search in progress as the
@@ -1425,6 +1524,7 @@ def dafcs(handle):
     pass
 
 
+@spiceErrorCheck
 def dafdc(handle):
     # Todo: test dafdc
     """
@@ -1440,6 +1540,7 @@ def dafdc(handle):
     pass
 
 
+@spiceErrorCheck
 def dafec(handle, bufsiz, lenout):
     """
     Extract comments from the comment area of a binary DAF.
@@ -1469,6 +1570,7 @@ def dafec(handle, bufsiz, lenout):
     return n.value, stypes.vectorToList(buffer), done.value
 
 
+@spiceErrorCheck
 def daffna():
     """
     Find the next (forward) array in the current DAF.
@@ -1483,6 +1585,7 @@ def daffna():
     return found.value
 
 
+@spiceErrorCheck
 def daffpa():
     """
     Find the previous (backward) array in the current DAF.
@@ -1497,6 +1600,7 @@ def daffpa():
     return found.value
 
 
+@spiceErrorCheck
 def dafgda(handle, begin, end):
     """
     Read the double precision data bounded by two addresses within a DAF.
@@ -1520,6 +1624,7 @@ def dafgda(handle, begin, end):
     return stypes.vectorToList(data)
 
 
+@spiceErrorCheck
 def dafgh():
     """
     Return (get) the handle of the DAF currently being searched.
@@ -1534,6 +1639,7 @@ def dafgh():
     return outvalue.value
 
 
+@spiceErrorCheck
 def dafgn(lenout):
     """
     Return (get) the name for the current array in the current DAF.
@@ -1551,6 +1657,7 @@ def dafgn(lenout):
     return stypes.toPythonString(name)
 
 
+@spiceErrorCheck
 def dafgs(n=125):
     # The 125 may be a hard set,
     # I got strange errors that occasionally happend without it
@@ -1569,6 +1676,7 @@ def dafgs(n=125):
     return stypes.vectorToList(retarray)[0:n]
 
 
+@spiceErrorCheck
 def dafgsr(handle, recno, begin, end):
     # Todo test dafgsr
     """
@@ -1598,6 +1706,7 @@ def dafgsr(handle, recno, begin, end):
     return data.value, found.value
 
 
+@spiceErrorCheck
 def dafopr(fname):
     """
     Open a DAF for subsequent read requests.
@@ -1615,6 +1724,7 @@ def dafopr(fname):
     return handle.value
 
 
+@spiceErrorCheck
 def dafopw(fname):
     """
     Open a DAF for subsequent write requests.
@@ -1632,6 +1742,7 @@ def dafopw(fname):
     return handle.value
 
 
+@spiceErrorCheck
 def dafps(nd, ni, dc, ic):
     # Todo: test dafps
     """
@@ -1661,6 +1772,7 @@ def dafps(nd, ni, dc, ic):
     return stypes.vectorToList(outsum)
 
 
+@spiceErrorCheck
 def dafrda(handle, begin, end):
     # Todo: test dafrda
     """
@@ -1689,6 +1801,7 @@ def dafrda(handle, begin, end):
     return stypes.vectorToList(data)
 
 
+@spiceErrorCheck
 def dafrfr(handle, lenout):
     """
     Read the contents of the file record of a DAF.
@@ -1722,6 +1835,7 @@ def dafrfr(handle, lenout):
         ifname), fward.value, bward.value, free.value
 
 
+@spiceErrorCheck
 def dafrs(insum):
     # Todo: test dafrs
     """
@@ -1737,6 +1851,7 @@ def dafrs(insum):
     pass
 
 
+@spiceErrorCheck
 def dafus(insum, nd, ni):
     """
     Unpack an array summary into its double precision and integer components.
@@ -1761,6 +1876,7 @@ def dafus(insum, nd, ni):
     return stypes.vectorToList(dc), stypes.vectorToList(ic)
 
 
+@spiceErrorCheck
 def dasac(handle, n, buflen, buffer):
     # Todo: test dasac
     """
@@ -1788,6 +1904,7 @@ def dasac(handle, n, buflen, buffer):
     return stypes.vectorToList(buffer)
 
 
+@spiceErrorCheck
 def dascls(handle):
     # Todo: test dafdc
     """
@@ -1803,6 +1920,7 @@ def dascls(handle):
     pass
 
 
+@spiceErrorCheck
 def dasec(handle, bufsiz, buflen):
     # Todo: test dasec
     """
@@ -1833,6 +1951,7 @@ def dasec(handle, bufsiz, buflen):
     return n.value, stypes.vectorToList(buffer), done.value
 
 
+@spiceErrorCheck
 def dasopr(fname):
     # Todo: test dasopr
     """
@@ -1851,6 +1970,7 @@ def dasopr(fname):
     return handle.value
 
 
+@spiceErrorCheck
 def dcyldr(x, y, z):
     """
     This routine computes the Jacobian of the transformation from
@@ -1875,6 +1995,7 @@ def dcyldr(x, y, z):
     return stypes.matrixToList(jacobi)
 
 
+@spiceErrorCheck
 def deltet(epoch, eptype):
     """
     Return the value of Delta ET (ET-UTC) for an input epoch.
@@ -1895,6 +2016,7 @@ def deltet(epoch, eptype):
     return delta.value
 
 
+@spiceErrorCheck
 def det(m1):
     """
     Compute the determinant of a double precision 3x3 matrix.
@@ -1910,6 +2032,7 @@ def det(m1):
     return libspice.det_c(m1)
 
 
+@spiceErrorCheck
 def dgeodr(x, y, z, re, f):
     """
     This routine computes the Jacobian of the transformation from
@@ -1940,6 +2063,7 @@ def dgeodr(x, y, z, re, f):
     return stypes.matrixToList(jacobi)
 
 
+@spiceErrorCheck
 def diags2(symmat):
     """
     Diagonalize a symmetric 2x2 matrix.
@@ -1960,6 +2084,7 @@ def diags2(symmat):
     return stypes.matrixToList(diag), stypes.matrixToList(rotateout)
 
 
+@spiceErrorCheck
 def diff(a, b):
     """
     Take the difference of two sets of any data type to form a third set.
@@ -1988,6 +2113,7 @@ def diff(a, b):
     return c
 
 
+@spiceErrorCheck
 def dlatdr(x, y, z):
     """
     This routine computes the Jacobian of the transformation from
@@ -2012,6 +2138,7 @@ def dlatdr(x, y, z):
     return stypes.matrixToList(jacobi)
 
 
+@spiceErrorCheck
 def dp2hx(number, lenout=None):
     """
     Convert a double precision number to an equivalent character
@@ -2035,6 +2162,7 @@ def dp2hx(number, lenout=None):
     return stypes.toPythonString(string)
 
 
+@spiceErrorCheck
 def dpgrdr(body, x, y, z, re, f):
     """
     This routine computes the Jacobian matrix of the transformation
@@ -2068,6 +2196,7 @@ def dpgrdr(body, x, y, z, re, f):
     return stypes.matrixToList(jacobi)
 
 
+@spiceErrorCheck
 def dpmax():
     """
     Return the value of the largest (positive) number representable
@@ -2083,6 +2212,7 @@ def dpmax():
     return libspice.dpmax_c()
 
 
+@spiceErrorCheck
 def dpmin():
     """
     Return the value of the smallest (negative) number representable
@@ -2098,6 +2228,7 @@ def dpmin():
     return libspice.dpmin_c()
 
 
+@spiceErrorCheck
 def dpr():
     """
     Return the number of degrees per radian.
@@ -2110,6 +2241,7 @@ def dpr():
     return libspice.dpr_c()
 
 
+@spiceErrorCheck
 def drdcyl(r, lon, z):
     """
     This routine computes the Jacobian of the transformation from
@@ -2134,6 +2266,7 @@ def drdcyl(r, lon, z):
     return stypes.matrixToList(jacobi)
 
 
+@spiceErrorCheck
 def drdgeo(lon, lat, alt, re, f):
     """
     This routine computes the Jacobian of the transformation from
@@ -2164,6 +2297,7 @@ def drdgeo(lon, lat, alt, re, f):
     return stypes.matrixToList(jacobi)
 
 
+@spiceErrorCheck
 def drdlat(r, lon, lat):
     """
     Compute the Jacobian of the transformation from latitudinal to
@@ -2188,6 +2322,7 @@ def drdlat(r, lon, lat):
     return stypes.matrixToList(jacobi)
 
 
+@spiceErrorCheck
 def drdpgr(body, lon, lat, alt, re, f):
     """
     This routine computes the Jacobian matrix of the transformation
@@ -2221,6 +2356,7 @@ def drdpgr(body, lon, lat, alt, re, f):
     return stypes.matrixToList(jacobi)
 
 
+@spiceErrorCheck
 def drdsph(r, colat, lon):
     """
     This routine computes the Jacobian of the transformation from
@@ -2245,6 +2381,7 @@ def drdsph(r, colat, lon):
     return stypes.matrixToList(jacobi)
 
 
+@spiceErrorCheck
 def dsphdr(x, y, z):
     """
     This routine computes the Jacobian of the transformation from
@@ -2270,6 +2407,7 @@ def dsphdr(x, y, z):
     return stypes.matrixToList(jacobi)
 
 
+@spiceErrorCheck
 def dtpool(name):
     """
     Return the data about a kernel pool variable.
@@ -2293,6 +2431,7 @@ def dtpool(name):
     return found.value, n.value, stypes.toPythonString(typeout.value)
 
 
+@spiceErrorCheck
 def ducrss(s1, s2):
     """
     Compute the unit vector parallel to the cross product of
@@ -2315,6 +2454,7 @@ def ducrss(s1, s2):
     return stypes.vectorToList(sout)
 
 
+@spiceErrorCheck
 def dvcrss(s1, s2):
     """
     Compute the cross product of two 3-dimensional vectors
@@ -2337,6 +2477,7 @@ def dvcrss(s1, s2):
     return stypes.vectorToList(sout)
 
 
+@spiceErrorCheck
 def dvdot(s1, s2):
     """
     Compute the derivative of the dot product of two double
@@ -2357,6 +2498,7 @@ def dvdot(s1, s2):
     return libspice.dvdot_c(s1, s2)
 
 
+@spiceErrorCheck
 def dvhat(s1):
     """
     Find the unit vector corresponding to a state vector and the
@@ -2376,6 +2518,7 @@ def dvhat(s1):
     return stypes.vectorToList(sout)
 
 
+@spiceErrorCheck
 def dvnorm(state):
     """
     Function to calculate the derivative of the norm of a 3-vector.
@@ -2393,6 +2536,7 @@ def dvnorm(state):
     return libspice.dvnorm_c(state)
 
 
+@spiceErrorCheck
 def dvpool(name):
     """
     Delete a variable from the kernel pool.
@@ -2407,6 +2551,7 @@ def dvpool(name):
     pass
 
 
+@spiceErrorCheck
 def dvsep(s1, s2):
     """
     Calculate the time derivative of the separation angle between
@@ -2431,6 +2576,7 @@ def dvsep(s1, s2):
 # E
 
 
+@spiceErrorCheck
 def edlimb(a, b, c, viewpt):
     """
     Find the limb of a triaxial ellipsoid, viewed from a specified point.
@@ -2457,6 +2603,7 @@ def edlimb(a, b, c, viewpt):
     return limb
 
 
+@spiceErrorCheck
 def edterm(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts):
     """
     Compute a set of points on the umbral or penumbral terminator of
@@ -2504,6 +2651,7 @@ def edterm(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts):
         trmpts)
 
 
+@spiceErrorCheck
 def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     """
     Add data to a character column in a specified EK record.
@@ -2540,6 +2688,7 @@ def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     pass
 
 
+@spiceErrorCheck
 def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
     """
     Add data to an double precision column in a specified EK record.
@@ -2572,6 +2721,7 @@ def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
     pass
 
 
+@spiceErrorCheck
 def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
     """
     Add data to an integer column in a specified EK record.
@@ -2603,6 +2753,7 @@ def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
     libspice.ekacei_c(handle, segno, recno, column, nvals, ivals, isnull)
 
 
+@spiceErrorCheck
 def ekaclc(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs,
            wkindx):
     """
@@ -2645,6 +2796,7 @@ def ekaclc(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs,
     return stypes.vectorToList(wkindx)
 
 
+@spiceErrorCheck
 def ekacld(handle, segno, column, dvals, entszs, nlflgs, rcptrs, wkindx):
     """
     Add an entire double precision column to an EK segment.
@@ -2683,6 +2835,7 @@ def ekacld(handle, segno, column, dvals, entszs, nlflgs, rcptrs, wkindx):
     return stypes.vectorToList(wkindx)
 
 
+@spiceErrorCheck
 def ekacli(handle, segno, column, ivals, entszs, nlflgs, rcptrs, wkindx):
     """
     Add an entire integer column to an EK segment.
@@ -2720,6 +2873,7 @@ def ekacli(handle, segno, column, ivals, entszs, nlflgs, rcptrs, wkindx):
     return stypes.vectorToList(wkindx)
 
 
+@spiceErrorCheck
 def ekappr(handle, segno):
     """
     Append a new, empty record at the end of a specified E-kernel segment.
@@ -2740,6 +2894,7 @@ def ekappr(handle, segno):
     return recno.value
 
 
+@spiceErrorCheck
 def ekbseg(handle, tabnam, ncols, cnmlen, cnames, declen, decls):
     # if 'cnmlen' in kwargs:
     # cnmlen = kwargs['cnmlen']
@@ -2787,6 +2942,7 @@ def ekbseg(handle, tabnam, ncols, cnmlen, cnames, declen, decls):
     return segno.value
 
 
+@spiceErrorCheck
 def ekccnt(table):
     """
     Return the number of distinct columns in a specified,
@@ -2805,6 +2961,7 @@ def ekccnt(table):
     return ccount.value
 
 
+@spiceErrorCheck
 def ekcii(table, cindex, lenout):
     """
     Return attribute information about a column belonging to a loaded
@@ -2829,6 +2986,7 @@ def ekcii(table, cindex, lenout):
     return stypes.toPythonString(column), attdsc
 
 
+@spiceErrorCheck
 def ekcls(handle):
     """
     Close an E-kernel.
@@ -2843,6 +3001,7 @@ def ekcls(handle):
     pass
 
 
+@spiceErrorCheck
 def ekdelr(handle, segno, recno):
     """
     Delete a specified record from a specified E-kernel segment.
@@ -2863,6 +3022,7 @@ def ekdelr(handle, segno, recno):
     pass
 
 
+@spiceErrorCheck
 def ekffld(handle, segno, rcptrs):
     """
     Complete a fast write operation on a new E-kernel segment.
@@ -2884,6 +3044,7 @@ def ekffld(handle, segno, rcptrs):
     pass
 
 
+@spiceErrorCheck
 def ekfind(query, lenout):
     """
     Find E-kernel data that satisfy a set of constraints.
@@ -2910,6 +3071,7 @@ def ekfind(query, lenout):
     return nmrows.value, error.value, stypes.toPythonString(errmsg)
 
 
+@spiceErrorCheck
 def ekgc(selidx, row, element, lenout):
     # ekgc has issues grabbing last element/row in column
     """
@@ -2944,6 +3106,7 @@ def ekgc(selidx, row, element, lenout):
     return stypes.toPythonString(cdata), null.value, found.value
 
 
+@spiceErrorCheck
 def ekgd(selidx, row, element):
     """
     Return an element of an entry in a column of double precision type in a
@@ -2974,6 +3137,7 @@ def ekgd(selidx, row, element):
     return ddata.value, null.value, found.value
 
 
+@spiceErrorCheck
 def ekgi(selidx, row, element):
     """
     Return an element of an entry in a column of integer type in a specified
@@ -3004,6 +3168,7 @@ def ekgi(selidx, row, element):
     return idata.value, null.value, found.value
 
 
+@spiceErrorCheck
 def ekifld(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls):
     """
     Initialize a new E-kernel segment to allow fast writing.
@@ -3044,6 +3209,7 @@ def ekifld(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls):
     return segno.value, stypes.vectorToList(recptrs)
 
 
+@spiceErrorCheck
 def ekinsr(handle, segno, recno):
     # Todo: test ekinsr
     """
@@ -3066,6 +3232,7 @@ def ekinsr(handle, segno, recno):
     pass
 
 
+@spiceErrorCheck
 def eklef(fname):
     """
     Load an EK file, making it accessible to the EK readers.
@@ -3083,6 +3250,7 @@ def eklef(fname):
     return handle.value
 
 
+@spiceErrorCheck
 def eknelt(selidx, row):
     # Todo: test eknelt
     """
@@ -3103,6 +3271,7 @@ def eknelt(selidx, row):
     return libspice.eknelt_c(selidx, row)
 
 
+@spiceErrorCheck
 def eknseg(handle):
     """
     Return the number of segments in a specified EK.
@@ -3118,6 +3287,7 @@ def eknseg(handle):
     return libspice.eknseg_c(handle)
 
 
+@spiceErrorCheck
 def ekntab():
     """
     Return the number of loaded EK tables.
@@ -3132,6 +3302,7 @@ def ekntab():
     return n.value
 
 
+@spiceErrorCheck
 def ekopn(fname, ifname, ncomch):
     """
     Open a new E-kernel file and prepare the file for writing.
@@ -3155,6 +3326,7 @@ def ekopn(fname, ifname, ncomch):
     return handle.value
 
 
+@spiceErrorCheck
 def ekopr(fname):
     """
     Open an existing E-kernel file for reading.
@@ -3172,6 +3344,7 @@ def ekopr(fname):
     return handle.value
 
 
+@spiceErrorCheck
 def ekops():
     """
     Open a scratch (temporary) E-kernel file and prepare the file
@@ -3187,6 +3360,7 @@ def ekops():
     return handle.value
 
 
+@spiceErrorCheck
 def ekopw(fname):
     """
     Open an existing E-kernel file for writing.
@@ -3204,6 +3378,7 @@ def ekopw(fname):
     return handle.value
 
 
+@spiceErrorCheck
 def ekpsel(query, msglen, tablen, collen):
     # Todo: test ekpsel
     """
@@ -3255,6 +3430,7 @@ def ekpsel(query, msglen, tablen, collen):
         stypes.toPythonString(errmsg)
 
 
+@spiceErrorCheck
 def ekrcec(handle, segno, recno, column, lenout, nelts=3):
     # Todo: test ekrcec , possible new way to get back 2d char arrays
     """
@@ -3293,6 +3469,7 @@ def ekrcec(handle, segno, recno, column, lenout, nelts=3):
     return nvals.value, stypes.vectorToList(cvals), isnull.value
 
 
+@spiceErrorCheck
 def ekrced(handle, segno, recno, column):
     # Todo: test ekrced
     """
@@ -3326,6 +3503,7 @@ def ekrced(handle, segno, recno, column):
     return nvals.value, stypes.vectorToList(dvals), isnull.value
 
 
+@spiceErrorCheck
 def ekrcei(handle, segno, recno, column):
     # Todo: test ekrcei
     """
@@ -3359,6 +3537,7 @@ def ekrcei(handle, segno, recno, column):
     return nvals.value, stypes.vectorToList(ivals), isnull.value
 
 
+@spiceErrorCheck
 def ekssum(handle, segno):
     """
     Return summary information for a specified segment in a specified EK.
@@ -3379,6 +3558,7 @@ def ekssum(handle, segno):
     return segsum
 
 
+@spiceErrorCheck
 def ektnam(n, lenout):
     """
     Return the name of a specified, loaded table.
@@ -3399,6 +3579,7 @@ def ektnam(n, lenout):
     return stypes.toPythonString(table)
 
 
+@spiceErrorCheck
 def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     # Todo: test ekucec
     """
@@ -3436,6 +3617,7 @@ def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     pass
 
 
+@spiceErrorCheck
 def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
     # Todo: test ekucei
     """
@@ -3470,6 +3652,7 @@ def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
     pass
 
 
+@spiceErrorCheck
 def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
     # Todo: test ekucei
     """
@@ -3504,6 +3687,7 @@ def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
     pass
 
 
+@spiceErrorCheck
 def ekuef(handle):
     """
     Unload an EK file, making its contents inaccessible to the
@@ -3520,6 +3704,7 @@ def ekuef(handle):
     pass
 
 
+@spiceErrorCheck
 def el2cgv(ellipse):
     """
     Convert an ellipse to a center vector and two generating
@@ -3542,6 +3727,7 @@ def el2cgv(ellipse):
         smajor), stypes.vectorToList(sminor)
 
 
+@spiceErrorCheck
 def elemc(item, inset):
     """
     Determine whether an item is an element of a character set.
@@ -3560,6 +3746,7 @@ def elemc(item, inset):
     return libspice.elemc_c(item, ctypes.byref(inset))
 
 
+@spiceErrorCheck
 def elemd(item, inset):
     """
     Determine whether an item is an element of a double precision set.
@@ -3579,6 +3766,7 @@ def elemd(item, inset):
     return libspice.elemd_c(item, ctypes.byref(inset))
 
 
+@spiceErrorCheck
 def elemi(item, inset):
     """
     Determine whether an item is an element of an integer set.
@@ -3598,6 +3786,7 @@ def elemi(item, inset):
     return libspice.elemi_c(item, ctypes.byref(inset))
 
 
+@spiceErrorCheck
 def eqncpv(et, epoch, eqel, rapol, decpol):
     """
     Compute the state (position and velocity of an object whose
@@ -3629,6 +3818,7 @@ def eqncpv(et, epoch, eqel, rapol, decpol):
     return stypes.vectorToList(state)
 
 
+@spiceErrorCheck
 def eqstr(a, b):
     """
     Determine whether two strings are equivalent.
@@ -3796,6 +3986,7 @@ def esrchc(value, array):
     return libspice.esrchc_c(value, ndim, lenvals, array)
 
 
+@spiceErrorCheck
 def et2lst(et, body, lon, typein, timlen, ampmlen):
     """
     Given an ephemeris epoch, compute the local solar time for
@@ -3841,6 +4032,7 @@ def et2lst(et, body, lon, typein, timlen, ampmlen):
         time), stypes.toPythonString(ampm)
 
 
+@spiceErrorCheck
 def et2utc(et, formatStr, prec, lenout):
     """
     Convert an input time from ephemeris seconds past J2000
@@ -3868,6 +4060,7 @@ def et2utc(et, formatStr, prec, lenout):
     return stypes.toPythonString(utcstr)
 
 
+@spiceErrorCheck
 def etcal(et, lenout):
     """
     Convert from an ephemeris epoch measured in seconds past
@@ -3890,6 +4083,7 @@ def etcal(et, lenout):
     return stypes.toPythonString(string)
 
 
+@spiceErrorCheck
 def eul2m(angle3, angle2, angle1, axis3, axis2, axis1):
     """
     Construct a rotation matrix from a set of Euler angles.
@@ -3922,6 +4116,7 @@ def eul2m(angle3, angle2, angle1, axis3, axis2, axis1):
     return stypes.matrixToList(r)
 
 
+@spiceErrorCheck
 def eul2xf(eulang, axisa, axisb, axisc):
     """
     This routine computes a state transformation from an Euler angle
@@ -3951,6 +4146,7 @@ def eul2xf(eulang, axisa, axisb, axisc):
     return stypes.matrixToList(xform)
 
 
+@spiceErrorCheck
 def exists(fname):
     """
     Determine whether a file exists.
@@ -3965,6 +4161,7 @@ def exists(fname):
     return libspice.exists_c(fname)
 
 
+@spiceErrorCheck
 def expool(name):
     """
     Confirm the existence of a kernel variable in the kernel pool.
@@ -3998,6 +4195,7 @@ def failed():
     return libspice.failed_c()
 
 
+@spiceErrorCheck
 def fovray(inst, raydir, rframe, abcorr, observer, et):
     # Unsure if et is returned or not (I vs I/O)
     """
@@ -4033,6 +4231,7 @@ def fovray(inst, raydir, rframe, abcorr, observer, et):
     return visible.value
 
 
+@spiceErrorCheck
 def fovtrg(inst, target, tshape, tframe, abcorr, observer, et):
     # Unsure if et is returned or not (I vs I/O)
     """
@@ -4071,6 +4270,7 @@ def fovtrg(inst, target, tshape, tframe, abcorr, observer, et):
     return visible.value
 
 
+@spiceErrorCheck
 def frame(x):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/frame_c.html
@@ -4088,6 +4288,7 @@ def frame(x):
         z)
 
 
+@spiceErrorCheck
 def frinfo(frcode):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/frinfo_c.html
@@ -4107,6 +4308,7 @@ def frinfo(frcode):
     return cent.value, frclss.value, clssid.value, found.value
 
 
+@spiceErrorCheck
 def frmnam(frcode, lenout=125):
     """
     Retrieve the name of a reference frame associated with a SPICE ID code.
@@ -4127,6 +4329,7 @@ def frmnam(frcode, lenout=125):
     return stypes.toPythonString(frname)
 
 
+@spiceErrorCheck
 def ftncls(unit):
     """
     Close a file designated by a Fortran-style integer logical unit.
@@ -4141,6 +4344,7 @@ def ftncls(unit):
     pass
 
 
+@spiceErrorCheck
 def furnsh(path):
     """
     Load one or more SPICE kernels into a program.
@@ -4163,6 +4367,7 @@ def furnsh(path):
 # G
 
 
+@spiceErrorCheck
 def gcpool(name, start, room, lenout):
     """
     Return the character value of a kernel variable from the kernel pool.
@@ -4194,6 +4399,7 @@ def gcpool(name, start, room, lenout):
     return [stypes.toPythonString(x.value) for x in cvals[0:n.value]], found.value
 
 
+@spiceErrorCheck
 def gdpool(name, start, room):
     """
     Return the d.p. value of a kernel variable from the kernel pool.
@@ -4223,6 +4429,7 @@ def gdpool(name, start, room):
     return stypes.vectorToList(values)[0:n.value], found.value
 
 
+@spiceErrorCheck
 def georec(lon, lat, alt, re, f):
     """
     Convert geodetic coordinates to rectangular coordinates.
@@ -4255,6 +4462,7 @@ def georec(lon, lat, alt, re, f):
 # getcml not really needed
 
 
+@spiceErrorCheck
 def getelm(frstyr, lineln, lines):
     """
     Given a the "lines" of a two-line element set, parse the
@@ -4283,6 +4491,7 @@ def getelm(frstyr, lineln, lines):
     return epoch.value, stypes.vectorToList(elems)
 
 
+@spiceErrorCheck
 def getfat(file):
     """
     Determine the file architecture and file type of most SPICE kernel files.
@@ -4303,6 +4512,7 @@ def getfat(file):
     return stypes.toPythonString(arch), stypes.toPythonString(rettype)
 
 
+@spiceErrorCheck
 def getfov(instid, room, shapelen, framelen):
     """
     This routine returns the field-of-view (FOV) parameters for a
@@ -4364,6 +4574,7 @@ def getmsg(option, lenout):
     return stypes.toPythonString(msg)
 
 
+@spiceErrorCheck
 def gfbail():
     """
     Indicate whether an interrupt signal (SIGINT) has been received.
@@ -4376,6 +4587,7 @@ def gfbail():
     return libspice.gfbail_c()
 
 
+@spiceErrorCheck
 def gfclrh():
     """
     Clear the interrupt signal handler status, so that future calls
@@ -4388,6 +4600,7 @@ def gfclrh():
     pass
 
 
+@spiceErrorCheck
 def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls,
            cnfine, result):
     """
@@ -4442,6 +4655,7 @@ def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls,
 # gfilum
 
 
+@spiceErrorCheck
 def gfinth(sigcode):
     # Todo: test gfinth
     """
@@ -4462,6 +4676,7 @@ def gfinth(sigcode):
 # gfocce  callbacks? cells
 
 
+@spiceErrorCheck
 def gfoclt(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr,
            step, cnfine, result):
     """
@@ -4514,6 +4729,7 @@ def gfoclt(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr,
                       ctypes.byref(result))
 
 
+@spiceErrorCheck
 def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals,
          cnfine, result):
     """
@@ -4565,6 +4781,7 @@ def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals,
     pass
 
 
+@spiceErrorCheck
 def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval,
            adjust, step, nintvals, cnfine, result):
     """
@@ -4621,6 +4838,7 @@ def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval,
     pass
 
 
+@spiceErrorCheck
 def gfrefn(t1, t2, s1, s2):
     # Todo: test gfrefn
     """
@@ -4649,6 +4867,7 @@ def gfrefn(t1, t2, s1, s2):
     return t.value
 
 
+@spiceErrorCheck
 def gfrepf():
     # Todo: test gfrepf
     """
@@ -4661,6 +4880,7 @@ def gfrepf():
     pass
 
 
+@spiceErrorCheck
 def gfrepi(window, begmss, endmss):
     # Todo: test gfrepi
     """
@@ -4683,6 +4903,7 @@ def gfrepi(window, begmss, endmss):
     pass
 
 
+@spiceErrorCheck
 def gfrepu(ivbeg, ivend, time):
     # Todo: test gfrepu
     """
@@ -4705,6 +4926,7 @@ def gfrepu(ivbeg, ivend, time):
     pass
 
 
+@spiceErrorCheck
 def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result):
     # Todo: test gfrfov
     """
@@ -4745,6 +4967,7 @@ def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result):
                       ctypes.byref(cnfine), ctypes.byref(result))
 
 
+@spiceErrorCheck
 def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine,
          result):
     """
@@ -4791,6 +5014,7 @@ def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine,
                     ctypes.byref(result))
 
 
+@spiceErrorCheck
 def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr,
           relate, refval, adjust, step, nintvals, cnfine, result):
     """
@@ -4853,6 +5077,7 @@ def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr,
                      ctypes.byref(cnfine), ctypes.byref(result))
 
 
+@spiceErrorCheck
 def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord,
            relate, refval, adjust, step, nintvals,
            cnfine, result):
@@ -4919,6 +5144,7 @@ def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord,
                       ctypes.byref(result))
 
 
+@spiceErrorCheck
 def gfsstp(step):
     """
     Set the step size to be returned by :func:`gfstep`.
@@ -4933,6 +5159,7 @@ def gfsstp(step):
     pass
 
 
+@spiceErrorCheck
 def gfstep(time):
     """
     Return the time step set by the most recent call to :func:`gfsstp`.
@@ -4950,6 +5177,7 @@ def gfstep(time):
     return step.value
 
 
+@spiceErrorCheck
 def gfstol(value):
     """
     Override the default GF convergence
@@ -4965,6 +5193,7 @@ def gfstol(value):
     pass
 
 
+@spiceErrorCheck
 def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate,
            refval, adjust, step, nintvals, cnfine,
            result):
@@ -5024,6 +5253,7 @@ def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate,
                       ctypes.byref(cnfine), ctypes.byref(result))
 
 
+@spiceErrorCheck
 def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
     # Todo: test gftfov
     """
@@ -5069,6 +5299,7 @@ def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
 # gfuds has call backs
 
 
+@spiceErrorCheck
 def gipool(name, start, room):
     """
     Return the integer value of a kernel variable from the kernel pool.
@@ -5097,6 +5328,7 @@ def gipool(name, start, room):
     return stypes.vectorToList(ivals)[0:n.value], found.value
 
 
+@spiceErrorCheck
 def gnpool(name, start, room, lenout):
     """
     Return names of kernel variables matching a specified template.
@@ -5130,6 +5362,7 @@ def gnpool(name, start, room, lenout):
 # H
 
 
+@spiceErrorCheck
 def halfpi():
     """
     Return half the value of pi (the ratio of the circumference of
@@ -5143,6 +5376,7 @@ def halfpi():
     return libspice.halfpi_c()
 
 
+@spiceErrorCheck
 def hx2dp(string):
     """
     Convert a string representing a double precision number in a
@@ -5173,6 +5407,7 @@ def hx2dp(string):
 # I
 
 
+@spiceErrorCheck
 def ident():
     """
     This routine returns the 3x3 identity matrix.
@@ -5187,6 +5422,7 @@ def ident():
     return stypes.matrixToList(matrix)
 
 
+@spiceErrorCheck
 def illum(target, et, abcorr, obsrvr, spoint):
     """
     Deprecated: This routine has been superseded by the CSPICE
@@ -5227,6 +5463,7 @@ def illum(target, et, abcorr, obsrvr, spoint):
     return phase.value, solar.value, emissn.value
 
 
+@spiceErrorCheck
 def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
     """
     Find the illumination angles (phase, solar incidence, and
@@ -5275,6 +5512,7 @@ def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
         srfvec), phase.value, solar.value, emissn.value
 
 
+@spiceErrorCheck
 def inedpl(a, b, c, plane):
     """
     Find the intersection of a triaxial ellipsoid and a plane.
@@ -5305,6 +5543,7 @@ def inedpl(a, b, c, plane):
     return ellipse, found.value
 
 
+@spiceErrorCheck
 def inelpl(ellips, plane):
     """
     Find the intersection of an ellipse and a plane.
@@ -5331,6 +5570,7 @@ def inelpl(ellips, plane):
     return nxpts.value, stypes.vectorToList(xpt1), stypes.vectorToList(xpt2)
 
 
+@spiceErrorCheck
 def inrypl(vertex, direct, plane):
     """
     Find the intersection of a ray and a plane.
@@ -5359,6 +5599,7 @@ def inrypl(vertex, direct, plane):
     return nxpts.value, stypes.vectorToList(xpt)
 
 
+@spiceErrorCheck
 def insrtc(item, inset):
     """
     Insert an item into a character set.
@@ -5380,6 +5621,7 @@ def insrtc(item, inset):
     pass
 
 
+@spiceErrorCheck
 def insrtd(item, inset):
     """
     Insert an item into a double precision set.
@@ -5401,6 +5643,7 @@ def insrtd(item, inset):
     pass
 
 
+@spiceErrorCheck
 def insrti(item, inset):
     """
     Insert an item into an integer set.
@@ -5422,6 +5665,7 @@ def insrti(item, inset):
     pass
 
 
+@spiceErrorCheck
 def inter(a, b):
     """
     Intersect two sets of any data type to form a third set.
@@ -5451,6 +5695,7 @@ def inter(a, b):
     return c
 
 
+@spiceErrorCheck
 def intmax():
     """
     Return the value of the largest (positive) number representable
@@ -5464,6 +5709,7 @@ def intmax():
     return libspice.intmax_c()
 
 
+@spiceErrorCheck
 def intmin():
     """
     Return the value of the smallest (negative) number representable
@@ -5477,6 +5723,7 @@ def intmin():
     return libspice.intmin_c()
 
 
+@spiceErrorCheck
 def invert(m):
     """
     Generate the inverse of a 3x3 matrix.
@@ -5494,6 +5741,7 @@ def invert(m):
     return stypes.matrixToList(mout)
 
 
+@spiceErrorCheck
 def invort(m):
     """
     Given a matrix, construct the matrix whose rows are the
@@ -5513,6 +5761,7 @@ def invort(m):
     return stypes.matrixToList(mout)
 
 
+@spiceErrorCheck
 def isordv(array, n):
     """
     Determine whether an array of n items contains the integers
@@ -5534,6 +5783,7 @@ def isordv(array, n):
     return libspice.isordv_c(array, n)
 
 
+@spiceErrorCheck
 def isrchc(value, ndim, lenvals, array):
     """
     Search for a given value within a character string array. Return
@@ -5562,6 +5812,7 @@ def isrchc(value, ndim, lenvals, array):
     return libspice.isrchc_c(value, ndim, lenvals, array)
 
 
+@spiceErrorCheck
 def isrchd(value, ndim, array):
     """
     Search for a given value within a double precision array. Return
@@ -5587,6 +5838,7 @@ def isrchd(value, ndim, array):
     return libspice.isrchd_c(value, ndim, array)
 
 
+@spiceErrorCheck
 def isrchi(value, ndim, array):
     """
     Search for a given value within an integer array. Return
@@ -5612,6 +5864,7 @@ def isrchi(value, ndim, array):
     return libspice.isrchi_c(value, ndim, array)
 
 
+@spiceErrorCheck
 def isrot(m, ntol, dtol):
     """
     Indicate whether a 3x3 matrix is a rotation matrix.
@@ -5635,6 +5888,7 @@ def isrot(m, ntol, dtol):
     return libspice.isrot_c(m, ntol, dtol)
 
 
+@spiceErrorCheck
 def iswhsp(string):
     """
     Return a boolean value indicating whether a string contains
@@ -5657,6 +5911,7 @@ def iswhsp(string):
 # J
 
 
+@spiceErrorCheck
 def j1900():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j1900_c.html
@@ -5667,6 +5922,7 @@ def j1900():
     return libspice.j1900_c()
 
 
+@spiceErrorCheck
 def j1950():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j1950_c.html
@@ -5677,6 +5933,7 @@ def j1950():
     return libspice.j1950_c()
 
 
+@spiceErrorCheck
 def j2000():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j2000_c.html
@@ -5687,6 +5944,7 @@ def j2000():
     return libspice.j2000_c()
 
 
+@spiceErrorCheck
 def j2100():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j2100_c.html
@@ -5697,6 +5955,7 @@ def j2100():
     return libspice.j2100_c()
 
 
+@spiceErrorCheck
 def jyear():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/jyear_c.html
@@ -5711,6 +5970,7 @@ def jyear():
 # K
 
 
+@spiceErrorCheck
 def kclear():
     """
     Clear the KEEPER subsystem: unload all kernels, clear the kernel
@@ -5724,6 +5984,7 @@ def kclear():
     pass
 
 
+@spiceErrorCheck
 def kdata(which, kind, fillen, typlen, srclen):
     """
     Return data for the nth kernel that is among a list of specified
@@ -5764,6 +6025,7 @@ def kdata(which, kind, fillen, typlen, srclen):
         filtyp), stypes.toPythonString(source), handle.value, found.value
 
 
+@spiceErrorCheck
 def kinfo(file, typlen, srclen):
     """
     Return information about a loaded kernel specified by name.
@@ -5796,6 +6058,7 @@ def kinfo(file, typlen, srclen):
         source), handle.value, found.value
 
 
+@spiceErrorCheck
 def kplfrm(frmcls, cell_size=1000):
     """
     Return a SPICE set containing the frame IDs of all reference
@@ -5816,6 +6079,7 @@ def kplfrm(frmcls, cell_size=1000):
     return idset
 
 
+@spiceErrorCheck
 def ktotal(kind):
     """
     Return the current number of kernels that have been loaded
@@ -5834,6 +6098,7 @@ def ktotal(kind):
     return count.value
 
 
+@spiceErrorCheck
 def kxtrct(keywd, termlen, terms, nterms, stringlen, substrlen, instring):
     """
     Locate a keyword in a string and extract the substring from
@@ -5882,6 +6147,7 @@ def kxtrct(keywd, termlen, terms, nterms, stringlen, substrlen, instring):
 # L
 
 
+@spiceErrorCheck
 def lastnb(string):
     """
     Return the zero based index of the last non-blank character in
@@ -5897,6 +6163,7 @@ def lastnb(string):
     return libspice.lastnb_c(string)
 
 
+@spiceErrorCheck
 def latcyl(radius, lon, lat):
     """
     Convert from latitudinal coordinates to cylindrical coordinates.
@@ -5921,6 +6188,7 @@ def latcyl(radius, lon, lat):
     return r.value, lonc.value, z.value
 
 
+@spiceErrorCheck
 def latrec(radius, longitude, latitude):
     """
     Convert from latitudinal coordinates to rectangular coordinates.
@@ -5944,6 +6212,7 @@ def latrec(radius, longitude, latitude):
     return stypes.vectorToList(rectan)
 
 
+@spiceErrorCheck
 def latsph(radius, lon, lat):
     """
     Convert from latitudinal coordinates to spherical coordinates.
@@ -5967,6 +6236,7 @@ def latsph(radius, lon, lat):
     return rho.value, colat.value, lons.value
 
 
+@spiceErrorCheck
 def lcase(instr, lenout):
     """
     Convert the characters in a string to lowercase.
@@ -5987,6 +6257,7 @@ def lcase(instr, lenout):
     return stypes.toPythonString(outstr)
 
 
+@spiceErrorCheck
 def ldpool(filename):
     """
     Load the variables contained in a NAIF ASCII kernel file into the
@@ -6002,6 +6273,7 @@ def ldpool(filename):
     pass
 
 
+@spiceErrorCheck
 def lmpool(cvals):
     """
     Load the variables contained in an internal buffer into the
@@ -6019,6 +6291,7 @@ def lmpool(cvals):
     pass
 
 
+@spiceErrorCheck
 def lparse(inlist, delim, nmax):
     """
     Parse a list of items delimited by a single character.
@@ -6045,6 +6318,7 @@ def lparse(inlist, delim, nmax):
     return [stypes.toPythonString(x.value) for x in items[0:n.value]]
 
 
+@spiceErrorCheck
 def lparsm(inlist, delims, nmax, lenout=None):
     """
     Parse a list of items separated by multiple delimiters.
@@ -6073,6 +6347,7 @@ def lparsm(inlist, delims, nmax, lenout=None):
     return [stypes.toPythonString(x.value) for x in items][0:n.value]
 
 
+@spiceErrorCheck
 def lparss(inlist, delims, NMAX=20, LENGTH=50):
     """
     Parse a list of items separated by multiple delimiters, placing the
@@ -6098,6 +6373,7 @@ def lparss(inlist, delims, NMAX=20, LENGTH=50):
     return returnSet
 
 
+@spiceErrorCheck
 def lspcn(body, et, abcorr):
     """
     Compute L_s, the planetocentric longitude of the sun, as seen
@@ -6120,6 +6396,7 @@ def lspcn(body, et, abcorr):
     return libspice.lspcn_c(body, et, abcorr)
 
 
+@spiceErrorCheck
 def lstlec(string, n, lenvals, array):
     """
     Given a character string and an ordered array of character
@@ -6148,6 +6425,7 @@ def lstlec(string, n, lenvals, array):
     return libspice.lstlec_c(string, n, lenvals, array)
 
 
+@spiceErrorCheck
 def lstled(x, n, array):
     """
     Given a number x and an array of non-decreasing floats,
@@ -6170,6 +6448,7 @@ def lstled(x, n, array):
     return libspice.lstled_c(x, n, array)
 
 
+@spiceErrorCheck
 def lstlei(x, n, array):
     """
     Given a number x and an array of non-decreasing ints,
@@ -6192,6 +6471,7 @@ def lstlei(x, n, array):
     return libspice.lstlei_c(x, n, array)
 
 
+@spiceErrorCheck
 def lstltc(string, n, lenvals, array):
     """
     Given a character string and an ordered array of character
@@ -6220,6 +6500,7 @@ def lstltc(string, n, lenvals, array):
     return libspice.lstltc_c(string, n, lenvals, array)
 
 
+@spiceErrorCheck
 def lstltd(x, n, array):
     """
     Given a number x and an array of non-decreasing floats,
@@ -6242,6 +6523,7 @@ def lstltd(x, n, array):
     return libspice.lstltd_c(x, n, array)
 
 
+@spiceErrorCheck
 def lstlti(x, n, array):
     """
     Given a number x and an array of non-decreasing int,
@@ -6264,6 +6546,7 @@ def lstlti(x, n, array):
     return libspice.lstlti_c(x, n, array)
 
 
+@spiceErrorCheck
 def ltime(etobs, obs, direct, targ):
     """
     This routine computes the transmit (or receive) time
@@ -6295,6 +6578,7 @@ def ltime(etobs, obs, direct, targ):
     return ettarg.value, elapsd.value
 
 
+@spiceErrorCheck
 def lx4dec(string, first):
     """
     Scan a string from a specified starting position for the
@@ -6317,6 +6601,7 @@ def lx4dec(string, first):
     return last.value, nchar.value
 
 
+@spiceErrorCheck
 def lx4num(string, first):
     """
     Scan a string from a specified starting position for the
@@ -6339,6 +6624,7 @@ def lx4num(string, first):
     return last.value, nchar.value
 
 
+@spiceErrorCheck
 def lx4sgn(string, first):
     """
     Scan a string from a specified starting position for the
@@ -6361,6 +6647,7 @@ def lx4sgn(string, first):
     return last.value, nchar.value
 
 
+@spiceErrorCheck
 def lx4uns(string, first):
     """
     Scan a string from a specified starting position for the
@@ -6383,6 +6670,7 @@ def lx4uns(string, first):
     return last.value, nchar.value
 
 
+@spiceErrorCheck
 def lxqstr(string, qchar, first):
     """
     Lex (scan) a quoted string.
@@ -6412,6 +6700,7 @@ def lxqstr(string, qchar, first):
 # M
 
 
+@spiceErrorCheck
 def m2eul(r, axis3, axis2, axis1):
     """
     Factor a rotation matrix as a product of three rotations
@@ -6442,6 +6731,7 @@ def m2eul(r, axis3, axis2, axis1):
     return angle3.value, angle2.value, angle1.value
 
 
+@spiceErrorCheck
 def m2q(r):
     """
     Find a unit quaternion corresponding to a specified rotation matrix.
@@ -6459,6 +6749,7 @@ def m2q(r):
     return stypes.vectorToList(q)
 
 
+@spiceErrorCheck
 def matchi(string, templ, wstr, wchr):
     """
     Determine whether a string is matched by a template containing wild cards.
@@ -6484,6 +6775,7 @@ def matchi(string, templ, wstr, wchr):
     return libspice.matchi_c(string, templ, wstr, wchr)
 
 
+@spiceErrorCheck
 def matchw(string, templ, wstr, wchr):
     # ctypes.c_char(wstr.encode(encoding='UTF-8')
     """
@@ -6517,6 +6809,7 @@ def matchw(string, templ, wstr, wchr):
 # odd as arguments must be parsed and not really important
 
 
+@spiceErrorCheck
 def mequ(m1):
     """
     Set one double precision 3x3 matrix equal to another.
@@ -6534,6 +6827,7 @@ def mequ(m1):
     return stypes.matrixToList(mout)
 
 
+@spiceErrorCheck
 def mequg(m1, nr, nc):
     """
     Set one double precision matrix of arbitrary size equal to another.
@@ -6565,6 +6859,7 @@ def mequg(m1, nr, nc):
 # odd as arguments must be parsed and not really important
 
 
+@spiceErrorCheck
 def mtxm(m1, m2):
     """
     Multiply the transpose of a 3x3 matrix and a 3x3 matrix.
@@ -6585,6 +6880,7 @@ def mtxm(m1, m2):
     return stypes.matrixToList(mout)
 
 
+@spiceErrorCheck
 def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
     """
     Multiply the transpose of a matrix with
@@ -6615,6 +6911,7 @@ def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
     return stypes.matrixToList(mout)
 
 
+@spiceErrorCheck
 def mtxv(m1, vin):
     """
     Multiplies the transpose of a 3x3 matrix
@@ -6636,6 +6933,7 @@ def mtxv(m1, vin):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def mtxvg(m1, v2, ncol1, nr1r2):
     """
     Multiply the transpose of a matrix and
@@ -6663,6 +6961,7 @@ def mtxvg(m1, v2, ncol1, nr1r2):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def mxm(m1, m2):
     """
     Multiply two 3x3 matrices.
@@ -6683,6 +6982,7 @@ def mxm(m1, m2):
     return stypes.matrixToList(mout)
 
 
+@spiceErrorCheck
 def mxmg(m1, m2, nrow1, ncol1, ncol2):
     """
     Multiply two double precision matrices of arbitrary size.
@@ -6712,6 +7012,7 @@ def mxmg(m1, m2, nrow1, ncol1, ncol2):
     return stypes.matrixToList(mout)
 
 
+@spiceErrorCheck
 def mxmt(m1, m2):
     """
     Multiply a 3x3 matrix and the transpose of another 3x3 matrix.
@@ -6732,6 +7033,7 @@ def mxmt(m1, m2):
     return stypes.matrixToList(mout)
 
 
+@spiceErrorCheck
 def mxmtg(m1, m2, nrow1, nc1c2, nrow2):
     """
     Multiply a matrix and the transpose of a matrix, both of arbitrary size.
@@ -6761,6 +7063,7 @@ def mxmtg(m1, m2, nrow1, nc1c2, nrow2):
     return stypes.matrixToList(mout)
 
 
+@spiceErrorCheck
 def mxv(m1, vin):
     """
     Multiply a 3x3 double precision matrix with a
@@ -6782,6 +7085,7 @@ def mxv(m1, vin):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def mxvg(m1, v2, nrow1, nc1r2):
     """
     Multiply a matrix and a vector of arbitrary size.
@@ -6812,6 +7116,7 @@ def mxvg(m1, v2, nrow1, nc1r2):
 # N
 
 
+@spiceErrorCheck
 def namfrm(frname):
     """
     Look up the frame ID code associated with a string.
@@ -6829,6 +7134,7 @@ def namfrm(frname):
     return frcode.value
 
 
+@spiceErrorCheck
 def ncpos(string, chars, start):
     """
     Find the first occurrence in a string of a character NOT belonging
@@ -6852,6 +7158,7 @@ def ncpos(string, chars, start):
     return libspice.ncpos_c(string, chars, start)
 
 
+@spiceErrorCheck
 def ncposr(string, chars, start):
     """ 
     Find the first occurrence in a string of a character NOT belonging to a
@@ -6875,6 +7182,7 @@ def ncposr(string, chars, start):
     return libspice.ncposr_c(string, chars, start)
 
 
+@spiceErrorCheck
 def nearpt(positn, a, b, c):
     """ 
     locates the point on the surface of an ellipsoid that is nearest to a
@@ -6906,6 +7214,7 @@ def nearpt(positn, a, b, c):
     return stypes.vectorToList(npoint), alt.value
 
 
+@spiceErrorCheck
 def npedln(a, b, c, linept, linedr):
     """ 
     Find nearest point on a triaxial ellipsoid to a specified
@@ -6937,6 +7246,7 @@ def npedln(a, b, c, linept, linedr):
     return stypes.vectorToList(pnear), dist.value
 
 
+@spiceErrorCheck
 def npelpt(point, ellips):
     """
     Find the nearest point on an ellipse to a specified point, both
@@ -6959,6 +7269,7 @@ def npelpt(point, ellips):
     return stypes.vectorToList(pnear), dist.value
 
 
+@spiceErrorCheck
 def nplnpt(linpt, lindir, point):
     """ 
     Find the nearest point on a line to a specified point,
@@ -6986,6 +7297,7 @@ def nplnpt(linpt, lindir, point):
     return stypes.vectorToList(pnear), dist.value
 
 
+@spiceErrorCheck
 def nvc2pl(normal, constant):
     """
     Make a plane from a normal vector and a constant.
@@ -7006,6 +7318,7 @@ def nvc2pl(normal, constant):
     return plane
 
 
+@spiceErrorCheck
 def nvp2pl(normal, point):
     """
     Make a plane from a normal vector and a point.
@@ -7029,6 +7342,7 @@ def nvp2pl(normal, point):
 ################################################################################
 # O
 
+@spiceErrorCheck
 def occult(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer,
            et):
     """
@@ -7074,6 +7388,7 @@ def occult(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer,
     return occult_code.value
 
 
+@spiceErrorCheck
 def ordc(item, inset):
     """
     The function returns the ordinal position of any given item in a
@@ -7096,6 +7411,7 @@ def ordc(item, inset):
     return libspice.ordc_c(item, ctypes.byref(inset))
 
 
+@spiceErrorCheck
 def ordd(item, inset):
     """
     The function returns the ordinal position of any given item in a
@@ -7117,6 +7433,7 @@ def ordd(item, inset):
     return libspice.ordd_c(item, ctypes.byref(inset))
 
 
+@spiceErrorCheck
 def ordi(item, inset):
     """
     The function returns the ordinal position of any given item in an
@@ -7139,6 +7456,7 @@ def ordi(item, inset):
     return libspice.ordi_c(item, ctypes.byref(inset))
 
 
+@spiceErrorCheck
 def orderc(array, ndim=None):
     """
     Determine the order of elements in an array of character strings.
@@ -7163,6 +7481,7 @@ def orderc(array, ndim=None):
     return stypes.vectorToList(iorder)
 
 
+@spiceErrorCheck
 def orderd(array, ndim=None):
     """
     Determine the order of elements in a double precision array.
@@ -7186,6 +7505,7 @@ def orderd(array, ndim=None):
     return stypes.vectorToList(iorder)
 
 
+@spiceErrorCheck
 def orderi(array, ndim=None):
     """
     Determine the order of elements in an integer array.
@@ -7209,6 +7529,7 @@ def orderi(array, ndim=None):
     return stypes.vectorToList(iorder)
 
 
+@spiceErrorCheck
 def oscelt(state, et, mu):
     """
     Determine the set of osculating conic orbital elements that
@@ -7238,6 +7559,7 @@ def oscelt(state, et, mu):
 # P
 
 
+@spiceErrorCheck
 def pckcov(pck, idcode, cover):
     """
     Find the coverage window for a specified reference frame in a
@@ -7259,6 +7581,7 @@ def pckcov(pck, idcode, cover):
     libspice.pckcov_c(pck, idcode, ctypes.byref(cover))
 
 
+@spiceErrorCheck
 def pckfrm(pck, ids):
     """
     Find the set of reference frame class ID codes of all frames
@@ -7277,6 +7600,7 @@ def pckfrm(pck, ids):
     libspice.pckfrm_c(pck, ctypes.byref(ids))
 
 
+@spiceErrorCheck
 def pcklof(filename):
     """
     Load a binary PCK file for use by the readers.  Return the
@@ -7296,6 +7620,7 @@ def pcklof(filename):
     return handle.value
 
 
+@spiceErrorCheck
 def pckuof(handle):
     """
     Unload a binary PCK file so that it will no longer be searched by
@@ -7311,6 +7636,7 @@ def pckuof(handle):
     pass
 
 
+@spiceErrorCheck
 def pcpool(name, cvals):
     """
     This entry point provides toolkit programmers a method for
@@ -7331,6 +7657,7 @@ def pcpool(name, cvals):
     libspice.pcpool_c(name, n, lenvals, cvals)
 
 
+@spiceErrorCheck
 def pdpool(name, dvals):
     """
     This entry point provides toolkit programmers a method for
@@ -7350,6 +7677,7 @@ def pdpool(name, dvals):
     libspice.pdpool_c(name, n, dvals)
 
 
+@spiceErrorCheck
 def pgrrec(body, lon, lat, alt, re, f):
     """
     Convert planetographic coordinates to rectangular coordinates.
@@ -7382,6 +7710,7 @@ def pgrrec(body, lon, lat, alt, re, f):
     return stypes.vectorToList(rectan)
 
 
+@spiceErrorCheck
 def phaseq(et, target, illmn, obsrvr, abcorr):
     """
     Compute the apparent phase angle for a target, observer,
@@ -7410,6 +7739,7 @@ def phaseq(et, target, illmn, obsrvr, abcorr):
     return libspice.phaseq_c(et, target, illmn, obsrvr, abcorr)
 
 
+@spiceErrorCheck
 def pi():
     """
     Return the value of pi (the ratio of the circumference of
@@ -7423,6 +7753,7 @@ def pi():
     return libspice.pi_c()
 
 
+@spiceErrorCheck
 def pipool(name, ivals):
     """
     This entry point provides toolkit programmers a method for
@@ -7441,6 +7772,7 @@ def pipool(name, ivals):
     libspice.pipool_c(name, n, ivals)
 
 
+@spiceErrorCheck
 def pjelpl(elin, plane):
     """
     Project an ellipse onto a plane, orthogonally.
@@ -7462,6 +7794,7 @@ def pjelpl(elin, plane):
     return elout
 
 
+@spiceErrorCheck
 def pl2nvc(plane):
     """
     Return a unit normal vector and constant that define a specified plane.
@@ -7482,6 +7815,7 @@ def pl2nvc(plane):
     return stypes.vectorToList(normal), constant.value
 
 
+@spiceErrorCheck
 def pl2nvp(plane):
     """
     Return a unit normal vector and point that define a specified plane.
@@ -7501,6 +7835,7 @@ def pl2nvp(plane):
     return stypes.vectorToList(normal), stypes.vectorToList(point)
 
 
+@spiceErrorCheck
 def pl2psv(plane):
     """
     Return a point and two orthogonal spanning vectors that generate
@@ -7524,6 +7859,7 @@ def pl2psv(plane):
         span1), stypes.vectorToList(span2)
 
 
+@spiceErrorCheck
 def pos(string, substr, start):
     """
     Find the first occurrence in a string of a substring, starting at
@@ -7548,6 +7884,7 @@ def pos(string, substr, start):
     return libspice.pos_c(string, substr, start)
 
 
+@spiceErrorCheck
 def posr(string, substr, start):
     """
     Find the first occurrence in a string of a substring, starting at
@@ -7576,6 +7913,7 @@ def posr(string, substr, start):
 # skip for no as this is not really an important function for python users
 
 
+@spiceErrorCheck
 def prop2b(gm, pvinit, dt):
     """
     Given a central mass and the state of massless body at time t_0,
@@ -7601,6 +7939,7 @@ def prop2b(gm, pvinit, dt):
     return stypes.vectorToList(pvprop)
 
 
+@spiceErrorCheck
 def prsdp(string):
     """
     Parse a string as a double precision number, encapsulating error handling.
@@ -7618,6 +7957,7 @@ def prsdp(string):
     return dpval.value
 
 
+@spiceErrorCheck
 def prsint(string):
     """
     Parse a string as an integer, encapsulating error handling.
@@ -7635,6 +7975,7 @@ def prsint(string):
     return intval.value
 
 
+@spiceErrorCheck
 def psv2pl(point, span1, span2):
     """
     Make a CSPICE plane from a point and two spanning vectors.
@@ -7661,6 +8002,7 @@ def psv2pl(point, span1, span2):
 # skip putcml, is this really needed for python users?
 
 
+@spiceErrorCheck
 def pxform(fromstr, tostr, et):
     """
     Return the matrix that transforms position vectors from one
@@ -7685,6 +8027,7 @@ def pxform(fromstr, tostr, et):
     return stypes.matrixToList(rotatematrix)
 
 
+@spiceErrorCheck
 def pxfrm2(frame_from, frame_to, etfrom, etto):
     """
     Return the 3x3 matrix that transforms position vectors from one
@@ -7717,6 +8060,7 @@ def pxfrm2(frame_from, frame_to, etfrom, etto):
 # Q
 
 
+@spiceErrorCheck
 def q2m(q):
     """
     Find the rotation matrix corresponding to a specified unit quaternion.
@@ -7734,6 +8078,7 @@ def q2m(q):
     return stypes.matrixToList(mout)
 
 
+#@spiceErrorCheck
 def qcktrc(tracelen):
     """
     Return a string containing a traceback.
@@ -7751,6 +8096,7 @@ def qcktrc(tracelen):
     return stypes.toPythonString(tracestr)
 
 
+@spiceErrorCheck
 def qdq2av(q, dq):
     """
     Derive angular velocity from a unit quaternion and its derivative
@@ -7772,6 +8118,7 @@ def qdq2av(q, dq):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def qxq(q1, q2):
     """
     Multiply two quaternions.
@@ -7796,6 +8143,7 @@ def qxq(q1, q2):
 # R
 
 
+@spiceErrorCheck
 def radrec(inrange, re, dec):
     """
     Convert from range, right ascension, and declination to rectangular
@@ -7820,6 +8168,7 @@ def radrec(inrange, re, dec):
     return stypes.vectorToList(rectan)
 
 
+@spiceErrorCheck
 def rav2xf(rot, av):
     """
     This routine determines a state transformation matrix
@@ -7842,6 +8191,7 @@ def rav2xf(rot, av):
     return stypes.matrixToList(xform)
 
 
+@spiceErrorCheck
 def raxisa(matrix):
     """
     Compute the axis of the rotation given by an input matrix
@@ -7861,6 +8211,7 @@ def raxisa(matrix):
     return stypes.vectorToList(axis), angle.value
 
 
+@spiceErrorCheck
 def rdtext(file, lenout):  # pragma: no cover
     """
     Read the next line of text from a text file.
@@ -7882,6 +8233,7 @@ def rdtext(file, lenout):  # pragma: no cover
     return stypes.toPythonString(line), eof.value
 
 
+@spiceErrorCheck
 def reccyl(rectan):
     """
     Convert from rectangular to cylindrical coordinates.
@@ -7905,6 +8257,7 @@ def reccyl(rectan):
     return radius.value, lon.value, z.value
 
 
+@spiceErrorCheck
 def recgeo(rectan, re, f):
     """
     Convert from rectangular coordinates to geodetic coordinates.
@@ -7934,6 +8287,7 @@ def recgeo(rectan, re, f):
     return longitude.value, latitude.value, alt.value
 
 
+@spiceErrorCheck
 def reclat(rectan):
     """
     Convert from rectangular coordinates to latitudinal coordinates.
@@ -7954,6 +8308,7 @@ def reclat(rectan):
     return radius.value, longitude.value, latitude.value
 
 
+@spiceErrorCheck
 def recpgr(body, rectan, re, f):
     """
     Convert rectangular coordinates to planetographic coordinates.
@@ -7986,6 +8341,7 @@ def recpgr(body, rectan, re, f):
     return lon.value, lat.value, alt.value
 
 
+@spiceErrorCheck
 def recrad(rectan):
     """
     Convert rectangular coordinates to range, right ascension, and declination.
@@ -8009,6 +8365,7 @@ def recrad(rectan):
     return outrange.value, ra.value, dec.value
 
 
+@spiceErrorCheck
 def recsph(rectan):
     """
     Convert from rectangular coordinates to spherical coordinates.
@@ -8032,6 +8389,7 @@ def recsph(rectan):
     return r.value, colat.value, lon.value
 
 
+@spiceErrorCheck
 def removc(item, inset):
     """
     Remove an item from a character set.
@@ -8050,6 +8408,7 @@ def removc(item, inset):
     pass
 
 
+@spiceErrorCheck
 def removd(item, inset):
     """
     Remove an item from a double precision set.
@@ -8068,6 +8427,7 @@ def removd(item, inset):
     pass
 
 
+@spiceErrorCheck
 def removi(item, inset):
     """
     Remove an item from an integer set.
@@ -8086,6 +8446,7 @@ def removi(item, inset):
     pass
 
 
+@spiceErrorCheck
 def reordc(iorder, ndim, lenvals, array):
     """
     Re-order the elements of an array of character strings
@@ -8112,6 +8473,7 @@ def reordc(iorder, ndim, lenvals, array):
     return [stypes.toPythonString(x.value) for x in array]
 
 
+@spiceErrorCheck
 def reordd(iorder, ndim, array):
     """
     Re-order the elements of a double precision array according to
@@ -8135,6 +8497,7 @@ def reordd(iorder, ndim, array):
     return stypes.vectorToList(array)
 
 
+@spiceErrorCheck
 def reordi(iorder, ndim, array):
     """
     Re-order the elements of an integer array according to
@@ -8158,6 +8521,7 @@ def reordi(iorder, ndim, array):
     return stypes.vectorToList(array)
 
 
+@spiceErrorCheck
 def reordl(iorder, ndim, array):
     """
     Re-order the elements of a logical (Boolean) array according to
@@ -8181,6 +8545,7 @@ def reordl(iorder, ndim, array):
     return stypes.vectorToList(array)
 
 
+@spiceErrorCheck
 def repmc(instr, marker, value, lenout=None):
     """
     Replace a marker with a character string.
@@ -8208,6 +8573,7 @@ def repmc(instr, marker, value, lenout=None):
     return stypes.toPythonString(out)
 
 
+@spiceErrorCheck
 def repmct(instr, marker, value, repcase, lenout=None):
     """
     Replace a marker with the text representation of a
@@ -8239,6 +8605,7 @@ def repmct(instr, marker, value, repcase, lenout=None):
     return stypes.toPythonString(out)
 
 
+@spiceErrorCheck
 def repmd(instr, marker, value, sigdig):
     """
     Replace a marker with a double precision number.
@@ -8266,6 +8633,7 @@ def repmd(instr, marker, value, sigdig):
     return stypes.toPythonString(out)
 
 
+@spiceErrorCheck
 def repmf(instr, marker, value, sigdig, informat, lenout=None):
     """
     Replace a marker in a string with a formatted double precision value.
@@ -8299,6 +8667,7 @@ def repmf(instr, marker, value, sigdig, informat, lenout=None):
     return stypes.toPythonString(out)
 
 
+@spiceErrorCheck
 def repmi(instr, marker, value, lenout=None):
     """
     Replace a marker with an integer.
@@ -8326,6 +8695,7 @@ def repmi(instr, marker, value, lenout=None):
     return stypes.toPythonString(out)
 
 
+@spiceErrorCheck
 def repmot(instr, marker, value, repcase, lenout=None):
     """
     Replace a marker with the text representation of an ordinal number.
@@ -8369,6 +8739,7 @@ def reset():
     pass
 
 
+@spiceErrorCheck
 def return_c():
     """
     True if SPICE routines should return immediately upon entry.
@@ -8381,6 +8752,7 @@ def return_c():
     return libspice.return_c()
 
 
+@spiceErrorCheck
 def rotate(angle, iaxis):
     """
     Calculate the 3x3 rotation matrix generated by a rotation
@@ -8403,6 +8775,7 @@ def rotate(angle, iaxis):
     return stypes.matrixToList(mout)
 
 
+@spiceErrorCheck
 def rotmat(m1, angle, iaxis):
     """
     Rotmat applies a rotation of angle radians about axis iaxis to a
@@ -8428,6 +8801,7 @@ def rotmat(m1, angle, iaxis):
     return stypes.matrixToList(mout)
 
 
+@spiceErrorCheck
 def rotvec(v1, angle, iaxis):
     """
     Transform a vector to a new coordinate system rotated by angle
@@ -8453,6 +8827,7 @@ def rotvec(v1, angle, iaxis):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def rpd():
     """
     Return the number of radians per degree.
@@ -8465,6 +8840,7 @@ def rpd():
     return libspice.rpd_c()
 
 
+@spiceErrorCheck
 def rquad(a, b, c):
     """
     Find the roots of a quadratic equation.
@@ -8493,6 +8869,7 @@ def rquad(a, b, c):
 # S
 
 
+@spiceErrorCheck
 def saelgv(vec1, vec2):
     """
     Find semi-axis vectors of an ellipse generated by two arbitrary
@@ -8515,6 +8892,7 @@ def saelgv(vec1, vec2):
     return stypes.vectorToList(smajor), stypes.vectorToList(sminor)
 
 
+@spiceErrorCheck
 def scard(incard, cell):
     """
     Set the cardinality of a SPICE cell of any data type.
@@ -8534,6 +8912,7 @@ def scard(incard, cell):
     return cell
 
 
+@spiceErrorCheck
 def scdecd(sc, sclkdp, lenout, MXPART=None):
     # todo: figure out how to use mxpart, and test scdecd
     """
@@ -8561,6 +8940,7 @@ def scdecd(sc, sclkdp, lenout, MXPART=None):
     return stypes.toPythonString(sclkch)
 
 
+@spiceErrorCheck
 def sce2c(sc, et):
     """
     Convert ephemeris seconds past J2000 (ET) to continuous encoded
@@ -8585,6 +8965,7 @@ def sce2c(sc, et):
     return sclkdp.value
 
 
+@spiceErrorCheck
 def sce2s(sc, et, lenout):
     """
     Convert an epoch specified as ephemeris seconds past J2000 (ET) to a
@@ -8609,6 +8990,7 @@ def sce2s(sc, et, lenout):
     return stypes.toPythonString(sclkch)
 
 
+@spiceErrorCheck
 def sce2t(sc, et):
     """
     Convert ephemeris seconds past J2000 (ET) to integral
@@ -8632,6 +9014,7 @@ def sce2t(sc, et):
     return sclkdp.value
 
 
+@spiceErrorCheck
 def scencd(sc, sclkch, MXPART=None):
     """
     Encode character representation of spacecraft clock time into a
@@ -8655,6 +9038,7 @@ def scencd(sc, sclkch, MXPART=None):
     return sclkdp.value
 
 
+@spiceErrorCheck
 def scfmt(sc, ticks, lenout):
     """
     Convert encoded spacecraft clock ticks to character clock format.
@@ -8678,6 +9062,7 @@ def scfmt(sc, ticks, lenout):
     return stypes.toPythonString(clkstr)
 
 
+@spiceErrorCheck
 def scpart(sc):
     """
     Get spacecraft clock partition information from a spacecraft
@@ -8702,6 +9087,7 @@ def scpart(sc):
         pstop)[0:nparts.value]
 
 
+@spiceErrorCheck
 def scs2e(sc, sclkch):
     """
     Convert a spacecraft clock string to ephemeris seconds past J2000 (ET).
@@ -8722,6 +9108,7 @@ def scs2e(sc, sclkch):
     return et.value
 
 
+@spiceErrorCheck
 def sct2e(sc, sclkdp):
     """
     Convert encoded spacecraft clock ("ticks") to ephemeris
@@ -8743,6 +9130,7 @@ def sct2e(sc, sclkdp):
     return et.value
 
 
+@spiceErrorCheck
 def sctiks(sc, clkstr):
     """
     Convert a spacecraft clock format string to number of "ticks".
@@ -8763,6 +9151,7 @@ def sctiks(sc, clkstr):
     return ticks.value
 
 
+@spiceErrorCheck
 def sdiff(a, b):
     """
     Take the symmetric difference of two sets of any data type to form a
@@ -8793,6 +9182,7 @@ def sdiff(a, b):
     return c
 
 
+@spiceErrorCheck
 def set_c(a, op, b):
     """
     Given a relational operator, compare two sets of any data type.
@@ -8816,6 +9206,7 @@ def set_c(a, op, b):
     return libspice.set_c(ctypes.byref(a), op, ctypes.byref(b))
 
 
+@spiceErrorCheck
 def setmsg(message):
     """
     Set the value of the current long error message.
@@ -8830,6 +9221,7 @@ def setmsg(message):
     pass
 
 
+@spiceErrorCheck
 def shellc(ndim, lenvals, array):
     # This works! looks like this is a mutable 2d char array
     """
@@ -8854,6 +9246,7 @@ def shellc(ndim, lenvals, array):
     return stypes.vectorToList(array)
 
 
+@spiceErrorCheck
 def shelld(ndim, array):
     # Works!, use this as example for "I/O" parameters
     """
@@ -8874,6 +9267,7 @@ def shelld(ndim, array):
     return stypes.vectorToList(array)
 
 
+@spiceErrorCheck
 def shelli(ndim, array):
     # Works!, use this as example for "I/O" parameters
     """
@@ -8909,6 +9303,7 @@ def sigerr(message):
     pass
 
 
+@spiceErrorCheck
 def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
     """
     Given an observer and a direction vector defining a ray, compute
@@ -8961,6 +9356,7 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
         srfvec), found.value
 
 
+@spiceErrorCheck
 def size(cell):
     """
     Return the size (maximum cardinality) of a SPICE cell of any
@@ -8977,6 +9373,7 @@ def size(cell):
     return libspice.size_c(ctypes.byref(cell))
 
 
+@spiceErrorCheck
 def spd():
     """
     Return the number of seconds in a day.
@@ -8989,6 +9386,7 @@ def spd():
     return libspice.spd_c()
 
 
+@spiceErrorCheck
 def sphcyl(radius, colat, slon):
     """
     This routine converts from spherical coordinates to cylindrical
@@ -9019,6 +9417,7 @@ def sphcyl(radius, colat, slon):
     return r.value, lon.value, z.value
 
 
+@spiceErrorCheck
 def sphlat(r, colat, lons):
     """
     Convert from spherical coordinates to latitudinal coordinates.
@@ -9048,6 +9447,7 @@ def sphlat(r, colat, lons):
     return radius.value, lon.value, lat.value
 
 
+@spiceErrorCheck
 def sphrec(r, colat, lon):
     """
     Convert from spherical coordinates to rectangular coordinates.
@@ -9071,6 +9471,7 @@ def sphrec(r, colat, lon):
     return stypes.vectorToList(rectan)
 
 
+@spiceErrorCheck
 def spkacs(targ, et, ref, abcorr, obs):
     """
     Return the state (position and velocity) of a target body
@@ -9109,6 +9510,7 @@ def spkacs(targ, et, ref, abcorr, obs):
     return stypes.vectorToList(starg), lt.value, dlt.value
 
 
+@spiceErrorCheck
 def spkapo(targ, et, ref, sobs, abcorr):
     """
     Return the position of a target body relative to an observer,
@@ -9142,6 +9544,7 @@ def spkapo(targ, et, ref, sobs, abcorr):
     return stypes.vectorToList(ptarg), lt.value
 
 
+@spiceErrorCheck
 def spkapp(targ, et, ref, sobs, abcorr):
     """
     Deprecated: This routine has been superseded by :func:`spkaps`. This
@@ -9179,6 +9582,7 @@ def spkapp(targ, et, ref, sobs, abcorr):
     return stypes.vectorToList(starg), lt.value
 
 
+@spiceErrorCheck
 def spkaps(targ, et, ref, abcorr, stobs, accobs):
     """
     Given the state and acceleration of an observer relative to the
@@ -9225,6 +9629,7 @@ def spkaps(targ, et, ref, abcorr, stobs, accobs):
     return stypes.vectorToList(starg), lt.value, dlt.value
 
 
+@spiceErrorCheck
 def spk14a(handle, ncsets, coeffs, epochs):
     """
     Add data to a type 14 SPK segment associated with handle. See
@@ -9249,6 +9654,7 @@ def spk14a(handle, ncsets, coeffs, epochs):
     pass
 
 
+@spiceErrorCheck
 def spk14b(handle, segid, body, center, framename, first, last, chbdeg):
     """
     Begin a type 14 SPK segment in the SPK file associated with
@@ -9286,6 +9692,7 @@ def spk14b(handle, segid, body, center, framename, first, last, chbdeg):
     pass
 
 
+@spiceErrorCheck
 def spk14e(handle):
     """
     End the type 14 SPK segment currently being written to the SPK
@@ -9301,6 +9708,7 @@ def spk14e(handle):
     pass
 
 
+@spiceErrorCheck
 def spkcls(handle):
     """
     Close an open SPK file.
@@ -9315,6 +9723,7 @@ def spkcls(handle):
     pass
 
 
+@spiceErrorCheck
 def spkcov(spk, idcode, cover):
     """
     Find the coverage window for a specified ephemeris object in a
@@ -9336,6 +9745,7 @@ def spkcov(spk, idcode, cover):
     libspice.spkcov_c(spk, idcode, ctypes.byref(cover))
 
 
+@spiceErrorCheck
 def spkcpo(target, et, outref, refloc, abcorr, obspos, obsctr, obsref):
     """
     Return the state of a specified target relative to an "observer,"
@@ -9381,6 +9791,7 @@ def spkcpo(target, et, outref, refloc, abcorr, obspos, obsctr, obsref):
     return stypes.vectorToList(state), lt.value
 
 
+@spiceErrorCheck
 def spkcpt(trgpos, trgctr, trgref, et, outref, refloc, abcorr, obsrvr):
     """
     Return the state, relative to a specified observer, of a target
@@ -9425,6 +9836,7 @@ def spkcpt(trgpos, trgctr, trgref, et, outref, refloc, abcorr, obsrvr):
     return stypes.vectorToList(state), lt.value
 
 
+@spiceErrorCheck
 def spkcvo(target, et, outref, refloc, abcorr, obssta, obsepc, obsctr, obsref):
     """
     Return the state of a specified target relative to an "observer,"
@@ -9473,6 +9885,7 @@ def spkcvo(target, et, outref, refloc, abcorr, obssta, obsepc, obsctr, obsref):
     return stypes.vectorToList(state), lt.value
 
 
+@spiceErrorCheck
 def spkcvt(trgsta, trgepc, trgctr, trgref, et, outref, refloc, abcorr, obsrvr):
     """
     Return the state, relative to a specified observer, of a target
@@ -9521,6 +9934,7 @@ def spkcvt(trgsta, trgepc, trgctr, trgref, et, outref, refloc, abcorr, obsrvr):
     return stypes.vectorToList(state), lt.value
 
 
+@spiceErrorCheck
 def spkez(targ, et, ref, abcorr, obs):
     """
     Return the state (position and velocity) of a target body
@@ -9555,6 +9969,7 @@ def spkez(targ, et, ref, abcorr, obs):
     return stypes.vectorToList(starg), lt.value
 
 
+@spiceErrorCheck
 def spkezp(targ, et, ref, abcorr, obs):
     """
     Return the position of a target body relative to an observing
@@ -9589,6 +10004,7 @@ def spkezp(targ, et, ref, abcorr, obs):
     return stypes.vectorToList(ptarg), lt.value
 
 
+@spiceErrorCheck
 def spkezr(targ, et, ref, abcorr, obs):
     """
     Return the state (position and velocity) of a target body
@@ -9623,6 +10039,7 @@ def spkezr(targ, et, ref, abcorr, obs):
     return stypes.vectorToList(starg), lt.value
 
 
+@spiceErrorCheck
 def spkgeo(targ, et, ref, obs):
     """
     Compute the geometric state (position and velocity) of a target
@@ -9651,6 +10068,7 @@ def spkgeo(targ, et, ref, obs):
     return stypes.vectorToList(state), lt.value
 
 
+@spiceErrorCheck
 def spkgps(targ, et, ref, obs):
     """
     Compute the geometric position of a target body relative to an
@@ -9679,6 +10097,7 @@ def spkgps(targ, et, ref, obs):
     return stypes.vectorToList(position), lt.value
 
 
+@spiceErrorCheck
 def spklef(filename):
     """
     Load an ephemeris file for use by the readers.  Return that file's
@@ -9697,6 +10116,7 @@ def spklef(filename):
     return handle.value
 
 
+@spiceErrorCheck
 def spkltc(targ, et, ref, abcorr, stobs):
     """
     Return the state (position and velocity) of a target body
@@ -9734,6 +10154,7 @@ def spkltc(targ, et, ref, abcorr, stobs):
     return stypes.vectorToList(starg), lt.value, dlt.value
 
 
+@spiceErrorCheck
 def spkobj(spk, ids):
     """
     Find the set of ID codes of all objects in a specified SPK file.
@@ -9751,6 +10172,7 @@ def spkobj(spk, ids):
     libspice.spkobj_c(spk, ctypes.byref(ids))
 
 
+@spiceErrorCheck
 def spkopa(filename):
     # Todo: test spkopa
     """
@@ -9769,6 +10191,7 @@ def spkopa(filename):
     return handle.value
 
 
+@spiceErrorCheck
 def spkopn(filename, ifname, ncomch):
     """
     Create a new SPK file, returning the handle of the opened file.
@@ -9792,6 +10215,7 @@ def spkopn(filename, ifname, ncomch):
     return handle.value
 
 
+@spiceErrorCheck
 def spkpds(body, center, framestr, typenum, first, last):
     # Todo: test spkpds
     """
@@ -9826,6 +10250,7 @@ def spkpds(body, center, framestr, typenum, first, last):
     return stypes.vectorToList(descr)
 
 
+@spiceErrorCheck
 def spkpos(targ, et, ref, abcorr, obs):
     """
     Return the position of a target body relative to an observing
@@ -9867,6 +10292,7 @@ def spkpos(targ, et, ref, abcorr, obs):
     return stypes.vectorToList(ptarg), lt.value
 
 
+@spiceErrorCheck
 def spkpvn(handle, descr, et):
     """
     For a specified SPK segment and time, return the state (position and
@@ -9898,6 +10324,7 @@ def spkpvn(handle, descr, et):
     return ref.value, stypes.vectorToList(state), center.value
 
 
+@spiceErrorCheck
 def spksfs(body, et, idlen):
     # spksfs has a Parameter SIDLEN,
     # sounds like an optional but is that possible?
@@ -9933,6 +10360,7 @@ def spksfs(body, et, idlen):
            stypes.toPythonString(identstring), found.value
 
 
+@spiceErrorCheck
 def spkssb(targ, et, ref):
     # Todo: test spkssb
     """
@@ -9958,6 +10386,7 @@ def spkssb(targ, et, ref):
     return stypes.vectorToList(starg)
 
 
+@spiceErrorCheck
 def spksub(handle, descr, identin, begin, end, newh):
     # Todo: test spksub
     """
@@ -9990,6 +10419,7 @@ def spksub(handle, descr, identin, begin, end, newh):
     pass
 
 
+@spiceErrorCheck
 def spkuds(descr):
     # Todo: test spkuds
     """
@@ -10028,6 +10458,7 @@ def spkuds(descr):
         first.value, last.value, begin.value, end.value
 
 
+@spiceErrorCheck
 def spkuef(handle):
     # Todo: test spkuef
     """
@@ -10044,6 +10475,7 @@ def spkuef(handle):
     pass
 
 
+@spiceErrorCheck
 def spkw02(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
            cdata, btime):
     """
@@ -10093,6 +10525,7 @@ def spkw02(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
     pass
 
 
+@spiceErrorCheck
 def spkw03(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
            cdata, btime):
     """
@@ -10142,6 +10575,7 @@ def spkw03(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
     pass
 
 
+@spiceErrorCheck
 def spkw05(handle, body, center, inframe, first, last, segid, gm, n, states,
            epochs):
     # see libspice args for solution to array[][N] problem
@@ -10191,6 +10625,7 @@ def spkw05(handle, body, center, inframe, first, last, segid, gm, n, states,
     pass
 
 
+@spiceErrorCheck
 def spkw08(handle, body, center, inframe, first, last, segid, degree, n, states,
            epoch1, step):
     # see libspice args for solution to array[][N] problem
@@ -10241,6 +10676,7 @@ def spkw08(handle, body, center, inframe, first, last, segid, degree, n, states,
     pass
 
 
+@spiceErrorCheck
 def spkw09(handle, body, center, inframe, first, last, segid, degree, n, states,
            epochs):
     """
@@ -10287,6 +10723,7 @@ def spkw09(handle, body, center, inframe, first, last, segid, degree, n, states,
     pass
 
 
+@spiceErrorCheck
 def spkw10(handle, body, center, inframe, first, last, segid, consts, n, elems,
            epochs):
     """
@@ -10334,6 +10771,7 @@ def spkw10(handle, body, center, inframe, first, last, segid, consts, n, elems,
     pass
 
 
+@spiceErrorCheck
 def spkw12(handle, body, center, inframe, first, last, segid, degree, n, states,
            epoch0, step):
     """
@@ -10383,6 +10821,7 @@ def spkw12(handle, body, center, inframe, first, last, segid, degree, n, states,
     pass
 
 
+@spiceErrorCheck
 def spkw13(handle, body, center, inframe, first, last, segid, degree, n, states,
            epochs):
     """
@@ -10429,6 +10868,7 @@ def spkw13(handle, body, center, inframe, first, last, segid, degree, n, states,
     pass
 
 
+@spiceErrorCheck
 def spkw15(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p,
            ecc, j2flg, pv, gm, j2, radius):
     # Todo: test spkw15
@@ -10494,6 +10934,7 @@ def spkw15(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p,
     pass
 
 
+@spiceErrorCheck
 def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel,
            rapol, decpol):
     # Todo: test spkw17
@@ -10547,6 +10988,7 @@ def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel,
 # spkw20
 
 
+@spiceErrorCheck
 def srfrec(body, longitude, latitude):
     """
     Convert planetocentric latitude and longitude of a surface
@@ -10574,6 +11016,7 @@ def srfrec(body, longitude, latitude):
     return stypes.vectorToList(rectan)
 
 
+@spiceErrorCheck
 def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
     """
     Deprecated: This routine has been superseded by the CSPICE
@@ -10631,6 +11074,7 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
         obspos), found.value
 
 
+@spiceErrorCheck
 def ssize(newsize, cell):
     """
     Set the size (maximum cardinality) of a CSPICE cell of any data type.
@@ -10650,6 +11094,7 @@ def ssize(newsize, cell):
     return cell
 
 
+@spiceErrorCheck
 def stelab(pobj, vobs):
     """
     Correct the apparent position of an object for stellar
@@ -10675,6 +11120,7 @@ def stelab(pobj, vobs):
     return stypes.vectorToList(appobj)
 
 
+@spiceErrorCheck
 def stpool(item, nth, contin, lenout):
     """
     Retrieve the nth string from the kernel pool variable, where the
@@ -10709,6 +11155,7 @@ def stpool(item, nth, contin, lenout):
     return stypes.toPythonString(strout), sizet.value, found.value
 
 
+@spiceErrorCheck
 def str2et(time):
     """
     Convert a string representing an epoch to a double precision
@@ -10730,6 +11177,7 @@ def str2et(time):
     return et.value
 
 
+@spiceErrorCheck
 def subpnt(method, target, et, fixref, abcorr, obsrvr):
     """
     Compute the rectangular coordinates of the sub-observer point on
@@ -10773,6 +11221,7 @@ def subpnt(method, target, et, fixref, abcorr, obsrvr):
         srfvec)
 
 
+@spiceErrorCheck
 def subpt(method, target, et, abcorr, obsrvr):
     """
     Deprecated: This routine has been superseded by the CSPICE
@@ -10818,6 +11267,7 @@ def subpt(method, target, et, abcorr, obsrvr):
     return stypes.vectorToList(spoint), alt.value
 
 
+@spiceErrorCheck
 def subslr(method, target, et, fixref, abcorr, obsrvr):
     """
     Compute the rectangular coordinates of the sub-solar point on
@@ -10861,6 +11311,7 @@ def subslr(method, target, et, fixref, abcorr, obsrvr):
         srfvec)
 
 
+@spiceErrorCheck
 def subsol(method, target, et, abcorr, obsrvr):
     """
     Deprecated: This routine has been superseded by the CSPICE
@@ -10897,6 +11348,7 @@ def subsol(method, target, et, abcorr, obsrvr):
     return stypes.vectorToList(spoint)
 
 
+@spiceErrorCheck
 def sumad(array):
     """
     Return the sum of the elements of a double precision array.
@@ -10913,6 +11365,7 @@ def sumad(array):
     return libspice.sumad_c(array, n)
 
 
+@spiceErrorCheck
 def sumai(array):
     """
     Return the sum of the elements of an integer array.
@@ -10929,6 +11382,7 @@ def sumai(array):
     return libspice.sumai_c(array, n)
 
 
+@spiceErrorCheck
 def surfnm(a, b, c, point):
     """
     This routine computes the outward-pointing, unit normal vector
@@ -10956,6 +11410,7 @@ def surfnm(a, b, c, point):
     return stypes.vectorToList(normal)
 
 
+@spiceErrorCheck
 def surfpt(positn, u, a, b, c):
     """
     Determine the intersection of a line-of-sight vector with the
@@ -10989,6 +11444,7 @@ def surfpt(positn, u, a, b, c):
     return stypes.vectorToList(point), found.value
 
 
+@spiceErrorCheck
 def surfpv(stvrtx, stdir, a, b, c):
     """
     Find the state (position and velocity) of the surface intercept
@@ -11022,6 +11478,7 @@ def surfpv(stvrtx, stdir, a, b, c):
     return stypes.vectorToList(stx), found.value
 
 
+@spiceErrorCheck
 def swpool(agent, nnames, lenvals, names):
     # Todo: test swpool
     """
@@ -11047,6 +11504,7 @@ def swpool(agent, nnames, lenvals, names):
     pass
 
 
+@spiceErrorCheck
 def sxform(instring, tostring, et):
     """
     Return the state transformation matrix from one frame to
@@ -11074,6 +11532,7 @@ def sxform(instring, tostring, et):
     return stypes.matrixToList(xform)
 
 
+@spiceErrorCheck
 def szpool(name):
     """
     Return the kernel pool size limitations.
@@ -11097,6 +11556,7 @@ def szpool(name):
 # T
 
 
+@spiceErrorCheck
 def timdef(action, item, lenout, value=None):
     """
     Set and retrieve the defaults associated with calendar input strings.
@@ -11125,6 +11585,7 @@ def timdef(action, item, lenout, value=None):
     return stypes.toPythonString(value)
 
 
+@spiceErrorCheck
 def timout(et, pictur, lenout):
     """
     This vectorized routine converts an input epoch represented in TDB seconds
@@ -11152,6 +11613,7 @@ def timout(et, pictur, lenout):
     return stypes.toPythonString(output)
 
 
+@spiceErrorCheck
 def tipbod(ref, body, et):
     """
     Return a 3x3 matrix that transforms positions in inertial
@@ -11177,6 +11639,7 @@ def tipbod(ref, body, et):
     return stypes.matrixToList(retmatrix)
 
 
+@spiceErrorCheck
 def tisbod(ref, body, et):
     """
     Return a 6x6 matrix that transforms states in inertial coordinates to
@@ -11201,6 +11664,7 @@ def tisbod(ref, body, et):
     return stypes.matrixToList(retmatrix)
 
 
+#@spiceErrorCheck
 def tkvrsn(item):
     """
     Given an item such as the Toolkit or an entry point name, return
@@ -11217,6 +11681,7 @@ def tkvrsn(item):
     return stypes.toPythonString(libspice.tkvrsn_c(item))
 
 
+@spiceErrorCheck
 def tparse(instring, lenout):
     """
     Parse a time string and return seconds past the J2000
@@ -11239,6 +11704,7 @@ def tparse(instring, lenout):
     return sp2000.value, stypes.toPythonString(errmsg)
 
 
+@spiceErrorCheck
 def tpictr(sample, lenout, lenerr):
     """
     Given a sample time string, create a time format picture
@@ -11269,6 +11735,7 @@ def tpictr(sample, lenout, lenerr):
         errmsg)
 
 
+@spiceErrorCheck
 def trace(matrix):
     """
     Return the trace of a 3x3 matrix.
@@ -11284,6 +11751,7 @@ def trace(matrix):
     return libspice.trace_c(matrix)
 
 
+@spiceErrorCheck
 def trcdep():
     """
     Return the number of modules in the traceback representation.
@@ -11298,6 +11766,7 @@ def trcdep():
     return depth.value
 
 
+@spiceErrorCheck
 def trcnam(index, namlen):
     """
     Return the name of the module having the specified position in
@@ -11320,6 +11789,7 @@ def trcnam(index, namlen):
     return stypes.toPythonString(name)
 
 
+@spiceErrorCheck
 def trcoff():
     # Todo: test trcoff
     """
@@ -11332,6 +11802,7 @@ def trcoff():
     pass
 
 
+@spiceErrorCheck
 def tsetyr(year):
     # Todo: test tsetyr
     """
@@ -11347,6 +11818,7 @@ def tsetyr(year):
     pass
 
 
+@spiceErrorCheck
 def twopi():
     """
     Return twice the value of pi
@@ -11360,6 +11832,7 @@ def twopi():
     return libspice.twopi_c()
 
 
+@spiceErrorCheck
 def twovec(axdef, indexa, plndef, indexp):
     """
     Find the transformation to the right-handed frame having a
@@ -11388,6 +11861,7 @@ def twovec(axdef, indexa, plndef, indexp):
     return stypes.matrixToList(mout)
 
 
+@spiceErrorCheck
 def tyear():
     """
     Return the number of seconds in a tropical year.
@@ -11403,6 +11877,7 @@ def tyear():
 ################################################################################
 # U
 
+@spiceErrorCheck
 def ucase(inchar, lenout=None):
     """
     Convert the characters in a string to uppercase.
@@ -11425,6 +11900,7 @@ def ucase(inchar, lenout=None):
     return stypes.toPythonString(outchar)
 
 
+@spiceErrorCheck
 def ucrss(v1, v2):
     """
     Compute the normalized cross product of two 3-vectors.
@@ -11454,6 +11930,7 @@ def ucrss(v1, v2):
 # UDF # callback?
 
 
+@spiceErrorCheck
 def union(a, b):
     """
     Compute the union of two sets of any data type to form a third set.
@@ -11483,6 +11960,7 @@ def union(a, b):
     return c
 
 
+@spiceErrorCheck
 def unitim(epoch, insys, outsys):
     """
     Transform time from one uniform scale to another.  The uniform
@@ -11507,6 +11985,7 @@ def unitim(epoch, insys, outsys):
     return libspice.unitim_c(epoch, insys, outsys)
 
 
+@spiceErrorCheck
 def unload(filename):
     """
     Unload a SPICE kernel.
@@ -11524,6 +12003,7 @@ def unload(filename):
     pass
 
 
+@spiceErrorCheck
 def unorm(v1):
     """
     Normalize a double precision 3-vector and return its magnitude.
@@ -11542,6 +12022,7 @@ def unorm(v1):
     return stypes.vectorToList(vout), vmag.value
 
 
+@spiceErrorCheck
 def unormg(v1, ndim):
     """
     Normalize a double precision vector of arbitrary dimension and
@@ -11564,6 +12045,7 @@ def unormg(v1, ndim):
     return stypes.vectorToList(vout), vmag.value
 
 
+@spiceErrorCheck
 def utc2et(utcstr):
     """
     Convert an input time from Calendar or Julian Date format, UTC,
@@ -11586,6 +12068,7 @@ def utc2et(utcstr):
 # V
 
 
+@spiceErrorCheck
 def vadd(v1, v2):
     """ Add two 3 dimensional vectors.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vadd_c.html
@@ -11604,6 +12087,7 @@ def vadd(v1, v2):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def vaddg(v1, v2, ndim):
     """ Add two n-dimensional vectors
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vaddg_c.html
@@ -11625,6 +12109,7 @@ def vaddg(v1, v2, ndim):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def valid(insize, n, inset):
     """
     Create a valid CSPICE set from a CSPICE Cell of any data type.
@@ -11646,6 +12131,7 @@ def valid(insize, n, inset):
     return inset
 
 
+@spiceErrorCheck
 def vcrss(v1, v2):
     """
     Compute the cross product of two 3-dimensional vectors.
@@ -11666,6 +12152,7 @@ def vcrss(v1, v2):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def vdist(v1, v2):
     """
     Return the distance between two three-dimensional vectors.
@@ -11684,6 +12171,7 @@ def vdist(v1, v2):
     return libspice.vdist_c(v1, v2)
 
 
+@spiceErrorCheck
 def vdistg(v1, v2, ndim):
     """
     Return the distance between two vectors of arbitrary dimension.
@@ -11705,6 +12193,7 @@ def vdistg(v1, v2, ndim):
     return libspice.vdistg_c(v1, v2, ndim)
 
 
+@spiceErrorCheck
 def vdot(v1, v2):
     """
     Compute the dot product of two double precision, 3-dimensional vectors.
@@ -11723,6 +12212,7 @@ def vdot(v1, v2):
     return libspice.vdot_c(v1, v2)
 
 
+@spiceErrorCheck
 def vdotg(v1, v2, ndim):
     """
     Compute the dot product of two double precision vectors of
@@ -11745,6 +12235,7 @@ def vdotg(v1, v2, ndim):
     return libspice.vdotg_c(v1, v2, ndim)
 
 
+@spiceErrorCheck
 def vequ(v1):
     """
     Make one double precision 3-dimensional vector equal to another.
@@ -11762,6 +12253,7 @@ def vequ(v1):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def vequg(v1, ndim):
     """
     Make one double precision vector of arbitrary dimension equal to another.
@@ -11782,6 +12274,7 @@ def vequg(v1, ndim):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def vhat(v1):
     """
     Find the unit vector along a double precision 3-dimensional vector.
@@ -11799,6 +12292,7 @@ def vhat(v1):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def vhatg(v1, ndim):
     """
     Find the unit vector along a double precision vector of arbitrary dimension.
@@ -11819,6 +12313,7 @@ def vhatg(v1, ndim):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def vlcom(a, v1, b, v2):
     """
     Compute a vector linear combination of two double precision,
@@ -11846,6 +12341,7 @@ def vlcom(a, v1, b, v2):
     return stypes.vectorToList(sumv)
 
 
+@spiceErrorCheck
 def vlcom3(a, v1, b, v2, c, v3):
     """
     This subroutine computes the vector linear combination
@@ -11879,6 +12375,7 @@ def vlcom3(a, v1, b, v2, c, v3):
     return stypes.vectorToList(sumv)
 
 
+@spiceErrorCheck
 def vlcomg(n, a, v1, b, v2):
     """
     Compute a vector linear combination of two double precision
@@ -11909,6 +12406,7 @@ def vlcomg(n, a, v1, b, v2):
     return stypes.vectorToList(sumv)
 
 
+@spiceErrorCheck
 def vminug(vin, ndim):
     """
     Negate a double precision vector of arbitrary dimension.
@@ -11929,6 +12427,7 @@ def vminug(vin, ndim):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def vminus(vin):
     """
     Negate a double precision 3-dimensional vector.
@@ -11946,6 +12445,7 @@ def vminus(vin):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def vnorm(v):
     """
     Compute the magnitude of a double precision, 3-dimensional vector.
@@ -11961,6 +12461,7 @@ def vnorm(v):
     return libspice.vnorm_c(v)
 
 
+@spiceErrorCheck
 def vnormg(v, ndim):
     """
     Compute the magnitude of a double precision vector of arbitrary dimension.
@@ -11979,6 +12480,7 @@ def vnormg(v, ndim):
     return libspice.vnormg_c(v, ndim)
 
 
+@spiceErrorCheck
 def vpack(x, y, z):
     """
     Pack three scalar components into a vector.
@@ -12002,6 +12504,7 @@ def vpack(x, y, z):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def vperp(a, b):
     """
     Find the component of a vector that is perpendicular to a second
@@ -12023,6 +12526,7 @@ def vperp(a, b):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def vprjp(vin, plane):
     """
     Project a vector onto a specified plane, orthogonally.
@@ -12042,6 +12546,7 @@ def vprjp(vin, plane):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def vprjpi(vin, projpl, invpl):
     """
     Find the vector in a specified plane that maps to a specified
@@ -12066,6 +12571,7 @@ def vprjpi(vin, projpl, invpl):
     return stypes.vectorToList(vout), found.value
 
 
+@spiceErrorCheck
 def vproj(a, b):
     """
     Find the projection of one vector onto another vector.
@@ -12086,6 +12592,7 @@ def vproj(a, b):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def vrel(v1, v2):
     """
     Return the relative difference between two 3-dimensional vectors.
@@ -12104,6 +12611,7 @@ def vrel(v1, v2):
     return libspice.vrel_c(v1, v2)
 
 
+@spiceErrorCheck
 def vrelg(v1, v2, ndim):
     """
     Return the relative difference between two vectors of general dimension.
@@ -12125,6 +12633,7 @@ def vrelg(v1, v2, ndim):
     return libspice.vrelg_c(v1, v2, ndim)
 
 
+@spiceErrorCheck
 def vrotv(v, axis, theta):
     """
     Rotate a vector about a specified axis vector by a
@@ -12149,6 +12658,7 @@ def vrotv(v, axis, theta):
     return stypes.vectorToList(r)
 
 
+@spiceErrorCheck
 def vscl(s, v1):
     """
     Multiply a scalar and a 3-dimensional double precision vector.
@@ -12169,6 +12679,7 @@ def vscl(s, v1):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def vsclg(s, v1, ndim):
     """
     Multiply a scalar and a double precision vector of arbitrary dimension.
@@ -12192,6 +12703,7 @@ def vsclg(s, v1, ndim):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def vsep(v1, v2):
     """
     Find the separation angle in radians between two double
@@ -12212,6 +12724,7 @@ def vsep(v1, v2):
     return libspice.vsep_c(v1, v2)
 
 
+@spiceErrorCheck
 def vsepg(v1, v2, ndim):
     """
     Find the separation angle in radians between two double
@@ -12235,6 +12748,7 @@ def vsepg(v1, v2, ndim):
     return libspice.vsepg_c(v1, v2, ndim)
 
 
+@spiceErrorCheck
 def vsub(v1, v2):
     """
     Compute the difference between two 3-dimensional,
@@ -12256,6 +12770,7 @@ def vsub(v1, v2):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def vsubg(v1, v2, ndim):
     """
     Compute the difference between two double precision
@@ -12280,6 +12795,7 @@ def vsubg(v1, v2, ndim):
     return stypes.vectorToList(vout)
 
 
+@spiceErrorCheck
 def vtmv(v1, matrix, v2):
     """
     Multiply the transpose of a 3-dimensional column vector
@@ -12302,6 +12818,7 @@ def vtmv(v1, matrix, v2):
     return libspice.vtmv_c(v1, matrix, v2)
 
 
+@spiceErrorCheck
 def vtmvg(v1, matrix, v2, nrow, ncol):
     """
     Multiply the transpose of a n-dimensional
@@ -12331,6 +12848,7 @@ def vtmvg(v1, matrix, v2, nrow, ncol):
     return libspice.vtmvg_c(v1, matrix, v2, nrow, ncol)
 
 
+@spiceErrorCheck
 def vupack(v):
     """
     Unpack three scalar components from a vector.
@@ -12350,6 +12868,7 @@ def vupack(v):
     return x.value, y.value, z.value
 
 
+@spiceErrorCheck
 def vzero(v):
     """
     Indicate whether a 3-vector is the zero vector.
@@ -12365,6 +12884,7 @@ def vzero(v):
     return libspice.vzero_c(v)
 
 
+@spiceErrorCheck
 def vzerog(v, ndim):
     """
     Indicate whether a general-dimensional vector is the zero vector.
@@ -12387,6 +12907,7 @@ def vzerog(v, ndim):
 # W
 
 
+@spiceErrorCheck
 def wncard(window):
     """
     Return the cardinality (number of intervals) of a double
@@ -12403,6 +12924,7 @@ def wncard(window):
     return libspice.wncard_c(window)
 
 
+@spiceErrorCheck
 def wncomd(left, right, window):
     """
     Determine the complement of a double precision window with
@@ -12428,6 +12950,7 @@ def wncomd(left, right, window):
     return result
 
 
+@spiceErrorCheck
 def wncond(left, right, window):
     """
     Contract each of the intervals of a double precision window.
@@ -12451,6 +12974,7 @@ def wncond(left, right, window):
     return window
 
 
+@spiceErrorCheck
 def wndifd(a, b):
     """
     Place the difference of two double precision windows into
@@ -12474,6 +12998,7 @@ def wndifd(a, b):
     return c
 
 
+@spiceErrorCheck
 def wnelmd(point, window):
     """
     Determine whether a point is an element of a double precision
@@ -12494,6 +13019,7 @@ def wnelmd(point, window):
     return libspice.wnelmd_c(point, ctypes.byref(window))
 
 
+@spiceErrorCheck
 def wnexpd(left, right, window):
     """
     Expand each of the intervals of a double precision window.
@@ -12517,6 +13043,7 @@ def wnexpd(left, right, window):
     return window
 
 
+@spiceErrorCheck
 def wnextd(side, window):
     """
     Extract the left or right endpoints from a double precision
@@ -12539,6 +13066,7 @@ def wnextd(side, window):
     return window
 
 
+@spiceErrorCheck
 def wnfetd(window, n):
     """
     Fetch a particular interval from a double precision window.
@@ -12562,6 +13090,7 @@ def wnfetd(window, n):
     return left.value, right.value
 
 
+@spiceErrorCheck
 def wnfild(small, window):
     """
     Fill small gaps between adjacent intervals of a double precision window.
@@ -12582,6 +13111,7 @@ def wnfild(small, window):
     return window
 
 
+@spiceErrorCheck
 def wnfltd(small, window):
     """
     Filter (remove) small intervals from a double precision window.
@@ -12602,6 +13132,7 @@ def wnfltd(small, window):
     return window
 
 
+@spiceErrorCheck
 def wnincd(left, right, window):
     """
     Determine whether an interval is included in a double precision window.
@@ -12624,6 +13155,7 @@ def wnincd(left, right, window):
     return libspice.wnincd_c(left, right, ctypes.byref(window))
 
 
+@spiceErrorCheck
 def wninsd(left, right, window):
     """
     Insert an interval into a double precision window.
@@ -12644,6 +13176,7 @@ def wninsd(left, right, window):
     libspice.wninsd_c(left, right, ctypes.byref(window))
 
 
+@spiceErrorCheck
 def wnintd(a, b):
     """
     Place the intersection of two double precision windows into
@@ -12668,6 +13201,7 @@ def wnintd(a, b):
     return c
 
 
+@spiceErrorCheck
 def wnreld(a, op, b):
     """
     Compare two double precision windows.
@@ -12692,6 +13226,7 @@ def wnreld(a, op, b):
     return libspice.wnreld_c(ctypes.byref(a), op, ctypes.byref(b))
 
 
+@spiceErrorCheck
 def wnsumd(window):
     """
     Summarize the contents of a double precision window.
@@ -12720,6 +13255,7 @@ def wnsumd(window):
     return meas.value, avg.value, stddev.value, shortest.value, longest.value
 
 
+@spiceErrorCheck
 def wnunid(a, b):
     """
     Place the union of two double precision windows into a third window.
@@ -12742,6 +13278,7 @@ def wnunid(a, b):
     return c
 
 
+@spiceErrorCheck
 def wnvald(insize, n, window):
     """
     Form a valid double precision window from the contents
@@ -12769,6 +13306,7 @@ def wnvald(insize, n, window):
 ################################################################################
 # X
 
+@spiceErrorCheck
 def xf2eul(xform, axisa, axisb, axisc):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xf2eul_c.html
@@ -12794,6 +13332,7 @@ def xf2eul(xform, axisa, axisb, axisc):
     return stypes.vectorToList(eulang), unique.value
 
 
+@spiceErrorCheck
 def xf2rav(xform):
     """
     This routine determines the rotation matrix and angular velocity
@@ -12814,6 +13353,7 @@ def xf2rav(xform):
     return stypes.matrixToList(rot), stypes.vectorToList(av)
 
 
+@spiceErrorCheck
 def xfmsta(input_state, input_coord_sys, output_coord_sys, body):
     """
     Transform a state between coordinate systems.
@@ -12843,6 +13383,7 @@ def xfmsta(input_state, input_coord_sys, output_coord_sys, body):
     return stypes.vectorToList(output_state)
 
 
+@spiceErrorCheck
 def xpose(m):
     """
     Transpose a 3x3 matrix
@@ -12860,6 +13401,7 @@ def xpose(m):
     return stypes.matrixToList(mout)
 
 
+@spiceErrorCheck
 def xpose6(m):
     """
     Transpose a 6x6 matrix
@@ -12877,6 +13419,7 @@ def xpose6(m):
     return stypes.matrixToList(mout)
 
 
+@spiceErrorCheck
 def xposeg(matrix, nrow, ncol):
     """
     Transpose a matrix of arbitrary size
