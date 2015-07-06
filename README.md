@@ -1,5 +1,7 @@
 # SpiceyPy
 
+[![Join the chat at https://gitter.im/AndrewAnnex/SpiceyPy](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/AndrewAnnex/SpiceyPy?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A wrapper for the NAIF C SPICE Toolkit (N65), compatible with Python 2 and 3, written using ctypes.
 
 *IMPORTANT*: I have no current affiliation with NASA, NAIF, or JPL. The code is provided "as is", use at your own risk.
