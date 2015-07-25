@@ -16,10 +16,18 @@ The [SPICE Toolkit](http://naif.jpl.nasa.gov/naif/). In short it is an essential
 - [ ] Numpy integration?
 
 ### Important User Information
-*UPDATE* A very primative setup.py file exists and should get the shared library generated for you and placed in your site-packages directory.
-*This is only known to work on OS X 10.9.2 with Python 3.3. Making the library work with Python 2.7 should be rather trivial and will happen eventually.*
-*Unknown if this works at all in linux environments (Ubuntu, etc).*
 
+A very primative setup.py file exists and should get the shared library generated for you and placed in your site-packages directory.
+
+**Currently tested configurations**:
+* OS X 10.9.2 with Python 3.3. 
+* OS X 10.10.3/4 with Python 3.4
+
+**Caveats**
+* Making the library work with Python 2.7 should be rather trivial and will happen eventually (but not yet?).
+* It is unknown at this point if this works at all in linux environments (Ubuntu, etc).
+
+### Older installation instruction (should be not required anymore at this point)
 First the user must generate their own shared library of CSPICE. In the Lib subdirectory in CSPICE run the following commands:
 ```
 ar -x cspice.a
