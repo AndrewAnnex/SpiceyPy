@@ -1,16 +1,13 @@
+sudo: false
 language: python
+cache: pip
 python:
- - 2.7
- - 3.3
- - 3.4
-# install dependencies
-before_install:
-    - pip install --use-mirrors numpy
-    - pip install --use-mirrors coverage
-    - pip install --use-mirrors coveralls
-    - pip install --use-mirrors six
+ - "2.7"
+ - "3.3"
+ - "3.4"
 install:
-    - python setup.py install
+    - "pip install -r requirements.txt"
+    - "python setup.py install"
 # run tests
 script:
     - coverage run --source=SpiceyPy setup.py test

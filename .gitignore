@@ -16,6 +16,9 @@
 *.tf
 *.tls
 
+# Cspice
+cspice/
+
 # Test meta kernels
 test/*.txt
 
