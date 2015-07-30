@@ -1,9 +1,11 @@
 __author__ = 'AndrewAnnex'
 from ctypes import CDLL, POINTER, c_bool, c_int, c_double, c_char, c_char_p, c_void_p
 import os
+import platform
 
-sitePath = os.path.dirname(__file__)
-sitePath = os.path.join(sitePath, 'spice.so')
+host_OS = platform.system()
+sharedLib = "cspice.dll" if host_OS == "Windows" else "spice.so"
+sitePath = os.path.join(os.path.dirname(__file__), sharedLib)
 libspice = CDLL(sitePath)
 
 import SpiceyPy.support_types as stypes

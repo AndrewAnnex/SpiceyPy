@@ -1,20 +1,19 @@
 # SpiceyPy
 
-[![Join the chat at https://gitter.im/AndrewAnnex/SpiceyPy](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/AndrewAnnex/SpiceyPy?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N65), compatible with Python 2 and 3, written using ctypes.
 
-A wrapper for the NAIF C SPICE Toolkit (N65), compatible with Python 2 and 3, written using ctypes.
-
-*IMPORTANT*: I have no current affiliation with NASA, NAIF, or JPL. The code is provided "as is", use at your own risk.
 ### Introduction
 
 The [SPICE Toolkit](http://naif.jpl.nasa.gov/naif/). 
 In short it is an essential tool for scientists and engineers alike in the planetary science field for Solar System Geometry.   
-Please visit the NAIF website listed earlier for more details.
+Please visit the NAIF website for more details.
 
-
+[![Join the chat at https://gitter.im/AndrewAnnex/SpiceyPy](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/AndrewAnnex/SpiceyPy?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+*IMPORTANT*: I have no current affiliation with NASA, NAIF, or JPL. The code is provided "as is", use at your own risk.
 ### Travis and Coveralls Status
 
 [![Build Status](https://travis-ci.org/AndrewAnnex/SpiceyPy.svg?style=flat?branch=master)](https://travis-ci.org/AndrewAnnex/SpiceyPy)
+[![Windows Build status](https://ci.appveyor.com/api/projects/status/wly0q2cwy33ffura/branch/master?svg=true)](https://ci.appveyor.com/project/AndrewAnnex/spiceypy/branch/master)
 [![Coverage Status](https://img.shields.io/coveralls/AndrewAnnex/SpiceyPy.svg)](https://coveralls.io/r/AndrewAnnex/SpiceyPy?branch=master) 
 A secondary list (non-maintained) of what functions have been wrapped can be found [here](https://github.com/AndrewAnnex/SpiceyPy/wiki/Wrapper-Completion).  
 A majority of SPICE functions have written wrappers along with tests mainly derived from the CSPICE documentation.  
@@ -47,10 +46,10 @@ The citation information for SPICE can be found on the NAIF website and please c
 
 ### Design Goals
 - [x] Majorly complete coverage of all existing CSPICE commands, within reason.
-- [ ] Useful, but abbreviated commenting on functions.
-- [ ] Enable vectorization of certain functions to be more like ICY.
+- [x] Useful, but abbreviated commenting on functions.
 - [x] Python 2 and 3 support.
 - [x] Numpy Support.
+- [ ] Enable vectorization of certain functions to be more like ICY.
 
 ### Installation
 First install the dependencies (numpy, six, pytest). Then download the project, extract it, and inside just run `python setup.py install`.
@@ -58,13 +57,32 @@ If you are updating to the newest commit/version, be sure to completely delete t
 This can most commonly be done by uninstalling SpiceyPy using pip.
 
 ### Known Working Environments:
-These are the following OS environments I have been able to run the exampleProgramTest.py program on. SpiceyPy is being developed
-in a Python 3.4.1 64-bit Mac OS X 10.9.5 environment. Travis CI is also ubuntu 12.04 LTS to my knowledge.
+These are the following OS environments with all tests passing. SpiceyPy is being developed
+in a Python 3.4.1 64-bit Mac OS X 10.10.4 environment. Travis CI is ubuntu 12.04 LTS to my knowledge.
+* Python 3.4.1 64-bit Mac OS X 10.10.4
 * Python 3.3.3 64-bit Mac OS X 10.9.4
 * Python 2.7.5 64-bit Mac OS X 10.9.4
 * Python 3.3.3 64-bit Mac OS X 10.9.2
 * Python 2.7.5 64-bit Mac OS X 10.9.2
 * Python 3.2.3 64-bit Ubuntu 12.04 LTS (VM)
+* _Python 3.4.3 64-bit Windows (Appveyor), using Visual Studio 2013_
+* _Python 2.7.9 64-bit Windows (Appveyor), using Visual Studio 2013_
+
+#### Windows Support
+Windows support is currently highly experimental and difficult for the author to test locally.
+If attempting to install on windows platforms, please ensure you have a recent version of Visual Studio is 
+installed and ensure cl.exe and link.exe is available on the path. Given the variability of systems, 
+I will not be able to diagnose most issues encountered with running SpiceyPy on windows. Below is a 
+semi-complete list of instructions to get SpiceyPy built and installed on windows. For a more complete
+but less readable guide follow the appveyor.yml file included in this distribution.
+
+1. Ensure Visual Studio is properly installed and that cl.exe and link.exe are available on the path.
+  * If you run `cl` or `link` you should see some indication that you have done this correctly. 
+2. Ensure you have pip, numpy, pytest, and six installed.
+3. Call `vcvarsall.bat` from your visual studio with the option "amd64" for 64 bit builds (I have not tested 32bit yet)
+4. Run `python setup.py install` to install SpiceyPy (this will take a few minutes.)
+5. You are done! 
+  * You can run tests by running py.test test, ensure the root directory of SpiceyPy does not have a lengthy path as the spice function furnsh fails with long absolute paths.
 
 ### Acknowledgements
 [DaRasch](https://github.com/DaRasch) wrote spiceminer, which I looked at to get SpiceCells working, thanks!

@@ -4,7 +4,10 @@ import pytest
 import SpiceyPy as spice
 import numpy as np
 import numpy.testing as npt
+from test.gettestkernels import *
 import os
+
+
 cwd = os.path.realpath(os.path.dirname(__file__))
 _testKernelPath = os.path.join(cwd, "testKernels.txt")
 _extraTestVoyagerKernel = os.path.join(cwd, "vg200022.tsc")
@@ -16,6 +19,11 @@ _spkMGSTi = os.path.join(cwd, "mgs_moc_v20.ti")
 _spkMgsSclk = os.path.join(cwd, "mgs_sclkscet_00061.tsc")
 _spkMgsSpk = os.path.join(cwd, "mgs_crus.bsp")
 _spk = os.path.join(cwd, "de421.bsp")
+
+
+def setup_module(module):
+    if not os.path.exists(_testKernelPath) or not os.path.exists(_extraTestVoyagerKernel):
+        downloadKernels()
 
 
 def test_appndc():
@@ -1770,13 +1778,15 @@ def test_ekuef():
         os.remove(ekpath)
     handle = spice.ekopn(ekpath, ekpath, 80)
     spice.ekcls(handle)
+    spice.kclear()
     assert spice.exists(ekpath)
     testhandle = spice.ekopr(ekpath)
     assert testhandle is not None
     spice.ekuef(testhandle)
+    spice.ekcls(testhandle)
+    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)
-    spice.kclear()
 
 
 def test_el2cgv():

@@ -1,0 +1,60 @@
+# AppVeyor.com is a Continuous Integration service to build and run tests under Windows
+# This yml file was made in part by looking at the yml files for conda and astropy.
+# TODO: add 32 bit builds
+
+# This is not a .NET project, so we build SpiceyPy in the install step.
+build: off
+
+environment:
+  global:
+      WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\windows_sdk.cmd"
+
+
+  matrix:
+      - PYTHON: "C:\\Python27-x64"
+        PYTHON_VERSION: "2.7"
+        PYTHON_ARCH: "64"
+      - PYTHON: "C:\\Python34-x64"
+        PYTHON_VERSION: "3.4"
+        PYTHON_ARCH: "64"
+        WINDOWS_SDK_VERSION: "v7.1"
+
+platform:
+  - x64
+
+cache:
+  - C:\Users\appveyor\Downloads -> \appveyor\install_numpy.ps1
+
+install:
+  # Log out the python version just so we know it
+  - ECHO "%PYTHON_VERSION%"
+  # update path to use installed pip
+  - set PATH=%PYTHON%\\scripts;%PATH%
+
+  # Download things we absolutly need
+  - pip install --upgrade pip
+  - pip install wheel
+  - pip install six pytest
+  # coveralls and or coverage fail to install for 3.4 python builds so don't bother for now.
+
+  # Download CSPICE so we can build outside of python
+  - "%PYTHON%/python getspice.py"
+
+  # Check for numpy wheel, compile if absent
+  - "powershell appveyor\\install_numpy.ps1"
+
+  # Now install numpy from pre-built wheel. This may be fragile.
+  - "%WITH_COMPILER% pip install --use-wheel --no-index --find-links=c:\\Users\\appveyor\\Downloads numpy"
+
+  # Now install SpiceyPy
+  - call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64
+  - "%PYTHON%/python setup.py install"
+
+  - ECHO "Installed SpiceyPy!"
+
+test_script:
+  - "%PYTHON%/Scripts/py.test test"
+
+after_test:
+  - ECHO "DONE!"
+  - dir
