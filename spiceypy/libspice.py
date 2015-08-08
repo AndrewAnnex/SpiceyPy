@@ -8,7 +8,7 @@ sharedLib = "cspice.dll" if host_OS == "Windows" else "spice.so"
 sitePath = os.path.join(os.path.dirname(__file__), sharedLib)
 libspice = CDLL(sitePath)
 
-import SpiceyPy.support_types as stypes
+import spiceypy.support_types as stypes
 
 # ######################################################################################################################
 # A

@@ -4,8 +4,8 @@ __author__ = 'AndrewAnnex'
 # here is where all the wrapper functions are located.
 
 import ctypes
-import SpiceyPy.support_types as stypes
-from SpiceyPy.libspice import libspice
+import spiceypy.support_types as stypes
+from spiceypy.libspice import libspice
 import functools
 import numpy
 
@@ -32,7 +32,7 @@ def checkForSpiceError(f):
 
 def spiceErrorCheck(f):
     """
-    Decorator for SpiceyPy hooking into spice error system.
+    Decorator for spiceypy hooking into spice error system.
     If an error is detected, an output simillar to outmsg_
 
     :type f: builtins.function
@@ -914,7 +914,7 @@ def ckobj(ck, ids=None):
     :param ck: Name of CK file.
     :type ck: str
     :param ids: Optional user provided spicecell.
-    :type ids: Optional SpiceyPy.support_types.SpiceCell
+    :type ids: Optional spiceypy.support_types.SpiceCell
     :return: Set of ID codes of objects in CK file.
     :rtype: SpiceyPy.support_types.SpiceCell
     """
@@ -3838,7 +3838,7 @@ def eqstr(a, b):
 def erract(op, lenout, action=None):
     """
     Retrieve or set the default error action.
-    SpiceyPy sets the default error action to "report" on init.
+    spiceypy sets the default error action to "report" on init.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/erract_c.html
 
@@ -5530,7 +5530,7 @@ def inedpl(a, b, c, plane):
     :return:
             Intersection ellipse,
             Found Flag.
-    :rtype: SpiceyPy.support_types.Ellipse, bool
+    :rtype: spiceypy.support_types.Ellipse, bool
     """
     assert (isinstance(plane, stypes.Plane))
     ellipse = stypes.Ellipse()
@@ -5551,7 +5551,7 @@ def inelpl(ellips, plane):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/inelpl_c.html
 
     :param ellips: A SPICE ellipse. 
-    :type plane: SpiceyPy.support_types.Ellipse
+    :type plane: spiceypy.support_types.Ellipse
     :param plane: A SPICE plane. 
     :type plane: SpiceyPy.support_types.Plane
     :return:
