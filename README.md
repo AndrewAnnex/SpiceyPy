@@ -1,5 +1,9 @@
 # SpiceyPy
 
+| Continuous Integration | Code Coverage | Docs | Chat |              
+|:----------------------:|:-------------:|:----:|:----:|  
+| <a href="https://travis-ci.org/AndrewAnnex/SpiceyPy"><img alt="Travis Build Status" src="https://travis-ci.org/AndrewAnnex/SpiceyPy.svg?style=flat?branch=master"/></a> <a href="https://ci.appveyor.com/project/AndrewAnnex/spiceypy/"><img alt="Windows Build Status" src="https://ci.appveyor.com/api/projects/status/wly0q2cwy33ffura/branch/master?svg=true"/></a> | <a href="https://coveralls.io/r/AndrewAnnex/SpiceyPy?branch=master"><img alt="Coverage Status" src="https://img.shields.io/coveralls/AndrewAnnex/SpiceyPy.svg"/></a> | <a href="http://spiceypy.readthedocs.org"><img alt="Documentation Status" src="https://readthedocs.org/projects/spiceypy/badge/?version=master"/></a> | <a href="https://gitter.im/AndrewAnnex/SpiceyPy"><img alt="Join the chat at https://gitter.im/AndrewAnnex/SpiceyPy" src="https://badges.gitter.im/Join%20Chat.svg"/></a> |
+
 SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N65), compatible with Python 2 and 3, written using ctypes.
 
 ### Introduction
@@ -8,13 +12,9 @@ The [SPICE Toolkit](http://naif.jpl.nasa.gov/naif/).
 In short it is an essential tool for scientists and engineers alike in the planetary science field for Solar System Geometry.   
 Please visit the NAIF website for more details.
 
-[![Join the chat at https://gitter.im/AndrewAnnex/SpiceyPy](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/AndrewAnnex/SpiceyPy?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 *IMPORTANT*: I have no current affiliation with NASA, NAIF, or JPL. The code is provided "as is", use at your own risk.
 ### Travis and Coveralls Status
 
-[![Build Status](https://travis-ci.org/AndrewAnnex/SpiceyPy.svg?style=flat?branch=master)](https://travis-ci.org/AndrewAnnex/SpiceyPy)
-[![Windows Build status](https://ci.appveyor.com/api/projects/status/wly0q2cwy33ffura/branch/master?svg=true)](https://ci.appveyor.com/project/AndrewAnnex/spiceypy/branch/master)
-[![Coverage Status](https://img.shields.io/coveralls/AndrewAnnex/SpiceyPy.svg)](https://coveralls.io/r/AndrewAnnex/SpiceyPy?branch=master) 
 A secondary list (non-maintained) of what functions have been wrapped can be found [here](https://github.com/AndrewAnnex/SpiceyPy/wiki/Wrapper-Completion).  
 A majority of SPICE functions have written wrappers along with tests mainly derived from the CSPICE documentation.  
 A small number of functions have no wrapper functions of any kind due to lack of necessity, they are labeled as "Skipped".   
@@ -23,8 +23,6 @@ Functions that utilize call-backs have not been wrapped or tested yet, although 
 If you encounter an error with a function please report it or write up a PR to fix it, with ctypes it is easy! 
 
 ### Documentation
- 
-[![Documentation Status](https://readthedocs.org/projects/spiceypy/badge/?version=master)](https://readthedocs.org/projects/spiceypy/?badge=master) 
  
 **The SpiceyPy docs are available at: [spiceypy.readthedocs.org](http://spiceypy.readthedocs.org).**
  
