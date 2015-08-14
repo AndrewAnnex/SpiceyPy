@@ -86,21 +86,46 @@ def build_library():
             status = os.waitpid(build_lib.pid, 0)[1]
             if status != 0:
                 raise BaseException('%d' % status)
+            success = os.path.exists(os.path.join(os.getcwd(), 'spice.so'))
+            if not success:
+                raise BaseException("Did not find spice.so, build went badly.")
         except BaseException as errorInst:
             status = errorInst.args
             sys.exit('Error: compilation of shared spice.so build exit status: %d' % status)
         finally:
             os.chdir(currentDir)
+    elif host_OS == "Windows":
+        currentDir = os.getcwd()
+        try:
+            destination = os.path.join(cspice_dir, "src", "cspice")
+            defFile = os.path.join(root_dir, "appveyor", "cspice.def")
+            makeBat = os.path.join(root_dir, "appveyor", "makeDynamicSpice.bat")
+            shutil.copy(defFile, destination)
+            shutil.copy(makeBat, destination)
+            # run the script
+            os.chdir(destination)
+            windows_build = subprocess.Popen("makeDynamicSpice.bat", shell=True)
+            status = windows_build.wait()
+            if status != 0:
+                raise BaseException('%d' % status)
+        except BaseException as error:
+            sys.exit("Build failed with: %d" % error.args)
+            pass
+        finally:
+            os.chdir(currentDir)
 
 
 def move_to_root_directory():
-    try:
-        if host_OS == "Linux" or host_OS == "Darwin":
-            os.rename(os.path.join(cspice_dir, 'lib', 'spice.so'), os.path.join(root_dir, 'SpiceyPy', 'spice.so'))
-        elif host_OS == "Windows":
-            os.rename(os.path.join(cspice_dir, 'src', 'cspice', 'cspice.dll'), os.path.join(root_dir, 'SpiceyPy', 'cspice.dll'))
-    except BaseException:
-        sys.exit('spice.so or cspice.dll file not found, what happend?')
+    if host_OS == "Linux" or host_OS == "Darwin":
+        try:
+            os.rename(os.path.join(cspice_dir, 'lib', 'spice.so'), os.path.join(root_dir, 'spiceypy', 'spice.so'))
+        except BaseException as e:
+            sys.exit('spice.so file not found, what happend?: {}'.format(e))
+    elif host_OS == "Windows":
+        try:
+            os.rename(os.path.join(cspice_dir, 'src', 'cspice', 'cspice.dll'), os.path.join(root_dir, 'spiceypy', 'cspice.dll'))
+        except BaseException as e:
+            sys.exit('cspice.dll file not found, what happend?: {}'.format(e))
 
 
 def cleanup():
@@ -123,28 +148,6 @@ def mac_linux_method():
         move_to_root_directory()
 
 
-def build_for_windows():
-    if host_OS == "Windows":
-        currentDir = os.getcwd()
-        try:
-            destination = os.path.join(cspice_dir, "src", "cspice")
-            defFile = os.path.join(root_dir, "appveyor", "cspice.def")
-            makeBat = os.path.join(root_dir, "appveyor", "makeDynamicSpice.bat")
-            shutil.copy(defFile, destination)
-            shutil.copy(makeBat, destination)
-            # run the script
-            os.chdir(destination)
-            windows_build = subprocess.Popen("makeDynamicSpice.bat", shell=True)
-            status = windows_build.wait()
-            if status != 0:
-                raise BaseException('%d' % status)
-        except BaseException as error:
-            sys.exit("Build failed with: %d" % error.args)
-            pass
-        finally:
-            os.chdir(currentDir)
-
-
 def windows_method():
     if host_OS == "Windows":
         if os.path.exists(os.path.join(cspice_dir, "lib", "cspice.dll")):
@@ -152,7 +155,7 @@ def windows_method():
             return
         else:
             # Build the DLL
-            build_for_windows()
+            build_library()
             # Move to correct location (root of the distribution)
             move_to_root_directory()
 
@@ -170,17 +173,17 @@ try:
         sys.exit("Unsupported OS: %s" % host_OS)
 
     setup(
-        name='SpiceyPy',
-        version='0.6.0',
+        name='spiceypy',
+        version='0.6.1',
         description='A Python Wrapper for the NAIF CSPICE Toolkit made using ctypes',
         url='https://github.com/AndrewAnnex/SpiceyPy',
         author='Andrew Annex',
-        packages=['SpiceyPy'],
+        packages=['spiceypy'],
         tests_require=['pytest', 'numpy', 'six'],
         cmdclass={'test': PyTest},
         test_suite='test.test_wrapper.py',
         requires=['numpy', 'pytest', 'six'],
-        package_data={'SpiceyPy': ['*.so', "*.dll"]},
+        package_data={'spiceypy': ['*.so', "*.dll"]},
         include_package_data=True,
         zip_safe=False,
         classifiers=[

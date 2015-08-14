@@ -1,7 +1,7 @@
 __author__ = 'AndrewAnnex'
 import pytest
 
-import SpiceyPy as spice
+import spiceypy as spice
 import numpy as np
 import numpy.testing as npt
 from test.gettestkernels import *
@@ -94,7 +94,7 @@ def test_b1950():
 def test_badkpv():
     spice.kclear()
     spice.pdpool('DTEST_VAL', [3.1415, 186.0, 282.397])
-    assert not spice.badkpv("SpiceyPy BADKPV test", "DTEST_VAL", "=", 3, 1, 'N')
+    assert not spice.badkpv("spiceypy BADKPV test", "DTEST_VAL", "=", 3, 1, 'N')
     spice.clpool()
     assert not spice.expool("DTEST_VAL")
     spice.kclear()

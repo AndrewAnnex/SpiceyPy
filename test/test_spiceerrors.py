@@ -1,6 +1,6 @@
 __author__ = 'AndrewAnnex'
 import pytest
-import SpiceyPy as spice
+import spiceypy as spice
 import os
 cwd = os.path.realpath(os.path.dirname(__file__))
 
