@@ -1,6 +1,5 @@
 # AppVeyor.com is a Continuous Integration service to build and run tests under Windows
 # This yml file was made in part by looking at the yml files for conda and astropy.
-# TODO: add 32 bit builds
 
 # This is not a .NET project, so we build SpiceyPy in the install step.
 build: off
@@ -9,13 +8,22 @@ environment:
   global:
       WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\windows_sdk.cmd"
 
-
   matrix:
+      - PYTHON: "C:\\Python27"
+        PYTHON_VERSION: "2.7.x"
+        PYTHON_ARCH: "32"
+
       - PYTHON: "C:\\Python27-x64"
-        PYTHON_VERSION: "2.7"
+        PYTHON_VERSION: "2.7.x"
         PYTHON_ARCH: "64"
+
+      - PYTHON: "C:\\Python34"
+        PYTHON_VERSION: "3.4.x"
+        PYTHON_ARCH: "32"
+        WINDOWS_SDK_VERSION: "v7.1"
+
       - PYTHON: "C:\\Python34-x64"
-        PYTHON_VERSION: "3.4"
+        PYTHON_VERSION: "3.4.x"
         PYTHON_ARCH: "64"
         WINDOWS_SDK_VERSION: "v7.1"
 
@@ -23,7 +31,7 @@ platform:
   - x64
 
 cache:
-  - C:\Users\appveyor\Downloads -> \appveyor\install_numpy.ps1
+  - C:\Users\appveyor\Downloads -> appveyor.yml
 
 install:
   # Log out the python version just so we know it
@@ -35,7 +43,7 @@ install:
   - pip install --upgrade pip
   - pip install wheel
   - pip install six pytest
-  # coveralls and or coverage fail to install for 3.4 python builds so don't bother for now.
+  # coveralls and or coverage fail to install for 3.4 64bit python builds so don't bother for now.
 
   # Download CSPICE so we can build outside of python
   - "%PYTHON%/python getspice.py"
@@ -47,7 +55,8 @@ install:
   - "%WITH_COMPILER% pip install --use-wheel --no-index --find-links=c:\\Users\\appveyor\\Downloads numpy"
 
   # Now install spiceypy
-  - call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64
+  - IF "%PYTHON_ARCH%"=="32" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86) ELSE (ECHO "probably a 64bit build")
+  - IF "%PYTHON_ARCH%"=="64" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64) ELSE (ECHO "probably a 32bit build")
   - "%PYTHON%/python setup.py install"
 
   - ECHO "Installed SpiceyPy!"
