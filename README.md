@@ -55,8 +55,11 @@ If you are updating to the newest commit/version, be sure to completely delete t
 This can most commonly be done by uninstalling SpiceyPy using pip.
 
 ### Known Working Environments:
-These are the following OS environments with all tests passing. SpiceyPy is being developed
-in a Python 3.4.1 64-bit Mac OS X 10.10.4 environment. Travis CI is ubuntu 12.04 LTS to my knowledge.
+SpicyPy is now compatible with modern Linux, Mac, and Windows environments. Since the package
+is a wrapper, any environment not supported by the NAIF is similarly not supported by SpiceyPy.
+Below is a list of known working environments. If you run into issues with your system please
+submit an issue with details.
+
 * Python 3.4.1 64-bit Mac OS X 10.10.4
 * Python 3.3.3 64-bit Mac OS X 10.9.4
 * Python 2.7.5 64-bit Mac OS X 10.9.4
@@ -64,14 +67,16 @@ in a Python 3.4.1 64-bit Mac OS X 10.10.4 environment. Travis CI is ubuntu 12.04
 * Python 2.7.5 64-bit Mac OS X 10.9.2
 * Python 3.2.3 64-bit Ubuntu 12.04 LTS (VM)
 * _Python 3.4.3 64-bit Windows (Appveyor), using Visual Studio 2013_
+* _Python 3.4.3 32-bit Windows (Appveyor), using Visual Studio 2013_
 * _Python 2.7.9 64-bit Windows (Appveyor), using Visual Studio 2013_
+* _Python 2.7.9 32-bit Windows (Appveyor), using Visual Studio 2013_
 
-#### Windows Support
+#### A Note About Windows Support
 Windows support is currently highly experimental and difficult for the author to test locally.
 If attempting to install on windows platforms, please ensure you have a recent version of Visual Studio is 
 installed and ensure cl.exe and link.exe is available on the path. Given the variability of systems, 
-I will not be able to diagnose most issues encountered with running SpiceyPy on windows. Below is a 
-semi-complete list of instructions to get SpiceyPy built and installed on windows. For a more complete
+I will not be able to diagnose most issues encountered with running SpiceyPy on Windows. Below is a 
+semi-complete list of instructions for getting SpiceyPy built and installed. For a more complete
 but less readable guide follow the appveyor.yml file included in this distribution.
 
 1. Ensure Visual Studio is properly installed and that cl.exe and link.exe are available on the path.
@@ -85,16 +90,16 @@ but less readable guide follow the appveyor.yml file included in this distributi
 ### Acknowledgements
 [DaRasch](https://github.com/DaRasch) wrote spiceminer, which I looked at to get SpiceCells working, thanks!
 
-### Steps for making the shared library
+#### Steps for making the shared library (now integrated into setup.py)
 The below steps are now integrated into the setup.py file included and can be ignored, but for those who want to try for themselves I left the following sequences for you.
 
-First the user must generate their own shared library of CSPICE. In the Lib subdirectory in CSPICE run the following commands:
+_First the user must generate their own shared library of CSPICE. In the Lib subdirectory in CSPICE run the following commands:_
 ```
 ar -x cspice.a
 ar -x csupport.a
 ```
-This will generate a large collection of `*.o` files.
-Next compile the shared library, last I checked this was correct on my system.
+_This will generate a large collection of `*.o` files.
+Next compile the shared library, last I checked this was correct on my system._
 ```
 gcc -shared -fPIC -lm *.o -o spice.so
 ```
