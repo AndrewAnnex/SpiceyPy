@@ -10111,6 +10111,7 @@ def spkobj(spk, outCell=None):
     assert isinstance(outCell, stypes.SpiceCell)
     assert outCell.dtype == 2
     libspice.spkobj_c(spk, ctypes.byref(outCell))
+    return outCell
 
 
 @spiceErrorCheck
