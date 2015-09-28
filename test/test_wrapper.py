@@ -4320,9 +4320,8 @@ def test_spkcls():
 
 def test_spkcov():
     spice.kclear()
-    ids = spice.stypes.SPICEINT_CELL(1000)
     cover = spice.stypes.SPICEDOUBLE_CELL(2000)
-    spice.spkobj(_spk, ids)
+    ids = spice.spkobj(_spk)
     tempObj = ids[0]
     spice.scard(0, cover)
     spice.spkcov(_spk, tempObj, cover)
@@ -4488,9 +4487,8 @@ def test_spkltc():
 def test_spkobj():
     # Same as test_spkcov
     spice.kclear()
-    ids = spice.stypes.SPICEINT_CELL(1000)
     cover = spice.stypes.SPICEDOUBLE_CELL(2000)
-    spice.spkobj(_spk, ids)
+    ids = spice.spkobj(_spk)
     tempObj = ids[0]
     spice.scard(0, cover)
     spice.spkcov(_spk, tempObj, cover)

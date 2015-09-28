@@ -209,10 +209,8 @@ def bltfrm(frmcls, outCell=None):
 
     :param frmcls: Frame class.
     :type frmcls: int
-    :param outCell:
+    :param outCell: Optional SpiceInt Cell that is returned
     :type outCell: spiceypy.support_types.SpiceCell
-    :param outSize: Optional size for return cell.
-    :type outSize: spiceypy.support_types.SpiceCell
     :return: Set of ID codes of frames of the specified class.
     :rtype: spiceypy.support_types.SpiceCell
     """
@@ -900,7 +898,7 @@ def cklpf(filename):
 
 
 @spiceErrorCheck
-def ckobj(ck, ids=None):
+def ckobj(ck, outCell=None):
     # Todo: test ckobj
     """
     Find the set of ID codes of all objects in a specified CK file.
@@ -909,19 +907,19 @@ def ckobj(ck, ids=None):
 
     :param ck: Name of CK file.
     :type ck: str
-    :param ids: Optional user provided spicecell.
-    :type ids: Optional spiceypy.support_types.SpiceCell
+    :param outCell: Optional user provided Spice Int cell.
+    :type outCell: Optional spiceypy.support_types.SpiceCell
     :return: Set of ID codes of objects in CK file.
     :rtype: spiceypy.support_types.SpiceCell
     """
     assert isinstance(ck, str)
     ck = stypes.stringToCharP(ck)
-    if not ids:
-        ids = stypes.SPICEINT_CELL(1000)
-    assert isinstance(ids, stypes.SpiceCell)
-    assert ids.dtype == 2
-    libspice.ckobj_c(ck, ctypes.byref(ids))
-    return ids
+    if not outCell:
+        outCell = stypes.SPICEINT_CELL(1000)
+    assert isinstance(outCell, stypes.SpiceCell)
+    assert outCell.dtype == 2
+    libspice.ckobj_c(ck, ctypes.byref(outCell))
+    return outCell
 
 
 @spiceErrorCheck
@@ -6012,7 +6010,7 @@ def kinfo(file, typlen, srclen):
 
 
 @spiceErrorCheck
-def kplfrm(frmcls, cell_size=1000):
+def kplfrm(frmcls, outCell=None):
     """
     Return a SPICE set containing the frame IDs of all reference
     frames of a given class having specifications in the kernel pool.
@@ -6021,15 +6019,16 @@ def kplfrm(frmcls, cell_size=1000):
 
     :param frmcls: Frame class.
     :type frmcls: int
-    :param cell_size: Optional size of the cell, default is 1000.
-    :type cell_size: int
+    :param outCell: Optional output Spice Int Cell
+    :type outCell: spiceypy.support_types.SpiceCell
     :return: Set of ID codes of frames of the specified class.
     :rtype: spiceypy.support_types.SpiceCell
     """
+    if not outCell:
+        outCell = stypes.SPICEINT_CELL(1000)
     frmcls = ctypes.c_int(frmcls)
-    idset = stypes.SPICEINT_CELL(cell_size)
-    libspice.kplfrm_c(frmcls, ctypes.byref(idset))
-    return idset
+    libspice.kplfrm_c(frmcls, ctypes.byref(outCell))
+    return outCell
 
 
 @spiceErrorCheck
@@ -10095,7 +10094,7 @@ def spkltc(targ, et, ref, abcorr, stobs):
 
 
 @spiceErrorCheck
-def spkobj(spk, ids):
+def spkobj(spk, outCell=None):
     """
     Find the set of ID codes of all objects in a specified SPK file.
 
@@ -10103,13 +10102,15 @@ def spkobj(spk, ids):
 
     :param spk: Name of SPK file.
     :type spk: str
-    :param ids: Empty SpiceCell
-    :type ids: spiceypy.support_types.SpiceCell
+    :param outCell: Optional Spice Int Cell.
+    :type outCell: spiceypy.support_types.SpiceCell
     """
     spk = stypes.stringToCharP(spk)
-    assert isinstance(ids, stypes.SpiceCell)
-    assert ids.dtype == 2
-    libspice.spkobj_c(spk, ctypes.byref(ids))
+    if not outCell:
+        outCell = stypes.SPICEINT_CELL(1000)
+    assert isinstance(outCell, stypes.SpiceCell)
+    assert outCell.dtype == 2
+    libspice.spkobj_c(spk, ctypes.byref(outCell))
 
 
 @spiceErrorCheck
