@@ -40,7 +40,7 @@ install:
   - set PATH=%PYTHON%\\scripts;%PATH%
 
   # Download things we absolutly need
-  - pip install --upgrade pip
+  # - pip install --upgrade pip
   - pip install wheel
   - pip install six pytest
   # coveralls and or coverage fail to install for 3.4 64bit python builds so don't bother for now.
