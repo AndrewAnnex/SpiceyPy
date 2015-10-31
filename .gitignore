@@ -24,3 +24,6 @@ test/*.txt
 
 # Pycharm specific things
 .idea/
+
+# python things
+*.egg-info*

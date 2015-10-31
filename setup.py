@@ -61,18 +61,17 @@ def unpack_cspice():
                         unpack_lib_process = subprocess.Popen(lib, shell=True)
                         process_status = os.waitpid(unpack_lib_process.pid, 0)[1]
                         if process_status != 0:
-                            raise BaseException('%d' % process_status)
+                            raise BaseException('{0}'.format(process_status))
                 else:
-                    raise BaseException("Unsupported OS: %s" % host_OS)
+                    raise BaseException("Unsupported OS: {0}".format(host_OS))
             except BaseException as error:
                 status = error.args
-                sys.exit('Error: cspice object file extraction '
-                         'failed with exit status: %d' % status)
+                sys.exit('Error: cspice object file extraction failed with exit status: {0}'.format(status))
             finally:
                 os.chdir(cwd)
         else:
             error_Message = "Error, cannot find CSPICE " \
-                            "static libraries at {}".format(lib_dir)
+                            "static libraries at {0}".format(lib_dir)
             sys.exit(error_Message)
 
 
@@ -85,13 +84,13 @@ def build_library():
             build_lib = subprocess.Popen('gcc -shared -fPIC -lm *.o -o spice.so', shell=True)
             status = os.waitpid(build_lib.pid, 0)[1]
             if status != 0:
-                raise BaseException('%d' % status)
+                raise BaseException('{0}'.format(status))
             success = os.path.exists(os.path.join(os.getcwd(), 'spice.so'))
             if not success:
                 raise BaseException("Did not find spice.so, build went badly.")
         except BaseException as errorInst:
             status = errorInst.args
-            sys.exit('Error: compilation of shared spice.so build exit status: %d' % status)
+            sys.exit('Error: compilation of shared spice.so build exit status: {0}'.format(status))
         finally:
             os.chdir(currentDir)
     elif host_OS == "Windows":
@@ -107,9 +106,9 @@ def build_library():
             windows_build = subprocess.Popen("makeDynamicSpice.bat", shell=True)
             status = windows_build.wait()
             if status != 0:
-                raise BaseException('%d' % status)
+                raise BaseException('{0}'.format(status))
         except BaseException as error:
-            sys.exit("Build failed with: %d" % error.args)
+            sys.exit("Build failed with: {0}".format(error.args))
             pass
         finally:
             os.chdir(currentDir)
@@ -120,12 +119,12 @@ def move_to_root_directory():
         try:
             os.rename(os.path.join(cspice_dir, 'lib', 'spice.so'), os.path.join(root_dir, 'spiceypy', 'spice.so'))
         except BaseException as e:
-            sys.exit('spice.so file not found, what happend?: {}'.format(e))
+            sys.exit('spice.so file not found, what happend?: {0}'.format(e))
     elif host_OS == "Windows":
         try:
             os.rename(os.path.join(cspice_dir, 'src', 'cspice', 'cspice.dll'), os.path.join(root_dir, 'spiceypy', 'cspice.dll'))
         except BaseException as e:
-            sys.exit('cspice.dll file not found, what happend?: {}'.format(e))
+            sys.exit('cspice.dll file not found, what happend?: {0}'.format(e))
 
 
 def cleanup():
@@ -170,7 +169,7 @@ try:
     elif host_OS == "Windows":
         windows_method()
     else:
-        sys.exit("Unsupported OS: %s" % host_OS)
+        sys.exit("Unsupported OS: {0}".format(host_OS))
 
     setup(
         name='spiceypy',
