@@ -11,6 +11,8 @@ import numpy
 
 ################################################################################
 
+_default_len_out = 256
+
 
 def checkForSpiceError(f):
     """
@@ -39,6 +41,7 @@ def spiceErrorCheck(f):
     :return:
     :rtype:
     """
+
     @functools.wraps(f)
     def with_errcheck(*args, **kwargs):
         try:
@@ -47,6 +50,7 @@ def spiceErrorCheck(f):
             return res
         except:
             raise
+
     return with_errcheck
 
 
@@ -72,7 +76,7 @@ def appndc(item, cell):
     else:
         item = stypes.stringToCharP(item)
         libspice.appndc_c(item, cell)
-    
+
 
 @spiceErrorCheck
 def appndd(item, cell):
@@ -93,7 +97,7 @@ def appndd(item, cell):
     else:
         item = ctypes.c_double(item)
         libspice.appndd_c(item, cell)
-    
+
 
 @spiceErrorCheck
 def appndi(item, cell):
@@ -114,7 +118,7 @@ def appndi(item, cell):
     else:
         item = ctypes.c_int(item)
         libspice.appndi_c(item, cell)
-    
+
 
 @spiceErrorCheck
 def axisar(axis, angle):
@@ -222,7 +226,7 @@ def bltfrm(frmcls, outCell=None):
 
 
 @spiceErrorCheck
-def bodc2n(code, lenout):
+def bodc2n(code, lenout=_default_len_out):
     """
     Translate the SPICE integer code of a body into a common name
     for that body.
@@ -247,7 +251,7 @@ def bodc2n(code, lenout):
 
 
 @spiceErrorCheck
-def bodc2s(code, lenout):
+def bodc2s(code, lenout=_default_len_out):
     """
     Translate a body ID code to either the corresponding name or if no
     name to ID code mapping exists, the string representation of the
@@ -285,7 +289,7 @@ def boddef(name, code):
     name = stypes.stringToCharP(name)
     code = ctypes.c_int(code)
     libspice.boddef_c(name, code)
-    
+
 
 @spiceErrorCheck
 def bodfnd(body, item):
@@ -326,7 +330,7 @@ def bodn2c(name):
     code = ctypes.c_int(0)
     found = ctypes.c_bool(0)
     libspice.bodn2c_c(name, ctypes.byref(code), ctypes.byref(found))
-    return  code.value, found.value
+    return code.value, found.value
 
 
 @spiceErrorCheck
@@ -639,7 +643,7 @@ def card(cell):
 
 
 @spiceErrorCheck
-def ccifrm(frclss, clssid, lenout):
+def ccifrm(frclss, clssid, lenout=_default_len_out):
     """
     Return the frame name, frame ID, and center associated with
     a given frame class and class ID.
@@ -668,7 +672,8 @@ def ccifrm(frclss, clssid, lenout):
     found = ctypes.c_bool()
     libspice.ccifrm_c(frclss, clssid, lenout, ctypes.byref(frcode), frname,
                       ctypes.byref(center), ctypes.byref(found))
-    return frcode.value, stypes.toPythonString(frname), center.value, found.value
+    return frcode.value, stypes.toPythonString(
+        frname), center.value, found.value
 
 
 @spiceErrorCheck
@@ -707,7 +712,7 @@ def chkin(module):
     """
     module = stypes.stringToCharP(module)
     libspice.chkin_c(module)
-    
+
 
 @spiceErrorCheck
 def chkout(module):
@@ -721,10 +726,10 @@ def chkout(module):
     """
     module = stypes.stringToCharP(module)
     libspice.chkout_c(module)
-    
+
 
 @spiceErrorCheck
-def cidfrm(cent, lenout):
+def cidfrm(cent, lenout=_default_len_out):
     """
     Retrieve frame ID code and name to associate with a frame center.
 
@@ -762,7 +767,7 @@ def ckcls(handle):
     """
     handle = ctypes.c_int(handle)
     libspice.ckcls_c(handle)
-    
+
 
 @spiceErrorCheck
 def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
@@ -873,7 +878,7 @@ def ckgpav(inst, sclkdp, tol, ref):
     libspice.ckgpav_c(inst, sclkdp, tol, ref, cmat, av, ctypes.byref(clkout),
                       ctypes.byref(found))
     return stypes.matrixToList(cmat), stypes.vectorToList(
-        av), clkout.value, found.value
+            av), clkout.value, found.value
 
 
 @spiceErrorCheck
@@ -960,7 +965,7 @@ def ckupf(handle):
     """
     handle = ctypes.c_int(handle)
     libspice.ckupf_c(handle)
-    
+
 
 @spiceErrorCheck
 def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
@@ -1006,7 +1011,7 @@ def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
     nrec = ctypes.c_int(nrec)
     libspice.ckw01_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec,
                      sclkdp, quats, avvs)
-    
+
 
 @spiceErrorCheck
 def ckw02(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats,
@@ -1055,7 +1060,7 @@ def ckw02(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats,
     nrec = ctypes.c_int(nrec)
     libspice.ckw02_c(handle, begtim, endtim, inst, ref, segid, nrec, start,
                      stop, quats, avvs, rates)
-    
+
 
 @spiceErrorCheck
 def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
@@ -1107,7 +1112,7 @@ def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
     nints = ctypes.c_int(nints)
     libspice.ckw03_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec,
                      sclkdp, quats, avvs, nints, starts)
-    
+
 
 # ckw05, skipping, ck05subtype?
 
@@ -1134,7 +1139,7 @@ def clpool():
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/clpool_c.html
     """
     libspice.clpool_c()
-    
+
 
 @spiceErrorCheck
 def cmprss(delim, n, instr, lenout=None):
@@ -1167,7 +1172,7 @@ def cmprss(delim, n, instr, lenout=None):
 
 
 @spiceErrorCheck
-def cnmfrm(cname, lenout):
+def cnmfrm(cname, lenout=_default_len_out):
     """
     Retrieve frame ID code and name to associate with an object.
 
@@ -1449,7 +1454,7 @@ def dafac(handle, n, lenvals, buffer):
     n = ctypes.c_int(n)
     lenvals = ctypes.c_int(lenvals)
     libspice.dafac_c(handle, n, lenvals, ctypes.byref(buffer))
-    
+
 
 @spiceErrorCheck
 def dafbbs(handle):
@@ -1463,7 +1468,7 @@ def dafbbs(handle):
     """
     handle = ctypes.c_int(handle)
     libspice.dafbbs_c(handle)
-    
+
 
 @spiceErrorCheck
 def dafbfs(handle):
@@ -1477,7 +1482,7 @@ def dafbfs(handle):
     """
     handle = ctypes.c_int(handle)
     libspice.dafbfs_c(handle)
-    
+
 
 @spiceErrorCheck
 def dafcls(handle):
@@ -1491,7 +1496,7 @@ def dafcls(handle):
     """
     handle = ctypes.c_int(handle)
     libspice.dafcls_c(handle)
-    
+
 
 @spiceErrorCheck
 def dafcs(handle):
@@ -1506,7 +1511,7 @@ def dafcs(handle):
     """
     handle = ctypes.c_int(handle)
     libspice.dafcs_c(handle)
-    
+
 
 @spiceErrorCheck
 def dafdc(handle):
@@ -1521,10 +1526,10 @@ def dafdc(handle):
     """
     handle = ctypes.c_int(handle)
     libspice.dafcc_c(handle)
-    
+
 
 @spiceErrorCheck
-def dafec(handle, bufsiz, lenout):
+def dafec(handle, bufsiz, lenout=_default_len_out):
     """
     Extract comments from the comment area of a binary DAF.
 
@@ -1623,7 +1628,7 @@ def dafgh():
 
 
 @spiceErrorCheck
-def dafgn(lenout):
+def dafgn(lenout=_default_len_out):
     """
     Return (get) the name for the current array in the current DAF.
 
@@ -1785,7 +1790,7 @@ def dafrda(handle, begin, end):
 
 
 @spiceErrorCheck
-def dafrfr(handle, lenout):
+def dafrfr(handle, lenout=_default_len_out):
     """
     Read the contents of the file record of a DAF.
 
@@ -1815,7 +1820,7 @@ def dafrfr(handle, lenout):
                       ifname, ctypes.byref(fward), ctypes.byref(bward),
                       ctypes.byref(free))
     return nd.value, ni.value, stypes.toPythonString(
-        ifname), fward.value, bward.value, free.value
+            ifname), fward.value, bward.value, free.value
 
 
 @spiceErrorCheck
@@ -1831,7 +1836,7 @@ def dafrs(insum):
     """
     insum = stypes.toDoubleVector(insum)
     libspice.dafrs_c(ctypes.byref(insum))
-    
+
 
 @spiceErrorCheck
 def dafus(insum, nd, ni):
@@ -1859,7 +1864,7 @@ def dafus(insum, nd, ni):
 
 
 @spiceErrorCheck
-def dasac(handle, n, buflen, buffer):
+def dasac(handle, n, buffer, buflen=_default_len_out):
     # Todo: test dasac
     """
     Add comments from a buffer of character strings to the comment
@@ -1872,13 +1877,14 @@ def dasac(handle, n, buflen, buffer):
     :type handle: int
     :param n: Number of comments to put into the comment area.
     :type n: int
-    :param buflen: Line length associated with buffer.
-    :type buflen: int
     :param buffer: Buffer of lines to be put into the comment area.
     :type buffer: Array of strs.
+    :param buflen: Line length associated with buffer.
+    :type buflen: int
     :return: :rtype:
     """
     handle = ctypes.c_int(handle)
+    # TODO: make this a mutable 2d string array
     buffer = stypes.charvector(n, buflen)
     n = ctypes.c_int(n)
     buflen = ctypes.c_int(buflen)
@@ -1899,10 +1905,10 @@ def dascls(handle):
     """
     handle = ctypes.c_int(handle)
     libspice.dascls_c(handle)
-    
+
 
 @spiceErrorCheck
-def dasec(handle, bufsiz, buflen):
+def dasec(handle, bufsiz=_default_len_out, buflen=_default_len_out):
     # Todo: test dasec
     """
     Extract comments from the comment area of a binary DAS file.
@@ -2529,7 +2535,7 @@ def dvpool(name):
     """
     name = stypes.stringToCharP(name)
     libspice.dvpool_c(name)
-    
+
 
 @spiceErrorCheck
 def dvsep(s1, s2):
@@ -2628,7 +2634,7 @@ def edterm(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts):
     libspice.edterm_c(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts,
                       ctypes.byref(trgepc), obspos, trmpts)
     return trgepc.value, stypes.vectorToList(obspos), stypes.matrixToList(
-        trmpts)
+            trmpts)
 
 
 @spiceErrorCheck
@@ -2665,7 +2671,7 @@ def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     isnull = ctypes.c_bool(isnull)
     libspice.ekacec_c(handle, segno, recno, column, nvals, vallen, cvals,
                       isnull)
-    
+
 
 @spiceErrorCheck
 def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
@@ -2697,7 +2703,7 @@ def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
     dvals = stypes.toDoubleVector(dvals)
     isnull = ctypes.c_bool(isnull)
     libspice.ekaced_c(handle, segno, recno, column, nvals, dvals, isnull)
-    
+
 
 @spiceErrorCheck
 def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
@@ -2940,7 +2946,7 @@ def ekccnt(table):
 
 
 @spiceErrorCheck
-def ekcii(table, cindex, lenout):
+def ekcii(table, cindex, lenout=_default_len_out):
     """
     Return attribute information about a column belonging to a loaded
     EK table, specifying the column by table and index.
@@ -2976,7 +2982,7 @@ def ekcls(handle):
     """
     handle = ctypes.c_int(handle)
     libspice.ekcls_c(handle)
-    
+
 
 @spiceErrorCheck
 def ekdelr(handle, segno, recno):
@@ -2996,7 +3002,7 @@ def ekdelr(handle, segno, recno):
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
     libspice.ekdelr_c(handle, segno, recno)
-    
+
 
 @spiceErrorCheck
 def ekffld(handle, segno, rcptrs):
@@ -3017,10 +3023,10 @@ def ekffld(handle, segno, rcptrs):
     rcptrs = stypes.toIntVector(rcptrs)
     libspice.ekffld_c(handle, segno,
                       ctypes.cast(rcptrs, ctypes.POINTER(ctypes.c_int)))
-    
+
 
 @spiceErrorCheck
-def ekfind(query, lenout):
+def ekfind(query, lenout=_default_len_out):
     """
     Find E-kernel data that satisfy a set of constraints.
 
@@ -3047,7 +3053,7 @@ def ekfind(query, lenout):
 
 
 @spiceErrorCheck
-def ekgc(selidx, row, element, lenout):
+def ekgc(selidx, row, element, lenout=_default_len_out):
     # ekgc has issues grabbing last element/row in column
     """
     Return an element of an entry in a column of character type in a specified
@@ -3204,7 +3210,7 @@ def ekinsr(handle, segno, recno):
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
     libspice.ekinsr_c(handle, segno, recno)
-    
+
 
 @spiceErrorCheck
 def eklef(fname):
@@ -3368,7 +3374,7 @@ def ekpsel(query, msglen, tablen, collen):
     :type msglen: int
     :param tablen: UNKNOWN? Length of Table?
     :type tablen: int
-    :param collen: UNKOWN? Length of Colunn?
+    :param collen: UNKOWN? Length of Column?
     :return:
             Number of items in SELECT clause of query,
             Begin positions of expressions in SELECT clause,
@@ -3399,9 +3405,9 @@ def ekpsel(query, msglen, tablen, collen):
                       ctypes.byref(xtypes), ctypes.byref(xclass),
                       ctypes.byref(tabs), ctypes.byref(cols),
                       ctypes.byref(error), ctypes.byref(errmsg))
-    return n.value, xbegs.value, xends.value, xtypes.value, xclass.value,\
-        stypes.vectorToList(tabs), stypes.vectorToList(cols), error.value,\
-        stypes.toPythonString(errmsg)
+    return n.value, xbegs.value, xends.value, xtypes.value, xclass.value, \
+           stypes.vectorToList(tabs), stypes.vectorToList(cols), error.value, \
+           stypes.toPythonString(errmsg)
 
 
 @spiceErrorCheck
@@ -3533,7 +3539,7 @@ def ekssum(handle, segno):
 
 
 @spiceErrorCheck
-def ektnam(n, lenout):
+def ektnam(n, lenout=_default_len_out):
     """
     Return the name of a specified, loaded table.
 
@@ -3588,7 +3594,7 @@ def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     cvals = stypes.listToCharArrayPtr(cvals, xLen=vallen, yLen=nvals)
     libspice.ekucec_c(handle, segno, recno, column, nvals, vallen, cvals,
                       isnull)
-    
+
 
 @spiceErrorCheck
 def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
@@ -3622,7 +3628,7 @@ def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
     dvals = stypes.toDoubleVector(dvals)
     libspice.ekuced_c(handle, segno, recno, column, nvals, ctypes.byref(dvals),
                       isnull)
-    
+
 
 @spiceErrorCheck
 def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
@@ -3656,7 +3662,7 @@ def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
     ivals = stypes.toIntVector(ivals)
     libspice.ekucei_c(handle, segno, recno, column, nvals, ctypes.byref(ivals),
                       isnull)
-    
+
 
 @spiceErrorCheck
 def ekuef(handle):
@@ -3672,7 +3678,7 @@ def ekuef(handle):
     """
     handle = ctypes.c_int(handle)
     libspice.ekuef_c(handle)
-    
+
 
 @spiceErrorCheck
 def el2cgv(ellipse):
@@ -3694,7 +3700,7 @@ def el2cgv(ellipse):
     sminor = stypes.emptyDoubleVector(3)
     libspice.el2cgv_c(ctypes.byref(ellipse), center, smajor, sminor)
     return stypes.vectorToList(center), stypes.vectorToList(
-        smajor), stypes.vectorToList(sminor)
+            smajor), stypes.vectorToList(sminor)
 
 
 @spiceErrorCheck
@@ -3846,7 +3852,7 @@ def errch(marker, string):
     marker = stypes.stringToCharP(marker)
     string = stypes.stringToCharP(string)
     libspice.errch_c(marker, string)
-    
+
 
 def errdev(op, lenout, device):
     """
@@ -3886,7 +3892,7 @@ def errdp(marker, number):
     marker = stypes.stringToCharP(marker)
     number = ctypes.c_double(number)
     libspice.errdp_c(marker, number)
-    
+
 
 def errint(marker, number):
     """
@@ -3903,7 +3909,7 @@ def errint(marker, number):
     marker = stypes.stringToCharP(marker)
     number = ctypes.c_int(number)
     libspice.errint_c(marker, number)
-    
+
 
 def errprt(op, lenout, inlist):
     """
@@ -3954,7 +3960,7 @@ def esrchc(value, array):
 
 
 @spiceErrorCheck
-def et2lst(et, body, lon, typein, timlen, ampmlen):
+def et2lst(et, body, lon, typein, timlen=_default_len_out, ampmlen=_default_len_out):
     """
     Given an ephemeris epoch, compute the local solar time for
     an object on the surface of a body at a specified longitude.
@@ -3996,11 +4002,11 @@ def et2lst(et, body, lon, typein, timlen, ampmlen):
                       ctypes.byref(hr), ctypes.byref(mn), ctypes.byref(sc),
                       time, ampm)
     return hr.value, mn.value, sc.value, stypes.toPythonString(
-        time), stypes.toPythonString(ampm)
+            time), stypes.toPythonString(ampm)
 
 
 @spiceErrorCheck
-def et2utc(et, formatStr, prec, lenout):
+def et2utc(et, formatStr, prec, lenout=_default_len_out):
     """
     Convert an input time from ephemeris seconds past J2000
     to Calendar, Day-of-Year, or Julian Date format, UTC.
@@ -4028,7 +4034,7 @@ def et2utc(et, formatStr, prec, lenout):
 
 
 @spiceErrorCheck
-def etcal(et, lenout):
+def etcal(et, lenout=_default_len_out):
     """
     Convert from an ephemeris epoch measured in seconds past
     the epoch of J2000 to a calendar string format using a
@@ -4252,7 +4258,7 @@ def frame(x):
     z = stypes.emptyDoubleVector(3)
     libspice.frame_c(x, y, z)
     return stypes.vectorToList(x), stypes.vectorToList(y), stypes.vectorToList(
-        z)
+            z)
 
 
 @spiceErrorCheck
@@ -4308,7 +4314,7 @@ def ftncls(unit):
     """
     unit = ctypes.c_int(unit)
     libspice.ftncls_c(unit)
-    
+
 
 @spiceErrorCheck
 def furnsh(path):
@@ -4326,14 +4332,14 @@ def furnsh(path):
     else:
         path = stypes.stringToCharP(path)
         libspice.furnsh_c(path)
-    
+
 
 ################################################################################
 # G
 
 
 @spiceErrorCheck
-def gcpool(name, start, room, lenout):
+def gcpool(name, start, room, lenout=_default_len_out):
     """
     Return the character value of a kernel variable from the kernel pool.
 
@@ -4361,7 +4367,8 @@ def gcpool(name, start, room, lenout):
     found = ctypes.c_bool()
     libspice.gcpool_c(name, start, room, lenout, ctypes.byref(n),
                       ctypes.byref(cvals), ctypes.byref(found))
-    return [stypes.toPythonString(x.value) for x in cvals[0:n.value]], found.value
+    return [stypes.toPythonString(x.value) for x in
+            cvals[0:n.value]], found.value
 
 
 @spiceErrorCheck
@@ -4478,7 +4485,7 @@ def getfat(file):
 
 
 @spiceErrorCheck
-def getfov(instid, room, shapelen, framelen):
+def getfov(instid, room, shapelen=_default_len_out, framelen=_default_len_out):
     """
     This routine returns the field-of-view (FOV) parameters for a
     specified instrument.
@@ -4513,11 +4520,11 @@ def getfov(instid, room, shapelen, framelen):
     libspice.getfov_c(instid, room, shapelen, framelen, shape, framen, bsight,
                       ctypes.byref(n), bounds)
     return stypes.toPythonString(shape), stypes.toPythonString(
-        framen), stypes.vectorToList(
-        bsight), n.value, stypes.matrixToList(bounds)[0:n.value]
+            framen), stypes.vectorToList(
+            bsight), n.value, stypes.matrixToList(bounds)[0:n.value]
 
 
-def getmsg(option, lenout):
+def getmsg(option, lenout=_default_len_out):
     """
     Retrieve the current short error message,
     the explanation of the short error message, or the
@@ -4562,7 +4569,7 @@ def gfclrh():
 
     """
     libspice.gfclrh_c()
-    
+
 
 @spiceErrorCheck
 def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls,
@@ -4634,6 +4641,7 @@ def gfinth(sigcode):
     """
     sigcode = ctypes.c_int(sigcode)
     libspice.gfinth_c(sigcode)
+
 
 # gfocce  callbacks? cells
 
@@ -4740,7 +4748,7 @@ def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals,
     libspice.gfpa_c(target, illmin, abcorr, obsrvr, relate, refval,
                     adjust, step, nintvals, ctypes.byref(cnfine),
                     ctypes.byref(result))
-    
+
 
 @spiceErrorCheck
 def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval,
@@ -4796,7 +4804,7 @@ def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval,
     libspice.gfposc_c(target, inframe, abcorr, obsrvr, crdsys, coord,
                       relate, refval, adjust, step, nintvals,
                       ctypes.byref(cnfine), ctypes.byref(result))
-    
+
 
 @spiceErrorCheck
 def gfrefn(t1, t2, s1, s2):
@@ -4837,7 +4845,7 @@ def gfrepf():
 
     """
     libspice.gfrepf_c()
-    
+
 
 @spiceErrorCheck
 def gfrepi(window, begmss, endmss):
@@ -4859,7 +4867,7 @@ def gfrepi(window, begmss, endmss):
     begmss = stypes.stringToCharP(begmss)
     endmss = stypes.stringToCharP(endmss)
     libspice.gfrepi_c(ctypes.byref(window), begmss, endmss)
-    
+
 
 @spiceErrorCheck
 def gfrepu(ivbeg, ivend, time):
@@ -4881,7 +4889,7 @@ def gfrepu(ivbeg, ivend, time):
     ivend = ctypes.c_double(ivend)
     time = ctypes.c_double(time)
     libspice.gfrepu_c(ivbeg, ivend, time)
-    
+
 
 @spiceErrorCheck
 def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result):
@@ -5113,7 +5121,7 @@ def gfsstp(step):
     """
     step = ctypes.c_double(step)
     libspice.gfsstp_c(step)
-    
+
 
 @spiceErrorCheck
 def gfstep(time):
@@ -5146,7 +5154,7 @@ def gfstol(value):
     """
     value = ctypes.c_double(value)
     libspice.gfstol_c(value)
-    
+
 
 @spiceErrorCheck
 def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate,
@@ -5284,7 +5292,7 @@ def gipool(name, start, room):
 
 
 @spiceErrorCheck
-def gnpool(name, start, room, lenout):
+def gnpool(name, start, room, lenout=_default_len_out):
     """
     Return names of kernel variables matching a specified template.
 
@@ -5464,7 +5472,7 @@ def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
                       srfvec, ctypes.byref(phase), ctypes.byref(solar),
                       ctypes.byref(emissn))
     return trgepc.value, stypes.vectorToList(
-        srfvec), phase.value, solar.value, emissn.value
+            srfvec), phase.value, solar.value, emissn.value
 
 
 @spiceErrorCheck
@@ -5573,7 +5581,7 @@ def insrtc(item, inset):
     else:
         item = stypes.stringToCharP(item)
         libspice.insrtc_c(item, ctypes.byref(inset))
-    
+
 
 @spiceErrorCheck
 def insrtd(item, inset):
@@ -5594,7 +5602,7 @@ def insrtd(item, inset):
     else:
         item = ctypes.c_double(item)
         libspice.insrtd_c(item, ctypes.byref(inset))
-    
+
 
 @spiceErrorCheck
 def insrti(item, inset):
@@ -5615,7 +5623,7 @@ def insrti(item, inset):
     else:
         item = ctypes.c_int(item)
         libspice.insrti_c(item, ctypes.byref(inset))
-    
+
 
 @spiceErrorCheck
 def inter(a, b):
@@ -5933,10 +5941,10 @@ def kclear():
 
     """
     libspice.kclear_c()
-    
+
 
 @spiceErrorCheck
-def kdata(which, kind, fillen, typlen, srclen):
+def kdata(which, kind, fillen=_default_len_out, typlen=_default_len_out, srclen=_default_len_out):
     """
     Return data for the nth kernel that is among a list of specified
     kernel types.
@@ -5973,11 +5981,11 @@ def kdata(which, kind, fillen, typlen, srclen):
     libspice.kdata_c(which, kind, fillen, typlen, srclen, file, filtyp, source,
                      ctypes.byref(handle), ctypes.byref(found))
     return stypes.toPythonString(file), stypes.toPythonString(
-        filtyp), stypes.toPythonString(source), handle.value, found.value
+            filtyp), stypes.toPythonString(source), handle.value, found.value
 
 
 @spiceErrorCheck
-def kinfo(file, typlen, srclen):
+def kinfo(file, typlen=_default_len_out, srclen=_default_len_out):
     """
     Return information about a loaded kernel specified by name.
 
@@ -6006,7 +6014,7 @@ def kinfo(file, typlen, srclen):
     libspice.kinfo_c(file, typlen, srclen, filtyp, source, ctypes.byref(handle),
                      ctypes.byref(found))
     return stypes.toPythonString(filtyp), stypes.toPythonString(
-        source), handle.value, found.value
+            source), handle.value, found.value
 
 
 @spiceErrorCheck
@@ -6051,7 +6059,7 @@ def ktotal(kind):
 
 
 @spiceErrorCheck
-def kxtrct(keywd, termlen, terms, nterms, stringlen, substrlen, instring):
+def kxtrct(keywd, terms, nterms, instring, termlen=_default_len_out, stringlen=_default_len_out, substrlen=_default_len_out):
     """
     Locate a keyword in a string and extract the substring from
     the beginning of the first word following the keyword to the
@@ -6061,18 +6069,18 @@ def kxtrct(keywd, termlen, terms, nterms, stringlen, substrlen, instring):
 
     :param keywd: Word that marks the beginning of text of interest.
     :type keywd: str
-    :param termlen: Length of strings in string array term.
-    :type termlen: int
     :param terms: Set of words, any of which marks the end of text.
     :type terms: Array of str
     :param nterms: Number of terms.
     :type nterms: int
+    :param instring: String containing a sequence of words.
+    :type instring: str
+    :param termlen: Length of strings in string array term.
+    :type termlen: int
     :param stringlen: Available space in argument string.
     :type stringlen: int
     :param substrlen: Available space in output substring.
     :type substrlen: int
-    :param instring: String containing a sequence of words.
-    :type instring: str
     :return:
             String containing a sequence of words,
             True if the keyword is found in the string,
@@ -6092,7 +6100,7 @@ def kxtrct(keywd, termlen, terms, nterms, stringlen, substrlen, instring):
                       stringlen, substrlen, instring, ctypes.byref(found),
                       substr)
     return stypes.toPythonString(instring), found.value, stypes.toPythonString(
-        substr)
+            substr)
 
 
 ################################################################################
@@ -6189,7 +6197,7 @@ def latsph(radius, lon, lat):
 
 
 @spiceErrorCheck
-def lcase(instr, lenout):
+def lcase(instr, lenout=_default_len_out):
     """
     Convert the characters in a string to lowercase.
 
@@ -6222,7 +6230,7 @@ def ldpool(filename):
     """
     filename = stypes.stringToCharP(filename)
     libspice.ldpool_c(filename)
-    
+
 
 @spiceErrorCheck
 def lmpool(cvals):
@@ -6239,7 +6247,7 @@ def lmpool(cvals):
     n = ctypes.c_int(len(cvals))
     cvals = stypes.listToCharArrayPtr(cvals, xLen=lenvals, yLen=n)
     libspice.lmpool_c(cvals, lenvals, n)
-    
+
 
 @spiceErrorCheck
 def lparse(inlist, delim, nmax):
@@ -7583,7 +7591,7 @@ def pckuof(handle):
     """
     handle = ctypes.c_int(handle)
     libspice.pckuof_c(handle)
-    
+
 
 @spiceErrorCheck
 def pcpool(name, cvals):
@@ -7805,7 +7813,7 @@ def pl2psv(plane):
     span2 = stypes.emptyDoubleVector(3)
     libspice.pl2psv_c(ctypes.byref(plane), point, span1, span2)
     return stypes.vectorToList(point), stypes.vectorToList(
-        span1), stypes.vectorToList(span2)
+            span1), stypes.vectorToList(span2)
 
 
 @spiceErrorCheck
@@ -8027,8 +8035,8 @@ def q2m(q):
     return stypes.matrixToList(mout)
 
 
-#@spiceErrorCheck
-def qcktrc(tracelen):
+# @spiceErrorCheck
+def qcktrc(tracelen=_default_len_out):
     """
     Return a string containing a traceback.
 
@@ -8161,7 +8169,7 @@ def raxisa(matrix):
 
 
 @spiceErrorCheck
-def rdtext(file, lenout):  # pragma: no cover
+def rdtext(file, lenout=_default_len_out):  # pragma: no cover
     """
     Read the next line of text from a text file.
 
@@ -8354,7 +8362,7 @@ def removc(item, inset):
     assert inset.dtype == 0
     item = stypes.stringToCharP(item)
     libspice.removc_c(item, ctypes.byref(inset))
-    
+
 
 @spiceErrorCheck
 def removd(item, inset):
@@ -8372,7 +8380,7 @@ def removd(item, inset):
     assert inset.dtype == 1
     item = ctypes.c_double(item)
     libspice.removd_c(item, ctypes.byref(inset))
-    
+
 
 @spiceErrorCheck
 def removi(item, inset):
@@ -8390,7 +8398,7 @@ def removi(item, inset):
     assert inset.dtype == 2
     item = ctypes.c_int(item)
     libspice.removi_c(item, ctypes.byref(inset))
-    
+
 
 @spiceErrorCheck
 def reordc(iorder, ndim, lenvals, array):
@@ -8682,7 +8690,7 @@ def reset():
 
     """
     libspice.reset_c()
-    
+
 
 @spiceErrorCheck
 def return_c():
@@ -8858,7 +8866,7 @@ def scard(incard, cell):
 
 
 @spiceErrorCheck
-def scdecd(sc, sclkdp, lenout, MXPART=None):
+def scdecd(sc, sclkdp, lenout=_default_len_out, MXPART=None):
     # todo: figure out how to use mxpart, and test scdecd
     """
     Convert double precision encoding of spacecraft clock time into
@@ -8911,7 +8919,7 @@ def sce2c(sc, et):
 
 
 @spiceErrorCheck
-def sce2s(sc, et, lenout):
+def sce2s(sc, et, lenout=_default_len_out):
     """
     Convert an epoch specified as ephemeris seconds past J2000 (ET) to a
     character string representation of a spacecraft clock value (SCLK).
@@ -8984,7 +8992,7 @@ def scencd(sc, sclkch, MXPART=None):
 
 
 @spiceErrorCheck
-def scfmt(sc, ticks, lenout):
+def scfmt(sc, ticks, lenout=_default_len_out):
     """
     Convert encoded spacecraft clock ticks to character clock format.
 
@@ -9029,7 +9037,7 @@ def scpart(sc):
     pstop = stypes.emptyDoubleVector(9999)
     libspice.scpart_c(sc, nparts, pstart, pstop)
     return stypes.vectorToList(pstart)[0:nparts.value], stypes.vectorToList(
-        pstop)[0:nparts.value]
+            pstop)[0:nparts.value]
 
 
 @spiceErrorCheck
@@ -9163,7 +9171,7 @@ def setmsg(message):
     """
     message = stypes.stringToCharP(message)
     libspice.setmsg_c(message)
-    
+
 
 @spiceErrorCheck
 def shellc(ndim, lenvals, array):
@@ -9244,7 +9252,7 @@ def sigerr(message):
     """
     message = stypes.stringToCharP(message)
     libspice.sigerr_c(message)
-    
+
 
 @spiceErrorCheck
 def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
@@ -9296,7 +9304,7 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
     libspice.sincpt_c(method, target, et, fixref, abcorr, obsrvr, dref, dvec,
                       spoint, ctypes.byref(trgepc), srfvec, ctypes.byref(found))
     return stypes.vectorToList(spoint), trgepc.value, stypes.vectorToList(
-        srfvec), found.value
+            srfvec), found.value
 
 
 @spiceErrorCheck
@@ -9594,7 +9602,7 @@ def spk14a(handle, ncsets, coeffs, epochs):
     coeffs = stypes.toDoubleVector(coeffs)
     epochs = stypes.toDoubleVector(epochs)
     libspice.spk14a_c(handle, ncsets, coeffs, epochs)
-    
+
 
 @spiceErrorCheck
 def spk14b(handle, segid, body, center, framename, first, last, chbdeg):
@@ -9631,7 +9639,7 @@ def spk14b(handle, segid, body, center, framename, first, last, chbdeg):
     chbdeg = ctypes.c_int(chbdeg)
     libspice.spk14b_c(handle, segid, body, center, framename, first, last,
                       chbdeg)
-    
+
 
 @spiceErrorCheck
 def spk14e(handle):
@@ -9646,7 +9654,7 @@ def spk14e(handle):
     """
     handle = ctypes.c_int(handle)
     libspice.spk14e_c(handle)
-    
+
 
 @spiceErrorCheck
 def spkcls(handle):
@@ -9660,7 +9668,7 @@ def spkcls(handle):
     """
     handle = ctypes.c_int(handle)
     libspice.spkcls_c(handle)
-    
+
 
 @spiceErrorCheck
 def spkcov(spk, idcode, cover):
@@ -10298,7 +10306,7 @@ def spksfs(body, et, idlen):
     found = ctypes.c_bool()
     libspice.spksfs_c(body, et, idlen, ctypes.byref(handle), descr, identstring,
                       ctypes.byref(found))
-    return handle.value, stypes.vectorToList(descr),\
+    return handle.value, stypes.vectorToList(descr), \
            stypes.toPythonString(identstring), found.value
 
 
@@ -10358,7 +10366,7 @@ def spksub(handle, descr, identin, begin, end, newh):
     end = ctypes.c_int(end)
     newh = ctypes.c_int(newh)
     libspice.spksub_c(handle, descr, identin, begin, end, newh)
-    
+
 
 @spiceErrorCheck
 def spkuds(descr):
@@ -10395,8 +10403,8 @@ def spkuds(descr):
                       ctypes.byref(framenum), ctypes.byref(typenum),
                       ctypes.byref(first), ctypes.byref(last),
                       ctypes.byref(begin), ctypes.byref(end))
-    return body.value, center.value, framenum.value, typenum.value,\
-        first.value, last.value, begin.value, end.value
+    return body.value, center.value, framenum.value, typenum.value, \
+           first.value, last.value, begin.value, end.value
 
 
 @spiceErrorCheck
@@ -10413,7 +10421,7 @@ def spkuef(handle):
     """
     handle = ctypes.c_int(handle)
     libspice.spkuef_c(handle)
-    
+
 
 @spiceErrorCheck
 def spkw02(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
@@ -10462,7 +10470,7 @@ def spkw02(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
     btime = ctypes.c_double(btime)
     libspice.spkw02_c(handle, body, center, inframe, first, last, segid, intlen,
                       n, polydg, cdata, btime)
-    
+
 
 @spiceErrorCheck
 def spkw03(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
@@ -10511,7 +10519,7 @@ def spkw03(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
     btime = ctypes.c_double(btime)
     libspice.spkw03_c(handle, body, center, inframe, first, last, segid, intlen,
                       n, polydg, cdata, btime)
-    
+
 
 @spiceErrorCheck
 def spkw05(handle, body, center, inframe, first, last, segid, gm, n, states,
@@ -10560,7 +10568,7 @@ def spkw05(handle, body, center, inframe, first, last, segid, gm, n, states,
     epochs = stypes.toDoubleVector(epochs)
     libspice.spkw05_c(handle, body, center, inframe, first, last, segid, gm, n,
                       states, epochs)
-    
+
 
 @spiceErrorCheck
 def spkw08(handle, body, center, inframe, first, last, segid, degree, n, states,
@@ -10610,7 +10618,7 @@ def spkw08(handle, body, center, inframe, first, last, segid, degree, n, states,
     step = ctypes.c_double(step)
     libspice.spkw08_c(handle, body, center, inframe, first, last, segid, degree,
                       n, states, epoch1, step)
-    
+
 
 @spiceErrorCheck
 def spkw09(handle, body, center, inframe, first, last, segid, degree, n, states,
@@ -10656,7 +10664,7 @@ def spkw09(handle, body, center, inframe, first, last, segid, degree, n, states,
     epochs = stypes.toDoubleVector(epochs)
     libspice.spkw09_c(handle, body, center, inframe, first, last, segid, degree,
                       n, states, epochs)
-    
+
 
 @spiceErrorCheck
 def spkw10(handle, body, center, inframe, first, last, segid, consts, n, elems,
@@ -10703,7 +10711,7 @@ def spkw10(handle, body, center, inframe, first, last, segid, consts, n, elems,
     epochs = stypes.toDoubleVector(epochs)
     libspice.spkw10_c(handle, body, center, inframe, first, last, segid, consts,
                       n, elems, epochs)
-    
+
 
 @spiceErrorCheck
 def spkw12(handle, body, center, inframe, first, last, segid, degree, n, states,
@@ -10752,7 +10760,7 @@ def spkw12(handle, body, center, inframe, first, last, segid, degree, n, states,
     step = ctypes.c_double(step)
     libspice.spkw12_c(handle, body, center, inframe, first, last, segid, degree,
                       n, states, epoch0, step)
-    
+
 
 @spiceErrorCheck
 def spkw13(handle, body, center, inframe, first, last, segid, degree, n, states,
@@ -10798,7 +10806,7 @@ def spkw13(handle, body, center, inframe, first, last, segid, degree, n, states,
     epochs = stypes.toDoubleVector(epochs)
     libspice.spkw13_c(handle, body, center, inframe, first, last, segid, degree,
                       n, states, epochs)
-    
+
 
 @spiceErrorCheck
 def spkw15(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p,
@@ -10863,7 +10871,7 @@ def spkw15(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p,
     radius = ctypes.c_double(radius)
     libspice.spkw15_c(handle, body, center, inframe, first, last, segid, epoch,
                       tp, pa, p, ecc, j2flg, pv, gm, j2, radius)
-    
+
 
 @spiceErrorCheck
 def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel,
@@ -10910,7 +10918,7 @@ def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel,
     decpol = ctypes.c_double(decpol)
     libspice.spkw17_c(handle, body, center, inframe, first, last, segid, epoch,
                       eqel, rapol, decpol)
-    
+
 
 # spkw18
 
@@ -10937,7 +10945,8 @@ def srfrec(body, longitude, latitude):
     """
     if hasattr(longitude, "__iter__") and hasattr(latitude, "__iter__"):
         return numpy.array(
-            [srfrec(body, lon, lat) for lon, lat in zip(longitude, latitude)])
+                [srfrec(body, lon, lat) for lon, lat in
+                 zip(longitude, latitude)])
     body = ctypes.c_int(body)
     longitude = ctypes.c_double(longitude)
     latitude = ctypes.c_double(latitude)
@@ -10983,7 +10992,8 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
     """
     if hasattr(et, "__iter__"):
         return numpy.array(
-            [srfxpt(method, target, t, abcorr, obsrvr, dref, dvec) for t in et])
+                [srfxpt(method, target, t, abcorr, obsrvr, dref, dvec) for t in
+                 et])
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
@@ -11000,8 +11010,8 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
                       spoint, ctypes.byref(dist), ctypes.byref(trgepc), obspos,
                       ctypes.byref(found))
     return stypes.vectorToList(
-        spoint), dist.value, trgepc.value, stypes.vectorToList(
-        obspos), found.value
+            spoint), dist.value, trgepc.value, stypes.vectorToList(
+            obspos), found.value
 
 
 @spiceErrorCheck
@@ -11051,7 +11061,7 @@ def stelab(pobj, vobs):
 
 
 @spiceErrorCheck
-def stpool(item, nth, contin, lenout):
+def stpool(item, nth, contin, lenout=_default_len_out):
     """
     Retrieve the nth string from the kernel pool variable, where the
     string may be continued across several components of the kernel pool
@@ -11148,7 +11158,7 @@ def subpnt(method, target, et, fixref, abcorr, obsrvr):
     libspice.subpnt_c(method, target, et, fixref, abcorr, obsrvr, spoint,
                       ctypes.byref(trgepc), srfvec)
     return stypes.vectorToList(spoint), trgepc.value, stypes.vectorToList(
-        srfvec)
+            srfvec)
 
 
 @spiceErrorCheck
@@ -11184,7 +11194,7 @@ def subpt(method, target, et, abcorr, obsrvr):
     """
     if hasattr(et, "__iter__"):
         return numpy.array(
-            [subpt(method, target, t, abcorr, obsrvr) for t in et])
+                [subpt(method, target, t, abcorr, obsrvr) for t in et])
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
@@ -11238,7 +11248,7 @@ def subslr(method, target, et, fixref, abcorr, obsrvr):
     libspice.subslr_c(method, target, et, fixref, abcorr, obsrvr, spoint,
                       ctypes.byref(trgepc), srfvec)
     return stypes.vectorToList(spoint), trgepc.value, stypes.vectorToList(
-        srfvec)
+            srfvec)
 
 
 @spiceErrorCheck
@@ -11431,7 +11441,7 @@ def swpool(agent, nnames, lenvals, names):
     lenvals = ctypes.c_int(lenvals)
     names = stypes.listtocharvector(names)
     libspice.swpool_c(agent, nnames, lenvals, names)
-    
+
 
 @spiceErrorCheck
 def sxform(instring, tostring, et):
@@ -11481,6 +11491,7 @@ def szpool(name):
     libspice.szpool_c(name, ctypes.byref(n), ctypes.byref(found))
     return n.value, found.value
 
+
 ################################################################################
 # T
 
@@ -11515,7 +11526,7 @@ def timdef(action, item, lenout, value=None):
 
 
 @spiceErrorCheck
-def timout(et, pictur, lenout):
+def timout(et, pictur, lenout=_default_len_out):
     """
     This vectorized routine converts an input epoch represented in TDB seconds
     past the TDB epoch of J2000 to a character string formatted to
@@ -11593,7 +11604,7 @@ def tisbod(ref, body, et):
     return stypes.matrixToList(retmatrix)
 
 
-#@spiceErrorCheck
+# @spiceErrorCheck
 def tkvrsn(item):
     """
     Given an item such as the Toolkit or an entry point name, return
@@ -11611,7 +11622,7 @@ def tkvrsn(item):
 
 
 @spiceErrorCheck
-def tparse(instring, lenout):
+def tparse(instring, lenout=_default_len_out):
     """
     Parse a time string and return seconds past the J2000
     epoch on a formal calendar.
@@ -11661,7 +11672,7 @@ def tpictr(sample, lenout, lenerr):
     ok = ctypes.c_bool()
     libspice.tpictr_c(sample, lenout, lenerr, pictur, ctypes.byref(ok), errmsg)
     return stypes.toPythonString(pictur), ok.value, stypes.toPythonString(
-        errmsg)
+            errmsg)
 
 
 @spiceErrorCheck
@@ -11696,7 +11707,7 @@ def trcdep():
 
 
 @spiceErrorCheck
-def trcnam(index, namlen):
+def trcnam(index, namlen=_default_len_out):
     """
     Return the name of the module having the specified position in
     the trace representation. The first module to check in is at
@@ -11728,7 +11739,7 @@ def trcoff():
 
     """
     libspice.trcoff_c()
-    
+
 
 @spiceErrorCheck
 def tsetyr(year):
@@ -11743,7 +11754,7 @@ def tsetyr(year):
     """
     year = ctypes.c_int(year)
     libspice.tsetyr_c(year)
-    
+
 
 @spiceErrorCheck
 def twopi():
@@ -11927,7 +11938,7 @@ def unload(filename):
             libspice.unload_c(stypes.stringToCharP(f))
     filename = stypes.stringToCharP(filename)
     libspice.unload_c(filename)
-    
+
 
 @spiceErrorCheck
 def unorm(v1):
