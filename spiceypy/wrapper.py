@@ -1864,7 +1864,7 @@ def dafus(insum, nd, ni):
 
 
 @spiceErrorCheck
-def dasac(handle, n, buflen, buffer):
+def dasac(handle, n, buffer, buflen=_default_len_out):
     # Todo: test dasac
     """
     Add comments from a buffer of character strings to the comment
@@ -1877,13 +1877,14 @@ def dasac(handle, n, buflen, buffer):
     :type handle: int
     :param n: Number of comments to put into the comment area.
     :type n: int
-    :param buflen: Line length associated with buffer.
-    :type buflen: int
     :param buffer: Buffer of lines to be put into the comment area.
     :type buffer: Array of strs.
+    :param buflen: Line length associated with buffer.
+    :type buflen: int
     :return: :rtype:
     """
     handle = ctypes.c_int(handle)
+    # TODO: make this a mutable 2d string array
     buffer = stypes.charvector(n, buflen)
     n = ctypes.c_int(n)
     buflen = ctypes.c_int(buflen)
@@ -1907,7 +1908,7 @@ def dascls(handle):
 
 
 @spiceErrorCheck
-def dasec(handle, bufsiz, buflen):
+def dasec(handle, bufsiz=_default_len_out, buflen=_default_len_out):
     # Todo: test dasec
     """
     Extract comments from the comment area of a binary DAS file.
@@ -6058,7 +6059,7 @@ def ktotal(kind):
 
 
 @spiceErrorCheck
-def kxtrct(keywd, termlen, terms, nterms, stringlen, substrlen, instring):
+def kxtrct(keywd, terms, nterms, instring, termlen=_default_len_out, stringlen=_default_len_out, substrlen=_default_len_out):
     """
     Locate a keyword in a string and extract the substring from
     the beginning of the first word following the keyword to the
@@ -6068,18 +6069,18 @@ def kxtrct(keywd, termlen, terms, nterms, stringlen, substrlen, instring):
 
     :param keywd: Word that marks the beginning of text of interest.
     :type keywd: str
-    :param termlen: Length of strings in string array term.
-    :type termlen: int
     :param terms: Set of words, any of which marks the end of text.
     :type terms: Array of str
     :param nterms: Number of terms.
     :type nterms: int
+    :param instring: String containing a sequence of words.
+    :type instring: str
+    :param termlen: Length of strings in string array term.
+    :type termlen: int
     :param stringlen: Available space in argument string.
     :type stringlen: int
     :param substrlen: Available space in output substring.
     :type substrlen: int
-    :param instring: String containing a sequence of words.
-    :type instring: str
     :return:
             String containing a sequence of words,
             True if the keyword is found in the string,
@@ -8865,7 +8866,7 @@ def scard(incard, cell):
 
 
 @spiceErrorCheck
-def scdecd(sc, sclkdp, lenout, MXPART=None):
+def scdecd(sc, sclkdp, lenout=_default_len_out, MXPART=None):
     # todo: figure out how to use mxpart, and test scdecd
     """
     Convert double precision encoding of spacecraft clock time into
