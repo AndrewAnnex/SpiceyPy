@@ -13,10 +13,10 @@ import spiceypy.support_types as stypes
 # ######################################################################################################################
 # A
 
-libspice.appndc_c.argtypes = [c_char_p, POINTER(stypes.SpiceCell)]
-libspice.appndd_c.argtypes = [c_double, POINTER(stypes.SpiceCell)]
-libspice.appndi_c.argtypes = [c_int, POINTER(stypes.SpiceCell)]
-libspice.axisar_c.argtypes = [(c_double * 3), c_double, (c_double * 3) * 3]
+
+
+
+
 
 # #######################################################################################################################
 # B

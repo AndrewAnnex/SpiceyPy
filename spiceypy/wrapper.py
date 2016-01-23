@@ -4,6 +4,7 @@ __author__ = 'AndrewAnnex'
 # here is where all the wrapper functions are located.
 
 import ctypes
+from ctypes import CDLL, POINTER, c_bool, c_int, c_double, c_char, c_char_p, c_void_p
 import spiceypy.support_types as stypes
 from spiceypy.libspice import libspice
 import functools
@@ -56,6 +57,8 @@ def spiceErrorCheck(f):
 
 ################################################################################
 # A
+libspice.appndc_c.argtypes = [c_char_p, POINTER(stypes.SpiceCell)]
+
 
 @spiceErrorCheck
 def appndc(item, cell):
@@ -76,6 +79,8 @@ def appndc(item, cell):
     else:
         item = stypes.stringToCharP(item)
         libspice.appndc_c(item, cell)
+
+libspice.appndd_c.argtypes = [c_double, POINTER(stypes.SpiceCell)]
 
 
 @spiceErrorCheck
@@ -98,6 +103,8 @@ def appndd(item, cell):
         item = ctypes.c_double(item)
         libspice.appndd_c(item, cell)
 
+libspice.appndi_c.argtypes = [c_int, POINTER(stypes.SpiceCell)]
+
 
 @spiceErrorCheck
 def appndi(item, cell):
@@ -118,6 +125,8 @@ def appndi(item, cell):
     else:
         item = ctypes.c_int(item)
         libspice.appndi_c(item, cell)
+
+libspice.axisar_c.argtypes = [(c_double * 3), c_double, (c_double * 3) * 3]
 
 
 @spiceErrorCheck
@@ -8867,7 +8876,6 @@ def scard(incard, cell):
 
 @spiceErrorCheck
 def scdecd(sc, sclkdp, lenout=_default_len_out, MXPART=None):
-    # todo: figure out how to use mxpart, and test scdecd
     """
     Convert double precision encoding of spacecraft clock time into
     a character representation.
