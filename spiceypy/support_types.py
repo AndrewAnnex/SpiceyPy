@@ -22,6 +22,7 @@ Toolkit version: {tkvsn}
 ================================================================================\
 """
 
+
 class SpiceyError(Exception):
     """
     SpiceyError wraps CSPICE errors.
@@ -167,7 +168,8 @@ def listToCharArrayPtr(inList, xLen=None, yLen=None):
 
 
 class DoubleArrayType:
-    # Class type that will handle all double vectors, inspiration from python cookbook 3rd edition
+    # Class type that will handle all double vectors,
+    # inspiration from python cookbook 3rd edition
     def from_param(self, param):
         typename = type(param).__name__
         if hasattr(self, 'from_' + typename):
@@ -190,7 +192,8 @@ class DoubleArrayType:
     # Cast from a numpy array,
     def from_ndarray(self, param):
         # return param.data_as(POINTER(c_double))
-        # the above older method does not work with functions which take vectors of known size
+        # the above older method does not work with
+        # functions which take vectors of known size
         return numpy.ctypeslib.as_ctypes(param)
 
     # Cast from array.array objects
@@ -202,7 +205,8 @@ class DoubleArrayType:
 
 
 class DoubleMatrixType:
-    # Class type that will handle all double matricies, inspiration from python cookbook 3rd edition
+    # Class type that will handle all double matricies,
+    # inspiration from python cookbook 3rd edition
     def from_param(self, param):
         typename = type(param).__name__
         if hasattr(self, 'from_' + typename):
@@ -224,17 +228,18 @@ class DoubleMatrixType:
 
     # Cast from a numpy array
     def from_ndarray(self, param):
-        #return param.data_as(POINTER(c_double))
+        # return param.data_as(POINTER(c_double))
         return numpy.ctypeslib.as_ctypes(param)
 
     # Cast from a numpy matrix
     def from_matrix(self, param):
-        #return param.data_as(POINTER(c_double))
+        # return param.data_as(POINTER(c_double))
         return numpy.ctypeslib.as_ctypes(param)
 
 
 class IntArrayType:
-    # Class type that will handle all int vectors, inspiration from python cookbook 3rd edition
+    # Class type that will handle all int vectors,
+    # inspiration from python cookbook 3rd edition
     def from_param(self, param):
         typename = type(param).__name__
         if hasattr(self, 'from_' + typename):
@@ -256,8 +261,9 @@ class IntArrayType:
 
     # Cast from a numpy array
     def from_ndarray(self, param):
-        #return param.data_as(POINTER(c_int)) # not sure if long is same as int, it should be..
-        #return numpy.ctypeslib.as_ctypes(param)
+        # return param.data_as(POINTER(c_int))
+        # not sure if long is same as int, it should be..
+        # return numpy.ctypeslib.as_ctypes(param)
         return self.from_param(param.tolist())
 
     # Cast from array.array objects
@@ -269,7 +275,8 @@ class IntArrayType:
 
 
 class BoolArrayType:
-    # Class type that will handle all int vectors, inspiration from python cookbook 3rd edition
+    # Class type that will handle all int vectors,
+    # inspiration from python cookbook 3rd edition
     def from_param(self, param):
         typename = type(param).__name__
         if hasattr(self, 'from_' + typename):
@@ -291,8 +298,9 @@ class BoolArrayType:
 
     # Cast from a numpy array
     def from_ndarray(self, param):
-        #return param.data_as(POINTER(c_int)) # not sure if long is same as int, it should be..
-        #return numpy.ctypeslib.as_ctypes(param)
+        # return param.data_as(POINTER(c_int))
+        # not sure if long is same as int, it should be..
+        # return numpy.ctypeslib.as_ctypes(param)
         return self.from_param(param.tolist())
 
 
@@ -453,7 +461,7 @@ class SpiceEKSegSum(Structure):
         return '<SpiceEKSegSum tabnam = %s, nrows = %s, ncols = %s, cnames = %s, cdescrs = %s >' % (self.tabnam, self.nrows, self.ncols, self.cnames, self.cdescrs)
 
 
-#SpiceCell implementation below is inpart from github.com/DaRasch/spiceminer/
+# SpiceCell implementation below is inpart from github.com/DaRasch/spiceminer/
 # and modified as needed for this author, maybe we should work together?
 
 ### helper classes/functions ###
@@ -516,7 +524,10 @@ class SpiceCell(Structure):
         self.data = data
 
     def __str__(self):
-        return '<SpiceCell dtype = %s, length = %s, size = %s, card = %s, isSet = %s, adjust = %s, init = %s, base = %s, data = %s>' % (self.dtype, self.length, self.size, self.card, self.isSet, self.adjust, self.init, self.base, self.data)
+        return '<SpiceCell dtype = %s, length = %s, size = %s, card = %s,' \
+               ' isSet = %s, adjust = %s, init = %s, base = %s, data = %s>' % \
+               (self.dtype, self.length, self.size, self.card, self.isSet,
+                self.adjust, self.init, self.base, self.data)
 
     def is_int(self):
         return self.dtype == 2

@@ -173,7 +173,7 @@ try:
 
     setup(
         name='spiceypy',
-        version='0.6.1',
+        version='0.6.2',
         description='A Python Wrapper for the NAIF CSPICE Toolkit made using ctypes',
         url='https://github.com/AndrewAnnex/SpiceyPy',
         author='Andrew Annex',
