@@ -53,8 +53,7 @@ def spiceErrorCheck(f):
 
 def spiceFoundExceptionThrower(f):
     """
-    Decorator for wrapping functions that utalize the kernel pool
-    to do a unpythonic LYBL, so that we can pythonically raise an exception
+    Decorator for wrapping functions that use status codes
     """
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
