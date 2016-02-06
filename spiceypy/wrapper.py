@@ -1,13 +1,10 @@
-__author__ = 'AndrewAnnex'
-
-# wrapper.py, a weak wrapper for libspice.py,
-# here is where all the wrapper functions are located.
-
 import ctypes
 import spiceypy.support_types as stypes
 from spiceypy.libspice import libspice
 import functools
 import numpy
+
+__author__ = 'AndrewAnnex'
 
 ################################################################################
 
@@ -35,7 +32,7 @@ def checkForSpiceError(f):
 def spiceErrorCheck(f):
     """
     Decorator for spiceypy hooking into spice error system.
-    If an error is detected, an output simillar to outmsg_
+    If an error is detected, an output similar to outmsg_
 
     :type f: builtins.function
     :return:
@@ -52,6 +49,25 @@ def spiceErrorCheck(f):
             raise
 
     return with_errcheck
+
+
+def spiceFoundExceptionThrower(f):
+    """
+    Decorator for wrapping functions that use status codes
+    """
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        res = f(*args, **kwargs)
+        found = res[-1]
+        if isinstance(found, bool) and not found:
+            raise stypes.SpiceyError("Spice returns not found for function: {}".format(f.__name__))
+        else:
+            actualres = res[0:-1]
+            if len(actualres) == 1:
+                return actualres[0]
+            else:
+                return actualres
+    return wrapper
 
 
 ################################################################################
@@ -226,6 +242,7 @@ def bltfrm(frmcls, outCell=None):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def bodc2n(code, lenout=_default_len_out):
     """
     Translate the SPICE integer code of a body into a common name
@@ -237,10 +254,8 @@ def bodc2n(code, lenout=_default_len_out):
     :type code: int
     :param lenout: Maximum length of output name.
     :type lenout: int
-    :return:
-            A common name for the body identified by code,
-            Found flag.
-    :rtype: tuple
+    :return: A common name for the body identified by code.
+    :rtype: str
     """
     code = ctypes.c_int(code)
     name = stypes.stringToCharP(" " * lenout)
@@ -312,6 +327,7 @@ def bodfnd(body, item):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def bodn2c(name):
     """
     Translate the name of a body or object to the corresponding SPICE
@@ -321,10 +337,8 @@ def bodn2c(name):
 
     :param name: Body name to be translated into a SPICE ID code.
     :type name: str
-    :return:
-            SPICE integer ID code for the named body,
-            Found Flag.
-    :rtype: tuple
+    :return: SPICE integer ID code for the named body.
+    :rtype: int
     """
     name = stypes.stringToCharP(name)
     code = ctypes.c_int(0)
@@ -334,6 +348,7 @@ def bodn2c(name):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def bods2c(name):
     """
     Translate a string containing a body name or ID code to an integer code.
@@ -342,10 +357,8 @@ def bods2c(name):
 
     :param name: String to be translated to an ID code.
     :type name: str
-    :return:
-            Integer ID code corresponding to name,
-            Found Flag.
-    :rtype: tuple
+    :return: Integer ID code corresponding to name.
+    :rtype: int
     """
     name = stypes.stringToCharP(name)
     code = ctypes.c_int(0)
@@ -643,6 +656,7 @@ def card(cell):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def ccifrm(frclss, clssid, lenout=_default_len_out):
     """
     Return the frame name, frame ID, and center associated with
@@ -659,8 +673,7 @@ def ccifrm(frclss, clssid, lenout=_default_len_out):
     :return:
             the frame name,
             frame ID,
-            center,
-            and found.
+            center.
     :rtype: tuple
     """
     frclss = ctypes.c_int(frclss)
@@ -729,6 +742,7 @@ def chkout(module):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def cidfrm(cent, lenout=_default_len_out):
     """
     Retrieve frame ID code and name to associate with a frame center.
@@ -741,8 +755,7 @@ def cidfrm(cent, lenout=_default_len_out):
     :type lenout: int
     :return:
             frame ID code,
-            name to associate with a frame center,
-            Found Flag.
+            name to associate with a frame center.
     :rtype: tuple
     """
     cent = ctypes.c_int(cent)
@@ -844,6 +857,7 @@ def ckgp(inst, sclkdp, tol, ref):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def ckgpav(inst, sclkdp, tol, ref):
     # Todo: test ckgpav
     """
@@ -863,8 +877,7 @@ def ckgpav(inst, sclkdp, tol, ref):
     :return:
             C-matrix pointing data,
             Angular velocity vector,
-            Output encoded spacecraft clock time,
-            True when requested pointing is available.
+            Output encoded spacecraft clock time.
     :rtype: tuple
     """
     inst = ctypes.c_int(inst)
@@ -1172,6 +1185,7 @@ def cmprss(delim, n, instr, lenout=None):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def cnmfrm(cname, lenout=_default_len_out):
     """
     Retrieve frame ID code and name to associate with an object.
@@ -1184,8 +1198,7 @@ def cnmfrm(cname, lenout=_default_len_out):
     :type lenout: int
     :return:
             The ID code of the frame associated with cname,
-            The name of the frame with ID frcode,
-            Found flag.
+            The name of the frame with ID frcode.
     :rtype: tuple
     """
     lenout = ctypes.c_int(lenout)
@@ -1665,6 +1678,7 @@ def dafgs(n=125):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def dafgsr(handle, recno, begin, end):
     # Todo test dafgsr
     """
@@ -1680,8 +1694,8 @@ def dafgsr(handle, recno, begin, end):
     :type begin: int
     :param end: Last word to read from record.
     :type end: int
-    :return: Contents of record, True if record is found.
-    :rtype: tuple
+    :return: Contents of record.
+    :rtype: float
     """
     handle = ctypes.c_int(handle)
     recno = ctypes.c_int(recno)
@@ -2395,6 +2409,7 @@ def dsphdr(x, y, z):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def dtpool(name):
     """
     Return the data about a kernel pool variable.
@@ -2404,7 +2419,6 @@ def dtpool(name):
     :param name: Name of the variable whose value is to be returned.
     :type name: str
     :return:
-            True if variable is in pool,
             Number of values returned for name,
             Type of the variable "C", "N", or "X".
     :rtype: tuple
@@ -2415,7 +2429,7 @@ def dtpool(name):
     typeout = ctypes.c_char()
     libspice.dtpool_c(name, ctypes.byref(found), ctypes.byref(n),
                       ctypes.byref(typeout))
-    return found.value, n.value, stypes.toPythonString(typeout.value)
+    return n.value, stypes.toPythonString(typeout.value), found.value
 
 
 @spiceErrorCheck
@@ -3053,6 +3067,7 @@ def ekfind(query, lenout=_default_len_out):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def ekgc(selidx, row, element, lenout=_default_len_out):
     # ekgc has issues grabbing last element/row in column
     """
@@ -3071,8 +3086,7 @@ def ekgc(selidx, row, element, lenout=_default_len_out):
     :type lenout: int
     :return:
             Character string element of column entry,
-            Flag indicating whether column entry was null,
-            Flag indicating whether column was present in row.
+            Flag indicating whether column entry was null.
     :rtype: tuple
     """
     selidx = ctypes.c_int(selidx)
@@ -3088,6 +3102,7 @@ def ekgc(selidx, row, element, lenout=_default_len_out):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def ekgd(selidx, row, element):
     """
     Return an element of an entry in a column of double precision type in a
@@ -3103,8 +3118,7 @@ def ekgd(selidx, row, element):
     :type element: int
     :return:
             Double precision element of column entry,
-            Flag indicating whether column entry was null,
-            Flag indicating whether column was present in row.
+            Flag indicating whether column entry was null.
     :rtype: tuple
     """
     selidx = ctypes.c_int(selidx)
@@ -3119,6 +3133,7 @@ def ekgd(selidx, row, element):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def ekgi(selidx, row, element):
     """
     Return an element of an entry in a column of integer type in a specified
@@ -3134,8 +3149,7 @@ def ekgi(selidx, row, element):
     :type element: int
     :return:
             Integer element of column entry,
-            Flag indicating whether column entry was null,
-            Flag indicating whether column was present in row.
+            Flag indicating whether column entry was null.
     :rtype: tuple
     """
     selidx = ctypes.c_int(selidx)
@@ -4262,13 +4276,14 @@ def frame(x):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def frinfo(frcode):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/frinfo_c.html
 
-    :param frcode: the idcode for some frame
+    :param frcode: the idcode for some frame.
     :type frcode: int
-    :return: a tuple of attributes associated with the frame
+    :return: a tuple of attributes associated with the frame.
     :rtype: tuple
     """
     frcode = ctypes.c_int(frcode)
@@ -4339,6 +4354,7 @@ def furnsh(path):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def gcpool(name, start, room, lenout=_default_len_out):
     """
     Return the character value of a kernel variable from the kernel pool.
@@ -4353,10 +4369,8 @@ def gcpool(name, start, room, lenout=_default_len_out):
     :type room: int
     :param lenout: The length of the output string.
     :type lenout: int
-    :return:
-            Values associated with name,
-            Found flag.
-    :rtype: tuple
+    :return: Values associated with name.
+    :rtype: list of str
     """
     name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
@@ -4372,6 +4386,7 @@ def gcpool(name, start, room, lenout=_default_len_out):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def gdpool(name, start, room):
     """
     Return the d.p. value of a kernel variable from the kernel pool.
@@ -4384,10 +4399,8 @@ def gdpool(name, start, room):
     :type start: int
     :param room: The largest number of values to return.
     :type room: int
-    :return:
-            Values associated with name,
-            Found flag.
-    :rtype: tuple
+    :return: Values associated with name.
+    :rtype: list of float
     """
     name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
@@ -5263,6 +5276,7 @@ def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def gipool(name, start, room):
     """
     Return the integer value of a kernel variable from the kernel pool.
@@ -5275,10 +5289,8 @@ def gipool(name, start, room):
     :type start: int
     :param room: The largest number of values to return.
     :type room: int
-    :return:
-            Values associated with name,
-            Found Flag.
-    :rtype: tuple
+    :return: Values associated with name.
+    :rtype: list of int
     """
     name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
@@ -5292,6 +5304,7 @@ def gipool(name, start, room):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def gnpool(name, start, room, lenout=_default_len_out):
     """
     Return names of kernel variables matching a specified template.
@@ -5306,8 +5319,8 @@ def gnpool(name, start, room, lenout=_default_len_out):
     :type room: int
     :param lenout: Length of strings in output array kvars.
     :type lenout: int
-    :return: Kernel pool variables whose names match name, found.
-    :rtype: tuple
+    :return: Kernel pool variables whose names match name.
+    :rtype: list of str
     """
     name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
@@ -5476,6 +5489,7 @@ def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def inedpl(a, b, c, plane):
     """
     Find the intersection of a triaxial ellipsoid and a plane.
@@ -5488,19 +5502,17 @@ def inedpl(a, b, c, plane):
     :type b: float
     :param c: Length of ellipsoid semi-axis lying on the z-axis.
     :type c: float
-    :param plane: Plane that intersects ellipsoid
+    :param plane: Plane that intersects ellipsoid.
     :type plane: spiceypy.support_types.Plane
-    :return:
-            Intersection ellipse,
-            Found Flag.
-    :rtype: spiceypy.support_types.Ellipse, bool
+    :return: Intersection ellipse.
+    :rtype: spiceypy.support_types.Ellipse
     """
     assert (isinstance(plane, stypes.Plane))
     ellipse = stypes.Ellipse()
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
     c = ctypes.c_double(c)
-    found = ctypes.c_bool()
+    found = ctypes.c_bool() #TODO: throw exception?
     libspice.inedpl_c(a, b, c, ctypes.byref(plane), ctypes.byref(ellipse),
                       ctypes.byref(found))
     return ellipse, found.value
@@ -5759,7 +5771,7 @@ def isrchc(value, ndim, lenvals, array):
     :param lenvals: String length.
     :type lenvals: int
     :param array: Character string array to search.
-    :type array: Array of str
+    :type array: List of str
     :return:
             The index of the first matching array element or -1
             if the value is not found.
@@ -5944,6 +5956,7 @@ def kclear():
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def kdata(which, kind, fillen=_default_len_out, typlen=_default_len_out, srclen=_default_len_out):
     """
     Return data for the nth kernel that is among a list of specified
@@ -5964,8 +5977,7 @@ def kdata(which, kind, fillen=_default_len_out, typlen=_default_len_out, srclen=
     :return:
             The name of the kernel file, The type of the kernel,
             Name of the source file used to load file,
-            The handle attached to file,
-            True if the specified file could be located
+            The handle attached to file.
     :rtype: tuple
     """
     which = ctypes.c_int(which)
@@ -5985,6 +5997,7 @@ def kdata(which, kind, fillen=_default_len_out, typlen=_default_len_out, srclen=
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def kinfo(file, typlen=_default_len_out, srclen=_default_len_out):
     """
     Return information about a loaded kernel specified by name.
@@ -6000,8 +6013,7 @@ def kinfo(file, typlen=_default_len_out, srclen=_default_len_out):
     :return:
             The type of the kernel,
             Name of the source file used to load file,
-            The handle attached to file,
-            True if the specified file could be located
+            The handle attached to file.
     :rtype: tuple
     """
     typlen = ctypes.c_int(typlen)
@@ -6059,6 +6071,7 @@ def ktotal(kind):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def kxtrct(keywd, terms, nterms, instring, termlen=_default_len_out, stringlen=_default_len_out, substrlen=_default_len_out):
     """
     Locate a keyword in a string and extract the substring from
@@ -6083,7 +6096,6 @@ def kxtrct(keywd, terms, nterms, instring, termlen=_default_len_out, stringlen=_
     :type substrlen: int
     :return:
             String containing a sequence of words,
-            True if the keyword is found in the string,
             String from end of keywd to beginning of first terms item found.
     :rtype: tuple
     """
@@ -6099,8 +6111,8 @@ def kxtrct(keywd, terms, nterms, instring, termlen=_default_len_out, stringlen=_
     libspice.kxtrct_c(keywd, termlen, ctypes.byref(terms), nterms,
                       stringlen, substrlen, instring, ctypes.byref(found),
                       substr)
-    return stypes.toPythonString(instring), found.value, stypes.toPythonString(
-            substr)
+    return stypes.toPythonString(instring), stypes.toPythonString(
+            substr), found.value
 
 
 ################################################################################
@@ -6240,8 +6252,8 @@ def lmpool(cvals):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lmpool_c.html
 
-    :param cvals: list of strings
-    :type cvals: list
+    :param cvals: list of strings.
+    :type cvals: list of str
     """
     lenvals = ctypes.c_int(len(max(cvals, key=len)) + 1)
     n = ctypes.c_int(len(cvals))
@@ -6263,7 +6275,7 @@ def lparse(inlist, delim, nmax):
     :param nmax: Maximum number of items to return.
     :type nmax: int
     :return: Items in the list, left justified.
-    :rtype: list of strings
+    :rtype: list of str
     """
     delim = stypes.stringToCharP(delim)
     lenout = ctypes.c_int(len(inlist))
@@ -9255,6 +9267,7 @@ def sigerr(message):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
     """
     Given an observer and a direction vector defining a ray, compute
@@ -9285,8 +9298,7 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
     :return:
             Surface intercept point on the target body,
             Intercept epoch,
-            Vector from observer to intercept point,
-            Flag indicating whether intercept was found.
+            Vector from observer to intercept point.
     :rtype: tuple
     """
     method = stypes.stringToCharP(method)
@@ -10275,6 +10287,7 @@ def spkpvn(handle, descr, et):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def spksfs(body, et, idlen):
     # spksfs has a Parameter SIDLEN,
     # sounds like an optional but is that possible?
@@ -10293,8 +10306,7 @@ def spksfs(body, et, idlen):
     :return:
             Handle of file containing the applicable segment,
             Descriptor of the applicable segment,
-            Identifier of the applicable segment,
-            Found flag Indicates whether or not a segment was found.
+            Identifier of the applicable segment.
     :rtype: tuple
     """
     body = ctypes.c_int(body)
@@ -10956,6 +10968,7 @@ def srfrec(body, longitude, latitude):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
     """
     Deprecated: This routine has been superseded by the CSPICE
@@ -10986,8 +10999,7 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
             Surface intercept point on the target body,
             Distance from the observer to the intercept point,
             Intercept epoch,
-            Observer position relative to target center,
-            Flag indicating whether intercept was found.
+            Observer position relative to target center.
     :rtype: tuple
     """
     if hasattr(et, "__iter__"):
@@ -11061,6 +11073,7 @@ def stelab(pobj, vobs):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def stpool(item, nth, contin, lenout=_default_len_out):
     """
     Retrieve the nth string from the kernel pool variable, where the
@@ -11079,8 +11092,7 @@ def stpool(item, nth, contin, lenout=_default_len_out):
     :type lenout: int
     :return:
             A full string concatenated across continuations,
-            The number of characters in the full string value,
-            Flag indicating success or failure of request.
+            The number of characters in the full string value.
     :rtype: tuple
     """
     item = stypes.stringToCharP(item)
@@ -11351,6 +11363,7 @@ def surfnm(a, b, c, point):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def surfpt(positn, u, a, b, c):
     """
     Determine the intersection of a line-of-sight vector with the
@@ -11368,9 +11381,7 @@ def surfpt(positn, u, a, b, c):
     :type b: float
     :param c: Length of the ellisoid semi-axis along the z-axis.
     :type c: float
-    :return:
-            Point on the ellipsoid pointed to by u,
-            Found Flag.
+    :return: Point on the ellipsoid pointed to by u.
     :rtype: 3-Element Array of Floats
     """
     a = ctypes.c_double(a)
@@ -11385,6 +11396,7 @@ def surfpt(positn, u, a, b, c):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def surfpv(stvrtx, stdir, a, b, c):
     """
     Find the state (position and velocity) of the surface intercept
@@ -11402,10 +11414,8 @@ def surfpv(stvrtx, stdir, a, b, c):
     :type b: float
     :param c: Length of the ellisoid semi-axis along the z-axis.
     :type c: float
-    :return:
-            State of surface intercept,
-            Flag indicating whether intercept state was found.
-    :rtype: tuple
+    :return: State of surface intercept.
+    :rtype: List
     """
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
@@ -11472,6 +11482,7 @@ def sxform(instring, tostring, et):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def szpool(name):
     """
     Return the kernel pool size limitations.
@@ -11480,10 +11491,8 @@ def szpool(name):
 
     :param name: Name of the parameter to be returned.
     :type name: str
-    :return:
-            Value of parameter specified by name,
-            Found Flag.
-    :rtype: Int or None
+    :return: Value of parameter specified by name,
+    :rtype: int
     """
     name = stypes.stringToCharP(name)
     n = ctypes.c_int()
@@ -12484,6 +12493,7 @@ def vprjp(vin, plane):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def vprjpi(vin, projpl, invpl):
     """
     Find the vector in a specified plane that maps to a specified
@@ -12492,13 +12502,13 @@ def vprjpi(vin, projpl, invpl):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vprjpi_c.html
 
     :param vin: The projected vector. 
-    :type vin: 3-Element Array of Floats.
+    :type vin: 3-Element Array of Floats
     :param projpl: Plane containing vin. 
     :type projpl: spiceypy.support_types.Plane
     :param invpl: Plane containing inverse image of vin. 
     :type invpl: spiceypy.support_types.Plane
-    :return: (Inverse projection of vin, success)
-    :rtype: tuple
+    :return: Inverse projection of vin.
+    :rtype: list
     """
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(3)

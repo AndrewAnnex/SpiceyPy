@@ -13,6 +13,17 @@ def test_geterror():
     assert spice.getmsg("LONG", 200) == "some error occured"
 
 
-def test_getspiceyexception():
+def test_getSpiceyException():
     with pytest.raises(spice.stypes.SpiceyError):
-        spice.furnsh(os.path.join(cwd,"_null_kernel.txt"))
+        spice.furnsh(os.path.join(cwd, "_null_kernel.txt"))
+
+
+def test_emptyKernelPoolException():
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.ckgp(0, 0, 0, "blah")
+
+
+def test_foundErrorChecker():
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.bodc2n(-9991)
+
