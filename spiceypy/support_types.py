@@ -200,8 +200,7 @@ class DoubleArrayType:
     def from_array(self, param):
         if param.typecode != 'd':
             raise TypeError('must be an array of doubles')
-        ptr, _ = param.buffer_info()
-        return cast(ptr, POINTER(c_double))
+        return self.from_list(param)
 
 
 class DoubleMatrixType:
@@ -270,8 +269,7 @@ class IntArrayType:
     def from_array(self, param):
         if param.typecode != 'i':
             raise TypeError('must be an array of ints')
-        ptr, _ = param.buffer_info()
-        return cast(ptr, POINTER(c_int))
+        return self.from_list(param)
 
 
 class BoolArrayType:
@@ -328,7 +326,7 @@ class Plane(Structure):
         return self._constant
 
     def __str__(self):
-        return '<Plane: normal=%s; constant=%s>' % (', '.join([str(x) for x in self._normal]), self._constant)
+        return '<SpicePlane: normal=%s; constant=%s>' % (', '.join([str(x) for x in self._normal]), self._constant)
 
 
 class Ellipse(Structure):
@@ -591,20 +589,18 @@ class SpiceCell(Structure):
 
     def __getitem__(self, key):
         getter = SpiceCell.DATATYPES_GET[self.dtype]
-        length, card, data = self.length, self.card, self.data
         if isinstance(key, slice):
-            start, stop, step = key.start or 0, key.stop or -1, key.step or 1
             #TODO Typechecking
-            if card == 0:
+            if self.card == 0:
                 return []
             else:
-                return list(getter(data, i, length)
-                            for i in range(start % card, stop % card + 1, step))
-        if key in range(-card, card):
-            return getter(data, key, length)
+                start, stop, step = key.indices(self.card)
+                return [getter(self.data, i, self.length) for i in range(start, stop, step)]
+        elif key in range(-self.card, self.card):
+            index = key if key >= 0 else self.card - abs(key)
+            return getter(self.data, index, self.length)
         elif not isinstance(key, int):
-            msg = 'SpiceCell inices must be integers, not {}'.format(type(key))
-            raise TypeError(msg)
+            raise TypeError('SpiceCell indices must be integers, not {}'.format(type(key)))
         else:
             raise IndexError('SpiceCell index out of range')
 
