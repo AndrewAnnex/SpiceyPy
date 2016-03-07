@@ -1,5 +1,5 @@
 import os
-import six.moves.urlib as urllib
+import six.moves.urllib as urllib
 
 standardKernelList = ['pck00010.tpc', 'de421.bsp', 'gm_de431.tpc',
                       'naif0011.tls']
