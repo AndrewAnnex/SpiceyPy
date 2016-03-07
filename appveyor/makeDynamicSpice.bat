@@ -7,7 +7,7 @@ rem    Specifically cl.exe and link.exe .
 rem
 rem
 
-set cl= /c /O2 -D_COMPLEX_DEFINED -DMSDOS -DOMIT_BLANK_CC -DNON_ANSI_STDIO
+set cl= /c /O2 /nologo -D_COMPLEX_DEFINED -DMSDOS -DOMIT_BLANK_CC -DNON_ANSI_STDIO
 
 rem
 rem  The optimization algorithm has a very tough time with zzsecptr.c,

@@ -62,7 +62,7 @@ install:
   - ECHO "Installed SpiceyPy!"
 
 test_script:
-  - "%PYTHON%/Scripts/py.test test"
+  - "%PYTHON%/Scripts/py.test spiceypy/tests"
 
 after_test:
   - ECHO "DONE!"
