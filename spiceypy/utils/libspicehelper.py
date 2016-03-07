@@ -1,14 +1,14 @@
-__author__ = 'AndrewAnnex'
 from ctypes import CDLL, POINTER, c_bool, c_int, c_double, c_char, c_char_p, c_void_p
 import os
 import platform
+from . import support_types as stypes
 
 host_OS = platform.system()
 sharedLib = "cspice.dll" if host_OS == "Windows" else "spice.so"
 sitePath = os.path.join(os.path.dirname(__file__), sharedLib)
 libspice = CDLL(sitePath)
 
-import spiceypy.support_types as stypes
+__author__ = 'AndrewAnnex'
 
 # ######################################################################################################################
 # A

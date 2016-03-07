@@ -1,5 +1,5 @@
 import spiceypy as spice
-import spiceypy.support_types as stypes
+import spiceypy.utils.support_types as stypes
 import pytest
 import ctypes
 import numpy as np

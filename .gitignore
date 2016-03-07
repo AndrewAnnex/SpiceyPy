@@ -20,7 +20,7 @@
 cspice/
 
 # Test meta kernels
-test/*.txt
+spiceypy/tests/*.txt
 
 # Pycharm specific things
 .idea/
