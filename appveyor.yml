@@ -52,7 +52,7 @@ install:
   - "powershell appveyor\\install_numpy.ps1"
 
   # Now install numpy from pre-built wheel. This may be fragile.
-  - "%WITH_COMPILER% pip install --use-wheel --no-index --find-links=C:\\Users\\appveyor\\Downloads numpy"
+  - "%WITH_COMPILER% pip install --no-index --find-links=C:\\Users\\appveyor\\Downloads numpy"
 
   # Now install spiceypy
   - IF "%PYTHON_ARCH%"=="32" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86) ELSE (ECHO "probably a 64bit build")
