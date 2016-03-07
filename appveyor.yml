@@ -31,7 +31,7 @@ platform:
   - x64
 
 cache:
-  - C:\Users\appveyor\Downloads -> appveyor.yml
+  - C:\Users\appveyor\Downloads -> setup.py
 
 install:
   # Log out the python version just so we know it
