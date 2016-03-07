@@ -9,7 +9,10 @@ function main (){
         Write-Host "numpy has already been compiled."
         $numpywheel = Get-ChildItem "C:\Users\appveyor\Downloads\" | Out-String
         Write-Host "$numpywheel"
-        iex "cmd /E:ON /V:ON /C .\\appveyor\\windows_sdk.cmd python -m wheel install $numpywheel"
+        $cwd = "$pwd"
+        cd "C:\Users\appveyor\Downloads\"
+        iex "cmd /E:ON /V:ON /C .\\appveyor\\windows_sdk.cmd pip install $numpywheel"
+        cd $cwd
     }
 }
 
