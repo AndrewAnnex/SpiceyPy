@@ -11,7 +11,9 @@ function main (){
         Write-Host "$numpywheel"
         $cwd = "$pwd"
         cd "C:\Users\appveyor\Downloads\"
-        iex "cmd /E:ON /V:ON /C .\\appveyor\\windows_sdk.cmd pip install $numpywheel"
+        $numpypath= "" & $numpywheel.DirectoryName & "\" & $numpywheel.Name
+        Write-Host "$numpypath"
+        iex "cmd /E:ON /V:ON /C .\\appveyor\\windows_sdk.cmd pip install $numpypath"
         cd $cwd
     }
 }
