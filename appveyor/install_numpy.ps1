@@ -7,7 +7,9 @@ function main (){
         iex "cmd /E:ON /V:ON /C .\\appveyor\\windows_sdk.cmd pip wheel --wheel-dir=c:\\Users\\appveyor\\Downloads numpy"
     } else {
         Write-Host "numpy has already been compiled."
-        Get-ChildItem "C:\Users\appveyor\Downloads\"
+        $numpywheel = Get-ChildItem "C:\Users\appveyor\Downloads\" | Out-String
+        Write-Host "$numpywheel"
+        iex "cmd /E:ON /V:ON /C .\\appveyor\\windows_sdk.cmd python -m wheel install $numpywheel"
     }
 }
 
