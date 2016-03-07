@@ -3,7 +3,6 @@ from setuptools import setup
 from setuptools.command.test import test as TestCommand
 import sys
 import getspice
-import test.gettestkernels as getTestKernels
 import os
 import subprocess
 import platform
@@ -28,7 +27,6 @@ class PyTest(TestCommand):
         self.test_suite = True
 
     def run_tests(self):
-        getTestKernels.downloadKernels()
         import pytest
         errcode = pytest.main(self.test_args)
         sys.exit(errcode)
