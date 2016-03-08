@@ -1,13 +1,13 @@
-__author__ = 'AndrewAnnex'
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
 import sys
 import getspice
-import test.gettestkernels as getTestKernels
 import os
 import subprocess
 import platform
 import shutil
+
+__author__ = 'AndrewAnnex'
 
 # Get OS platform
 host_OS = platform.system()
@@ -18,7 +18,6 @@ cspice_dir = os.path.join(root_dir, 'cspice')
 # Make the directory path for cspice/lib
 lib_dir = os.path.join(cspice_dir, 'lib')
 
-
 # py.test integration from pytest.org
 class PyTest(TestCommand):
 
@@ -28,7 +27,6 @@ class PyTest(TestCommand):
         self.test_suite = True
 
     def run_tests(self):
-        getTestKernels.downloadKernels()
         import pytest
         errcode = pytest.main(self.test_args)
         sys.exit(errcode)
@@ -117,12 +115,12 @@ def build_library():
 def move_to_root_directory():
     if host_OS == "Linux" or host_OS == "Darwin":
         try:
-            os.rename(os.path.join(cspice_dir, 'lib', 'spice.so'), os.path.join(root_dir, 'spiceypy', 'spice.so'))
+            os.rename(os.path.join(cspice_dir, 'lib', 'spice.so'), os.path.join(root_dir, 'spiceypy', 'utils', 'spice.so'))
         except BaseException as e:
             sys.exit('spice.so file not found, what happend?: {0}'.format(e))
     elif host_OS == "Windows":
         try:
-            os.rename(os.path.join(cspice_dir, 'src', 'cspice', 'cspice.dll'), os.path.join(root_dir, 'spiceypy', 'cspice.dll'))
+            os.rename(os.path.join(cspice_dir, 'src', 'cspice', 'cspice.dll'), os.path.join(root_dir, 'spiceypy', 'utils', 'cspice.dll'))
         except BaseException as e:
             sys.exit('cspice.dll file not found, what happend?: {0}'.format(e))
 
@@ -173,28 +171,34 @@ try:
 
     setup(
         name='spiceypy',
-        version='0.6.2',
-        description='A Python Wrapper for the NAIF CSPICE Toolkit made using ctypes',
+        version='0.6.8',
+        description='A Python Wrapper for the NAIF CSPICE Toolkit',
+        keywords='spiceypy spice naif jpl space geometry',
         url='https://github.com/AndrewAnnex/SpiceyPy',
-        author='Andrew Annex',
-        packages=['spiceypy'],
-        tests_require=['pytest', 'numpy', 'six'],
-        cmdclass={'test': PyTest},
-        test_suite='test.test_wrapper.py',
-        requires=['numpy', 'pytest', 'six'],
-        package_data={'spiceypy': ['*.so', "*.dll"]},
-        include_package_data=True,
-        zip_safe=False,
         classifiers=[
             "Development Status :: 4 - Beta",
             "Natural Language :: English",
             "Topic :: Scientific/Engineering",
+            "Topic :: Scientific/Engineering :: Astronomy",
+            "License :: OSI Approved :: MIT License",
             "Programming Language :: Python :: 2.7",
             "Programming Language :: Python :: 3.3",
             "Programming Language :: Python :: 3.4",
+            "Programming Language :: Python :: 3.5",
             "Operating System :: MacOS :: MacOS X",
-            "Operating System :: POSIX :: Linux"
+            "Operating System :: POSIX :: Linux",
+            "Operating System :: Microsoft :: Windows"
         ],
+        license='MIT',
+        author='Andrew Annex',
+        packages=['spiceypy'],
+        tests_require=['pytest', 'numpy', 'six'],
+        cmdclass={'test': PyTest},
+        requires=['numpy', 'pytest', 'six'],
+        package_data={'spiceypy': ['*.so', "*.dll"]},
+        include_package_data=True,
+        zip_safe=False,
+        test_suite='spiceypy.tests.test_wrapper.py',
         extras_require={
             'testing': ['pytest'],
         }

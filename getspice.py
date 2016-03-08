@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-__author__ = 'AndrewAnnex'
+
 
 # Sources: mostly from DaRasch, spiceminer/getcspice.py,
 # with edits as needed for python2/3 compatibility
@@ -11,6 +11,8 @@ from six.moves import urllib
 import io
 import zipfile
 import subprocess
+
+__author__ = 'AndrewAnnex'
 
 
 def getSpice():

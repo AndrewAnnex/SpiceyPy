@@ -1,4 +1,3 @@
-__author__ = 'AndrewAnnex'
 import pytest
 import spiceypy as spice
 import os

@@ -1,6 +1,6 @@
 import ctypes
-import spiceypy.support_types as stypes
-from spiceypy.libspice import libspice
+from .utils import support_types as stypes
+from .utils.libspicehelper import libspice
 import functools
 import numpy
 
@@ -1155,7 +1155,7 @@ def clpool():
 
 
 @spiceErrorCheck
-def cmprss(delim, n, instr, lenout=None):
+def cmprss(delim, n, instr, lenout=_default_len_out):
     """
     Compress a character string by removing occurrences of
     more than N consecutive occurrences of a specified
@@ -1174,8 +1174,6 @@ def cmprss(delim, n, instr, lenout=None):
     :return: Compressed string.
     :rtype: str
     """
-    if lenout is None:
-        lenout = ctypes.c_int(len(instr) + 1)
     delim = ctypes.c_char(delim.encode(encoding='UTF-8'))
     n = ctypes.c_int(n)
     instr = stypes.stringToCharP(instr)
@@ -4057,12 +4055,14 @@ def etcal(et, lenout=_default_len_out):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/etcal_c.html
 
     :param et: Ephemeris time measured in seconds past J2000.
-    :type et: float
+    :type et: float or iterable of float
     :param lenout: Length of output string.
     :type lenout: int
     :return: A standard calendar representation of et.
     :rtype: str
     """
+    if hasattr(et, "__iter__"):
+        return [etcal(t) for t in et]
     et = ctypes.c_double(et)
     lenout = ctypes.c_int(lenout)
     string = stypes.stringToCharP(lenout)
@@ -10955,10 +10955,6 @@ def srfrec(body, longitude, latitude):
     :return: Rectangular coordinates of the point.
     :rtype: 3-Element Array of Floats
     """
-    if hasattr(longitude, "__iter__") and hasattr(latitude, "__iter__"):
-        return numpy.array(
-                [srfrec(body, lon, lat) for lon, lat in
-                 zip(longitude, latitude)])
     body = ctypes.c_int(body)
     longitude = ctypes.c_double(longitude)
     latitude = ctypes.c_double(latitude)
