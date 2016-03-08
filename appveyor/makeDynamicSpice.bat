@@ -1,3 +1,4 @@
+@echo off
 rem
 rem    makeDynamicSpice.bat
 rem
@@ -6,6 +7,9 @@ rem    Requires Visual Studio development tools to be in the path.
 rem    Specifically cl.exe and link.exe .
 rem
 rem
+@echo on
+rem Running makeDynamicSpice.bat, this may take some time (a minute or two) ...
+@echo off
 
 set cl= /c /O2 /nologo -D_COMPLEX_DEFINED -DMSDOS -DOMIT_BLANK_CC -DNON_ANSI_STDIO
 
@@ -33,9 +37,12 @@ rename zzsecprt.x zzsecprt.c
 cl zzsecprt.c
 
 dir /b *.obj > temp.lst
-
+@echo on
+rem Finished Compiling, starting to Link spice.
+@echo off
 rem
 rem Create cspice.dll
 rem
 
 link /DLL /OUT:cspice.dll /DEF:cspice.def /IMPLIB:cspice.lib @temp.lst
+@echo on
