@@ -1,4 +1,3 @@
-__author__ = 'AndrewAnnex'
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
 import sys
@@ -8,6 +7,8 @@ import subprocess
 import platform
 import shutil
 
+__author__ = 'AndrewAnnex'
+
 # Get OS platform
 host_OS = platform.system()
 # Get current working directory
@@ -16,7 +17,6 @@ root_dir = os.path.dirname(os.path.realpath(__file__))
 cspice_dir = os.path.join(root_dir, 'cspice')
 # Make the directory path for cspice/lib
 lib_dir = os.path.join(cspice_dir, 'lib')
-
 
 # py.test integration from pytest.org
 class PyTest(TestCommand):
