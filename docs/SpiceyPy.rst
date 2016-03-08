@@ -1,26 +1,26 @@
 SpiceyPy package
 ================
 
-spiceypy.wrapper module
------------------------
-
-.. automodule:: spiceypy.wrapper
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-spiceypy.libspice module
+spiceypy.spiceypy module
 ------------------------
 
-.. automodule:: spiceypy.libspice
+.. automodule:: spiceypy.spiceypy
     :members:
     :undoc-members:
     :show-inheritance:
 
-spiceypy.support_types module
------------------------------
+spiceypy.utils.support_types module
+-----------------------------------
 
-.. automodule:: spiceypy.support_types
+.. automodule:: spiceypy.utils.support_types
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+spiceypy.utils.libspice module
+------------------------------
+
+.. automodule:: spiceypy.utils.libspicehelper
     :members:
     :undoc-members:
     :show-inheritance:
