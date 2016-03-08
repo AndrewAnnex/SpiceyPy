@@ -1,15 +1,13 @@
-__author__ = 'AndrewAnnex'
 import pytest
-
 import spiceypy as spice
 import numpy as np
 import numpy.testing as npt
-from test.gettestkernels import *
 import os
+from .gettestkernels import downloadKernels
 
 
 cwd = os.path.realpath(os.path.dirname(__file__))
-_testKernelPath = os.path.join(cwd, "testKernels.txt")
+_testKernelPath = os.path.join(cwd, "exampleKernels.txt")
 _extraTestVoyagerKernel = os.path.join(cwd, "vg200022.tsc")
 _testPckPath = os.path.join(cwd, "pck00010.tpc")
 _spkEarthPck = os.path.join(cwd, "earth_720101_070426.bpc")

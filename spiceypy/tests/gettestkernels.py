@@ -1,7 +1,5 @@
-__author__ = 'AndrewAnnex'
-
 import os
-from six.moves import urllib
+import six.moves.urllib as urllib
 
 standardKernelList = ['pck00010.tpc', 'de421.bsp', 'gm_de431.tpc',
                       'naif0011.tls']
@@ -40,7 +38,7 @@ def getExtraTestKernels():
 
 def writeTestMetaKernel():
     # Update the paths!
-    with open(os.path.join(cwd, "testKernels.txt"), 'w') as kernelFile:
+    with open(os.path.join(cwd, "exampleKernels.txt"), 'w') as kernelFile:
         kernelFile.write('\\begindata\n')
         kernelFile.write('KERNELS_TO_LOAD = (\n')
         for kernel in standardKernelList:
