@@ -22,6 +22,9 @@ cspice/
 # Test meta kernels
 spiceypy/tests/*.txt
 
+# Docs
+docs/_build
+
 # Pycharm specific things
 .idea/
 
