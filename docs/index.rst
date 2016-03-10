@@ -21,7 +21,7 @@ Contents:
    :maxdepth: 2
 
    installation
-   spiceypy
+   documentation
 
 
 Indices and tables
