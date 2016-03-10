@@ -258,7 +258,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'SpiceyPy', 'SpiceyPy Documentation',
+  ('index', 'spiceypy', 'SpiceyPy Documentation',
    'Andrew Annex', 'SpiceyPy',
    'The NASA JPL NAIF SPICE toolkit wrapper written in Python.',
    'Miscellaneous'),

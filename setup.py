@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 import sys
 import getspice
@@ -191,18 +191,16 @@ try:
         ],
         license='MIT',
         author='Andrew Annex',
-        packages=['spiceypy'],
-        tests_require=['pytest', 'numpy', 'six'],
-        cmdclass={'test': PyTest},
-        requires=['numpy', 'pytest', 'six'],
-        package_data={'spiceypy': ['*.so', "*.dll"]},
+        packages=find_packages(exclude=["*.tests"]),
         include_package_data=True,
         zip_safe=False,
+        package_data={'': ['*.so', "*.dll"]},
+        install_requires=['six'],
+        requires=['numpy', 'pytest', 'six'],
+        tests_require=['pytest', 'numpy', 'six'],
+        cmdclass={'test': PyTest},
         test_suite='spiceypy.tests.test_wrapper.py',
-        extras_require={
-            'testing': ['pytest'],
-        }
-
+        extras_require={'testing': ['pytest']}
     )
 finally:
     cleanup()
