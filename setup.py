@@ -191,7 +191,7 @@ try:
         ],
         license='MIT',
         author='Andrew Annex',
-        packages=['spiceypy'],
+        packages=['spiceypy', 'spiceypy.utils'],
         tests_require=['pytest', 'numpy', 'six'],
         cmdclass={'test': PyTest},
         requires=['numpy', 'pytest', 'six'],
