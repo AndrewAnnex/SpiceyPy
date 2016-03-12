@@ -25,7 +25,9 @@ _merIau2000 = os.path.join(cwd, "mer1_ls_040128_iau2000_v1.bsp")
 
 
 def setup_module(module):
-    if not os.path.exists(_testKernelPath) or not os.path.exists(_extraTestVoyagerKernel):
+    if not os.path.exists(_testKernelPath) \
+            or not os.path.exists(_extraTestVoyagerKernel) \
+            or not os.path.exists(_merPsp):
         downloadKernels()
 
 
