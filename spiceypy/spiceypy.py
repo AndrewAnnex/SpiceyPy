@@ -83,7 +83,7 @@ def appndc(item, cell):
     :param item: The item to append.
     :type item: str or list
     :param cell: The cell to append to.
-    :type cell: spiceypy.support_types.SpiceCell
+    :type cell: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cell, stypes.SpiceCell)
     if isinstance(item, list):
@@ -104,7 +104,7 @@ def appndd(item, cell):
     :param item: The item to append.
     :type item: float or list
     :param cell: The cell to append to.
-    :type cell: spiceypy.support_types.SpiceCell
+    :type cell: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cell, stypes.SpiceCell)
     if hasattr(item, "__iter__"):
@@ -125,7 +125,7 @@ def appndi(item, cell):
     :param item: The item to append.
     :type item: int or list
     :param cell: The cell to append to.
-    :type cell: spiceypy.support_types.SpiceCell
+    :type cell: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cell, stypes.SpiceCell)
     if hasattr(item, "__iter__"):
@@ -230,9 +230,9 @@ def bltfrm(frmcls, outCell=None):
     :param frmcls: Frame class.
     :type frmcls: int
     :param outCell: Optional SpiceInt Cell that is returned
-    :type outCell: spiceypy.support_types.SpiceCell
+    :type outCell: spiceypy.utils.support_types.SpiceCell
     :return: Set of ID codes of frames of the specified class.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     frmcls = ctypes.c_int(frmcls)
     if not outCell:
@@ -648,7 +648,7 @@ def card(cell):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/card_c.html
 
     :param cell: Input cell.
-    :type cell: spiceypy.support_types.SpiceCell
+    :type cell: spiceypy.utils.support_types.SpiceCell
     :return: the number of elements in a cell of any data type.
     :rtype: int
     """
@@ -805,7 +805,7 @@ def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
     :param cover: Window giving coverage for idcode.
     :type cover: Optional SpiceCell
     :return: coverage window for a specified object in a specified CK file
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     ck = stypes.stringToCharP(ck)
     idcode = ctypes.c_int(idcode)
@@ -926,9 +926,9 @@ def ckobj(ck, outCell=None):
     :param ck: Name of CK file.
     :type ck: str
     :param outCell: Optional user provided Spice Int cell.
-    :type outCell: Optional spiceypy.support_types.SpiceCell
+    :type outCell: Optional spiceypy.utils.support_types.SpiceCell
     :return: Set of ID codes of objects in CK file.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(ck, str)
     ck = stypes.stringToCharP(ck)
@@ -1267,9 +1267,9 @@ def copy(cell):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/copy_c.html
 
     :param cell: Cell to be copied.
-    :type cell: spiceypy.support_types.SpiceCell
+    :type cell: spiceypy.utils.support_types.SpiceCell
     :return: New cell
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cell, stypes.SpiceCell)
     assert cell.dtype == 0 or cell.dtype == 1 or cell.dtype == 2
@@ -2090,11 +2090,11 @@ def diff(a, b):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/diff_c.html
 
     :param a: First input set.
-    :type a: spiceypy.support_types.SpiceCell
+    :type a: spiceypy.utils.support_types.SpiceCell
     :param b: Second input set.
-    :type b: spiceypy.support_types.SpiceCell
+    :type b: spiceypy.utils.support_types.SpiceCell
     :return: Difference of a and b.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
@@ -3725,7 +3725,7 @@ def elemc(item, inset):
     :param item: Item to be tested.
     :type item: str
     :param inset: Set to be tested.
-    :type inset: spiceypy.support_types.SpiceCell
+    :type inset: spiceypy.utils.support_types.SpiceCell
     :return: True if item is an element of set.
     :rtype: bool
     """
@@ -3744,7 +3744,7 @@ def elemd(item, inset):
     :param item: Item to be tested.
     :type item: float
     :param inset: Set to be tested.
-    :type inset: spiceypy.support_types.SpiceCell
+    :type inset: spiceypy.utils.support_types.SpiceCell
     :return: True if item is an element of set.
     :rtype: bool
     """
@@ -3764,7 +3764,7 @@ def elemi(item, inset):
     :param item: Item to be tested.
     :type item: int
     :param inset: Set to be tested.
-    :type inset: spiceypy.support_types.SpiceCell
+    :type inset: spiceypy.utils.support_types.SpiceCell
     :return: True if item is an element of set.
     :rtype: bool
     """
@@ -4610,9 +4610,9 @@ def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls,
     :param nintvls: Workspace window interval count.
     :type nintvls: int
     :param cnfine: SPICE window to which the search is confined.
-    :type cnfine: spiceypy.support_types.SpiceCell
+    :type cnfine: spiceypy.utils.support_types.SpiceCell
     :param result: SPICE window containing results.
-    :type result: spiceypy.support_types.SpiceCell
+    :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -4636,7 +4636,65 @@ def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls,
 # gffove  callbacks? cells
 
 
-# gfilum
+@spiceErrorCheck
+def gfilum(method, angtyp, target, illumn,
+           fixref, abcorr, obsrvr, spoint,
+           relate, refval, adjust, step, nintvls, cnfine, result):
+    """
+    Return the time window over which a specified constraint on
+    the observed phase, solar incidence, or emission angle at
+    a specifed target body surface point is met.
+
+    :param method: Shape model used to represent the surface of the target body.
+    :type method: str
+    :param angtyp: The type of illumination angle for which a search is to be performed.
+    :type angtyp: str
+    :param target: Name of a target body.
+    :type target: str
+    :param illumn: Name of the illumination source.
+    :type illumn: str
+    :param fixref: Name of the body-fixed, body-centered reference frame associated with the target body.
+    :type fixref: str
+    :param abcorr: The aberration corrections to be applied.
+    :type abcorr: str
+    :param obsrvr: Name of an observing body.
+    :type obsrvr: str
+    :param spoint: Body-fixed coordinates of a target surface point.
+    :type spoint: 3-Element Array of Floats
+    :param relate: Relational operator used to define a constraint on a specified illumination angle.
+    :type relate: str
+    :param refval: Reference value used with 'relate' to define an equality or inequality to be satisfied by the specified illumination angle.
+    :type refval: float
+    :param adjust: Parameter used to modify searches for absolute extrema.
+    :type adjust: float
+    :param step: Step size to be used in the search.
+    :type step: float
+    :param nintvls: Number of intervals that can be accommodated by each of the dynamically allocated workspace windows used internally by this routine.
+    :type nintvls: int
+    :param cnfine: Window that confines the time period over which the specified search is conducted. This can be updated by gfilum
+    :type cnfine: spiceypy.utils.support_types.SpiceCell
+    :param result: Window of intervals in the confinement window that the illumination angle constraint is satisfied.
+    :type result: spiceypy.utils.support_types.SpiceCell
+    """
+    assert isinstance(cnfine, stypes.SpiceCell)
+    assert isinstance(result, stypes.SpiceCell)
+    method = stypes.stringToCharP(method)
+    angtyp = stypes.stringToCharP(angtyp)
+    target = stypes.stringToCharP(target)
+    illumn = stypes.stringToCharP(illumn)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    spoint = stypes.toDoubleVector(spoint)
+    relate = stypes.stringToCharP(relate)
+    refval = ctypes.c_double(refval)
+    adjust = ctypes.c_double(adjust)
+    step   = ctypes.c_double(step)
+    nintvls = ctypes.c_int(nintvls)
+    libspice.gfilum_c(method, angtyp, target, illumn,
+                      fixref, abcorr, obsrvr, spoint,
+                      relate, refval, adjust, step,
+                      nintvls, ctypes.byref(cnfine), ctypes.byref(result))
 
 
 @spiceErrorCheck
@@ -4689,9 +4747,9 @@ def gfoclt(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr,
     :param step: Step size in seconds for finding occultation events.
     :type step: float
     :param cnfine: SPICE window to which the search is restricted.
-    :type cnfine: spiceypy.support_types.SpiceCell
+    :type cnfine: spiceypy.utils.support_types.SpiceCell
     :param result: SPICE window containing results.
-    :type result: spiceypy.support_types.SpiceCell
+    :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -4741,9 +4799,9 @@ def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals,
     :param nintvals: Workspace window interval count.
     :type nintvals: int
     :param cnfine: SPICE window to which the search is restricted.
-    :type cnfine: spiceypy.support_types.SpiceCell
+    :type cnfine: spiceypy.utils.support_types.SpiceCell
     :param result: SPICE window containing results.
-    :type result: spiceypy.support_types.SpiceCell
+    :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -4795,9 +4853,9 @@ def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval,
     :param nintvals: Workspace window interval count.
     :type nintvals: int
     :param cnfine: SPICE window to which the search is restricted.
-    :type cnfine: spiceypy.support_types.SpiceCell
+    :type cnfine: spiceypy.utils.support_types.SpiceCell
     :param result: SPICE window containing results.
-    :type result: spiceypy.support_types.SpiceCell
+    :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -4869,7 +4927,7 @@ def gfrepi(window, begmss, endmss):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfrepi_c.html
 
     :param window: A window over which a job is to be performed.
-    :type window: spiceypy.support_types.SpiceCell
+    :type window: spiceypy.utils.support_types.SpiceCell
     :param begmss: Beginning of the text portion of the output message.
     :type begmss: str
     :param endmss: End of the text portion of the output message.
@@ -4927,9 +4985,9 @@ def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result):
     :param step: Step size in seconds for finding FOV events.
     :type step: float
     :param cnfine: SPICE window to which the search is restricted.
-    :type cnfine: spiceypy.support_types.SpiceCell
+    :type cnfine: spiceypy.utils.support_types.SpiceCell
     :param result: SPICE window containing results.
-    :type result: spiceypy.support_types.SpiceCell
+    :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -4971,9 +5029,9 @@ def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine,
     :param nintvals: Workspace window interval count.
     :type nintvals: int
     :param cnfine: SPICE window to which the search is restricted.
-    :type cnfine: spiceypy.support_types.SpiceCell
+    :type cnfine: spiceypy.utils.support_types.SpiceCell
     :param result: SPICE window containing results.
-    :type result: spiceypy.support_types.SpiceCell
+    :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -5029,9 +5087,9 @@ def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr,
     :param nintvals: Workspace window interval count.
     :type nintvals: int
     :param cnfine: SPICE window to which the search is restricted.
-    :type cnfine: spiceypy.support_types.SpiceCell
+    :type cnfine: spiceypy.utils.support_types.SpiceCell
     :param result: SPICE window containing results.
-    :type result: spiceypy.support_types.SpiceCell
+    :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -5094,9 +5152,9 @@ def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord,
     :param nintvals: Workspace window interval count.
     :type nintvals: int
     :param cnfine: SPICE window to which the search is restricted.
-    :type cnfine: spiceypy.support_types.SpiceCell
+    :type cnfine: spiceypy.utils.support_types.SpiceCell
     :param result: SPICE window containing results.
-    :type result: spiceypy.support_types.SpiceCell
+    :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -5204,9 +5262,9 @@ def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate,
     :param nintvals: Workspace window interval count.
     :type nintvals: int
     :param cnfine: SPICE window to which the search is restricted.
-    :type cnfine: spiceypy.support_types.SpiceCell
+    :type cnfine: spiceypy.utils.support_types.SpiceCell
     :param result: SPICE window containing results.
-    :type result: spiceypy.support_types.SpiceCell
+    :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -5254,7 +5312,7 @@ def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
     :param step: Step size in seconds for finding FOV events.
     :type step: float
     :param cnfine: SPICE window to which the search is restricted.
-    :type cnfine: spiceypy.support_types.SpiceCell
+    :type cnfine: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -5584,7 +5642,7 @@ def insrtc(item, inset):
     :param item: Item to be inserted.
     :type item: str or list of str
     :param inset: Insertion set.
-    :type inset: spiceypy.support_types.SpiceCell
+    :type inset: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(inset, stypes.SpiceCell)
     if isinstance(item, list):
@@ -5605,7 +5663,7 @@ def insrtd(item, inset):
     :param item: Item to be inserted.
     :type item: float or list of floats
     :param inset: Insertion set.
-    :type inset: spiceypy.support_types.SpiceCell
+    :type inset: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(inset, stypes.SpiceCell)
     if hasattr(item, "__iter__"):
@@ -5626,7 +5684,7 @@ def insrti(item, inset):
     :param item: Item to be inserted.
     :type item: int or list of ints
     :param inset: Insertion set.
-    :type inset: spiceypy.support_types.SpiceCell
+    :type inset: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(inset, stypes.SpiceCell)
     if hasattr(item, "__iter__"):
@@ -5645,11 +5703,11 @@ def inter(a, b):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/inter_c.html
 
     :param a: First input set.
-    :type a: spiceypy.support_types.SpiceCell
+    :type a: spiceypy.utils.support_types.SpiceCell
     :param b: Second input set.
-    :type b: spiceypy.support_types.SpiceCell
+    :type b: spiceypy.utils.support_types.SpiceCell
     :return: Intersection of a and b.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
@@ -6040,9 +6098,9 @@ def kplfrm(frmcls, outCell=None):
     :param frmcls: Frame class.
     :type frmcls: int
     :param outCell: Optional output Spice Int Cell
-    :type outCell: spiceypy.support_types.SpiceCell
+    :type outCell: spiceypy.utils.support_types.SpiceCell
     :return: Set of ID codes of frames of the specified class.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     if not outCell:
         outCell = stypes.SPICEINT_CELL(1000)
@@ -8368,7 +8426,7 @@ def removc(item, inset):
     :param item: Item to be removed.
     :type item: str
     :param inset: Set to be updated.
-    :type inset: spiceypy.support_types.SpiceCell
+    :type inset: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(inset, stypes.SpiceCell)
     assert inset.dtype == 0
@@ -8386,7 +8444,7 @@ def removd(item, inset):
     :param item: Item to be removed.
     :type item: float
     :param inset: Set to be updated.
-    :type inset: spiceypy.support_types.SpiceCell
+    :type inset: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(inset, stypes.SpiceCell)
     assert inset.dtype == 1
@@ -8404,7 +8462,7 @@ def removi(item, inset):
     :param item: Item to be removed.
     :type item: int
     :param inset: Set to be updated.
-    :type inset: spiceypy.support_types.SpiceCell
+    :type inset: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(inset, stypes.SpiceCell)
     assert inset.dtype == 2
@@ -8867,9 +8925,9 @@ def scard(incard, cell):
     :param incard: Cardinality of (number of elements in) the cell.
     :type incard: int
     :param cell: The cell.
-    :type cell: spiceypy.support_types.SpiceCell
+    :type cell: spiceypy.utils.support_types.SpiceCell
     :return: The updated Cell.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cell, stypes.SpiceCell)
     incard = ctypes.c_int(incard)
@@ -9125,11 +9183,11 @@ def sdiff(a, b):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sdiff_c.html
 
     :param a: First input set.
-    :type a: spiceypy.support_types.SpiceCell
+    :type a: spiceypy.utils.support_types.SpiceCell
     :param b: Second input set.
-    :type b: spiceypy.support_types.SpiceCell
+    :type b: spiceypy.utils.support_types.SpiceCell
     :return: Symmetric difference of a and b.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
@@ -9155,11 +9213,11 @@ def set_c(a, op, b):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/set_c.html
 
     :param a: First set.
-    :type a: spiceypy.support_types.SpiceCell
+    :type a: spiceypy.utils.support_types.SpiceCell
     :param op: Comparison operator.
     :type op: str
     :param b: Second set.
-    :type b: spiceypy.support_types.SpiceCell
+    :type b: spiceypy.utils.support_types.SpiceCell
     :return: The function returns the result of the comparison.
     :rtype: bool
     """
@@ -9328,7 +9386,7 @@ def size(cell):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/size_c.html
 
     :param cell: Input cell.
-    :type cell: spiceypy.support_types.SpiceCell
+    :type cell: spiceypy.utils.support_types.SpiceCell
     :return: The size of the input cell.
     :rtype: int
     """
@@ -9695,7 +9753,7 @@ def spkcov(spk, idcode, cover):
     :param idcode: ID code of ephemeris object.
     :type idcode: int
     :param cover: Window giving coverage in "spk" for "idcode".
-    :type cover: spiceypy.support_types.SpiceCell
+    :type cover: spiceypy.utils.support_types.SpiceCell
     """
     spk = stypes.stringToCharP(spk)
     idcode = ctypes.c_int(idcode)
@@ -10123,7 +10181,7 @@ def spkobj(spk, outCell=None):
     :param spk: Name of SPK file.
     :type spk: str
     :param outCell: Optional Spice Int Cell.
-    :type outCell: spiceypy.support_types.SpiceCell
+    :type outCell: spiceypy.utils.support_types.SpiceCell
     """
     spk = stypes.stringToCharP(spk)
     if not outCell:
@@ -11032,9 +11090,9 @@ def ssize(newsize, cell):
     :param newsize: Size (maximum cardinality) of the cell.
     :type newsize: int
     :param cell: The cell.
-    :type cell: spiceypy.support_types.SpiceCell
+    :type cell: spiceypy.utils.support_types.SpiceCell
     :return: The updated cell.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cell, stypes.SpiceCell)
     newsize = ctypes.c_int(newsize)
@@ -11881,11 +11939,11 @@ def union(a, b):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/union_c.html
 
     :param a: First input set.
-    :type a: spiceypy.support_types.SpiceCell
+    :type a: spiceypy.utils.support_types.SpiceCell
     :param b: Second input set.
-    :type b: spiceypy.support_types.SpiceCell
+    :type b: spiceypy.utils.support_types.SpiceCell
     :return: Union of a and b.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
@@ -12064,7 +12122,7 @@ def valid(insize, n, inset):
     :type n: int
     :param inset: Set to be validated.
     :return: validated set
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(inset, stypes.SpiceCell)
     insize = ctypes.c_int(insize)
@@ -12859,7 +12917,7 @@ def wncard(window):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wncard_c.html
 
     :param window: Input window 
-    :type window: spiceypy.support_types.SpiceCell
+    :type window: spiceypy.utils.support_types.SpiceCell
     :return: the cardinality of the input window.
     :rtype: int
     """
@@ -12880,9 +12938,9 @@ def wncomd(left, right, window):
     :param right: right endpoints of complement interval. 
     :type right: float
     :param window: Input window 
-    :type window: spiceypy.support_types.SpiceCell
+    :type window: spiceypy.utils.support_types.SpiceCell
     :return: Complement of window with respect to left and right.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
@@ -12905,9 +12963,9 @@ def wncond(left, right, window):
     :param right: Amount subtracted from each right endpoint. 
     :type right: float
     :param window: Window to be contracted 
-    :type window: spiceypy.support_types.SpiceCell
+    :type window: spiceypy.utils.support_types.SpiceCell
     :return: Contracted Window.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
@@ -12926,11 +12984,11 @@ def wndifd(a, b):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wndifd_c.html
 
     :param a: Input window A. 
-    :type a: spiceypy.support_types.SpiceCell
+    :type a: spiceypy.utils.support_types.SpiceCell
     :param b: Input window B. 
-    :type b: spiceypy.support_types.SpiceCell
+    :type b: spiceypy.utils.support_types.SpiceCell
     :return: Difference of a and b.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
@@ -12952,7 +13010,7 @@ def wnelmd(point, window):
     :param point: Input point. 
     :type point: float
     :param window: Input window 
-    :type window: spiceypy.support_types.SpiceCell
+    :type window: spiceypy.utils.support_types.SpiceCell
     :return: returns True if point is an element of window.
     :rtype: bool
     """
@@ -12974,9 +13032,9 @@ def wnexpd(left, right, window):
     :param right: Amount added to each right endpoint. 
     :type right: float
     :param window: Window to be expanded. 
-    :type window: spiceypy.support_types.SpiceCell
+    :type window: spiceypy.utils.support_types.SpiceCell
     :return: Expanded Window.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
@@ -12997,9 +13055,9 @@ def wnextd(side, window):
     :param side: Extract left "L" or right "R" endpoints. 
     :type side: str
     :param window: Window to be extracted. 
-    :type window: spiceypy.support_types.SpiceCell
+    :type window: spiceypy.utils.support_types.SpiceCell
     :return: Extracted Window.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
@@ -13017,7 +13075,7 @@ def wnfetd(window, n):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnfetd_c.html
 
     :param window: Input window 
-    :type window: spiceypy.support_types.SpiceCell
+    :type window: spiceypy.utils.support_types.SpiceCell
     :param n: Index of interval to be fetched. 
     :type n: int
     :return: Left, right endpoints of the nth interval.
@@ -13043,9 +13101,9 @@ def wnfild(small, window):
     :param small: Limiting measure of small gaps. 
     :type small: float
     :param window: Window to be filled 
-    :type window: spiceypy.support_types.SpiceCell
+    :type window: spiceypy.utils.support_types.SpiceCell
     :return: Filled Window.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
@@ -13064,9 +13122,9 @@ def wnfltd(small, window):
     :param small: Limiting measure of small intervals. 
     :type small: float
     :param window: Window to be filtered. 
-    :type window: spiceypy.support_types.SpiceCell
+    :type window: spiceypy.utils.support_types.SpiceCell
     :return: Filtered Window.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
@@ -13087,7 +13145,7 @@ def wnincd(left, right, window):
     :param right: Right interval 
     :type right: float
     :param window: Input window 
-    :type window: spiceypy.support_types.SpiceCell
+    :type window: spiceypy.utils.support_types.SpiceCell
     :return: Returns True if the input interval is included in window.
     :rtype: bool
     """
@@ -13110,7 +13168,7 @@ def wninsd(left, right, window):
     :param right: Right endpoints of new interval. 
     :type right: float
     :param window: Input window. 
-    :type window: spiceypy.support_types.SpiceCell
+    :type window: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
@@ -13129,11 +13187,11 @@ def wnintd(a, b):
 
 
     :param a: Input window A. 
-    :type a: spiceypy.support_types.SpiceCell
+    :type a: spiceypy.utils.support_types.SpiceCell
     :param b: Input window B. 
-    :type b: spiceypy.support_types.SpiceCell
+    :type b: spiceypy.utils.support_types.SpiceCell
     :return: Intersection of a and b.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(a, stypes.SpiceCell)
     assert b.dtype == 1
@@ -13152,11 +13210,11 @@ def wnreld(a, op, b):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnreld_c.html
 
     :param a: First window. 
-    :type a: spiceypy.support_types.SpiceCell
+    :type a: spiceypy.utils.support_types.SpiceCell
     :param op: Comparison operator. 
     :type op: str
     :param b: Second window. 
-    :type b: spiceypy.support_types.SpiceCell
+    :type b: spiceypy.utils.support_types.SpiceCell
     :return: The result of comparison: a (op) b.
     :rtype: bool
     """
@@ -13177,7 +13235,7 @@ def wnsumd(window):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnsumd_c.html
 
     :param window: Window to be summarized. 
-    :type window: spiceypy.support_types.SpiceCell
+    :type window: spiceypy.utils.support_types.SpiceCell
     :return:
             Total measure of intervals in window,
             Average measure, Standard deviation,
@@ -13206,11 +13264,11 @@ def wnunid(a, b):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnunid_c.html
 
     :param a: Input window A. 
-    :type a: spiceypy.support_types.SpiceCell
+    :type a: spiceypy.utils.support_types.SpiceCell
     :param b: Input window B. 
-    :type b: spiceypy.support_types.SpiceCell
+    :type b: spiceypy.utils.support_types.SpiceCell
     :return: Union of a and b.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(a, stypes.SpiceCell)
     assert b.dtype == 1
@@ -13234,9 +13292,9 @@ def wnvald(insize, n, window):
     :param n: Original number of endpoints. 
     :type n: int
     :param window: Input window. 
-    :type window: spiceypy.support_types.SpiceCell
+    :type window: spiceypy.utils.support_types.SpiceCell
     :return: The union of the intervals in the input cell.
-    :rtype: spiceypy.support_types.SpiceCell
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1

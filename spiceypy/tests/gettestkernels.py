@@ -8,9 +8,12 @@ cwd = os.path.realpath(os.path.dirname(__file__))
 
 def getKernel(url):
     kernelName = url.split('/')[-1]
-    print('Downloading: {0}'.format(kernelName))
-    with open(os.path.join(cwd, kernelName), "wb") as kernel:
-        kernel.write(urllib.request.urlopen(url).read())
+    kernelFile = os.path.join(cwd, kernelName)
+    # does not download if files are present, which allows us to potentially cache kernels
+    if not os.path.isfile(kernelFile):
+        print('Downloading: {0}'.format(kernelName))
+        with open(kernelFile, "wb") as kernel:
+            kernel.write(urllib.request.urlopen(url).read())
 
 
 def getStandardKernels():
@@ -20,8 +23,7 @@ def getStandardKernels():
                      'http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/gm_de431.tpc',
                      'http://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0011.tls']
     for kernel in kernelURLlist:
-        if not os.path.isfile(os.path.join(cwd, kernel.split('/')[-1])):
-            getKernel(kernel)
+        getKernel(kernel)
 
 
 def getExtraTestKernels():
@@ -34,6 +36,20 @@ def getExtraTestKernels():
     getKernel(earthStnSpk)
     earthGenPck = "http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/earth_720101_070426.bpc"
     getKernel(earthGenPck)
+
+
+def getExtraMarsTestKernels():
+    merExt10 = "https://naif.jpl.nasa.gov/pub/naif/pds/data/mer1-m-spice-6-v1.0/mer1sp_1000/data/spk/mer1_surf_rover_ext10_v1.bsp"
+    getKernel(merExt10)
+    merExt11 = "https://naif.jpl.nasa.gov/pub/naif/pds/data/mer1-m-spice-6-v1.0/mer1sp_1000/data/spk/mer1_surf_rover_ext11_v1.bsp"
+    getKernel(merExt11)
+    merIau2000 = "https://naif.jpl.nasa.gov/pub/naif/pds/data/mer1-m-spice-6-v1.0/mer1sp_1000/data/spk/mer1_ls_040128_iau2000_v1.bsp"
+    getKernel(merIau2000)
+    merFK = "https://naif.jpl.nasa.gov/pub/naif/MER/kernels/fk/mer1_v10.tf"
+    getKernel(merFK)
+    print("About to Download 'mro_psp1.bsp' which is over 170MB...")
+    mroPsp = "https://naif.jpl.nasa.gov/pub/naif/MRO/kernels/spk/mro_psp1.bsp"
+    getKernel(mroPsp)
 
 
 def writeTestMetaKernel():
@@ -54,10 +70,11 @@ def downloadKernels():
     getStandardKernels()
     # Now grab any extra test kernels we need
     getExtraTestKernels()
-    # Now create the meta kernal file for tests
+    # Now create the meta kernel file for tests
     writeTestMetaKernel()
+    # Now download other extra kernels
+    getExtraMarsTestKernels()
 
 
 if __name__ == '__main__':
     downloadKernels()
-    getExtraTestKernels()
