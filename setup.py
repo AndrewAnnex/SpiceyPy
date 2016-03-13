@@ -169,11 +169,16 @@ try:
     else:
         sys.exit("Unsupported OS: {0}".format(host_OS))
 
+    readme = open('README.rst', 'r')
+    readmetext = readme.read()
+    readme.close()
+
     setup(
         name='spiceypy',
         version='0.6.8',
         description='A Python Wrapper for the NAIF CSPICE Toolkit',
-        keywords='spiceypy spice naif jpl space geometry',
+        long_description=readmetext,
+        keywords=['spiceypy', 'spice', 'naif', 'jpl', 'space', 'geometry'],
         url='https://github.com/AndrewAnnex/SpiceyPy',
         classifiers=[
             "Development Status :: 4 - Beta",
