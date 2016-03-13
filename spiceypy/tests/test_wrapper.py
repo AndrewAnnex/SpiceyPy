@@ -17,10 +17,17 @@ _spkMGSTi = os.path.join(cwd, "mgs_moc_v20.ti")
 _spkMgsSclk = os.path.join(cwd, "mgs_sclkscet_00061.tsc")
 _spkMgsSpk = os.path.join(cwd, "mgs_crus.bsp")
 _spk = os.path.join(cwd, "de421.bsp")
+_merFK    = os.path.join(cwd, "mer1_v10.tf")
+_merExt10 = os.path.join(cwd, "mer1_surf_rover_ext10_v1.bsp")
+_merExt11 = os.path.join(cwd, "mer1_surf_rover_ext11_v1.bsp")
+_merPsp   = os.path.join(cwd, "mro_psp1.bsp")
+_merIau2000 = os.path.join(cwd, "mer1_ls_040128_iau2000_v1.bsp")
 
 
 def setup_module(module):
-    if not os.path.exists(_testKernelPath) or not os.path.exists(_extraTestVoyagerKernel):
+    if not os.path.exists(_testKernelPath) \
+            or not os.path.exists(_extraTestVoyagerKernel) \
+            or not os.path.exists(_merPsp):
         downloadKernels()
 
 
@@ -2158,7 +2165,34 @@ def test_gffove():
 
 
 def test_gfilum():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_merExt10)
+    spice.furnsh(_merExt11)
+    spice.furnsh(_merIau2000)
+    spice.furnsh(_merFK)
+    spice.furnsh(_merPsp)
+    startET = spice.str2et("2006 OCT 02 00:00:00 UTC")
+    endET   = spice.str2et("2006 NOV 30 12:00:00 UTC")
+    cnfine  = spice.stypes.SPICEDOUBLE_CELL(2000)
+    spice.wninsd(startET, endET, cnfine)
+    wnsolr  = spice.stypes.SPICEDOUBLE_CELL(2000)
+    pos, lt = spice.spkpos("MER-1", startET, "iau_mars", "CN+S", "Mars")
+    spice.gfilum("Ellipsoid", "INCIDENCE", "Mars", "Sun",
+                 "iau_mars", "CN+S", "MRO", pos,
+                 "<", 60.0 * spice.rpd(), 0.0, 21600.0,
+                 1000, cnfine, wnsolr)
+    result = spice.stypes.SPICEDOUBLE_CELL(2000)
+    spice.gfilum("Ellipsoid", "EMISSION", "Mars", "Sun",
+                 "iau_mars", "CN+S", "MRO", pos,
+                 "<", 20.0 * spice.rpd(), 0.0, 900.0,
+                 1000, wnsolr, result)
+    assert spice.wncard(result) > 0
+    startEpoch = spice.timout(result[0],  "YYYY MON DD HR:MN:SC.###### UTC")
+    endEpoch   = spice.timout(result[-1], "YYYY MON DD HR:MN:SC.###### UTC")
+    assert startEpoch.startswith("2006 OCT 03")
+    assert endEpoch.startswith("2006 NOV 30")
+    spice.kclear()
 
 
 def test_gfinth():

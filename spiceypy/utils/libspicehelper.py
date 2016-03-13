@@ -269,6 +269,7 @@ libspice.gfdist_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_double, 
 # libspice.gfevnt_c.argtypes = [c_double, c_double, c_double, c_double, c_bool, c_bool, c_double, c_char_p, c_int, c_int, c_char_p, c_double, c_double, c_double, c_bool, None, c_char_p, c_char_p, c_double, c_double, c_double, c_int, c_bool, c_bool, None, None]
 # libspice.gffove_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double, c_double, c_double,  c_double, c_bool, c_bool, c_double, c_bool, None,  c_char_p, c_char_p, c_double, c_double, c_double,  c_bool, c_bool, None, None]
 libspice.gfinth_c.argtypes = [c_int]
+libspice.gfilum_c.argtupes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, (c_double * 3), c_char_p, c_double, c_double, c_double, c_int, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
 # libspice.gfocce_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double, c_double, c_double, c_double, c_bool, c_bool, c_double, c_bool, None, c_char_p, c_char_p, c_double, c_double, c_double, c_bool, c_bool, None, None]
 libspice.gfoclt_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p,
                               c_double, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
