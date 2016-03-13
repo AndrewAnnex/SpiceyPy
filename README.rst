@@ -52,8 +52,8 @@ Status
 Documentation
 -------------
 
-**The SpiceyPy docs are available at:
-`spiceypy.readthedocs.org <http://spiceypy.readthedocs.org>`__.**
+**The SpiceyPy docs are available at:**
+`spiceypy.readthedocs.org <http://spiceypy.readthedocs.org>`__.
 
 | The documentation for SpiceyPy is intentionally abridged so as to
   utilize the excellent `documentation provided by the
