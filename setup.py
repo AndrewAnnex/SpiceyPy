@@ -176,6 +176,9 @@ try:
     setup(
         name='spiceypy',
         version='0.6.8',
+        license='MIT',
+        author='Andrew Annex',
+        author_email='ama6fy@virginia.edu',
         description='A Python Wrapper for the NAIF CSPICE Toolkit',
         long_description=readmetext,
         keywords=['spiceypy', 'spice', 'naif', 'jpl', 'space', 'geometry'],
@@ -194,8 +197,6 @@ try:
             "Operating System :: POSIX :: Linux",
             "Operating System :: Microsoft :: Windows"
         ],
-        license='MIT',
-        author='Andrew Annex',
         packages=find_packages(exclude=["*.tests"]),
         include_package_data=True,
         zip_safe=False,

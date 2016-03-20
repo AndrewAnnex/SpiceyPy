@@ -14,7 +14,6 @@ import subprocess
 
 __author__ = 'AndrewAnnex'
 
-
 def getSpice():
 
     def give_points(dct, info):

@@ -30,3 +30,4 @@ docs/_build
 
 # python things
 *.egg-info*
+dist/
