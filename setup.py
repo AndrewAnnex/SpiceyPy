@@ -113,16 +113,16 @@ def build_library():
 
 
 def move_to_root_directory():
-    if host_OS == "Linux" or host_OS == "Darwin":
+    sharedLib = 'spice.so' if host_OS == "Linux" or host_OS == "Darwin" else 'cspice.dll'
+    destination = os.path.join(root_dir, 'spiceypy', 'utils', sharedLib)
+    if not os.path.isfile(destination):
         try:
-            os.rename(os.path.join(cspice_dir, 'lib', 'spice.so'), os.path.join(root_dir, 'spiceypy', 'utils', 'spice.so'))
+            if host_OS == "Linux" or host_OS == "Darwin":
+                os.rename(os.path.join(cspice_dir, 'lib', 'spice.so'), destination)
+            elif host_OS == "Windows":
+                os.rename(os.path.join(cspice_dir, 'src', 'cspice', 'cspice.dll'), destination)
         except BaseException as e:
-            sys.exit('spice.so file not found, what happend?: {0}'.format(e))
-    elif host_OS == "Windows":
-        try:
-            os.rename(os.path.join(cspice_dir, 'src', 'cspice', 'cspice.dll'), os.path.join(root_dir, 'spiceypy', 'utils', 'cspice.dll'))
-        except BaseException as e:
-            sys.exit('cspice.dll file not found, what happend?: {0}'.format(e))
+            sys.exit('{0} file not found, what happend?: {1}'.format(sharedLib, e))
 
 
 def cleanup():
@@ -149,6 +149,9 @@ def windows_method():
     if host_OS == "Windows":
         if os.path.exists(os.path.join(cspice_dir, "lib", "cspice.dll")):
             print("Found premade cspice.dll, not building")
+            return
+        elif os.path.exists(os.path.join(root_dir, 'spiceypy', 'utils', 'cspice.dll')):
+            print("Found premade cspice.dll in spiceypy, not building")
             return
         else:
             # Build the DLL
