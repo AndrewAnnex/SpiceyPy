@@ -34,7 +34,7 @@ set cl= /c /nologo -D_COMPLEX_DEFINED -DMSDOS -DOMIT_BLANK_CC  >nul
 
 rename zzsecprt.x zzsecprt.c
 
-cl zzsecprt.c
+cl zzsecprt.c >nul
 
 dir /b *.obj > temp.lst
 @echo on

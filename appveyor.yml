@@ -12,20 +12,24 @@ environment:
       - PYTHON: "C:\\Python27"
         PYTHON_VERSION: "2.7.x"
         PYTHON_ARCH: "32"
+        PLAT_NAME: "win32"
 
       - PYTHON: "C:\\Python27-x64"
         PYTHON_VERSION: "2.7.x"
         PYTHON_ARCH: "64"
+        PLAT_NAME: "win-amd64"
 
       - PYTHON: "C:\\Python34"
         PYTHON_VERSION: "3.4.x"
         PYTHON_ARCH: "32"
         WINDOWS_SDK_VERSION: "v7.1"
+        PLAT_NAME: "win32"
 
       - PYTHON: "C:\\Python34-x64"
         PYTHON_VERSION: "3.4.x"
         PYTHON_ARCH: "64"
         WINDOWS_SDK_VERSION: "v7.1"
+        PLAT_NAME: "win-amd64"
 
 platform:
   - x64
@@ -70,7 +74,7 @@ after_test:
   - ECHO "DONE!"
   - dir
   - ECHO "BUILDING WHEELS..."
-  - "%PYTHON%/python setup.py bdist_wheel"
+  - "%PYTHON%/python setup.py bdist_wheel --plat-name=%PLAT_NAME%"
 
 artifacts:
   - path: dist\*
