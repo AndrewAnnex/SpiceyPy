@@ -31,6 +31,18 @@ environment:
         WINDOWS_SDK_VERSION: "v7.1"
         PLAT_NAME: "win-amd64"
 
+      - PYTHON: "C:\\Python35"
+        PYTHON_VERSION: "3.5.x"
+        PYTHON_ARCH: "32"
+        WINDOWS_SDK_VERSION: "v7.1"
+        PLAT_NAME: "win32"
+
+      - PYTHON: "C:\\Python35-x64"
+        PYTHON_VERSION: "3.5.x"
+        PYTHON_ARCH: "64"
+        WINDOWS_SDK_VERSION: "v7.1"
+        PLAT_NAME: "win-amd64"
+
 platform:
   - x64
 
