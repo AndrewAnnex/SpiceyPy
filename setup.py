@@ -209,7 +209,7 @@ try:
         include_package_data=True,
         zip_safe=False,
         distclass=BinaryDistribution,
-        package_data={'': ['spiceypy/utils/*.so', "spiceypy/utils/*.dll"]},
+        package_data={'': ['*.so', "*.dll"]},
         install_requires=['six'],
         requires=['numpy', 'pytest', 'six'],
         tests_require=['pytest', 'numpy', 'six'],
