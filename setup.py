@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
+from setuptools.dist import Distribution
 import sys
 import getspice
 import os
@@ -31,6 +32,10 @@ class PyTest(TestCommand):
         errcode = pytest.main(self.test_args)
         sys.exit(errcode)
 
+
+class BinaryDistribution(Distribution):
+    def is_pure(self):
+        return False
 
 def check_for_spice():
     if not os.path.exists(cspice_dir):
@@ -203,6 +208,7 @@ try:
         packages=find_packages(exclude=["*.tests"]),
         include_package_data=True,
         zip_safe=False,
+        distclass=BinaryDistribution,
         package_data={'': ['*.so', "*.dll"]},
         install_requires=['six'],
         requires=['numpy', 'pytest', 'six'],

@@ -24,13 +24,13 @@ rem
 rem  Compile everything else.
 rem
 
-for %%f in (*.c) do cl %%f
+for %%f in (*.c) do cl %%f >nul
 
 rem
 rem  Set the cl variable to omit optimization.  Compile zzsecprt.c.
 rem
 
-set cl= /c -D_COMPLEX_DEFINED -DMSDOS -DOMIT_BLANK_CC
+set cl= /c /nologo -D_COMPLEX_DEFINED -DMSDOS -DOMIT_BLANK_CC  >nul
 
 rename zzsecprt.x zzsecprt.c
 
@@ -44,5 +44,6 @@ rem
 rem Create cspice.dll
 rem
 
-link /DLL /OUT:cspice.dll /DEF:cspice.def /IMPLIB:cspice.lib @temp.lst
+link /DLL /OUT:cspice.dll /DEF:cspice.def /IMPLIB:cspice.lib @temp.lst >nul
 @echo on
+rem Finished Linking Spice, makeDynamicSpice.bat completed.
