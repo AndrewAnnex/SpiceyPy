@@ -74,7 +74,7 @@ after_test:
   - ECHO "DONE!"
   - dir
   - ECHO "BUILDING WHEELS..."
-  - "%PYTHON%/python setup.py bdist_wheel --plat-name=%PLAT_NAME%"
+  - "%PYTHON%/python setup.py sdist bdist_wheel --plat-name=%PLAT_NAME%"
 
 artifacts:
   - path: dist\*
