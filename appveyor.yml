@@ -69,3 +69,9 @@ test_script:
 after_test:
   - ECHO "DONE!"
   - dir
+  - ECHO "BUILDING WHEELS..."
+  - "%PYTHON%/python setup.py bdist_wheel"
+
+artifacts:
+  - path: dist\*
+
