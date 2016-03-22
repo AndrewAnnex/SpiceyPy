@@ -31,8 +31,10 @@ Introduction
 | Please visit the NAIF website for more details.
 
 *IMPORTANT*: I have no current affiliation with NASA, NAIF, or JPL. The
-code is provided "as is", use at your own risk. ### Travis and Coveralls
-Status
+code is provided "as is", use at your own risk.
+
+Travis and Coveralls Status
+---------------------------
 
 | A secondary list (non-maintained) of what functions have been wrapped
   can be found
@@ -46,8 +48,8 @@ Status
   kernel functions are one example of this).
 | Functions that utilize call-backs have not been wrapped or tested yet,
   although ctypes does support call-backs so they will be revisited.
-| If you encounter an error with a function please report it or write up
-  a PR to fix it, with ctypes it is easy!
+| If you encounter an error with a function please report it or push
+  a PR with a fix, with ctypes it is easy!
 
 Documentation
 -------------
@@ -72,7 +74,6 @@ How to Help
 | writing a test, writing a wrapper, doing some code review, adding
   documentation, improving infrastructure code (like setup.py), or by
   spreading the word.
-| Any changes can be easily shared by submitting a pull request.
 
 Citing SpiceyPy
 ---------------
@@ -91,7 +92,7 @@ Design Goals
 -  [x] Useful, but abbreviated commenting on functions.
 -  [x] Python 2 and 3 support.
 -  [x] Numpy Support.
--  [ ] Enable vectorization of certain functions to be more like ICY.
+-  [x] Enable vectorization of certain functions to be more like ICY.
 
 Installation
 ------------
@@ -99,8 +100,7 @@ Installation
 First install the dependencies (numpy, six, pytest). Then download the
 project, extract it, and inside just run ``python setup.py install``. If
 you are updating to the newest commit/version, be sure to completely
-delete the SpiceyPy folder in your site-packages. This can most commonly
-be done by uninstalling SpiceyPy using pip.
+delete the SpiceyPy folder in your site-packages. This is normally by running ``pip uninstall spiceypy``
 
 Known Working Environments:
 ---------------------------
