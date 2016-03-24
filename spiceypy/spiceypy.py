@@ -3541,7 +3541,7 @@ def ekssum(handle, segno):
     :param segno: Number of segment to be summarized.
     :type segno: int
     :return: EK segment summary.
-    :rtype: SpicePy.support_types.SpiceEKSegSum
+    :rtype: spicepy.utils.support_types.SpiceEKSegSum
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)

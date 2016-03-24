@@ -183,7 +183,7 @@ try:
 
     setup(
         name='spiceypy',
-        version='0.6.8',
+        version='0.7.0',
         license='MIT',
         author='Andrew Annex',
         author_email='ama6fy@virginia.edu',
