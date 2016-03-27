@@ -81,7 +81,7 @@ Citing SpiceyPy
 ---------------
 
 | If SpiceyPy helps lead to a scientific publication, please consider
-  citing the SpiceyPy and the SPICE toolkit. The citation information
+  citing SpiceyPy and the SPICE toolkit. The citation information
   for SPICE can be found on the NAIF website. To cite SpiceyPy please
   utalize the zenodo DOI badge at the top of this readme.
 
