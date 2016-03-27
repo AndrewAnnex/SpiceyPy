@@ -1,11 +1,11 @@
 SpiceyPy
 ========
 
-+------------------------------------------------+---------------------+--------------------------+-------------------+
-| Continuous Integration                         | Code Coverage       | Docs                     | Chat              |
-+================================================+=====================+==========================+===================+
-| |Travis Build Status| |Windows Build Status|   | |Coverage Status|   | |Documentation Status|   | |Join the chat|   |
-+------------------------------------------------+---------------------+--------------------------+-------------------+
++------------------------------------------------+---------------------+--------------------------+-------------------+------------+
+| Continuous Integration                         | Code Coverage       | Docs                     | Chat              | Citation   |
++================================================+=====================+==========================+===================+============+
+| |Travis Build Status| |Windows Build Status|   | |Coverage Status|   | |Documentation Status|   | |Join the chat|   | |Citation| |
++------------------------------------------------+---------------------+--------------------------+-------------------+------------+
 
 .. |Travis Build Status| image:: https://travis-ci.org/AndrewAnnex/SpiceyPy.svg?style=flat?branch=master
    :target: https://travis-ci.org/AndrewAnnex/SpiceyPy
@@ -17,6 +17,8 @@ SpiceyPy
    :target: http://spiceypy.readthedocs.org/en/master/
 .. |Join the chat| image:: https://badges.gitter.im/Join%20Chat.svg
    :target: https://gitter.im/AndrewAnnex/SpiceyPy?utm_source=badge
+.. |Citation| image:: https://zenodo.org/badge/16987/AndrewAnnex/SpiceyPy.svg
+   :target: https://zenodo.org/badge/latestdoi/16987/AndrewAnnex/SpiceyPy
 
 
 SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N65),
@@ -79,10 +81,9 @@ Citing SpiceyPy
 ---------------
 
 | If SpiceyPy helps lead to a scientific publication, please consider
-  citing the SPICE toolkit, and listing SpiceyPy in the acknowledgments.
-| The citation information for SPICE can be found on the NAIF website
-  and please contact the author of this git repository for further
-  information regarding SpiceyPy itself.
+  citing SpiceyPy and the SPICE toolkit. The citation information
+  for SPICE can be found on the NAIF website. To cite SpiceyPy please
+  utalize the zenodo DOI badge at the top of this readme.
 
 Design Goals
 ------------
