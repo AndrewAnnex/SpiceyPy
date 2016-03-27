@@ -4,6 +4,7 @@ include getspice.py
 # Misc
 include LICENSE
 include requirements.txt
+include README.rst
 
 # Docs
 include docs/conf.py

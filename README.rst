@@ -123,60 +123,9 @@ system please submit an issue with details.
 -  *Python 2.7.9 64-bit Windows (Appveyor), using Visual Studio 2013*
 -  *Python 2.7.9 32-bit Windows (Appveyor), using Visual Studio 2013*
 
-A Note About Windows Support
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Windows support is currently highly experimental and difficult for the
-author to test locally. If attempting to install on windows platforms,
-please ensure you have a recent version of Visual Studio is installed
-and ensure cl.exe and link.exe is available on the path. Given the
-variability of systems, I will not be able to diagnose most issues
-encountered with running SpiceyPy on Windows. Below is a semi-complete
-list of instructions for getting SpiceyPy built and installed. For a
-more complete but less readable guide follow the appveyor.yml file
-included in this distribution.
-
-1. Ensure Visual Studio is properly installed and that cl.exe and
-   link.exe are available on the path.
-
--  If you run ``cl`` or ``link`` you should see some indication that you
-   have done this correctly.
-
-2. Ensure you have pip, numpy, pytest, and six installed.
-3. Call ``vcvarsall.bat`` from your visual studio with the option
-   "amd64" for 64 bit builds (I have not tested 32bit yet)
-4. Run ``python setup.py install`` to install SpiceyPy (this will take a
-   few minutes.)
-5. You are done!
-
--  You can run tests by running py.test test, ensure the root directory
-   of SpiceyPy does not have a lengthy path as the spice function furnsh
-   fails with long absolute paths.
-
 Acknowledgements
 ----------------
 
 `DaRasch <https://github.com/DaRasch>`__ wrote spiceminer, which I
 looked at to get SpiceCells working, thanks!
 
-Steps for making the shared library (now integrated into setup.py)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The below steps are now integrated into the setup.py file included and
-can be ignored, but for those who want to try for themselves I left the
-following sequences for you.
-
-*First the user must generate their own shared library of CSPICE. In the
-Lib subdirectory in CSPICE run the following commands:*
-
-::
-
-    ar -x cspice.a
-    ar -x csupport.a
-
-*This will generate a large collection of ``*.o`` files. Next compile
-the shared library, last I checked this was correct on my system.*
-
-::
-
-    gcc -shared -fPIC -lm *.o -o spice.so
