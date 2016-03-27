@@ -97,9 +97,11 @@ Design Goals
 
 Installation
 ------------
+First install the dependencies (numpy, six, pytest) for the project. Then
+run ``pip install spiceypy`` to install from pypi.
 
-First install the dependencies (numpy, six, pytest). Then download the
-project, extract it, and inside just run ``python setup.py install``. If
+If you wish to install spiceypy by hand first download the project. Then
+extract it, and inside just run ``python setup.py install``. If
 you are updating to the newest commit/version, be sure to completely
 delete the SpiceyPy folder in your site-packages. This is normally by running ``pip uninstall spiceypy``
 
