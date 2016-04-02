@@ -10,41 +10,53 @@ environment:
 
   matrix:
       - PYTHON: "C:\\Python27"
+        CONDA: "C:\\Miniconda"
+        CONDA_BUILDS: C:\\Miniconda\conda-bld\win-32
         PYTHON_VERSION: "2.7.x"
-        PYTHON_ARCH: "32"
+        ARCH: "32"
         PLAT_NAME: "win32"
         PY_TAG: "cp27"
 
       - PYTHON: "C:\\Python27-x64"
+        CONDA: "C:\\Miniconda-x64"
+        CONDA_BUILDS: C:\\Miniconda-x64\conda-bld\win-64
         PYTHON_VERSION: "2.7.x"
-        PYTHON_ARCH: "64"
+        ARCH: "64"
         PLAT_NAME: "win-amd64"
         PY_TAG: "cp27"
 
       - PYTHON: "C:\\Python34"
+        CONDA: "C:\\Miniconda3"
+        CONDA_BUILDS: C:\\Miniconda3\conda-bld\win-32
         PYTHON_VERSION: "3.4.x"
-        PYTHON_ARCH: "32"
+        ARCH: "32"
         WINDOWS_SDK_VERSION: "v7.1"
         PLAT_NAME: "win32"
         PY_TAG: "cp34"
 
       - PYTHON: "C:\\Python34-x64"
+        CONDA: "C:\\Miniconda3-x64"
+        CONDA_BUILDS: C:\\Miniconda3-x64\conda-bld\win-64
         PYTHON_VERSION: "3.4.x"
-        PYTHON_ARCH: "64"
+        ARCH: "64"
         WINDOWS_SDK_VERSION: "v7.1"
         PLAT_NAME: "win-amd64"
         PY_TAG: "cp34"
 
       - PYTHON: "C:\\Python35"
+        CONDA: "C:\\Miniconda35"
+        CONDA_BUILDS: C:\\Miniconda35\conda-bld\win-32
         PYTHON_VERSION: "3.5.x"
-        PYTHON_ARCH: "32"
+        ARCH: "32"
         WINDOWS_SDK_VERSION: "v7.1"
         PLAT_NAME: "win32"
         PY_TAG: "cp35"
 
       - PYTHON: "C:\\Python35-x64"
+        CONDA: "C:\\Miniconda35-x64"
+        CONDA_BUILDS: C:\\Miniconda35-x64\conda-bld\win-64
         PYTHON_VERSION: "3.5.x"
-        PYTHON_ARCH: "64"
+        ARCH: "64"
         WINDOWS_SDK_VERSION: "v7.1"
         PLAT_NAME: "win-amd64"
         PY_TAG: "cp35"
@@ -58,13 +70,12 @@ cache:
 install:
   # Log out the python version just so we know it
   - ECHO "%PYTHON_VERSION%"
+
   # update path to use installed pip
   - set PATH=%PYTHON%\\scripts;%PATH%
 
   # Download things we absolutly need
-  # - pip install --upgrade pip
-  - pip install wheel twine
-  - pip install six pytest
+  - pip install wheel twine six pytest
   # coveralls and or coverage fail to install for 3.4 64bit python builds so don't bother for now.
 
   # Check for numpy wheel, compile if absent
@@ -79,8 +90,8 @@ install:
   - "%PYTHON%/python getspice.py"
 
   # Now install spiceypy
-  - IF "%PYTHON_ARCH%"=="32" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86) ELSE (ECHO "probably a 64bit build")
-  - IF "%PYTHON_ARCH%"=="64" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64) ELSE (ECHO "probably a 32bit build")
+  - IF "%ARCH%"=="32" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86) ELSE (ECHO "probably a 64bit build")
+  - IF "%ARCH%"=="64" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64) ELSE (ECHO "probably a 32bit build")
   - "%PYTHON%/python setup.py install"
 
   - ECHO "Installed SpiceyPy!"
@@ -93,6 +104,18 @@ after_test:
   - dir
   - ECHO "BUILDING WHEELS..."
   - "%PYTHON%/python setup.py sdist bdist_wheel --plat-name=%PLAT_NAME% --python-tag=%PY_TAG%"
+  - ECHO "BUILDING CONDA PACKAGE..."
+  - set BK_PATH=%PATH%
+  - set PATH=%CONDA%;%CONDA%\\Scripts;%PATH%
+
+  # try conda things
+  - "conda install conda-build -y -q"
+  - "conda build appveyor -q --no-anaconda-upload"
+  - ps: ls $env:CONDA_BUILDS
+  - ps: cp $env:CONDA_BUILDS\*.* .\dist\
+  - ps: ls .\dist\
+  - set PATH=%BK_PATH%
+
 
 artifacts:
   - path: dist\*
