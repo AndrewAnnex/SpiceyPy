@@ -121,23 +121,23 @@ def move_to_root_directory():
     sharedLib = 'spice.so' if host_OS == "Linux" or host_OS == "Darwin" else 'cspice.dll'
     destination = os.path.join(root_dir, 'spiceypy', 'utils', sharedLib)
     if not os.path.isfile(destination):
+        target = os.path.join(cspice_dir, 'lib', sharedLib) \
+                if host_OS == "Linux" or host_OS == "Darwin" else \
+                os.path.join(cspice_dir, 'src', 'cspice', sharedLib)
+        print("Attempting to move: {0}   to: {1}".format(target, destination))
         try:
-            if host_OS == "Linux" or host_OS == "Darwin":
-                os.rename(os.path.join(cspice_dir, 'lib', 'spice.so'), destination)
-            elif host_OS == "Windows":
-                os.rename(os.path.join(cspice_dir, 'src', 'cspice', 'cspice.dll'), destination)
+            os.rename(target, destination)
         except BaseException as e:
             sys.exit('{0} file not found, what happend?: {1}'.format(sharedLib, e))
 
 
 def cleanup():
-    if host_OS == "Linux" or host_OS == "Darwin":
-        # Delete the extra files created by this install script
-        os.chdir(lib_dir)
-        currentDir = os.getcwd()
-        cleanupList = [file for file in os.listdir(currentDir) if file.endswith('.o') or file.endswith('.so')]
-        for file in cleanupList:
-            os.remove(file)
+    # Remove CSPICE folder
+    try:
+        shutil.rmtree(os.path.join(os.getcwd(), "cspice"))
+    except OSError as e:
+        print("Error Cleaning up cspice folder")
+        raise e
 
 
 def mac_linux_method():
@@ -183,7 +183,7 @@ try:
 
     setup(
         name='spiceypy',
-        version='1.0.0',
+        version='1.1.0dev',
         license='MIT',
         author='Andrew Annex',
         author_email='ama6fy@virginia.edu',
@@ -218,4 +218,5 @@ try:
         extras_require={'testing': ['pytest']}
     )
 finally:
-    cleanup()
+    pass
+
