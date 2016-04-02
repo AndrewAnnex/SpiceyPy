@@ -10,8 +10,7 @@ import platform
 
 import time
 
-import shutil
-from six.moves import urllib
+import six.moves.urllib as urllib
 import io
 import zipfile
 import subprocess
@@ -76,7 +75,7 @@ def getSpice():
 
     print('\nDownloading...')
 
-    attemptSpiceDownloadXTimes(3, root_url, result, root_dir)
+    attemptSpiceDownloadXTimes(10, root_url, result, root_dir)
 
 
 def downloadSpice(urlpath):
@@ -99,12 +98,13 @@ def attemptSpiceDownloadXTimes(x, root_url, result, root_dir):
                 proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE)
                 proc.stdin.write(download.read())
             download.close()
-
             break
-        except TimeoutError:
-            print("Download failed, trying agian!")
+        except urllib.error.URLError:
+            print("Download failed with URLError, trying agian after 15 seconds!")
+        except urllib.error.HTTPError as h:
+            print("Some http error: ", h, ", trying agian after 15 seconds!")
         attempts += 1
-        time.sleep(5)
+        time.sleep(15)
 
 
 if __name__ == '__main__':
