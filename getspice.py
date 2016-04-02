@@ -7,6 +7,10 @@
 import os
 import sys
 import platform
+
+import time
+
+import shutil
 from six.moves import urllib
 import io
 import zipfile
@@ -71,20 +75,36 @@ def getSpice():
     root_dir = os.path.realpath(os.path.dirname(__file__))
 
     print('\nDownloading...')
-    download = urllib.request.urlopen(root_url + result)
 
-    print('Unpacking... (this may take some time!)')
-    if result.endswith('zip'):
-        filelike = io.BytesIO(download.read())
-        with zipfile.ZipFile(filelike, 'r') as archive:
-            archive.extractall(root_dir)
-        filelike.close()
-    else:
-        cmd = 'gunzip | tar xC ' + root_dir
-        proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE)
-        proc.stdin.write(download.read())
-    download.close()
-    print('CSPICE download and extraction complete...')
+    attemptSpiceDownloadXTimes(3, root_url, result, root_dir)
+
+
+def downloadSpice(urlpath):
+    return urllib.request.urlopen(urlpath, timeout=10)
+
+def attemptSpiceDownloadXTimes(x, root_url, result, root_dir):
+    attempts = 0
+    while attempts < x:
+        try:
+            print("Attempting to download spice...")
+            download = downloadSpice(root_url + result)
+            print('Unpacking... (this may take some time!)')
+            if result.endswith('zip'):
+                filelike = io.BytesIO(download.read())
+                with zipfile.ZipFile(filelike, 'r') as archive:
+                    archive.extractall(root_dir)
+                filelike.close()
+            else:
+                cmd = 'gunzip | tar xC ' + root_dir
+                proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE)
+                proc.stdin.write(download.read())
+            download.close()
+
+            break
+        except TimeoutError:
+            print("Download failed, trying agian!")
+        attempts += 1
+        time.sleep(5)
 
 
 if __name__ == '__main__':
