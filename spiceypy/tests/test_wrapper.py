@@ -5892,3 +5892,35 @@ def test_xposeg():
     m1 = [[1.0, 2.0, 3.0], [0.0, 4.0, 5.0], [0.0, 6.0, 0.0]]
     npt.assert_array_almost_equal(spice.xposeg(m1, 3, 3), [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]])
     npt.assert_array_almost_equal(spice.xposeg(np.array(m1), 3, 3), [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]])
+
+
+def teardown_module(module):
+    if os.path.exists(_testKernelPath):
+        os.remove(_testKernelPath)
+    if os.path.exists(_extraTestVoyagerKernel):
+        os.remove(_extraTestVoyagerKernel)
+    if os.path.exists(_merExt10):
+        os.remove(_merExt10)
+    if os.path.exists(_merExt11):
+        os.remove(_merExt11)
+    if os.path.exists(_merFK):
+        os.remove(_merFK)
+    if os.path.exists(_merIau2000):
+        os.remove(_merIau2000)
+    if os.path.exists(_merPsp):
+        os.remove(_merPsp)
+    if os.path.exists(_testPckPath):
+        os.remove(_testPckPath)
+    if os.path.exists(_spkEarthPck):
+        os.remove(_spkEarthPck)
+    if os.path.exists(_spkEarthFk):
+        os.remove(_spkEarthFk)
+    if os.path.exists(_spkEarthTf):
+        os.remove(_spkEarthTf)
+    if os.path.exists(_spkMgsSclk):
+        os.remove(_spkMgsSclk)
+    if os.path.exists(_spkMgsSpk):
+        os.remove(_spkMgsSpk)
+    if os.path.exists(_spk):
+        os.remove(_spk)
+

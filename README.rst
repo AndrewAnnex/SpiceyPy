@@ -27,13 +27,47 @@ compatible with Python 2 and 3, written using ctypes.
 Introduction
 ------------
 
-| The `SPICE Toolkit <http://naif.jpl.nasa.gov/naif/>`__. In short it is
-  an essential tool for scientists and engineers alike in the planetary
+| SpiceyPy is a python wrapper for the `SPICE Toolkit <http://naif.jpl.nasa.gov/naif/>`__.
+  SPICE is an essential tool for scientists and engineers alike in the planetary
   science field for Solar System Geometry.
 | Please visit the NAIF website for more details.
 
 *IMPORTANT*: I have no current affiliation with NASA, NAIF, or JPL. The
 code is provided "as is", use at your own risk.
+
+Installation
+------------
+First install the dependencies (numpy, six, pytest) for the project. Then
+run ``pip install spiceypy`` to install from pypi. SpiceyPy is also available
+through conda by either first installing pip via conda or by running
+``conda install -c https://conda.anaconda.org/andrewannex spiceypy``.
+
+If you wish to install spiceypy from source first download the project. Then
+extract it, and inside just run ``python setup.py install``. If
+you are updating to the newest commit/version, be sure to completely
+delete the SpiceyPy folder in your site-packages. This is normally by running ``pip uninstall spiceypy``
+
+Documentation
+-------------
+
+**The SpiceyPy docs are available at:**
+`spiceypy.readthedocs.org <http://spiceypy.readthedocs.org>`__.
+
+| The documentation for SpiceyPy is intentionally abridged so as to
+  utilize the excellent `documentation provided by the
+  NAIF. <http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/index.html>`__
+| Please refer to C and IDL documentation available on the NAIF website
+  for in-depth explanations. Each function has a link to the
+  corresponding C function in the NAIF docs at a minimum.
+
+Citing SpiceyPy
+---------------
+
+| If the use of SpiceyPy is used in a publication, please consider
+  citing SpiceyPy and the SPICE toolkit. The citation information
+  for SPICE can be found on the NAIF website. To cite SpiceyPy please
+  utalize the zenodo DOI badge at the top of this readme.
+
 
 Travis and Coveralls Status
 ---------------------------
@@ -53,19 +87,6 @@ Travis and Coveralls Status
 | If you encounter an error with a function please report it or push
   a PR with a fix, with ctypes it is easy!
 
-Documentation
--------------
-
-**The SpiceyPy docs are available at:**
-`spiceypy.readthedocs.org <http://spiceypy.readthedocs.org>`__.
-
-| The documentation for SpiceyPy is intentionally abridged so as to
-  utilize the excellent `documentation provided by the
-  NAIF. <http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/index.html>`__
-| Please refer to C and IDL documentation available on the NAIF website
-  for in-depth explanations. Each function has a link to the
-  corresponding C function in the NAIF docs at a minimum.
-
 How to Help
 -----------
 
@@ -77,14 +98,6 @@ How to Help
   documentation, improving infrastructure code (like setup.py), or by
   spreading the word.
 
-Citing SpiceyPy
----------------
-
-| If the use of SpiceyPy is used in a publication, please consider
-  citing SpiceyPy and the SPICE toolkit. The citation information
-  for SPICE can be found on the NAIF website. To cite SpiceyPy please
-  utalize the zenodo DOI badge at the top of this readme.
-
 Design Goals
 ------------
 
@@ -95,35 +108,17 @@ Design Goals
 -  [x] Numpy Support.
 -  [x] Enable vectorization of certain functions to be more like ICY.
 
-Installation
-------------
-First install the dependencies (numpy, six, pytest) for the project. Then
-run ``pip install spiceypy`` to install from pypi.
-
-If you wish to install spiceypy by hand first download the project. Then
-extract it, and inside just run ``python setup.py install``. If
-you are updating to the newest commit/version, be sure to completely
-delete the SpiceyPy folder in your site-packages. This is normally by running ``pip uninstall spiceypy``
-
 Known Working Environments:
 ---------------------------
 
 SpicyPy is now compatible with modern Linux, Mac, and Windows
 environments. Since the package is a wrapper, any environment not
-supported by the NAIF is similarly not supported by SpiceyPy. Below is a
-list of known working environments. If you run into issues with your
-system please submit an issue with details.
+supported by the NAIF is similarly not supported by SpiceyPy.
+If you run into issues with your system please submit an issue with details.
 
--  Python 3.4.1 64-bit Mac OS X 10.10.4
--  Python 3.3.3 64-bit Mac OS X 10.9.4
--  Python 2.7.5 64-bit Mac OS X 10.9.4
--  Python 3.3.3 64-bit Mac OS X 10.9.2
--  Python 2.7.5 64-bit Mac OS X 10.9.2
--  Python 3.2.3 64-bit Ubuntu 12.04 LTS (VM)
--  *Python 3.4.3 64-bit Windows (Appveyor), using Visual Studio 2013*
--  *Python 3.4.3 32-bit Windows (Appveyor), using Visual Studio 2013*
--  *Python 2.7.9 64-bit Windows (Appveyor), using Visual Studio 2013*
--  *Python 2.7.9 32-bit Windows (Appveyor), using Visual Studio 2013*
+- OS: OS X, Linux, Windows
+- CPU: 64bit & 32bit
+- Python 2.7, 3.3, 3.4, 3.5
 
 Acknowledgements
 ----------------
