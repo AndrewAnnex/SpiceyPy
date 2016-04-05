@@ -1,4 +1,3 @@
-
 Below is an example that uses spiceypy to plot the position of the
 Cassini spacecraft relative to the barycenter of Saturn.
 
