@@ -32,7 +32,7 @@ def checkForSpiceError(f):
 def spiceErrorCheck(f):
     """
     Decorator for spiceypy hooking into spice error system.
-    If an error is detected, an output similar to outmsg_
+    If an error is detected, an output similar to outmsg
 
     :type f: builtins.function
     :return:
