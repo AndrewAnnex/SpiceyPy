@@ -33,12 +33,27 @@ First import spiceypy and test it out.
 
 
 
+We will need to load some kernels. You will need to download the following kernels
+from the NAIF servers via the links provided. After the kernels have been downloaded
+to a common directory write a metakernel containing the file names for each downloaded
+kernel (provided after the links).
+I named the metakernel 'cassMetaK.txt' for this example. For more on defining
+meta kernels in spice, please consult the `Kernel Required Reading <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/kernel.html>`_.
 
-We will need to load some kernels.
+- `naif0009.tls <http://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/a_old_versions/naif0009.tls>`_
+- `cas00084.tsc <http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/sclk/cas00084.tsc>`_
+- `cpck05Mar2004.tpc <http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/pck/cpck05Mar2004.tpc>`_
+- `cas_v37.tf <http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/fk/release.11/cas_v37.tf>`_
+- `04135_04171pc_psiv2.bc <http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/ck/04135_04171pc_psiv2.bc>`_
+- `030201AP_SK_SM546_T45.bsp <http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/030201AP_SK_SM546_T45.bsp>`_
+- `cas_iss_v09.ti <http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/ik/release.11/cas_iss_v09.ti>`_
+- `020514_SE_SAT105.bsp <http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/020514_SE_SAT105.bsp>`_
+- `981005_PLTEPH-DE405S.bsp <http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/981005_PLTEPH-DE405S.bsp>`_
+
 
 .. code:: python
 
-    # The meta kernel file contains entries pointing to the following SPICE kernels
+    # The meta kernel file contains entries pointing to the following SPICE kernels, which the user needs to download.
     #   http://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/a_old_versions/naif0009.tls
     #   http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/sclk/cas00084.tsc
     #   http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/pck/cpck05Mar2004.tpc
@@ -49,6 +64,8 @@ We will need to load some kernels.
     #   http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/020514_SE_SAT105.bsp
     #   http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/981005_PLTEPH-DE405S.bsp
     #
+    #   The following is the contents of a metakernel that was saved with
+    #   the name 'cassMetaK.txt'.
     #   \begindata
     #   KERNELS_TO_LOAD=(
     #   'naif0009.tls',
