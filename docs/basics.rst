@@ -17,12 +17,12 @@ is to simply run
 
     pip list
 
-You should see spiceypy in the list of your installed packages. If spiceypy
+You should see SpiceyPy in the list of your installed packages. If SpiceyPy
 is not present in the list then a configuration issue in your environment
-caused spiceypy to be installed in a non-standard way. Note this is an error
+caused SpiceyPy to be installed in a non-standard way. Note this is an error
 prone to systems with multiple installed python versions.
 
-If spiceypy is present in the pip list, then spiceypy is installed. Another
+If SpiceyPy is present in the pip list, then SpiceyPy is installed. Another
 verification step is within the python REPL run:
 
 .. code:: python
@@ -38,7 +38,7 @@ explanitory error message.
 A simple example program
 ------------------------
 
-The following calls the SPICE function ``tkvrsn`` which outputs the version
+The following calls the SPICE function :func:`tkvrsn` which outputs the version
 of cspice that SpiceyPy is wrapping.
 
 .. code:: python
