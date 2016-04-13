@@ -28,7 +28,6 @@ verification step is within the python REPL run:
 .. code:: python
 
     import spiceypy as spice
-    # Print out the toolkit version
 
 
 The version of the installed cspice toolkit (note: not SpiceyPy's version)
