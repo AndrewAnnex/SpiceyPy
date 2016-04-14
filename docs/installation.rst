@@ -4,13 +4,17 @@ Installation
 
 SpiceyPy is currently supported on Mac, Linux, and Windows systems.
 
-To Install simply run::
+To install simply run::
 
     pip install spiceypy
 
 If you use conda run::
 
     conda install -c https://conda.anaconda.org/andrewannex spiceypy
+
+
+How to install from source (for bleeding edge)
+----------------------------------------------
 
 If you wish to install from source, first simply clone the repository by
 running the following in your favorite shell::
