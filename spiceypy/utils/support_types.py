@@ -582,7 +582,7 @@ class SpiceCell(Structure):
     def __iter__(self):
         getter = SpiceCell.DATATYPES_GET[self.dtype]
         length, card, data = self.length, self.card, self.data
-        for i in range(card):
+        for i in six.moves.range(card):
             yield (getter(data, i, length))
 
     def __contains__(self, key):
@@ -596,8 +596,8 @@ class SpiceCell(Structure):
                 return []
             else:
                 start, stop, step = key.indices(self.card)
-                return [getter(self.data, i, self.length) for i in range(start, stop, step)]
-        elif key in range(-self.card, self.card):
+                return [getter(self.data, i, self.length) for i in six.moves.range(start, stop, step)]
+        elif key in six.moves.range(-self.card, self.card):
             index = key if key >= 0 else self.card - abs(key)
             return getter(self.data, index, self.length)
         elif not isinstance(key, int):
