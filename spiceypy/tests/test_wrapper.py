@@ -13,15 +13,19 @@ _testPckPath = os.path.join(cwd, "pck00010.tpc")
 _spkEarthPck = os.path.join(cwd, "earth_720101_070426.bpc")
 _spkEarthFk = os.path.join(cwd, "earthstns_itrf93_050714.bsp")
 _spkEarthTf = os.path.join(cwd, "earth_topo_050714.tf")
-_spkMGSTi = os.path.join(cwd, "mgs_moc_v20.ti")
-_spkMgsSclk = os.path.join(cwd, "mgs_sclkscet_00061.tsc")
-_spkMgsSpk = os.path.join(cwd, "mgs_crus.bsp")
+
 _spk = os.path.join(cwd, "de421.bsp")
 _merFK    = os.path.join(cwd, "mer1_v10.tf")
 _merExt10 = os.path.join(cwd, "mer1_surf_rover_ext10_v1.bsp")
 _merExt11 = os.path.join(cwd, "mer1_surf_rover_ext11_v1.bsp")
 _merPsp   = os.path.join(cwd, "mro_psp1.bsp")
 _merIau2000 = os.path.join(cwd, "mer1_ls_040128_iau2000_v1.bsp")
+
+_mgsSclk = os.path.join(cwd, "mgs_sclkscet_00061.tsc")
+_mgsPck = os.path.join(cwd, "mars_iau2000_v0.tpc")
+_mgsIk = os.path.join(cwd, "mgs_moc_v20.ti")
+_mgsSpk = os.path.join(cwd, "mgs_ext26.bsp")
+_mgsCk = os.path.join(cwd, "mgs_sc_ext26.bc")
 
 
 def setup_module(module):
@@ -4136,7 +4140,26 @@ def test_sigerr():
 
 
 def test_sincpt():
-    assert 1
+    spice.kclear()
+    # load kernels
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_mgsSclk)
+    spice.furnsh(_mgsPck)
+    spice.furnsh(_mgsIk)
+    spice.furnsh(_mgsSpk)
+    spice.furnsh(_mgsCk)
+    # start test
+    et = spice.str2et("2006 OCT 15 06:00:00 UTC")
+    camid = spice.bodn2c("MGS_MOC_NA")
+    shape, frame, bsight, n, bounds = spice.getfov(camid, 4)
+    # run sincpt on bore sight vector
+    spoint, trgepc, obspos = spice.sincpt("Ellipsoid", 'Mars', et, "iau_mars", "CN+S", "MGS", frame, bsight)
+    npt.assert_almost_equal(trgepc, 214164065.18107578)
+    expected_spoint = [-1798.27290315, -629.0785937, -2794.96014468]
+    expected_obspos = [ 290.14695575, 89.53165729, 239.80380831]
+    npt.assert_array_almost_equal(spoint, expected_spoint, 5)
+    npt.assert_array_almost_equal(obspos, expected_obspos, 5)
+    spice.kclear()
 
 
 def test_size():
@@ -4902,7 +4925,27 @@ def test_srfrec():
 
 
 def test_srfxpt():
-    assert 1
+    spice.kclear()
+    # load kernels
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_mgsSclk)
+    spice.furnsh(_mgsPck)
+    spice.furnsh(_mgsIk)
+    spice.furnsh(_mgsSpk)
+    spice.furnsh(_mgsCk)
+    # start test
+    et = spice.str2et("2006 OCT 15 06:00:00 UTC")
+    camid = spice.bodn2c("MGS_MOC_NA")
+    shape, frame, bsight, n, bounds = spice.getfov(camid, 4)
+    # run srfxpt on bore sight vector
+    spoint, dist, trgepc, obspos = spice.srfxpt("Ellipsoid", 'Mars', et, "LT+S", "MGS", frame, bsight)
+    npt.assert_almost_equal(dist, 386.91994715)
+    npt.assert_almost_equal(trgepc, 214164065.18107578)
+    expected_spoint = [-1798.27290315, -629.0785937, -2794.96014468]
+    expected_obspos = [-2088.42506636, -718.58930162, -3034.7654842 ]
+    npt.assert_array_almost_equal(spoint, expected_spoint)
+    npt.assert_array_almost_equal(obspos, expected_obspos)
+    spice.kclear()
 
 
 def test_ssize():
@@ -5917,10 +5960,15 @@ def teardown_module(module):
         os.remove(_spkEarthFk)
     if os.path.exists(_spkEarthTf):
         os.remove(_spkEarthTf)
-    if os.path.exists(_spkMgsSclk):
-        os.remove(_spkMgsSclk)
-    if os.path.exists(_spkMgsSpk):
-        os.remove(_spkMgsSpk)
     if os.path.exists(_spk):
         os.remove(_spk)
-
+    if os.path.exists(_mgsSclk):
+        os.remove(_mgsSclk)
+    if os.path.exists(_mgsPck):
+        os.remove(_mgsPck)
+    if os.path.exists(_mgsIk):
+        os.remove(_mgsIk)
+    if os.path.exists(_mgsSpk):
+        os.remove(_mgsSpk)
+    if os.path.exists(_mgsCk):
+        os.remove(_mgsCk)
