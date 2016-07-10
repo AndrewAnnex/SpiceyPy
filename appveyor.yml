@@ -108,7 +108,10 @@ after_test:
   - set BK_PATH=%PATH%
   - set PATH=%CONDA%;%CONDA%\\Scripts;%PATH%
 
-  # try conda things
+  # try conda thing
+  # Update to a known good conda, found from https://github.com/numba/numba/blob/master/appveyor.yml
+  # (to workaround http://help.appveyor.com/discussions/problems/4910)
+  - "conda install -q -y conda=4.1.4"
   - "conda install conda-build -y -q"
   - "conda build appveyor -q --no-anaconda-upload"
   - ps: ls $env:CONDA_BUILDS
