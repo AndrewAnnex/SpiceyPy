@@ -89,12 +89,17 @@ install:
   # Download CSPICE so we can build outside of python
   - "%PYTHON%/python getspice.py"
 
+  # Make a backup of the PATH just in case.
+  - set BK_PATH=%PATH%
+
   # Now install spiceypy
   - IF "%ARCH%"=="32" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86) ELSE (ECHO "probably a 64bit build")
   - IF "%ARCH%"=="64" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64) ELSE (ECHO "probably a 32bit build")
   - "%PYTHON%/python setup.py install"
 
   - ECHO "Installed SpiceyPy!"
+  # restore PATH
+  - set PATH=%BK_PATH%
 
 test_script:
   - "%PYTHON%/Scripts/py.test spiceypy/tests"
@@ -106,9 +111,9 @@ after_test:
   - "%PYTHON%/python setup.py sdist bdist_wheel --plat-name=%PLAT_NAME% --python-tag=%PY_TAG%"
   - ECHO "BUILDING CONDA PACKAGE..."
   - set BK_PATH=%PATH%
-  - set PATH=%CONDA%;%CONDA%\\Scripts;%PATH%
 
   # try conda thing
+  - set PATH=%CONDA%;%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
   # Update to a known good conda, found from https://github.com/numba/numba/blob/master/appveyor.yml
   # (to workaround http://help.appveyor.com/discussions/problems/4910)
   - "conda install -q -y conda=4.1.4"
