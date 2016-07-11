@@ -4508,7 +4508,11 @@ def test_spkgps():
 
 
 def test_spklef():
-    assert 1
+    spice.kclear()
+    handle = spice.spklef(_spk)
+    assert handle != -1
+    spice.spkuef(handle)
+    spice.kclear()
 
 
 def test_spkltc():
@@ -4542,7 +4546,30 @@ def test_spkobj():
 
 
 def test_spkopa():
-    assert 1
+    SPKOPA = os.path.join(cwd, "testspkopa.bsp")
+    if spice.exists(SPKOPA):
+        os.remove(SPKOPA)
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et("2012 APR 27 00:00:00.000 TDB")
+    # load subset from kernels
+    handle, descr, ident = spice.spksfs(5, et, 41)
+    body, center, frame, otype, first, last, begin, end = spice.spkuds(descr)
+    # create empty spk kernel
+    handle_test = spice.spkopn(SPKOPA, 'Test Kernel for spkopa unit test.', 4)
+    # created empty spk kernel, write to it
+    spice.spksub(handle, descr, ident, begin, end, handle_test)
+    # close kernel
+    spice.spkcls(handle_test)
+    # open the file to append to it
+    handle_spkopa = spice.spkopa(SPKOPA)
+    et2 = spice.str2et("2013 APR 27 00:00:00.000 TDB")
+    handle, descr, ident = spice.spksfs(5, et2, 41)
+    body, center, frame, otype, first, last, begin, end = spice.spkuds(descr)
+    spice.spksub(handle, descr, ident, begin, end, handle_spkopa)
+    if spice.exists(SPKOPA):
+        os.remove(SPKOPA)
+    spice.kclear()
 
 
 def test_spkopn():
@@ -4572,7 +4599,15 @@ def test_spkopn():
 
 
 def test_spkpds():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et("2012 APR 27 00:00:00.000 TDB")
+    handle, descr, ident = spice.spksfs(5, et, 41)
+    body, center, frame, otype, first, last, begin, end  = spice.spkuds(descr)
+    outframe = spice.frmnam(frame)
+    spkpds_output = spice.spkpds(body, center, outframe, otype, first, last)
+    npt.assert_almost_equal(spkpds_output, descr)
+    spice.kclear()
 
 
 def test_spkpos():
@@ -4638,15 +4673,45 @@ def test_spkssb():
 
 
 def test_spksub():
-    assert 1
+    SPKSUB = os.path.join(cwd, "testspksub.bsp")
+    if spice.exists(SPKSUB):
+        os.remove(SPKSUB)
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et("2012 APR 27 00:00:00.000 TDB")
+    # load subset from kernels
+    handle, descr, ident = spice.spksfs(5, et, 41)
+    body, center, frame, otype, first, last, begin, end = spice.spkuds(descr)
+    # create empty spk kernel
+    handle_test = spice.spkopn(SPKSUB, 'Test Kernel for spksub unit test.', 4)
+    # created empty spk kernel, write to it
+    spice.spksub(handle, descr, ident, begin, end, handle_test)
+    # close kernel
+    spice.spkcls(handle_test)
+    if spice.exists(SPKSUB):
+        os.remove(SPKSUB)
+    spice.kclear()
 
 
 def test_spkuds():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    et = spice.str2et("2012 APR 27 00:00:00.000 TDB")
+    handle, descr, ident = spice.spksfs(5, et, 41)
+    body, center, frame, otype, first, last, begin, end  = spice.spkuds(descr)
+    assert body == 5
+    assert begin == 628977
+    assert end == 674740
+    assert otype == 2
+    spice.kclear()
 
 
 def test_spkuef():
-    assert 1
+    spice.kclear()
+    handle = spice.spklef(_spk)
+    assert handle != -1
+    spice.spkuef(handle)
+    spice.kclear()
 
 
 def test_spkw02():
