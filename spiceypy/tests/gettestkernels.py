@@ -1,7 +1,9 @@
 import os
 import six.moves.urllib as urllib
 
-standardKernelList = ['pck00010.tpc', 'de421.bsp', 'gm_de431.tpc',
+standardKernelList = ['pck00010.tpc',
+                      'de421.bsp',
+                      'gm_de431.tpc',
                       'naif0011.tls']
 cwd = os.path.realpath(os.path.dirname(__file__))
 
@@ -51,6 +53,17 @@ def getExtraMarsTestKernels():
     mroPsp = "https://naif.jpl.nasa.gov/pub/naif/MRO/kernels/spk/mro_psp1.bsp"
     getKernel(mroPsp)
 
+def getMGSTestKernels():
+    mgsSclk = "https://naif.jpl.nasa.gov/pub/naif/pds/data/mgs-m-spice-6-v1.0/mgsp_1000/data/sclk/mgs_sclkscet_00061.tsc"
+    getKernel(mgsSclk)
+    mgsPck = "https://naif.jpl.nasa.gov/pub/naif/pds/data/ody-m-spice-6-v1.0/odsp_1000/data/pck/mars_iau2000_v0.tpc"
+    getKernel(mgsPck)
+    mgsIk = "https://naif.jpl.nasa.gov/pub/naif/pds/data/mgs-m-spice-6-v1.0/mgsp_1000/data/ik/mgs_moc_v20.ti"
+    getKernel(mgsIk)
+    mgsSpk = "https://naif.jpl.nasa.gov/pub/naif/pds/data/mgs-m-spice-6-v1.0/mgsp_1000/data/spk/mgs_ext26.bsp"
+    getKernel(mgsSpk)
+    mgsCk = "https://naif.jpl.nasa.gov/pub/naif/pds/data/mgs-m-spice-6-v1.0/mgsp_1000/data/ck/mgs_sc_ext26.bc"
+    getKernel(mgsCk)
 
 def writeTestMetaKernel():
     # Update the paths!
@@ -74,8 +87,7 @@ def downloadKernels():
     writeTestMetaKernel()
     # Now download other extra kernels
     getExtraMarsTestKernels()
-
-
+    getMGSTestKernels()
 
 
 if __name__ == '__main__':
