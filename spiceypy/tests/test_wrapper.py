@@ -4567,6 +4567,8 @@ def test_spkopa():
     handle, descr, ident = spice.spksfs(5, et2, 41)
     body, center, frame, otype, first, last, begin, end = spice.spkuds(descr)
     spice.spksub(handle, descr, ident, begin, end, handle_spkopa)
+    spice.spkcls(handle_spkopa)
+    # clean up
     if spice.exists(SPKOPA):
         os.remove(SPKOPA)
     spice.kclear()
