@@ -10432,8 +10432,8 @@ def spksub(handle, descr, identin, begin, end, newh):
     handle = ctypes.c_int(handle)
     descr = stypes.toDoubleVector(descr)
     identin = stypes.stringToCharP(identin)
-    begin = ctypes.c_int(begin)
-    end = ctypes.c_int(end)
+    begin = ctypes.c_double(begin)
+    end = ctypes.c_double(end)
     newh = ctypes.c_int(newh)
     libspice.spksub_c(handle, descr, identin, begin, end, newh)
 
