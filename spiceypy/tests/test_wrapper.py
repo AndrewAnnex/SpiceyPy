@@ -394,6 +394,7 @@ def test_cklpf():
     spice.kclear()
     handle = spice.cklpf(_mgsCk)
     spice.ckupf(handle)
+    spice.ckcls(handle)
     spice.kclear()
 
 
@@ -430,6 +431,7 @@ def test_ckupf():
     spice.kclear()
     handle = spice.cklpf(_mgsCk)
     spice.ckupf(handle)
+    spice.ckcls(handle)
     spice.kclear()
 
 
