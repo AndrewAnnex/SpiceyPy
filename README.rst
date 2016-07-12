@@ -66,7 +66,7 @@ Citing SpiceyPy
 | If the use of SpiceyPy is used in a publication, please consider
   citing SpiceyPy and the SPICE toolkit. The citation information
   for SPICE can be found on the NAIF website. To cite SpiceyPy please
-  utalize the zenodo DOI badge at the top of this readme.
+  utilize the zenodo DOI badge at the top of this readme.
 
 
 Travis and Coveralls Status
