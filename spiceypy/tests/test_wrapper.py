@@ -342,23 +342,87 @@ def test_ckcls():
 
 
 def test_ckcov():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_mgsSclk)
+    ckid = spice.ckobj(_mgsCk)[0]
+    cover = spice.ckcov(_mgsCk, ckid, False, "INTERVAL", 0.0, "TDB")
+    assert len(cover) > 0
+    npt.assert_almost_equal(cover[0], 213796925.9090098, decimal=5)
+    spice.kclear()
 
 
 def test_ckgp():
-    assert 1
+    spice.kclear()
+    spice.reset()
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_mgsSclk)
+    spice.furnsh(_mgsCk)
+    spice.furnsh(_mgsIk)
+    spice.furnsh(_mgsPck)
+    ckid = spice.ckobj(_mgsCk)[0]
+    cover = spice.ckcov(_mgsCk, ckid, False, "INTERVAL", 0.0, "SCLK")
+    cmat, clkout = spice.ckgp(ckid, cover[0], 256, "J2000")
+    expected_cmat = [[-0.61236959, -0.05157784, -0.78888733],
+                    [ 0.78254911, -0.18134383, -0.59559323],
+                    [-0.11234043, -0.98206626, 0.15141164]]
+    npt.assert_array_almost_equal(cmat, expected_cmat)
+    assert clkout == 80206648755.0
+    spice.reset()
+    spice.kclear()
 
 
 def test_ckgpav():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_mgsSclk)
+    spice.furnsh(_mgsCk)
+    spice.furnsh(_mgsIk)
+    spice.furnsh(_mgsPck)
+    ckid = spice.ckobj(_mgsCk)[0]
+    cover = spice.ckcov(_mgsCk, ckid, False, "INTERVAL", 0.0, "SCLK")
+    cmat, avout, clkout = spice.ckgpav(ckid, cover[0], 256, "J2000")
+    expected_cmat = [[-0.61236959, -0.05157784, -0.78888733],
+                    [ 0.78254911, -0.18134383, -0.59559323],
+                    [-0.11234043, -0.98206626, 0.15141164]]
+    expected_avout = [ 0.00069727, -0.00016942, -0.00053743]
+    npt.assert_array_almost_equal(cmat, expected_cmat)
+    npt.assert_array_almost_equal(avout, expected_avout)
+    assert clkout == 80206648755.0
+    spice.kclear()
 
 
 def test_cklpf():
-    assert 1
+    spice.kclear()
+    spice.reset()
+    CKLPF = os.path.join(cwd, "cklpfkernel.bc")
+    if spice.exists(CKLPF):
+        os.remove(CKLPF)
+    IFNAME = "Test CK type 1 segment created by cspice_cklpf"
+    handle = spice.ckopn(CKLPF, IFNAME, 10)
+    spice.ckw01(handle, 1.0, 10.0, -77701, "J2000", True, "Test type 1 CK segment",
+                2 - 1, [1.1, 4.1], [[1.0, 1.0, 1.0, 1.0], [2.0, 2.0, 2.0, 2.0]],
+                [[0.0, 0.0, 1.0], [0.0, 0.0, 2.0]])
+    spice.ckcls(handle)
+    spice.kclear()
+    handle = spice.cklpf(CKLPF)
+    spice.ckupf(handle)
+    spice.ckcls(handle)
+    spice.kclear()
+    spice.reset()
+    assert spice.exists(CKLPF)
+    if spice.exists(CKLPF):
+        os.remove(CKLPF)
+    assert not spice.exists(CKLPF)
 
 
 def test_ckobj():
-    assert 1
+    spice.kclear()
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_mgsSclk)
+    ids = spice.ckobj(_mgsCk)
+    assert len(ids) == 1
+    spice.kclear()
 
 
 def test_ckopn():
@@ -382,7 +446,13 @@ def test_ckopn():
 
 
 def test_ckupf():
-    assert 1
+    spice.kclear()
+    spice.reset()
+    handle = spice.cklpf(_mgsCk)
+    spice.ckupf(handle)
+    spice.ckcls(handle)
+    spice.reset()
+    spice.kclear()
 
 
 def test_ckw01():

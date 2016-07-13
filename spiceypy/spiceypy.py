@@ -784,7 +784,6 @@ def ckcls(handle):
 
 @spiceErrorCheck
 def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
-    # Todo: test ckcov
     """
     Find the coverage window for a specified object in a specified CK file.
 
@@ -814,7 +813,7 @@ def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
     tol = ctypes.c_double(tol)
     timsys = stypes.stringToCharP(timsys)
     if not cover:
-        cover = stypes.SPICEDOUBLE_CELL(2000)
+        cover = stypes.SPICEDOUBLE_CELL(20000)
     assert isinstance(cover, stypes.SpiceCell)
     assert cover.dtype == 1
     libspice.ckcov_c(ck, idcode, needav, level, tol, timsys,
@@ -823,8 +822,8 @@ def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
 def ckgp(inst, sclkdp, tol, ref):
-    # Todo: test ckgp
     """
     Get pointing (attitude) for a specified spacecraft clock time.
 
@@ -840,8 +839,7 @@ def ckgp(inst, sclkdp, tol, ref):
     :type ref: str
     :return:
             C-matrix pointing data,
-            Output encoded spacecraft clock time,
-            True when requested pointing is available.
+            Output encoded spacecraft clock time
     :rtype: tuple
     """
     inst = ctypes.c_int(inst)
@@ -859,7 +857,6 @@ def ckgp(inst, sclkdp, tol, ref):
 @spiceErrorCheck
 @spiceFoundExceptionThrower
 def ckgpav(inst, sclkdp, tol, ref):
-    # Todo: test ckgpav
     """
     Get pointing (attitude) and angular velocity
     for a specified spacecraft clock time.
@@ -896,7 +893,6 @@ def ckgpav(inst, sclkdp, tol, ref):
 
 @spiceErrorCheck
 def cklpf(filename):
-    # Todo: test cklpf
     """
     Load a CK pointing file for use by the CK readers.  Return that
     file's handle, to be used by other CK routines to refer to the
@@ -917,7 +913,6 @@ def cklpf(filename):
 
 @spiceErrorCheck
 def ckobj(ck, outCell=None):
-    # Todo: test ckobj
     """
     Find the set of ID codes of all objects in a specified CK file.
 
@@ -966,7 +961,6 @@ def ckopn(filename, ifname, ncomch):
 
 @spiceErrorCheck
 def ckupf(handle):
-    # Todo: test ckupf
     """
     Unload a CK pointing file so that it will no longer be searched
     by the readers.
