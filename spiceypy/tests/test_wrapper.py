@@ -6,7 +6,7 @@ import os
 from .gettestkernels import downloadKernels
 import sys
 
-is32bit = sys.maxsize == 2**32
+is32bit = sys.maxsize > 2**32
 
 cwd = os.path.realpath(os.path.dirname(__file__))
 _testKernelPath = os.path.join(cwd, "exampleKernels.txt")
