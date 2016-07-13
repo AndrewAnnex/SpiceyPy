@@ -4,9 +4,7 @@ import numpy as np
 import numpy.testing as npt
 import os
 from .gettestkernels import downloadKernels
-import sys
 
-is32bit = sys.maxsize <= 2**32
 
 cwd = os.path.realpath(os.path.dirname(__file__))
 _testKernelPath = os.path.join(cwd, "exampleKernels.txt")
@@ -343,7 +341,6 @@ def test_ckcls():
     assert not spice.exists(CK1)
 
 
-@pytest.mark.skipif(is32bit, reason="test is failing on 32bit os")
 def test_ckcov():
     spice.kclear()
     spice.furnsh(_testKernelPath)
@@ -355,7 +352,6 @@ def test_ckcov():
     spice.kclear()
 
 
-@pytest.mark.skipif(is32bit, reason="test is failing on 32bit os")
 def test_ckgp():
     spice.kclear()
     spice.reset()
@@ -376,7 +372,6 @@ def test_ckgp():
     spice.kclear()
 
 
-@pytest.mark.skipif(is32bit, reason="test is failing on 32bit os")
 def test_ckgpav():
     spice.kclear()
     spice.furnsh(_testKernelPath)
@@ -397,7 +392,6 @@ def test_ckgpav():
     spice.kclear()
 
 
-@pytest.mark.skipif(is32bit, reason="test is failing on 32bit os")
 def test_cklpf():
     spice.kclear()
     spice.reset()
@@ -422,7 +416,6 @@ def test_cklpf():
     assert not spice.exists(CKLPF)
 
 
-@pytest.mark.skipif(is32bit, reason="test is failing on 32bit os")
 def test_ckobj():
     spice.kclear()
     spice.furnsh(_testKernelPath)
@@ -452,7 +445,6 @@ def test_ckopn():
     assert not spice.exists(CK1)
 
 
-@pytest.mark.skipif(is32bit, reason="test is failing on 32bit os")
 def test_ckupf():
     spice.kclear()
     spice.reset()
