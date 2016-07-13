@@ -6,7 +6,7 @@ import os
 from .gettestkernels import downloadKernels
 import sys
 
-is32bit = sys.maxsize > 2**32
+is32bit = sys.maxsize <= 2**32
 
 cwd = os.path.realpath(os.path.dirname(__file__))
 _testKernelPath = os.path.join(cwd, "exampleKernels.txt")
@@ -358,6 +358,7 @@ def test_ckcov():
 @pytest.mark.skipif(is32bit, reason="test is failing on 32bit os")
 def test_ckgp():
     spice.kclear()
+    spice.reset()
     spice.furnsh(_testKernelPath)
     spice.furnsh(_mgsSclk)
     spice.furnsh(_mgsCk)
@@ -371,6 +372,7 @@ def test_ckgp():
                     [-0.11234043, -0.98206626, 0.15141164]]
     npt.assert_array_almost_equal(cmat, expected_cmat)
     assert clkout == 80206648755.0
+    spice.reset()
     spice.kclear()
 
 
@@ -398,10 +400,11 @@ def test_ckgpav():
 @pytest.mark.skipif(is32bit, reason="test is failing on 32bit os")
 def test_cklpf():
     spice.kclear()
+    spice.reset()
     CKLPF = os.path.join(cwd, "cklpfkernel.bc")
     if spice.exists(CKLPF):
         os.remove(CKLPF)
-    IFNAME = "Test CK type 1 segment created by cspice_ckw01"
+    IFNAME = "Test CK type 1 segment created by cspice_cklpf"
     handle = spice.ckopn(CKLPF, IFNAME, 10)
     spice.ckw01(handle, 1.0, 10.0, -77701, "J2000", True, "Test type 1 CK segment",
                 2 - 1, [1.1, 4.1], [[1.0, 1.0, 1.0, 1.0], [2.0, 2.0, 2.0, 2.0]],
@@ -412,6 +415,7 @@ def test_cklpf():
     spice.ckupf(handle)
     spice.ckcls(handle)
     spice.kclear()
+    spice.reset()
     assert spice.exists(CKLPF)
     if spice.exists(CKLPF):
         os.remove(CKLPF)
@@ -451,9 +455,11 @@ def test_ckopn():
 @pytest.mark.skipif(is32bit, reason="test is failing on 32bit os")
 def test_ckupf():
     spice.kclear()
+    spice.reset()
     handle = spice.cklpf(_mgsCk)
     spice.ckupf(handle)
     spice.ckcls(handle)
+    spice.reset()
     spice.kclear()
 
 

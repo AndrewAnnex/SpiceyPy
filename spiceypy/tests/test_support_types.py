@@ -8,6 +8,8 @@ import array
 
 
 def test_SpiceEllipse():
+    spice.kclear()
+    spice.reset()
     viewpt = [2.0, 0.0, 0.0]
     limb = spice.edlimb(np.sqrt(2), 2.0 * np.sqrt(2), np.sqrt(2), viewpt)
     expectedSMinor = [0.0, 0.0, -1.0]
@@ -17,6 +19,8 @@ def test_SpiceEllipse():
     npt.assert_array_almost_equal(limb.semi_major, expectedSMajor)
     npt.assert_array_almost_equal(limb.semi_minor, expectedSMinor)
     assert str(limb).startswith("<SpiceEllipse")
+    spice.reset()
+    spice.kclear()
 
 
 def test_SpicePlane():
@@ -86,6 +90,7 @@ def test_toBoolVector():
     assert len(madeFromCtypesArray) == 3
     with pytest.raises(TypeError):
         stypes.toBoolVector("ABCD")
+    spice.kclear()
 
 
 def test_toDoubleVector():
