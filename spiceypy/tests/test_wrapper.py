@@ -2057,11 +2057,37 @@ def test_failed():
 
 
 def test_fovray():
-    assert 1
+    spice.kclear()
+    # load kernels
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_mgsSclk)
+    spice.furnsh(_mgsPck)
+    spice.furnsh(_mgsIk)
+    spice.furnsh(_mgsSpk)
+    spice.furnsh(_mgsCk)
+    # core of test
+    camid = spice.bodn2c("MGS_MOC_NA")
+    shape, frame, bsight, n, bounds = spice.getfov(camid, 4)
+    et = spice.str2et("2006 OCT 15 06:00:00 UTC")
+    visible = spice.fovray("MGS_MOC_NA", [0.0, 0.0, 1.0], frame, "S", "MGS", et)
+    assert visible is True
+    spice.kclear()
 
 
 def test_fovtrg():
-    assert 1
+    spice.kclear()
+    # load kernels
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_mgsSclk)
+    spice.furnsh(_mgsPck)
+    spice.furnsh(_mgsIk)
+    spice.furnsh(_mgsSpk)
+    spice.furnsh(_mgsCk)
+    # core of test
+    et = spice.str2et("2006 OCT 15 06:00:00 UTC")
+    visible = spice.fovtrg("MGS_MOC_NA", "Mars", "Ellipsoid", "IAU_MARS", "LT+S", "MGS", et)
+    assert visible is True
+    spice.kclear()
 
 
 def test_frame():
@@ -3719,7 +3745,38 @@ def test_pxform():
 
 
 def test_pxfrm2():
-    assert 1
+    spice.kclear()
+    # load kernels
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_mgsSclk)
+    spice.furnsh(_mgsPck)
+    spice.furnsh(_mgsIk)
+    spice.furnsh(_mgsSpk)
+    spice.furnsh(_mgsCk)
+    # start of test
+    etrec = spice.str2et("2006 OCT 15 06:00:00 UTC")
+    camid = spice.bodn2c("MGS_MOC_NA")
+    shape, obsref, bsight, n, bounds = spice.getfov(camid, 4)
+    # run sincpt on bore sight vector
+    spoint, etemit, srfvec = spice.sincpt("Ellipsoid", 'Mars', etrec, "IAU_MARS", "CN+S", "MGS", obsref, bsight)
+    rotate = spice.pxfrm2(obsref, "IAU_MARS", etrec, etemit)
+    # get radii
+    num_vals, radii = spice.bodvrd("MARS", "RADII", 3)
+    # find position of center with respect to MGS
+    pmgsmr = spice.vsub(spoint, srfvec)
+    # rotate into IAU_MARS
+    bndvec = spice.mxv(rotate, bounds[1])
+    # get surface point
+    spoint = spice.surfpt(pmgsmr, bndvec, radii[0], radii[1], radii[2])
+    radius, lon, lat = spice.reclat(spoint)
+    lon *= spice.dpr()
+    lat *= spice.dpr()
+    # test output
+    npt.assert_almost_equal(radius, 3382.50243777, decimal=5)
+    npt.assert_almost_equal(lon,    -160.76301790, decimal=5)
+    npt.assert_almost_equal(lat,     -55.72263018, decimal=5)
+    # end of test
+    spice.kclear()
 
 
 def test_q2m():

@@ -4178,7 +4178,6 @@ def failed():
 
 @spiceErrorCheck
 def fovray(inst, raydir, rframe, abcorr, observer, et):
-    # Unsure if et is returned or not (I vs I/O)
     """
     Determine if a specified ray is within the field-of-view (FOV) of a
     specified instrument at a given time.
@@ -4214,7 +4213,6 @@ def fovray(inst, raydir, rframe, abcorr, observer, et):
 
 @spiceErrorCheck
 def fovtrg(inst, target, tshape, tframe, abcorr, observer, et):
-    # Unsure if et is returned or not (I vs I/O)
     """
     Determine if a specified ephemeris object is within the field-of-view (FOV)
     of a specified instrument at a given time.
