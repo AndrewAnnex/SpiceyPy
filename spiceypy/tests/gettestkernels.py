@@ -5,7 +5,7 @@ import six.moves.urllib as urllib
 standardKernelList = ['pck00010.tpc',
                       'de421.bsp',
                       'gm_de431.tpc',
-                      'naif0011.tls']
+                      'naif0012.tls']
 cwd = os.path.realpath(os.path.dirname(__file__))
 
 

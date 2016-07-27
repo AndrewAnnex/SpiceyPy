@@ -3443,17 +3443,14 @@ def test_occult():
     occult_code_one = spice.occult("MRO", "point", " ", "Mars", "ellipsoid", "IAU_MARS", "CN", "DSS-13", et_mars_transited_by_mro)
     # MRO is in front of Mars as seen by observer (DSS-13)
     assert occult_code_one == 2    # SPICE_OCCULT_ANNLR2
-
     et_mars_mro_both_visible = spice.str2et("2012-JAN-04 18:05")
     occult_code_two = spice.occult("MRO", "point", " ", "Mars", "ellipsoid", "IAU_MARS", "CN", "DSS-13", et_mars_mro_both_visible)
     # Both MRO and MARS are visible to observer (DSS-13)
     assert occult_code_two == 0    # SPICE_OCCULT_NOOCC
-
     et_mars_totally_occulted_mro = spice.str2et("2012-JAN-04 18:21")
     occult_code_three = spice.occult("MRO", "point", " ", "Mars", "ellipsoid", "IAU_MARS", "CN", "DSS-13", et_mars_totally_occulted_mro)
     # Mars is in front of MRO as seen by observer (DSS-13)
     assert occult_code_three == -3 # SPICE_OCCULT_TOTAL1
-
     # cleanup
     spice.kclear()
 
