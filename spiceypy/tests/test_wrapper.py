@@ -3,7 +3,7 @@ import spiceypy as spice
 import numpy as np
 import numpy.testing as npt
 import os
-from .gettestkernels import downloadKernels
+from .gettestkernels import downloadKernels, currentLSK
 
 
 cwd = os.path.realpath(os.path.dirname(__file__))
@@ -30,6 +30,7 @@ _mgsSpk  = os.path.join(cwd, "mgs_ext26.bsp")
 _mgsCk   = os.path.join(cwd, "mgs_sc_ext26.bc")
 
 _earthHighPerPck = os.path.join(cwd, "earth_latest_high_prec.bpc")
+_naifLSK = os.path.join(cwd, currentLSK)
 
 
 def setup_module(module):
@@ -2185,7 +2186,7 @@ def test_getelm():
 
 
 def test_getfat():
-    arch, outtype = spice.getfat(os.path.join(cwd, 'naif0011.tls'))
+    arch, outtype = spice.getfat(_naifLSK)
     assert arch == "KPL"
     assert outtype == "LSK"
 

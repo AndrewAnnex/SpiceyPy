@@ -2,10 +2,13 @@ import os
 import time
 import six.moves.urllib as urllib
 
+# note this gets updated
+currentLSK = 'naif0012.tls'
+
 standardKernelList = ['pck00010.tpc',
                       'de421.bsp',
                       'gm_de431.tpc',
-                      'naif0012.tls']
+                      currentLSK ]
 cwd = os.path.realpath(os.path.dirname(__file__))
 
 
@@ -34,6 +37,8 @@ def attemptDownload(url, kernelName, targetFileName, num_attempts):
         current_attempt += 1
         print("\t Attempting to Download kernel again...")
         time.sleep(2 + current_attempt)
+    if current_attempt >= num_attempts:
+        raise BaseException("Error Downloading kernel: {}, check if kernel exists at url: {}".format(kernelName, url))
 
 
 def getKernelNameFromURL(url):
@@ -45,7 +50,7 @@ def getStandardKernels():
     kernelURLlist = ['http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/pck00010.tpc',
                      'http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/a_old_versions/de421.bsp',
                      'http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/gm_de431.tpc',
-                     'http://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls']
+                     'http://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/{}'.format(currentLSK)]
     for kernel in kernelURLlist:
         getKernel(kernel)
 
