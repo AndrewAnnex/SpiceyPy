@@ -3,35 +3,40 @@ import spiceypy as spice
 import numpy as np
 import numpy.testing as npt
 import os
-from .gettestkernels import downloadKernels
+from .gettestkernels import downloadKernels, currentLSK
 
 
 cwd = os.path.realpath(os.path.dirname(__file__))
+
 _testKernelPath = os.path.join(cwd, "exampleKernels.txt")
 _extraTestVoyagerKernel = os.path.join(cwd, "vg200022.tsc")
 _testPckPath = os.path.join(cwd, "pck00010.tpc")
 _spkEarthPck = os.path.join(cwd, "earth_720101_070426.bpc")
-_spkEarthFk = os.path.join(cwd, "earthstns_itrf93_050714.bsp")
-_spkEarthTf = os.path.join(cwd, "earth_topo_050714.tf")
+_spkEarthFk  = os.path.join(cwd, "earthstns_itrf93_050714.bsp")
+_spkEarthTf  = os.path.join(cwd, "earth_topo_050714.tf")
 
-_spk = os.path.join(cwd, "de421.bsp")
-_merFK    = os.path.join(cwd, "mer1_v10.tf")
-_merExt10 = os.path.join(cwd, "mer1_surf_rover_ext10_v1.bsp")
-_merExt11 = os.path.join(cwd, "mer1_surf_rover_ext11_v1.bsp")
-_merPsp   = os.path.join(cwd, "mro_psp1.bsp")
+_spk        = os.path.join(cwd, "de421.bsp")
+_merFK      = os.path.join(cwd, "mer1_v10.tf")
+_merExt10   = os.path.join(cwd, "mer1_surf_rover_ext10_v1.bsp")
+_merExt11   = os.path.join(cwd, "mer1_surf_rover_ext11_v1.bsp")
+_mroPsp     = os.path.join(cwd, "mro_psp1.bsp")
+_mroPspTwentyTwo  = os.path.join(cwd, "mro_psp22.bsp")
 _merIau2000 = os.path.join(cwd, "mer1_ls_040128_iau2000_v1.bsp")
 
 _mgsSclk = os.path.join(cwd, "mgs_sclkscet_00061.tsc")
-_mgsPck = os.path.join(cwd, "mars_iau2000_v0.tpc")
-_mgsIk = os.path.join(cwd, "mgs_moc_v20.ti")
-_mgsSpk = os.path.join(cwd, "mgs_ext26.bsp")
-_mgsCk = os.path.join(cwd, "mgs_sc_ext26.bc")
+_mgsPck  = os.path.join(cwd, "mars_iau2000_v0.tpc")
+_mgsIk   = os.path.join(cwd, "mgs_moc_v20.ti")
+_mgsSpk  = os.path.join(cwd, "mgs_ext26.bsp")
+_mgsCk   = os.path.join(cwd, "mgs_sc_ext26.bc")
+
+_earthHighPerPck = os.path.join(cwd, "earth_latest_high_prec.bpc")
+_naifLSK = os.path.join(cwd, currentLSK)
 
 
 def setup_module(module):
     if not os.path.exists(_testKernelPath) \
             or not os.path.exists(_extraTestVoyagerKernel) \
-            or not os.path.exists(_merPsp):
+            or not os.path.exists(_mroPsp):
         downloadKernels()
 
 
@@ -2057,11 +2062,37 @@ def test_failed():
 
 
 def test_fovray():
-    assert 1
+    spice.kclear()
+    # load kernels
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_mgsSclk)
+    spice.furnsh(_mgsPck)
+    spice.furnsh(_mgsIk)
+    spice.furnsh(_mgsSpk)
+    spice.furnsh(_mgsCk)
+    # core of test
+    camid = spice.bodn2c("MGS_MOC_NA")
+    shape, frame, bsight, n, bounds = spice.getfov(camid, 4)
+    et = spice.str2et("2006 OCT 15 06:00:00 UTC")
+    visible = spice.fovray("MGS_MOC_NA", [0.0, 0.0, 1.0], frame, "S", "MGS", et)
+    assert visible is True
+    spice.kclear()
 
 
 def test_fovtrg():
-    assert 1
+    spice.kclear()
+    # load kernels
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_mgsSclk)
+    spice.furnsh(_mgsPck)
+    spice.furnsh(_mgsIk)
+    spice.furnsh(_mgsSpk)
+    spice.furnsh(_mgsCk)
+    # core of test
+    et = spice.str2et("2006 OCT 15 06:00:00 UTC")
+    visible = spice.fovtrg("MGS_MOC_NA", "Mars", "Ellipsoid", "IAU_MARS", "LT+S", "MGS", et)
+    assert visible is True
+    spice.kclear()
 
 
 def test_frame():
@@ -2155,7 +2186,7 @@ def test_getelm():
 
 
 def test_getfat():
-    arch, outtype = spice.getfat(os.path.join(cwd, 'naif0011.tls'))
+    arch, outtype = spice.getfat(_naifLSK)
     assert arch == "KPL"
     assert outtype == "LSK"
 
@@ -2245,7 +2276,7 @@ def test_gfilum():
     spice.furnsh(_merExt11)
     spice.furnsh(_merIau2000)
     spice.furnsh(_merFK)
-    spice.furnsh(_merPsp)
+    spice.furnsh(_mroPsp)
     startET = spice.str2et("2006 OCT 02 00:00:00 UTC")
     endET   = spice.str2et("2006 NOV 30 12:00:00 UTC")
     cnfine  = spice.stypes.SPICEDOUBLE_CELL(2000)
@@ -3401,7 +3432,28 @@ def test_nvp2pl():
 
 
 def test_occult():
-    assert 1
+    spice.kclear()
+    # load kernels
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_spkEarthFk)
+    spice.furnsh(_earthHighPerPck)
+    spice.furnsh(_mroPspTwentyTwo)
+    spice.furnsh(_spkEarthTf)
+    # start test
+    et_mars_transited_by_mro = spice.str2et("2012-JAN-04 17:15")
+    occult_code_one = spice.occult("MRO", "point", " ", "Mars", "ellipsoid", "IAU_MARS", "CN", "DSS-13", et_mars_transited_by_mro)
+    # MRO is in front of Mars as seen by observer (DSS-13)
+    assert occult_code_one == 2    # SPICE_OCCULT_ANNLR2
+    et_mars_mro_both_visible = spice.str2et("2012-JAN-04 18:05")
+    occult_code_two = spice.occult("MRO", "point", " ", "Mars", "ellipsoid", "IAU_MARS", "CN", "DSS-13", et_mars_mro_both_visible)
+    # Both MRO and MARS are visible to observer (DSS-13)
+    assert occult_code_two == 0    # SPICE_OCCULT_NOOCC
+    et_mars_totally_occulted_mro = spice.str2et("2012-JAN-04 18:21")
+    occult_code_three = spice.occult("MRO", "point", " ", "Mars", "ellipsoid", "IAU_MARS", "CN", "DSS-13", et_mars_totally_occulted_mro)
+    # Mars is in front of MRO as seen by observer (DSS-13)
+    assert occult_code_three == -3 # SPICE_OCCULT_TOTAL1
+    # cleanup
+    spice.kclear()
 
 
 def test_ordc():
@@ -3719,7 +3771,38 @@ def test_pxform():
 
 
 def test_pxfrm2():
-    assert 1
+    spice.kclear()
+    # load kernels
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_mgsSclk)
+    spice.furnsh(_mgsPck)
+    spice.furnsh(_mgsIk)
+    spice.furnsh(_mgsSpk)
+    spice.furnsh(_mgsCk)
+    # start of test
+    etrec = spice.str2et("2006 OCT 15 06:00:00 UTC")
+    camid = spice.bodn2c("MGS_MOC_NA")
+    shape, obsref, bsight, n, bounds = spice.getfov(camid, 4)
+    # run sincpt on bore sight vector
+    spoint, etemit, srfvec = spice.sincpt("Ellipsoid", 'Mars', etrec, "IAU_MARS", "CN+S", "MGS", obsref, bsight)
+    rotate = spice.pxfrm2(obsref, "IAU_MARS", etrec, etemit)
+    # get radii
+    num_vals, radii = spice.bodvrd("MARS", "RADII", 3)
+    # find position of center with respect to MGS
+    pmgsmr = spice.vsub(spoint, srfvec)
+    # rotate into IAU_MARS
+    bndvec = spice.mxv(rotate, bounds[1])
+    # get surface point
+    spoint = spice.surfpt(pmgsmr, bndvec, radii[0], radii[1], radii[2])
+    radius, lon, lat = spice.reclat(spoint)
+    lon *= spice.dpr()
+    lat *= spice.dpr()
+    # test output
+    npt.assert_almost_equal(radius, 3382.50243777, decimal=5)
+    npt.assert_almost_equal(lon,    -160.76301790, decimal=5)
+    npt.assert_almost_equal(lat,     -55.72263018, decimal=5)
+    # end of test
+    spice.kclear()
 
 
 def test_q2m():
@@ -6087,8 +6170,10 @@ def teardown_module(module):
         os.remove(_merFK)
     if os.path.exists(_merIau2000):
         os.remove(_merIau2000)
-    if os.path.exists(_merPsp):
-        os.remove(_merPsp)
+    if os.path.exists(_mroPsp):
+        os.remove(_mroPsp)
+    if os.path.exists(_mroPspTwentyTwo):
+        os.remove(_mroPspTwentyTwo)
     if os.path.exists(_testPckPath):
         os.remove(_testPckPath)
     if os.path.exists(_spkEarthPck):
@@ -6109,3 +6194,5 @@ def teardown_module(module):
         os.remove(_mgsSpk)
     if os.path.exists(_mgsCk):
         os.remove(_mgsCk)
+    if os.path.exists(_earthHighPerPck):
+        os.remove(_earthHighPerPck)

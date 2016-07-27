@@ -30,15 +30,15 @@ Or you can start a python interpreter and try importing SpiceyPy like so:
     print(spiceypy.tkvrsn('TOOLKIT'))
 
 This should print out the toolkit version without any errors. You have now
-verified that SpiceyPy is installed2.
+verified that SpiceyPy is installed.
 
 How to install from source (for bleeding edge)
 ----------------------------------------------
 
 .. attention::
 
-    If you have a run the pip or conda install commands above you do not
-    need to do the following commands. Installing from source is intended
+    If you have used the pip or conda install commands above you do not
+    need to do any of the following commands. Installing from source is intended
     for advanced users. Users on machines running Windows should take note
     that attempting to install from source will require software
     such as visual studio and additonal environment configuration. Given
