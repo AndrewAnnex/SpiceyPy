@@ -7,31 +7,35 @@ from .gettestkernels import downloadKernels
 
 
 cwd = os.path.realpath(os.path.dirname(__file__))
+
 _testKernelPath = os.path.join(cwd, "exampleKernels.txt")
 _extraTestVoyagerKernel = os.path.join(cwd, "vg200022.tsc")
 _testPckPath = os.path.join(cwd, "pck00010.tpc")
 _spkEarthPck = os.path.join(cwd, "earth_720101_070426.bpc")
-_spkEarthFk = os.path.join(cwd, "earthstns_itrf93_050714.bsp")
-_spkEarthTf = os.path.join(cwd, "earth_topo_050714.tf")
+_spkEarthFk  = os.path.join(cwd, "earthstns_itrf93_050714.bsp")
+_spkEarthTf  = os.path.join(cwd, "earth_topo_050714.tf")
 
-_spk = os.path.join(cwd, "de421.bsp")
-_merFK    = os.path.join(cwd, "mer1_v10.tf")
-_merExt10 = os.path.join(cwd, "mer1_surf_rover_ext10_v1.bsp")
-_merExt11 = os.path.join(cwd, "mer1_surf_rover_ext11_v1.bsp")
-_merPsp   = os.path.join(cwd, "mro_psp1.bsp")
+_spk        = os.path.join(cwd, "de421.bsp")
+_merFK      = os.path.join(cwd, "mer1_v10.tf")
+_merExt10   = os.path.join(cwd, "mer1_surf_rover_ext10_v1.bsp")
+_merExt11   = os.path.join(cwd, "mer1_surf_rover_ext11_v1.bsp")
+_mroPsp     = os.path.join(cwd, "mro_psp1.bsp")
+_mroPspTwentyTwo  = os.path.join(cwd, "mro_psp22.bsp")
 _merIau2000 = os.path.join(cwd, "mer1_ls_040128_iau2000_v1.bsp")
 
 _mgsSclk = os.path.join(cwd, "mgs_sclkscet_00061.tsc")
-_mgsPck = os.path.join(cwd, "mars_iau2000_v0.tpc")
-_mgsIk = os.path.join(cwd, "mgs_moc_v20.ti")
-_mgsSpk = os.path.join(cwd, "mgs_ext26.bsp")
-_mgsCk = os.path.join(cwd, "mgs_sc_ext26.bc")
+_mgsPck  = os.path.join(cwd, "mars_iau2000_v0.tpc")
+_mgsIk   = os.path.join(cwd, "mgs_moc_v20.ti")
+_mgsSpk  = os.path.join(cwd, "mgs_ext26.bsp")
+_mgsCk   = os.path.join(cwd, "mgs_sc_ext26.bc")
+
+_earthHighPerPck = os.path.join(cwd, "earth_latest_high_prec.bpc")
 
 
 def setup_module(module):
     if not os.path.exists(_testKernelPath) \
             or not os.path.exists(_extraTestVoyagerKernel) \
-            or not os.path.exists(_merPsp):
+            or not os.path.exists(_mroPsp):
         downloadKernels()
 
 
@@ -2271,7 +2275,7 @@ def test_gfilum():
     spice.furnsh(_merExt11)
     spice.furnsh(_merIau2000)
     spice.furnsh(_merFK)
-    spice.furnsh(_merPsp)
+    spice.furnsh(_mroPsp)
     startET = spice.str2et("2006 OCT 02 00:00:00 UTC")
     endET   = spice.str2et("2006 NOV 30 12:00:00 UTC")
     cnfine  = spice.stypes.SPICEDOUBLE_CELL(2000)
@@ -3427,7 +3431,31 @@ def test_nvp2pl():
 
 
 def test_occult():
-    assert 1
+    spice.kclear()
+    # load kernels
+    spice.furnsh(_testKernelPath)
+    spice.furnsh(_spkEarthFk)
+    spice.furnsh(_earthHighPerPck)
+    spice.furnsh(_mroPspTwentyTwo)
+    spice.furnsh(_spkEarthTf)
+    # start test
+    et_mars_transited_by_mro = spice.str2et("2012-JAN-04 17:15")
+    occult_code_one = spice.occult("MRO", "point", " ", "Mars", "ellipsoid", "IAU_MARS", "CN", "DSS-13", et_mars_transited_by_mro)
+    # MRO is in front of Mars as seen by observer (DSS-13)
+    assert occult_code_one == 2    # SPICE_OCCULT_ANNLR2
+
+    et_mars_mro_both_visible = spice.str2et("2012-JAN-04 18:05")
+    occult_code_two = spice.occult("MRO", "point", " ", "Mars", "ellipsoid", "IAU_MARS", "CN", "DSS-13", et_mars_mro_both_visible)
+    # Both MRO and MARS are visible to observer (DSS-13)
+    assert occult_code_two == 0    # SPICE_OCCULT_NOOCC
+
+    et_mars_totally_occulted_mro = spice.str2et("2012-JAN-04 18:21")
+    occult_code_three = spice.occult("MRO", "point", " ", "Mars", "ellipsoid", "IAU_MARS", "CN", "DSS-13", et_mars_totally_occulted_mro)
+    # Mars is in front of MRO as seen by observer (DSS-13)
+    assert occult_code_three == -3 # SPICE_OCCULT_TOTAL1
+
+    # cleanup
+    spice.kclear()
 
 
 def test_ordc():
@@ -6144,8 +6172,10 @@ def teardown_module(module):
         os.remove(_merFK)
     if os.path.exists(_merIau2000):
         os.remove(_merIau2000)
-    if os.path.exists(_merPsp):
-        os.remove(_merPsp)
+    if os.path.exists(_mroPsp):
+        os.remove(_mroPsp)
+    if os.path.exists(_mroPspTwentyTwo):
+        os.remove(_mroPspTwentyTwo)
     if os.path.exists(_testPckPath):
         os.remove(_testPckPath)
     if os.path.exists(_spkEarthPck):
@@ -6166,3 +6196,5 @@ def teardown_module(module):
         os.remove(_mgsSpk)
     if os.path.exists(_mgsCk):
         os.remove(_mgsCk)
+    if os.path.exists(_earthHighPerPck):
+        os.remove(_earthHighPerPck)
