@@ -4956,7 +4956,6 @@ def gfrepu(ivbeg, ivend, time):
 
 @spiceErrorCheck
 def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result):
-    # Todo: test gfrfov
     """
     Determine time intervals when a specified ray intersects the
     space bounded by the field-of-view (FOV) of a specified
@@ -5281,7 +5280,6 @@ def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate,
 
 @spiceErrorCheck
 def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
-    # Todo: test gftfov
     """
     Determine time intervals when a specified ephemeris object
     intersects the space bounded by the field-of-view (FOV) of a
@@ -5305,18 +5303,22 @@ def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
     :type step: float
     :param cnfine: SPICE window to which the search is restricted.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
+    :return: SpiceCell containing set of time  intervals, within the confinement period, when the target body is visible
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
+    inst   = stypes.stringToCharP(inst)
     target = stypes.stringToCharP(target)
     tshape = stypes.stringToCharP(tshape)
     tframe = stypes.stringToCharP(tframe)
     abcorr = stypes.stringToCharP(abcorr)
     obsrvr = stypes.stringToCharP(obsrvr)
     step = ctypes.c_double(step)
-    result = stypes.SPICEDOUBLE_CELL(cnfine.size)
+    result = stypes.SPICEDOUBLE_CELL(20000)
     libspice.gftfov_c(inst, target, tshape, tframe, abcorr, obsrvr, step,
                       ctypes.byref(cnfine), ctypes.byref(result))
+    return result
 
 
 # gfudb has call backs
@@ -11495,7 +11497,7 @@ def swpool(agent, nnames, lenvals, names):
     agent = stypes.stringToCharP(agent)
     nnames = ctypes.c_int(nnames)
     lenvals = ctypes.c_int(lenvals)
-    names = stypes.listtocharvector(names)
+    names = stypes.listToCharArray(names)
     libspice.swpool_c(agent, nnames, lenvals, names)
 
 
