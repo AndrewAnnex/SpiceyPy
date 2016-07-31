@@ -1,6 +1,7 @@
 import ctypes
 from .utils import support_types as stypes
 from .utils.libspicehelper import libspice
+from .utils.callbacks import SpiceUDF
 import functools
 import numpy
 
@@ -1333,7 +1334,6 @@ def cposr(string, chars, start):
 
 @spiceErrorCheck
 def cvpool(agent):
-    # Todo: test cvpool
     """
     Indicate whether or not any watched kernel variables that have a
     specified agent on their notification list have been updated.
@@ -11478,7 +11478,6 @@ def surfpv(stvrtx, stdir, a, b, c):
 
 @spiceErrorCheck
 def swpool(agent, nnames, lenvals, names):
-    # Todo: test swpool
     """
     Add a name to the list of agents to notify whenever a member of
     a list of kernel variables is updated.
@@ -11916,13 +11915,96 @@ def ucrss(v1, v2):
     return stypes.vectorToList(vout)
 
 
-# UDDC # callback?
+def uddc(udfunc, x, dx):
+    """
+    SPICE private routine intended solely for the support of SPICE
+    routines. Users should not call this routine directly due to the
+    volatile nature of this routine.
+
+    This routine calculates the derivative of 'udfunc' with respect
+    to time for 'et', then determines if the derivative has a
+    negative value.
+
+    Use the @spiceypy.utils.callbacks.SpiceUDF dectorator to wrap
+    a given python function that takes one parameter (float) and
+    returns a float. For example::
+
+        @spiceypy.utils.callbacks.SpiceUDF
+        def udfunc(et_in):
+            pos, new_et = spice.spkpos("MERCURY", et_in, "J2000", "LT+S", "MOON")
+            return new_et
+
+        deriv = spice.uddf(udfunc, et, 1.0)
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/uddc_c.html
+
+    :param udfunc: Name of the routine that computes the scalar value of interest.
+    :type udfunc: ctypes.CFunctionType
+    :param x: Independent variable of 'udfunc'.
+    :type x: float
+    :param dx: Interval from 'x' for derivative calculation.
+    :type dx: float
+    :return: Boolean indicating if the derivative is negative.
+    :rtype: bool
+    """
+    x = ctypes.c_double(x)
+    dx = ctypes.c_double(dx)
+    isdescr = ctypes.c_bool()
+    libspice.uddc_c(udfunc, x, dx, ctypes.byref(isdescr))
+    return isdescr.value
 
 
-# UDDF # callback?
+@spiceErrorCheck
+def uddf(udfunc, x, dx):
+    """
+    Routine to calculate the first derivative of a caller-specified
+    function using a three-point estimation.
+
+    Use the @spiceypy.utils.callbacks.SpiceUDF dectorator to wrap
+    a given python function that takes one parameter (float) and
+    returns a float. For example::
+
+        @spiceypy.utils.callbacks.SpiceUDF
+        def udfunc(et_in):
+            pos, new_et = spice.spkpos("MERCURY", et_in, "J2000", "LT+S", "MOON")
+            return new_et
+
+        deriv = spice.uddf(udfunc, et, 1.0)
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/uddf_c.html
+
+    :param udfunc: Name of the routine that computes the scalar value of interest.
+    :type udfunc: ctypes.CFunctionType
+    :param x: Independent variable of 'udfunc'.
+    :type x: float
+    :param dx: Interval from 'x' for derivative calculation.
+    :type dx: float
+    :return: Approximate derivative of 'udfunc' at 'x'
+    :rtype: float
+    """
+    x = ctypes.c_double(x)
+    dx = ctypes.c_double(dx)
+    deriv = ctypes.c_double()
+    libspice.uddf_c(udfunc, x, dx, ctypes.byref(deriv))
+    return deriv.value
 
 
-# UDF # callback?
+def udf(x):
+    """
+    No-op routine for with an argument signature matching udfuns.
+    Allways returns 0.0 .
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/udf_c.html
+
+    :param x: Double precision value, unused.
+    :type x: float
+    :return: Double precision value, unused.
+    :rtype: float
+    """
+    x = ctypes.c_double(x)
+    value = ctypes.c_double()
+    libspice.udf_c(x, ctypes.byref(value))
+    return value.value
 
 
 @spiceErrorCheck

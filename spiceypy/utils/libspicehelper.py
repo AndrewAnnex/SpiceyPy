@@ -2,6 +2,7 @@ from ctypes import CDLL, POINTER, c_bool, c_int, c_double, c_char, c_char_p, c_v
 import os
 import platform
 from . import support_types as stypes
+from . import callbacks
 
 host_OS = platform.system()
 sharedLib = "cspice.dll" if host_OS == "Windows" else "spice.so"
@@ -679,14 +680,17 @@ libspice.tyear_c.restype = c_double
 
 libspice.ucase_c.argtypes = [c_char_p, c_int, c_char_p]
 libspice.ucrss_c.argtypes = [(c_double * 3), (c_double * 3), (c_double * 3)]
-libspice.uddc_c.argtypes = [c_double, c_double, c_double, c_double, c_bool]
-libspice.uddf_c.argtypes = [c_double, c_double, c_double, c_double, c_double]
+libspice.uddc_c.argtypes  = [callbacks.UDFUNC, c_double, c_double, POINTER(c_bool)]
+libspice.uddc_c.restype   = None
+libspice.uddf_c.argtypes  = [callbacks.UDFUNC, c_double, c_double, POINTER(c_double)]
+libspice.uddf_c.restype   = None
+libspice.udf_c.argtypes   = [c_double, POINTER(c_double)]
+libspice.udf_c.restype    = None
 libspice.union_c.argtypes = [POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
-libspice.udf_c.argtypes = [c_double, POINTER(c_double)]
 libspice.unitim_c.argtypes = [c_double, c_char_p, c_char_p]
-libspice.unitim_c.restype = c_double
+libspice.unitim_c.restype  = c_double
 libspice.unload_c.argtypes = [c_char_p]
-libspice.unorm_c.argtypes = [(c_double * 3), (c_double * 3), POINTER(c_double)]
+libspice.unorm_c.argtypes  = [(c_double * 3), (c_double * 3), POINTER(c_double)]
 libspice.unormg_c.argtypes = [POINTER(c_double), c_int, POINTER(c_double), POINTER(c_double)]
 libspice.utc2et_c.argtypes = [c_char_p, POINTER(c_double)]
 ########################################################################################################################

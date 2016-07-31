@@ -3,6 +3,8 @@ import spiceypy as spice
 import numpy as np
 import numpy.testing as npt
 import os
+
+import spiceypy.utils.callbacks
 from .gettestkernels import downloadKernels,\
     CoreKernels,\
     MarsKernels, \
@@ -5621,15 +5623,40 @@ def test_ucrss():
 
 
 def test_uddc():
-    assert 1
+    spice.kclear()
+
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = spice.str2et("JAN 1 2009")
+
+    @spiceypy.utils.callbacks.SpiceUDF
+    def udfunc(et_in):
+        pos, new_et = spice.spkpos("MERCURY", et_in, "J2000", "LT+S", "MOON")
+        return new_et
+
+    assert spice.uddc(udfunc, et, 1.0)
+
+    spice.kclear()
 
 
 def test_uddf():
-    assert 1
+    spice.kclear()
+
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = spice.str2et("JAN 1 2009")
+
+    @spiceypy.utils.callbacks.SpiceUDF
+    def udfunc(et_in):
+        pos, new_et = spice.spkpos("MERCURY", et_in, "J2000", "LT+S", "MOON")
+        return new_et
+
+    deriv = spice.uddf(udfunc, et, 1.0)
+
+    npt.assert_almost_equal(deriv, -0.000135670940)
+    spice.kclear()
 
 
 def test_udf():
-    assert 1
+    assert spice.udf(0.0) == 0.0
 
 
 def test_union():
