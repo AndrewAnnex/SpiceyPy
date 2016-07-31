@@ -63,11 +63,6 @@ def toPythonString(inString):
         return bytes.decode(string_at(inString))
 
 
-def listtocharvector(x):
-    assert (isinstance(x, list))
-    return (c_char_p * len(x))(*[stringToCharP(y) for y in x])
-
-
 def charvector(ndim=1, lenvals=10):
     return ((c_char * lenvals) * ndim)()
 
