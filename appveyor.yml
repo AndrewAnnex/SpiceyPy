@@ -47,12 +47,13 @@ cache:
 
 install:
   # update path to have conda in it
-  - set PATH=%CONDA%;%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
+  - set PATH=%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
   # Log out the python version just so we know it
   - ECHO "%PYTHON_VERSION%"
 
   # Download things we absolutly need
   - pip install wheel twine six pytest
+  - "conda install -q -y conda=4.1.4"
   - "conda install -q -y numpy"
   # coveralls and or coverage fail to install for 3.4 64bit python builds so don't bother for now.
 
@@ -77,7 +78,6 @@ after_test:
   - ECHO "BUILDING CONDA PACKAGE..."
   # Update to a known good conda, found from https://github.com/numba/numba/blob/master/appveyor.yml
   # (to workaround http://help.appveyor.com/discussions/problems/4910)
-  - "conda install -q -y conda=4.1.4"
   - "conda install -q -y conda-build"
   - "conda build appveyor -q --no-anaconda-upload"
   - ps: ls $env:CONDA_BUILDS
