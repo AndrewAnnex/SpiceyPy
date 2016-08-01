@@ -53,6 +53,7 @@ install:
 
   # Download things we absolutly need
   - pip install wheel twine six pytest
+  - "conda install -q -y numpy"
   # coveralls and or coverage fail to install for 3.4 64bit python builds so don't bother for now.
 
   # Download CSPICE so we can build outside of python
