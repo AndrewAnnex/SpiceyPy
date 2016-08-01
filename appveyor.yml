@@ -46,6 +46,9 @@ cache:
   - C:\Users\appveyor\Downloads -> setup.py
 
 install:
+  - ps: ls $env:CONDA
+  - ps: ls $env:CONDA/bin
+  - ps: ls $env:CONDA/Scripts/
   # update path to have conda in it
   - set PATH=%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
   # Log out the python version just so we know it
