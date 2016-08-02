@@ -58,7 +58,7 @@ install:
   # (to workaround http://help.appveyor.com/discussions/problems/4910)
   - "conda install -q -y conda=4.1.4"
   - "conda install -q -y conda-build"
-  - "conda install -q -y numpy wheel twine six pytest"
+  - "conda install -q -y numpy wheel six pytest"
   - pip install wheel twine six pytest
   # coveralls and or coverage fail to install for 3.4 64bit python builds so don't bother for now.
 
