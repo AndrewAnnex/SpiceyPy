@@ -46,6 +46,8 @@ cache:
   - C:\Users\appveyor\Downloads -> setup.py
 
 install:
+  # make a backup PATH
+  - set BK_PATH=%PATH%
   # update path to have conda in it
   - "set PATH=%CONDA%;%CONDA%/Scripts;%PATH%"
   # Log out the python version just so we know it
@@ -56,28 +58,31 @@ install:
   # (to workaround http://help.appveyor.com/discussions/problems/4910)
   - "conda install -q -y conda=4.1.4"
   - "conda install -q -y conda-build"
-  - "conda install -q -y numpy wheel six pytest"
+  - "conda install -q -y numpy wheel twine six pytest"
   - pip install wheel twine six pytest
   # coveralls and or coverage fail to install for 3.4 64bit python builds so don't bother for now.
 
   # Download CSPICE so we can build outside of python
-  - "python getspice.py"
+  - "%CONDA%/python getspice.py"
 
   # Now install spiceypy
   - IF "%ARCH%"=="32" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86) ELSE (ECHO "probably a 64bit build")
   - IF "%ARCH%"=="64" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64) ELSE (ECHO "probably a 32bit build")
-  - "python setup.py install"
+  - "%CONDA%/python setup.py install"
   - ECHO "Installed SpiceyPy!"
-
+    # restore PATH
+  - set PATH=%BK_PATH%
 
 test_script:
-  - "py.test spiceypy/tests"
+  - "%CONDA%/Scripts/py.test spiceypy/tests"
 
 after_test:
   - ECHO "DONE!"
   - dir
   - ECHO "BUILDING WHEELS..."
-  - "python setup.py sdist bdist_wheel --plat-name=%PLAT_NAME% --python-tag=%PY_TAG%"
+  - "%CONDA%/python setup.py sdist bdist_wheel --plat-name=%PLAT_NAME% --python-tag=%PY_TAG%"
+  # restore PATH
+  - set PATH=%BK_PATH%
   - ECHO "BUILDING CONDA PACKAGE..."
   - "conda build appveyor -q --no-anaconda-upload"
   - ps: ls $env:CONDA_BUILDS
