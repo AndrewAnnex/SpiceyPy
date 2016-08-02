@@ -84,7 +84,7 @@ after_test:
   # restore PATH
   - set PATH=%BK_PATH%
   - ECHO "BUILDING CONDA PACKAGE..."
-  - "conda build appveyor -q --no-anaconda-upload"
+  - "%CONDA%/Scripts/conda build appveyor -q --no-anaconda-upload"
   - ps: ls $env:CONDA_BUILDS
   - ps: cp $env:CONDA_BUILDS\*.* .\dist\
   - ps: ls .\dist\
