@@ -52,7 +52,10 @@ install:
   - ECHO "%PYTHON_VERSION%"
 
   # Download things we absolutly need
+  # Update to a known good conda, found from https://github.com/numba/numba/blob/master/appveyor.yml
+  # (to workaround http://help.appveyor.com/discussions/problems/4910)
   - "conda install -q -y conda=4.1.4"
+  - "conda install -q -y conda-build"
   - "conda install -q -y numpy wheel six pytest"
   - pip install wheel twine six pytest
   # coveralls and or coverage fail to install for 3.4 64bit python builds so don't bother for now.
@@ -76,9 +79,6 @@ after_test:
   - ECHO "BUILDING WHEELS..."
   - "python setup.py sdist bdist_wheel --plat-name=%PLAT_NAME% --python-tag=%PY_TAG%"
   - ECHO "BUILDING CONDA PACKAGE..."
-  # Update to a known good conda, found from https://github.com/numba/numba/blob/master/appveyor.yml
-  # (to workaround http://help.appveyor.com/discussions/problems/4910)
-  - "conda install -q -y conda-build"
   - "conda build appveyor -q --no-anaconda-upload"
   - ps: ls $env:CONDA_BUILDS
   - ps: cp $env:CONDA_BUILDS\*.* .\dist\
