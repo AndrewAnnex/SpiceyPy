@@ -16,6 +16,7 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Start versioning based on the current English version at 0.3.0 to help
 - refactored tests to be cleaner with kernel files
+- fixed spice toolkit version to N65 pending new toolkit release.
 
 ## [1.0.0] - 2016-03-27
 ### Added
