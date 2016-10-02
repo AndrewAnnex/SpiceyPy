@@ -5689,6 +5689,13 @@ def test_unload():
     spice.kclear()
 
 
+def test_unload_emptystring():
+    spice.kclear()
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.unload("")
+    spice.kclear()
+
+
 def test_unorm():
     v1 = np.array([5.0, 12.0, 0.0])
     expectedVout = np.array([5.0 / 13.0, 12.0 / 13.0, 0.0])
