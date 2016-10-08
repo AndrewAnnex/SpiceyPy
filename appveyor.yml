@@ -62,6 +62,9 @@ install:
   - pip install wheel twine six pytest
   # coveralls and or coverage fail to install for 3.4 64bit python builds so don't bother for now.
 
+  # Download CSPICE so we can build outside of python
+  - "%CONDA%/python getspice.py"
+
   # Now install spiceypy
   - IF "%ARCH%"=="32" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86) ELSE (ECHO "probably a 64bit build")
   - IF "%ARCH%"=="64" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64) ELSE (ECHO "probably a 32bit build")
@@ -74,8 +77,16 @@ test_script:
   - "%CONDA%/Scripts/py.test spiceypy/tests"
 
 after_test:
+  - ECHO "DONE!"
+  - dir
   - ECHO "BUILDING WHEELS..."
   - "%CONDA%/python setup.py sdist bdist_wheel --plat-name=%PLAT_NAME% --python-tag=%PY_TAG%"
+  # restore PATH
+  - set PATH=%BK_PATH%
+  - ECHO "BUILDING CONDA PACKAGE..."
+  - "%CONDA%/Scripts/conda build appveyor -q --no-anaconda-upload"
+  - ps: ls $env:CONDA_BUILDS
+  - ps: cp $env:CONDA_BUILDS\*.* .\dist\
   - ps: ls .\dist\
 
 
