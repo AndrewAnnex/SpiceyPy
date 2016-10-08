@@ -9,42 +9,21 @@ environment:
       WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\windows_sdk.cmd"
 
   matrix:
-      - PYTHON: "C:\\Python27"
-        CONDA: "C:\\Miniconda"
+      - CONDA: "C:\\Miniconda"
         CONDA_BUILDS: C:\\Miniconda\conda-bld\win-32
         PYTHON_VERSION: "2.7.x"
         ARCH: "32"
         PLAT_NAME: "win32"
         PY_TAG: "cp27"
 
-      - PYTHON: "C:\\Python27-x64"
-        CONDA: "C:\\Miniconda-x64"
+      - CONDA: "C:\\Miniconda-x64"
         CONDA_BUILDS: C:\\Miniconda-x64\conda-bld\win-64
         PYTHON_VERSION: "2.7.x"
         ARCH: "64"
         PLAT_NAME: "win-amd64"
         PY_TAG: "cp27"
 
-      - PYTHON: "C:\\Python34"
-        CONDA: "C:\\Miniconda3"
-        CONDA_BUILDS: C:\\Miniconda3\conda-bld\win-32
-        PYTHON_VERSION: "3.4.x"
-        ARCH: "32"
-        WINDOWS_SDK_VERSION: "v7.1"
-        PLAT_NAME: "win32"
-        PY_TAG: "cp34"
-
-      - PYTHON: "C:\\Python34-x64"
-        CONDA: "C:\\Miniconda3-x64"
-        CONDA_BUILDS: C:\\Miniconda3-x64\conda-bld\win-64
-        PYTHON_VERSION: "3.4.x"
-        ARCH: "64"
-        WINDOWS_SDK_VERSION: "v7.1"
-        PLAT_NAME: "win-amd64"
-        PY_TAG: "cp34"
-
-      - PYTHON: "C:\\Python35"
-        CONDA: "C:\\Miniconda35"
+      - CONDA: "C:\\Miniconda35"
         CONDA_BUILDS: C:\\Miniconda35\conda-bld\win-32
         PYTHON_VERSION: "3.5.x"
         ARCH: "32"
@@ -52,8 +31,7 @@ environment:
         PLAT_NAME: "win32"
         PY_TAG: "cp35"
 
-      - PYTHON: "C:\\Python35-x64"
-        CONDA: "C:\\Miniconda35-x64"
+      - CONDA: "C:\\Miniconda35-x64"
         CONDA_BUILDS: C:\\Miniconda35-x64\conda-bld\win-64
         PYTHON_VERSION: "3.5.x"
         ARCH: "64"
@@ -68,61 +46,48 @@ cache:
   - C:\Users\appveyor\Downloads -> setup.py
 
 install:
+  # make a backup PATH
+  - set BK_PATH=%PATH%
+  # update path to have conda in it
+  - "set PATH=%CONDA%;%CONDA%/Scripts;%PATH%"
   # Log out the python version just so we know it
   - ECHO "%PYTHON_VERSION%"
 
-  # update path to use installed pip
-  - set PATH=%PYTHON%\\scripts;%PATH%
-
   # Download things we absolutly need
+  # Update to a known good conda, found from https://github.com/numba/numba/blob/master/appveyor.yml
+  # (to workaround http://help.appveyor.com/discussions/problems/4910)
+  - "conda install -q -y conda=4.1.4"
+  - "conda install -q -y conda-build"
+  - "conda install -q -y numpy wheel six pytest"
   - pip install wheel twine six pytest
   # coveralls and or coverage fail to install for 3.4 64bit python builds so don't bother for now.
 
-  # Check for numpy wheel, compile if absent
-  - "powershell appveyor\\install_numpy.ps1"
-
-  # Now install numpy from pre-built wheel. This may be fragile.
-  - "%WITH_COMPILER% pip install --use-wheel --no-index --find-links=c:\\Users\\appveyor\\Downloads numpy"
-  #- "%WITH_COMPILER% pip install --no-index --find-links=C:\\Users\\appveyor\\Downloads numpy"
-  #- "%WITH_COMPILER% pip install C:\\Users\\appveyor\\Downloads\\*.whl"
-
   # Download CSPICE so we can build outside of python
-  - "%PYTHON%/python getspice.py"
-
-  # Make a backup of the PATH just in case.
-  - set BK_PATH=%PATH%
+  - "%CONDA%/python getspice.py"
 
   # Now install spiceypy
   - IF "%ARCH%"=="32" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86) ELSE (ECHO "probably a 64bit build")
   - IF "%ARCH%"=="64" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64) ELSE (ECHO "probably a 32bit build")
-  - "%PYTHON%/python setup.py install"
-
+  - "%CONDA%/python setup.py install"
   - ECHO "Installed SpiceyPy!"
-  # restore PATH
+    # restore PATH
   - set PATH=%BK_PATH%
 
 test_script:
-  - "%PYTHON%/Scripts/py.test spiceypy/tests"
+  - "%CONDA%/Scripts/py.test spiceypy/tests"
 
 after_test:
   - ECHO "DONE!"
   - dir
   - ECHO "BUILDING WHEELS..."
-  - "%PYTHON%/python setup.py sdist bdist_wheel --plat-name=%PLAT_NAME% --python-tag=%PY_TAG%"
+  - "%CONDA%/python setup.py sdist bdist_wheel --plat-name=%PLAT_NAME% --python-tag=%PY_TAG%"
+  # restore PATH
+  - set PATH=%BK_PATH%
   - ECHO "BUILDING CONDA PACKAGE..."
-  - set BK_PATH=%PATH%
-
-  # try conda thing
-  - set PATH=%CONDA%;%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
-  # Update to a known good conda, found from https://github.com/numba/numba/blob/master/appveyor.yml
-  # (to workaround http://help.appveyor.com/discussions/problems/4910)
-  - "conda install -q -y conda=4.1.4"
-  - "conda install conda-build -y -q"
-  - "conda build appveyor -q --no-anaconda-upload"
+  - "%CONDA%/Scripts/conda build appveyor -q --no-anaconda-upload"
   - ps: ls $env:CONDA_BUILDS
   - ps: cp $env:CONDA_BUILDS\*.* .\dist\
   - ps: ls .\dist\
-  - set PATH=%BK_PATH%
 
 
 artifacts:
