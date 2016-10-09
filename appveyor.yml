@@ -25,24 +25,6 @@ environment:
         PLAT_NAME: "win-amd64"
         PY_TAG: "cp27"
 
-      - PYTHON: "C:\\Python34"
-        CONDA: "C:\\Miniconda3"
-        CONDA_BUILDS: C:\\Miniconda3\conda-bld\win-32
-        PYTHON_VERSION: "3.4.x"
-        ARCH: "32"
-        WINDOWS_SDK_VERSION: "v7.1"
-        PLAT_NAME: "win32"
-        PY_TAG: "cp34"
-
-      - PYTHON: "C:\\Python34-x64"
-        CONDA: "C:\\Miniconda3-x64"
-        CONDA_BUILDS: C:\\Miniconda3-x64\conda-bld\win-64
-        PYTHON_VERSION: "3.4.x"
-        ARCH: "64"
-        WINDOWS_SDK_VERSION: "v7.1"
-        PLAT_NAME: "win-amd64"
-        PY_TAG: "cp34"
-
       - PYTHON: "C:\\Python35"
         CONDA: "C:\\Miniconda35"
         CONDA_BUILDS: C:\\Miniconda35\conda-bld\win-32
