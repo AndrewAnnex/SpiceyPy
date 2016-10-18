@@ -14,13 +14,12 @@ after_success:
 - coveralls
 deploy:
   provider: pypi
-  server: https://testpypi.python.org/pypi
   user: andrewannex
   password:
-    secure: Tv62p2Dbt1Bh/fHOGtMkt9Yx2tX7HzKeJt5M3N4Gf2P0SlKjMWhx9RWdLfjOhJHsvj/q6uLg6lmpzqD/v50ltFBima8BD6O4Q5JJX7/mPojaT/zzN5Iz11VQgfv7E6oL6RpvKj6QmqLSJH9o2y1ZpLFefpinU+5YbACN8y1gofM=
+    secure: VDxslEgYn5a7KU4acnjuYDHsZjBKFWBYmXKh5QV6cKj65bLGUwXrw7/KqbOf0jZFOd4uv4/v5Ae0MLG+Qvly65HTAZdnBY5c87l2LTmUoqJ7kSigqz4lpsQyx4kSQIwZgG0odXSYPoATDBu7erexT0KDbxWHkdDr+DRuhiRy/a0=
   on:
     tags: true
-    branch: adding-pypi-uploads-to-ci
+    branch: master
     distributions: sdist
     repo: AndrewAnnex/SpiceyPy
 
