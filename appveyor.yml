@@ -102,11 +102,13 @@ artifacts:
 
 deploy_script:
   #- "echo [pypi] > %USERPROFILE%\\.pypirc" for master
-  - echo [test] >> %USERPROFILE%\\.pypirc
+  - echo "Starting Artifact Deployment"
+  - echo [test] > %USERPROFILE%\\.pypirc
   # "echo repository=https://pypi.python.org/pypi >> %USERPROFILE%\\.pypirc" for master
   - echo repository=https://testpypi.python.org/pypi >> %USERPROFILE%\\.pypirc
   - echo username=andrewannex >> %USERPROFILE%\\.pypirc
   - echo password=%PYPI_PASSWORD% >> %USERPROFILE%\\.pypirc
+  - cat %USERPROFILE%\\.pypirc
   - set HOME=%USERPROFILE%
   # upload to pypi for windows, add back: 'if($env:appveyor_repo_tag -eq 'True' -and $env:appveyor_repo_branch -eq 'master')' for master brach, remove -r test also
   - ps: Invoke-Expression "$env:PYTHON/Scripts/twine upload --skip-existing dist/* -r test"
@@ -114,3 +116,11 @@ deploy_script:
   # upload conda builds to conda cloud
   # If ($env:APPVEYOR_REPO_TAG -eq "true") { anaconda -t $env:BINSTAR_TOKEN upload ./win-*/*.tar.bz2 -u andrewannex --no-progress --force } Else { "Not on a tag, won't deploy" }
   - anaconda -t $env:BINSTAR_TOKEN upload ./win-*/*.tar.bz2 -u andrewannex --no-progress --force
+  - echo "Finished Artifact Deployment"
+notifications:
+- provider: Webhook
+  url: https://webhooks.gitter.im/e/a269901231ce14437a05
+  method: POST
+  on_build_success: true
+  on_build_failure: true
+  on_build_status_changed: true
