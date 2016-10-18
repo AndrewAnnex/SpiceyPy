@@ -1,16 +1,26 @@
 language: python
 sudo: false
 python:
- - 2.7
- - 3.3
- - 3.4
- - 3.5
-# install dependencies
+- 2.7
+- 3.5
 before_install:
-    - pip install -r requirements.txt
+- pip install twine
+- pip install -r requirements.txt
 install:
-    - python setup.py install
+- python setup.py install
 script:
-    - coverage run --source=spiceypy setup.py test
+- coverage run --source=spiceypy setup.py test
 after_success:
-    - coveralls
+- coveralls
+deploy:
+  provider: pypi
+  server: https://testpypi.python.org/pypi
+  user: andrewannex
+  password:
+    secure: Tv62p2Dbt1Bh/fHOGtMkt9Yx2tX7HzKeJt5M3N4Gf2P0SlKjMWhx9RWdLfjOhJHsvj/q6uLg6lmpzqD/v50ltFBima8BD6O4Q5JJX7/mPojaT/zzN5Iz11VQgfv7E6oL6RpvKj6QmqLSJH9o2y1ZpLFefpinU+5YbACN8y1gofM=
+  on:
+    tags: true
+    branch: adding-pypi-uploads-to-ci
+    distributions: sdist
+    repo: AndrewAnnex/SpiceyPy
+

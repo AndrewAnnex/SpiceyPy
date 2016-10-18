@@ -6,7 +6,7 @@ source:
   path: ../
 
 build:
-    number: 2
+    number: 200
 
 requirements:
     build:

@@ -7,16 +7,13 @@ build: off
 environment:
   global:
       WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\windows_sdk.cmd"
+  BINSTAR_TOKEN:
+    secure: Mmt+q/wM25qg6DUWIcPZP1sSisdl115dKG5RCuiJnJolY/wrMsmJGZj3198vgfAv
+  PYPI_PASSWORD:
+    secure: 2mj9Memj9wOksCDCZ4i0Zvw/f9gUeTkZNLPdOM/S0GU=
+  PYPI_USERNAME: andrewannex
 
   matrix:
-      - PYTHON: "C:\\Python27"
-        CONDA: "C:\\Miniconda"
-        CONDA_BUILDS: C:\\Miniconda\conda-bld\win-32
-        PYTHON_VERSION: "2.7.x"
-        ARCH: "32"
-        PLAT_NAME: "win32"
-        PY_TAG: "cp27"
-
       - PYTHON: "C:\\Python27-x64"
         CONDA: "C:\\Miniconda-x64"
         CONDA_BUILDS: C:\\Miniconda-x64\conda-bld\win-64
@@ -24,15 +21,6 @@ environment:
         ARCH: "64"
         PLAT_NAME: "win-amd64"
         PY_TAG: "cp27"
-
-      - PYTHON: "C:\\Python35"
-        CONDA: "C:\\Miniconda35"
-        CONDA_BUILDS: C:\\Miniconda35\conda-bld\win-32
-        PYTHON_VERSION: "3.5.x"
-        ARCH: "32"
-        WINDOWS_SDK_VERSION: "v7.1"
-        PLAT_NAME: "win32"
-        PY_TAG: "cp35"
 
       - PYTHON: "C:\\Python35-x64"
         CONDA: "C:\\Miniconda35-x64"
@@ -88,7 +76,6 @@ test_script:
 
 after_test:
   - ECHO "DONE!"
-  - dir
   - ECHO "BUILDING WHEELS..."
   - "%PYTHON%/python setup.py sdist bdist_wheel --plat-name=%PLAT_NAME% --python-tag=%PY_TAG%"
   - ECHO "BUILDING CONDA PACKAGE..."
@@ -99,14 +86,30 @@ after_test:
   # Update to a known good conda, found from https://github.com/numba/numba/blob/master/appveyor.yml
   # (to workaround http://help.appveyor.com/discussions/problems/4910)
   - "conda install -q -y conda=4.1.4"
-  - "conda install conda-build -y -q"
+  - "conda install -q -y conda-build anaconda-client numpy wheel six pytest"
   - "conda build appveyor -q --no-anaconda-upload"
   - ps: ls $env:CONDA_BUILDS
-  - ps: cp $env:CONDA_BUILDS\*.* .\dist\
-  - ps: ls .\dist\
+  - ps: mv $env:CONDA_BUILDS ./
   - set PATH=%BK_PATH%
 
 
 artifacts:
   - path: dist\*
+    name: pypiartifacts
 
+  - path: 'win-*\*.tar.bz2'
+    name: condaartifacts
+
+deploy_script:
+  #- "echo [pypi] > %USERPROFILE%\\.pypirc" for master
+  - "echo [test] >> %USERPROFILE%\\.pypirc"
+  # "echo repository=https://pypi.python.org/pypi >> %USERPROFILE%\\.pypirc" for master
+  - "echo repository=https://testpypi.python.org/pypi >> %USERPROFILE%\\.pypirc"
+  - "echo username=andrewannex >> %USERPROFILE%\\.pypirc"
+  - "echo password=%PYPI_PASSWORD% >> %USERPROFILE%\\.pypirc"
+  # upload to pypi for windows, add back: 'if($env:appveyor_repo_tag -eq 'True' -and $env:appveyor_repo_branch -eq 'master')' for master brach, remove -r test also
+  - ps: Invoke-Expression "$env:PYTHON/Scripts/twine -r test upload --skip-existing dist/*"
+  - ps: rm ~/.pypirc
+  # upload conda builds to conda cloud
+  # If ($env:APPVEYOR_REPO_TAG -eq "true") { anaconda -t $env:BINSTAR_TOKEN upload ./win-*/*.tar.bz2 -u andrewannex --no-progress --force } Else { "Not on a tag, won't deploy" }
+  - anaconda -t $env:BINSTAR_TOKEN upload ./win-*/*.tar.bz2 -u andrewannex --no-progress --force
