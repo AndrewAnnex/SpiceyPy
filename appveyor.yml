@@ -102,11 +102,12 @@ artifacts:
 
 deploy_script:
   #- "echo [pypi] > %USERPROFILE%\\.pypirc" for master
-  - "echo [test] >> %USERPROFILE%\\.pypirc"
+  - echo [test] >> %USERPROFILE%\\.pypirc
   # "echo repository=https://pypi.python.org/pypi >> %USERPROFILE%\\.pypirc" for master
-  - "echo repository=https://testpypi.python.org/pypi >> %USERPROFILE%\\.pypirc"
-  - "echo username=andrewannex >> %USERPROFILE%\\.pypirc"
-  - "echo password=%PYPI_PASSWORD% >> %USERPROFILE%\\.pypirc"
+  - echo repository=https://testpypi.python.org/pypi >> %USERPROFILE%\\.pypirc
+  - echo username=andrewannex >> %USERPROFILE%\\.pypirc
+  - echo password=%PYPI_PASSWORD% >> %USERPROFILE%\\.pypirc
+  - set HOME=%USERPROFILE%
   # upload to pypi for windows, add back: 'if($env:appveyor_repo_tag -eq 'True' -and $env:appveyor_repo_branch -eq 'master')' for master brach, remove -r test also
   - ps: Invoke-Expression "$env:PYTHON/Scripts/twine upload --skip-existing dist/* -r test"
   - ps: rm ~/.pypirc
