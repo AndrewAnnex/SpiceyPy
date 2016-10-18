@@ -7,6 +7,11 @@ build: off
 environment:
   global:
       WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\windows_sdk.cmd"
+  BINSTAR_TOKEN:
+    secure: Mmt+q/wM25qg6DUWIcPZP1sSisdl115dKG5RCuiJnJolY/wrMsmJGZj3198vgfAv
+  PYPI_PASSWORD:
+    secure: UrfQ7eYMkP0lXm2tRLPoOQHI2kQ2zJ/NrUowYuMMWkQ=
+  PYPI_USERNAME: andrewannex
 
   matrix:
       - PYTHON: "C:\\Python27"
@@ -88,7 +93,6 @@ test_script:
 
 after_test:
   - ECHO "DONE!"
-  - dir
   - ECHO "BUILDING WHEELS..."
   - "%PYTHON%/python setup.py sdist bdist_wheel --plat-name=%PLAT_NAME% --python-tag=%PY_TAG%"
   - ECHO "BUILDING CONDA PACKAGE..."
@@ -99,14 +103,33 @@ after_test:
   # Update to a known good conda, found from https://github.com/numba/numba/blob/master/appveyor.yml
   # (to workaround http://help.appveyor.com/discussions/problems/4910)
   - "conda install -q -y conda=4.1.4"
-  - "conda install conda-build -y -q"
+  - "conda install -q -y conda-build anaconda-client numpy wheel six pytest"
   - "conda build appveyor -q --no-anaconda-upload"
   - ps: ls $env:CONDA_BUILDS
-  - ps: cp $env:CONDA_BUILDS\*.* .\dist\
-  - ps: ls .\dist\
+  - ps: mv $env:CONDA_BUILDS ./
   - set PATH=%BK_PATH%
 
 
 artifacts:
   - path: dist\*
+    name: pypiartifacts
 
+  - path: 'win-*\*.tar.bz2'
+    name: condaartifacts
+
+deploy_script:
+  - echo "Starting Artifact Deployment"
+  # upload to pypi for windows
+  - set PATH=%BK_PATH%
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") { Invoke-Expression "twine upload -u andrewannex -p $env:PYPI_PASSWORD --repository-url https://testpypi.python.org/pypi/ --skip-existing dist/*" } Else { write-output "Not on a tag on master, won't deploy to pypi"}
+  # upload conda builds to conda cloud
+  - set PATH=%CONDA%;%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") { Invoke-Expression "anaconda -t $env:BINSTAR_TOKEN upload ./win-*/*.tar.bz2 -u andrewannex --no-progress --force" } Else { write-output "Not on a tag on master, won't deploy to anaconda" }
+  - set PATH=%BK_PATH%
+  - echo "Finished Artifact Deployment"
+notifications:
+  - provider: Webhook
+    url: https://webhooks.gitter.im/e/a269901231ce14437a05
+    on_build_success: true
+    on_build_failure: true
+    on_build_status_changed: true
