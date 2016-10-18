@@ -108,7 +108,7 @@ deploy_script:
   - "echo username=andrewannex >> %USERPROFILE%\\.pypirc"
   - "echo password=%PYPI_PASSWORD% >> %USERPROFILE%\\.pypirc"
   # upload to pypi for windows, add back: 'if($env:appveyor_repo_tag -eq 'True' -and $env:appveyor_repo_branch -eq 'master')' for master brach, remove -r test also
-  - ps: Invoke-Expression "$env:PYTHON/Scripts/twine upload -r test --skip-existing dist/*"
+  - ps: Invoke-Expression "$env:PYTHON/Scripts/twine upload --skip-existing dist/* -r test"
   - ps: rm ~/.pypirc
   # upload conda builds to conda cloud
   # If ($env:APPVEYOR_REPO_TAG -eq "true") { anaconda -t $env:BINSTAR_TOKEN upload ./win-*/*.tar.bz2 -u andrewannex --no-progress --force } Else { "Not on a tag, won't deploy" }
