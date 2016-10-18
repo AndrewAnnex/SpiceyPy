@@ -1,16 +1,25 @@
 language: python
 sudo: false
 python:
- - 2.7
- - 3.3
- - 3.4
- - 3.5
-# install dependencies
+- 2.7
+- 3.5
 before_install:
-    - pip install -r requirements.txt
+- pip install twine
+- pip install -r requirements.txt
 install:
-    - python setup.py install
+- python setup.py install
 script:
-    - coverage run --source=spiceypy setup.py test
+- coverage run --source=spiceypy setup.py test
 after_success:
-    - coveralls
+- coveralls
+deploy:
+  provider: pypi
+  user: andrewannex
+  password:
+    secure: VDxslEgYn5a7KU4acnjuYDHsZjBKFWBYmXKh5QV6cKj65bLGUwXrw7/KqbOf0jZFOd4uv4/v5Ae0MLG+Qvly65HTAZdnBY5c87l2LTmUoqJ7kSigqz4lpsQyx4kSQIwZgG0odXSYPoATDBu7erexT0KDbxWHkdDr+DRuhiRy/a0=
+  on:
+    tags: true
+    branch: master
+    distributions: sdist
+    repo: AndrewAnnex/SpiceyPy
+
