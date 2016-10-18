@@ -10,7 +10,7 @@ environment:
   BINSTAR_TOKEN:
     secure: Mmt+q/wM25qg6DUWIcPZP1sSisdl115dKG5RCuiJnJolY/wrMsmJGZj3198vgfAv
   PYPI_PASSWORD:
-    secure: 2mj9Memj9wOksCDCZ4i0Zvw/f9gUeTkZNLPdOM/S0GU=
+    secure: UrfQ7eYMkP0lXm2tRLPoOQHI2kQ2zJ/NrUowYuMMWkQ=
   PYPI_USERNAME: andrewannex
 
   matrix:
@@ -101,22 +101,14 @@ artifacts:
     name: condaartifacts
 
 deploy_script:
-  # - "echo [pypi] > %USERPROFILE%\\.pypirc" for master
   - echo "Starting Artifact Deployment"
-  # - echo [test] > %USERPROFILE%\\.pypirc
-  #  echo repository=https://testpypi.python.org/pypi >> %USERPROFILE%\\.pypirc
-  #  # "echo repository=https://pypi.python.org/pypi >> %USERPROFILE%\\.pypirc" for master
-  #  - echo username=andrewannex >> %USERPROFILE%\\.pypirc
-  #  - echo password=%PYPI_PASSWORD% >> %USERPROFILE%\\.pypirc
-  #  - cat %USERPROFILE%\\.pypirc
-  #  - set HOME=%USERPROFILE%
   # upload to pypi for windows, add back: 'if($env:appveyor_repo_tag -eq 'True' -and $env:appveyor_repo_branch -eq 'master')' for master brach, remove -r test also
-  # - ps: Invoke-Expression "$env:PYTHON/Scripts/twine upload --skip-existing dist/* -r test"
   - ps: Invoke-Expression "$env:PYTHON/Scripts/twine upload -u andrewannex -p %PYPI_PASSWORD% --repository-url https://testpypi.python.org/pypi/ --skip-existing dist/*"
-  # - ps: rm ~/.pypirc
   # upload conda builds to conda cloud
   # If ($env:APPVEYOR_REPO_TAG -eq "true") { anaconda -t $env:BINSTAR_TOKEN upload ./win-*/*.tar.bz2 -u andrewannex --no-progress --force } Else { "Not on a tag, won't deploy" }
+  - set PATH=%CONDA%;%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
   - anaconda -t $env:BINSTAR_TOKEN upload ./win-*/*.tar.bz2 -u andrewannex --no-progress --force
+  - set PATH=%BK_PATH%
   - echo "Finished Artifact Deployment"
 notifications:
 - provider: Webhook
