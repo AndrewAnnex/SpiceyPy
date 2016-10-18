@@ -103,10 +103,10 @@ artifacts:
 deploy_script:
   - echo "Starting Artifact Deployment"
   # upload to pypi for windows
-  - If ($env:APPVEYOR_REPO_TAG -eq 'True' -and $env:APPVEYOR_REPO_BRANCH -eq 'master') { "%PYTHON%/Scripts/twine upload -u andrewannex -p %PYPI_PASSWORD% --repository-url https://testpypi.python.org/pypi/ --skip-existing dist/*" } Else { "Not a tag on master, won't deploy to pypi"}
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") { Invoke-Expression "$env:PYTHON/Scripts/twine upload -u andrewannex -p $env:PYPI_PASSWORD --repository-url https://testpypi.python.org/pypi/ --skip-existing dist/*" } Else { write-output "Not a tag on master, won't deploy to pypi"}
   # upload conda builds to conda cloud
   - set PATH=%CONDA%;%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
-  - If ($env:APPVEYOR_REPO_TAG -eq "true" -and $env:APPVEYOR_REPO_BRANCH -eq 'master') { anaconda -t $env:BINSTAR_TOKEN upload ./win-*/*.tar.bz2 -u andrewannex --no-progress --force } Else { "Not on a tag on master, won't deploy to anaconda" }
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") { Invoke-Expression "anaconda -t $env:BINSTAR_TOKEN upload ./win-*/*.tar.bz2 -u andrewannex --no-progress --force" } Else { write-output "Not on a tag on master, won't deploy to anaconda" }
   - set PATH=%BK_PATH%
   - echo "Finished Artifact Deployment"
 notifications:
