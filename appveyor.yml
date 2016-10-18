@@ -14,6 +14,14 @@ environment:
   PYPI_USERNAME: andrewannex
 
   matrix:
+      - PYTHON: "C:\\Python27"
+        CONDA: "C:\\Miniconda"
+        CONDA_BUILDS: C:\\Miniconda\conda-bld\win-32
+        PYTHON_VERSION: "2.7.x"
+        ARCH: "32"
+        PLAT_NAME: "win32"
+        PY_TAG: "cp27"
+
       - PYTHON: "C:\\Python27-x64"
         CONDA: "C:\\Miniconda-x64"
         CONDA_BUILDS: C:\\Miniconda-x64\conda-bld\win-64
@@ -21,6 +29,15 @@ environment:
         ARCH: "64"
         PLAT_NAME: "win-amd64"
         PY_TAG: "cp27"
+
+      - PYTHON: "C:\\Python35"
+        CONDA: "C:\\Miniconda35"
+        CONDA_BUILDS: C:\\Miniconda35\conda-bld\win-32
+        PYTHON_VERSION: "3.5.x"
+        ARCH: "32"
+        WINDOWS_SDK_VERSION: "v7.1"
+        PLAT_NAME: "win32"
+        PY_TAG: "cp35"
 
       - PYTHON: "C:\\Python35-x64"
         CONDA: "C:\\Miniconda35-x64"
@@ -103,7 +120,8 @@ artifacts:
 deploy_script:
   - echo "Starting Artifact Deployment"
   # upload to pypi for windows
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") { Invoke-Expression "$env:PYTHON/Scripts/twine upload -u andrewannex -p $env:PYPI_PASSWORD --repository-url https://testpypi.python.org/pypi/ --skip-existing dist/*" } Else { write-output "Not a tag on master, won't deploy to pypi"}
+  - set PATH=%BK_PATH%
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") { Invoke-Expression "twine upload -u andrewannex -p $env:PYPI_PASSWORD --repository-url https://testpypi.python.org/pypi/ --skip-existing dist/*" } Else { write-output "Not on a tag on master, won't deploy to pypi"}
   # upload conda builds to conda cloud
   - set PATH=%CONDA%;%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
   - ps: If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") { Invoke-Expression "anaconda -t $env:BINSTAR_TOKEN upload ./win-*/*.tar.bz2 -u andrewannex --no-progress --force" } Else { write-output "Not on a tag on master, won't deploy to anaconda" }
