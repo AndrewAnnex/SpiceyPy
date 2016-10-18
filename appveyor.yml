@@ -112,7 +112,7 @@ deploy_script:
   #  - set HOME=%USERPROFILE%
   # upload to pypi for windows, add back: 'if($env:appveyor_repo_tag -eq 'True' -and $env:appveyor_repo_branch -eq 'master')' for master brach, remove -r test also
   # - ps: Invoke-Expression "$env:PYTHON/Scripts/twine upload --skip-existing dist/* -r test"
-  - ps: Invoke-Expression "$env:PYTHON/Scripts/twine upload --repository-url https://testpypi.python.org/pypi --skip-existing dist/* -u andrewannex -p %PYPI_PASSWORD% -r test"
+  - ps: Invoke-Expression "$env:PYTHON/Scripts/twine upload -u andrewannex -p %PYPI_PASSWORD% --repository-url https://testpypi.python.org/pypi/ --skip-existing dist/*"
   # - ps: rm ~/.pypirc
   # upload conda builds to conda cloud
   # If ($env:APPVEYOR_REPO_TAG -eq "true") { anaconda -t $env:BINSTAR_TOKEN upload ./win-*/*.tar.bz2 -u andrewannex --no-progress --force } Else { "Not on a tag, won't deploy" }
