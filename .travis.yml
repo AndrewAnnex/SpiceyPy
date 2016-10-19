@@ -14,10 +14,9 @@ after_success:
 - coveralls
 deploy:
   provider: pypi
-  server: https://testpypi.python.org/pypi
   user: andrewannex
   password:
-    secure: NhCK6eiiqI0pF6I1mJAh0sWCmPk3bqzE/37cfqs3AZlrf/a30UjibXvcVKtpfINnujIe0FRJbU9JsxCgfoNMhHfymC3V4Br0ponT1P4w5IY0POVsoZIVdQn8Hn0EAOFu/nkD1LOGOkOcb/2M8UB6PJ0/x2znbVjpDh4L27zCQNI=
+    secure: YXA8LYIyAZ5HA2In4H/vUaCaVow9HbvKNT/TTT9OaH91Fszspr1uFo9mRQLNJlBViGgy2SaqNQITzlRdFyIcDstqRGPDQUw3xNIKvZ7YuHIzG1TVWNVpJsZf2ha1+JxozPTS2c2tlrS/LR7N4hYVtLOipaYAK2ucmB8sDu4dkws=
   on:
     tags: true
     branch: master

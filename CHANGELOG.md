@@ -4,13 +4,14 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.1.0] - 2016-10-19
 ### Added
 - wrapper functions and tests for fovray, fovtrg, pxfrm2, occult #158
 - wrapper functions and tests for spklef, spkopa, spkpds, spksub, spkuds, spkuef #155
 - tests for srxpt and sincpt #154
 - a bunch of other tests for CK related functions
 - example added to docs
+- automated artifact deployments (mostly) to pypi and conda cloud
 ### Fixed
 - improved use of six api to have better spicecells
 ### Changed
