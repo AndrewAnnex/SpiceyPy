@@ -107,6 +107,7 @@ after_test:
   - "conda build appveyor -q --no-anaconda-upload"
   - ps: ls $env:CONDA_BUILDS
   - ps: mv $env:CONDA_BUILDS ./
+  - ps: rm dist/*.egg
   - set PATH=%BK_PATH%
 
 
