@@ -8,9 +8,9 @@ environment:
   global:
       WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\windows_sdk.cmd"
   BINSTAR_TOKEN:
-    secure: Mmt+q/wM25qg6DUWIcPZP1sSisdl115dKG5RCuiJnJolY/wrMsmJGZj3198vgfAv
+    secure: fWe4otuWHdusx6FemAe47mLWoaDfuEthoKo5BpSlCIrmSVgOMX05ceuDgU3TlrfE
   PYPI_PASSWORD:
-    secure: UrfQ7eYMkP0lXm2tRLPoOQHI2kQ2zJ/NrUowYuMMWkQ=
+    secure: 1Azz/T29ed78wY4IFlTtyCRUavcANMDsZ5tDhNHk9Ys=
   PYPI_USERNAME: andrewannex
 
   matrix:
@@ -121,11 +121,13 @@ deploy_script:
   - echo "Starting Artifact Deployment"
   # upload to pypi for windows
   - set PATH=%BK_PATH%
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") { Invoke-Expression "twine upload -u andrewannex -p $env:PYPI_PASSWORD --repository-url https://testpypi.python.org/pypi/ --skip-existing dist/*" } Else { write-output "Not on a tag on master, won't deploy to pypi"}
+  - ps: echo $null >> ~/.pypirc
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") { Invoke-Expression "twine upload -u andrewannex -p $env:PYPI_PASSWORD --repository pypitest --repository-url https://testpypi.python.org/pypi/ --skip-existing dist/*" 2>$null } Else { write-output "Not on a tag on master, won't deploy to pypi"}
   # upload conda builds to conda cloud
-  - set PATH=%CONDA%;%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") { Invoke-Expression "anaconda -t $env:BINSTAR_TOKEN upload ./win-*/*.tar.bz2 -u andrewannex --no-progress --force" } Else { write-output "Not on a tag on master, won't deploy to anaconda" }
-  - set PATH=%BK_PATH%
+  - cmd: set PATH=%CONDA%;%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
+  # because appveyor prints to stderror, we will run it in command mode by doing a check firs
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") { $env:conda_upload = 'true' } Else { write-output "Not on a tag on master, won't deploy to anaconda" }
+  - cmd: IF "%conda_upload%"=="true" anaconda -t %BINSTAR_TOKEN% upload .\win-*\*.tar.bz2 -u andrewannex --no-progress --force
   - echo "Finished Artifact Deployment"
 notifications:
   - provider: Webhook

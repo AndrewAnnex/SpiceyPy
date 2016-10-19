@@ -17,10 +17,8 @@ deploy:
   server: https://testpypi.python.org/pypi
   user: andrewannex
   password:
-    secure: K/8vOALbxyRbDslE/qzDDAtpJZLQ/aWnczRN9ydinUxILj4uHyGB8R2SQcd5tkhq7bmbWWwRWJyrf4q1wWa8M9qwbW5vMYX5a4kRaLjHbae7/9hYHbcXrKOlSbPAEm4Q3tjMOp7U5avZVYe2kJcx1XlGb7BS0lQJfDetf/OUK8M=
+    secure: NhCK6eiiqI0pF6I1mJAh0sWCmPk3bqzE/37cfqs3AZlrf/a30UjibXvcVKtpfINnujIe0FRJbU9JsxCgfoNMhHfymC3V4Br0ponT1P4w5IY0POVsoZIVdQn8Hn0EAOFu/nkD1LOGOkOcb/2M8UB6PJ0/x2znbVjpDh4L27zCQNI=
   on:
     tags: true
     branch: master
-    distributions: sdist
     repo: AndrewAnnex/SpiceyPy
-
