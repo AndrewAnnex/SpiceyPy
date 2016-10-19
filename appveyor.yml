@@ -11,7 +11,6 @@ environment:
     secure: fWe4otuWHdusx6FemAe47mLWoaDfuEthoKo5BpSlCIrmSVgOMX05ceuDgU3TlrfE
   PYPI_PASSWORD:
     secure: 1Azz/T29ed78wY4IFlTtyCRUavcANMDsZ5tDhNHk9Ys=
-  PYPI_USERNAME: andrewannex
 
   matrix:
       - PYTHON: "C:\\Python27"
@@ -120,10 +119,23 @@ artifacts:
 
 deploy_script:
   - echo "Starting Artifact Deployment"
+  # populate pypirc file for twine
+  - echo [distutils]                                  > %USERPROFILE%\\.pypirc
+  - echo index-servers =                             >> %USERPROFILE%\\.pypirc
+  - echo     pypi                                    >> %USERPROFILE%\\.pypirc
+  - echo     pypitest                                >> %USERPROFILE%\\.pypirc
+  - echo [pypitest]                                  >> %USERPROFILE%\\.pypirc
+  - echo repository=https://testpypi.python.org/pypi >> %USERPROFILE%\\.pypirc
+  - echo username=andrewannex                        >> %USERPROFILE%\\.pypirc
+  - echo password=%PYPI_PASSWORD%                    >> %USERPROFILE%\\.pypirc
+  - echo [pypi]                                      >> %USERPROFILE%\\.pypirc
+  - echo repository=https://pypi.python.org/pypi     >> %USERPROFILE%\\.pypirc
+  - echo username=andrewannex                        >> %USERPROFILE%\\.pypirc
+  - echo password=%PYPI_PASSWORD%                    >> %USERPROFILE%\\.pypirc
   # upload to pypi for windows
   - set PATH=%BK_PATH%
-  - ps: echo $null >> ~/.pypirc
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") { Invoke-Expression "twine upload -u andrewannex -p $env:PYPI_PASSWORD --repository pypitest --repository-url https://testpypi.python.org/pypi/ --skip-existing dist/*" 2>$null } Else { write-output "Not on a tag on master, won't deploy to pypi"}
+  - set HOME=%USERPROFILE%
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") { Invoke-Expression "twine upload -r pypitest --skip-existing dist/*" 2>$null } Else { write-output "Not on a tag on master, won't deploy to pypi"}
   # upload conda builds to conda cloud
   - cmd: set PATH=%CONDA%;%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
   # because appveyor prints to stderror, we will run it in command mode by doing a check firs
