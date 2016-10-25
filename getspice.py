@@ -81,6 +81,7 @@ def getSpice():
 def downloadSpice(urlpath):
     return urllib.request.urlopen(urlpath, timeout=10)
 
+
 def attemptSpiceDownloadXTimes(x, root_url, result, root_dir):
     attempts = 0
     while attempts < x:
@@ -100,9 +101,9 @@ def attemptSpiceDownloadXTimes(x, root_url, result, root_dir):
             download.close()
             break
         except urllib.error.URLError:
-            print("Download failed with URLError, trying agian after 15 seconds!")
+            print("Download failed with URLError, trying again after 15 seconds!")
         except urllib.error.HTTPError as h:
-            print("Some http error: ", h, ", trying agian after 15 seconds!")
+            print("Some http error: ", h, ", trying again after 15 seconds!")
         attempts += 1
         time.sleep(15)
 
