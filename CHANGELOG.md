@@ -7,6 +7,7 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 ## [unreleased]   
 ### Changed
 - version updated
+- fixed formatting on changelog
 
 ## [1.1.0] - 2016-10-19   
 ### Added    
@@ -16,8 +17,10 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 - a bunch of other tests for CK related functions
 - example added to docs
 - automated artifact deployments (mostly) to pypi and conda cloud
+
 ### Fixed   
 - improved use of six api to have better spicecells
+
 ### Changed   
 - Start versioning based on the current English version at 0.3.0 to help
 - refactored tests to be cleaner with kernel files
@@ -26,6 +29,7 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 ## [1.0.0] - 2016-03-27  
 ### Added  
 - DOI citation information
+
 ### Changed  
 - updated versions for pytest, coverage, coveralls
 - README updates
@@ -34,8 +38,10 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 ### Added  
 - python wheel builds in appveyor #117
 - wrapper for gfilum function
+
 ### Changed  
 - converted README to rst format
+
 ### Fixed  
 - inconsistencies in doc strings #143
 - issue #136
@@ -47,11 +53,15 @@ before things so this version can be considered a bit of a baseline
 
 ### Added  
 - many things
+
 ### Changed  
 - the game
+
 ### Deprecated  
 - nothing important
+
 ### Removed  
 - what had to go
+
 ### Fixed  
 - it
