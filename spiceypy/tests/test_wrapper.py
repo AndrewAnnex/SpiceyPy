@@ -316,7 +316,7 @@ def test_ckcls():
     spice.kclear()
     CK1 = os.path.join(cwd, "ckopenkernel.bc")
     if spice.exists(CK1):
-        os.remove(CK1)
+        os.remove(CK1) # pragma: no cover
     IFNAME = "Test CK type 1 segment created by cspice_ckw01"
     handle = spice.ckopn(CK1, IFNAME, 10)
     spice.ckw01(handle, 1.0, 10.0, -77701, "J2000", True, "Test type 1 CK segment",
@@ -327,7 +327,7 @@ def test_ckcls():
     spice.kclear()
     assert spice.exists(CK1)
     if spice.exists(CK1):
-        os.remove(CK1)
+        os.remove(CK1) # pragma: no cover
     assert not spice.exists(CK1)
 
 
@@ -387,7 +387,7 @@ def test_cklpf():
     spice.reset()
     CKLPF = os.path.join(cwd, "cklpfkernel.bc")
     if spice.exists(CKLPF):
-        os.remove(CKLPF)
+        os.remove(CKLPF) # pragma: no cover
     IFNAME = "Test CK type 1 segment created by cspice_cklpf"
     handle = spice.ckopn(CKLPF, IFNAME, 10)
     spice.ckw01(handle, 1.0, 10.0, -77701, "J2000", True, "Test type 1 CK segment",
@@ -402,7 +402,7 @@ def test_cklpf():
     spice.reset()
     assert spice.exists(CKLPF)
     if spice.exists(CKLPF):
-        os.remove(CKLPF)
+        os.remove(CKLPF) # pragma: no cover
     assert not spice.exists(CKLPF)
 
 
@@ -420,7 +420,7 @@ def test_ckopn():
     spice.kclear()
     CK1 = os.path.join(cwd, "ckopenkernel.bc")
     if spice.exists(CK1):
-        os.remove(CK1)
+        os.remove(CK1) # pragma: no cover
     IFNAME = "Test CK type 1 segment created by cspice_ckw01"
     handle = spice.ckopn(CK1, IFNAME, 10)
     spice.ckw01(handle, 1.0, 10.0, -77701, "J2000", True, "Test type 1 CK segment",
@@ -431,7 +431,7 @@ def test_ckopn():
     spice.kclear()
     assert spice.exists(CK1)
     if spice.exists(CK1):
-        os.remove(CK1)
+        os.remove(CK1) # pragma: no cover
     assert not spice.exists(CK1)
 
 
@@ -449,7 +449,7 @@ def test_ckw01():
     spice.kclear()
     CK1 = os.path.join(cwd, "type1.bc")
     if spice.exists(CK1):
-        os.remove(CK1)
+        os.remove(CK1) # pragma: no cover
     INST = -77701
     MAXREC = 201
     SECPERTICK = 0.001
@@ -485,14 +485,14 @@ def test_ckw01():
     assert end_size != init_size
     spice.kclear()
     if spice.exists(CK1):
-        os.remove(CK1)
+        os.remove(CK1) # pragma: no cover
 
 
 def test_ckw02():
     spice.kclear()
     CK2 = os.path.join(cwd, "type2.bc")
     if spice.exists(CK2):
-        os.remove(CK2)
+        os.remove(CK2) # pragma: no cover
     INST = -77702
     MAXREC = 201
     SECPERTICK = 0.001
@@ -530,14 +530,14 @@ def test_ckw02():
     assert end_size != init_size
     spice.kclear()
     if spice.exists(CK2):
-        os.remove(CK2)
+        os.remove(CK2) # pragma: no cover
 
 
 def test_ckw03():
     spice.kclear()
     CK3 = os.path.join(cwd, "type3.bc")
     if spice.exists(CK3):
-        os.remove(CK3)
+        os.remove(CK3) # pragma: no cover
     MAXREC = 201
     SECPERTICK = 0.001
     SEGID = "Test type 3 CK segment"
@@ -571,7 +571,7 @@ def test_ckw03():
     assert end_size != init_size
     spice.kclear()
     if spice.exists(CK3):
-        os.remove(CK3)
+        os.remove(CK3) # pragma: no cover
 
 
 def test_ckw05():
@@ -1271,7 +1271,7 @@ def test_ekacec():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekacec.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno = spice.ekbseg(handle, "test_table_ekacec", 1, 10, ["c1"], 200,
                          ["DATATYPE = CHARACTER*(*), NULLS_OK = TRUE"])
@@ -1280,7 +1280,7 @@ def test_ekacec():
     spice.ekcls(handle)
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1288,7 +1288,7 @@ def test_ekaced():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekaced.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno = spice.ekbseg(handle, "test_table_ekaced", 1, 10, ["c1"], 200,
                          ["DATATYPE = DOUBLE PRECISION, NULLS_OK = TRUE"])
@@ -1297,7 +1297,7 @@ def test_ekaced():
     spice.ekcls(handle)
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1305,7 +1305,7 @@ def test_ekacei():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekacei.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno = spice.ekbseg(handle, "test_table_ekacei", 1, 10, ["c1"], 200,
                          ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
@@ -1314,7 +1314,7 @@ def test_ekacei():
     spice.ekcls(handle)
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1322,7 +1322,7 @@ def test_ekaclc():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekaclc.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno, rcptrs = spice.ekifld(handle, "test_table_ekaclc", 1, 2, 200, ["c1"], 200,
                                  ["DATATYPE = CHARACTER*(*), INDEXED  = TRUE"])
@@ -1331,7 +1331,7 @@ def test_ekaclc():
     spice.ekcls(handle)
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1339,7 +1339,7 @@ def test_ekacld():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekacld.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno, rcptrs = spice.ekifld(handle, "test_table_ekacld", 1, 2, 200, ["c1"], 200,
                                  ["DATATYPE = DOUBLE PRECISION, NULLS_OK = TRUE"])
@@ -1348,7 +1348,7 @@ def test_ekacld():
     spice.ekcls(handle)
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1356,7 +1356,7 @@ def test_ekacli():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekacli.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno, rcptrs = spice.ekifld(handle, "test_table_ekacli", 1, 2, 200, ["c1"], 200,
                                  ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
@@ -1365,7 +1365,7 @@ def test_ekacli():
     spice.ekcls(handle)
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1378,7 +1378,7 @@ def test_ekappr():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekappr.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno = spice.ekbseg(handle, "test_table_ekappr", 1, 10, ["c1"], 200,
                          ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
@@ -1387,7 +1387,7 @@ def test_ekappr():
     spice.ekcls(handle)
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1395,7 +1395,7 @@ def test_ekbseg():
     ekpath = os.path.join(cwd, "example_ekbseg.ek")
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, "Test EK", 100)
     cnames = ['INT_COL_1']
     cdecls = ["DATATYPE=INTEGER, INDEXED=TRUE, NULLS_OK=TRUE"]
@@ -1407,7 +1407,7 @@ def test_ekbseg():
     spice.ekcls(handle)
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1420,7 +1420,7 @@ def test_ekccnt():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekccnt.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno = spice.ekbseg(handle, "TEST_TABLE_EKCCNT", 1, 10, ["c1"], 200,
                          ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
@@ -1434,7 +1434,7 @@ def test_ekccnt():
     assert spice.ekccnt("TEST_TABLE_EKCCNT") == 1
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1442,7 +1442,7 @@ def test_ekcii():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekcii.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno = spice.ekbseg(handle, "TEST_TABLE_EKCII", 1, 10, ["c1"], 200,
                          ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
@@ -1464,7 +1464,7 @@ def test_ekcii():
     assert not attdsc.indexd
     assert not attdsc.nullok
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1472,12 +1472,12 @@ def test_ekcls():
     spice.kclear()  # same as ekopn test
     ekpath = os.path.join(cwd, "example_ekcls.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 80)
     spice.ekcls(handle)
     assert spice.exists(ekpath)
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     spice.kclear()
 
 
@@ -1485,7 +1485,7 @@ def test_ekdelr():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekdelr.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno, rcptrs = spice.ekifld(handle, "test_table_ekdelr", 1, 10, 200, ["c1"], 200,
                                  ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
@@ -1495,7 +1495,7 @@ def test_ekdelr():
     spice.ekcls(handle)
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1509,7 +1509,7 @@ def test_ekffld():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekffld.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno, rcptrs = spice.ekifld(handle, "test_table_ekffld", 1, 10, 200, ["c1"], 200,
                                  ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
@@ -1518,7 +1518,7 @@ def test_ekffld():
     spice.ekcls(handle)
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1531,7 +1531,7 @@ def test_ekfind():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekfind.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno, rcptrs = spice.ekifld(handle, "test_table_ekfind", 1, 2, 200, ["cc1"], 200,
                                  ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
@@ -1545,7 +1545,7 @@ def test_ekfind():
     assert not error
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1558,7 +1558,7 @@ def test_ekgc():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekgc.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno, rcptrs = spice.ekifld(handle, "test_table_ekgc", 1, 2, 200, ["c1"], 200,
                                  ["DATATYPE = CHARACTER*(*), INDEXED  = TRUE"])
@@ -1577,7 +1577,7 @@ def test_ekgc():
     # assert c == "2.0" this fails, c is an empty string despite found being true.
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1585,7 +1585,7 @@ def test_ekgd():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekgd.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno, rcptrs = spice.ekifld(handle, "test_table_ekgd", 1, 2, 200, ["c1"], 200,
                                  ["DATATYPE = DOUBLE PRECISION, NULLS_OK = TRUE"])
@@ -1604,7 +1604,7 @@ def test_ekgd():
     assert d == 2.0
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1612,7 +1612,7 @@ def test_ekgi():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekgi.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno, rcptrs = spice.ekifld(handle, "test_table_ekgi", 1, 2, 200, ["c1"], 200,
                                  ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
@@ -1631,7 +1631,7 @@ def test_ekgi():
     assert i == 2
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1640,7 +1640,7 @@ def test_ekifld():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekifld.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno, rcptrs = spice.ekifld(handle, "test_table_ekifld", 1, 2, 200, ["c1"], 200,
                                  ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
@@ -1649,7 +1649,7 @@ def test_ekifld():
     spice.ekcls(handle)
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1661,7 +1661,7 @@ def test_eklef():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_eklef.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno = spice.ekbseg(handle, "test_table_eklef", 1, 10, ["c1"], 200,
                          ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
@@ -1673,7 +1673,7 @@ def test_eklef():
     assert handle is not None
     spice.ekuef(handle)
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
 
 
 def test_eknelt():
@@ -1684,7 +1684,7 @@ def test_eknseg():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_eknseg.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno = spice.ekbseg(handle, "TEST_TABLE_EKNSEG", 1, 10, ["c1"], 200,
                          ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
@@ -1697,7 +1697,7 @@ def test_eknseg():
     spice.ekcls(handle)
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1709,20 +1709,20 @@ def test_ekopn():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ek.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 80)
     spice.ekcls(handle)
     spice.kclear()
     assert spice.exists(ekpath)
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
 
 
 def test_ekopr():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekopr.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 80)
     spice.ekcls(handle)
     assert spice.exists(ekpath)
@@ -1731,7 +1731,7 @@ def test_ekopr():
     spice.ekcls(testhandle)
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
 
 
 def test_ekops():
@@ -1746,7 +1746,7 @@ def test_ekopw():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekopw.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 80)
     spice.ekcls(handle)
     assert spice.exists(ekpath)
@@ -1754,7 +1754,7 @@ def test_ekopw():
     assert testhandle is not None
     spice.ekcls(testhandle)
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     spice.kclear()
 
 
@@ -1775,7 +1775,7 @@ def test_ekrcei():
     # spice.kclear()
     # ekpath = os.path.join(cwd, "example_ekrcei.ek")
     # if spice.exists(ekpath):
-    # os.remove(ekpath)
+    # os.remove(ekpath) # pragma: no cover
     # handle = spice.ekopn(ekpath, ekpath, 0)
     # segno, rcptrs = spice.ekifld(handle, "test_table_ekrcei", 1, 2, 200, ["c1"], 200,
     #                              ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
@@ -1785,7 +1785,7 @@ def test_ekrcei():
     # spice.ekcls(handle)
     # spice.kclear()
     # if spice.exists(ekpath):
-    #     os.remove(ekpath)
+    #     os.remove(ekpath) # pragma: no cover
     # assert not spice.exists(ekpath)
 
 
@@ -1793,7 +1793,7 @@ def test_ekssum():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekssum.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno, rcptrs = spice.ekifld(handle, "test_table_ekssum", 1, 2, 200, ["c1"], 200,
                                  ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
@@ -1811,7 +1811,7 @@ def test_ekssum():
     spice.ekcls(handle)
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1819,7 +1819,7 @@ def test_ektnam():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ektnam.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno = spice.ekbseg(handle, "TEST_TABLE_EKTNAM", 1, 10, ["c1"], 200,
                          ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
@@ -1833,7 +1833,7 @@ def test_ektnam():
     assert spice.ekccnt("TEST_TABLE_EKTNAM") == 1
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
 
 
@@ -1853,7 +1853,7 @@ def test_ekuef():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekuef.ek")
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 80)
     spice.ekcls(handle)
     spice.kclear()
@@ -1864,7 +1864,7 @@ def test_ekuef():
     spice.ekcls(testhandle)
     spice.kclear()
     if spice.exists(ekpath):
-        os.remove(ekpath)
+        os.remove(ekpath) # pragma: no cover
 
 
 def test_el2cgv():
@@ -2194,7 +2194,7 @@ def test_getfov():
     spice.kclear()
     kernel = os.path.join(cwd, 'getfov_test.ti')
     if spice.exists(kernel):
-        os.remove(kernel)
+        os.remove(kernel) # pragma: no cover
     with open(kernel, 'w') as kernelFile:
         kernelFile.write('\\begindata\n')
         kernelFile.write("INS-999004_FOV_SHAPE            = 'POLYGON'\n")
@@ -2215,7 +2215,7 @@ def test_getfov():
     npt.assert_array_almost_equal(expected, bounds)
     spice.kclear()
     if spice.exists(kernel):
-        os.remove(kernel)
+        os.remove(kernel) # pragma: no cover
 
 
 def test_getmsg():
@@ -2521,7 +2521,7 @@ def test_gfsntc():
     spice.kclear()
     kernel = os.path.join(cwd, 'gfnstc_test.tf')
     if spice.exists(kernel):
-        os.remove(kernel)
+        os.remove(kernel) # pragma: no cover # pragma: no cover 
     with open(kernel, 'w') as kernelFile:
         kernelFile.write('\\begindata\n')
         kernelFile.write("FRAME_SEM                     =  10100000\n")
@@ -2567,7 +2567,7 @@ def test_gfsntc():
     assert endstr == "2007-SEP-23 09:46:39.579484 (TDB)"
     spice.kclear()
     if spice.exists(kernel):
-        os.remove(kernel)
+        os.remove(kernel) # pragma: no cover # pragma: no cover
 
 
 def test_gfsstp():
@@ -3038,7 +3038,7 @@ def test_ldpool():
                '                     32, @1999-JAN-1 )']
     kernel = os.path.join(cwd, 'ldpool_test.tls')
     if spice.exists(kernel):
-        os.remove(kernel)
+        os.remove(kernel) # pragma: no cover
     with open(kernel, 'w') as kernelFile:
         kernelFile.write('\\begindata\n')
         for line in textbuf:
@@ -3052,7 +3052,7 @@ def test_ldpool():
         assert vartype == 'N'
     spice.kclear()
     if spice.exists(kernel):
-        os.remove(kernel)
+        os.remove(kernel) # pragma: no cover
 
 
 def test_lmpool():
@@ -4418,7 +4418,7 @@ def test_spk14a():
                       4.0203, 4.0301, 4.0302, 4.0303]
     spk14 = os.path.join(cwd, "test14.bsp")
     if spice.exists(spk14):
-        os.remove(spk14)
+        os.remove(spk14) # pragma: no cover
     spice.kclear()
     handle = spice.spkopn(spk14, 'Type 14 SPK internal file name.', 1024)
     init_size = os.path.getsize(spk14)
@@ -4430,7 +4430,7 @@ def test_spk14a():
     spice.kclear()
     assert end_size != init_size
     if spice.exists(spk14):
-        os.remove(spk14)
+        os.remove(spk14) # pragma: no cover
 
 
 def test_spk14bstress():
@@ -4448,7 +4448,7 @@ def test_spk14b():
                       4.0203, 4.0301, 4.0302, 4.0303]
     spk14 = os.path.join(cwd, "test14.bsp")
     if spice.exists(spk14):
-        os.remove(spk14)
+        os.remove(spk14) # pragma: no cover
     spice.kclear()
     handle = spice.spkopn(spk14, 'Type 14 SPK internal file name.', 1024)
     init_size = os.path.getsize(spk14)
@@ -4460,7 +4460,7 @@ def test_spk14b():
     spice.kclear()
     assert end_size != init_size
     if spice.exists(spk14):
-        os.remove(spk14)
+        os.remove(spk14) # pragma: no cover
 
 
 def test_spk14e():
@@ -4473,7 +4473,7 @@ def test_spk14e():
                       4.0203, 4.0301, 4.0302, 4.0303]
     spk14 = os.path.join(cwd, "test14.bsp")
     if spice.exists(spk14):
-        os.remove(spk14)
+        os.remove(spk14) # pragma: no cover
     spice.kclear()
     handle = spice.spkopn(spk14, 'Type 14 SPK internal file name.', 1024)
     init_size = os.path.getsize(spk14)
@@ -4485,7 +4485,7 @@ def test_spk14e():
     spice.kclear()
     assert end_size != init_size
     if spice.exists(spk14):
-        os.remove(spk14)
+        os.remove(spk14) # pragma: no cover
 
 
 def test_spkacs():
@@ -4556,7 +4556,7 @@ def test_spkcls():
     # Same as test_spkw02
     SPK2 = os.path.join(cwd, "test2.bsp")
     if spice.exists(SPK2):
-        os.remove(SPK2)
+        os.remove(SPK2) # pragma: no cover
     spice.kclear()
     handle = spice.spkopn(SPK2, 'Type 2 SPK internal file name.', 4)
     init_size = os.path.getsize(SPK2)
@@ -4575,7 +4575,7 @@ def test_spkcls():
     spice.kclear()
     assert end_size != init_size
     if spice.exists(SPK2):
-        os.remove(SPK2)
+        os.remove(SPK2) # pragma: no cover
 
 
 def test_spkcov():
@@ -4765,7 +4765,7 @@ def test_spkobj():
 def test_spkopa():
     SPKOPA = os.path.join(cwd, "testspkopa.bsp")
     if spice.exists(SPKOPA):
-        os.remove(SPKOPA)
+        os.remove(SPKOPA) # pragma: no cover
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2012 APR 27 00:00:00.000 TDB")
@@ -4787,7 +4787,7 @@ def test_spkopa():
     spice.spkcls(handle_spkopa)
     # clean up
     if spice.exists(SPKOPA):
-        os.remove(SPKOPA)
+        os.remove(SPKOPA) # pragma: no cover
     spice.kclear()
 
 
@@ -4795,7 +4795,7 @@ def test_spkopn():
     # Same as test_spkw02
     SPK2 = os.path.join(cwd, "test2.bsp")
     if spice.exists(SPK2):
-        os.remove(SPK2)
+        os.remove(SPK2) # pragma: no cover
     spice.kclear()
     handle = spice.spkopn(SPK2, 'Type 2 SPK internal file name.', 4)
     init_size = os.path.getsize(SPK2)
@@ -4814,7 +4814,7 @@ def test_spkopn():
     spice.kclear()
     assert end_size != init_size
     if spice.exists(SPK2):
-        os.remove(SPK2)
+        os.remove(SPK2) # pragma: no cover
 
 
 def test_spkpds():
@@ -4894,7 +4894,7 @@ def test_spkssb():
 def test_spksub():
     SPKSUB = os.path.join(cwd, "testspksub.bsp")
     if spice.exists(SPKSUB):
-        os.remove(SPKSUB)
+        os.remove(SPKSUB) # pragma: no cover
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2012 APR 27 00:00:00.000 TDB")
@@ -4908,7 +4908,7 @@ def test_spksub():
     # close kernel
     spice.spkcls(handle_test)
     if spice.exists(SPKSUB):
-        os.remove(SPKSUB)
+        os.remove(SPKSUB) # pragma: no cover
     spice.kclear()
 
 
@@ -4936,7 +4936,7 @@ def test_spkuef():
 def test_spkw02():
     SPK2 = os.path.join(cwd, "test2.bsp")
     if spice.exists(SPK2):
-        os.remove(SPK2)
+        os.remove(SPK2) # pragma: no cover
     spice.kclear()
     handle = spice.spkopn(SPK2, 'Type 2 SPK internal file name.', 4)
     init_size = os.path.getsize(SPK2)
@@ -4955,13 +4955,13 @@ def test_spkw02():
     spice.kclear()
     assert end_size != init_size
     if spice.exists(SPK2):
-        os.remove(SPK2)
+        os.remove(SPK2) # pragma: no cover
 
 
 def test_spkw03():
     SPK3 = os.path.join(cwd, "test3.bsp")
     if spice.exists(SPK3):
-        os.remove(SPK3)
+        os.remove(SPK3) # pragma: no cover
     spice.kclear()
     handle = spice.spkopn(SPK3, 'Type 3 SPK internal file name.', 4)
     init_size = os.path.getsize(SPK3)
@@ -4983,13 +4983,13 @@ def test_spkw03():
     spice.kclear()
     assert end_size != init_size
     if spice.exists(SPK3):
-        os.remove(SPK3)
+        os.remove(SPK3) # pragma: no cover
 
 
 def test_spkw05():
     SPK5 = os.path.join(cwd, "test5.bsp")
     if spice.exists(SPK5):
-        os.remove(SPK5)
+        os.remove(SPK5) # pragma: no cover
     spice.kclear()
     handle = spice.spkopn(SPK5, 'Type 5 SPK internal file name.', 4)
     init_size = os.path.getsize(SPK5)
@@ -5013,13 +5013,13 @@ def test_spkw05():
     spice.kclear()
     assert end_size != init_size
     if spice.exists(SPK5):
-        os.remove(SPK5)
+        os.remove(SPK5) # pragma: no cover
 
 
 def test_spkw08():
     SPK8 = os.path.join(cwd, "test8.bsp")
     if spice.exists(SPK8):
-        os.remove(SPK8)
+        os.remove(SPK8) # pragma: no cover
     spice.kclear()
     handle = spice.spkopn(SPK8, 'Type 8 SPK internal file name.', 4)
     init_size = os.path.getsize(SPK8)
@@ -5044,13 +5044,13 @@ def test_spkw08():
     spice.kclear()
     assert end_size != init_size
     if spice.exists(SPK8):
-        os.remove(SPK8)
+        os.remove(SPK8) # pragma: no cover
 
 
 def test_spkw09():
     SPK9 = os.path.join(cwd, "test9.bsp")
     if spice.exists(SPK9):
-        os.remove(SPK9)
+        os.remove(SPK9) # pragma: no cover
     spice.kclear()
     handle = spice.spkopn(SPK9, 'Type 9 SPK internal file name.', 4)
     init_size = os.path.getsize(SPK9)
@@ -5074,7 +5074,7 @@ def test_spkw09():
     spice.kclear()
     assert end_size != init_size
     if spice.exists(SPK9):
-        os.remove(SPK9)
+        os.remove(SPK9) # pragma: no cover
 
 
 def test_spkw10():
@@ -5110,7 +5110,7 @@ def test_spkw10():
     last = epoch_x[-1] + 0.5 * spice.spd()
     consts = [1.082616e-3, -2.538813e-6, -1.65597e-6, 7.43669161e-2, 120.0, 78.0, 6378.135, 1.0]
     if spice.exists(SPK10):
-        os.remove(SPK10)
+        os.remove(SPK10) # pragma: no cover
     handle = spice.spkopn(SPK10, 'Type 10 SPK internal file name.', 100)
     init_size = os.path.getsize(SPK10)
     spice.spkw10(handle, -118123, 399, "J2000", first, last, "DMSP F8", consts, 9, elems_x, epoch_x)
@@ -5119,13 +5119,13 @@ def test_spkw10():
     assert end_size != init_size
     spice.kclear()
     if spice.exists(SPK10):
-        os.remove(SPK10)
+        os.remove(SPK10) # pragma: no cover
 
 
 def test_spkw12():
     SPK12 = os.path.join(cwd, "test12.bsp")
     if spice.exists(SPK12):
-        os.remove(SPK12)
+        os.remove(SPK12) # pragma: no cover
     spice.kclear()
     handle = spice.spkopn(SPK12, 'Type 12 SPK internal file name.', 4)
     init_size = os.path.getsize(SPK12)
@@ -5150,13 +5150,13 @@ def test_spkw12():
     spice.kclear()
     assert end_size != init_size
     if spice.exists(SPK12):
-        os.remove(SPK12)
+        os.remove(SPK12) # pragma: no cover
 
 
 def test_spkw13():
     SPK13 = os.path.join(cwd, "test13.bsp")
     if spice.exists(SPK13):
-        os.remove(SPK13)
+        os.remove(SPK13) # pragma: no cover 
     spice.kclear()
     handle = spice.spkopn(SPK13, 'Type 13 SPK internal file name.', 4)
     init_size = os.path.getsize(SPK13)
@@ -5180,7 +5180,7 @@ def test_spkw13():
     spice.kclear()
     assert end_size != init_size
     if spice.exists(SPK13):
-        os.remove(SPK13)
+        os.remove(SPK13) # pragma: no cover
 
 
 def test_spkw15():
@@ -5263,7 +5263,7 @@ def test_stpool():
     spice.kclear()
     kernel = os.path.join(cwd, 'stpool_t.ker')
     if spice.exists(kernel):
-        os.remove(kernel)
+        os.remove(kernel) # pragma: no cover
     with open(kernel, 'w') as kernelFile:
         kernelFile.write('\\begindata\n')
         kernelFile.write("SPK_FILES = ( 'this_is_the_full_path_specification_*',\n")
@@ -5280,7 +5280,7 @@ def test_stpool():
     assert string == "this_is_the_full_path_specification_of_a_second_file_name"
     spice.kclear()
     if spice.exists(kernel):
-        os.remove(kernel)
+        os.remove(kernel) # pragma: no cover
 
 
 def test_str2et():
