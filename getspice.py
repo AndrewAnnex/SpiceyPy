@@ -101,8 +101,8 @@ def attemptSpiceDownloadXTimes(x, root_url, result, root_dir):
                 proc.stdin.write(download.read())
             download.close()
             break
-        except urllib.error.URLError:
-            print("Download failed with URLError, trying again after 15 seconds!")
+        except urllib.error.URLError as e:
+            print("Download failed with URLError: {}, trying again after 15 seconds!".format(str(e)))
         except urllib.error.HTTPError as h:
             print("Some http error: ", h, ", trying again after 15 seconds!")
         attempts += 1
