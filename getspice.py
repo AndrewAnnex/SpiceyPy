@@ -14,6 +14,7 @@ import six.moves.urllib as urllib
 import io
 import zipfile
 import subprocess
+import random
 
 __author__ = 'AndrewAnnex'
 
@@ -79,7 +80,7 @@ def getSpice():
 
 
 def downloadSpice(urlpath):
-    return urllib.request.urlopen(urlpath, timeout=10)
+    return urllib.request.urlopen(urlpath, timeout=30)
 
 
 def attemptSpiceDownloadXTimes(x, root_url, result, root_dir):
@@ -105,7 +106,7 @@ def attemptSpiceDownloadXTimes(x, root_url, result, root_dir):
         except urllib.error.HTTPError as h:
             print("Some http error: ", h, ", trying again after 15 seconds!")
         attempts += 1
-        time.sleep(15)
+        time.sleep(15 + random.random())
 
 
 if __name__ == '__main__':
