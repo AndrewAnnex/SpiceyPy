@@ -103,11 +103,13 @@ def attemptSpiceDownloadXTimes(x, root_url, result, root_dir):
                 download.close()
                 break
             else:
-                print("Download failed with URLError: {}, trying again after 15 seconds!".format(str(download)))
+                print("Download failed somehow {}, trying again after 15 seconds!".format(str(download)))
                 attempts += 1
                 time.sleep(15 + random.random())
         except requests.RequestException as r:
-            print("Got the following error: {}".format(r))
+            print("Got the following error: {}, trying again after 15 seconds!".format(r))
+            attempts += 1
+            time.sleep(15 + random.random())
 
 
 if __name__ == '__main__':
