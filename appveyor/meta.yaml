@@ -14,12 +14,19 @@ requirements:
         - setuptools
         - six
         - numpy
-        - requests[security]
+        - requests
+        - idna
+        - pyasn1
+        - cryptography
     run:
         - python
         - setuptools
         - six
         - numpy
+        - requests
+        - idna
+        - pyasn1
+        - cryptography
 
 test:
     imports:
