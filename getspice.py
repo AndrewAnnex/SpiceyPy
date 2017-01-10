@@ -10,7 +10,7 @@ import platform
 
 import time
 
-import six.moves.urllib as urllib
+import requests
 import io
 import zipfile
 import subprocess
@@ -80,7 +80,7 @@ def getSpice():
 
 
 def downloadSpice(urlpath):
-    return urllib.request.urlopen(urlpath, timeout=30)
+    return requests.get(urlpath, timeout=30)
 
 
 def attemptSpiceDownloadXTimes(x, root_url, result, root_dir):
@@ -89,24 +89,25 @@ def attemptSpiceDownloadXTimes(x, root_url, result, root_dir):
         try:
             print("Attempting to download spice...")
             download = downloadSpice(root_url + result)
-            print('Unpacking... (this may take some time!)')
-            if result.endswith('zip'):
-                filelike = io.BytesIO(download.read())
-                with zipfile.ZipFile(filelike, 'r') as archive:
-                    archive.extractall(root_dir)
-                filelike.close()
+            if download.status_code == requests.codes.ok:
+                print('Unpacking... (this may take some time!)')
+                if result.endswith('zip'):
+                    filelike = io.BytesIO(download.content)
+                    with zipfile.ZipFile(filelike, 'r') as archive:
+                        archive.extractall(root_dir)
+                    filelike.close()
+                else:
+                    cmd = 'gunzip | tar xC ' + root_dir
+                    proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE)
+                    proc.stdin.write(download.content)
+                download.close()
+                break
             else:
-                cmd = 'gunzip | tar xC ' + root_dir
-                proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE)
-                proc.stdin.write(download.read())
-            download.close()
-            break
-        except urllib.error.URLError as e:
-            print("Download failed with URLError: {}, trying again after 15 seconds!".format(str(e)))
-        except urllib.error.HTTPError as h:
-            print("Some http error: ", h, ", trying again after 15 seconds!")
-        attempts += 1
-        time.sleep(15 + random.random())
+                print("Download failed with URLError: {}, trying again after 15 seconds!".format(str(download)))
+                attempts += 1
+                time.sleep(15 + random.random())
+        except requests.RequestException as r:
+            print("Got the following error: {}".format(r))
 
 
 if __name__ == '__main__':
