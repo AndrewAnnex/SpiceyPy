@@ -80,7 +80,7 @@ def getSpice():
 
 
 def downloadSpice(urlpath):
-    return requests.get(urlpath, timeout=30)
+    return requests.get(urlpath, timeout=30, verify=False)
 
 
 def attemptSpiceDownloadXTimes(x, root_url, result, root_dir):
