@@ -16,6 +16,7 @@ requirements:
         - numpy
         - requests
         - idna
+        - urllib3
         - pyasn1
         - cryptography
     run:
@@ -25,6 +26,7 @@ requirements:
         - numpy
         - requests
         - idna
+        - urllib3
         - pyasn1
         - cryptography
 

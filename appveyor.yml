@@ -61,7 +61,7 @@ install:
   - set PATH=%PYTHON%\\scripts;%PATH%
 
   # Download things we absolutly need
-  - pip install wheel twine six pytest requests[security]
+  - pip install wheel urllib3 twine six pytest requests[security]
   # coveralls and or coverage fail to install for 3.4 64bit python builds so don't bother for now.
 
   # Check for numpy wheel, compile if absent

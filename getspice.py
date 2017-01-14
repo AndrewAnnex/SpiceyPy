@@ -15,29 +15,10 @@ import zipfile
 import subprocess
 import random
 
-import ssl
+import urllib3.contrib.pyopenssl
+urllib3.contrib.pyopenssl.inject_into_urllib3()
 import requests
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.poolmanager import PoolManager
-from requests.packages.urllib3.util.ssl_ import create_urllib3_context
 
-
-class TLSv1_2HttpSAdapter(HTTPAdapter):
-    """"
-    Transport adapter" that allows us to use TLSv1.2.
-    adopted from https://github.com/kennethreitz/requests/issues/3774
-    """
-    CIPHERS = (
-        'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+HIGH:'
-        'DH+HIGH:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+HIGH:RSA+3DES:!aNULL:'
-        '!eNULL:!MD5'
-    )
-    def init_poolmanager(self, connections, maxsize, block=False, *args, **kwargs):
-        context = create_urllib3_context(ciphers=TLSv1_2HttpSAdapter.CIPHERS)
-        kwargs['ssl_context'] = context
-        self.poolmanager = PoolManager(
-            num_pools=connections, maxsize=maxsize,
-            block=block, ssl_version=ssl.PROTOCOL_TLSv1_2, *args, **kwargs)
 
 __author__ = 'AndrewAnnex'
 
@@ -103,8 +84,6 @@ def getSpice():
 
 
 def downloadSpice(urlpath):
-    session = requests.Session()
-    session.mount('https://naif.jpl.nasa.gov', TLSv1_2HttpSAdapter())
     return requests.get(urlpath, timeout=30)
 
 
