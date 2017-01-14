@@ -16,6 +16,21 @@ import zipfile
 import subprocess
 import random
 
+import ssl
+import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.poolmanager import PoolManager
+
+class TLSv1_2HttpAdapter(HTTPAdapter):
+    """"
+    Transport adapter" that allows us to use TLSv1.2.
+    adopted from https://github.com/kennethreitz/requests/issues/3774
+    """
+    def init_poolmanager(self, connections, maxsize, block=False):
+        self.poolmanager = PoolManager(
+            num_pools=connections, maxsize=maxsize,
+            block=block, ssl_version=ssl.PROTOCOL_TLSv1_2)
+
 __author__ = 'AndrewAnnex'
 
 def getSpice():
@@ -80,7 +95,9 @@ def getSpice():
 
 
 def downloadSpice(urlpath):
-    return requests.get(urlpath, timeout=30, verify=False)
+    session = requests.Session()
+    session.mount(urlpath, TLSv1_2HttpAdapter())
+    return requests.get(urlpath, timeout=30)
 
 
 def attemptSpiceDownloadXTimes(x, root_url, result, root_dir):
