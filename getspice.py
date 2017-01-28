@@ -35,7 +35,7 @@ def getSpice():
                 winner = cand
         return winner
 
-    root_url = 'http://naif.jpl.nasa.gov/pub/naif/misc/toolkit_N0065/C/'
+    root_url = 'https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_N0065/C/'
     platform_urls = [
         'MacIntel_OSX_AppleC_32bit/',
         'MacIntel_OSX_AppleC_64bit/',
