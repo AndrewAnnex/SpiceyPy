@@ -16,14 +16,14 @@ def cleanupFile(path):
         os.remove(path)
 
 class CassiniKernels(object):
-    cassPck_url     = "http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/pck/cpck05Mar2004.tpc"
-    cassSpk_url     = "http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/981005_PLTEPH-DE405S.bsp"
-    satSpk_url      = "http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/020514_SE_SAT105.bsp"
-    cassTourSpk_url = "http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/030201AP_SK_SM546_T45.bsp"
-    cassFk_url      = "http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/fk/cas_v40.tf"
-    cassCk_url      = "http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/ck/04135_04171pc_psiv2.bc"
-    cassSclk_url    = "http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/sclk/cas00167.tsc"
-    cassIk_url      = "http://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/ik/cas_iss_v10.ti"
+    cassPck_url     = "https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/pck/cpck05Mar2004.tpc"
+    cassSpk_url     = "https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/981005_PLTEPH-DE405S.bsp"
+    satSpk_url      = "https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/020514_SE_SAT105.bsp"
+    cassTourSpk_url = "https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/030201AP_SK_SM546_T45.bsp"
+    cassFk_url      = "https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/fk/cas_v40.tf"
+    cassCk_url      = "https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/ck/04135_04171pc_psiv2.bc"
+    cassSclk_url    = "https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/sclk/cas00167.tsc"
+    cassIk_url      = "https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/ik/cas_iss_v10.ti"
     cassPck         = getPathFromUrl(cassPck_url)
     cassSpk         = getPathFromUrl(cassSpk_url)
     satSpk          = getPathFromUrl(satSpk_url)
@@ -45,17 +45,17 @@ def cleanup_Cassini_Kernels():
 
 
 class MarsKernels(object):
-    merExt10_url        = "http://naif.jpl.nasa.gov/pub/naif/pds/data/mer1-m-spice-6-v1.0/mer1sp_1000/data/spk/mer1_surf_rover_ext10_v1.bsp"
-    merExt11_url        = "http://naif.jpl.nasa.gov/pub/naif/pds/data/mer1-m-spice-6-v1.0/mer1sp_1000/data/spk/mer1_surf_rover_ext11_v1.bsp"
-    merIau2000_url      = "http://naif.jpl.nasa.gov/pub/naif/pds/data/mer1-m-spice-6-v1.0/mer1sp_1000/data/spk/mer1_ls_040128_iau2000_v1.bsp"
-    merFK_url           = "http://naif.jpl.nasa.gov/pub/naif/MER/kernels/fk/mer1_v10.tf"
-    mroPspOne_url       = "http://naif.jpl.nasa.gov/pub/naif/MRO/kernels/spk/mro_psp1.bsp"
-    mroPspTwentyTwo_url = "http://naif.jpl.nasa.gov/pub/naif/MRO/kernels/spk/mro_psp22.bsp"
-    mgsSclk_url         = "http://naif.jpl.nasa.gov/pub/naif/pds/data/mgs-m-spice-6-v1.0/mgsp_1000/data/sclk/mgs_sclkscet_00061.tsc"
-    mgsPck_url          = "http://naif.jpl.nasa.gov/pub/naif/pds/data/ody-m-spice-6-v1.0/odsp_1000/data/pck/mars_iau2000_v0.tpc"
-    mgsIk_url           = "http://naif.jpl.nasa.gov/pub/naif/pds/data/mgs-m-spice-6-v1.0/mgsp_1000/data/ik/mgs_moc_v20.ti"
-    mgsSpk_url          = "http://naif.jpl.nasa.gov/pub/naif/pds/data/mgs-m-spice-6-v1.0/mgsp_1000/data/spk/mgs_ext26.bsp"
-    mgsCk_url           = "http://naif.jpl.nasa.gov/pub/naif/pds/data/mgs-m-spice-6-v1.0/mgsp_1000/data/ck/mgs_sc_ext26.bc"
+    merExt10_url        = "https://naif.jpl.nasa.gov/pub/naif/pds/data/mer1-m-spice-6-v1.0/mer1sp_1000/data/spk/mer1_surf_rover_ext10_v1.bsp"
+    merExt11_url        = "https://naif.jpl.nasa.gov/pub/naif/pds/data/mer1-m-spice-6-v1.0/mer1sp_1000/data/spk/mer1_surf_rover_ext11_v1.bsp"
+    merIau2000_url      = "https://naif.jpl.nasa.gov/pub/naif/pds/data/mer1-m-spice-6-v1.0/mer1sp_1000/data/spk/mer1_ls_040128_iau2000_v1.bsp"
+    merFK_url           = "https://naif.jpl.nasa.gov/pub/naif/MER/kernels/fk/mer1_v10.tf"
+    mroPspOne_url       = "https://naif.jpl.nasa.gov/pub/naif/MRO/kernels/spk/mro_psp1.bsp"
+    mroPspTwentyTwo_url = "https://naif.jpl.nasa.gov/pub/naif/MRO/kernels/spk/mro_psp22.bsp"
+    mgsSclk_url         = "https://naif.jpl.nasa.gov/pub/naif/pds/data/mgs-m-spice-6-v1.0/mgsp_1000/data/sclk/mgs_sclkscet_00061.tsc"
+    mgsPck_url          = "https://naif.jpl.nasa.gov/pub/naif/pds/data/ody-m-spice-6-v1.0/odsp_1000/data/pck/mars_iau2000_v0.tpc"
+    mgsIk_url           = "https://naif.jpl.nasa.gov/pub/naif/pds/data/mgs-m-spice-6-v1.0/mgsp_1000/data/ik/mgs_moc_v20.ti"
+    mgsSpk_url          = "https://naif.jpl.nasa.gov/pub/naif/pds/data/mgs-m-spice-6-v1.0/mgsp_1000/data/spk/mgs_ext26.bsp"
+    mgsCk_url           = "https://naif.jpl.nasa.gov/pub/naif/pds/data/mgs-m-spice-6-v1.0/mgsp_1000/data/ck/mgs_sc_ext26.bc"
     merExt10            = getPathFromUrl(merExt10_url)
     merExt11            = getPathFromUrl(merExt11_url)
     merIau2000          = getPathFromUrl(merIau2000_url)
@@ -83,11 +83,11 @@ def cleanup_Mars_Kernels():
 
 
 class ExtraKernels(object):
-    voyagerSclk_url     = "http://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/sclk/vg200022.tsc"
-    earthTopoTf_url     = "http://naif.jpl.nasa.gov/pub/naif/generic_kernels/fk/stations/earth_topo_050714.tf"
-    earthStnSpk_url     = "http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/stations/earthstns_itrf93_050714.bsp"
-    earthGenPck_url     = "http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/earth_720101_070426.bpc"
-    earthHighPerPck_url = "http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/earth_latest_high_prec.bpc"
+    voyagerSclk_url     = "https://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/sclk/vg200022.tsc"
+    earthTopoTf_url     = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/fk/stations/earth_topo_050714.tf"
+    earthStnSpk_url     = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/stations/earthstns_itrf93_050714.bsp"
+    earthGenPck_url     = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/earth_720101_070426.bpc"
+    earthHighPerPck_url = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/earth_latest_high_prec.bpc"
     voyagerSclk         = getPathFromUrl(voyagerSclk_url)
     earthTopoTf         = getPathFromUrl(earthTopoTf_url)
     earthStnSpk         = getPathFromUrl(earthStnSpk_url)
@@ -106,10 +106,10 @@ class CoreKernels(object):
     # note this gets updated
     currentLSK = 'naif0012.tls'
     #
-    pck_url    = 'http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/pck00010.tpc'
-    spk_url    = 'http://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/a_old_versions/de421.bsp'
-    gm_pck_url = 'http://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/gm_de431.tpc'
-    lsk_url    = 'http://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/{}'.format(currentLSK)
+    pck_url    = 'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/pck00010.tpc'
+    spk_url    = 'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/a_old_versions/de421.bsp'
+    gm_pck_url = 'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/gm_de431.tpc'
+    lsk_url    = 'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/{}'.format(currentLSK)
     pck        = getPathFromUrl(pck_url)
     spk        = getPathFromUrl(spk_url)
     gm_pck     = getPathFromUrl(gm_pck_url)
