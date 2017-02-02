@@ -18,7 +18,6 @@ def SpiceUDF(f):
     def wrapping_udfunc(x, value):
         result = f(x)
         value[0] = ctypes.c_double(result)
-        pass
 
     return UDFUNC(wrapping_udfunc)
 

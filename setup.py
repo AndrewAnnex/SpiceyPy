@@ -112,7 +112,6 @@ def build_library():
                 raise BaseException('{0}'.format(status))
         except BaseException as error:
             sys.exit("Build failed with: {0}".format(error.args))
-            pass
         finally:
             os.chdir(currentDir)
 
