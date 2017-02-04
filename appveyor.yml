@@ -39,7 +39,7 @@ environment:
         PY_TAG: "cp34"
 
       - PYTHON: "C:\\Python34-x64"
-        CONDA: "C:\\Miniconda3"
+        CONDA: "C:\\Miniconda3-x64"
         CONDA_BUILDS: C:\\Miniconda3-x64\conda-bld\win-64
         PYTHON_VERSION: "3.4.x"
         ARCH: "64"
