@@ -49,7 +49,7 @@ environment:
 
       - PYTHON: "C:\\Python36"
         CONDA: "C:\\Miniconda36"
-        CONDA_BUILDS: C:\\Miniconda35\conda-bld\win-32
+        CONDA_BUILDS: C:\\Miniconda36\conda-bld\win-32
         PYTHON_VERSION: "3.6.x"
         ARCH: "32"
         WINDOWS_SDK_VERSION: "v7.1"
