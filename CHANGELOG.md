@@ -4,10 +4,19 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## [unreleased]   
+## [unreleased]
+
+## [1.1.1] - 2017-04-23
+### Added
+- added python3.6 builds
+
+### Fixed
+- fixed formatting on changelog
+- fixed issues with rtd builds
+
 ### Changed
 - version updated
-- fixed formatting on changelog
+- converted all downloads to use https
 
 ## [1.1.0] - 2016-10-19   
 ### Added    
