@@ -25,6 +25,7 @@ SOFTWARE.
 import os
 import time
 import six.moves.urllib as urllib
+from six import print_ as six_print
 
 
 cwd = os.path.realpath(os.path.dirname(__file__))
@@ -161,18 +162,18 @@ def attemptDownload(url, kernelName, targetFileName, num_attempts):
     current_attempt = 0
     while current_attempt < num_attempts:
         try:
-            print("Attempting to Download kernel: {}".format(kernelName))
+            six_print("Attempting to Download kernel: {}".format(kernelName), flush=True)
             current_kernel = urllib.request.urlopen(url, timeout=10)
             with open(targetFileName, "wb") as kernel:
                 kernel.write(current_kernel.read())
-            print("Downloaded kernel: {}".format(kernelName))
+            six_print("Downloaded kernel: {}".format(kernelName), flush=True)
             break
         except urllib.error.URLError:
-            print("Download of kernel: {} failed with URLError, trying agian after a bit.".format(kernelName))
+            six_print("Download of kernel: {} failed with URLError, trying agian after a bit.".format(kernelName), flush=True)
         except urllib.error.HTTPError as h:
             print("Some http error when downloading kernel {}, error: ".format(kernelName), h, ", trying agian after a bit.")
         current_attempt += 1
-        print("\t Attempting to Download kernel again...")
+        six_print("\t Attempting to Download kernel again...", flush=True)
         time.sleep(2 + current_attempt)
     if current_attempt >= num_attempts:
         raise BaseException("Error Downloading kernel: {}, check if kernel exists at url: {}".format(kernelName, url))
@@ -180,7 +181,7 @@ def attemptDownload(url, kernelName, targetFileName, num_attempts):
 
 
 def getStandardKernels():
-    print("\tChecking for kernels...\n")
+    six_print("\tChecking for kernels...\n", flush=True)
     getKernel(CoreKernels.pck_url)
     getKernel(CoreKernels.spk_url)
     getKernel(CoreKernels.gm_pck_url)
@@ -200,9 +201,9 @@ def getExtraMarsTestKernels():
     getKernel(MarsKernels.merExt11_url)
     getKernel(MarsKernels.merIau2000_url)
     getKernel(MarsKernels.merFK_url)
-    print("About to Download 'mro_psp1.bsp' which is over 170MB...")
+    six_print("About to Download 'mro_psp1.bsp' which is over 170MB...", flush=True)
     getKernel(MarsKernels.mroPspOne_url)
-    print("About to Download 'mro_psp22.bsp' which is over 105MB...")
+    six_print("About to Download 'mro_psp22.bsp' which is over 105MB...", flush=True)
     getKernel(MarsKernels.mroPspTwentyTwo_url)
 
 def getMGSTestKernels():
@@ -232,7 +233,7 @@ def writeTestMetaKernel():
         kernelFile.write(')\n')
         kernelFile.write('\\begintext')
         kernelFile.close()
-    print('\nDone writing test meta kernel.')
+    six_print('\nDone writing test meta kernel.', flush=True)
 
 
 def downloadKernels():
