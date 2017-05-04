@@ -28,7 +28,7 @@ before_install:
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then python --version; fi
 - pip install twine
 - pip install -r requirements.txt
-- if [ "$TRAVIS_OS_NAME" == "osx" ]; then python ./spiceypy/tests/gettestkernels.py; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then travis_wait python ./spiceypy/tests/gettestkernels.py; fi
 install:
 - python setup.py install
 script:
