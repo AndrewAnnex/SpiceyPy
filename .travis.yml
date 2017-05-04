@@ -3,14 +3,19 @@ sudo: false
 matrix:
     include:
         - os: linux
+          dist: trusty
           python: 2.7
         - os: linux
+          dist: trusty
           python: 3.5
         - os: linux
+          dist: trusty
           python: 3.6
         - os: osx
+          language: generic
           env: PYVERSION='2.7.13'
         - os: osx
+          language: generic
           env: PYVERSION='3.6.0'
 
 before_install:
