@@ -1,13 +1,34 @@
 language: python
 sudo: false
-dist: trusty
-python:
-- 2.7
-- 3.5
-- 3.6
+matrix:
+    include:
+        - os: linux
+          dist: trusty
+          python: 2.7
+        - os: linux
+          dist: trusty
+          python: 3.5
+        - os: linux
+          dist: trusty
+          python: 3.6
+        - os: osx
+          language: generic
+          env: PYVERSION='2.7.13'
+        - os: osx
+          language: generic
+          env: PYVERSION='3.6.0'
+
 before_install:
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew upgrade pyenv; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then eval "$(pyenv init -)"; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then pyenv install $PYVERSION; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then pyenv global $PYVERSION; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then pyenv versions; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then python --version; fi
 - pip install twine
 - pip install -r requirements.txt
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then travis_wait python ./spiceypy/tests/gettestkernels.py; fi
 install:
 - python setup.py install
 script:
