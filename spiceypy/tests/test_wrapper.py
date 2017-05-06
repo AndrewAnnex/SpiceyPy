@@ -5557,7 +5557,7 @@ def test_tisbod():
 
 def test_tkvrsn():
     version = spice.tkvrsn("toolkit")
-    assert version == "CSPICE_N0065"
+    assert version == "CSPICE_N0066"
 
 
 def test_tparse():
