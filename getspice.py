@@ -56,9 +56,6 @@ import platform
 import time
 
 import six.moves.urllib as urllib
-import io
-import zipfile
-import subprocess
 
 __author__ = 'AndrewAnnex'
 
@@ -135,15 +132,18 @@ def attemptSpiceDownloadXTimes(x, root_url, result, root_dir):
             download = downloadSpice(root_url + result)
             print('Unpacking... (this may take some time!)')
             if result.endswith('zip'):
+                import zipfile
+                import io
                 filelike = io.BytesIO(download.read())
                 with zipfile.ZipFile(filelike, 'r') as archive:
                     archive.extractall(root_dir)
                 filelike.close()
+                download.close()
             else:
-                cmd = 'gunzip | tar xC ' + root_dir
-                proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE)
-                proc.stdin.write(download.read())
-            download.close()
+                import tarfile
+                tar = tarfile.open(fileobj=download, mode="r|gz")
+                tar.extractall(path=root_dir)
+                tar.close()
             break
         except urllib.error.URLError:
             print("Download failed with URLError, trying again after 15 seconds!")
