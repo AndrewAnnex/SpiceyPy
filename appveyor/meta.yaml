@@ -14,11 +14,21 @@ requirements:
         - setuptools
         - six
         - numpy
+        - requests
+        - idna
+        - urllib3
+        - pyasn1
+        - cryptography
     run:
         - python
         - setuptools
         - six
         - numpy
+        - requests
+        - idna
+        - urllib3
+        - pyasn1
+        - cryptography
 
 test:
     imports:

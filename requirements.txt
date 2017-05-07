@@ -3,3 +3,5 @@ six>=1.9.0
 pytest>=2.9.0
 coverage>=4.0
 coveralls>=1.1
+urllib3>=1.19
+requests[security]>=2.12.4

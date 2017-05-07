@@ -55,10 +55,15 @@ import platform
 
 import time
 
-import six.moves.urllib as urllib
 import io
 import zipfile
 import subprocess
+import random
+
+import urllib3.contrib.pyopenssl
+urllib3.contrib.pyopenssl.inject_into_urllib3()
+import requests
+
 
 __author__ = 'AndrewAnnex'
 
@@ -80,7 +85,7 @@ def getSpice():
                 winner = cand
         return winner
 
-    root_url = 'https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_N0065/C/'
+    root_url = 'http://naif.jpl.nasa.gov/pub/naif/misc/toolkit_N0065/C/'
     platform_urls = [
         'MacIntel_OSX_AppleC_32bit/',
         'MacIntel_OSX_AppleC_64bit/',
@@ -124,7 +129,7 @@ def getSpice():
 
 
 def downloadSpice(urlpath):
-    return urllib.request.urlopen(urlpath, timeout=10)
+    return requests.get(urlpath, timeout=30)
 
 
 def attemptSpiceDownloadXTimes(x, root_url, result, root_dir):
@@ -133,24 +138,27 @@ def attemptSpiceDownloadXTimes(x, root_url, result, root_dir):
         try:
             print("Attempting to download spice...")
             download = downloadSpice(root_url + result)
-            print('Unpacking... (this may take some time!)')
-            if result.endswith('zip'):
-                filelike = io.BytesIO(download.read())
-                with zipfile.ZipFile(filelike, 'r') as archive:
-                    archive.extractall(root_dir)
-                filelike.close()
+            if download.status_code == requests.codes.ok:
+                print('Unpacking... (this may take some time!)')
+                if result.endswith('zip'):
+                    filelike = io.BytesIO(download.content)
+                    with zipfile.ZipFile(filelike, 'r') as archive:
+                        archive.extractall(root_dir)
+                    filelike.close()
+                else:
+                    cmd = 'gunzip | tar xC ' + root_dir
+                    proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE)
+                    proc.stdin.write(download.content)
+                download.close()
+                break
             else:
-                cmd = 'gunzip | tar xC ' + root_dir
-                proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE)
-                proc.stdin.write(download.read())
-            download.close()
-            break
-        except urllib.error.URLError:
-            print("Download failed with URLError, trying again after 15 seconds!")
-        except urllib.error.HTTPError as h:
-            print("Some http error: ", h, ", trying again after 15 seconds!")
-        attempts += 1
-        time.sleep(15)
+                print("Download failed somehow {}, trying again after 15 seconds!".format(str(download)))
+                attempts += 1
+                time.sleep(15 + random.random())
+        except requests.RequestException as r:
+            print("Got the following error: {}, trying again after 15 seconds!".format(r))
+            attempts += 1
+            time.sleep(15 + random.random())
 
 
 if __name__ == '__main__':
