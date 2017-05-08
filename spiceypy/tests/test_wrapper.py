@@ -29,7 +29,7 @@ import numpy.testing as npt
 import os
 
 import spiceypy.utils.callbacks
-from .gettestkernels import downloadKernels,\
+from spiceypy.tests.gettestkernels import downloadKernels,\
     CoreKernels,\
     MarsKernels, \
     CassiniKernels,\
@@ -2685,6 +2685,14 @@ def test_gnpool():
 
 def test_halfpi():
     assert spice.halfpi() == np.pi / 2
+
+
+def test_hrmint():
+    xvals = [-1.0, 0.0, 3.0, 5.0]
+    yvals = [6.0, 3.0, 5.0, 0.0, 2210.0, 5115.0, 78180.0, 109395.0]
+    answer, deriv = spice.hrmint(4, xvals, yvals, 2)
+    assert answer == pytest.approx(141.0)
+    assert deriv  == pytest.approx(456.0)
 
 
 def test_hx2dp():

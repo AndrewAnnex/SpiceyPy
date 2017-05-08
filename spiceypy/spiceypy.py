@@ -5429,6 +5429,36 @@ def halfpi():
 
 
 @spiceErrorCheck
+def hrmint(n, xvals, yvals, x):
+    """
+    Evaluate a Hermite interpolating polynomial at a specified
+    abscissa value.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/hrmint_c.html
+    
+    :param n: Number of points defining the polynomial.
+    :type n: int
+    :param xvals: Abscissa values.
+    :type xvals: Array of floats
+    :param yvals: Ordinate and derivative values.
+    :type yvals: Array of floats
+    :param x: Point at which to interpolate the polynomial.
+    :type x: int
+    :return: Interpolated function value at x and the Interpolated function's derivative at x  
+    :rtype: tuple
+    """
+    work  = stypes.emptyDoubleVector(int(2*len(yvals)+1))
+    n     = ctypes.c_int(n)
+    xvals = stypes.toDoubleVector(xvals)
+    yvals = stypes.toDoubleVector(yvals)
+    x     = ctypes.c_double(x)
+    f     = ctypes.c_double(0)
+    df    = ctypes.c_double(0)
+    libspice.hrmint_c(n, xvals, yvals, x, work, f, df)
+    return f.value, df.value
+
+
+@spiceErrorCheck
 def hx2dp(string):
     """
     Convert a string representing a double precision number in a

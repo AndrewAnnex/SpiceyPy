@@ -330,6 +330,7 @@ libspice.gnpool_c.argtypes = [c_char_p, c_int, c_int, c_int, POINTER(c_int), c_v
 # H
 
 libspice.halfpi_c.restype = c_double
+libspice.hrmint_c.argtypes = [c_int, POINTER(c_double), POINTER(c_double), c_double, POINTER(c_double), POINTER(c_double), POINTER(c_double)]
 libspice.hx2dp_c.argtypes = [c_char_p, c_int, POINTER(c_double), POINTER(c_bool), c_char_p]
 
 ########################################################################################################################
