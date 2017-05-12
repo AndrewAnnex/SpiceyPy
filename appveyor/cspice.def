@@ -209,6 +209,7 @@ EXPORTS			appndc_c
 				gipool_c
 				gnpool_c
 				halfpi_c
+				hrmint_c
 				hx2dp_c
 				ident_c
 				illum_c
@@ -427,8 +428,12 @@ EXPORTS			appndc_c
 				spkw17_c
 				spkw18_c
 				spkw20_c
+				srfc2s
+				srfcss
 				srfrec_c
 				srfxpt_c
+				srfs2c
+				srfscc
 				ssize_c
 				stelab_c
 				stpool_c
