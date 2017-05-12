@@ -85,7 +85,7 @@ install:
   - ECHO "Installed SpiceyPy!"
   # restore PATH
   - set PATH=%BK_PATH%
-  - "%PYTHON%/Scirpts/pytest --version
+  - "%PYTHON%/Scirpts/pytest --version"
 
 test_script:
   - "%PYTHON%/Scripts/py.test spiceypy/tests"
