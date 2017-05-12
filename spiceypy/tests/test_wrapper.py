@@ -5230,6 +5230,57 @@ def test_spkw18():
 def test_spkw20():
     assert 1
 
+def test_srfc2s():
+    spice.kclear()
+    kernel = os.path.join(cwd, 'srfc2s_ex1.tm')
+    if spice.exists(kernel):
+        os.remove(kernel) # pragma: no cover
+    with open(kernel, 'w') as kernelFile:
+        kernelFile.write('\\begindata\n')
+        kernelFile.write("NAIF_SURFACE_NAME += ( 'MGS MOLA  64 pixel/deg',\n")
+        kernelFile.write("                       'MGS MOLA 128 pixel/deg',\n")
+        kernelFile.write("                       'PHOBOS GASKELL Q512'     )\n")
+        kernelFile.write("NAIF_SURFACE_CODE += (   1,   2,    1 )\n")
+        kernelFile.write("NAIF_SURFACE_BODY += ( 499, 499,  401 )\n")
+        kernelFile.write("\\begintext\n")
+        kernelFile.close()
+    spice.furnsh(kernel)
+    assert spice.srfc2s(1, 499)   == "MGS MOLA  64 pixel/deg"
+    assert spice.srfc2s(1, 401) == "PHOBOS GASKELL Q512"
+    assert spice.srfc2s(2, 499)    == "MGS MOLA 128 pixel/deg"
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.srfc2s(1, -1)
+    spice.reset()
+    spice.kclear()
+    if spice.exists(kernel):
+        os.remove(kernel)  # pragma: no cover
+
+
+def test_srfcss():
+    spice.kclear()
+    kernel = os.path.join(cwd, 'srfcss_ex1.tm')
+    if spice.exists(kernel):
+        os.remove(kernel) # pragma: no cover
+    with open(kernel, 'w') as kernelFile:
+        kernelFile.write('\\begindata\n')
+        kernelFile.write("NAIF_SURFACE_NAME += ( 'MGS MOLA  64 pixel/deg',\n")
+        kernelFile.write("                       'MGS MOLA 128 pixel/deg',\n")
+        kernelFile.write("                       'PHOBOS GASKELL Q512'     )\n")
+        kernelFile.write("NAIF_SURFACE_CODE += (   1,   2,    1 )\n")
+        kernelFile.write("NAIF_SURFACE_BODY += ( 499, 499,  401 )\n")
+        kernelFile.write("\\begintext\n")
+        kernelFile.close()
+    spice.furnsh(kernel)
+    assert spice.srfcss(1, "MARS")   == "MGS MOLA  64 pixel/deg"
+    assert spice.srfcss(1, "PHOBOS") == "PHOBOS GASKELL Q512"
+    assert spice.srfcss(2, "499")    == "MGS MOLA 128 pixel/deg"
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.srfcss(1, "ZZZ")
+    spice.reset()
+    spice.kclear()
+    if spice.exists(kernel):
+        os.remove(kernel)  # pragma: no cover
+
 
 def test_srfrec():
     spice.kclear()
@@ -5238,6 +5289,63 @@ def test_srfrec():
     expected = [-906.24919474, 5139.59458217, 3654.29989637]
     npt.assert_array_almost_equal(x, expected)
     spice.kclear()
+
+
+def test_srfs2c():
+    spice.kclear()
+    kernel = os.path.join(cwd, 'srfs2c_ex1.tm')
+    if spice.exists(kernel):
+        os.remove(kernel) # pragma: no cover
+    with open(kernel, 'w') as kernelFile:
+        kernelFile.write('\\begindata\n')
+        kernelFile.write("NAIF_SURFACE_NAME += ( 'MGS MOLA  64 pixel/deg',\n")
+        kernelFile.write("                       'MGS MOLA 128 pixel/deg',\n")
+        kernelFile.write("                       'PHOBOS GASKELL Q512'     )\n")
+        kernelFile.write("NAIF_SURFACE_CODE += (   1,   2,    1 )\n")
+        kernelFile.write("NAIF_SURFACE_BODY += ( 499, 499,  401 )\n")
+        kernelFile.write("\\begintext\n")
+        kernelFile.close()
+    spice.furnsh(kernel)
+    assert spice.srfs2c("MGS MOLA  64 pixel/deg", "MARS") == 1
+    assert spice.srfs2c("PHOBOS GASKELL Q512", "PHOBOS")  == 1
+    assert spice.srfs2c("MGS MOLA 128 pixel/deg", "MARS") == 2
+    assert spice.srfs2c("MGS MOLA  64 pixel/deg", "499")  == 1
+    assert spice.srfs2c("1", "PHOBOS") == 1
+    assert spice.srfs2c("2", "499") == 2
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.srfs2c("ZZZ", "MARS")
+    spice.reset()
+    spice.kclear()
+    if spice.exists(kernel):
+        os.remove(kernel)  # pragma: no cover
+
+
+def test_srfscc():
+    spice.kclear()
+    kernel = os.path.join(cwd, 'srfscc_ex1.tm')
+    if spice.exists(kernel):
+        os.remove(kernel) # pragma: no cover
+    with open(kernel, 'w') as kernelFile:
+        kernelFile.write('\\begindata\n')
+        kernelFile.write("NAIF_SURFACE_NAME += ( 'MGS MOLA  64 pixel/deg',\n")
+        kernelFile.write("                       'MGS MOLA 128 pixel/deg',\n")
+        kernelFile.write("                       'PHOBOS GASKELL Q512'     )\n")
+        kernelFile.write("NAIF_SURFACE_CODE += (   1,   2,    1 )\n")
+        kernelFile.write("NAIF_SURFACE_BODY += ( 499, 499,  401 )\n")
+        kernelFile.write("\\begintext\n")
+        kernelFile.close()
+    spice.furnsh(kernel)
+    assert spice.srfscc("MGS MOLA  64 pixel/deg", 499) == 1
+    assert spice.srfscc("PHOBOS GASKELL Q512", 401)  == 1
+    assert spice.srfscc("MGS MOLA 128 pixel/deg", 499) == 2
+    assert spice.srfscc("1", 401) == 1
+    assert spice.srfscc("2", 499) == 2
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.srfscc("ZZZ", 499)
+    spice.reset()
+    spice.kclear()
+    if spice.exists(kernel):
+        os.remove(kernel)  # pragma: no cover
 
 
 def test_srfxpt():
@@ -6299,8 +6407,8 @@ def test_xposeg():
     npt.assert_array_almost_equal(spice.xposeg(np.array(m1), 3, 3), [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]])
 
 
-def teardown_module(module):
-    cleanup_Cassini_Kernels()
-    cleanup_Mars_Kernels()
-    cleanup_Extra_Kernels()
-    cleanup_Core_Kernels()
+#def teardown_module(module):
+    #cleanup_Cassini_Kernels()
+    #cleanup_Mars_Kernels()
+    #cleanup_Extra_Kernels()
+    #cleanup_Core_Kernels()

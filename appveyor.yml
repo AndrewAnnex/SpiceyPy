@@ -70,8 +70,6 @@ install:
 
   # Now install numpy from pre-built wheel. This may be fragile.
   - "%WITH_COMPILER% pip install --use-wheel --no-index --find-links=c:\\Users\\appveyor\\Downloads numpy"
-  #- "%WITH_COMPILER% pip install --no-index --find-links=C:\\Users\\appveyor\\Downloads numpy"
-  #- "%WITH_COMPILER% pip install C:\\Users\\appveyor\\Downloads\\*.whl"
 
   # Download CSPICE so we can build outside of python
   - "%PYTHON%/python getspice.py"
@@ -87,6 +85,7 @@ install:
   - ECHO "Installed SpiceyPy!"
   # restore PATH
   - set PATH=%BK_PATH%
+  - "%PYTHON%/Scirpts/pytest --version
 
 test_script:
   - "%PYTHON%/Scripts/py.test spiceypy/tests"

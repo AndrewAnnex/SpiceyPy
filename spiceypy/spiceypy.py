@@ -11045,6 +11045,64 @@ def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel,
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
+def srfc2s(code, bodyid, srflen=_default_len_out):
+    """
+    Translate a surface ID code, together with a body ID code, to the 
+    corresponding surface name. If no such name exists, return a 
+    string representation of the surface ID code. 
+    
+    note: from NAIF if isname is false, this case is not treated as an error.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfc2s_c.html
+    
+    :param code: Integer surface ID code to translate to a string. 
+    :type code: int
+    :param bodyid: ID code of body associated with surface. 
+    :type bodyid: int
+    :param srflen: Available space in output string.
+    :param srflen: int 
+    :return: String corresponding to surface ID code.
+    :rtype: str
+    """
+    code   = ctypes.c_int(code)
+    bodyid = ctypes.c_int(bodyid)
+    srfstr = stypes.stringToCharP(srflen)
+    srflen = ctypes.c_int(srflen)
+    isname = ctypes.c_bool()
+    libspice.srfc2s_c(code, bodyid, srflen, srfstr, ctypes.byref(isname))
+    return stypes.toPythonString(srfstr), isname.value
+
+
+@spiceErrorCheck
+@spiceFoundExceptionThrower
+def srfcss(code, bodstr, srflen=_default_len_out):
+    """
+    Translate a surface ID code, together with a body string, to the 
+    corresponding surface name. If no such surface name exists, 
+    return a string representation of the surface ID code. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfcss_c.html
+    
+    :param code: Integer surface ID code to translate to a string. 
+    :type code: int
+    :param bodstr: Name or ID of body associated with surface.
+    :type bodstr: str
+    :param srflen: Available space in output string.
+    :param srflen: int
+    :return: String corresponding to surface ID code.
+    :rtype: str
+    """
+    code = ctypes.c_int(code)
+    bodstr = stypes.stringToCharP(bodstr)
+    srfstr = stypes.stringToCharP(srflen)
+    srflen = ctypes.c_int(srflen)
+    isname = ctypes.c_bool()
+    libspice.srfcss_c(code, bodstr, srflen, srfstr, ctypes.byref(isname))
+    return stypes.toPythonString(srfstr), isname.value
+
+
+@spiceErrorCheck
 def srfrec(body, longitude, latitude):
     """
     Convert planetocentric latitude and longitude of a surface
@@ -11067,6 +11125,56 @@ def srfrec(body, longitude, latitude):
     rectan = stypes.emptyDoubleVector(3)
     libspice.srfrec_c(body, longitude, latitude, rectan)
     return stypes.vectorToList(rectan)
+
+
+@spiceErrorCheck
+@spiceFoundExceptionThrower
+def srfs2c(srfstr, bodstr):
+    """
+    Translate a surface string, together with a body string, to the 
+    corresponding surface ID code. The input strings may contain 
+    names or integer ID codes.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfs2c_c.html
+    
+    :param srfstr: Surface name or ID string.
+    :type srfstr: str
+    :param bodstr: Body name or ID string.
+    :type bodstr: str
+    :return: Integer surface ID code.
+    :rtype: int
+    """
+    srfstr = stypes.stringToCharP(srfstr)
+    bodstr = stypes.stringToCharP(bodstr)
+    code   = ctypes.c_int()
+    isname = ctypes.c_bool()
+    libspice.srfs2c_c(srfstr, bodstr, ctypes.byref(code), ctypes.byref(isname))
+    return code.value, isname.value
+
+
+@spiceErrorCheck
+@spiceFoundExceptionThrower
+def srfscc(srfstr, bodyid):
+    """
+    Translate a surface string, together with a body ID code, to the 
+    corresponding surface ID code. The input surface string may 
+    contain a name or an integer ID code. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfscc_c.html
+    
+    :param srfstr: Surface name or ID string.
+    :type srfstr: str
+    :param bodyid: ID code of body associated with surface. 
+    :type bodyid: int 
+    :return: Integer surface ID code.
+    :rtype: int
+    """
+    srfstr = stypes.stringToCharP(srfstr)
+    bodyid = ctypes.c_int(bodyid)
+    code = ctypes.c_int()
+    isname = ctypes.c_bool()
+    libspice.srfscc_c(srfstr, bodyid, ctypes.byref(code), ctypes.byref(isname))
+    return code.value, isname.value
 
 
 @spiceErrorCheck
