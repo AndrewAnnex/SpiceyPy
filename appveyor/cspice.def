@@ -428,12 +428,12 @@ EXPORTS			appndc_c
 				spkw17_c
 				spkw18_c
 				spkw20_c
-				srfc2s
-				srfcss
+				srfc2s_c
+				srfcss_c
 				srfrec_c
 				srfxpt_c
-				srfs2c
-				srfscc
+				srfs2c_c
+				srfscc_c
 				ssize_c
 				stelab_c
 				stpool_c
