@@ -317,6 +317,12 @@ EXPORTS			appndc_c
 				pl2nvc_c
 				pl2nvp_c
 				pl2psv_c
+				pltar_c
+				pltexp_c
+				pltnp_c
+				pltnrm_c
+				pltvol_c
+				polyds_c
 				pos_c
 				posr_c
 				prompt_c

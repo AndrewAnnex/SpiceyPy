@@ -2077,7 +2077,7 @@ def det(m1):
     :return: The determinant of the matrix.
     :rtype: float
     """
-    m1 = stypes.listtodoublematrix(m1)
+    m1 = stypes.toDoubleMatrix(m1)
     return libspice.det_c(m1)
 
 
@@ -2126,7 +2126,7 @@ def diags2(symmat):
             A rotation used as the similarity transformation.
     :rtype: tuple
     """
-    symmat = stypes.listtodoublematrix(symmat, x=2, y=2)
+    symmat = stypes.toDoubleMatrix(symmat)
     diag = stypes.emptyDoubleMatrix(x=2, y=2)
     rotateout = stypes.emptyDoubleMatrix(x=2, y=2)
     libspice.diags2_c(symmat, diag, rotateout)
@@ -5845,7 +5845,7 @@ def invert(m):
     :return: Inverted matrix (m1)^-1
     :rtype: 3x3-Element Array of floats
     """
-    m = stypes.listtodoublematrix(m)
+    m = stypes.toDoubleMatrix(m)
     mout = stypes.emptyDoubleMatrix()
     libspice.invert_c(m, mout)
     return stypes.matrixToList(mout)
@@ -5865,7 +5865,7 @@ def invort(m):
     :return: m after transposition and scaling of rows.
     :rtype: 3x3-Element Array of floats
     """
-    m = stypes.listtodoublematrix(m)
+    m = stypes.toDoubleMatrix(m)
     mout = stypes.emptyDoubleMatrix()
     libspice.invort_c(m, mout)
     return stypes.matrixToList(mout)
@@ -5992,7 +5992,7 @@ def isrot(m, ntol, dtol):
     :return: True if and only if m is a rotation matrix.
     :rtype: bool
     """
-    m = stypes.listtodoublematrix(m)
+    m = stypes.toDoubleMatrix(m)
     ntol = ctypes.c_double(ntol)
     dtol = ctypes.c_double(dtol)
     return libspice.isrot_c(m, ntol, dtol)
@@ -6827,7 +6827,7 @@ def m2eul(r, axis3, axis2, axis1):
     :return: Third, second, and first Euler angles, in radians.
     :rtype: tuple
     """
-    r = stypes.listtodoublematrix(r)
+    r = stypes.toDoubleMatrix(r)
     axis3 = ctypes.c_int(axis3)
     axis2 = ctypes.c_int(axis2)
     axis1 = ctypes.c_int(axis1)
@@ -6851,7 +6851,7 @@ def m2q(r):
     :return: A unit quaternion representing the rotation matrix
     :rtype: 4-Element Array of floats
     """
-    r = stypes.listtodoublematrix(r)
+    r = stypes.toDoubleMatrix(r)
     q = stypes.emptyDoubleVector(4)
     libspice.m2q_c(r, q)
     return stypes.vectorToList(q)
@@ -6929,7 +6929,7 @@ def mequ(m1):
     :return: Output matrix equal to m1.
     :rtype: 3x3-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1)
+    m1 = stypes.toDoubleMatrix(m1)
     mout = stypes.emptyDoubleMatrix()
     libspice.mequ_c(m1, mout)
     return stypes.matrixToList(mout)
@@ -6951,7 +6951,7 @@ def mequg(m1, nr, nc):
     :return: Output matrix equal to m1
     :rtype: NxM-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1, x=nc, y=nr)
+    m1 = stypes.toDoubleMatrix(m1)
     mout = stypes.emptyDoubleMatrix(x=nc, y=nr)
     nc = ctypes.c_int(nc)
     nr = ctypes.c_int(nr)
@@ -6981,8 +6981,8 @@ def mtxm(m1, m2):
     :return: The produce m1 transpose times m2.
     :rtype: 3x3-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1)
-    m2 = stypes.listtodoublematrix(m2)
+    m1 = stypes.toDoubleMatrix(m1)
+    m2 = stypes.toDoubleMatrix(m2)
     mout = stypes.emptyDoubleMatrix()
     libspice.mtxm_c(m1, m2, mout)
     return stypes.matrixToList(mout)
@@ -7009,8 +7009,8 @@ def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
     :return: Transpose of m1 times m2.
     :rtype: NxM-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nr1r2)
-    m2 = stypes.listtodoublematrix(m2, x=ncol2, y=nr1r2)
+    m1 = stypes.toDoubleMatrix(m1)
+    m2 = stypes.toDoubleMatrix(m2)
     mout = stypes.emptyDoubleMatrix(x=ncol2, y=ncol1)
     ncol1 = ctypes.c_int(ncol1)
     nr1r2 = ctypes.c_int(nr1r2)
@@ -7034,7 +7034,7 @@ def mtxv(m1, vin):
     :return: 3-dimensional double precision vector.
     :rtype: 3-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1)
+    m1 = stypes.toDoubleMatrix(m1)
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(3)
     libspice.mtxv_c(m1, vin, vout)
@@ -7060,7 +7060,7 @@ def mtxvg(m1, v2, ncol1, nr1r2):
     :return: Product vector m1 transpose * v2.
     :rtype: Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nr1r2)
+    m1 = stypes.toDoubleMatrix(m1)
     v2 = stypes.toDoubleVector(v2)
     ncol1 = ctypes.c_int(ncol1)
     nr1r2 = ctypes.c_int(nr1r2)
@@ -7083,8 +7083,8 @@ def mxm(m1, m2):
     :return: 3x3 double precision matrix.
     :rtype: 3x3-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1)
-    m2 = stypes.listtodoublematrix(m2)
+    m1 = stypes.toDoubleMatrix(m1)
+    m2 = stypes.toDoubleMatrix(m2)
     mout = stypes.emptyDoubleMatrix()
     libspice.mxm_c(m1, m2, mout)
     return stypes.matrixToList(mout)
@@ -7110,8 +7110,8 @@ def mxmg(m1, m2, nrow1, ncol1, ncol2):
     :return: nrow1 X ncol2 double precision matrix.
     :rtype: NxM-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nrow1)
-    m2 = stypes.listtodoublematrix(m2, x=ncol2, y=ncol1)
+    m1 = stypes.toDoubleMatrix(m1)
+    m2 = stypes.toDoubleMatrix(m2)
     mout = stypes.emptyDoubleMatrix(x=ncol2, y=nrow1)
     nrow1 = ctypes.c_int(nrow1)
     ncol1 = ctypes.c_int(ncol1)
@@ -7134,8 +7134,8 @@ def mxmt(m1, m2):
     :return: The product m1 times m2 transpose.
     :rtype: float
     """
-    m1 = stypes.listtodoublematrix(m1)
-    m2 = stypes.listtodoublematrix(m2)
+    m1 = stypes.toDoubleMatrix(m1)
+    m2 = stypes.toDoubleMatrix(m2)
     mout = stypes.emptyDoubleMatrix()
     libspice.mxmt_c(m1, m2, mout)
     return stypes.matrixToList(mout)
@@ -7161,8 +7161,8 @@ def mxmtg(m1, m2, nrow1, nc1c2, nrow2):
     :return: Product matrix.
     :rtype: NxM-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1, x=nc1c2, y=nrow1)
-    m2 = stypes.listtodoublematrix(m2, x=nc1c2, y=nrow2)
+    m1 = stypes.toDoubleMatrix(m1)
+    m2 = stypes.toDoubleMatrix(m2)
     mout = stypes.emptyDoubleMatrix(x=nrow2, y=nrow1)
     nrow1 = ctypes.c_int(nrow1)
     nc1c2 = ctypes.c_int(nc1c2)
@@ -7186,7 +7186,7 @@ def mxv(m1, vin):
     :return: 3-dimensional double precision vector.
     :rtype: 3-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1)
+    m1 = stypes.toDoubleMatrix(m1)
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(3)
     libspice.mxv_c(m1, vin, vout)
@@ -7211,7 +7211,7 @@ def mxvg(m1, v2, nrow1, nc1r2):
     :return: Product vector m1*v2
     :rtype: Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1, x=nc1r2, y=nrow1)
+    m1 = stypes.toDoubleMatrix(m1)
     v2 = stypes.toDoubleVector(v2)
     nrow1 = ctypes.c_int(nrow1)
     nc1r2 = ctypes.c_int(nc1r2)
@@ -7967,6 +7967,153 @@ def pl2psv(plane):
 
 
 @spiceErrorCheck
+def pltar(vrtces, plates):
+    """
+    Compute the total area of a collection of triangular plates.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltar_c.html
+    
+    :param vrtces: Array of vertices.
+    :type vrtces: Nx3-Element Array of floats
+    :param plates: Array of plates. 
+    :type plates: Nx3-Element Array of ints
+    :return: total area of the set of plates
+    :rtype: float
+    """
+    nv = ctypes.c_int(len(vrtces))
+    vrtces = stypes.toDoubleMatrix(vrtces)
+    np = ctypes.c_int(len(plates))
+    plates = stypes.toIntMatrix(plates)
+    return libspice.pltar_c(nv, vrtces, np, plates)
+
+
+@spiceErrorCheck
+def pltexp(iverts, delta):
+    """
+    Expand a triangular plate by a specified amount. The expanded 
+    plate is co-planar with, and has the same orientation as, the 
+    original. The centroids of the two plates coincide. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltexp_c.html
+    
+    :param iverts: Vertices of the plate to be expanded. 
+    :type iverts: 3x3-Element Array of floats
+    :param delta: Fraction by which the plate is to be expanded.
+    :type delta: double
+    :return: Vertices of the expanded plate. 
+    :rtype: 3x3-Element Array of floats
+    """
+    iverts = stypes.toDoubleMatrix(iverts)
+    delta = ctypes.c_double(delta)
+    overts = stypes.emptyDoubleMatrix()
+    libspice.pltexp_c(iverts, delta, overts)
+    return stypes.matrixToList(overts)
+
+
+@spiceErrorCheck
+def pltnp(point, v1, v2, v3):
+    """
+    Find the nearest point on a triangular plate to a given point. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltnp_c.html
+    
+    :param point: A point in 3-dimensional space. 
+    :type point: 3-Element Array of floats
+    :param v1: Vertices of a triangular plate.
+    :type v1: 3-Element Array of floats
+    :param v2: Vertices of a triangular plate. 
+    :type v2: 3-Element Array of floats
+    :param v3: Vertices of a triangular plate. 
+    :type v3: 3-Element Array of floats
+    :return: the nearest point on a triangular plate to a given point and distance
+    :rtype: tuple
+    """
+    point = stypes.toDoubleVector(point)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
+    v3 = stypes.toDoubleVector(v3)
+    pnear = stypes.emptyDoubleVector(3)
+    dist = ctypes.c_double()
+    libspice.pltnp_c(point, v1, v2, v3, pnear, ctypes.byref(dist))
+    return stypes.vectorToList(pnear), dist.value
+
+
+@spiceErrorCheck
+def pltnrm(v1, v2, v3):
+    """
+    Compute an outward normal vector of a triangular plate. 
+    The vector does not necessarily have unit length. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltnrm_c.html
+    
+    :param v1: Vertices of a plate.
+    :type v1: 3-Element Array of floats
+    :param v2: Vertices of a plate. 
+    :type v2: 3-Element Array of floats
+    :param v3: Vertices of a plate. 
+    :type v3: 3-Element Array of floats
+    :return: Plate's outward normal vector.
+    :rtype: 3-Element Array of floats
+    """
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
+    v3 = stypes.toDoubleVector(v3)
+    normal = stypes.emptyDoubleVector(3)
+    libspice.pltnrm_c(v1, v2, v3, normal)
+    return stypes.vectorToList(normal)
+
+
+@spiceErrorCheck
+def pltvol(vrtces, plates):
+    """
+    Compute the volume of a three-dimensional region bounded by a 
+    collection of triangular plates. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltvol_c.html
+ 
+    :param vrtces: Array of vertices.
+    :type vrtces: Nx3-Element Array of floats
+    :param plates: Array of plates. 
+    :type plates: Nx3-Element Array of ints 
+    :return: the volume of the spatial region bounded by the plates. 
+    :rtype: float
+    """
+    nv = ctypes.c_int(len(vrtces))
+    vrtces = stypes.toDoubleMatrix(vrtces)
+    np = ctypes.c_int(len(plates))
+    plates = stypes.toIntMatrix(plates)
+    return libspice.pltvol_c(nv, vrtces, np, plates)
+
+
+@spiceErrorCheck
+def polyds(coeffs, deg, nderiv, t):
+    """
+    Compute the value of a polynomial and it's first
+    n derivatives at the value t.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/polyds_c.html
+    
+    :param coeffs: Coefficients of the polynomial to be evaluated.
+    :type coeffs: N-Element Array of floats
+    :param deg: Degree of the polynomial to be evaluated.
+    :type deg: int
+    :param nderiv: Number of derivatives to compute.
+    :type nderiv: int
+    :param t: Point to evaluate the polynomial and derivatives
+    :type t: float
+    :return: Value of polynomial and derivatives.
+    :rtype: nderiv-Element Array of floats
+    """
+    coeffs = stypes.toDoubleVector(coeffs)
+    deg = ctypes.c_int(deg)
+    p = stypes.emptyDoubleVector(nderiv + 1)
+    nderiv = ctypes.c_int(nderiv)
+    t = ctypes.c_double(t)
+    libspice.polyds_c(ctypes.byref(coeffs), deg, nderiv, t, p)
+    return stypes.vectorToList(p)
+
+
+@spiceErrorCheck
 def pos(string, substr, start):
     """
     Find the first occurrence in a string of a substring, starting at
@@ -8311,7 +8458,7 @@ def raxisa(matrix):
     :return: Axis of the rotation, Angle through which the rotation is performed
     :rtype: tuple
     """
-    matrix = stypes.listtodoublematrix(matrix)
+    matrix = stypes.toDoubleMatrix(matrix)
     axis = stypes.emptyDoubleVector(3)
     angle = ctypes.c_double()
     libspice.raxisa_c(matrix, axis, ctypes.byref(angle))
@@ -8896,7 +9043,7 @@ def rotmat(m1, angle, iaxis):
     :return: Resulting rotated matrix.
     :rtype: 3x3-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1)
+    m1 = stypes.toDoubleMatrix(m1)
     angle = ctypes.c_double(angle)
     iaxis = ctypes.c_int(iaxis)
     mout = stypes.emptyDoubleMatrix()
@@ -13084,7 +13231,7 @@ def vtmv(v1, matrix, v2):
     :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
-    matrix = stypes.listtodoublematrix(matrix)
+    matrix = stypes.toDoubleMatrix(matrix)
     v2 = stypes.toDoubleVector(v2)
     return libspice.vtmv_c(v1, matrix, v2)
 
@@ -13112,7 +13259,7 @@ def vtmvg(v1, matrix, v2, nrow, ncol):
     :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
-    matrix = stypes.listtodoublematrix(matrix, x=ncol, y=nrow)
+    matrix = stypes.toDoubleMatrix(matrix)
     v2 = stypes.toDoubleVector(v2)
     nrow = ctypes.c_int(nrow)
     ncol = ctypes.c_int(ncol)
@@ -13593,7 +13740,7 @@ def xf2eul(xform, axisa, axisb, axisc):
     :return: (eulang, unique)
     :rtype: tuple
     """
-    xform = stypes.listtodoublematrix(xform, x=6, y=6)
+    xform = stypes.toDoubleMatrix(xform)
     axisa = ctypes.c_int(axisa)
     axisb = ctypes.c_int(axisb)
     axisc = ctypes.c_int(axisc)
@@ -13617,7 +13764,7 @@ def xf2rav(xform):
             angular velocity associated with xform.
     :rtype: tuple
     """
-    xform = stypes.listtodoublematrix(xform, x=6, y=6)
+    xform = stypes.toDoubleMatrix(xform)
     rot = stypes.emptyDoubleMatrix()
     av = stypes.emptyDoubleVector(3)
     libspice.xf2rav_c(xform, rot, av)
@@ -13707,7 +13854,7 @@ def xposeg(matrix, nrow, ncol):
     :return: Transposed matrix
     :rtype: NxM-Element Array of floats
     """
-    matrix = stypes.listtodoublematrix(matrix, x=ncol, y=nrow)
+    matrix = stypes.toDoubleMatrix(matrix)
     mout = stypes.emptyDoubleMatrix(x=ncol, y=nrow)
     ncol = ctypes.c_int(ncol)
     nrow = ctypes.c_int(nrow)

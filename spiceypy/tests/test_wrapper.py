@@ -3784,6 +3784,47 @@ def test_pl2psv():
     npt.assert_almost_equal(spice.vdot(span1, span2), 0)
 
 
+def test_pltar():
+    vrtces = [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+    plates = [[1, 4, 3], [1, 2, 4], [1, 3, 2], [2, 3, 4]]
+    assert spice.pltar(vrtces, plates) == pytest.approx(2.3660254037844)
+
+
+def test_pltexp():
+    iverts = [[np.sqrt(3.0) / 2.0, -0.5, 7.0], [0.0, 1.0, 7.0], [-np.sqrt(3.0) / 2.0, -0.5, 7.0]]
+    overts = spice.pltexp(iverts, 1.0)
+    expected = [[1.732050807569, -1.0, 7.0], [0.0, 2.0, 7.0], [-1.732050807569, -1.0, 7.0]]
+    npt.assert_array_almost_equal(expected, overts)
+
+
+def test_pltnp():
+    point = [2.0, 2.0, 2.0]
+    v1 = [1.0, 0.0, 0.0]
+    v2 = [0.0, 1.0, 0.0]
+    v3 = [0.0, 0.0, 1.0]
+    near, distance = spice.pltnp(point, v1, v2, v3)
+    npt.assert_array_almost_equal([1.0/3.0, 1.0/3.0, 1.0/3.0], near)
+    assert distance == pytest.approx(2.8867513)
+
+
+def test_pltnrm():
+    v1 = [np.sqrt(3.0)/2.0, -0.5, 0.0]
+    v2 = [0.0, 1.0, 0.0]
+    v3 = [-np.sqrt(3.0)/2.0, -0.5, 0.0]
+    npt.assert_array_almost_equal([0.0, 0.0, 2.59807621135], spice.pltnrm(v1, v2, v3))
+
+
+def test_pltvol():
+    vrtces = [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+    plates = [[1, 4, 3], [1, 2, 4], [1, 3, 2], [2, 3, 4]]
+    assert spice.pltvol(vrtces, plates) == pytest.approx(1/6)
+
+
+def test_polyds():
+    result = spice.polyds([1., 3., 0.5, 1., 0.5, -1., 1.], 6, 3, 1)
+    npt.assert_array_almost_equal([6.0, 10.0, 23.0, 78.0], result)
+
+
 def test_pos():
     string = "AN ANT AND AN ELEPHANT        "
     assert spice.pos(string, "AN", 0) == 0

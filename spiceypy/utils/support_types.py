@@ -93,6 +93,10 @@ def toIntVector(x):
     return IntArray.from_param(param=x)
 
 
+def toIntMatrix(x):
+    return IntMatrix.from_param(param=x)
+
+
 def toBoolVector(x):
     return BoolArray.from_param(param=x)
 
@@ -110,13 +114,6 @@ def toPythonString(inString):
 
 def charvector(ndim=1, lenvals=10):
     return ((c_char * lenvals) * ndim)()
-
-
-def listtodoublematrix(data, x=3, y=3):
-    matrix = ((c_double * x) * y)()
-    for i, row in enumerate(data):
-        matrix[i] = tuple(row)
-    return matrix
 
 
 def emptyCharArray(xLen=None, yLen=None):
@@ -268,12 +265,10 @@ class DoubleMatrixType:
 
     # Cast from a numpy array
     def from_ndarray(self, param):
-        # return param.data_as(POINTER(c_double))
         return numpy.ctypeslib.as_ctypes(param)
 
     # Cast from a numpy matrix
     def from_matrix(self, param):
-        # return param.data_as(POINTER(c_double))
         return numpy.ctypeslib.as_ctypes(param)
 
 
@@ -313,6 +308,36 @@ class IntArrayType:
         return self.from_list(param)
 
 
+class IntMatrixType:
+    # Class type that will handle all int matricies,
+    # inspiration from python cookbook 3rd edition
+    def from_param(self, param):
+        typename = type(param).__name__
+        if hasattr(self, 'from_' + typename):
+            return getattr(self, 'from_' + typename)(param)
+        elif isinstance(param, Array):
+            return param
+        else:
+            raise TypeError("Can't convert %s" % typename)
+
+    # Cast from lists/tuples
+    def from_list(self, param):
+        val = ((c_int * len(param[0])) * len(param))(*[IntArray.from_param(x) for x in param])
+        return val
+
+    # Cast from Tuple
+    def from_tuple(self, param):
+        val = ((c_int * len(param[0])) * len(param))(*[IntArray.from_param(x) for x in param])
+        return val
+
+    # Cast from a numpy array
+    def from_ndarray(self, param):
+        return numpy.ctypeslib.as_ctypes(param)
+
+    # Cast from a numpy matrix
+    def from_matrix(self, param):
+        return numpy.ctypeslib.as_ctypes(param)
+
 class BoolArrayType:
     # Class type that will handle all int vectors,
     # inspiration from python cookbook 3rd edition
@@ -346,6 +371,8 @@ class BoolArrayType:
 DoubleArray = DoubleArrayType()
 
 IntArray = IntArrayType()
+
+IntMatrix = IntMatrixType()
 
 BoolArray = BoolArrayType()
 
