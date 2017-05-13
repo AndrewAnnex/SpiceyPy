@@ -80,6 +80,7 @@ libspice.card_c.argtypes = [POINTER(stypes.SpiceCell)]
 libspice.card_c.restype = c_int
 libspice.ccifrm_c.argtypes = [c_int, c_int, c_int, POINTER(c_int), c_char_p, POINTER(c_int), POINTER(c_bool)]
 libspice.cgv2el_c.argtypes = [(c_double * 3), (c_double * 3), (c_double * 3), POINTER(stypes.Ellipse)]
+libspice.chbder_c.argtypes = [POINTER(c_double), c_int, (c_double*2), c_double, c_int, POINTER(c_double), POINTER(c_double)]
 libspice.chkin_c.argtypes = [c_char_p]
 libspice.chkout_c.argtypes = [c_char_p]
 libspice.cidfrm_c.argtypes = [c_int, c_int, POINTER(c_int), c_char_p, POINTER(c_bool)]

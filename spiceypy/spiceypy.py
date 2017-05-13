@@ -737,6 +737,32 @@ def cgv2el(center, vec1, vec2):
     libspice.cgv2el_c(center, vec1, vec2, ctypes.byref(ellipse))
     return ellipse
 
+@spiceErrorCheck
+def chbder(cp, degp, x2s, x, nderiv):
+    """
+    Given the coefficients for the Chebyshev expansion of a
+    polynomial, this returns the value of the polynomial and its
+    first nderiv derivatives evaluated at the input X.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/chbder_c.html
+    
+    :param cp: 
+    :param degp: 
+    :param x2s: 
+    :param x: 
+    :param nderiv: 
+    :return: 
+    """
+    cp = stypes.toDoubleVector(cp)
+    degp = ctypes.c_int(degp)
+    x2s = stypes.toDoubleVector(x2s)
+    x = ctypes.c_double(x)
+    partdp = stypes.emptyDoubleVector(3*(nderiv+1))
+    dpdxs = stypes.emptyDoubleVector(nderiv+1)
+    nderiv = ctypes.c_int(nderiv)
+    libspice.chbder_c(cp, degp, x2s, x, nderiv, partdp, dpdxs)
+    return stypes.vectorToList(dpdxs)
+
 
 @spiceErrorCheck
 def chkin(module):

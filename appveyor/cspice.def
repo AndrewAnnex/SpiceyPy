@@ -26,6 +26,7 @@ EXPORTS			appndc_c
 				card_c
 				ccifrm_c
 				cgv2el_c
+				chbder_c
 				chkin_c
 				chkout_c
 				cidfrm_c

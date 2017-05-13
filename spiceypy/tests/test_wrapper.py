@@ -295,6 +295,13 @@ def test_cgv2el():
     npt.assert_array_almost_equal(expectedSminor, ellipse.semi_minor)
 
 
+def test_chbder():
+    cp = [ 1., 3., 0.5, 1., 0.5, -1., 1.]
+    x2s = [0.5, 3.0]
+    dpdxs = spice.chbder(cp, 6, x2s, 1.0, 3)
+    npt.assert_array_almost_equal([-0.340878, 0.382716, 4.288066, -1.514403], dpdxs)
+
+
 def test_chkin():
     spice.reset()
     assert spice.trcdep() == 0
