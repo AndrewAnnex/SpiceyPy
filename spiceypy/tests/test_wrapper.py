@@ -3817,7 +3817,7 @@ def test_pltnrm():
 def test_pltvol():
     vrtces = [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
     plates = [[1, 4, 3], [1, 2, 4], [1, 3, 2], [2, 3, 4]]
-    assert spice.pltvol(vrtces, plates) == pytest.approx(1/6)
+    assert spice.pltvol(vrtces, plates) == pytest.approx(1.0/6.0)
 
 
 def test_polyds():
@@ -6455,8 +6455,8 @@ def test_xposeg():
     npt.assert_array_almost_equal(spice.xposeg(np.array(m1), 3, 3), [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]])
 
 
-#def teardown_module(module):
-    #cleanup_Cassini_Kernels()
-    #cleanup_Mars_Kernels()
-    #cleanup_Extra_Kernels()
-    #cleanup_Core_Kernels()
+def teardown_module(module):
+    cleanup_Cassini_Kernels()
+    cleanup_Mars_Kernels()
+    cleanup_Extra_Kernels()
+    cleanup_Core_Kernels()
