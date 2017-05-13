@@ -746,12 +746,18 @@ def chbder(cp, degp, x2s, x, nderiv):
     
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/chbder_c.html
     
-    :param cp: 
-    :param degp: 
-    :param x2s: 
-    :param x: 
-    :param nderiv: 
-    :return: 
+    :param cp: degp+1 Chebyshev polynomial coefficients.
+    :type cp: Array of floats
+    :param degp: Degree of polynomial.
+    :type degp: int
+    :param x2s: Transformation parameters of polynomial.
+    :type x2s: Array of floats
+    :param x: Value for which the polynomial is to be evaluated
+    :type x: float
+    :param nderiv: The number of derivatives to compute
+    :type nderiv: int
+    :return: Array of the derivatives of the polynomial
+    :rtype: Array of floats
     """
     cp = stypes.toDoubleVector(cp)
     degp = ctypes.c_int(degp)
