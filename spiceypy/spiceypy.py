@@ -7665,6 +7665,18 @@ def oscelt(state, et, mu):
 
 ################################################################################
 # P
+@spiceErrorCheck
+def pckcls(handle):
+    """
+    Close an open PCK file. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pckcls_c.html
+    
+    :param handle: Handle of the PCK file to be closed.
+    :type handle: int
+    """
+    handle = ctypes.c_int(handle)
+    libspice.pckcls_c(handle)
 
 
 @spiceErrorCheck
@@ -7729,6 +7741,30 @@ def pcklof(filename):
 
 
 @spiceErrorCheck
+def pckopn(name, ifname, ncomch):
+    """
+    Create a new PCK file, returning the handle of the opened file. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pckopn_c.html
+    
+    :param name: The name of the PCK file to be opened. 
+    :type name: str
+    :param ifname: The internal filename for the PCK.
+    :type ifname: str
+    :param ncomch: The number of characters to reserve for comments. 
+    :type ncomch: int
+    :return: The handle of the opened PCK file.
+    :rtype: int
+    """
+    name = stypes.stringToCharP(name)
+    ifname = stypes.stringToCharP(ifname)
+    ncomch = ctypes.c_int(ncomch)
+    handle = ctypes.c_int()
+    libspice.pckopn_c(name, ifname, ncomch, ctypes.byref(handle))
+    return handle.value
+
+
+@spiceErrorCheck
 def pckuof(handle):
     """
     Unload a binary PCK file so that it will no longer be searched by
@@ -7741,6 +7777,52 @@ def pckuof(handle):
     """
     handle = ctypes.c_int(handle)
     libspice.pckuof_c(handle)
+
+
+@spiceErrorCheck
+def pckw02(handle, classid, frname, first, last, segid, intlen, n, polydg, cdata, btime):
+    """
+    Write a type 2 segment to a PCK binary file given the file handle,
+    frame class ID, base frame, time range covered by the segment, and
+    the Chebyshev polynomial coefficients.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pckw02_c.html
+    
+    :param handle: Handle of binary PCK file open for writing.
+    :type handle: int
+    :param classid: Frame class ID of body-fixed frame.
+    :type classid: int
+    :param frname: Name of base reference frame.
+    :type frname: str
+    :param first: Start time of interval covered by segment. 
+    :type first: float
+    :param last: End time of interval covered by segment.
+    :type last: float
+    :param segid: Segment identifier.
+    :type segid: str
+    :param intlen: Length of time covered by logical record.
+    :type intlen: float
+    :param n: Number of logical records in segment.
+    :type n: int
+    :param polydg: Chebyshev polynomial degree. 
+    :type polydg: int
+    :param cdata: Array of Chebyshev coefficients.
+    :type cdata: N-Element Array of floats
+    :param btime: Begin time of first logical record.
+    :type btime: float
+    """
+    handle = ctypes.c_int(handle)
+    classid = ctypes.c_int(classid)
+    frame = stypes.stringToCharP(frname)
+    first = ctypes.c_double(first)
+    last = ctypes.c_double(last)
+    segid = stypes.stringToCharP(segid)
+    intlen = ctypes.c_double(intlen)
+    n = ctypes.c_int(n)
+    polydg = ctypes.c_int(polydg)
+    cdata = stypes.toDoubleVector(cdata)
+    btime = ctypes.c_double(btime)
+    libspice.pckw02_c(handle, classid, frame, first, last, segid, intlen, n, polydg, cdata, btime)
 
 
 @spiceErrorCheck

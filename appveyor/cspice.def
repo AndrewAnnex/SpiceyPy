@@ -303,10 +303,13 @@ EXPORTS			appndc_c
 				orderi_c
 				ordi_c
 				oscelt_c
+				pckcls_c
 				pckcov_c
 				pckfrm_c
 				pcklof_c
+				pckopn_c
 				pckuof_c
+				pckw02_c
 				pcpool_c
 				pdpool_c
 				pgrrec_c

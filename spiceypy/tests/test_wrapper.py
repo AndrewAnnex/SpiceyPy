@@ -3623,6 +3623,19 @@ def test_oscelt():
     spice.kclear()
 
 
+def test_pckopn_pckw02_pckcls():
+    pck = os.path.join(cwd, "test_pck.pck")
+    if spice.exists(pck):
+        os.remove(pck) # pragma: no cover
+    spice.kclear()
+    handle = spice.pckopn("test_pck.pck", "Test PCK file", 5000)
+    spice.pckw02(handle, 301, "j2000", 0.0, 3.0, "segid", 1.0, 3, 1, [1.0, 2.0, 3.0], 0.0)
+    spice.pckcls(handle)
+    spice.kclear()
+    if spice.exists(pck):
+        os.remove(pck) # pragma: no cover
+
+
 def test_pckcov():
     spice.kclear()
     ids = spice.stypes.SPICEINT_CELL(1000)

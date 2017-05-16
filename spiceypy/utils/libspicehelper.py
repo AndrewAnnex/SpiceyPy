@@ -480,10 +480,13 @@ libspice.oscelt_c.argtypes = [c_double * 6, c_double, c_double, c_double * 8]
 ########################################################################################################################
 # P
 
+libspice.pckcls_c.argtypes = [c_int]
 libspice.pckcov_c.argtypes = [c_char_p, c_int, POINTER(stypes.SpiceCell)]
 libspice.pckfrm_c.argtypes = [c_char_p, POINTER(stypes.SpiceCell)]
 libspice.pcklof_c.argtypes = [c_char_p, POINTER(c_int)]
+libspice.pckopn_c.argtypes = [c_char_p, c_char_p, c_int, POINTER(c_int)]
 libspice.pckuof_c.argtypes = [c_int]
+libspice.pckw02_c.argtypes = [c_int, c_int, c_char_p, c_double, c_double, c_char_p, c_double, c_int, c_int, POINTER(c_double), c_double]
 libspice.pcpool_c.argtypes = [c_char_p, c_int, c_int, c_void_p]
 libspice.pdpool_c.argtypes = [c_char_p, c_int, POINTER(c_double)]
 libspice.pipool_c.argtypes = [c_char_p, c_int, POINTER(c_int)]
