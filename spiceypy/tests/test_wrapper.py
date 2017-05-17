@@ -43,10 +43,10 @@ cwd = os.path.realpath(os.path.dirname(__file__))
 
 
 def setup_module(module):
-    if not os.path.exists(CoreKernels.testMetaKernel) \
-            or not os.path.exists(ExtraKernels.voyagerSclk) \
-            or not os.path.exists(MarsKernels.mroPspOne):
-        downloadKernels()
+    # if not os.path.exists(CoreKernels.testMetaKernel) \
+    #         or not os.path.exists(ExtraKernels.voyagerSclk) \
+    #         or not os.path.exists(MarsKernels.mroPspOne):
+    downloadKernels()
 
 
 def test_appndc():
@@ -934,20 +934,58 @@ def test_dafus():
     spice.kclear()
 
 
-def test_dasac():
-    assert 1
+def test_dasac_dasopr_dasec_dasdc():
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.kclear()
+        daspath = os.path.join(cwd, "ex_dasac.das")
+        if spice.exists(daspath):
+            os.remove(daspath) # pragma: no cover
+        handle = spice.dasonw(daspath, "TEST", "ex_dasac", 140)
+        assert handle is not None
+        spice.dasac(handle, ["spice", "naif", "python"])
+        spice.dascls(handle)
+        spice.kclear()
+        spice.reset()
+        # we wrote to the test kernel, now load it in read mode
+        # there is something wrong with dasec, never recognized handle
+        handle = spice.dasopr(daspath)
+        assert handle is not None
+        assert spice.dashfn(handle) == daspath
+        n, comments, done = spice.dasec(handle)
+        assert n == 3
+        assert set(comments) == {"spice", 'naif', "python"} & set(comments)
+        spice.dascls(handle)
+        # now reload the kernel and delete the commnets
+        handle = spice.dasonw(daspath, "TEST", daspath, 0)
+        assert handle is not None
+        spice.dasdc(handle)
+        spice.dascls(handle)
+        handle = spice.dasopr(daspath)
+        assert handle is not None
+        n, comments, done = spice.dasec(handle)
+        assert n == 0
+        spice.dascls(handle)
+        if spice.exists(daspath):
+            os.remove(daspath) # pragma: no cover
+        spice.kclear()
 
 
-def test_dascls():
-    assert 1
-
-
-def test_dasec():
-    assert 1
-
-
-def test_dasopr():
-    assert 1
+def test_dasopw_dascls_dasopr():
+    spice.kclear()
+    daspath = os.path.join(cwd, "ex_das.das")
+    if spice.exists(daspath):
+        os.remove(daspath) # pragma: no cover
+    handle = spice.dasonw(daspath, "TEST", daspath, 0)
+    assert handle is not None
+    spice.dascls(handle)
+    handle = spice.dasopw(daspath)
+    assert handle is not None
+    spice.dascls(handle)
+    handle = spice.dasopr(daspath)
+    assert handle is not None
+    if spice.exists(daspath):
+        os.remove(daspath) # pragma: no cover
+    spice.kclear()
 
 
 def test_dcyldr():
@@ -1089,9 +1127,9 @@ def test_drdgeo():
 
 def test_drdlat():
     output = spice.drdlat(1.0, 90.0 * spice.rpd(), 0.0)
-    expected = [[1.0, 0.0, -0.0],
-                [0.0, 0.0, 1.0],
-                [0.0, -1.0, 0.0]]
+    expected = [[0.0, -1.0, -0.0],
+                [1.0, 0.0, -0.0],
+                [0.0, 0.0, 1.0]]
     npt.assert_array_almost_equal(output, expected)
 
 
@@ -1116,6 +1154,26 @@ def test_drdsph():
                 [0.0, 0.0, -1.0],
                 [0.0, -1.0, 0.0]]
     npt.assert_array_almost_equal(output, expected)
+
+
+def test_dskgtl_dskstl():
+    SPICE_DSK_KEYXFR = 1
+    assert spice.dskgtl(SPICE_DSK_KEYXFR) == pytest.approx(1.0e-10)
+    spice.dskstl(SPICE_DSK_KEYXFR, 1.0e-8)
+    assert spice.dskgtl(SPICE_DSK_KEYXFR) == pytest.approx(1.0e-8)
+    spice.dskstl(SPICE_DSK_KEYXFR, 1.0e-10)
+    assert spice.dskgtl(SPICE_DSK_KEYXFR) == pytest.approx(1.0e-10)
+
+
+def test_dskobj_dsksrf():
+    spice.reset()
+    spice.kclear()
+    bodyids = spice.dskobj(ExtraKernels.phobosDsk)
+    assert 401 in bodyids
+    srfids = spice.dsksrf(ExtraKernels.phobosDsk, 401)
+    assert 401 in srfids
+    spice.kclear()
+    spice.reset()
 
 
 def test_dsphdr():
@@ -2697,7 +2755,7 @@ def test_halfpi():
 def test_hrmint():
     xvals = [-1.0, 0.0, 3.0, 5.0]
     yvals = [6.0, 3.0, 5.0, 0.0, 2210.0, 5115.0, 78180.0, 109395.0]
-    answer, deriv = spice.hrmint(4, xvals, yvals, 2)
+    answer, deriv = spice.hrmint(xvals, yvals, 2)
     assert answer == pytest.approx(141.0)
     assert deriv  == pytest.approx(456.0)
 
@@ -3092,6 +3150,12 @@ def test_ldpool():
     spice.kclear()
     if spice.exists(kernel):
         os.remove(kernel) # pragma: no cover
+
+
+def test_lgrind():
+    p, dp = spice.lgrind([-1.0, 0.0, 1.0, 3.0], [-2.0, -7.0, -8.0, 26.0], 2.0)
+    assert p == pytest.approx(1.0)
+    assert dp == pytest.approx(16.0)
 
 
 def test_lmpool():
@@ -6468,8 +6532,8 @@ def test_xposeg():
     npt.assert_array_almost_equal(spice.xposeg(np.array(m1), 3, 3), [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]])
 
 
-def teardown_module(module):
-    cleanup_Cassini_Kernels()
-    cleanup_Mars_Kernels()
-    cleanup_Extra_Kernels()
-    cleanup_Core_Kernels()
+# def teardown_module(module):
+#     cleanup_Cassini_Kernels()
+#     cleanup_Mars_Kernels()
+#     cleanup_Extra_Kernels()
+#     cleanup_Core_Kernels()

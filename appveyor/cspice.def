@@ -78,8 +78,13 @@ EXPORTS			appndc_c
 				dafus_c
 				dasac_c
 				dascls_c
+				dasdc_c
 				dasec_c
+				dashfn_c
 				dasopr_c
+				dasopw_c
+				dasonw_
+				dasrfr_c
 				dcyldr_c
 				deltet_c
 				det_c
@@ -97,6 +102,12 @@ EXPORTS			appndc_c
 				drdlat_c
 				drdpgr_c
 				drdsph_c
+				dskcls_c
+				dskgtl_c
+				dskobj_c
+				dskopn_c
+				dsksrf_c
+				dskstl_c
 				dsphdr_c
 				dtpool_c
 				ducrss_c
@@ -249,6 +260,7 @@ EXPORTS			appndc_c
 				latsph_c
 				lcase_c
 				ldpool_c
+				lgrind_c
 				lmpool_c
 				lparse_c
 				lparsm_c

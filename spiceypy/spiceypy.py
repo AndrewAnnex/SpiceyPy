@@ -1493,7 +1493,6 @@ def cylsph(r, lonc, z):
 
 @spiceErrorCheck
 def dafac(handle, n, lenvals, buffer):
-    # Todo: test dafac
     """
     Add comments from a buffer of character strings to the comment
     area of a binary DAF file, appending them to any comments which
@@ -1508,7 +1507,7 @@ def dafac(handle, n, lenvals, buffer):
     :param lenvals: Length of elements
     :type lenvals: int
     :param buffer: Buffer of comments to put into the comment area.
-    :type buffer: Array of str
+    :type buffer: Array of strs
     """
     handle = ctypes.c_int(handle)
     buffer = stypes.listToCharArrayPtr(buffer)
@@ -1926,8 +1925,7 @@ def dafus(insum, nd, ni):
 
 
 @spiceErrorCheck
-def dasac(handle, n, buffer, buflen=_default_len_out):
-    # Todo: test dasac
+def dasac(handle, buffer):
     """
     Add comments from a buffer of character strings to the comment
     area of a binary DAS file, appending them to any comments which
@@ -1937,26 +1935,18 @@ def dasac(handle, n, buffer, buflen=_default_len_out):
 
     :param handle: DAS handle of a file opened with write access.
     :type handle: int
-    :param n: Number of comments to put into the comment area.
-    :type n: int
     :param buffer: Buffer of lines to be put into the comment area.
     :type buffer: Array of strs
-    :param buflen: Line length associated with buffer.
-    :type buflen: int
-    :return: :rtype:
     """
     handle = ctypes.c_int(handle)
-    # TODO: make this a mutable 2d string array
-    buffer = stypes.charvector(n, buflen)
-    n = ctypes.c_int(n)
-    buflen = ctypes.c_int(buflen)
-    libspice.dasac_c(handle, n, buflen, ctypes.byref(buffer))
-    return stypes.vectorToList(buffer)
+    n = ctypes.c_int(len(buffer))
+    buflen = ctypes.c_int(max(len(s) for s in buffer) + 1)
+    buffer = stypes.listToCharArrayPtr(buffer)
+    libspice.dasac_c(handle, n, buflen, buffer)
 
 
 @spiceErrorCheck
 def dascls(handle):
-    # Todo: test dafdc
     """
     Close a DAS file.
 
@@ -1970,8 +1960,22 @@ def dascls(handle):
 
 
 @spiceErrorCheck
+def dasdc(handle):
+    """
+    Delete the entire comment area of a previously opened binary 
+    DAS file.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasdc_c.html
+    
+    :param handle: The handle of a binary DAS file opened for writing.
+    :type handle: int 
+    """
+    handle = ctypes.c_int(handle)
+    libspice.dasdc_c(handle)
+
+
+@spiceErrorCheck
 def dasec(handle, bufsiz=_default_len_out, buflen=_default_len_out):
-    # Todo: test dasec
     """
     Extract comments from the comment area of a binary DAS file.
 
@@ -1990,10 +1994,10 @@ def dasec(handle, bufsiz=_default_len_out, buflen=_default_len_out):
     :rtype: tuple
     """
     handle = ctypes.c_int(handle)
-    buffer = stypes.charvector(bufsiz, buflen)
+    buffer = stypes.emptyCharArray(buflen, bufsiz)
     bufsiz = ctypes.c_int(bufsiz)
     buflen = ctypes.c_int(buflen)
-    n = ctypes.c_int()
+    n = ctypes.c_int(0)
     done = ctypes.c_bool()
     libspice.dafec_c(handle, bufsiz, buflen, ctypes.byref(n),
                      ctypes.byref(buffer), ctypes.byref(done))
@@ -2001,8 +2005,48 @@ def dasec(handle, bufsiz=_default_len_out, buflen=_default_len_out):
 
 
 @spiceErrorCheck
+def dashfn(handle, lenout=_default_len_out):
+    """
+    Return the name of the DAS file associated with a handle.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dashfn_c.html
+    :param lenout: 
+    :param handle: 
+    :param namlen: 
+    :return: 
+    """
+    handle = ctypes.c_int(handle)
+    namlen = ctypes.c_int(lenout)
+    fname  = stypes.stringToCharP(lenout)
+    libspice.dashfn_c(handle, namlen, fname)
+    return stypes.toPythonString(fname)
+
+
+@spiceErrorCheck
+def dasonw(fname, ftype, ifname, ncomch):
+    """
+    Internal undocumented command for creating a new DAS file
+    
+    :param fname: filename
+    :param ftype: type
+    :param ifname: internal file name
+    :param ncomch: amount of comment area
+    :return: 
+    """
+    fnamelen = ctypes.c_int(len(fname))
+    ftypelen = ctypes.c_int(len(ftype))
+    ifnamelen = ctypes.c_int(len(ifname))
+    ncomch  = ctypes.c_int(ncomch)
+    handle  = ctypes.c_int()
+    fname   = stypes.stringToCharP(fname)
+    ftype   = stypes.stringToCharP(ftype)
+    ifname  = stypes.stringToCharP(ifname)
+    libspice.dasonw_(fname, ftype, ifname, ctypes.byref(ncomch), ctypes.byref(handle), fnamelen, ftypelen, ifnamelen)
+    return handle.value
+
+
+@spiceErrorCheck
 def dasopr(fname):
-    # Todo: test dasopr
     """
     Open a DAS file for reading.
 
@@ -2017,6 +2061,48 @@ def dasopr(fname):
     handle = ctypes.c_int()
     libspice.dasopr_c(fname, ctypes.byref(handle))
     return handle.value
+
+
+@spiceErrorCheck
+def dasopw(fname):
+    """
+    Open a DAS file for writing.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasopw_c.html
+    :param fname: Name of a DAS file to be opened. 
+    :type fname: str
+    :return: Handle assigned to the opened DAS file.
+    """
+    fname = stypes.stringToCharP(fname)
+    handle = ctypes.c_int(0)
+    libspice.dasopw_c(fname, ctypes.byref(handle))
+    return handle.value
+
+
+@spiceErrorCheck
+def dasrfr(handle, lenout=_default_len_out):
+    """
+    Return the contents of the file record of a specified DAS file. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasrfr_c.html
+
+    :param handle: DAS file handle.
+    :param lenout: 
+    :return: 
+    """
+    handle = ctypes.c_int(handle)
+    idwlen = ctypes.c_int(lenout) # intentional
+    ifnlen = ctypes.c_int(lenout) # intentional
+    idword = stypes.stringToCharP(lenout)
+    ifname = stypes.stringToCharP(lenout)
+    nresvr = ctypes.c_int(0)
+    nresvc = ctypes.c_int(0)
+    ncomr  = ctypes.c_int(0)
+    ncomc  = ctypes.c_int(0)
+    libspice.dasrfr_c(handle, idwlen, ifnlen, idword, ifname,
+                      ctypes.byref(nresvr), ctypes.byref(nresvc),
+                      ctypes.byref(ncomr), ctypes.byref(ncomc))
+    return stypes.toPythonString(idword), stypes.toPythonString(ifname), nresvr.value, nresvc.value, ncomr.value, ncomc.value
 
 
 @spiceErrorCheck
@@ -2367,7 +2453,7 @@ def drdlat(r, lon, lat):
     lon = ctypes.c_double(lon)
     lat = ctypes.c_double(lat)
     jacobi = stypes.emptyDoubleMatrix()
-    libspice.drdsph_c(r, lon, lat, jacobi)
+    libspice.drdlat_c(r, lon, lat, jacobi)
     return stypes.matrixToList(jacobi)
 
 
@@ -2428,6 +2514,82 @@ def drdsph(r, colat, lon):
     jacobi = stypes.emptyDoubleMatrix()
     libspice.drdsph_c(r, colat, lon, jacobi)
     return stypes.matrixToList(jacobi)
+
+
+@spiceErrorCheck
+def dskgtl(keywrd):
+    """
+    Retrieve the value of a specified DSK tolerance or margin parameter.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskgtl_c.html
+    
+    :param keywrd: Code specifying parameter to retrieve. 
+    :type keywrd: int
+    :return: Value of parameter.
+    :rtype: float
+    """
+    keywrd = ctypes.c_int(keywrd)
+    dpval  = ctypes.c_double(0)
+    libspice.dskgtl_c(keywrd, ctypes.byref(dpval))
+    return dpval.value
+
+
+@spiceErrorCheck
+def dskobj(dsk):
+    """
+    Find the set of body ID codes of all objects for which 
+    topographic data are provided in a specified DSK file. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskobj_c.html
+    
+    :param dsk: Name of DSK file. 
+    :type dsk: str
+    :return: Set of ID codes of objects in DSK file.
+    :rtype: spiceypy.utils.support_types.SpiceCell
+    """
+    dsk = stypes.stringToCharP(dsk)
+    bodids = stypes.SPICEINT_CELL(10000)
+    libspice.dskobj_c(dsk, ctypes.byref(bodids))
+    return bodids
+
+
+@spiceErrorCheck
+def dsksrf(dsk, bodyid):
+    """
+    Find the set of surface ID codes for all surfaces associated with 
+    a given body in a specified DSK file. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dsksrf_c.html
+    
+    :param dsk: Name of DSK file.
+    :type dsk: str
+    :param bodyid: Integer body ID code.
+    :type bodyid: int
+    :return: Set of ID codes of surfaces in DSK file. 
+    """
+    dsk    = stypes.stringToCharP(dsk)
+    bodyid = ctypes.c_int(bodyid)
+    srfids = stypes.SPICEINT_CELL(10000)
+    libspice.dsksrf_c(dsk, bodyid, ctypes.byref(srfids))
+    return srfids
+
+
+@spiceErrorCheck
+def dskstl(keywrd, dpval):
+    """
+    Set the value of a specified DSK tolerance or margin parameter.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskstl_c.html
+    
+    :param keywrd: Code specifying parameter to set.
+    :type keywrd: int
+    :param dpval: Value of parameter. 
+    :type dpval: float
+    :return: 
+    """
+    keywrd = ctypes.c_int(keywrd)
+    dpval = ctypes.c_double(dpval)
+    libspice.dskstl_c(keywrd, dpval)
 
 
 @spiceErrorCheck
@@ -5461,15 +5623,13 @@ def halfpi():
 
 
 @spiceErrorCheck
-def hrmint(n, xvals, yvals, x):
+def hrmint(xvals, yvals, x):
     """
     Evaluate a Hermite interpolating polynomial at a specified
     abscissa value.
     
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/hrmint_c.html
     
-    :param n: Number of points defining the polynomial.
-    :type n: int
     :param xvals: Abscissa values.
     :type xvals: Array of floats
     :param yvals: Ordinate and derivative values.
@@ -5480,7 +5640,7 @@ def hrmint(n, xvals, yvals, x):
     :rtype: tuple
     """
     work  = stypes.emptyDoubleVector(int(2*len(yvals)+1))
-    n     = ctypes.c_int(n)
+    n     = ctypes.c_int(len(xvals))
     xvals = stypes.toDoubleVector(xvals)
     yvals = stypes.toDoubleVector(yvals)
     x     = ctypes.c_double(x)
@@ -6380,6 +6540,34 @@ def ldpool(filename):
     """
     filename = stypes.stringToCharP(filename)
     libspice.ldpool_c(filename)
+
+@spiceErrorCheck
+def lgrind(xvals, yvals, x):
+    """
+    Evaluate a Lagrange interpolating polynomial for a specified
+    set of coordinate pairs, at a specified abscissa value.
+    Return the value of both polynomial and derivative.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lgrind_c.html
+
+    :param xvals: Abscissa values.
+    :type xvals: N-Element Array of floats
+    :param yvals: Ordinate values.
+    :type yvals: N-Element Array of floats
+    :param x: Point at which to interpolate the polynomial.
+    :type x: float
+    :return: Polynomial value at x, Polynomial derivative at x.
+    :rtype: tuple
+    """
+    n = ctypes.c_int(len(xvals))
+    xvals = stypes.toDoubleVector(xvals)
+    yvals = stypes.toDoubleVector(yvals)
+    work  = stypes.emptyDoubleVector(n.value*2)
+    x  = ctypes.c_double(x)
+    p  = ctypes.c_double(0)
+    dp = ctypes.c_double(0)
+    libspice.lgrind_c(n, xvals, yvals, work, x, p, dp)
+    return p.value, dp.value
 
 
 @spiceErrorCheck

@@ -10,6 +10,7 @@
 # Spice Kernels
 *.bsp
 *.bpc
+*.bds
 *.ek
 *.tpc
 *.tsc
