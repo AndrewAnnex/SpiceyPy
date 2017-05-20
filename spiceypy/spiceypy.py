@@ -2335,7 +2335,7 @@ def drdlat(r, lon, lat):
     lon = ctypes.c_double(lon)
     lat = ctypes.c_double(lat)
     jacobi = stypes.emptyDoubleMatrix()
-    libspice.drdsph_c(r, lon, lat, jacobi)
+    libspice.drdlat_c(r, lon, lat, jacobi)
     return stypes.matrixToList(jacobi)
 
 
