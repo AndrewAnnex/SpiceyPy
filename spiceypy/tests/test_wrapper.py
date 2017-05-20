@@ -43,9 +43,6 @@ cwd = os.path.realpath(os.path.dirname(__file__))
 
 
 def setup_module(module):
-    # if not os.path.exists(CoreKernels.testMetaKernel) \
-    #         or not os.path.exists(ExtraKernels.voyagerSclk) \
-    #         or not os.path.exists(MarsKernels.mroPspOne):
     downloadKernels()
 
 
@@ -6533,8 +6530,8 @@ def test_xposeg():
     npt.assert_array_almost_equal(spice.xposeg(np.array(m1), 3, 3), [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]])
 
 
-# def teardown_module(module):
-#     cleanup_Cassini_Kernels()
-#     cleanup_Mars_Kernels()
-#     cleanup_Extra_Kernels()
-#     cleanup_Core_Kernels()
+def teardown_module(module):
+    cleanup_Cassini_Kernels()
+    cleanup_Mars_Kernels()
+    cleanup_Extra_Kernels()
+    cleanup_Core_Kernels()
