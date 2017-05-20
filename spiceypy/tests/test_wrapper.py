@@ -982,6 +982,7 @@ def test_dasopw_dascls_dasopr():
     assert handle is not None
     spice.dascls(handle)
     handle = spice.dasopr(daspath)
+    spice.dascls(handle)
     assert handle is not None
     if spice.exists(daspath):
         os.remove(daspath) # pragma: no cover
