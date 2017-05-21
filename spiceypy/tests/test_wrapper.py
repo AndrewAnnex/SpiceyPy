@@ -1082,9 +1082,9 @@ def test_drdgeo():
 
 def test_drdlat():
     output = spice.drdlat(1.0, 90.0 * spice.rpd(), 0.0)
-    expected = [[1.0, 0.0, -0.0],
-                [0.0, 0.0, 1.0],
-                [0.0, -1.0, 0.0]]
+    expected = [[0.0, -1.0, -0.0],
+                [1.0, 0.0, -0.0],
+                [0.0, 0.0, 1.0]]
     npt.assert_array_almost_equal(output, expected)
 
 
