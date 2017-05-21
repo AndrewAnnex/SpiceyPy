@@ -932,39 +932,62 @@ def test_dafus():
 
 
 def test_dasac_dasopr_dasec_dasdc():
-    with pytest.raises(spice.stypes.SpiceyError):
-        spice.kclear()
-        daspath = os.path.join(cwd, "ex_dasac.das")
-        if spice.exists(daspath):
-            os.remove(daspath) # pragma: no cover
-        handle = spice.dasonw(daspath, "TEST", "ex_dasac", 140)
-        assert handle is not None
-        spice.dasac(handle, ["spice", "naif", "python"])
-        spice.dascls(handle)
-        spice.kclear()
-        spice.reset()
-        # we wrote to the test kernel, now load it in read mode
-        # there is something wrong with dasec, never recognized handle
-        handle = spice.dasopr(daspath)
-        assert handle is not None
-        assert spice.dashfn(handle) == daspath
-        n, comments, done = spice.dasec(handle)
-        assert n == 3
-        assert set(comments) == {"spice", 'naif', "python"} & set(comments)
-        spice.dascls(handle)
-        # now reload the kernel and delete the commnets
-        handle = spice.dasonw(daspath, "TEST", daspath, 0)
-        assert handle is not None
-        spice.dasdc(handle)
-        spice.dascls(handle)
-        handle = spice.dasopr(daspath)
-        assert handle is not None
-        n, comments, done = spice.dasec(handle)
-        assert n == 0
-        spice.dascls(handle)
-        if spice.exists(daspath):
-            os.remove(daspath) # pragma: no cover
-        spice.kclear()
+    spice.kclear()
+    daspath = os.path.join(cwd, "ex_dasac.das")
+    if spice.exists(daspath):
+        os.remove(daspath) # pragma: no cover
+    handle = spice.dasonw(daspath, "TEST", "ex_dasac", 140)
+    assert handle is not None
+    # write some comments
+    spice.dasac(handle, ["spice", "naif", "python"])
+    spice.dascls(handle)
+    spice.kclear()
+    spice.reset()
+    # we wrote to the test kernel, now load it in read mode
+    handle = spice.dasopr(daspath)
+    assert handle is not None
+    # check that dashfn points to the correct path
+    assert spice.dashfn(handle) == daspath
+    # extract out the comment, say we only want 3 things out
+    n, comments, done = spice.dasec(handle, bufsiz=3)
+    assert n == 3
+    assert set(comments) == {"spice", "naif", "python"} & set(comments)
+    # close the das file
+    spice.dascls(handle)
+    ###############################################
+    # now test dasrfr
+    handle = spice.dasopr(daspath)
+    assert handle is not None
+    idword, ifname, nresvr, nresvc, ncomr, ncomc = spice.dasrfr(handle)
+    assert idword is not None
+    assert idword == 'DAS/TEST'
+    assert ifname == 'ex_dasac'
+    assert nresvr == 0
+    assert nresvc == 0
+    assert ncomr  == 140
+    assert ncomc  == 18
+    # close the das file
+    spice.dascls(handle)
+    ###############################################
+    # now reload the kernel and delete the commnets
+    handle = spice.dasopw(daspath)
+    assert handle is not None
+    # delete the comments
+    spice.dasdc(handle)
+    # close the das file
+    spice.dascls(handle)
+    # open again for reading
+    handle = spice.dasopr(daspath)
+    assert handle is not None
+    # extract out the comments, hopefully nothing
+    n, comments, done = spice.dasec(handle)
+    assert n == 0
+    # close it again
+    spice.dascls(handle)
+    # done, so clean up
+    if spice.exists(daspath):
+        os.remove(daspath) # pragma: no cover
+    spice.kclear()
 
 
 def test_dasopw_dascls_dasopr():
@@ -6531,7 +6554,10 @@ def test_xposeg():
 
 
 def teardown_module(module):
-    cleanup_Cassini_Kernels()
-    cleanup_Mars_Kernels()
-    cleanup_Extra_Kernels()
-    cleanup_Core_Kernels()
+    # if you are developing spiceypy, and don't want to delete kernels each time you run the tests, set
+    # set the following environment variable "spiceypy_do_not_remove_kernels" to anything
+    if not os.environ.get('spiceypy_do_not_remove_kernels'):
+        cleanup_Cassini_Kernels()
+        cleanup_Mars_Kernels()
+        cleanup_Extra_Kernels()
+        cleanup_Core_Kernels()

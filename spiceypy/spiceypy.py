@@ -1999,7 +1999,7 @@ def dasec(handle, bufsiz=_default_len_out, buflen=_default_len_out):
     buflen = ctypes.c_int(buflen)
     n = ctypes.c_int(0)
     done = ctypes.c_bool()
-    libspice.dafec_c(handle, bufsiz, buflen, ctypes.byref(n),
+    libspice.dasec_c(handle, bufsiz, buflen, ctypes.byref(n),
                      ctypes.byref(buffer), ctypes.byref(done))
     return n.value, stypes.vectorToList(buffer), done.value
 
