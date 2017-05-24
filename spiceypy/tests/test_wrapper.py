@@ -2859,6 +2859,14 @@ def test_ilumin():
     spice.kclear()
 
 
+def test_illumf():
+    assert 1
+
+
+def test_illumg():
+    assert 1
+
+
 def test_inedpl():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -3141,6 +3149,16 @@ def test_latsph():
     npt.assert_array_almost_equal(expected1, spice.latsph(1.0, 0.0, 0.0), decimal=7)
     npt.assert_array_almost_equal(expected2, spice.latsph(1.0, 90.0 * spice.rpd(), 0.0), decimal=7)
     npt.assert_array_almost_equal(expected3, spice.latsph(1.0, 180.0 * spice.rpd(), 0.0), decimal=7)
+
+
+def test_latsrf():
+    spice.kclear()
+    spice.furnsh(ExtraKernels.phobosDsk)
+    srfpts = spice.latsrf("DSK/UNPRIORITIZED", "phobos", 0.0, "iau_phobos", [[0.0, 45.0], [60.0, 45.0]])
+    radii = [spice.recrad(x)[0] for x in srfpts]
+    assert radii[0] > 9.5
+    assert radii[1] > 10.3
+    spice.kclear()
 
 
 def test_lcase():

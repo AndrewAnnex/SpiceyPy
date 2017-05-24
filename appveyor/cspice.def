@@ -243,6 +243,8 @@ EXPORTS			appndc_c
 				hx2dp_c
 				ident_c
 				illum_c
+				illumf_c
+				illumg_c
 				ilumin_c
 				inedpl_c
 				inelpl_c
@@ -276,6 +278,7 @@ EXPORTS			appndc_c
 				latcyl_c
 				latrec_c
 				latsph_c
+				latsrf_c
 				lcase_c
 				ldpool_c
 				lgrind_c

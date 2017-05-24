@@ -157,7 +157,12 @@ def vectorToList(x):
         return [toPythonString(y) for y in x]
 
 
-def matrixToList(x):
+def cMatrixToNumpy(x):
+    """
+    Convert a ctypes 2d array (or matrix) into a numpy array for python use
+    :param x: thing to convert
+    :return: numpy.ndarray
+    """
     return numpc.as_array(x)
 
 

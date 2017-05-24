@@ -180,7 +180,7 @@ def axisar(axis, angle):
     angle = ctypes.c_double(angle)
     r = stypes.emptyDoubleMatrix()
     libspice.axisar_c(axis, angle, r)
-    return stypes.matrixToList(r)
+    return stypes.cMatrixToNumpy(r)
 
 
 ################################################################################
@@ -908,7 +908,7 @@ def ckgp(inst, sclkdp, tol, ref):
     found = ctypes.c_bool()
     libspice.ckgp_c(inst, sclkdp, tol, ref, cmat, ctypes.byref(clkout),
                     ctypes.byref(found))
-    return stypes.matrixToList(cmat), clkout.value, found.value
+    return stypes.cMatrixToNumpy(cmat), clkout.value, found.value
 
 
 @spiceErrorCheck
@@ -944,7 +944,7 @@ def ckgpav(inst, sclkdp, tol, ref):
     found = ctypes.c_bool()
     libspice.ckgpav_c(inst, sclkdp, tol, ref, cmat, av, ctypes.byref(clkout),
                       ctypes.byref(found))
-    return stypes.matrixToList(cmat), stypes.vectorToList(
+    return stypes.cMatrixToNumpy(cmat), stypes.vectorToList(
             av), clkout.value, found.value
 
 
@@ -2127,7 +2127,7 @@ def dcyldr(x, y, z):
     z = ctypes.c_double(z)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.dcyldr_c(x, y, z, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
@@ -2195,7 +2195,7 @@ def dgeodr(x, y, z, re, f):
     f = ctypes.c_double(f)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.dgeodr_c(x, y, z, re, f, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
@@ -2216,7 +2216,7 @@ def diags2(symmat):
     diag = stypes.emptyDoubleMatrix(x=2, y=2)
     rotateout = stypes.emptyDoubleMatrix(x=2, y=2)
     libspice.diags2_c(symmat, diag, rotateout)
-    return stypes.matrixToList(diag), stypes.matrixToList(rotateout)
+    return stypes.cMatrixToNumpy(diag), stypes.cMatrixToNumpy(rotateout)
 
 
 @spiceErrorCheck
@@ -2357,7 +2357,7 @@ def dlatdr(x, y, z):
     z = ctypes.c_double(z)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.dlatdr_c(x, y, z, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
@@ -2415,7 +2415,7 @@ def dpgrdr(body, x, y, z, re, f):
     f = ctypes.c_double(f)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.dpgrdr_c(body, x, y, z, re, f, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
@@ -2485,7 +2485,7 @@ def drdcyl(r, lon, z):
     z = ctypes.c_double(z)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.drdcyl_c(r, lon, z, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
@@ -2516,7 +2516,7 @@ def drdgeo(lon, lat, alt, re, f):
     f = ctypes.c_double(f)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.drdgeo_c(lon, lat, alt, re, f, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
@@ -2541,7 +2541,7 @@ def drdlat(r, lon, lat):
     lat = ctypes.c_double(lat)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.drdlat_c(r, lon, lat, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
@@ -2575,7 +2575,7 @@ def drdpgr(body, lon, lat, alt, re, f):
     f = ctypes.c_double(f)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.drdpgr_c(body, lon, lat, alt, re, f, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
@@ -2600,7 +2600,7 @@ def drdsph(r, colat, lon):
     lon = ctypes.c_double(lon)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.drdsph_c(r, colat, lon, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
@@ -2743,7 +2743,7 @@ def dsphdr(x, y, z):
     z = ctypes.c_double(z)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.dsphdr_c(x, y, z, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
@@ -2985,7 +2985,7 @@ def edterm(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts):
     npts = ctypes.c_int(npts)
     libspice.edterm_c(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts,
                       ctypes.byref(trgepc), obspos, trmpts)
-    return trgepc.value, stypes.vectorToList(obspos), stypes.matrixToList(
+    return trgepc.value, stypes.vectorToList(obspos), stypes.cMatrixToNumpy(
             trmpts)
 
 
@@ -4440,7 +4440,7 @@ def eul2m(angle3, angle2, angle1, axis3, axis2, axis1):
     axis1 = ctypes.c_int(axis1)
     r = stypes.emptyDoubleMatrix()
     libspice.eul2m_c(angle3, angle2, angle1, axis3, axis2, axis1, r)
-    return stypes.matrixToList(r)
+    return stypes.cMatrixToNumpy(r)
 
 
 @spiceErrorCheck
@@ -4470,7 +4470,7 @@ def eul2xf(eulang, axisa, axisb, axisc):
     axisc = ctypes.c_int(axisc)
     xform = stypes.emptyDoubleMatrix(x=6, y=6)
     libspice.eul2xf_c(eulang, axisa, axisb, axisc, xform)
-    return stypes.matrixToList(xform)
+    return stypes.cMatrixToNumpy(xform)
 
 
 @spiceErrorCheck
@@ -4872,7 +4872,7 @@ def getfov(instid, room, shapelen=_default_len_out, framelen=_default_len_out):
                       ctypes.byref(n), bounds)
     return stypes.toPythonString(shape), stypes.toPythonString(
             framen), stypes.vectorToList(
-            bsight), n.value, stypes.matrixToList(bounds)[0:n.value]
+            bsight), n.value, stypes.cMatrixToNumpy(bounds)[0:n.value]
 
 
 def getmsg(option, lenout=_default_len_out):
@@ -5821,7 +5821,7 @@ def ident():
     """
     matrix = stypes.emptyDoubleMatrix()
     libspice.ident_c(matrix)
-    return stypes.matrixToList(matrix)
+    return stypes.cMatrixToNumpy(matrix)
 
 
 @spiceErrorCheck
@@ -5863,6 +5863,121 @@ def illum(target, et, abcorr, obsrvr, spoint):
     libspice.illum_c(target, et, abcorr, obsrvr, spoint, ctypes.byref(phase),
                      ctypes.byref(solar), ctypes.byref(emissn))
     return phase.value, solar.value, emissn.value
+
+
+@spiceErrorCheck
+def illumf(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint):
+    """
+    Compute the illumination angles---phase, incidence, and
+    emission---at a specified point on a target body. Return logical
+    flags indicating whether the surface point is visible from
+    the observer's position and whether the surface point is
+    illuminated.
+
+    The target body's surface is represented using topographic data
+    provided by DSK files, or by a reference ellipsoid.
+
+    The illumination source is a specified ephemeris object.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/illumf_c.html
+    
+    :param method: Computation method.
+    :type method: str
+    :param target: Name of target body.
+    :type target: str 
+    :param ilusrc: Name of illumination source.
+    :type ilusrc: str
+    :param et: Epoch in ephemeris seconds past J2000.
+    :type et: float
+    :param fixref: Body-fixed, body-centered target body frame.
+    :type fixref: str
+    :param abcorr: Desired aberration correction.
+    :type abcorr: str
+    :param obsrvr: Name of observing body.
+    :type obsrvr: str
+    :param spoint: Body-fixed coordinates of a target surface point.
+    :type spoint: 3-Element Array of floats
+    :return: Target surface point epoch, Vector from observer to target
+     surface point, Phase angle at the surface point, Source incidence 
+     angle at the surface point, Emission angle at the surface point, 
+     Visibility flag, Illumination flag
+    :rtype: tuple
+    """
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
+    ilusrc = stypes.stringToCharP(ilusrc)
+    et     = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    spoint = stypes.toDoubleVector(spoint)
+    trgepc = ctypes.c_double(0)
+    srfvec = stypes.emptyDoubleVector(3)
+    phase  = ctypes.c_double(0)
+    incdnc = ctypes.c_double(0)
+    emissn = ctypes.c_double(0)
+    visibl = ctypes.c_bool()
+    lit    = ctypes.c_bool()
+    libspice.illumf_c(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint,
+                      ctypes.byref(trgepc), srfvec, ctypes.byref(phase),
+                      ctypes.byref(incdnc), ctypes.byref(emissn),
+                      ctypes.byref(visibl), ctypes.byref(lit))
+    return trgepc.value, stypes.vectorToList(srfvec), \
+           phase.value, incdnc.value, emissn.value, visibl.value, lit.value
+
+
+@spiceErrorCheck
+def illumg(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint):
+    """
+    Find the illumination angles (phase, incidence, and 
+    emission) at a specified surface point of a target body. 
+ 
+    The surface of the target body may be represented by a triaxial 
+    ellipsoid or by topographic data provided by DSK files. 
+ 
+    The illumination source is a specified ephemeris object.
+    param method: Computation method.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/illumg_c.html
+    
+    :type method: str
+    :param target: Name of target body.
+    :type target: str 
+    :param ilusrc: Name of illumination source.
+    :type ilusrc: str
+    :param et: Epoch in ephemeris seconds past J2000.
+    :type et: float
+    :param fixref: Body-fixed, body-centered target body frame.
+    :type fixref: str
+    :param abcorr: Desired aberration correction.
+    :type abcorr: str
+    :param obsrvr: Name of observing body.
+    :type obsrvr: str
+    :param spoint: Body-fixed coordinates of a target surface point.
+    :type spoint: 3-Element Array of floats
+    :return: Target surface point epoch, Vector from observer to target
+     surface point, Phase angle at the surface point, Source incidence 
+     angle at the surface point, Emission angle at the surface point, 
+    :rtype: tuple
+    """
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
+    ilusrc = stypes.stringToCharP(ilusrc)
+    et     = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    spoint = stypes.toDoubleVector(spoint)
+    trgepc = ctypes.c_double(0)
+    srfvec = stypes.emptyDoubleVector(3)
+    phase  = ctypes.c_double(0)
+    incdnc = ctypes.c_double(0)
+    emissn = ctypes.c_double(0)
+    libspice.illumg_c(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint,
+                      ctypes.byref(trgepc), srfvec, ctypes.byref(phase),
+                      ctypes.byref(incdnc), ctypes.byref(emissn))
+    return trgepc.value, stypes.vectorToList(srfvec), \
+           phase.value, incdnc.value, emissn.value
 
 
 @spiceErrorCheck
@@ -6136,7 +6251,7 @@ def invert(m):
     m = stypes.toDoubleMatrix(m)
     mout = stypes.emptyDoubleMatrix()
     libspice.invert_c(m, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -6156,7 +6271,7 @@ def invort(m):
     m = stypes.toDoubleMatrix(m)
     mout = stypes.emptyDoubleMatrix()
     libspice.invort_c(m, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -6632,6 +6747,41 @@ def latsph(radius, lon, lat):
     libspice.latsph_c(radius, lon, lat, ctypes.byref(rho), ctypes.byref(colat),
                       ctypes.byref(lons))
     return rho.value, colat.value, lons.value
+
+
+@spiceErrorCheck
+def latsrf(method, target, et, fixref, lonlat):
+    """
+    Map array of planetocentric longitude/latitude coordinate pairs 
+    to surface points on a specified target body. 
+ 
+    The surface of the target body may be represented by a triaxial 
+    ellipsoid or by topographic data provided by DSK files.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/latsrf_c.html
+    
+    :param method: Computation method.
+    :type method: str
+    :param target: Name of target body.
+    :type target: str
+    :param et: Epoch in TDB seconds past J2000 TDB. 
+    :type et: float
+    :param fixref: Body-fixed, body-centered target body frame.
+    :type fixref: str
+    :param lonlat: Array of longitude/latitude coordinate pairs.
+    :type lonlat: A 2xM-Element Array of floats
+    :return: Array of surface points. 
+    :rtype: A 3xM-Element Array of floats
+    """
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
+    et     = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    npts   = ctypes.c_int(len(lonlat))
+    lonlat = stypes.toDoubleMatrix(lonlat)
+    srfpts = stypes.emptyDoubleMatrix(3, npts.value)
+    libspice.latsrf_c(method, target, et, fixref, npts, lonlat, srfpts)
+    return stypes.cMatrixToNumpy(srfpts)
 
 
 @spiceErrorCheck
@@ -7248,7 +7398,7 @@ def mequ(m1):
     m1 = stypes.toDoubleMatrix(m1)
     mout = stypes.emptyDoubleMatrix()
     libspice.mequ_c(m1, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -7272,7 +7422,7 @@ def mequg(m1, nr, nc):
     nc = ctypes.c_int(nc)
     nr = ctypes.c_int(nr)
     libspice.mequg_c(m1, nc, nr, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 # skiping for now mind_c,
@@ -7301,7 +7451,7 @@ def mtxm(m1, m2):
     m2 = stypes.toDoubleMatrix(m2)
     mout = stypes.emptyDoubleMatrix()
     libspice.mtxm_c(m1, m2, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -7332,7 +7482,7 @@ def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
     nr1r2 = ctypes.c_int(nr1r2)
     ncol2 = ctypes.c_int(ncol2)
     libspice.mtxmg_c(m1, m2, ncol1, nr1r2, ncol2, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -7403,7 +7553,7 @@ def mxm(m1, m2):
     m2 = stypes.toDoubleMatrix(m2)
     mout = stypes.emptyDoubleMatrix()
     libspice.mxm_c(m1, m2, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -7433,7 +7583,7 @@ def mxmg(m1, m2, nrow1, ncol1, ncol2):
     ncol1 = ctypes.c_int(ncol1)
     ncol2 = ctypes.c_int(ncol2)
     libspice.mxmg_c(m1, m2, nrow1, ncol1, ncol2, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -7454,7 +7604,7 @@ def mxmt(m1, m2):
     m2 = stypes.toDoubleMatrix(m2)
     mout = stypes.emptyDoubleMatrix()
     libspice.mxmt_c(m1, m2, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -7484,7 +7634,7 @@ def mxmtg(m1, m2, nrow1, nc1c2, nrow2):
     nc1c2 = ctypes.c_int(nc1c2)
     nrow2 = ctypes.c_int(nrow2)
     libspice.mxmtg_c(m1, m2, nrow1, nc1c2, nrow2, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -8405,7 +8555,7 @@ def pltexp(iverts, delta):
     delta = ctypes.c_double(delta)
     overts = stypes.emptyDoubleMatrix()
     libspice.pltexp_c(iverts, delta, overts)
-    return stypes.matrixToList(overts)
+    return stypes.cMatrixToNumpy(overts)
 
 
 @spiceErrorCheck
@@ -8676,7 +8826,7 @@ def pxform(fromstr, tostr, et):
     fromstr = stypes.stringToCharP(fromstr)
     rotatematrix = stypes.emptyDoubleMatrix()
     libspice.pxform_c(fromstr, tostr, et, rotatematrix)
-    return stypes.matrixToList(rotatematrix)
+    return stypes.cMatrixToNumpy(rotatematrix)
 
 
 @spiceErrorCheck
@@ -8705,7 +8855,7 @@ def pxfrm2(frame_from, frame_to, etfrom, etto):
     etto = ctypes.c_double(etto)
     outmatrix = stypes.emptyDoubleMatrix()
     libspice.pxfrm2_c(frame_from, frame_to, etfrom, etto, outmatrix)
-    return stypes.matrixToList(outmatrix)
+    return stypes.cMatrixToNumpy(outmatrix)
 
 
 ################################################################################
@@ -8727,7 +8877,7 @@ def q2m(q):
     q = stypes.toDoubleVector(q)
     mout = stypes.emptyDoubleMatrix()
     libspice.q2m_c(q, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 # @spiceErrorCheck
@@ -8840,7 +8990,7 @@ def rav2xf(rot, av):
     av = stypes.toDoubleVector(av)
     xform = stypes.emptyDoubleMatrix(x=6, y=6)
     libspice.rav2xf_c(rot, av, xform)
-    return stypes.matrixToList(xform)
+    return stypes.cMatrixToNumpy(xform)
 
 
 @spiceErrorCheck
@@ -9420,7 +9570,7 @@ def rotate(angle, iaxis):
     iaxis = ctypes.c_int(iaxis)
     mout = stypes.emptyDoubleMatrix()
     libspice.rotate_c(angle, iaxis, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -9446,7 +9596,7 @@ def rotmat(m1, angle, iaxis):
     iaxis = ctypes.c_int(iaxis)
     mout = stypes.emptyDoubleMatrix()
     libspice.rotmat_c(m1, angle, iaxis, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -12264,7 +12414,7 @@ def sxform(instring, tostring, et):
     et = ctypes.c_double(et)
     xform = stypes.emptyDoubleMatrix(x=6, y=6)
     libspice.sxform_c(instring, tostring, et, xform)
-    return stypes.matrixToList(xform)
+    return stypes.cMatrixToNumpy(xform)
 
 
 @spiceErrorCheck
@@ -12371,7 +12521,7 @@ def tipbod(ref, body, et):
     et = ctypes.c_double(et)
     retmatrix = stypes.emptyDoubleMatrix()
     libspice.tipbod_c(ref, body, et, retmatrix)
-    return stypes.matrixToList(retmatrix)
+    return stypes.cMatrixToNumpy(retmatrix)
 
 
 @spiceErrorCheck
@@ -12396,7 +12546,7 @@ def tisbod(ref, body, et):
     et = ctypes.c_double(et)
     retmatrix = stypes.emptyDoubleMatrix(x=6, y=6)
     libspice.tisbod_c(ref, body, et, retmatrix)
-    return stypes.matrixToList(retmatrix)
+    return stypes.cMatrixToNumpy(retmatrix)
 
 
 # @spiceErrorCheck
@@ -12591,7 +12741,7 @@ def twovec(axdef, indexa, plndef, indexp):
     indexp = ctypes.c_int(indexp)
     mout = stypes.emptyDoubleMatrix()
     libspice.twovec_c(axdef, indexa, plndef, indexp, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -14166,7 +14316,7 @@ def xf2rav(xform):
     rot = stypes.emptyDoubleMatrix()
     av = stypes.emptyDoubleVector(3)
     libspice.xf2rav_c(xform, rot, av)
-    return stypes.matrixToList(rot), stypes.vectorToList(av)
+    return stypes.cMatrixToNumpy(rot), stypes.vectorToList(av)
 
 
 @spiceErrorCheck
@@ -14214,7 +14364,7 @@ def xpose(m):
     m = stypes.toDoubleMatrix(m)
     mout = stypes.emptyDoubleMatrix(x=3, y=3)
     libspice.xpose_c(m, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -14232,7 +14382,7 @@ def xpose6(m):
     m = stypes.toDoubleMatrix(m)
     mout = stypes.emptyDoubleMatrix(x=6, y=6)
     libspice.xpose6_c(m, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -14257,4 +14407,4 @@ def xposeg(matrix, nrow, ncol):
     ncol = ctypes.c_int(ncol)
     nrow = ctypes.c_int(nrow)
     libspice.xposeg_c(matrix, nrow, ncol, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
