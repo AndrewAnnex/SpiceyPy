@@ -1076,6 +1076,28 @@ def test_diff():
     assert [x for x in outCell] == [1]
 
 
+def test_dlabfs():
+    spice.kclear()
+    handle = spice.dasopr(ExtraKernels.phobosDsk)
+    current = spice.dlabfs(handle)
+    assert current is not None
+    assert current.dsize == 494554
+    with pytest.raises(spice.stypes.SpiceyError):
+        next = spice.dlafns(handle, current)
+    spice.dascls(handle)
+    spice.kclear()
+
+def test_dlabbs():
+    spice.kclear()
+    handle = spice.dasopr(ExtraKernels.phobosDsk)
+    current = spice.dlabbs(handle)
+    assert current is not None
+    assert current.dsize == 494554
+    with pytest.raises(spice.stypes.SpiceyError):
+        prev = spice.dlafps(handle, current)
+    spice.dascls(handle)
+    spice.kclear()
+
 def test_dlatdr():
     output = spice.dlatdr(1.0, 0.0, 0.0)
     expected = [[1.0, 0.0, 0.0],

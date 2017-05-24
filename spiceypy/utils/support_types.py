@@ -437,6 +437,43 @@ class DataType(object):
         pass
 
 
+class SpiceDLADescr(Structure):
+    _fields_ = [
+        ('bwdptr', c_int),
+        ('fwdptr', c_int),
+        ('ibase', c_int),
+        ('isize', c_int),
+        ('dbase', c_int),
+        ('dsize', c_int),
+        ('cbase', c_int),
+        ('csize', c_int)
+    ]
+    def bwdptr(self):
+        return self._bwdptr.value
+
+    def fwdptr(self):
+        return self._fwdprt.value
+
+    def ibase(self):
+        return self._ibase.value
+
+    def isize(self):
+        return self._isize.value
+
+    def dbase(self):
+        return self._dbase.value
+
+    def dsize(self):
+        return self._dsize.value
+
+    def cbase(self):
+        return self._cbase.value
+
+    def csize(self):
+        return self._csize.value
+
+
+
 class SpiceEKDataType(c_int):
     _fields_ = [
         ('SPICE_CHR', c_int(0)),

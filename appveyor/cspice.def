@@ -91,6 +91,10 @@ EXPORTS			appndc_c
 				dgeodr_c
 				diags2_c
 				diff_c
+				dlabbs_c
+                dlabfs_c
+                dlafns_c
+                dlafps_c
 				dlatdr_c
 				dp2hx_c
 				dpgrdr_c
@@ -102,12 +106,26 @@ EXPORTS			appndc_c
 				drdlat_c
 				drdpgr_c
 				drdsph_c
+				dskb02_c
 				dskcls_c
+				dskd02_c
+                dskgd_c
 				dskgtl_c
+				dski02_c
+                dskmi2_c
+                dskn02_c
 				dskobj_c
 				dskopn_c
+				dskp02_c
+                dskrb2_c
 				dsksrf_c
 				dskstl_c
+				dskv02_c
+                dskw02_c
+                dskx02_c
+                dskxsi_c
+                dskxv_c
+                dskz02_c
 				dsphdr_c
 				dtpool_c
 				ducrss_c

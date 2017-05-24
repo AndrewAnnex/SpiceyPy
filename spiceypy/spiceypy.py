@@ -2249,6 +2249,93 @@ def diff(a, b):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
+def dlabbs(handle):
+    """
+    Begin a backward segment search in a DLA file.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlabbs_c.html
+    
+    :param handle: Handle of open DLA file.
+    :type handle: int
+    :return: Descriptor of last segment in DLA file
+    :rtype: spiceypy.utils.support_types.SpiceDLADescr
+    """
+    handle = ctypes.c_int(handle)
+    descr  = stypes.SpiceDLADescr()
+    found  = ctypes.c_bool()
+    libspice.dlabbs_c(handle, ctypes.byref(descr), ctypes.byref(found))
+    return descr, found.value
+
+
+@spiceErrorCheck
+@spiceFoundExceptionThrower
+def dlabfs(handle):
+    """
+    Begin a forward segment search in a DLA file.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlabfs_c.html
+    
+    :param handle: Handle of open DLA file.
+    :type handle: int
+    :return: Descriptor of next segment in DLA file
+    :rtype: spiceypy.utils.support_types.SpiceDLADescr
+    """
+    handle = ctypes.c_int(handle)
+    descr  = stypes.SpiceDLADescr()
+    found  = ctypes.c_bool()
+    libspice.dlabfs_c(handle, ctypes.byref(descr), ctypes.byref(found))
+    return descr, found.value
+
+
+@spiceErrorCheck
+@spiceFoundExceptionThrower
+def dlafns(handle, descr):
+    """
+    Find the segment following a specified segment in a DLA file. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlafns_c.html
+    
+    :param handle: Handle of open DLA file.
+    :type handle: c_int
+    :param descr: Descriptor of a DLA segment.
+    :type descr: spiceypy.utils.support_types.SpiceDLADescr
+    :return: Descriptor of next segment in DLA file
+    :rtype: spiceypy.utils.support_types.SpiceDLADescr
+    """
+    assert isinstance(descr, stypes.SpiceDLADescr)
+    handle = ctypes.c_int(handle)
+    nxtdsc = stypes.SpiceDLADescr()
+    found  = ctypes.c_bool()
+    libspice.dlafns_c(handle, ctypes.byref(descr), ctypes.byref(nxtdsc), ctypes.byref(found))
+    return nxtdsc, found.value
+
+
+@spiceErrorCheck
+@spiceFoundExceptionThrower
+def dlafps(handle, descr):
+    """
+    Find the segment preceding a specified segment in a DLA file.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlafps_c.html
+    
+    :param handle: Handle of open DLA file.
+    :type handle: c_int
+    :param descr: Descriptor of a segment in DLA file. 
+    :type descr: spiceypy.utils.support_types.SpiceDLADescr
+    :return: Descriptor of previous segment in DLA file
+    :rtype: spiceypy.utils.support_types.SpiceDLADescr
+    """
+    assert isinstance(descr, stypes.SpiceDLADescr)
+    handle = ctypes.c_int(handle)
+    prvdsc = stypes.SpiceDLADescr()
+    found = ctypes.c_bool()
+    libspice.dlafps_c(handle, ctypes.byref(descr), ctypes.byref(prvdsc),
+                      ctypes.byref(found))
+    return prvdsc, found.value
+
+
+@spiceErrorCheck
 def dlatdr(x, y, z):
     """
     This routine computes the Jacobian of the transformation from
@@ -2517,6 +2604,24 @@ def drdsph(r, colat, lon):
 
 
 @spiceErrorCheck
+def dskcls(handle, optmiz=False):
+    """
+    Close a DSK file. 
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskcls_c.html
+    
+    :param handle: Handle assigned to the opened DSK file.
+    :type handle: int
+    :param optmiz: Flag indicating whether to segregate the DSK.
+    :type optmiz: bool
+    :return: 
+    """
+    handle = ctypes.c_int(handle)
+    optmiz = ctypes.c_bool(optmiz)
+    libspice.dskcls_c(handle, optmiz)
+
+
+@spiceErrorCheck
 def dskgtl(keywrd):
     """
     Retrieve the value of a specified DSK tolerance or margin parameter.
@@ -2551,6 +2656,29 @@ def dskobj(dsk):
     bodids = stypes.SPICEINT_CELL(10000)
     libspice.dskobj_c(dsk, ctypes.byref(bodids))
     return bodids
+
+
+@spiceErrorCheck
+def dskopn(fname, ifname, ncomch):
+    """
+    Open a new DSK file for subsequent write operations. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskopn_c.html
+    
+    :param fname: Name of a DSK file to be opened. 
+    :type fname: str
+    :param ifname: Internal file name.
+    :type ifname: str
+    :param ncomch: Number of comment characters to allocate. 
+    :type ncomch: int
+    :return: 
+    """
+    fname = stypes.stringToCharP(fname)
+    ifname = stypes.stringToCharP(ifname)
+    ncomch = ctypes.c_int(ncomch)
+    handle = ctypes.c_int()
+    libspice.dskopn_c(fname, ifname, ncomch, ctypes.byref(handle))
+    return handle.value
 
 
 @spiceErrorCheck
