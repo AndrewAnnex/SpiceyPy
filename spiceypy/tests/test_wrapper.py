@@ -3219,6 +3219,24 @@ def test_lgrind():
     assert dp == pytest.approx(16.0)
 
 
+def test_limbpt():
+    spice.kclear()
+    spice.furnsh(CoreKernels.spk)
+    spice.furnsh(ExtraKernels.marsSpk)
+    spice.furnsh(CoreKernels.pck)
+    spice.furnsh(CoreKernels.lsk)
+    spice.furnsh(ExtraKernels.phobosDsk)
+    # set the time
+    et = spice.str2et("1972 AUG 11 00:00:00")
+    # call limpt
+    npts, points, epochs, tangts = spice.limbpt("TANGENT/DSK/UNPRIORITIZED", "Phobos", et, "IAU_PHOBOS",
+                       "CN+S", "CENTER", "MARS", [0.0, 0.0, 1.0],
+                       spice.twopi()/3.0, 3, 1.0e-4, 1.0e-7, 10000)
+    assert points is not None
+    assert len(points) == 3
+    spice.kclear()
+
+
 def test_lmpool():
     spice.kclear()
     lmpoolNames = ['DELTET/DELTA_T_A', 'DELTET/K', 'DELTET/EB', 'DELTET/M', 'DELTET/DELTA_AT']
@@ -5466,6 +5484,20 @@ def test_srfcss():
     spice.kclear()
     if spice.exists(kernel):
         os.remove(kernel)  # pragma: no cover
+
+
+def test_srfnrm():
+    spice.kclear()
+    spice.furnsh(CoreKernels.pck)
+    spice.furnsh(ExtraKernels.phobosDsk)
+    srfpts = spice.latsrf("DSK/UNPRIORITIZED", "phobos", 0.0, "iau_phobos",
+                          [[0.0, 45.0], [60.0, 45.0]])
+    normals = spice.srfnrm("DSK/UNPRIORITIZED", "phobos", 0.0, "iau_phobos",
+                           srfpts)
+    srf_rad = np.array([spice.recrad(x) for x in srfpts])
+    nrm_rad = np.array([spice.recrad(x) for x in normals])
+    assert np.any(np.not_equal(srf_rad, nrm_rad))
+    spice.kclear()
 
 
 def test_srfrec():

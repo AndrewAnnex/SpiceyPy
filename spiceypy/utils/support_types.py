@@ -139,6 +139,9 @@ def emptyDoubleVector(n):
     return (c_double * n)()
 
 
+def emptyIntMatrix(x=3, y=3):
+    return ((c_int * x) * y)()
+
 def emptyIntVector(n):
     if isinstance(n, c_int):
         n = n.value

@@ -114,12 +114,14 @@ class ExtraKernels(object):
     earthGenPck_url     = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/earth_720101_070426.bpc"
     earthHighPerPck_url = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/earth_latest_high_prec.bpc"
     phobosDsk_url       = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/dsk/phobos/phobos_3_3.bds"
+    marsSpk_url         = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/a_old_versions/mar022-1.bsp"
     voyagerSclk         = getPathFromUrl(voyagerSclk_url)
     earthTopoTf         = getPathFromUrl(earthTopoTf_url)
     earthStnSpk         = getPathFromUrl(earthStnSpk_url)
     earthGenPck         = getPathFromUrl(earthGenPck_url)
     earthHighPerPck     = getPathFromUrl(earthHighPerPck_url)
     phobosDsk           = getPathFromUrl(phobosDsk_url)
+    marsSpk             = getPathFromUrl(marsSpk_url)
 
 def cleanup_Extra_Kernels():
     cleanupFile(ExtraKernels.voyagerSclk)
@@ -128,6 +130,7 @@ def cleanup_Extra_Kernels():
     cleanupFile(ExtraKernels.earthGenPck)
     cleanupFile(ExtraKernels.earthHighPerPck)
     cleanupFile(ExtraKernels.phobosDsk)
+    cleanupFile(ExtraKernels.marsSpk)
 
 
 class CoreKernels(object):
@@ -197,6 +200,7 @@ def getExtraTestKernels():
     getKernel(ExtraKernels.earthGenPck_url)
     getKernel(ExtraKernels.earthHighPerPck_url)
     getKernel(ExtraKernels.phobosDsk_url)
+    getKernel(ExtraKernels.marsSpk_url)
 
 def getExtraMarsTestKernels():
     getKernel(MarsKernels.merExt10_url)

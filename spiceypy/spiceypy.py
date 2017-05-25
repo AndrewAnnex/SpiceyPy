@@ -6819,6 +6819,76 @@ def ldpool(filename):
     filename = stypes.stringToCharP(filename)
     libspice.ldpool_c(filename)
 
+
+@spiceErrorCheck
+def limbpt(method, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp, ncuts, schstp, soltol, maxn):
+    """
+    Find limb points on a target body. The limb is the set of points 
+    of tangency on the target of rays emanating from the observer. 
+    The caller specifies half-planes bounded by the observer-target 
+    center vector in which to search for limb points. 
+ 
+    The surface of the target body may be represented either by a 
+    triaxial ellipsoid or by topographic data. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/limbpt_c.html
+    
+    :param method: Computation method. 
+    :type method: str
+    :param target: Name of target body.
+    :type target: str
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :type et: float
+    :param fixref: Body-fixed, body-centered target body frame.
+    :type fixref: str
+    :param abcorr: Aberration correction. 
+    :type abcorr: str
+    :param corloc: Aberration correction locus.
+    :type corloc: str
+    :param obsrvr: Name of observing body.
+    :type obsrvr: str
+    :param refvec: Reference vector for cutting half-planes.
+    :type refvec: 3-Element Array of floats
+    :param rolstp: Roll angular step for cutting half-planes. 
+    :type rolstp: float
+    :param ncuts: Number of cutting half-planes. 
+    :type ncuts: int
+    :param schstp: Angular step size for searching. 
+    :type schstp: float
+    :param soltol: Solution convergence tolerance. 
+    :type soltol: float
+    :param maxn: Maximum number of entries in output arrays. 
+    :type maxn: int
+    :return: Counts of limb points corresponding to cuts, Limb points, Times associated with limb points, Tangent vectors emanating from the observer
+    :rtype: tuple
+    """
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
+    et     = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    corloc = stypes.stringToCharP(corloc)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    refvec = stypes.toDoubleVector(refvec)
+    rolstp = ctypes.c_double(rolstp)
+    ncuts  = ctypes.c_int(ncuts)
+    schstp = ctypes.c_double(schstp)
+    soltol = ctypes.c_double(soltol)
+    maxn   = ctypes.c_int(maxn)
+    npts   = stypes.emptyIntVector(maxn.value)
+    points = stypes.emptyDoubleMatrix(3, maxn.value)
+    epochs = stypes.emptyDoubleVector(maxn)
+    tangts = stypes.emptyDoubleMatrix(3, maxn.value)
+    libspice.limbpt_c(method, target, et, fixref,
+                      abcorr, corloc, obsrvr, refvec,
+                      rolstp, ncuts, schstp, soltol,
+                      maxn, npts, points, epochs, tangts)
+    # Clip the empty elements out of returned results
+    npts = stypes.vectorToList(npts)
+    valid_points = numpy.where(npts >= 1)
+    return npts[valid_points], stypes.cMatrixToNumpy(points)[valid_points], stypes.vectorToList(epochs)[valid_points], stypes.cMatrixToNumpy(tangts)[valid_points]
+
+
 @spiceErrorCheck
 def lgrind(xvals, yvals, x):
     """
@@ -8126,6 +8196,31 @@ def oscelt(state, et, mu):
     mu = ctypes.c_double(mu)
     elts = stypes.emptyDoubleVector(8)
     libspice.oscelt_c(state, et, mu, elts)
+    return stypes.vectorToList(elts)
+
+
+def oscltx(state, et, mu):
+    """
+    Determine the set of osculating conic orbital elements that 
+    corresponds to the state (position, velocity) of a body at some 
+    epoch. In additional to the classical elements, return the true 
+    anomaly, semi-major axis, and period, if applicable. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/oscltx_c.html
+    
+    :param state: State of body at epoch of elements. 
+    :type state: 6-Element Array of floats
+    :param et: Epoch of elements. 
+    :type et: float
+    :param mu: Gravitational parameter (GM) of primary body. 
+    :type mu: float
+    :return: Extended set of classical conic elements. 
+    """
+    state = stypes.toDoubleVector(state)
+    et = ctypes.c_double(et)
+    mu = ctypes.c_double(mu)
+    elts = stypes.emptyDoubleVector(11)
+    libspice.oscltx_c(state, et, mu, elts)
     return stypes.vectorToList(elts)
 
 
@@ -11827,6 +11922,41 @@ def srfcss(code, bodstr, srflen=_default_len_out):
     isname = ctypes.c_bool()
     libspice.srfcss_c(code, bodstr, srflen, srfstr, ctypes.byref(isname))
     return stypes.toPythonString(srfstr), isname.value
+
+
+@spiceErrorCheck
+def srfnrm(method, target, et, fixref, srfpts):
+    """
+    Map array of surface points on a specified target body to 
+    the corresponding unit length outward surface normal vectors. 
+ 
+    The surface of the target body may be represented by a triaxial 
+    ellipsoid or by topographic data provided by DSK files. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfnrm_c.html
+    
+    :param method: Computation method.
+    :type method: str
+    :param target: Name of target body. 
+    :type target: str
+    :param et: Epoch in TDB seconds past J2000 TDB. 
+    :type et: float
+    :param fixref: Body-fixed, body-centered target body frame. 
+    :type fixref: str
+    :param srfpts: Array of surface points.
+    :type srfpts: 3xM-Element Array of floats
+    :return: Array of outward, unit length normal vectors.
+    :rtype: 3xM-Element Array of floats
+    """
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
+    et     = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    npts   = ctypes.c_int(len(srfpts))
+    srfpts = stypes.toDoubleMatrix(srfpts)
+    normls = stypes.emptyDoubleMatrix(3, npts.value)
+    libspice.srfnrm_c(method, target, et, fixref, npts, srfpts, normls)
+    return stypes.cMatrixToNumpy(normls)
 
 
 @spiceErrorCheck

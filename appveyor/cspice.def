@@ -282,6 +282,7 @@ EXPORTS			appndc_c
 				lcase_c
 				ldpool_c
 				lgrind_c
+				limbpt_c
 				lmpool_c
 				lparse_c
 				lparsm_c
@@ -336,6 +337,7 @@ EXPORTS			appndc_c
 				orderi_c
 				ordi_c
 				oscelt_c
+				oscltx_c
 				pckcls_c
 				pckcov_c
 				pckfrm_c
@@ -473,6 +475,7 @@ EXPORTS			appndc_c
 				spkw20_c
 				srfc2s_c
 				srfcss_c
+				srfnrm_c
 				srfrec_c
 				srfxpt_c
 				srfs2c_c
@@ -493,6 +496,7 @@ EXPORTS			appndc_c
 				swpool_c
 				sxform_c
 				szpool_c
+				termpt_c
 				timdef_c
 				timout_c
 				tipbod_c

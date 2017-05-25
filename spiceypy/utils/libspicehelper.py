@@ -430,6 +430,7 @@ libspice.latsrf_c.argtypes = [c_char_p, c_char_p, c_double, c_char_p, c_int, c_v
 libspice.lcase_c.argtypes  = [c_char_p, c_int, c_char_p]
 libspice.ldpool_c.argtypes = [c_char_p]
 libspice.lgrind_c.argtypes = [c_int, POINTER(c_double), POINTER(c_double), POINTER(c_double), c_double, POINTER(c_double), POINTER(c_double)]
+libspice.limbpt_c.argtypes = [c_char_p, c_char_p, c_double, c_char_p, c_char_p, c_char_p, c_char_p, (c_double * 3), c_double, c_int, c_double, c_double, c_int, POINTER(c_int), c_void_p, POINTER(c_double), c_void_p]
 libspice.lmpool_c.argtypes = [c_void_p, c_int, c_int]
 libspice.lparse_c.argtypes = [c_char_p, c_char_p, c_int, c_int, POINTER(c_int), c_void_p]
 libspice.lparsm_c.argtypes = [c_char_p, c_char_p, c_int, c_int, POINTER(c_int), c_void_p]
@@ -509,6 +510,7 @@ libspice.orderc_c.argtypes = [c_int, c_void_p, c_int, POINTER(c_int)]
 libspice.orderd_c.argtypes = [POINTER(c_double), c_int, POINTER(c_int)]
 libspice.orderi_c.argtypes = [POINTER(c_int), c_int, POINTER(c_int)]
 libspice.oscelt_c.argtypes = [c_double * 6, c_double, c_double, c_double * 8]
+libspice.oscltx_c.argtypes = [(c_double * 6), c_double, c_double, POINTER(c_double)]
 
 ########################################################################################################################
 # P
@@ -698,7 +700,7 @@ libspice.spkw20_c.argtypes = [c_int, c_int, c_int, c_char_p, c_double,
                               c_double]
 libspice.srfc2s_c.argtypes = [c_int, c_int, c_int, c_char_p, POINTER(c_bool)]
 libspice.srfcss_c.argtypes = [c_int, c_char_p, c_int, c_char_p, POINTER(c_bool)]
-#libspice.srfnrm_c.argtypes =
+libspice.srfnrm_c.argtypes = [c_char_p, c_char_p, c_double, c_char_p, c_int, c_void_p, c_void_p]
 libspice.srfrec_c.argtypes = [c_int, c_double, c_double, (c_double * 3)]
 libspice.srfs2c_c.argtypes = [c_char_p, c_char_p, POINTER(c_int), POINTER(c_bool)]
 libspice.srfscc_c.argtypes = [c_char_p, c_int, POINTER(c_int), POINTER(c_bool)]
@@ -732,6 +734,7 @@ libspice.szpool_c.argtypes = [c_char_p, POINTER(c_int), POINTER(c_bool)]
 ########################################################################################################################
 # T
 
+libspice.termpt_c.argtypes = [c_char_p, c_char_p, c_char_p, c_double, c_char_p, c_char_p, c_char_p, c_char_p, (c_double * 3), c_double, c_int, c_double, c_double, c_int, c_void_p, c_void_p, c_void_p, c_void_p]
 libspice.timdef_c.argtypes = [c_char_p, c_char_p, c_int, c_char_p]
 libspice.timout_c.argtypes = [c_double, c_char_p, c_int, c_char_p]
 libspice.tipbod_c.argtypes = [c_char_p, c_int, c_double, (c_double * 3) * 3]
