@@ -734,7 +734,7 @@ libspice.szpool_c.argtypes = [c_char_p, POINTER(c_int), POINTER(c_bool)]
 ########################################################################################################################
 # T
 
-libspice.termpt_c.argtypes = [c_char_p, c_char_p, c_char_p, c_double, c_char_p, c_char_p, c_char_p, c_char_p, (c_double * 3), c_double, c_int, c_double, c_double, c_int, c_void_p, c_void_p, c_void_p, c_void_p]
+libspice.termpt_c.argtypes = [c_char_p, c_char_p, c_char_p, c_double, c_char_p, c_char_p, c_char_p, c_char_p, (c_double * 3), c_double, c_int, c_double, c_double, c_int, POINTER(c_int), c_void_p, POINTER(c_double), c_void_p]
 libspice.timdef_c.argtypes = [c_char_p, c_char_p, c_int, c_char_p]
 libspice.timout_c.argtypes = [c_double, c_char_p, c_int, c_char_p]
 libspice.tipbod_c.argtypes = [c_char_p, c_int, c_double, (c_double * 3) * 3]

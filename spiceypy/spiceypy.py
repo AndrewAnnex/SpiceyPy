@@ -12572,6 +12572,81 @@ def szpool(name):
 
 
 @spiceErrorCheck
+def termpt(method, ilusrc, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp,
+           ncuts, schstp, soltol, maxn):
+    """
+    Find limb points on a target body. The limb is the set of points 
+    of tangency on the target of rays emanating from the observer. 
+    The caller specifies half-planes bounded by the observer-target 
+    center vector in which to search for limb points. 
+
+    The surface of the target body may be represented either by a 
+    triaxial ellipsoid or by topographic data. 
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/limbpt_c.html
+
+    :param method: Computation method. 
+    :type method: str
+    :param ilusrc: Illumination source.
+    :type ilusrc: str
+    :param target: Name of target body.
+    :type target: str
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :type et: float
+    :param fixref: Body-fixed, body-centered target body frame.
+    :type fixref: str
+    :param abcorr: Aberration correction. 
+    :type abcorr: str
+    :param corloc: Aberration correction locus.
+    :type corloc: str
+    :param obsrvr: Name of observing body.
+    :type obsrvr: str
+    :param refvec: Reference vector for cutting half-planes.
+    :type refvec: 3-Element Array of floats
+    :param rolstp: Roll angular step for cutting half-planes. 
+    :type rolstp: float
+    :param ncuts: Number of cutting half-planes. 
+    :type ncuts: int
+    :param schstp: Angular step size for searching. 
+    :type schstp: float
+    :param soltol: Solution convergence tolerance. 
+    :type soltol: float
+    :param maxn: Maximum number of entries in output arrays. 
+    :type maxn: int
+    :return: Counts of terminator points corresponding to cuts, Terminator points, Times associated with terminator points, Terminator vectors emanating from the observer
+    :rtype: tuple
+    """
+    method = stypes.stringToCharP(method)
+    ilusrc = stypes.stringToCharP(ilusrc)
+    target = stypes.stringToCharP(target)
+    et = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    corloc = stypes.stringToCharP(corloc)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    refvec = stypes.toDoubleVector(refvec)
+    rolstp = ctypes.c_double(rolstp)
+    ncuts = ctypes.c_int(ncuts)
+    schstp = ctypes.c_double(schstp)
+    soltol = ctypes.c_double(soltol)
+    maxn = ctypes.c_int(maxn)
+    npts = stypes.emptyIntVector(maxn.value)
+    points = stypes.emptyDoubleMatrix(3, maxn.value)
+    epochs = stypes.emptyDoubleVector(maxn)
+    trmvcs = stypes.emptyDoubleMatrix(3, maxn.value)
+    libspice.termpt_c(method, ilusrc, target, et, fixref,
+                      abcorr, corloc, obsrvr, refvec,
+                      rolstp, ncuts, schstp, soltol,
+                      maxn, npts, points, epochs, trmvcs)
+    # Clip the empty elements out of returned results
+    npts = stypes.vectorToList(npts)
+    valid_points = numpy.where(npts >= 1)
+    return npts[valid_points], stypes.cMatrixToNumpy(points)[valid_points], \
+           stypes.vectorToList(epochs)[valid_points], \
+           stypes.cMatrixToNumpy(trmvcs)[valid_points]
+
+
+@spiceErrorCheck
 def timdef(action, item, lenout, value=None):
     """
     Set and retrieve the defaults associated with calendar input strings.

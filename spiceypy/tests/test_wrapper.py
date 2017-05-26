@@ -5836,6 +5836,24 @@ def test_szpool():
     assert spice.szpool("MAXLIN") == 15000
 
 
+def test_termpt():
+    spice.kclear()
+    spice.furnsh(CoreKernels.spk)
+    spice.furnsh(ExtraKernels.marsSpk)
+    spice.furnsh(CoreKernels.pck)
+    spice.furnsh(CoreKernels.lsk)
+    spice.furnsh(ExtraKernels.phobosDsk)
+    # set the time
+    et = spice.str2et("1972 AUG 11 00:00:00")
+    # call limpt
+    npts, points, epochs, tangts = spice.termpt("UMBRAL/TANGENT/DSK/UNPRIORITIZED", "SUN", "Phobos", et, "IAU_PHOBOS",
+                       "CN+S", "CENTER", "MARS", [0.0, 0.0, 1.0],
+                       spice.twopi()/3.0, 3, 1.0e-4, 1.0e-7, 10000)
+    assert points is not None
+    assert len(points) == 3
+    spice.kclear()
+
+
 def test_timdef():
     value = spice.timdef('GET', 'CALENDAR', 10)
     assert value == 'GREGORIAN' or 'JULIAN' or 'MIXED'
