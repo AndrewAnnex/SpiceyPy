@@ -1247,9 +1247,9 @@ def test_dskd02():
     with pytest.raises(NotImplementedError):
         spice.dskd02()
 
-def test_dskg2():
+def test_dskgd():
     with pytest.raises(NotImplementedError):
-        spice.dskg2()
+        spice.dskgd()
 
 def test_dski02():
     with pytest.raises(NotImplementedError):
