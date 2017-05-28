@@ -1219,6 +1219,19 @@ def test_dskobj_dsksrf():
     spice.reset()
 
 
+def test_dskopn_dskcls():
+    spice.kclear()
+    dskpath = os.path.join(cwd, "TEST.dsk")
+    if spice.exists(dskpath):
+        os.remove(dskpath) # pragma: no cover
+    handle = spice.dskopn('TEST.dsk', 'TEST.DSK/NAIF/NJB/20-OCT-2006/14:37:00', 0)
+    assert handle is not None
+    spice.dskcls(handle)
+    if spice.exists(dskpath):
+        os.remove(dskpath) # pragma: no cover
+    spice.kclear()
+
+
 def test_dsphdr():
     output = spice.dsphdr(-1.0, 0.0, 0.0)
     expected = [[-1.0, 0.0, 0.0],
