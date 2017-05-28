@@ -2699,7 +2699,8 @@ def dskopn(fname, ifname, ncomch):
     :type ifname: str
     :param ncomch: Number of comment characters to allocate. 
     :type ncomch: int
-    :return: 
+    :return: Handle assigned to the opened DSK file.
+    :rtype: int
     """
     fname = stypes.stringToCharP(fname)
     ifname = stypes.stringToCharP(ifname)

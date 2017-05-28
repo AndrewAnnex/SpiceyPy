@@ -30,8 +30,6 @@ import numpy as np
 import numpy.testing as npt
 import array
 
-from spiceypy.tests.gettestkernels import ExtraKernels
-
 
 def test_SpiceEllipse():
     spice.kclear()
