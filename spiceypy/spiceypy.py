@@ -1181,6 +1181,10 @@ def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
 # ckw05, skipping, ck05subtype?
 
 
+def cleard():
+    raise NotImplementedError
+
+
 @spiceErrorCheck
 def clight():
     """
@@ -2603,6 +2607,10 @@ def drdsph(r, colat, lon):
     return stypes.cMatrixToNumpy(jacobi)
 
 
+def dskb02():
+    raise NotImplementedError
+
+
 @spiceErrorCheck
 def dskcls(handle, optmiz=False):
     """
@@ -2621,6 +2629,14 @@ def dskcls(handle, optmiz=False):
     libspice.dskcls_c(handle, optmiz)
 
 
+def dskd02():
+    raise NotImplementedError
+
+
+def dskgd():
+    raise NotImplementedError
+
+
 @spiceErrorCheck
 def dskgtl(keywrd):
     """
@@ -2637,6 +2653,18 @@ def dskgtl(keywrd):
     dpval  = ctypes.c_double(0)
     libspice.dskgtl_c(keywrd, ctypes.byref(dpval))
     return dpval.value
+
+
+def dski02():
+    raise NotImplementedError
+
+
+def dskmi2():
+    raise NotImplementedError
+
+
+def dskn02():
+    raise NotImplementedError
 
 
 @spiceErrorCheck
@@ -2681,6 +2709,14 @@ def dskopn(fname, ifname, ncomch):
     return handle.value
 
 
+def dskp02():
+    raise NotImplementedError
+
+
+def dskrb2():
+    raise NotImplementedError
+
+
 @spiceErrorCheck
 def dsksrf(dsk, bodyid):
     """
@@ -2718,6 +2754,30 @@ def dskstl(keywrd, dpval):
     keywrd = ctypes.c_int(keywrd)
     dpval = ctypes.c_double(dpval)
     libspice.dskstl_c(keywrd, dpval)
+
+
+def dskv02():
+    raise NotImplementedError
+
+
+def dskw02():
+    raise NotImplementedError
+
+
+def dskx02():
+    raise NotImplementedError
+
+
+def dskxsi():
+    raise NotImplementedError
+
+
+def dskxv():
+    raise NotImplementedError
+
+
+def dskz02():
+    raise NotImplementedError
 
 
 @spiceErrorCheck

@@ -606,6 +606,11 @@ def test_ckw05():
     assert 1
 
 
+def test_cleard():
+    with pytest.raises(NotImplementedError):
+        spice.cleard()
+
+
 def test_clight():
     assert spice.clight() == 299792.458
 
@@ -1087,6 +1092,7 @@ def test_dlabfs():
     spice.dascls(handle)
     spice.kclear()
 
+
 def test_dlabbs():
     spice.kclear()
     handle = spice.dasopr(ExtraKernels.phobosDsk)
@@ -1097,6 +1103,7 @@ def test_dlabbs():
         prev = spice.dlafps(handle, current)
     spice.dascls(handle)
     spice.kclear()
+
 
 def test_dlatdr():
     output = spice.dlatdr(1.0, 0.0, 0.0)
@@ -1231,6 +1238,62 @@ def test_dskopn_dskcls():
         os.remove(dskpath) # pragma: no cover
     spice.kclear()
 
+
+def test_dskb02():
+    with pytest.raises(NotImplementedError):
+        spice.dskb02()
+
+def test_dskd02():
+    with pytest.raises(NotImplementedError):
+        spice.dskd02()
+
+def test_dskg2():
+    with pytest.raises(NotImplementedError):
+        spice.dskg2()
+
+def test_dski02():
+    with pytest.raises(NotImplementedError):
+        spice.dski02()
+
+def test_dskmi2():
+    with pytest.raises(NotImplementedError):
+        spice.dskmi2()
+
+def test_dskn02():
+    with pytest.raises(NotImplementedError):
+        spice.dskn02()
+
+def test_dskp02():
+    with pytest.raises(NotImplementedError):
+        spice.dskp02()
+
+def test_dskrb2():
+    with pytest.raises(NotImplementedError):
+        spice.dskrb2()
+
+def test_dskv02():
+    with pytest.raises(NotImplementedError):
+        spice.dskv02()
+
+def test_dskw02():
+    with pytest.raises(NotImplementedError):
+        spice.dskw02()
+
+def test_dskx02():
+    with pytest.raises(NotImplementedError):
+        spice.dskx02()
+
+def test_dskxsi():
+    with pytest.raises(NotImplementedError):
+        spice.dskxsi()
+
+def test_dskxv():
+    with pytest.raises(NotImplementedError):
+        spice.dskxv()
+
+def test_dskz02():
+    with pytest.raises(NotImplementedError):
+        spice.dskz02()
 
 def test_dsphdr():
     output = spice.dsphdr(-1.0, 0.0, 0.0)
