@@ -3880,6 +3880,11 @@ def test_oscelt():
     spice.kclear()
 
 
+def test_oscltx_stress():
+    for i in range(0, 30):
+        test_oscltx()
+
+
 def test_oscltx():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)

@@ -8280,9 +8280,9 @@ def oscltx(state, et, mu):
     state = stypes.toDoubleVector(state)
     et = ctypes.c_double(et)
     mu = ctypes.c_double(mu)
-    elts = stypes.emptyDoubleVector(11)
+    elts = stypes.emptyDoubleVector(20)
     libspice.oscltx_c(state, et, mu, elts)
-    return stypes.vectorToList(elts)
+    return stypes.vectorToList(elts[0:11])
 
 
 ################################################################################
