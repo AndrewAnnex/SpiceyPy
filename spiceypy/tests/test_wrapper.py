@@ -2936,11 +2936,49 @@ def test_ilumin():
 
 
 def test_illumf():
-    assert 1
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(MarsKernels.mgsSclk)
+    spice.furnsh(MarsKernels.mgsPck)
+    spice.furnsh(MarsKernels.mgsIk)
+    spice.furnsh(MarsKernels.mgsSpk)
+    spice.furnsh(MarsKernels.mgsCk)
+    et = spice.str2et('2006 OCT 15 06:00:00 UTC')
+    # start of test
+    camid = spice.bodn2c("MGS_MOC_NA")
+    shape, obsref, bsight, n, bounds = spice.getfov(camid, 4)
+    # run sincpt on bore sight vector
+    spoint, etemit, srfvec = spice.sincpt("Ellipsoid", 'Mars', et, "IAU_MARS", "CN+S", "MGS", obsref, bsight)
+    trgepc2, srfvec2, phase, incid, emissn, visibl, lit = spice.illumf("Ellipsoid", 'Mars', 'Sun', et, 'IAU_MARS', 'CN+S', 'MGS', spoint)
+    phase = phase * spice.dpr()
+    incid = incid * spice.dpr()
+    emissn = emissn * spice.dpr()
+    assert phase == pytest.approx(71.01925681623278)
+    assert incid == pytest.approx(85.60229545269)
+    assert emissn == pytest.approx(17.7918047758293)
+    assert lit
+    assert visibl
+    spice.kclear()
 
 
 def test_illumg():
-    assert 1
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(MarsKernels.mgsSclk)
+    spice.furnsh(MarsKernels.mgsPck)
+    spice.furnsh(MarsKernels.mgsIk)
+    spice.furnsh(MarsKernels.mgsSpk)
+    spice.furnsh(MarsKernels.mgsCk)
+    et = spice.str2et('2006 OCT 15 06:00:00 UTC')
+    spoint, trgepc, srfvec = spice.subpnt("Near Point/Ellipsoid", 'Mars', et, 'IAU_MARS', 'CN+S', 'Earth')
+    trgepc2, srfvec2, phase, incid, emissn = spice.illumg("Ellipsoid", 'Mars', 'Sun', et, 'IAU_MARS', 'CN+S', 'MGS', spoint)
+    phase = phase * spice.dpr()
+    incid = incid * spice.dpr()
+    emissn = emissn * spice.dpr()
+    assert phase == pytest.approx(129.04940569)
+    assert incid == pytest.approx(3.47985701011)
+    assert emissn == pytest.approx(128.4514654058)
+    spice.kclear()
 
 
 def test_inedpl():
@@ -3838,6 +3876,19 @@ def test_oscelt():
     elts = spice.oscelt(state, et, mass_earth[0])
     expected = [365914.1064478308, 423931.14818353514, 0.4871779356168817, 6.185842076488205,
                 1.8854463601391007, 18676.97965206709, 251812865.1837092, 1.0000]
+    npt.assert_array_almost_equal(elts, expected, decimal=4)
+    spice.kclear()
+
+
+def test_oscltx():
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = spice.str2et('Dec 25, 2007')
+    state, ltime = spice.spkezr('Moon', et, 'J2000', 'LT+S', 'EARTH')
+    mass_earth = spice.bodvrd('EARTH', 'GM', 1)
+    elts = spice.oscltx(state, et, mass_earth[0])
+    expected = [365914.1064478308, 423931.14818353514, 0.4871779356168817, 6.185842076488205,
+                1.8854463601391007, 18676.97965206709, 251812865.1837092, 1.0, 0.0440283707189, -0.863147167088, 0.0]
     npt.assert_array_almost_equal(elts, expected, decimal=4)
     spice.kclear()
 

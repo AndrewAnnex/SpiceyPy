@@ -183,7 +183,6 @@ def attemptDownload(url, kernelName, targetFileName, num_attempts):
         raise BaseException("Error Downloading kernel: {}, check if kernel exists at url: {}".format(kernelName, url))
 
 
-
 def getStandardKernels():
     six_print("\tChecking for kernels...\n", flush=True)
     getKernel(CoreKernels.pck_url)
