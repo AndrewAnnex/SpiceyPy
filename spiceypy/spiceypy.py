@@ -2014,10 +2014,13 @@ def dashfn(handle, lenout=_default_len_out):
     Return the name of the DAS file associated with a handle.
     
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dashfn_c.html
-    :param lenout: 
-    :param handle: 
-    :param namlen: 
-    :return: 
+
+    :param handle: Handle of a DAS file.
+    :type handle: int
+    :param lenout: Length of output file name string.
+    :type lenout: int
+    :return: Corresponding file name.
+    :rtype: str
     """
     handle = ctypes.c_int(handle)
     namlen = ctypes.c_int(lenout)
@@ -2091,8 +2094,13 @@ def dasrfr(handle, lenout=_default_len_out):
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasrfr_c.html
 
     :param handle: DAS file handle.
-    :param lenout: 
-    :return: 
+    :type handle: int
+    :param lenout: length of output strs
+    :type lenout: str
+    :return: ID word, DAS internal file name, Number of reserved records in file,
+    Number of characters in use in reserved rec. area, Number of comment records in file,
+    Number of characters in use in comment area.
+    :rtype: tuple
     """
     handle = ctypes.c_int(handle)
     idwlen = ctypes.c_int(lenout) # intentional
@@ -2365,7 +2373,7 @@ def dlatdr(x, y, z):
 
 
 @spiceErrorCheck
-def dp2hx(number, lenout=None):
+def dp2hx(number, lenout=_default_len_out):
     """
     Convert a double precision number to an equivalent character
     string using base 16 "scientific notation."
@@ -2375,11 +2383,10 @@ def dp2hx(number, lenout=None):
     :param number: D.p. number to be converted.
     :type number: float
     :param lenout: Available space for output string.
+    :type lenout: int
     :return: Equivalent character string, left justified.
     :rtype: str
     """
-    if lenout is None:
-        lenout = 255
     number = ctypes.c_double(number)
     lenout = ctypes.c_int(lenout)
     string = stypes.stringToCharP(lenout)
@@ -4696,7 +4703,7 @@ def frinfo(frcode):
 
 
 @spiceErrorCheck
-def frmnam(frcode, lenout=125):
+def frmnam(frcode, lenout=_default_len_out):
     """
     Retrieve the name of a reference frame associated with a SPICE ID code.
 
@@ -9868,7 +9875,7 @@ def scard(incard, cell):
 
 @spiceErrorCheck
 def scdecd(sc, sclkdp, lenout=_default_len_out, MXPART=None):
-    # todo: figure out how to use mxpart, and test scdecd
+    # todo: figure out how to use mxpart
     """
     Convert double precision encoding of spacecraft clock time into
     a character representation.
@@ -12856,7 +12863,7 @@ def tparse(instring, lenout=_default_len_out):
 
 
 @spiceErrorCheck
-def tpictr(sample, lenout, lenerr):
+def tpictr(sample, lenout=_default_len_out, lenerr=_default_len_out):
     """
     Given a sample time string, create a time format picture
     suitable for use by the routine timout.

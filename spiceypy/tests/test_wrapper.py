@@ -128,23 +128,23 @@ def test_bltfrm():
 def test_bodc2n():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
-    assert spice.bodc2n(399, 10) == "EARTH"
-    assert spice.bodc2n(0, 40) == "SOLAR SYSTEM BARYCENTER"
+    assert spice.bodc2n(399) == "EARTH"
+    assert spice.bodc2n(0) == "SOLAR SYSTEM BARYCENTER"
     spice.kclear()
 
 
 def test_bodc2s():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
-    assert spice.bodc2s(399, 10) == "EARTH"
-    assert spice.bodc2s(0, 40) == "SOLAR SYSTEM BARYCENTER"
+    assert spice.bodc2s(399) == "EARTH"
+    assert spice.bodc2s(0) == "SOLAR SYSTEM BARYCENTER"
     spice.kclear()
 
 
 def test_boddef():
     spice.kclear()
     spice.boddef("Jebediah", 117)
-    assert spice.bodc2n(117, 10) == "Jebediah"
+    assert spice.bodc2n(117) == "Jebediah"
     spice.kclear()
 
 
@@ -273,7 +273,7 @@ def test_card():
 
 
 def test_ccifrm():
-    frcode, frname, center = spice.ccifrm(2, 3000, 33)
+    frcode, frname, center = spice.ccifrm(2, 3000)
     assert frname == "ITRF93"
     assert frcode == 13000
     assert center == 399
@@ -328,13 +328,13 @@ def test_chkout():
 
 
 def test_cidfrm():
-    frcode, frname = spice.cidfrm(501, 10)
+    frcode, frname = spice.cidfrm(501)
     assert frcode == 10023
     assert frname == 'IAU_IO'
-    frcode, frname = spice.cidfrm(399, 10)
+    frcode, frname = spice.cidfrm(399)
     assert frcode == 10013
     assert frname == 'IAU_EARTH'
-    frcode, frname = spice.cidfrm(301, 10)
+    frcode, frname = spice.cidfrm(301)
     assert frcode == 10020
     assert frname == 'IAU_MOON'
 
@@ -629,16 +629,16 @@ def test_clpool():
 
 def test_cmprss():
     strings = ['ABC...DE.F...', '...........', '.. ..AB....CD']
-    assert spice.cmprss('.', 2, strings[0], 15) == 'ABC..DE.F..'
-    assert spice.cmprss('.', 3, strings[1], 15) == '...'
-    assert spice.cmprss('.', 1, strings[2], 15) == '. .AB.CD'
+    assert spice.cmprss('.', 2, strings[0]) == 'ABC..DE.F..'
     assert spice.cmprss('.', 3, strings[1]) == '...'
     assert spice.cmprss('.', 1, strings[2]) == '. .AB.CD'
-    assert spice.cmprss(' ', 0, ' Embe dde d -sp   a c  es   ', 20) == 'Embedded-spaces'
+    assert spice.cmprss('.', 3, strings[1]) == '...'
+    assert spice.cmprss('.', 1, strings[2]) == '. .AB.CD'
+    assert spice.cmprss(' ', 0, ' Embe dde d -sp   a c  es   ') == 'Embedded-spaces'
 
 
 def test_cnmfrm():
-    ioFrcode, ioFrname = spice.cnmfrm('IO', 10)
+    ioFrcode, ioFrname = spice.cnmfrm('IO')
     assert ioFrcode == 10023
     assert ioFrname == 'IAU_IO'
 
@@ -788,7 +788,7 @@ def test_dafdc():
 def test_dafec():
     spice.kclear()
     handle = spice.dafopr(os.path.join(cwd, "de421.bsp"))
-    n, buffer, done = spice.dafec(handle, 15, 80)
+    n, buffer, done = spice.dafec(handle, 15)
     assert n == 15
     assert buffer == ['; de421.bsp LOG FILE', ';', '; Created 2008-02-12/11:33:34.00.', ';', '; BEGIN NIOSPK COMMANDS',
                       '', 'LEAPSECONDS_FILE    = naif0007.tls', 'SPK_FILE            = de421.bsp',
@@ -908,7 +908,7 @@ def test_dafrda():
 def test_dafrfr():
     spice.kclear()
     handle = spice.dafopr(os.path.join(cwd, "de421.bsp"))
-    nd, ni, ifname, fward, bward, free = spice.dafrfr(handle, 61)
+    nd, ni, ifname, fward, bward, free = spice.dafrfr(handle)
     spice.dafcls(handle)
     assert nd == 2
     assert ni == 6
@@ -2217,14 +2217,14 @@ def test_et2utc():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = -527644192.5403653
-    output = spice.et2utc(et, "J", 6, 35)
+    output = spice.et2utc(et, "J", 6)
     assert output == "JD 2445438.006415"
     spice.kclear()
 
 
 def test_etcal():
     et = np.arange(0, 20)
-    cal = spice.etcal(et[0], 51)
+    cal = spice.etcal(et[0])
     assert cal == '2000 JAN 01 12:00:00.000'
 
 
@@ -2318,7 +2318,7 @@ def test_frinfo():
 
 
 def test_frmnam():
-    assert spice.frmnam(13000, 30) == "ITRF93"
+    assert spice.frmnam(13000) == "ITRF93"
     assert spice.frmnam(13000) == "ITRF93"
 
 
@@ -2348,7 +2348,7 @@ def test_gcpool():
     spice.kclear()
     data = [j + str(i) for i, j in enumerate(list(string.ascii_lowercase))]
     spice.pcpool('pcpool_test', data)
-    cvals = spice.gcpool('pcpool_test', 0, 30, 4)
+    cvals = spice.gcpool('pcpool_test', 0, 30)
     assert data == cvals
     spice.kclear()
 
@@ -2858,11 +2858,10 @@ def test_gnpool():
     var = "BODY599*"
     index = 0
     room = 10
-    strlen = 81
     expected = ["BODY599_POLE_DEC", "BODY599_LONG_AXIS", "BODY599_PM", "BODY599_RADII",
                 "BODY599_POLE_RA", "BODY599_GM", "BODY599_NUT_PREC_PM", "BODY599_NUT_PREC_DEC",
                 "BODY599_NUT_PREC_RA"]
-    kervar = spice.gnpool(var, index, room, strlen)
+    kervar = spice.gnpool(var, index, room)
     spice.kclear()
     assert set(expected) == set(kervar)
 
@@ -3276,8 +3275,8 @@ def test_latsrf():
 
 
 def test_lcase():
-    assert spice.lcase("THIS IS AN EXAMPLE", 20) == "THIS IS AN EXAMPLE".lower()
-    assert spice.lcase("1234", 5) == "1234"
+    assert spice.lcase("THIS IS AN EXAMPLE") == "THIS IS AN EXAMPLE".lower()
+    assert spice.lcase("1234") == "1234"
 
 
 def test_ldpool():
@@ -4560,7 +4559,7 @@ def test_scdecd():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     timein = spice.scencd(-32, '2/20538:39:768')
-    sclkch = spice.scdecd(-32, timein, 50)
+    sclkch = spice.scdecd(-32, timein)
     assert sclkch == '2/20538:39:768'
     spice.kclear()
 
@@ -4580,7 +4579,7 @@ def test_sce2s():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     et = spice.str2et('1979 JUL 05 21:50:21.23379')
-    sclkch = spice.sce2s(-32, et, 50)
+    sclkch = spice.sce2s(-32, et)
     assert sclkch == "2/20538:39:768"
     spice.kclear()
 
@@ -4611,8 +4610,8 @@ def test_scfmt():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     pstart, pstop = spice.scpart(-32)
-    start = spice.scfmt(-32, pstart[0], 50)
-    stop = spice.scfmt(-32, pstop[0], 50)
+    start = spice.scfmt(-32, pstart[0])
+    stop = spice.scfmt(-32, pstop[0])
     assert start == "00011:00:001"
     assert stop == "04011:21:784"
     spice.kclear()
@@ -5762,10 +5761,10 @@ def test_stpool():
         kernelFile.write("              'of_a_second_file_name' )\n")
         kernelFile.close()
     spice.furnsh(kernel)
-    string, n = spice.stpool("SPK_FILES", 0, "*", 256)
+    string, n = spice.stpool("SPK_FILES", 0, "*")
     assert n == 62
     assert string == "this_is_the_full_path_specification_of_a_file_with_a_long_name"
-    string, n = spice.stpool("SPK_FILES", 1, "*", 256)
+    string, n = spice.stpool("SPK_FILES", 1, "*")
     assert n == 57
     assert string == "this_is_the_full_path_specification_of_a_second_file_name"
     spice.kclear()
@@ -5993,13 +5992,12 @@ def test_timdef():
 
 def test_timout():
     sample = 'Thu Oct 1 11:11:11 PDT 1111'
-    lenout = len(sample) + 2
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
-    pic, ok, err = spice.tpictr(sample, 64, 60)
+    pic, ok, err = spice.tpictr(sample)
     assert ok
     et = 188745364.0
-    out = spice.timout(et, pic, lenout)
+    out = spice.timout(et, pic)
     assert out == "Sat Dec 24 18:14:59 PDT 2005"
     spice.kclear()
 
@@ -6045,11 +6043,11 @@ def test_tkvrsn():
 
 
 def test_tparse():
-    actualOne, errorOne = spice.tparse("1996-12-18T12:28:28", 100)
+    actualOne, errorOne = spice.tparse("1996-12-18T12:28:28")
     assert actualOne == -95815892.0
-    actualTwo, errorTwo = spice.tparse("1 DEC 1997 12:28:29.192", 100)
+    actualTwo, errorTwo = spice.tparse("1 DEC 1997 12:28:29.192")
     assert actualTwo == -65748690.808
-    actualThree, errorThree = spice.tparse("1997-162::12:18:28.827", 100)
+    actualThree, errorThree = spice.tparse("1997-162::12:18:28.827")
     assert actualThree == -80696491.173
 
 

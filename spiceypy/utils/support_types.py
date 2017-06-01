@@ -105,11 +105,11 @@ def toPythonString(inString):
     if six.PY2:
         if isinstance(inString, c_char_p):
             return toPythonString(inString.value)
-        return string_at(inString)
+        return string_at(inString).rstrip()
     elif six.PY3:
         if isinstance(inString, c_char_p):
             return toPythonString(inString.value)
-        return bytes.decode(string_at(inString))
+        return bytes.decode(string_at(inString)).rstrip()
 
 
 def charvector(ndim=1, lenvals=10):
