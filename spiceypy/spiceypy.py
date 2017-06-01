@@ -7011,7 +7011,7 @@ def lparse(inlist, delim, nmax):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lparse_c.html
 
     :param inlist: list of items delimited by delim.
-    :type inlist: list of strings
+    :type inlist: list
     :param delim: Single character used to delimit items.
     :type delim: str
     :param nmax: Maximum number of items to return.
