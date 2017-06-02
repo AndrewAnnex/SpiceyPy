@@ -180,7 +180,7 @@ def axisar(axis, angle):
     angle = ctypes.c_double(angle)
     r = stypes.emptyDoubleMatrix()
     libspice.axisar_c(axis, angle, r)
-    return stypes.matrixToList(r)
+    return stypes.cMatrixToNumpy(r)
 
 
 ################################################################################
@@ -737,6 +737,38 @@ def cgv2el(center, vec1, vec2):
     libspice.cgv2el_c(center, vec1, vec2, ctypes.byref(ellipse))
     return ellipse
 
+@spiceErrorCheck
+def chbder(cp, degp, x2s, x, nderiv):
+    """
+    Given the coefficients for the Chebyshev expansion of a
+    polynomial, this returns the value of the polynomial and its
+    first nderiv derivatives evaluated at the input X.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/chbder_c.html
+    
+    :param cp: degp+1 Chebyshev polynomial coefficients.
+    :type cp: Array of floats
+    :param degp: Degree of polynomial.
+    :type degp: int
+    :param x2s: Transformation parameters of polynomial.
+    :type x2s: Array of floats
+    :param x: Value for which the polynomial is to be evaluated
+    :type x: float
+    :param nderiv: The number of derivatives to compute
+    :type nderiv: int
+    :return: Array of the derivatives of the polynomial
+    :rtype: Array of floats
+    """
+    cp = stypes.toDoubleVector(cp)
+    degp = ctypes.c_int(degp)
+    x2s = stypes.toDoubleVector(x2s)
+    x = ctypes.c_double(x)
+    partdp = stypes.emptyDoubleVector(3*(nderiv+1))
+    dpdxs = stypes.emptyDoubleVector(nderiv+1)
+    nderiv = ctypes.c_int(nderiv)
+    libspice.chbder_c(cp, degp, x2s, x, nderiv, partdp, dpdxs)
+    return stypes.vectorToList(dpdxs)
+
 
 @spiceErrorCheck
 def chkin(module):
@@ -876,7 +908,7 @@ def ckgp(inst, sclkdp, tol, ref):
     found = ctypes.c_bool()
     libspice.ckgp_c(inst, sclkdp, tol, ref, cmat, ctypes.byref(clkout),
                     ctypes.byref(found))
-    return stypes.matrixToList(cmat), clkout.value, found.value
+    return stypes.cMatrixToNumpy(cmat), clkout.value, found.value
 
 
 @spiceErrorCheck
@@ -912,7 +944,7 @@ def ckgpav(inst, sclkdp, tol, ref):
     found = ctypes.c_bool()
     libspice.ckgpav_c(inst, sclkdp, tol, ref, cmat, av, ctypes.byref(clkout),
                       ctypes.byref(found))
-    return stypes.matrixToList(cmat), stypes.vectorToList(
+    return stypes.cMatrixToNumpy(cmat), stypes.vectorToList(
             av), clkout.value, found.value
 
 
@@ -1147,6 +1179,10 @@ def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
 
 
 # ckw05, skipping, ck05subtype?
+
+
+def cleard():
+    raise NotImplementedError
 
 
 @spiceErrorCheck
@@ -1461,7 +1497,6 @@ def cylsph(r, lonc, z):
 
 @spiceErrorCheck
 def dafac(handle, n, lenvals, buffer):
-    # Todo: test dafac
     """
     Add comments from a buffer of character strings to the comment
     area of a binary DAF file, appending them to any comments which
@@ -1476,7 +1511,7 @@ def dafac(handle, n, lenvals, buffer):
     :param lenvals: Length of elements
     :type lenvals: int
     :param buffer: Buffer of comments to put into the comment area.
-    :type buffer: Array of str
+    :type buffer: Array of strs
     """
     handle = ctypes.c_int(handle)
     buffer = stypes.listToCharArrayPtr(buffer)
@@ -1894,8 +1929,7 @@ def dafus(insum, nd, ni):
 
 
 @spiceErrorCheck
-def dasac(handle, n, buffer, buflen=_default_len_out):
-    # Todo: test dasac
+def dasac(handle, buffer):
     """
     Add comments from a buffer of character strings to the comment
     area of a binary DAS file, appending them to any comments which
@@ -1905,26 +1939,18 @@ def dasac(handle, n, buffer, buflen=_default_len_out):
 
     :param handle: DAS handle of a file opened with write access.
     :type handle: int
-    :param n: Number of comments to put into the comment area.
-    :type n: int
     :param buffer: Buffer of lines to be put into the comment area.
     :type buffer: Array of strs
-    :param buflen: Line length associated with buffer.
-    :type buflen: int
-    :return: :rtype:
     """
     handle = ctypes.c_int(handle)
-    # TODO: make this a mutable 2d string array
-    buffer = stypes.charvector(n, buflen)
-    n = ctypes.c_int(n)
-    buflen = ctypes.c_int(buflen)
-    libspice.dasac_c(handle, n, buflen, ctypes.byref(buffer))
-    return stypes.vectorToList(buffer)
+    n = ctypes.c_int(len(buffer))
+    buflen = ctypes.c_int(max(len(s) for s in buffer) + 1)
+    buffer = stypes.listToCharArrayPtr(buffer)
+    libspice.dasac_c(handle, n, buflen, buffer)
 
 
 @spiceErrorCheck
 def dascls(handle):
-    # Todo: test dafdc
     """
     Close a DAS file.
 
@@ -1938,8 +1964,22 @@ def dascls(handle):
 
 
 @spiceErrorCheck
+def dasdc(handle):
+    """
+    Delete the entire comment area of a previously opened binary 
+    DAS file.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasdc_c.html
+    
+    :param handle: The handle of a binary DAS file opened for writing.
+    :type handle: int 
+    """
+    handle = ctypes.c_int(handle)
+    libspice.dasdc_c(handle)
+
+
+@spiceErrorCheck
 def dasec(handle, bufsiz=_default_len_out, buflen=_default_len_out):
-    # Todo: test dasec
     """
     Extract comments from the comment area of a binary DAS file.
 
@@ -1958,19 +1998,62 @@ def dasec(handle, bufsiz=_default_len_out, buflen=_default_len_out):
     :rtype: tuple
     """
     handle = ctypes.c_int(handle)
-    buffer = stypes.charvector(bufsiz, buflen)
+    buffer = stypes.emptyCharArray(buflen, bufsiz)
     bufsiz = ctypes.c_int(bufsiz)
     buflen = ctypes.c_int(buflen)
-    n = ctypes.c_int()
+    n = ctypes.c_int(0)
     done = ctypes.c_bool()
-    libspice.dafec_c(handle, bufsiz, buflen, ctypes.byref(n),
+    libspice.dasec_c(handle, bufsiz, buflen, ctypes.byref(n),
                      ctypes.byref(buffer), ctypes.byref(done))
     return n.value, stypes.vectorToList(buffer), done.value
 
 
 @spiceErrorCheck
+def dashfn(handle, lenout=_default_len_out):
+    """
+    Return the name of the DAS file associated with a handle.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dashfn_c.html
+
+    :param handle: Handle of a DAS file.
+    :type handle: int
+    :param lenout: Length of output file name string.
+    :type lenout: int
+    :return: Corresponding file name.
+    :rtype: str
+    """
+    handle = ctypes.c_int(handle)
+    namlen = ctypes.c_int(lenout)
+    fname  = stypes.stringToCharP(lenout)
+    libspice.dashfn_c(handle, namlen, fname)
+    return stypes.toPythonString(fname)
+
+
+@spiceErrorCheck
+def dasonw(fname, ftype, ifname, ncomch):
+    """
+    Internal undocumented command for creating a new DAS file
+    
+    :param fname: filename
+    :param ftype: type
+    :param ifname: internal file name
+    :param ncomch: amount of comment area
+    :return: 
+    """
+    fnamelen = ctypes.c_int(len(fname))
+    ftypelen = ctypes.c_int(len(ftype))
+    ifnamelen = ctypes.c_int(len(ifname))
+    ncomch  = ctypes.c_int(ncomch)
+    handle  = ctypes.c_int()
+    fname   = stypes.stringToCharP(fname)
+    ftype   = stypes.stringToCharP(ftype)
+    ifname  = stypes.stringToCharP(ifname)
+    libspice.dasonw_(fname, ftype, ifname, ctypes.byref(ncomch), ctypes.byref(handle), fnamelen, ftypelen, ifnamelen)
+    return handle.value
+
+
+@spiceErrorCheck
 def dasopr(fname):
-    # Todo: test dasopr
     """
     Open a DAS file for reading.
 
@@ -1985,6 +2068,53 @@ def dasopr(fname):
     handle = ctypes.c_int()
     libspice.dasopr_c(fname, ctypes.byref(handle))
     return handle.value
+
+
+@spiceErrorCheck
+def dasopw(fname):
+    """
+    Open a DAS file for writing.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasopw_c.html
+    :param fname: Name of a DAS file to be opened. 
+    :type fname: str
+    :return: Handle assigned to the opened DAS file.
+    """
+    fname = stypes.stringToCharP(fname)
+    handle = ctypes.c_int(0)
+    libspice.dasopw_c(fname, ctypes.byref(handle))
+    return handle.value
+
+
+@spiceErrorCheck
+def dasrfr(handle, lenout=_default_len_out):
+    """
+    Return the contents of the file record of a specified DAS file. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasrfr_c.html
+
+    :param handle: DAS file handle.
+    :type handle: int
+    :param lenout: length of output strs
+    :type lenout: str
+    :return: ID word, DAS internal file name, Number of reserved records in file,
+    Number of characters in use in reserved rec. area, Number of comment records in file,
+    Number of characters in use in comment area.
+    :rtype: tuple
+    """
+    handle = ctypes.c_int(handle)
+    idwlen = ctypes.c_int(lenout) # intentional
+    ifnlen = ctypes.c_int(lenout) # intentional
+    idword = stypes.stringToCharP(lenout)
+    ifname = stypes.stringToCharP(lenout)
+    nresvr = ctypes.c_int(0)
+    nresvc = ctypes.c_int(0)
+    ncomr  = ctypes.c_int(0)
+    ncomc  = ctypes.c_int(0)
+    libspice.dasrfr_c(handle, idwlen, ifnlen, idword, ifname,
+                      ctypes.byref(nresvr), ctypes.byref(nresvc),
+                      ctypes.byref(ncomr), ctypes.byref(ncomc))
+    return stypes.toPythonString(idword), stypes.toPythonString(ifname), nresvr.value, nresvc.value, ncomr.value, ncomc.value
 
 
 @spiceErrorCheck
@@ -2009,7 +2139,7 @@ def dcyldr(x, y, z):
     z = ctypes.c_double(z)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.dcyldr_c(x, y, z, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
@@ -2045,7 +2175,7 @@ def det(m1):
     :return: The determinant of the matrix.
     :rtype: float
     """
-    m1 = stypes.listtodoublematrix(m1)
+    m1 = stypes.toDoubleMatrix(m1)
     return libspice.det_c(m1)
 
 
@@ -2077,7 +2207,7 @@ def dgeodr(x, y, z, re, f):
     f = ctypes.c_double(f)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.dgeodr_c(x, y, z, re, f, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
@@ -2094,11 +2224,11 @@ def diags2(symmat):
             A rotation used as the similarity transformation.
     :rtype: tuple
     """
-    symmat = stypes.listtodoublematrix(symmat, x=2, y=2)
+    symmat = stypes.toDoubleMatrix(symmat)
     diag = stypes.emptyDoubleMatrix(x=2, y=2)
     rotateout = stypes.emptyDoubleMatrix(x=2, y=2)
     libspice.diags2_c(symmat, diag, rotateout)
-    return stypes.matrixToList(diag), stypes.matrixToList(rotateout)
+    return stypes.cMatrixToNumpy(diag), stypes.cMatrixToNumpy(rotateout)
 
 
 @spiceErrorCheck
@@ -2131,6 +2261,93 @@ def diff(a, b):
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
+def dlabbs(handle):
+    """
+    Begin a backward segment search in a DLA file.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlabbs_c.html
+    
+    :param handle: Handle of open DLA file.
+    :type handle: int
+    :return: Descriptor of last segment in DLA file
+    :rtype: spiceypy.utils.support_types.SpiceDLADescr
+    """
+    handle = ctypes.c_int(handle)
+    descr  = stypes.SpiceDLADescr()
+    found  = ctypes.c_bool()
+    libspice.dlabbs_c(handle, ctypes.byref(descr), ctypes.byref(found))
+    return descr, found.value
+
+
+@spiceErrorCheck
+@spiceFoundExceptionThrower
+def dlabfs(handle):
+    """
+    Begin a forward segment search in a DLA file.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlabfs_c.html
+    
+    :param handle: Handle of open DLA file.
+    :type handle: int
+    :return: Descriptor of next segment in DLA file
+    :rtype: spiceypy.utils.support_types.SpiceDLADescr
+    """
+    handle = ctypes.c_int(handle)
+    descr  = stypes.SpiceDLADescr()
+    found  = ctypes.c_bool()
+    libspice.dlabfs_c(handle, ctypes.byref(descr), ctypes.byref(found))
+    return descr, found.value
+
+
+@spiceErrorCheck
+@spiceFoundExceptionThrower
+def dlafns(handle, descr):
+    """
+    Find the segment following a specified segment in a DLA file. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlafns_c.html
+    
+    :param handle: Handle of open DLA file.
+    :type handle: c_int
+    :param descr: Descriptor of a DLA segment.
+    :type descr: spiceypy.utils.support_types.SpiceDLADescr
+    :return: Descriptor of next segment in DLA file
+    :rtype: spiceypy.utils.support_types.SpiceDLADescr
+    """
+    assert isinstance(descr, stypes.SpiceDLADescr)
+    handle = ctypes.c_int(handle)
+    nxtdsc = stypes.SpiceDLADescr()
+    found  = ctypes.c_bool()
+    libspice.dlafns_c(handle, ctypes.byref(descr), ctypes.byref(nxtdsc), ctypes.byref(found))
+    return nxtdsc, found.value
+
+
+@spiceErrorCheck
+@spiceFoundExceptionThrower
+def dlafps(handle, descr):
+    """
+    Find the segment preceding a specified segment in a DLA file.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlafps_c.html
+    
+    :param handle: Handle of open DLA file.
+    :type handle: c_int
+    :param descr: Descriptor of a segment in DLA file. 
+    :type descr: spiceypy.utils.support_types.SpiceDLADescr
+    :return: Descriptor of previous segment in DLA file
+    :rtype: spiceypy.utils.support_types.SpiceDLADescr
+    """
+    assert isinstance(descr, stypes.SpiceDLADescr)
+    handle = ctypes.c_int(handle)
+    prvdsc = stypes.SpiceDLADescr()
+    found = ctypes.c_bool()
+    libspice.dlafps_c(handle, ctypes.byref(descr), ctypes.byref(prvdsc),
+                      ctypes.byref(found))
+    return prvdsc, found.value
+
+
+@spiceErrorCheck
 def dlatdr(x, y, z):
     """
     This routine computes the Jacobian of the transformation from
@@ -2152,11 +2369,11 @@ def dlatdr(x, y, z):
     z = ctypes.c_double(z)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.dlatdr_c(x, y, z, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
-def dp2hx(number, lenout=None):
+def dp2hx(number, lenout=_default_len_out):
     """
     Convert a double precision number to an equivalent character
     string using base 16 "scientific notation."
@@ -2166,11 +2383,10 @@ def dp2hx(number, lenout=None):
     :param number: D.p. number to be converted.
     :type number: float
     :param lenout: Available space for output string.
+    :type lenout: int
     :return: Equivalent character string, left justified.
     :rtype: str
     """
-    if lenout is None:
-        lenout = 255
     number = ctypes.c_double(number)
     lenout = ctypes.c_int(lenout)
     string = stypes.stringToCharP(lenout)
@@ -2210,7 +2426,7 @@ def dpgrdr(body, x, y, z, re, f):
     f = ctypes.c_double(f)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.dpgrdr_c(body, x, y, z, re, f, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
@@ -2280,7 +2496,7 @@ def drdcyl(r, lon, z):
     z = ctypes.c_double(z)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.drdcyl_c(r, lon, z, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
@@ -2311,7 +2527,7 @@ def drdgeo(lon, lat, alt, re, f):
     f = ctypes.c_double(f)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.drdgeo_c(lon, lat, alt, re, f, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
@@ -2336,7 +2552,7 @@ def drdlat(r, lon, lat):
     lat = ctypes.c_double(lat)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.drdlat_c(r, lon, lat, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
@@ -2370,7 +2586,7 @@ def drdpgr(body, lon, lat, alt, re, f):
     f = ctypes.c_double(f)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.drdpgr_c(body, lon, lat, alt, re, f, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
@@ -2395,7 +2611,181 @@ def drdsph(r, colat, lon):
     lon = ctypes.c_double(lon)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.drdsph_c(r, colat, lon, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
+
+
+def dskb02():
+    raise NotImplementedError
+
+
+@spiceErrorCheck
+def dskcls(handle, optmiz=False):
+    """
+    Close a DSK file. 
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskcls_c.html
+    
+    :param handle: Handle assigned to the opened DSK file.
+    :type handle: int
+    :param optmiz: Flag indicating whether to segregate the DSK.
+    :type optmiz: bool
+    :return: 
+    """
+    handle = ctypes.c_int(handle)
+    optmiz = ctypes.c_bool(optmiz)
+    libspice.dskcls_c(handle, optmiz)
+
+
+def dskd02():
+    raise NotImplementedError
+
+
+def dskgd():
+    raise NotImplementedError
+
+
+@spiceErrorCheck
+def dskgtl(keywrd):
+    """
+    Retrieve the value of a specified DSK tolerance or margin parameter.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskgtl_c.html
+    
+    :param keywrd: Code specifying parameter to retrieve. 
+    :type keywrd: int
+    :return: Value of parameter.
+    :rtype: float
+    """
+    keywrd = ctypes.c_int(keywrd)
+    dpval  = ctypes.c_double(0)
+    libspice.dskgtl_c(keywrd, ctypes.byref(dpval))
+    return dpval.value
+
+
+def dski02():
+    raise NotImplementedError
+
+
+def dskmi2():
+    raise NotImplementedError
+
+
+def dskn02():
+    raise NotImplementedError
+
+
+@spiceErrorCheck
+def dskobj(dsk):
+    """
+    Find the set of body ID codes of all objects for which 
+    topographic data are provided in a specified DSK file. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskobj_c.html
+    
+    :param dsk: Name of DSK file. 
+    :type dsk: str
+    :return: Set of ID codes of objects in DSK file.
+    :rtype: spiceypy.utils.support_types.SpiceCell
+    """
+    dsk = stypes.stringToCharP(dsk)
+    bodids = stypes.SPICEINT_CELL(10000)
+    libspice.dskobj_c(dsk, ctypes.byref(bodids))
+    return bodids
+
+
+@spiceErrorCheck
+def dskopn(fname, ifname, ncomch):
+    """
+    Open a new DSK file for subsequent write operations. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskopn_c.html
+    
+    :param fname: Name of a DSK file to be opened. 
+    :type fname: str
+    :param ifname: Internal file name.
+    :type ifname: str
+    :param ncomch: Number of comment characters to allocate. 
+    :type ncomch: int
+    :return: Handle assigned to the opened DSK file.
+    :rtype: int
+    """
+    fname = stypes.stringToCharP(fname)
+    ifname = stypes.stringToCharP(ifname)
+    ncomch = ctypes.c_int(ncomch)
+    handle = ctypes.c_int()
+    libspice.dskopn_c(fname, ifname, ncomch, ctypes.byref(handle))
+    return handle.value
+
+
+def dskp02():
+    raise NotImplementedError
+
+
+def dskrb2():
+    raise NotImplementedError
+
+
+@spiceErrorCheck
+def dsksrf(dsk, bodyid):
+    """
+    Find the set of surface ID codes for all surfaces associated with 
+    a given body in a specified DSK file. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dsksrf_c.html
+    
+    :param dsk: Name of DSK file.
+    :type dsk: str
+    :param bodyid: Integer body ID code.
+    :type bodyid: int
+    :return: Set of ID codes of surfaces in DSK file. 
+    """
+    dsk    = stypes.stringToCharP(dsk)
+    bodyid = ctypes.c_int(bodyid)
+    srfids = stypes.SPICEINT_CELL(10000)
+    libspice.dsksrf_c(dsk, bodyid, ctypes.byref(srfids))
+    return srfids
+
+
+@spiceErrorCheck
+def dskstl(keywrd, dpval):
+    """
+    Set the value of a specified DSK tolerance or margin parameter.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskstl_c.html
+    
+    :param keywrd: Code specifying parameter to set.
+    :type keywrd: int
+    :param dpval: Value of parameter. 
+    :type dpval: float
+    :return: 
+    """
+    keywrd = ctypes.c_int(keywrd)
+    dpval = ctypes.c_double(dpval)
+    libspice.dskstl_c(keywrd, dpval)
+
+
+def dskv02():
+    raise NotImplementedError
+
+
+def dskw02():
+    raise NotImplementedError
+
+
+def dskx02():
+    raise NotImplementedError
+
+
+def dskxsi():
+    raise NotImplementedError
+
+
+def dskxv():
+    raise NotImplementedError
+
+
+def dskz02():
+    raise NotImplementedError
 
 
 @spiceErrorCheck
@@ -2421,7 +2811,7 @@ def dsphdr(x, y, z):
     z = ctypes.c_double(z)
     jacobi = stypes.emptyDoubleMatrix()
     libspice.dsphdr_c(x, y, z, jacobi)
-    return stypes.matrixToList(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
 @spiceErrorCheck
@@ -2663,7 +3053,7 @@ def edterm(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts):
     npts = ctypes.c_int(npts)
     libspice.edterm_c(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts,
                       ctypes.byref(trgepc), obspos, trmpts)
-    return trgepc.value, stypes.vectorToList(obspos), stypes.matrixToList(
+    return trgepc.value, stypes.vectorToList(obspos), stypes.cMatrixToNumpy(
             trmpts)
 
 
@@ -4118,7 +4508,7 @@ def eul2m(angle3, angle2, angle1, axis3, axis2, axis1):
     axis1 = ctypes.c_int(axis1)
     r = stypes.emptyDoubleMatrix()
     libspice.eul2m_c(angle3, angle2, angle1, axis3, axis2, axis1, r)
-    return stypes.matrixToList(r)
+    return stypes.cMatrixToNumpy(r)
 
 
 @spiceErrorCheck
@@ -4148,7 +4538,7 @@ def eul2xf(eulang, axisa, axisb, axisc):
     axisc = ctypes.c_int(axisc)
     xform = stypes.emptyDoubleMatrix(x=6, y=6)
     libspice.eul2xf_c(eulang, axisa, axisb, axisc, xform)
-    return stypes.matrixToList(xform)
+    return stypes.cMatrixToNumpy(xform)
 
 
 @spiceErrorCheck
@@ -4313,7 +4703,7 @@ def frinfo(frcode):
 
 
 @spiceErrorCheck
-def frmnam(frcode, lenout=125):
+def frmnam(frcode, lenout=_default_len_out):
     """
     Retrieve the name of a reference frame associated with a SPICE ID code.
 
@@ -4550,7 +4940,7 @@ def getfov(instid, room, shapelen=_default_len_out, framelen=_default_len_out):
                       ctypes.byref(n), bounds)
     return stypes.toPythonString(shape), stypes.toPythonString(
             framen), stypes.vectorToList(
-            bsight), n.value, stypes.matrixToList(bounds)[0:n.value]
+            bsight), n.value, stypes.cMatrixToNumpy(bounds)[0:n.value]
 
 
 def getmsg(option, lenout=_default_len_out):
@@ -5429,6 +5819,34 @@ def halfpi():
 
 
 @spiceErrorCheck
+def hrmint(xvals, yvals, x):
+    """
+    Evaluate a Hermite interpolating polynomial at a specified
+    abscissa value.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/hrmint_c.html
+    
+    :param xvals: Abscissa values.
+    :type xvals: Array of floats
+    :param yvals: Ordinate and derivative values.
+    :type yvals: Array of floats
+    :param x: Point at which to interpolate the polynomial.
+    :type x: int
+    :return: Interpolated function value at x and the Interpolated function's derivative at x  
+    :rtype: tuple
+    """
+    work  = stypes.emptyDoubleVector(int(2*len(yvals)+1))
+    n     = ctypes.c_int(len(xvals))
+    xvals = stypes.toDoubleVector(xvals)
+    yvals = stypes.toDoubleVector(yvals)
+    x     = ctypes.c_double(x)
+    f     = ctypes.c_double(0)
+    df    = ctypes.c_double(0)
+    libspice.hrmint_c(n, xvals, yvals, x, work, f, df)
+    return f.value, df.value
+
+
+@spiceErrorCheck
 def hx2dp(string):
     """
     Convert a string representing a double precision number in a
@@ -5471,7 +5889,7 @@ def ident():
     """
     matrix = stypes.emptyDoubleMatrix()
     libspice.ident_c(matrix)
-    return stypes.matrixToList(matrix)
+    return stypes.cMatrixToNumpy(matrix)
 
 
 @spiceErrorCheck
@@ -5513,6 +5931,121 @@ def illum(target, et, abcorr, obsrvr, spoint):
     libspice.illum_c(target, et, abcorr, obsrvr, spoint, ctypes.byref(phase),
                      ctypes.byref(solar), ctypes.byref(emissn))
     return phase.value, solar.value, emissn.value
+
+
+@spiceErrorCheck
+def illumf(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint):
+    """
+    Compute the illumination angles---phase, incidence, and
+    emission---at a specified point on a target body. Return logical
+    flags indicating whether the surface point is visible from
+    the observer's position and whether the surface point is
+    illuminated.
+
+    The target body's surface is represented using topographic data
+    provided by DSK files, or by a reference ellipsoid.
+
+    The illumination source is a specified ephemeris object.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/illumf_c.html
+    
+    :param method: Computation method.
+    :type method: str
+    :param target: Name of target body.
+    :type target: str 
+    :param ilusrc: Name of illumination source.
+    :type ilusrc: str
+    :param et: Epoch in ephemeris seconds past J2000.
+    :type et: float
+    :param fixref: Body-fixed, body-centered target body frame.
+    :type fixref: str
+    :param abcorr: Desired aberration correction.
+    :type abcorr: str
+    :param obsrvr: Name of observing body.
+    :type obsrvr: str
+    :param spoint: Body-fixed coordinates of a target surface point.
+    :type spoint: 3-Element Array of floats
+    :return: Target surface point epoch, Vector from observer to target
+     surface point, Phase angle at the surface point, Source incidence 
+     angle at the surface point, Emission angle at the surface point, 
+     Visibility flag, Illumination flag
+    :rtype: tuple
+    """
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
+    ilusrc = stypes.stringToCharP(ilusrc)
+    et     = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    spoint = stypes.toDoubleVector(spoint)
+    trgepc = ctypes.c_double(0)
+    srfvec = stypes.emptyDoubleVector(3)
+    phase  = ctypes.c_double(0)
+    incdnc = ctypes.c_double(0)
+    emissn = ctypes.c_double(0)
+    visibl = ctypes.c_bool()
+    lit    = ctypes.c_bool()
+    libspice.illumf_c(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint,
+                      ctypes.byref(trgepc), srfvec, ctypes.byref(phase),
+                      ctypes.byref(incdnc), ctypes.byref(emissn),
+                      ctypes.byref(visibl), ctypes.byref(lit))
+    return trgepc.value, stypes.vectorToList(srfvec), \
+           phase.value, incdnc.value, emissn.value, visibl.value, lit.value
+
+
+@spiceErrorCheck
+def illumg(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint):
+    """
+    Find the illumination angles (phase, incidence, and 
+    emission) at a specified surface point of a target body. 
+ 
+    The surface of the target body may be represented by a triaxial 
+    ellipsoid or by topographic data provided by DSK files. 
+ 
+    The illumination source is a specified ephemeris object.
+    param method: Computation method.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/illumg_c.html
+    
+    :type method: str
+    :param target: Name of target body.
+    :type target: str 
+    :param ilusrc: Name of illumination source.
+    :type ilusrc: str
+    :param et: Epoch in ephemeris seconds past J2000.
+    :type et: float
+    :param fixref: Body-fixed, body-centered target body frame.
+    :type fixref: str
+    :param abcorr: Desired aberration correction.
+    :type abcorr: str
+    :param obsrvr: Name of observing body.
+    :type obsrvr: str
+    :param spoint: Body-fixed coordinates of a target surface point.
+    :type spoint: 3-Element Array of floats
+    :return: Target surface point epoch, Vector from observer to target
+     surface point, Phase angle at the surface point, Source incidence 
+     angle at the surface point, Emission angle at the surface point, 
+    :rtype: tuple
+    """
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
+    ilusrc = stypes.stringToCharP(ilusrc)
+    et     = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    spoint = stypes.toDoubleVector(spoint)
+    trgepc = ctypes.c_double(0)
+    srfvec = stypes.emptyDoubleVector(3)
+    phase  = ctypes.c_double(0)
+    incdnc = ctypes.c_double(0)
+    emissn = ctypes.c_double(0)
+    libspice.illumg_c(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint,
+                      ctypes.byref(trgepc), srfvec, ctypes.byref(phase),
+                      ctypes.byref(incdnc), ctypes.byref(emissn))
+    return trgepc.value, stypes.vectorToList(srfvec), \
+           phase.value, incdnc.value, emissn.value
 
 
 @spiceErrorCheck
@@ -5783,10 +6316,10 @@ def invert(m):
     :return: Inverted matrix (m1)^-1
     :rtype: 3x3-Element Array of floats
     """
-    m = stypes.listtodoublematrix(m)
+    m = stypes.toDoubleMatrix(m)
     mout = stypes.emptyDoubleMatrix()
     libspice.invert_c(m, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -5803,10 +6336,10 @@ def invort(m):
     :return: m after transposition and scaling of rows.
     :rtype: 3x3-Element Array of floats
     """
-    m = stypes.listtodoublematrix(m)
+    m = stypes.toDoubleMatrix(m)
     mout = stypes.emptyDoubleMatrix()
     libspice.invort_c(m, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -5930,7 +6463,7 @@ def isrot(m, ntol, dtol):
     :return: True if and only if m is a rotation matrix.
     :rtype: bool
     """
-    m = stypes.listtodoublematrix(m)
+    m = stypes.toDoubleMatrix(m)
     ntol = ctypes.c_double(ntol)
     dtol = ctypes.c_double(dtol)
     return libspice.isrot_c(m, ntol, dtol)
@@ -6285,6 +6818,41 @@ def latsph(radius, lon, lat):
 
 
 @spiceErrorCheck
+def latsrf(method, target, et, fixref, lonlat):
+    """
+    Map array of planetocentric longitude/latitude coordinate pairs 
+    to surface points on a specified target body. 
+ 
+    The surface of the target body may be represented by a triaxial 
+    ellipsoid or by topographic data provided by DSK files.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/latsrf_c.html
+    
+    :param method: Computation method.
+    :type method: str
+    :param target: Name of target body.
+    :type target: str
+    :param et: Epoch in TDB seconds past J2000 TDB. 
+    :type et: float
+    :param fixref: Body-fixed, body-centered target body frame.
+    :type fixref: str
+    :param lonlat: Array of longitude/latitude coordinate pairs.
+    :type lonlat: A 2xM-Element Array of floats
+    :return: Array of surface points. 
+    :rtype: A 3xM-Element Array of floats
+    """
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
+    et     = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    npts   = ctypes.c_int(len(lonlat))
+    lonlat = stypes.toDoubleMatrix(lonlat)
+    srfpts = stypes.emptyDoubleMatrix(3, npts.value)
+    libspice.latsrf_c(method, target, et, fixref, npts, lonlat, srfpts)
+    return stypes.cMatrixToNumpy(srfpts)
+
+
+@spiceErrorCheck
 def lcase(instr, lenout=_default_len_out):
     """
     Convert the characters in a string to lowercase.
@@ -6321,6 +6889,104 @@ def ldpool(filename):
 
 
 @spiceErrorCheck
+def limbpt(method, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp, ncuts, schstp, soltol, maxn):
+    """
+    Find limb points on a target body. The limb is the set of points 
+    of tangency on the target of rays emanating from the observer. 
+    The caller specifies half-planes bounded by the observer-target 
+    center vector in which to search for limb points. 
+ 
+    The surface of the target body may be represented either by a 
+    triaxial ellipsoid or by topographic data. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/limbpt_c.html
+    
+    :param method: Computation method. 
+    :type method: str
+    :param target: Name of target body.
+    :type target: str
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :type et: float
+    :param fixref: Body-fixed, body-centered target body frame.
+    :type fixref: str
+    :param abcorr: Aberration correction. 
+    :type abcorr: str
+    :param corloc: Aberration correction locus.
+    :type corloc: str
+    :param obsrvr: Name of observing body.
+    :type obsrvr: str
+    :param refvec: Reference vector for cutting half-planes.
+    :type refvec: 3-Element Array of floats
+    :param rolstp: Roll angular step for cutting half-planes. 
+    :type rolstp: float
+    :param ncuts: Number of cutting half-planes. 
+    :type ncuts: int
+    :param schstp: Angular step size for searching. 
+    :type schstp: float
+    :param soltol: Solution convergence tolerance. 
+    :type soltol: float
+    :param maxn: Maximum number of entries in output arrays. 
+    :type maxn: int
+    :return: Counts of limb points corresponding to cuts, Limb points, Times associated with limb points, Tangent vectors emanating from the observer
+    :rtype: tuple
+    """
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
+    et     = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    corloc = stypes.stringToCharP(corloc)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    refvec = stypes.toDoubleVector(refvec)
+    rolstp = ctypes.c_double(rolstp)
+    ncuts  = ctypes.c_int(ncuts)
+    schstp = ctypes.c_double(schstp)
+    soltol = ctypes.c_double(soltol)
+    maxn   = ctypes.c_int(maxn)
+    npts   = stypes.emptyIntVector(maxn.value)
+    points = stypes.emptyDoubleMatrix(3, maxn.value)
+    epochs = stypes.emptyDoubleVector(maxn)
+    tangts = stypes.emptyDoubleMatrix(3, maxn.value)
+    libspice.limbpt_c(method, target, et, fixref,
+                      abcorr, corloc, obsrvr, refvec,
+                      rolstp, ncuts, schstp, soltol,
+                      maxn, npts, points, epochs, tangts)
+    # Clip the empty elements out of returned results
+    npts = stypes.vectorToList(npts)
+    valid_points = numpy.where(npts >= 1)
+    return npts[valid_points], stypes.cMatrixToNumpy(points)[valid_points], stypes.vectorToList(epochs)[valid_points], stypes.cMatrixToNumpy(tangts)[valid_points]
+
+
+@spiceErrorCheck
+def lgrind(xvals, yvals, x):
+    """
+    Evaluate a Lagrange interpolating polynomial for a specified
+    set of coordinate pairs, at a specified abscissa value.
+    Return the value of both polynomial and derivative.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lgrind_c.html
+
+    :param xvals: Abscissa values.
+    :type xvals: N-Element Array of floats
+    :param yvals: Ordinate values.
+    :type yvals: N-Element Array of floats
+    :param x: Point at which to interpolate the polynomial.
+    :type x: float
+    :return: Polynomial value at x, Polynomial derivative at x.
+    :rtype: tuple
+    """
+    n = ctypes.c_int(len(xvals))
+    xvals = stypes.toDoubleVector(xvals)
+    yvals = stypes.toDoubleVector(yvals)
+    work  = stypes.emptyDoubleVector(n.value*2)
+    x  = ctypes.c_double(x)
+    p  = ctypes.c_double(0)
+    dp = ctypes.c_double(0)
+    libspice.lgrind_c(n, xvals, yvals, work, x, p, dp)
+    return p.value, dp.value
+
+
+@spiceErrorCheck
 def lmpool(cvals):
     """
     Load the variables contained in an internal buffer into the
@@ -6345,7 +7011,7 @@ def lparse(inlist, delim, nmax):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lparse_c.html
 
     :param inlist: list of items delimited by delim.
-    :type inlist: list of strings
+    :type inlist: list
     :param delim: Single character used to delimit items.
     :type delim: str
     :param nmax: Maximum number of items to return.
@@ -6765,7 +7431,7 @@ def m2eul(r, axis3, axis2, axis1):
     :return: Third, second, and first Euler angles, in radians.
     :rtype: tuple
     """
-    r = stypes.listtodoublematrix(r)
+    r = stypes.toDoubleMatrix(r)
     axis3 = ctypes.c_int(axis3)
     axis2 = ctypes.c_int(axis2)
     axis1 = ctypes.c_int(axis1)
@@ -6789,7 +7455,7 @@ def m2q(r):
     :return: A unit quaternion representing the rotation matrix
     :rtype: 4-Element Array of floats
     """
-    r = stypes.listtodoublematrix(r)
+    r = stypes.toDoubleMatrix(r)
     q = stypes.emptyDoubleVector(4)
     libspice.m2q_c(r, q)
     return stypes.vectorToList(q)
@@ -6867,10 +7533,10 @@ def mequ(m1):
     :return: Output matrix equal to m1.
     :rtype: 3x3-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1)
+    m1 = stypes.toDoubleMatrix(m1)
     mout = stypes.emptyDoubleMatrix()
     libspice.mequ_c(m1, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -6889,12 +7555,12 @@ def mequg(m1, nr, nc):
     :return: Output matrix equal to m1
     :rtype: NxM-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1, x=nc, y=nr)
+    m1 = stypes.toDoubleMatrix(m1)
     mout = stypes.emptyDoubleMatrix(x=nc, y=nr)
     nc = ctypes.c_int(nc)
     nr = ctypes.c_int(nr)
     libspice.mequg_c(m1, nc, nr, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 # skiping for now mind_c,
@@ -6919,11 +7585,11 @@ def mtxm(m1, m2):
     :return: The produce m1 transpose times m2.
     :rtype: 3x3-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1)
-    m2 = stypes.listtodoublematrix(m2)
+    m1 = stypes.toDoubleMatrix(m1)
+    m2 = stypes.toDoubleMatrix(m2)
     mout = stypes.emptyDoubleMatrix()
     libspice.mtxm_c(m1, m2, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -6947,14 +7613,14 @@ def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
     :return: Transpose of m1 times m2.
     :rtype: NxM-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nr1r2)
-    m2 = stypes.listtodoublematrix(m2, x=ncol2, y=nr1r2)
+    m1 = stypes.toDoubleMatrix(m1)
+    m2 = stypes.toDoubleMatrix(m2)
     mout = stypes.emptyDoubleMatrix(x=ncol2, y=ncol1)
     ncol1 = ctypes.c_int(ncol1)
     nr1r2 = ctypes.c_int(nr1r2)
     ncol2 = ctypes.c_int(ncol2)
     libspice.mtxmg_c(m1, m2, ncol1, nr1r2, ncol2, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -6972,7 +7638,7 @@ def mtxv(m1, vin):
     :return: 3-dimensional double precision vector.
     :rtype: 3-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1)
+    m1 = stypes.toDoubleMatrix(m1)
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(3)
     libspice.mtxv_c(m1, vin, vout)
@@ -6998,7 +7664,7 @@ def mtxvg(m1, v2, ncol1, nr1r2):
     :return: Product vector m1 transpose * v2.
     :rtype: Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nr1r2)
+    m1 = stypes.toDoubleMatrix(m1)
     v2 = stypes.toDoubleVector(v2)
     ncol1 = ctypes.c_int(ncol1)
     nr1r2 = ctypes.c_int(nr1r2)
@@ -7021,11 +7687,11 @@ def mxm(m1, m2):
     :return: 3x3 double precision matrix.
     :rtype: 3x3-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1)
-    m2 = stypes.listtodoublematrix(m2)
+    m1 = stypes.toDoubleMatrix(m1)
+    m2 = stypes.toDoubleMatrix(m2)
     mout = stypes.emptyDoubleMatrix()
     libspice.mxm_c(m1, m2, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -7048,14 +7714,14 @@ def mxmg(m1, m2, nrow1, ncol1, ncol2):
     :return: nrow1 X ncol2 double precision matrix.
     :rtype: NxM-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1, x=ncol1, y=nrow1)
-    m2 = stypes.listtodoublematrix(m2, x=ncol2, y=ncol1)
+    m1 = stypes.toDoubleMatrix(m1)
+    m2 = stypes.toDoubleMatrix(m2)
     mout = stypes.emptyDoubleMatrix(x=ncol2, y=nrow1)
     nrow1 = ctypes.c_int(nrow1)
     ncol1 = ctypes.c_int(ncol1)
     ncol2 = ctypes.c_int(ncol2)
     libspice.mxmg_c(m1, m2, nrow1, ncol1, ncol2, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -7072,11 +7738,11 @@ def mxmt(m1, m2):
     :return: The product m1 times m2 transpose.
     :rtype: float
     """
-    m1 = stypes.listtodoublematrix(m1)
-    m2 = stypes.listtodoublematrix(m2)
+    m1 = stypes.toDoubleMatrix(m1)
+    m2 = stypes.toDoubleMatrix(m2)
     mout = stypes.emptyDoubleMatrix()
     libspice.mxmt_c(m1, m2, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -7099,14 +7765,14 @@ def mxmtg(m1, m2, nrow1, nc1c2, nrow2):
     :return: Product matrix.
     :rtype: NxM-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1, x=nc1c2, y=nrow1)
-    m2 = stypes.listtodoublematrix(m2, x=nc1c2, y=nrow2)
+    m1 = stypes.toDoubleMatrix(m1)
+    m2 = stypes.toDoubleMatrix(m2)
     mout = stypes.emptyDoubleMatrix(x=nrow2, y=nrow1)
     nrow1 = ctypes.c_int(nrow1)
     nc1c2 = ctypes.c_int(nc1c2)
     nrow2 = ctypes.c_int(nrow2)
     libspice.mxmtg_c(m1, m2, nrow1, nc1c2, nrow2, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -7124,7 +7790,7 @@ def mxv(m1, vin):
     :return: 3-dimensional double precision vector.
     :rtype: 3-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1)
+    m1 = stypes.toDoubleMatrix(m1)
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(3)
     libspice.mxv_c(m1, vin, vout)
@@ -7149,7 +7815,7 @@ def mxvg(m1, v2, nrow1, nc1r2):
     :return: Product vector m1*v2
     :rtype: Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1, x=nc1r2, y=nrow1)
+    m1 = stypes.toDoubleMatrix(m1)
     v2 = stypes.toDoubleVector(v2)
     nrow1 = ctypes.c_int(nrow1)
     nc1r2 = ctypes.c_int(nc1r2)
@@ -7601,8 +8267,45 @@ def oscelt(state, et, mu):
     return stypes.vectorToList(elts)
 
 
+def oscltx(state, et, mu):
+    """
+    Determine the set of osculating conic orbital elements that 
+    corresponds to the state (position, velocity) of a body at some 
+    epoch. In additional to the classical elements, return the true 
+    anomaly, semi-major axis, and period, if applicable. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/oscltx_c.html
+    
+    :param state: State of body at epoch of elements. 
+    :type state: 6-Element Array of floats
+    :param et: Epoch of elements. 
+    :type et: float
+    :param mu: Gravitational parameter (GM) of primary body. 
+    :type mu: float
+    :return: Extended set of classical conic elements. 
+    """
+    state = stypes.toDoubleVector(state)
+    et = ctypes.c_double(et)
+    mu = ctypes.c_double(mu)
+    elts = stypes.emptyDoubleVector(20)
+    libspice.oscltx_c(state, et, mu, elts)
+    return stypes.vectorToList(elts[0:11])
+
+
 ################################################################################
 # P
+@spiceErrorCheck
+def pckcls(handle):
+    """
+    Close an open PCK file. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pckcls_c.html
+    
+    :param handle: Handle of the PCK file to be closed.
+    :type handle: int
+    """
+    handle = ctypes.c_int(handle)
+    libspice.pckcls_c(handle)
 
 
 @spiceErrorCheck
@@ -7667,6 +8370,30 @@ def pcklof(filename):
 
 
 @spiceErrorCheck
+def pckopn(name, ifname, ncomch):
+    """
+    Create a new PCK file, returning the handle of the opened file. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pckopn_c.html
+    
+    :param name: The name of the PCK file to be opened. 
+    :type name: str
+    :param ifname: The internal filename for the PCK.
+    :type ifname: str
+    :param ncomch: The number of characters to reserve for comments. 
+    :type ncomch: int
+    :return: The handle of the opened PCK file.
+    :rtype: int
+    """
+    name = stypes.stringToCharP(name)
+    ifname = stypes.stringToCharP(ifname)
+    ncomch = ctypes.c_int(ncomch)
+    handle = ctypes.c_int()
+    libspice.pckopn_c(name, ifname, ncomch, ctypes.byref(handle))
+    return handle.value
+
+
+@spiceErrorCheck
 def pckuof(handle):
     """
     Unload a binary PCK file so that it will no longer be searched by
@@ -7679,6 +8406,52 @@ def pckuof(handle):
     """
     handle = ctypes.c_int(handle)
     libspice.pckuof_c(handle)
+
+
+@spiceErrorCheck
+def pckw02(handle, classid, frname, first, last, segid, intlen, n, polydg, cdata, btime):
+    """
+    Write a type 2 segment to a PCK binary file given the file handle,
+    frame class ID, base frame, time range covered by the segment, and
+    the Chebyshev polynomial coefficients.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pckw02_c.html
+    
+    :param handle: Handle of binary PCK file open for writing.
+    :type handle: int
+    :param classid: Frame class ID of body-fixed frame.
+    :type classid: int
+    :param frname: Name of base reference frame.
+    :type frname: str
+    :param first: Start time of interval covered by segment. 
+    :type first: float
+    :param last: End time of interval covered by segment.
+    :type last: float
+    :param segid: Segment identifier.
+    :type segid: str
+    :param intlen: Length of time covered by logical record.
+    :type intlen: float
+    :param n: Number of logical records in segment.
+    :type n: int
+    :param polydg: Chebyshev polynomial degree. 
+    :type polydg: int
+    :param cdata: Array of Chebyshev coefficients.
+    :type cdata: N-Element Array of floats
+    :param btime: Begin time of first logical record.
+    :type btime: float
+    """
+    handle = ctypes.c_int(handle)
+    classid = ctypes.c_int(classid)
+    frame = stypes.stringToCharP(frname)
+    first = ctypes.c_double(first)
+    last = ctypes.c_double(last)
+    segid = stypes.stringToCharP(segid)
+    intlen = ctypes.c_double(intlen)
+    n = ctypes.c_int(n)
+    polydg = ctypes.c_int(polydg)
+    cdata = stypes.toDoubleVector(cdata)
+    btime = ctypes.c_double(btime)
+    libspice.pckw02_c(handle, classid, frame, first, last, segid, intlen, n, polydg, cdata, btime)
 
 
 @spiceErrorCheck
@@ -7905,6 +8678,153 @@ def pl2psv(plane):
 
 
 @spiceErrorCheck
+def pltar(vrtces, plates):
+    """
+    Compute the total area of a collection of triangular plates.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltar_c.html
+    
+    :param vrtces: Array of vertices.
+    :type vrtces: Nx3-Element Array of floats
+    :param plates: Array of plates. 
+    :type plates: Nx3-Element Array of ints
+    :return: total area of the set of plates
+    :rtype: float
+    """
+    nv = ctypes.c_int(len(vrtces))
+    vrtces = stypes.toDoubleMatrix(vrtces)
+    np = ctypes.c_int(len(plates))
+    plates = stypes.toIntMatrix(plates)
+    return libspice.pltar_c(nv, vrtces, np, plates)
+
+
+@spiceErrorCheck
+def pltexp(iverts, delta):
+    """
+    Expand a triangular plate by a specified amount. The expanded 
+    plate is co-planar with, and has the same orientation as, the 
+    original. The centroids of the two plates coincide. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltexp_c.html
+    
+    :param iverts: Vertices of the plate to be expanded. 
+    :type iverts: 3x3-Element Array of floats
+    :param delta: Fraction by which the plate is to be expanded.
+    :type delta: double
+    :return: Vertices of the expanded plate. 
+    :rtype: 3x3-Element Array of floats
+    """
+    iverts = stypes.toDoubleMatrix(iverts)
+    delta = ctypes.c_double(delta)
+    overts = stypes.emptyDoubleMatrix()
+    libspice.pltexp_c(iverts, delta, overts)
+    return stypes.cMatrixToNumpy(overts)
+
+
+@spiceErrorCheck
+def pltnp(point, v1, v2, v3):
+    """
+    Find the nearest point on a triangular plate to a given point. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltnp_c.html
+    
+    :param point: A point in 3-dimensional space. 
+    :type point: 3-Element Array of floats
+    :param v1: Vertices of a triangular plate.
+    :type v1: 3-Element Array of floats
+    :param v2: Vertices of a triangular plate. 
+    :type v2: 3-Element Array of floats
+    :param v3: Vertices of a triangular plate. 
+    :type v3: 3-Element Array of floats
+    :return: the nearest point on a triangular plate to a given point and distance
+    :rtype: tuple
+    """
+    point = stypes.toDoubleVector(point)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
+    v3 = stypes.toDoubleVector(v3)
+    pnear = stypes.emptyDoubleVector(3)
+    dist = ctypes.c_double()
+    libspice.pltnp_c(point, v1, v2, v3, pnear, ctypes.byref(dist))
+    return stypes.vectorToList(pnear), dist.value
+
+
+@spiceErrorCheck
+def pltnrm(v1, v2, v3):
+    """
+    Compute an outward normal vector of a triangular plate. 
+    The vector does not necessarily have unit length. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltnrm_c.html
+    
+    :param v1: Vertices of a plate.
+    :type v1: 3-Element Array of floats
+    :param v2: Vertices of a plate. 
+    :type v2: 3-Element Array of floats
+    :param v3: Vertices of a plate. 
+    :type v3: 3-Element Array of floats
+    :return: Plate's outward normal vector.
+    :rtype: 3-Element Array of floats
+    """
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
+    v3 = stypes.toDoubleVector(v3)
+    normal = stypes.emptyDoubleVector(3)
+    libspice.pltnrm_c(v1, v2, v3, normal)
+    return stypes.vectorToList(normal)
+
+
+@spiceErrorCheck
+def pltvol(vrtces, plates):
+    """
+    Compute the volume of a three-dimensional region bounded by a 
+    collection of triangular plates. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltvol_c.html
+ 
+    :param vrtces: Array of vertices.
+    :type vrtces: Nx3-Element Array of floats
+    :param plates: Array of plates. 
+    :type plates: Nx3-Element Array of ints 
+    :return: the volume of the spatial region bounded by the plates. 
+    :rtype: float
+    """
+    nv = ctypes.c_int(len(vrtces))
+    vrtces = stypes.toDoubleMatrix(vrtces)
+    np = ctypes.c_int(len(plates))
+    plates = stypes.toIntMatrix(plates)
+    return libspice.pltvol_c(nv, vrtces, np, plates)
+
+
+@spiceErrorCheck
+def polyds(coeffs, deg, nderiv, t):
+    """
+    Compute the value of a polynomial and it's first
+    n derivatives at the value t.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/polyds_c.html
+    
+    :param coeffs: Coefficients of the polynomial to be evaluated.
+    :type coeffs: N-Element Array of floats
+    :param deg: Degree of the polynomial to be evaluated.
+    :type deg: int
+    :param nderiv: Number of derivatives to compute.
+    :type nderiv: int
+    :param t: Point to evaluate the polynomial and derivatives
+    :type t: float
+    :return: Value of polynomial and derivatives.
+    :rtype: nderiv-Element Array of floats
+    """
+    coeffs = stypes.toDoubleVector(coeffs)
+    deg = ctypes.c_int(deg)
+    p = stypes.emptyDoubleVector(nderiv + 1)
+    nderiv = ctypes.c_int(nderiv)
+    t = ctypes.c_double(t)
+    libspice.polyds_c(ctypes.byref(coeffs), deg, nderiv, t, p)
+    return stypes.vectorToList(p)
+
+
+@spiceErrorCheck
 def pos(string, substr, start):
     """
     Find the first occurrence in a string of a substring, starting at
@@ -8069,7 +8989,7 @@ def pxform(fromstr, tostr, et):
     fromstr = stypes.stringToCharP(fromstr)
     rotatematrix = stypes.emptyDoubleMatrix()
     libspice.pxform_c(fromstr, tostr, et, rotatematrix)
-    return stypes.matrixToList(rotatematrix)
+    return stypes.cMatrixToNumpy(rotatematrix)
 
 
 @spiceErrorCheck
@@ -8098,7 +9018,7 @@ def pxfrm2(frame_from, frame_to, etfrom, etto):
     etto = ctypes.c_double(etto)
     outmatrix = stypes.emptyDoubleMatrix()
     libspice.pxfrm2_c(frame_from, frame_to, etfrom, etto, outmatrix)
-    return stypes.matrixToList(outmatrix)
+    return stypes.cMatrixToNumpy(outmatrix)
 
 
 ################################################################################
@@ -8120,7 +9040,7 @@ def q2m(q):
     q = stypes.toDoubleVector(q)
     mout = stypes.emptyDoubleMatrix()
     libspice.q2m_c(q, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 # @spiceErrorCheck
@@ -8233,7 +9153,7 @@ def rav2xf(rot, av):
     av = stypes.toDoubleVector(av)
     xform = stypes.emptyDoubleMatrix(x=6, y=6)
     libspice.rav2xf_c(rot, av, xform)
-    return stypes.matrixToList(xform)
+    return stypes.cMatrixToNumpy(xform)
 
 
 @spiceErrorCheck
@@ -8249,7 +9169,7 @@ def raxisa(matrix):
     :return: Axis of the rotation, Angle through which the rotation is performed
     :rtype: tuple
     """
-    matrix = stypes.listtodoublematrix(matrix)
+    matrix = stypes.toDoubleMatrix(matrix)
     axis = stypes.emptyDoubleVector(3)
     angle = ctypes.c_double()
     libspice.raxisa_c(matrix, axis, ctypes.byref(angle))
@@ -8813,7 +9733,7 @@ def rotate(angle, iaxis):
     iaxis = ctypes.c_int(iaxis)
     mout = stypes.emptyDoubleMatrix()
     libspice.rotate_c(angle, iaxis, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -8834,12 +9754,12 @@ def rotmat(m1, angle, iaxis):
     :return: Resulting rotated matrix.
     :rtype: 3x3-Element Array of floats
     """
-    m1 = stypes.listtodoublematrix(m1)
+    m1 = stypes.toDoubleMatrix(m1)
     angle = ctypes.c_double(angle)
     iaxis = ctypes.c_int(iaxis)
     mout = stypes.emptyDoubleMatrix()
     libspice.rotmat_c(m1, angle, iaxis, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -8955,7 +9875,7 @@ def scard(incard, cell):
 
 @spiceErrorCheck
 def scdecd(sc, sclkdp, lenout=_default_len_out, MXPART=None):
-    # todo: figure out how to use mxpart, and test scdecd
+    # todo: figure out how to use mxpart
     """
     Convert double precision encoding of spacecraft clock time into
     a character representation.
@@ -11015,6 +11935,99 @@ def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel,
 
 
 @spiceErrorCheck
+@spiceFoundExceptionThrower
+def srfc2s(code, bodyid, srflen=_default_len_out):
+    """
+    Translate a surface ID code, together with a body ID code, to the 
+    corresponding surface name. If no such name exists, return a 
+    string representation of the surface ID code. 
+    
+    note: from NAIF if isname is false, this case is not treated as an error.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfc2s_c.html
+    
+    :param code: Integer surface ID code to translate to a string. 
+    :type code: int
+    :param bodyid: ID code of body associated with surface. 
+    :type bodyid: int
+    :param srflen: Available space in output string.
+    :param srflen: int 
+    :return: String corresponding to surface ID code.
+    :rtype: str
+    """
+    code   = ctypes.c_int(code)
+    bodyid = ctypes.c_int(bodyid)
+    srfstr = stypes.stringToCharP(srflen)
+    srflen = ctypes.c_int(srflen)
+    isname = ctypes.c_bool()
+    libspice.srfc2s_c(code, bodyid, srflen, srfstr, ctypes.byref(isname))
+    return stypes.toPythonString(srfstr), isname.value
+
+
+@spiceErrorCheck
+@spiceFoundExceptionThrower
+def srfcss(code, bodstr, srflen=_default_len_out):
+    """
+    Translate a surface ID code, together with a body string, to the 
+    corresponding surface name. If no such surface name exists, 
+    return a string representation of the surface ID code. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfcss_c.html
+    
+    :param code: Integer surface ID code to translate to a string. 
+    :type code: int
+    :param bodstr: Name or ID of body associated with surface.
+    :type bodstr: str
+    :param srflen: Available space in output string.
+    :param srflen: int
+    :return: String corresponding to surface ID code.
+    :rtype: str
+    """
+    code = ctypes.c_int(code)
+    bodstr = stypes.stringToCharP(bodstr)
+    srfstr = stypes.stringToCharP(srflen)
+    srflen = ctypes.c_int(srflen)
+    isname = ctypes.c_bool()
+    libspice.srfcss_c(code, bodstr, srflen, srfstr, ctypes.byref(isname))
+    return stypes.toPythonString(srfstr), isname.value
+
+
+@spiceErrorCheck
+def srfnrm(method, target, et, fixref, srfpts):
+    """
+    Map array of surface points on a specified target body to 
+    the corresponding unit length outward surface normal vectors. 
+ 
+    The surface of the target body may be represented by a triaxial 
+    ellipsoid or by topographic data provided by DSK files. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfnrm_c.html
+    
+    :param method: Computation method.
+    :type method: str
+    :param target: Name of target body. 
+    :type target: str
+    :param et: Epoch in TDB seconds past J2000 TDB. 
+    :type et: float
+    :param fixref: Body-fixed, body-centered target body frame. 
+    :type fixref: str
+    :param srfpts: Array of surface points.
+    :type srfpts: 3xM-Element Array of floats
+    :return: Array of outward, unit length normal vectors.
+    :rtype: 3xM-Element Array of floats
+    """
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
+    et     = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    npts   = ctypes.c_int(len(srfpts))
+    srfpts = stypes.toDoubleMatrix(srfpts)
+    normls = stypes.emptyDoubleMatrix(3, npts.value)
+    libspice.srfnrm_c(method, target, et, fixref, npts, srfpts, normls)
+    return stypes.cMatrixToNumpy(normls)
+
+
+@spiceErrorCheck
 def srfrec(body, longitude, latitude):
     """
     Convert planetocentric latitude and longitude of a surface
@@ -11037,6 +12050,56 @@ def srfrec(body, longitude, latitude):
     rectan = stypes.emptyDoubleVector(3)
     libspice.srfrec_c(body, longitude, latitude, rectan)
     return stypes.vectorToList(rectan)
+
+
+@spiceErrorCheck
+@spiceFoundExceptionThrower
+def srfs2c(srfstr, bodstr):
+    """
+    Translate a surface string, together with a body string, to the 
+    corresponding surface ID code. The input strings may contain 
+    names or integer ID codes.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfs2c_c.html
+    
+    :param srfstr: Surface name or ID string.
+    :type srfstr: str
+    :param bodstr: Body name or ID string.
+    :type bodstr: str
+    :return: Integer surface ID code.
+    :rtype: int
+    """
+    srfstr = stypes.stringToCharP(srfstr)
+    bodstr = stypes.stringToCharP(bodstr)
+    code   = ctypes.c_int()
+    isname = ctypes.c_bool()
+    libspice.srfs2c_c(srfstr, bodstr, ctypes.byref(code), ctypes.byref(isname))
+    return code.value, isname.value
+
+
+@spiceErrorCheck
+@spiceFoundExceptionThrower
+def srfscc(srfstr, bodyid):
+    """
+    Translate a surface string, together with a body ID code, to the 
+    corresponding surface ID code. The input surface string may 
+    contain a name or an integer ID code. 
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfscc_c.html
+    
+    :param srfstr: Surface name or ID string.
+    :type srfstr: str
+    :param bodyid: ID code of body associated with surface. 
+    :type bodyid: int 
+    :return: Integer surface ID code.
+    :rtype: int
+    """
+    srfstr = stypes.stringToCharP(srfstr)
+    bodyid = ctypes.c_int(bodyid)
+    code = ctypes.c_int()
+    isname = ctypes.c_bool()
+    libspice.srfscc_c(srfstr, bodyid, ctypes.byref(code), ctypes.byref(isname))
+    return code.value, isname.value
 
 
 @spiceErrorCheck
@@ -11549,7 +12612,7 @@ def sxform(instring, tostring, et):
     et = ctypes.c_double(et)
     xform = stypes.emptyDoubleMatrix(x=6, y=6)
     libspice.sxform_c(instring, tostring, et, xform)
-    return stypes.matrixToList(xform)
+    return stypes.cMatrixToNumpy(xform)
 
 
 @spiceErrorCheck
@@ -11574,6 +12637,81 @@ def szpool(name):
 
 ################################################################################
 # T
+
+
+@spiceErrorCheck
+def termpt(method, ilusrc, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp,
+           ncuts, schstp, soltol, maxn):
+    """
+    Find limb points on a target body. The limb is the set of points 
+    of tangency on the target of rays emanating from the observer. 
+    The caller specifies half-planes bounded by the observer-target 
+    center vector in which to search for limb points. 
+
+    The surface of the target body may be represented either by a 
+    triaxial ellipsoid or by topographic data. 
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/limbpt_c.html
+
+    :param method: Computation method. 
+    :type method: str
+    :param ilusrc: Illumination source.
+    :type ilusrc: str
+    :param target: Name of target body.
+    :type target: str
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :type et: float
+    :param fixref: Body-fixed, body-centered target body frame.
+    :type fixref: str
+    :param abcorr: Aberration correction. 
+    :type abcorr: str
+    :param corloc: Aberration correction locus.
+    :type corloc: str
+    :param obsrvr: Name of observing body.
+    :type obsrvr: str
+    :param refvec: Reference vector for cutting half-planes.
+    :type refvec: 3-Element Array of floats
+    :param rolstp: Roll angular step for cutting half-planes. 
+    :type rolstp: float
+    :param ncuts: Number of cutting half-planes. 
+    :type ncuts: int
+    :param schstp: Angular step size for searching. 
+    :type schstp: float
+    :param soltol: Solution convergence tolerance. 
+    :type soltol: float
+    :param maxn: Maximum number of entries in output arrays. 
+    :type maxn: int
+    :return: Counts of terminator points corresponding to cuts, Terminator points, Times associated with terminator points, Terminator vectors emanating from the observer
+    :rtype: tuple
+    """
+    method = stypes.stringToCharP(method)
+    ilusrc = stypes.stringToCharP(ilusrc)
+    target = stypes.stringToCharP(target)
+    et = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    corloc = stypes.stringToCharP(corloc)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    refvec = stypes.toDoubleVector(refvec)
+    rolstp = ctypes.c_double(rolstp)
+    ncuts = ctypes.c_int(ncuts)
+    schstp = ctypes.c_double(schstp)
+    soltol = ctypes.c_double(soltol)
+    maxn = ctypes.c_int(maxn)
+    npts = stypes.emptyIntVector(maxn.value)
+    points = stypes.emptyDoubleMatrix(3, maxn.value)
+    epochs = stypes.emptyDoubleVector(maxn)
+    trmvcs = stypes.emptyDoubleMatrix(3, maxn.value)
+    libspice.termpt_c(method, ilusrc, target, et, fixref,
+                      abcorr, corloc, obsrvr, refvec,
+                      rolstp, ncuts, schstp, soltol,
+                      maxn, npts, points, epochs, trmvcs)
+    # Clip the empty elements out of returned results
+    npts = stypes.vectorToList(npts)
+    valid_points = numpy.where(npts >= 1)
+    return npts[valid_points], stypes.cMatrixToNumpy(points)[valid_points], \
+           stypes.vectorToList(epochs)[valid_points], \
+           stypes.cMatrixToNumpy(trmvcs)[valid_points]
 
 
 @spiceErrorCheck
@@ -11656,7 +12794,7 @@ def tipbod(ref, body, et):
     et = ctypes.c_double(et)
     retmatrix = stypes.emptyDoubleMatrix()
     libspice.tipbod_c(ref, body, et, retmatrix)
-    return stypes.matrixToList(retmatrix)
+    return stypes.cMatrixToNumpy(retmatrix)
 
 
 @spiceErrorCheck
@@ -11681,7 +12819,7 @@ def tisbod(ref, body, et):
     et = ctypes.c_double(et)
     retmatrix = stypes.emptyDoubleMatrix(x=6, y=6)
     libspice.tisbod_c(ref, body, et, retmatrix)
-    return stypes.matrixToList(retmatrix)
+    return stypes.cMatrixToNumpy(retmatrix)
 
 
 # @spiceErrorCheck
@@ -11725,7 +12863,7 @@ def tparse(instring, lenout=_default_len_out):
 
 
 @spiceErrorCheck
-def tpictr(sample, lenout, lenerr):
+def tpictr(sample, lenout=_default_len_out, lenerr=_default_len_out):
     """
     Given a sample time string, create a time format picture
     suitable for use by the routine timout.
@@ -11876,7 +13014,7 @@ def twovec(axdef, indexa, plndef, indexp):
     indexp = ctypes.c_int(indexp)
     mout = stypes.emptyDoubleMatrix()
     libspice.twovec_c(axdef, indexa, plndef, indexp, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -12914,7 +14052,7 @@ def vtmv(v1, matrix, v2):
     :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
-    matrix = stypes.listtodoublematrix(matrix)
+    matrix = stypes.toDoubleMatrix(matrix)
     v2 = stypes.toDoubleVector(v2)
     return libspice.vtmv_c(v1, matrix, v2)
 
@@ -12942,7 +14080,7 @@ def vtmvg(v1, matrix, v2, nrow, ncol):
     :rtype: float
     """
     v1 = stypes.toDoubleVector(v1)
-    matrix = stypes.listtodoublematrix(matrix, x=ncol, y=nrow)
+    matrix = stypes.toDoubleMatrix(matrix)
     v2 = stypes.toDoubleVector(v2)
     nrow = ctypes.c_int(nrow)
     ncol = ctypes.c_int(ncol)
@@ -13423,7 +14561,7 @@ def xf2eul(xform, axisa, axisb, axisc):
     :return: (eulang, unique)
     :rtype: tuple
     """
-    xform = stypes.listtodoublematrix(xform, x=6, y=6)
+    xform = stypes.toDoubleMatrix(xform)
     axisa = ctypes.c_int(axisa)
     axisb = ctypes.c_int(axisb)
     axisc = ctypes.c_int(axisc)
@@ -13447,11 +14585,11 @@ def xf2rav(xform):
             angular velocity associated with xform.
     :rtype: tuple
     """
-    xform = stypes.listtodoublematrix(xform, x=6, y=6)
+    xform = stypes.toDoubleMatrix(xform)
     rot = stypes.emptyDoubleMatrix()
     av = stypes.emptyDoubleVector(3)
     libspice.xf2rav_c(xform, rot, av)
-    return stypes.matrixToList(rot), stypes.vectorToList(av)
+    return stypes.cMatrixToNumpy(rot), stypes.vectorToList(av)
 
 
 @spiceErrorCheck
@@ -13499,7 +14637,7 @@ def xpose(m):
     m = stypes.toDoubleMatrix(m)
     mout = stypes.emptyDoubleMatrix(x=3, y=3)
     libspice.xpose_c(m, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -13517,7 +14655,7 @@ def xpose6(m):
     m = stypes.toDoubleMatrix(m)
     mout = stypes.emptyDoubleMatrix(x=6, y=6)
     libspice.xpose6_c(m, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 @spiceErrorCheck
@@ -13537,9 +14675,9 @@ def xposeg(matrix, nrow, ncol):
     :return: Transposed matrix
     :rtype: NxM-Element Array of floats
     """
-    matrix = stypes.listtodoublematrix(matrix, x=ncol, y=nrow)
+    matrix = stypes.toDoubleMatrix(matrix)
     mout = stypes.emptyDoubleMatrix(x=ncol, y=nrow)
     ncol = ctypes.c_int(ncol)
     nrow = ctypes.c_int(nrow)
     libspice.xposeg_c(matrix, nrow, ncol, mout)
-    return stypes.matrixToList(mout)
+    return stypes.cMatrixToNumpy(mout)

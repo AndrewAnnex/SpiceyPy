@@ -7,6 +7,9 @@ matrix:
           python: 2.7
         - os: linux
           dist: trusty
+          python: 3.4
+        - os: linux
+          dist: trusty
           python: 3.5
         - os: linux
           dist: trusty
@@ -14,6 +17,12 @@ matrix:
         - os: osx
           language: generic
           env: PYVERSION='2.7.13'
+        - os: osx
+          language: generic
+          env: PYVERSION='3.4.0'
+        - os: osx
+          language: generic
+          env: PYVERSION='3.5.0'
         - os: osx
           language: generic
           env: PYVERSION='3.6.0'
@@ -28,11 +37,10 @@ before_install:
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then python --version; fi
 - pip install twine
 - pip install -r requirements.txt
-- if [ "$TRAVIS_OS_NAME" == "osx" ]; then travis_wait python ./spiceypy/tests/gettestkernels.py; fi
 install:
 - python setup.py install
 script:
-- coverage run --source=spiceypy setup.py test
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then travis_wait 30 coverage run --source=spiceypy setup.py test; else coverage run --source=spiceypy setup.py test; fi
 after_success:
 - coveralls
 deploy:

@@ -13,14 +13,6 @@ environment:
     secure: ojP0ftEgmrZcijN49vQEPz39rkcPyOxtjwNp5hUYkdKxQq47DwkiaWOnVA11nog637VUmRnHb07uXwvrhK4bbg==
 
   matrix:
-      - PYTHON: "C:\\Python27"
-        CONDA: "C:\\Miniconda"
-        CONDA_BUILDS: C:\\Miniconda\conda-bld\win-32
-        PYTHON_VERSION: "2.7.x"
-        ARCH: "32"
-        PLAT_NAME: "win32"
-        PY_TAG: "cp27"
-
       - PYTHON: "C:\\Python27-x64"
         CONDA: "C:\\Miniconda-x64"
         CONDA_BUILDS: C:\\Miniconda-x64\conda-bld\win-64
@@ -29,14 +21,14 @@ environment:
         PLAT_NAME: "win-amd64"
         PY_TAG: "cp27"
 
-      - PYTHON: "C:\\Python35"
-        CONDA: "C:\\Miniconda35"
-        CONDA_BUILDS: C:\\Miniconda35\conda-bld\win-32
-        PYTHON_VERSION: "3.5.x"
-        ARCH: "32"
+      - PYTHON: "C:\\Python34-x64"
+        CONDA: "C:\\Miniconda3-x64"
+        CONDA_BUILDS: C:\\Miniconda3-x64\conda-bld\win-64
+        PYTHON_VERSION: "3.4.x"
+        ARCH: "64"
         WINDOWS_SDK_VERSION: "v7.1"
-        PLAT_NAME: "win32"
-        PY_TAG: "cp35"
+        PLAT_NAME: "win-amd64"
+        PY_TAG: "cp34"
 
       - PYTHON: "C:\\Python35-x64"
         CONDA: "C:\\Miniconda35-x64"
@@ -46,15 +38,6 @@ environment:
         WINDOWS_SDK_VERSION: "v7.1"
         PLAT_NAME: "win-amd64"
         PY_TAG: "cp35"
-
-      - PYTHON: "C:\\Python36"
-        CONDA: "C:\\Miniconda36"
-        CONDA_BUILDS: C:\\Miniconda36\conda-bld\win-32
-        PYTHON_VERSION: "3.6.x"
-        ARCH: "32"
-        WINDOWS_SDK_VERSION: "v7.1"
-        PLAT_NAME: "win32"
-        PY_TAG: "cp36"
 
       - PYTHON: "C:\\Python36-x64"
         CONDA: "C:\\Miniconda36-x64"
@@ -87,8 +70,6 @@ install:
 
   # Now install numpy from pre-built wheel. This may be fragile.
   - "%WITH_COMPILER% pip install --use-wheel --no-index --find-links=c:\\Users\\appveyor\\Downloads numpy"
-  #- "%WITH_COMPILER% pip install --no-index --find-links=C:\\Users\\appveyor\\Downloads numpy"
-  #- "%WITH_COMPILER% pip install C:\\Users\\appveyor\\Downloads\\*.whl"
 
   # Download CSPICE so we can build outside of python
   - "%PYTHON%/python getspice.py"
@@ -104,6 +85,7 @@ install:
   - ECHO "Installed SpiceyPy!"
   # restore PATH
   - set PATH=%BK_PATH%
+  - "%PYTHON%/Scripts/py.test --version"
 
 test_script:
   - "%PYTHON%/Scripts/py.test spiceypy/tests"
@@ -156,7 +138,5 @@ deploy_script:
   - echo "Finished Artifact Deployment"
 notifications:
   - provider: Webhook
-    url: https://webhooks.gitter.im/e/a269901231ce14437a05
-    on_build_success: true
-    on_build_failure: true
-    on_build_status_changed: true
+    url: https://webhooks.gitter.im/e/3a0242522a806d39ba2b
+    method: POST

@@ -26,6 +26,7 @@ EXPORTS			appndc_c
 				card_c
 				ccifrm_c
 				cgv2el_c
+				chbder_c
 				chkin_c
 				chkout_c
 				cidfrm_c
@@ -77,14 +78,23 @@ EXPORTS			appndc_c
 				dafus_c
 				dasac_c
 				dascls_c
+				dasdc_c
 				dasec_c
+				dashfn_c
 				dasopr_c
+				dasopw_c
+				dasonw_
+				dasrfr_c
 				dcyldr_c
 				deltet_c
 				det_c
 				dgeodr_c
 				diags2_c
 				diff_c
+				dlabbs_c
+				dlabfs_c
+				dlafns_c
+				dlafps_c
 				dlatdr_c
 				dp2hx_c
 				dpgrdr_c
@@ -96,6 +106,26 @@ EXPORTS			appndc_c
 				drdlat_c
 				drdpgr_c
 				drdsph_c
+				dskb02_c
+				dskcls_c
+				dskd02_c
+				dskgd_c
+				dskgtl_c
+				dski02_c
+				dskmi2_c
+				dskn02_c
+				dskobj_c
+				dskopn_c
+				dskp02_c
+				dskrb2_c
+				dsksrf_c
+				dskstl_c
+				dskv02_c
+				dskw02_c
+				dskx02_c
+				dskxsi_c
+				dskxv_c
+				dskz02_c
 				dsphdr_c
 				dtpool_c
 				ducrss_c
@@ -209,9 +239,12 @@ EXPORTS			appndc_c
 				gipool_c
 				gnpool_c
 				halfpi_c
+				hrmint_c
 				hx2dp_c
 				ident_c
 				illum_c
+				illumf_c
+				illumg_c
 				ilumin_c
 				inedpl_c
 				inelpl_c
@@ -245,8 +278,11 @@ EXPORTS			appndc_c
 				latcyl_c
 				latrec_c
 				latsph_c
+				latsrf_c
 				lcase_c
 				ldpool_c
+				lgrind_c
+				limbpt_c
 				lmpool_c
 				lparse_c
 				lparsm_c
@@ -301,10 +337,14 @@ EXPORTS			appndc_c
 				orderi_c
 				ordi_c
 				oscelt_c
+				oscltx_c
+				pckcls_c
 				pckcov_c
 				pckfrm_c
 				pcklof_c
+				pckopn_c
 				pckuof_c
+				pckw02_c
 				pcpool_c
 				pdpool_c
 				pgrrec_c
@@ -315,6 +355,12 @@ EXPORTS			appndc_c
 				pl2nvc_c
 				pl2nvp_c
 				pl2psv_c
+				pltar_c
+				pltexp_c
+				pltnp_c
+				pltnrm_c
+				pltvol_c
+				polyds_c
 				pos_c
 				posr_c
 				prompt_c
@@ -427,8 +473,13 @@ EXPORTS			appndc_c
 				spkw17_c
 				spkw18_c
 				spkw20_c
+				srfc2s_c
+				srfcss_c
+				srfnrm_c
 				srfrec_c
 				srfxpt_c
+				srfs2c_c
+				srfscc_c
 				ssize_c
 				stelab_c
 				stpool_c
@@ -445,6 +496,7 @@ EXPORTS			appndc_c
 				swpool_c
 				sxform_c
 				szpool_c
+				termpt_c
 				timdef_c
 				timout_c
 				tipbod_c

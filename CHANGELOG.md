@@ -4,7 +4,22 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## [unreleased]
+## [2.0.0]
+### Added
+- Implemented most of the new functions from N66 SPICE
+- IntMatrixType support type
+- SpiceDLADescr struct
+
+### Changed
+- now backing N66 CSPICE
+- now builds 2.7, 3.4, 3.5, 3.6
+
+### Deprecated
+- 32 bit builds
+
+### Fixed
+- toPythonString now strips whitespace
+
 
 ## [1.1.1] - 2017-04-23
 ### Added
@@ -60,17 +75,17 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 Got to a semi complete api here, lots of commits
 before things so this version can be considered a bit of a baseline
 
-### Added  
+### Added
 - many things
 
-### Changed  
+### Changed
 - the game
 
-### Deprecated  
+### Deprecated
 - nothing important
 
-### Removed  
+### Removed
 - what had to go
 
-### Fixed  
+### Fixed
 - it

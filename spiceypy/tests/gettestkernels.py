@@ -113,11 +113,15 @@ class ExtraKernels(object):
     earthStnSpk_url     = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/stations/earthstns_itrf93_050714.bsp"
     earthGenPck_url     = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/earth_720101_070426.bpc"
     earthHighPerPck_url = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/earth_latest_high_prec.bpc"
+    phobosDsk_url       = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/dsk/phobos/phobos_3_3.bds"
+    marsSpk_url         = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/a_old_versions/mar022-1.bsp"
     voyagerSclk         = getPathFromUrl(voyagerSclk_url)
     earthTopoTf         = getPathFromUrl(earthTopoTf_url)
     earthStnSpk         = getPathFromUrl(earthStnSpk_url)
     earthGenPck         = getPathFromUrl(earthGenPck_url)
     earthHighPerPck     = getPathFromUrl(earthHighPerPck_url)
+    phobosDsk           = getPathFromUrl(phobosDsk_url)
+    marsSpk             = getPathFromUrl(marsSpk_url)
 
 def cleanup_Extra_Kernels():
     cleanupFile(ExtraKernels.voyagerSclk)
@@ -125,6 +129,8 @@ def cleanup_Extra_Kernels():
     cleanupFile(ExtraKernels.earthStnSpk)
     cleanupFile(ExtraKernels.earthGenPck)
     cleanupFile(ExtraKernels.earthHighPerPck)
+    cleanupFile(ExtraKernels.phobosDsk)
+    cleanupFile(ExtraKernels.marsSpk)
 
 
 class CoreKernels(object):
@@ -147,8 +153,6 @@ def cleanup_Core_Kernels():
     cleanupFile(CoreKernels.spk)
     cleanupFile(CoreKernels.gm_pck)
     cleanupFile(CoreKernels.lsk)
-
-
 
 def getKernel(url):
     kernelName = getKernelNameFromURL(url)
@@ -179,7 +183,6 @@ def attemptDownload(url, kernelName, targetFileName, num_attempts):
         raise BaseException("Error Downloading kernel: {}, check if kernel exists at url: {}".format(kernelName, url))
 
 
-
 def getStandardKernels():
     six_print("\tChecking for kernels...\n", flush=True)
     getKernel(CoreKernels.pck_url)
@@ -195,6 +198,8 @@ def getExtraTestKernels():
     getKernel(ExtraKernels.earthStnSpk_url)
     getKernel(ExtraKernels.earthGenPck_url)
     getKernel(ExtraKernels.earthHighPerPck_url)
+    getKernel(ExtraKernels.phobosDsk_url)
+    getKernel(ExtraKernels.marsSpk_url)
 
 def getExtraMarsTestKernels():
     getKernel(MarsKernels.merExt10_url)
