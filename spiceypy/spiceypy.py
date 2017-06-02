@@ -1178,7 +1178,8 @@ def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
                      sclkdp, quats, avvs, nints, starts)
 
 
-# ckw05, skipping, ck05subtype?
+def ckw05():
+    raise NotImplementedError
 
 
 def cleard():
@@ -5036,10 +5037,12 @@ def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls,
                       step, nintvls, ctypes.byref(cnfine), ctypes.byref(result))
 
 
-# gdevnt  callbacks? cells
+def gfevnt():
+    raise NotImplementedError
 
 
-# gffove  callbacks? cells
+def gffove():
+    raise NotImplementedError
 
 
 @spiceErrorCheck
@@ -5120,7 +5123,8 @@ def gfinth(sigcode):
     libspice.gfinth_c(sigcode)
 
 
-# gfocce  callbacks? cells
+def gfocce():
+    raise NotImplementedError
 
 
 @spiceErrorCheck
@@ -5735,10 +5739,12 @@ def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
     return result
 
 
-# gfudb has call backs
+def gfudb():
+    raise NotImplementedError
 
 
-# gfuds has call backs
+def gfuds():
+    raise NotImplementedError
 
 
 @spiceErrorCheck
@@ -11132,7 +11138,6 @@ def spkobj(spk, outCell=None):
 
 @spiceErrorCheck
 def spkopa(filename):
-    # Todo: test spkopa
     """
     Open an existing SPK file for subsequent write.
 
@@ -11175,7 +11180,6 @@ def spkopn(filename, ifname, ncomch):
 
 @spiceErrorCheck
 def spkpds(body, center, framestr, typenum, first, last):
-    # Todo: test spkpds
     """
     Perform routine error checks and if all check pass, pack the
     descriptor for an SPK segment
@@ -11320,7 +11324,6 @@ def spksfs(body, et, idlen):
 
 @spiceErrorCheck
 def spkssb(targ, et, ref):
-    # Todo: test spkssb
     """
     Return the state (position and velocity) of a target body
     relative to the solar system barycenter.
@@ -11346,7 +11349,6 @@ def spkssb(targ, et, ref):
 
 @spiceErrorCheck
 def spksub(handle, descr, identin, begin, end, newh):
-    # Todo: test spksub
     """
     Extract a subset of the data in an SPK segment into a
     separate segment.
@@ -11378,7 +11380,6 @@ def spksub(handle, descr, identin, begin, end, newh):
 
 @spiceErrorCheck
 def spkuds(descr):
-    # Todo: test spkuds
     """
     Unpack the contents of an SPK segment descriptor.
 
@@ -11417,7 +11418,6 @@ def spkuds(descr):
 
 @spiceErrorCheck
 def spkuef(handle):
-    # Todo: test spkuef
     """
     Unload an ephemeris file so that it will no longer be searched by
     the readers.
@@ -11928,10 +11928,12 @@ def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel,
                       eqel, rapol, decpol)
 
 
-# spkw18
+def spkw18():
+    raise NotImplementedError
 
 
-# spkw20
+def spkw20():
+    raise NotImplementedError
 
 
 @spiceErrorCheck

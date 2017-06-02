@@ -603,7 +603,8 @@ def test_ckw03():
 
 
 def test_ckw05():
-    assert 1
+    with pytest.raises(NotImplementedError):
+        spice.ckw05()
 
 
 def test_cleard():
@@ -2469,11 +2470,13 @@ def test_gfdist():
 
 
 def test_gfevnt():
-    assert 1
+    with pytest.raises(NotImplementedError):
+        spice.gfevnt()
 
 
 def test_gffove():
-    assert 1
+    with pytest.raises(NotImplementedError):
+        spice.gffove()
 
 
 def test_gfilum():
@@ -2512,7 +2515,8 @@ def test_gfinth():
 
 
 def test_gfocce():
-    assert 1
+    with pytest.raises(NotImplementedError):
+        spice.gfocce()
 
 
 def test_gfoclt():
@@ -2835,11 +2839,13 @@ def test_gftfov():
 
 
 def test_gfudb():
-    assert 1
+    with pytest.raises(NotImplementedError):
+        spice.gfudb()
 
 
 def test_gfuds():
-    assert 1
+    with pytest.raises(NotImplementedError):
+        spice.gfuds()
 
 
 def test_gipool():
@@ -5559,11 +5565,14 @@ def test_spkw17():
 
 
 def test_spkw18():
-    assert 1
+    with pytest.raises(NotImplementedError):
+        spice.spkw18()
 
 
 def test_spkw20():
-    assert 1
+    with pytest.raises(NotImplementedError):
+        spice.spkw20()
+
 
 def test_srfc2s():
     spice.kclear()
