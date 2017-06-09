@@ -29,7 +29,7 @@ import numpy.testing as npt
 import os
 
 import spiceypy.utils.callbacks
-from .gettestkernels import downloadKernels,\
+from spiceypy.tests.gettestkernels import downloadKernels,\
     CoreKernels,\
     MarsKernels, \
     CassiniKernels,\
@@ -43,10 +43,7 @@ cwd = os.path.realpath(os.path.dirname(__file__))
 
 
 def setup_module(module):
-    if not os.path.exists(CoreKernels.testMetaKernel) \
-            or not os.path.exists(ExtraKernels.voyagerSclk) \
-            or not os.path.exists(MarsKernels.mroPspOne):
-        downloadKernels()
+    downloadKernels()
 
 
 def test_appndc():
@@ -131,23 +128,23 @@ def test_bltfrm():
 def test_bodc2n():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
-    assert spice.bodc2n(399, 10) == "EARTH"
-    assert spice.bodc2n(0, 40) == "SOLAR SYSTEM BARYCENTER"
+    assert spice.bodc2n(399) == "EARTH"
+    assert spice.bodc2n(0) == "SOLAR SYSTEM BARYCENTER"
     spice.kclear()
 
 
 def test_bodc2s():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
-    assert spice.bodc2s(399, 10) == "EARTH"
-    assert spice.bodc2s(0, 40) == "SOLAR SYSTEM BARYCENTER"
+    assert spice.bodc2s(399) == "EARTH"
+    assert spice.bodc2s(0) == "SOLAR SYSTEM BARYCENTER"
     spice.kclear()
 
 
 def test_boddef():
     spice.kclear()
     spice.boddef("Jebediah", 117)
-    assert spice.bodc2n(117, 10) == "Jebediah"
+    assert spice.bodc2n(117) == "Jebediah"
     spice.kclear()
 
 
@@ -276,7 +273,7 @@ def test_card():
 
 
 def test_ccifrm():
-    frcode, frname, center = spice.ccifrm(2, 3000, 33)
+    frcode, frname, center = spice.ccifrm(2, 3000)
     assert frname == "ITRF93"
     assert frcode == 13000
     assert center == 399
@@ -293,6 +290,13 @@ def test_cgv2el():
     npt.assert_array_almost_equal(expectedCenter, ellipse.center)
     npt.assert_array_almost_equal(expectedSmajor, ellipse.semi_major)
     npt.assert_array_almost_equal(expectedSminor, ellipse.semi_minor)
+
+
+def test_chbder():
+    cp = [ 1., 3., 0.5, 1., 0.5, -1., 1.]
+    x2s = [0.5, 3.0]
+    dpdxs = spice.chbder(cp, 6, x2s, 1.0, 3)
+    npt.assert_array_almost_equal([-0.340878, 0.382716, 4.288066, -1.514403], dpdxs)
 
 
 def test_chkin():
@@ -324,13 +328,13 @@ def test_chkout():
 
 
 def test_cidfrm():
-    frcode, frname = spice.cidfrm(501, 10)
+    frcode, frname = spice.cidfrm(501)
     assert frcode == 10023
     assert frname == 'IAU_IO'
-    frcode, frname = spice.cidfrm(399, 10)
+    frcode, frname = spice.cidfrm(399)
     assert frcode == 10013
     assert frname == 'IAU_EARTH'
-    frcode, frname = spice.cidfrm(301, 10)
+    frcode, frname = spice.cidfrm(301)
     assert frcode == 10020
     assert frname == 'IAU_MOON'
 
@@ -599,7 +603,13 @@ def test_ckw03():
 
 
 def test_ckw05():
-    assert 1
+    with pytest.raises(NotImplementedError):
+        spice.ckw05()
+
+
+def test_cleard():
+    with pytest.raises(NotImplementedError):
+        spice.cleard()
 
 
 def test_clight():
@@ -620,16 +630,16 @@ def test_clpool():
 
 def test_cmprss():
     strings = ['ABC...DE.F...', '...........', '.. ..AB....CD']
-    assert spice.cmprss('.', 2, strings[0], 15) == 'ABC..DE.F..'
-    assert spice.cmprss('.', 3, strings[1], 15) == '...'
-    assert spice.cmprss('.', 1, strings[2], 15) == '. .AB.CD'
+    assert spice.cmprss('.', 2, strings[0]) == 'ABC..DE.F..'
     assert spice.cmprss('.', 3, strings[1]) == '...'
     assert spice.cmprss('.', 1, strings[2]) == '. .AB.CD'
-    assert spice.cmprss(' ', 0, ' Embe dde d -sp   a c  es   ', 20) == 'Embedded-spaces'
+    assert spice.cmprss('.', 3, strings[1]) == '...'
+    assert spice.cmprss('.', 1, strings[2]) == '. .AB.CD'
+    assert spice.cmprss(' ', 0, ' Embe dde d -sp   a c  es   ') == 'Embedded-spaces'
 
 
 def test_cnmfrm():
-    ioFrcode, ioFrname = spice.cnmfrm('IO', 10)
+    ioFrcode, ioFrname = spice.cnmfrm('IO')
     assert ioFrcode == 10023
     assert ioFrname == 'IAU_IO'
 
@@ -779,7 +789,7 @@ def test_dafdc():
 def test_dafec():
     spice.kclear()
     handle = spice.dafopr(os.path.join(cwd, "de421.bsp"))
-    n, buffer, done = spice.dafec(handle, 15, 80)
+    n, buffer, done = spice.dafec(handle, 15)
     assert n == 15
     assert buffer == ['; de421.bsp LOG FILE', ';', '; Created 2008-02-12/11:33:34.00.', ';', '; BEGIN NIOSPK COMMANDS',
                       '', 'LEAPSECONDS_FILE    = naif0007.tls', 'SPK_FILE            = de421.bsp',
@@ -899,7 +909,7 @@ def test_dafrda():
 def test_dafrfr():
     spice.kclear()
     handle = spice.dafopr(os.path.join(cwd, "de421.bsp"))
-    nd, ni, ifname, fward, bward, free = spice.dafrfr(handle, 61)
+    nd, ni, ifname, fward, bward, free = spice.dafrfr(handle)
     spice.dafcls(handle)
     assert nd == 2
     assert ni == 6
@@ -927,20 +937,82 @@ def test_dafus():
     spice.kclear()
 
 
-def test_dasac():
-    assert 1
+def test_dasac_dasopr_dasec_dasdc():
+    spice.kclear()
+    daspath = os.path.join(cwd, "ex_dasac.das")
+    if spice.exists(daspath):
+        os.remove(daspath) # pragma: no cover
+    handle = spice.dasonw(daspath, "TEST", "ex_dasac", 140)
+    assert handle is not None
+    # write some comments
+    spice.dasac(handle, ["spice", "naif", "python"])
+    spice.dascls(handle)
+    spice.kclear()
+    spice.reset()
+    # we wrote to the test kernel, now load it in read mode
+    handle = spice.dasopr(daspath)
+    assert handle is not None
+    # check that dashfn points to the correct path
+    assert spice.dashfn(handle) == daspath
+    # extract out the comment, say we only want 3 things out
+    n, comments, done = spice.dasec(handle, bufsiz=3)
+    assert n == 3
+    assert set(comments) == {"spice", "naif", "python"} & set(comments)
+    # close the das file
+    spice.dascls(handle)
+    ###############################################
+    # now test dasrfr
+    handle = spice.dasopr(daspath)
+    assert handle is not None
+    idword, ifname, nresvr, nresvc, ncomr, ncomc = spice.dasrfr(handle)
+    assert idword is not None
+    assert idword == 'DAS/TEST'
+    assert ifname == 'ex_dasac'
+    assert nresvr == 0
+    assert nresvc == 0
+    assert ncomr  == 140
+    assert ncomc  == 18
+    # close the das file
+    spice.dascls(handle)
+    ###############################################
+    # now reload the kernel and delete the commnets
+    handle = spice.dasopw(daspath)
+    assert handle is not None
+    # delete the comments
+    spice.dasdc(handle)
+    # close the das file
+    spice.dascls(handle)
+    # open again for reading
+    handle = spice.dasopr(daspath)
+    assert handle is not None
+    # extract out the comments, hopefully nothing
+    n, comments, done = spice.dasec(handle)
+    assert n == 0
+    # close it again
+    spice.dascls(handle)
+    # done, so clean up
+    if spice.exists(daspath):
+        os.remove(daspath) # pragma: no cover
+    spice.kclear()
 
 
-def test_dascls():
-    assert 1
-
-
-def test_dasec():
-    assert 1
-
-
-def test_dasopr():
-    assert 1
+def test_dasopw_dascls_dasopr():
+    spice.kclear()
+    daspath = os.path.join(cwd, "ex_das.das")
+    if spice.exists(daspath):
+        os.remove(daspath) # pragma: no cover
+    handle = spice.dasonw(daspath, "TEST", daspath, 0)
+    assert handle is not None
+    spice.dascls(handle)
+    handle = spice.dasopw(daspath)
+    assert handle is not None
+    spice.dascls(handle)
+    handle = spice.dasopr(daspath)
+    spice.dascls(handle)
+    assert handle is not None
+    if spice.exists(daspath):
+        os.remove(daspath) # pragma: no cover
+    spice.kclear()
 
 
 def test_dcyldr():
@@ -1008,6 +1080,30 @@ def test_diff():
     spice.insrti(4, testCellTwo)
     outCell = spice.diff(testCellOne, testCellTwo)
     assert [x for x in outCell] == [1]
+
+
+def test_dlabfs():
+    spice.kclear()
+    handle = spice.dasopr(ExtraKernels.phobosDsk)
+    current = spice.dlabfs(handle)
+    assert current is not None
+    assert current.dsize == 494554
+    with pytest.raises(spice.stypes.SpiceyError):
+        next = spice.dlafns(handle, current)
+    spice.dascls(handle)
+    spice.kclear()
+
+
+def test_dlabbs():
+    spice.kclear()
+    handle = spice.dasopr(ExtraKernels.phobosDsk)
+    current = spice.dlabbs(handle)
+    assert current is not None
+    assert current.dsize == 494554
+    with pytest.raises(spice.stypes.SpiceyError):
+        prev = spice.dlafps(handle, current)
+    spice.dascls(handle)
+    spice.kclear()
 
 
 def test_dlatdr():
@@ -1110,6 +1206,95 @@ def test_drdsph():
                 [0.0, -1.0, 0.0]]
     npt.assert_array_almost_equal(output, expected)
 
+
+def test_dskgtl_dskstl():
+    SPICE_DSK_KEYXFR = 1
+    assert spice.dskgtl(SPICE_DSK_KEYXFR) == pytest.approx(1.0e-10)
+    spice.dskstl(SPICE_DSK_KEYXFR, 1.0e-8)
+    assert spice.dskgtl(SPICE_DSK_KEYXFR) == pytest.approx(1.0e-8)
+    spice.dskstl(SPICE_DSK_KEYXFR, 1.0e-10)
+    assert spice.dskgtl(SPICE_DSK_KEYXFR) == pytest.approx(1.0e-10)
+
+
+def test_dskobj_dsksrf():
+    spice.reset()
+    spice.kclear()
+    bodyids = spice.dskobj(ExtraKernels.phobosDsk)
+    assert 401 in bodyids
+    srfids = spice.dsksrf(ExtraKernels.phobosDsk, 401)
+    assert 401 in srfids
+    spice.kclear()
+    spice.reset()
+
+
+def test_dskopn_dskcls():
+    spice.kclear()
+    dskpath = os.path.join(cwd, "TEST.dsk")
+    if spice.exists(dskpath):
+        os.remove(dskpath) # pragma: no cover
+    handle = spice.dskopn('TEST.dsk', 'TEST.DSK/NAIF/NJB/20-OCT-2006/14:37:00', 0)
+    assert handle is not None
+    spice.dskcls(handle)
+    if spice.exists(dskpath):
+        os.remove(dskpath) # pragma: no cover
+    spice.kclear()
+
+
+def test_dskb02():
+    with pytest.raises(NotImplementedError):
+        spice.dskb02()
+
+def test_dskd02():
+    with pytest.raises(NotImplementedError):
+        spice.dskd02()
+
+def test_dskgd():
+    with pytest.raises(NotImplementedError):
+        spice.dskgd()
+
+def test_dski02():
+    with pytest.raises(NotImplementedError):
+        spice.dski02()
+
+def test_dskmi2():
+    with pytest.raises(NotImplementedError):
+        spice.dskmi2()
+
+def test_dskn02():
+    with pytest.raises(NotImplementedError):
+        spice.dskn02()
+
+def test_dskp02():
+    with pytest.raises(NotImplementedError):
+        spice.dskp02()
+
+def test_dskrb2():
+    with pytest.raises(NotImplementedError):
+        spice.dskrb2()
+
+def test_dskv02():
+    with pytest.raises(NotImplementedError):
+        spice.dskv02()
+
+def test_dskw02():
+    with pytest.raises(NotImplementedError):
+        spice.dskw02()
+
+def test_dskx02():
+    with pytest.raises(NotImplementedError):
+        spice.dskx02()
+
+def test_dskxsi():
+    with pytest.raises(NotImplementedError):
+        spice.dskxsi()
+
+def test_dskxv():
+    with pytest.raises(NotImplementedError):
+        spice.dskxv()
+
+def test_dskz02():
+    with pytest.raises(NotImplementedError):
+        spice.dskz02()
 
 def test_dsphdr():
     output = spice.dsphdr(-1.0, 0.0, 0.0)
@@ -2033,14 +2218,14 @@ def test_et2utc():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = -527644192.5403653
-    output = spice.et2utc(et, "J", 6, 35)
+    output = spice.et2utc(et, "J", 6)
     assert output == "JD 2445438.006415"
     spice.kclear()
 
 
 def test_etcal():
     et = np.arange(0, 20)
-    cal = spice.etcal(et[0], 51)
+    cal = spice.etcal(et[0])
     assert cal == '2000 JAN 01 12:00:00.000'
 
 
@@ -2134,7 +2319,7 @@ def test_frinfo():
 
 
 def test_frmnam():
-    assert spice.frmnam(13000, 30) == "ITRF93"
+    assert spice.frmnam(13000) == "ITRF93"
     assert spice.frmnam(13000) == "ITRF93"
 
 
@@ -2164,7 +2349,7 @@ def test_gcpool():
     spice.kclear()
     data = [j + str(i) for i, j in enumerate(list(string.ascii_lowercase))]
     spice.pcpool('pcpool_test', data)
-    cvals = spice.gcpool('pcpool_test', 0, 30, 4)
+    cvals = spice.gcpool('pcpool_test', 0, 30)
     assert data == cvals
     spice.kclear()
 
@@ -2285,11 +2470,13 @@ def test_gfdist():
 
 
 def test_gfevnt():
-    assert 1
+    with pytest.raises(NotImplementedError):
+        spice.gfevnt()
 
 
 def test_gffove():
-    assert 1
+    with pytest.raises(NotImplementedError):
+        spice.gffove()
 
 
 def test_gfilum():
@@ -2328,7 +2515,8 @@ def test_gfinth():
 
 
 def test_gfocce():
-    assert 1
+    with pytest.raises(NotImplementedError):
+        spice.gfocce()
 
 
 def test_gfoclt():
@@ -2651,11 +2839,13 @@ def test_gftfov():
 
 
 def test_gfudb():
-    assert 1
+    with pytest.raises(NotImplementedError):
+        spice.gfudb()
 
 
 def test_gfuds():
-    assert 1
+    with pytest.raises(NotImplementedError):
+        spice.gfuds()
 
 
 def test_gipool():
@@ -2674,17 +2864,24 @@ def test_gnpool():
     var = "BODY599*"
     index = 0
     room = 10
-    strlen = 81
     expected = ["BODY599_POLE_DEC", "BODY599_LONG_AXIS", "BODY599_PM", "BODY599_RADII",
                 "BODY599_POLE_RA", "BODY599_GM", "BODY599_NUT_PREC_PM", "BODY599_NUT_PREC_DEC",
                 "BODY599_NUT_PREC_RA"]
-    kervar = spice.gnpool(var, index, room, strlen)
+    kervar = spice.gnpool(var, index, room)
     spice.kclear()
     assert set(expected) == set(kervar)
 
 
 def test_halfpi():
     assert spice.halfpi() == np.pi / 2
+
+
+def test_hrmint():
+    xvals = [-1.0, 0.0, 3.0, 5.0]
+    yvals = [6.0, 3.0, 5.0, 0.0, 2210.0, 5115.0, 78180.0, 109395.0]
+    answer, deriv = spice.hrmint(xvals, yvals, 2)
+    assert answer == pytest.approx(141.0)
+    assert deriv  == pytest.approx(456.0)
 
 
 def test_hx2dp():
@@ -2740,6 +2937,52 @@ def test_ilumin():
     iluet2, srfvec2, phase2, solar2, emissn2 = spice.ilumin("Ellipsoid", "MOON", et, "IAU_MOON",
                                                             "LT+S", "EARTH", trmpts[2])
     npt.assert_almost_equal(spice.dpr() * solar2, 90.269765730)
+    spice.kclear()
+
+
+def test_illumf():
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(MarsKernels.mgsSclk)
+    spice.furnsh(MarsKernels.mgsPck)
+    spice.furnsh(MarsKernels.mgsIk)
+    spice.furnsh(MarsKernels.mgsSpk)
+    spice.furnsh(MarsKernels.mgsCk)
+    et = spice.str2et('2006 OCT 15 06:00:00 UTC')
+    # start of test
+    camid = spice.bodn2c("MGS_MOC_NA")
+    shape, obsref, bsight, n, bounds = spice.getfov(camid, 4)
+    # run sincpt on bore sight vector
+    spoint, etemit, srfvec = spice.sincpt("Ellipsoid", 'Mars', et, "IAU_MARS", "CN+S", "MGS", obsref, bsight)
+    trgepc2, srfvec2, phase, incid, emissn, visibl, lit = spice.illumf("Ellipsoid", 'Mars', 'Sun', et, 'IAU_MARS', 'CN+S', 'MGS', spoint)
+    phase = phase * spice.dpr()
+    incid = incid * spice.dpr()
+    emissn = emissn * spice.dpr()
+    assert phase == pytest.approx(71.01925681623278)
+    assert incid == pytest.approx(85.60229545269)
+    assert emissn == pytest.approx(17.7918047758293)
+    assert lit
+    assert visibl
+    spice.kclear()
+
+
+def test_illumg():
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(MarsKernels.mgsSclk)
+    spice.furnsh(MarsKernels.mgsPck)
+    spice.furnsh(MarsKernels.mgsIk)
+    spice.furnsh(MarsKernels.mgsSpk)
+    spice.furnsh(MarsKernels.mgsCk)
+    et = spice.str2et('2006 OCT 15 06:00:00 UTC')
+    spoint, trgepc, srfvec = spice.subpnt("Near Point/Ellipsoid", 'Mars', et, 'IAU_MARS', 'CN+S', 'Earth')
+    trgepc2, srfvec2, phase, incid, emissn = spice.illumg("Ellipsoid", 'Mars', 'Sun', et, 'IAU_MARS', 'CN+S', 'MGS', spoint)
+    phase = phase * spice.dpr()
+    incid = incid * spice.dpr()
+    emissn = emissn * spice.dpr()
+    assert phase == pytest.approx(129.04940569)
+    assert incid == pytest.approx(3.47985701011)
+    assert emissn == pytest.approx(128.4514654058)
     spice.kclear()
 
 
@@ -3027,9 +3270,19 @@ def test_latsph():
     npt.assert_array_almost_equal(expected3, spice.latsph(1.0, 180.0 * spice.rpd(), 0.0), decimal=7)
 
 
+def test_latsrf():
+    spice.kclear()
+    spice.furnsh(ExtraKernels.phobosDsk)
+    srfpts = spice.latsrf("DSK/UNPRIORITIZED", "phobos", 0.0, "iau_phobos", [[0.0, 45.0], [60.0, 45.0]])
+    radii = [spice.recrad(x)[0] for x in srfpts]
+    assert radii[0] > 9.5
+    assert radii[1] > 10.3
+    spice.kclear()
+
+
 def test_lcase():
-    assert spice.lcase("THIS IS AN EXAMPLE", 20) == "THIS IS AN EXAMPLE".lower()
-    assert spice.lcase("1234", 5) == "1234"
+    assert spice.lcase("THIS IS AN EXAMPLE") == "THIS IS AN EXAMPLE".lower()
+    assert spice.lcase("1234") == "1234"
 
 
 def test_ldpool():
@@ -3077,6 +3330,30 @@ def test_ldpool():
     spice.kclear()
     if spice.exists(kernel):
         os.remove(kernel) # pragma: no cover
+
+
+def test_lgrind():
+    p, dp = spice.lgrind([-1.0, 0.0, 1.0, 3.0], [-2.0, -7.0, -8.0, 26.0], 2.0)
+    assert p == pytest.approx(1.0)
+    assert dp == pytest.approx(16.0)
+
+
+def test_limbpt():
+    spice.kclear()
+    spice.furnsh(CoreKernels.spk)
+    spice.furnsh(ExtraKernels.marsSpk)
+    spice.furnsh(CoreKernels.pck)
+    spice.furnsh(CoreKernels.lsk)
+    spice.furnsh(ExtraKernels.phobosDsk)
+    # set the time
+    et = spice.str2et("1972 AUG 11 00:00:00")
+    # call limpt
+    npts, points, epochs, tangts = spice.limbpt("TANGENT/DSK/UNPRIORITIZED", "Phobos", et, "IAU_PHOBOS",
+                       "CN+S", "CENTER", "MARS", [0.0, 0.0, 1.0],
+                       spice.twopi()/3.0, 3, 1.0e-4, 1.0e-7, 10000)
+    assert points is not None
+    assert len(points) == 3
+    spice.kclear()
 
 
 def test_lmpool():
@@ -3608,6 +3885,37 @@ def test_oscelt():
     spice.kclear()
 
 
+def test_oscltx_stress():
+    for i in range(0, 30):
+        test_oscltx()
+
+
+def test_oscltx():
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = spice.str2et('Dec 25, 2007')
+    state, ltime = spice.spkezr('Moon', et, 'J2000', 'LT+S', 'EARTH')
+    mass_earth = spice.bodvrd('EARTH', 'GM', 1)
+    elts = spice.oscltx(state, et, mass_earth[0])
+    expected = [365914.1064478308, 423931.14818353514, 0.4871779356168817, 6.185842076488205,
+                1.8854463601391007, 18676.97965206709, 251812865.1837092, 1.0, 0.0440283707189, -0.863147167088, 0.0]
+    npt.assert_array_almost_equal(elts, expected, decimal=4)
+    spice.kclear()
+
+
+def test_pckopn_pckw02_pckcls():
+    pck = os.path.join(cwd, "test_pck.pck")
+    if spice.exists(pck):
+        os.remove(pck) # pragma: no cover
+    spice.kclear()
+    handle = spice.pckopn("test_pck.pck", "Test PCK file", 5000)
+    spice.pckw02(handle, 301, "j2000", 0.0, 3.0, "segid", 1.0, 3, 1, [1.0, 2.0, 3.0], 0.0)
+    spice.pckcls(handle)
+    spice.kclear()
+    if spice.exists(pck):
+        os.remove(pck) # pragma: no cover
+
+
 def test_pckcov():
     spice.kclear()
     ids = spice.stypes.SPICEINT_CELL(1000)
@@ -3767,6 +4075,47 @@ def test_pl2psv():
     npt.assert_almost_equal(spice.vdot(point, span1), 0)
     npt.assert_almost_equal(spice.vdot(point, span2), 0)
     npt.assert_almost_equal(spice.vdot(span1, span2), 0)
+
+
+def test_pltar():
+    vrtces = [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+    plates = [[1, 4, 3], [1, 2, 4], [1, 3, 2], [2, 3, 4]]
+    assert spice.pltar(vrtces, plates) == pytest.approx(2.3660254037844)
+
+
+def test_pltexp():
+    iverts = [[np.sqrt(3.0) / 2.0, -0.5, 7.0], [0.0, 1.0, 7.0], [-np.sqrt(3.0) / 2.0, -0.5, 7.0]]
+    overts = spice.pltexp(iverts, 1.0)
+    expected = [[1.732050807569, -1.0, 7.0], [0.0, 2.0, 7.0], [-1.732050807569, -1.0, 7.0]]
+    npt.assert_array_almost_equal(expected, overts)
+
+
+def test_pltnp():
+    point = [2.0, 2.0, 2.0]
+    v1 = [1.0, 0.0, 0.0]
+    v2 = [0.0, 1.0, 0.0]
+    v3 = [0.0, 0.0, 1.0]
+    near, distance = spice.pltnp(point, v1, v2, v3)
+    npt.assert_array_almost_equal([1.0/3.0, 1.0/3.0, 1.0/3.0], near)
+    assert distance == pytest.approx(2.8867513)
+
+
+def test_pltnrm():
+    v1 = [np.sqrt(3.0)/2.0, -0.5, 0.0]
+    v2 = [0.0, 1.0, 0.0]
+    v3 = [-np.sqrt(3.0)/2.0, -0.5, 0.0]
+    npt.assert_array_almost_equal([0.0, 0.0, 2.59807621135], spice.pltnrm(v1, v2, v3))
+
+
+def test_pltvol():
+    vrtces = [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+    plates = [[1, 4, 3], [1, 2, 4], [1, 3, 2], [2, 3, 4]]
+    assert spice.pltvol(vrtces, plates) == pytest.approx(1.0/6.0)
+
+
+def test_polyds():
+    result = spice.polyds([1., 3., 0.5, 1., 0.5, -1., 1.], 6, 3, 1)
+    npt.assert_array_almost_equal([6.0, 10.0, 23.0, 78.0], result)
 
 
 def test_pos():
@@ -4216,7 +4565,7 @@ def test_scdecd():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     timein = spice.scencd(-32, '2/20538:39:768')
-    sclkch = spice.scdecd(-32, timein, 50)
+    sclkch = spice.scdecd(-32, timein)
     assert sclkch == '2/20538:39:768'
     spice.kclear()
 
@@ -4236,7 +4585,7 @@ def test_sce2s():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     et = spice.str2et('1979 JUL 05 21:50:21.23379')
-    sclkch = spice.sce2s(-32, et, 50)
+    sclkch = spice.sce2s(-32, et)
     assert sclkch == "2/20538:39:768"
     spice.kclear()
 
@@ -4267,8 +4616,8 @@ def test_scfmt():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     pstart, pstop = spice.scpart(-32)
-    start = spice.scfmt(-32, pstart[0], 50)
-    stop = spice.scfmt(-32, pstop[0], 50)
+    start = spice.scfmt(-32, pstart[0])
+    stop = spice.scfmt(-32, pstop[0])
     assert start == "00011:00:001"
     assert stop == "04011:21:784"
     spice.kclear()
@@ -5216,11 +5565,79 @@ def test_spkw17():
 
 
 def test_spkw18():
-    assert 1
+    with pytest.raises(NotImplementedError):
+        spice.spkw18()
 
 
 def test_spkw20():
-    assert 1
+    with pytest.raises(NotImplementedError):
+        spice.spkw20()
+
+
+def test_srfc2s():
+    spice.kclear()
+    kernel = os.path.join(cwd, 'srfc2s_ex1.tm')
+    if spice.exists(kernel):
+        os.remove(kernel) # pragma: no cover
+    with open(kernel, 'w') as kernelFile:
+        kernelFile.write('\\begindata\n')
+        kernelFile.write("NAIF_SURFACE_NAME += ( 'MGS MOLA  64 pixel/deg',\n")
+        kernelFile.write("                       'MGS MOLA 128 pixel/deg',\n")
+        kernelFile.write("                       'PHOBOS GASKELL Q512'     )\n")
+        kernelFile.write("NAIF_SURFACE_CODE += (   1,   2,    1 )\n")
+        kernelFile.write("NAIF_SURFACE_BODY += ( 499, 499,  401 )\n")
+        kernelFile.write("\\begintext\n")
+        kernelFile.close()
+    spice.furnsh(kernel)
+    assert spice.srfc2s(1, 499)   == "MGS MOLA  64 pixel/deg"
+    assert spice.srfc2s(1, 401) == "PHOBOS GASKELL Q512"
+    assert spice.srfc2s(2, 499)    == "MGS MOLA 128 pixel/deg"
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.srfc2s(1, -1)
+    spice.reset()
+    spice.kclear()
+    if spice.exists(kernel):
+        os.remove(kernel)  # pragma: no cover
+
+
+def test_srfcss():
+    spice.kclear()
+    kernel = os.path.join(cwd, 'srfcss_ex1.tm')
+    if spice.exists(kernel):
+        os.remove(kernel) # pragma: no cover
+    with open(kernel, 'w') as kernelFile:
+        kernelFile.write('\\begindata\n')
+        kernelFile.write("NAIF_SURFACE_NAME += ( 'MGS MOLA  64 pixel/deg',\n")
+        kernelFile.write("                       'MGS MOLA 128 pixel/deg',\n")
+        kernelFile.write("                       'PHOBOS GASKELL Q512'     )\n")
+        kernelFile.write("NAIF_SURFACE_CODE += (   1,   2,    1 )\n")
+        kernelFile.write("NAIF_SURFACE_BODY += ( 499, 499,  401 )\n")
+        kernelFile.write("\\begintext\n")
+        kernelFile.close()
+    spice.furnsh(kernel)
+    assert spice.srfcss(1, "MARS")   == "MGS MOLA  64 pixel/deg"
+    assert spice.srfcss(1, "PHOBOS") == "PHOBOS GASKELL Q512"
+    assert spice.srfcss(2, "499")    == "MGS MOLA 128 pixel/deg"
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.srfcss(1, "ZZZ")
+    spice.reset()
+    spice.kclear()
+    if spice.exists(kernel):
+        os.remove(kernel)  # pragma: no cover
+
+
+def test_srfnrm():
+    spice.kclear()
+    spice.furnsh(CoreKernels.pck)
+    spice.furnsh(ExtraKernels.phobosDsk)
+    srfpts = spice.latsrf("DSK/UNPRIORITIZED", "phobos", 0.0, "iau_phobos",
+                          [[0.0, 45.0], [60.0, 45.0]])
+    normals = spice.srfnrm("DSK/UNPRIORITIZED", "phobos", 0.0, "iau_phobos",
+                           srfpts)
+    srf_rad = np.array([spice.recrad(x) for x in srfpts])
+    nrm_rad = np.array([spice.recrad(x) for x in normals])
+    assert np.any(np.not_equal(srf_rad, nrm_rad))
+    spice.kclear()
 
 
 def test_srfrec():
@@ -5230,6 +5647,63 @@ def test_srfrec():
     expected = [-906.24919474, 5139.59458217, 3654.29989637]
     npt.assert_array_almost_equal(x, expected)
     spice.kclear()
+
+
+def test_srfs2c():
+    spice.kclear()
+    kernel = os.path.join(cwd, 'srfs2c_ex1.tm')
+    if spice.exists(kernel):
+        os.remove(kernel) # pragma: no cover
+    with open(kernel, 'w') as kernelFile:
+        kernelFile.write('\\begindata\n')
+        kernelFile.write("NAIF_SURFACE_NAME += ( 'MGS MOLA  64 pixel/deg',\n")
+        kernelFile.write("                       'MGS MOLA 128 pixel/deg',\n")
+        kernelFile.write("                       'PHOBOS GASKELL Q512'     )\n")
+        kernelFile.write("NAIF_SURFACE_CODE += (   1,   2,    1 )\n")
+        kernelFile.write("NAIF_SURFACE_BODY += ( 499, 499,  401 )\n")
+        kernelFile.write("\\begintext\n")
+        kernelFile.close()
+    spice.furnsh(kernel)
+    assert spice.srfs2c("MGS MOLA  64 pixel/deg", "MARS") == 1
+    assert spice.srfs2c("PHOBOS GASKELL Q512", "PHOBOS")  == 1
+    assert spice.srfs2c("MGS MOLA 128 pixel/deg", "MARS") == 2
+    assert spice.srfs2c("MGS MOLA  64 pixel/deg", "499")  == 1
+    assert spice.srfs2c("1", "PHOBOS") == 1
+    assert spice.srfs2c("2", "499") == 2
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.srfs2c("ZZZ", "MARS")
+    spice.reset()
+    spice.kclear()
+    if spice.exists(kernel):
+        os.remove(kernel)  # pragma: no cover
+
+
+def test_srfscc():
+    spice.kclear()
+    kernel = os.path.join(cwd, 'srfscc_ex1.tm')
+    if spice.exists(kernel):
+        os.remove(kernel) # pragma: no cover
+    with open(kernel, 'w') as kernelFile:
+        kernelFile.write('\\begindata\n')
+        kernelFile.write("NAIF_SURFACE_NAME += ( 'MGS MOLA  64 pixel/deg',\n")
+        kernelFile.write("                       'MGS MOLA 128 pixel/deg',\n")
+        kernelFile.write("                       'PHOBOS GASKELL Q512'     )\n")
+        kernelFile.write("NAIF_SURFACE_CODE += (   1,   2,    1 )\n")
+        kernelFile.write("NAIF_SURFACE_BODY += ( 499, 499,  401 )\n")
+        kernelFile.write("\\begintext\n")
+        kernelFile.close()
+    spice.furnsh(kernel)
+    assert spice.srfscc("MGS MOLA  64 pixel/deg", 499) == 1
+    assert spice.srfscc("PHOBOS GASKELL Q512", 401)  == 1
+    assert spice.srfscc("MGS MOLA 128 pixel/deg", 499) == 2
+    assert spice.srfscc("1", 401) == 1
+    assert spice.srfscc("2", 499) == 2
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.srfscc("ZZZ", 499)
+    spice.reset()
+    spice.kclear()
+    if spice.exists(kernel):
+        os.remove(kernel)  # pragma: no cover
 
 
 def test_srfxpt():
@@ -5296,10 +5770,10 @@ def test_stpool():
         kernelFile.write("              'of_a_second_file_name' )\n")
         kernelFile.close()
     spice.furnsh(kernel)
-    string, n = spice.stpool("SPK_FILES", 0, "*", 256)
+    string, n = spice.stpool("SPK_FILES", 0, "*")
     assert n == 62
     assert string == "this_is_the_full_path_specification_of_a_file_with_a_long_name"
-    string, n = spice.stpool("SPK_FILES", 1, "*", 256)
+    string, n = spice.stpool("SPK_FILES", 1, "*")
     assert n == 57
     assert string == "this_is_the_full_path_specification_of_a_second_file_name"
     spice.kclear()
@@ -5502,6 +5976,24 @@ def test_szpool():
     assert spice.szpool("MAXLIN") == 15000
 
 
+def test_termpt():
+    spice.kclear()
+    spice.furnsh(CoreKernels.spk)
+    spice.furnsh(ExtraKernels.marsSpk)
+    spice.furnsh(CoreKernels.pck)
+    spice.furnsh(CoreKernels.lsk)
+    spice.furnsh(ExtraKernels.phobosDsk)
+    # set the time
+    et = spice.str2et("1972 AUG 11 00:00:00")
+    # call limpt
+    npts, points, epochs, tangts = spice.termpt("UMBRAL/TANGENT/DSK/UNPRIORITIZED", "SUN", "Phobos", et, "IAU_PHOBOS",
+                       "CN+S", "CENTER", "MARS", [0.0, 0.0, 1.0],
+                       spice.twopi()/3.0, 3, 1.0e-4, 1.0e-7, 10000)
+    assert points is not None
+    assert len(points) == 3
+    spice.kclear()
+
+
 def test_timdef():
     value = spice.timdef('GET', 'CALENDAR', 10)
     assert value == 'GREGORIAN' or 'JULIAN' or 'MIXED'
@@ -5509,13 +6001,12 @@ def test_timdef():
 
 def test_timout():
     sample = 'Thu Oct 1 11:11:11 PDT 1111'
-    lenout = len(sample) + 2
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
-    pic, ok, err = spice.tpictr(sample, 64, 60)
+    pic, ok, err = spice.tpictr(sample)
     assert ok
     et = 188745364.0
-    out = spice.timout(et, pic, lenout)
+    out = spice.timout(et, pic)
     assert out == "Sat Dec 24 18:14:59 PDT 2005"
     spice.kclear()
 
@@ -5557,15 +6048,15 @@ def test_tisbod():
 
 def test_tkvrsn():
     version = spice.tkvrsn("toolkit")
-    assert version == "CSPICE_N0065"
+    assert version == "CSPICE_N0066"
 
 
 def test_tparse():
-    actualOne, errorOne = spice.tparse("1996-12-18T12:28:28", 100)
+    actualOne, errorOne = spice.tparse("1996-12-18T12:28:28")
     assert actualOne == -95815892.0
-    actualTwo, errorTwo = spice.tparse("1 DEC 1997 12:28:29.192", 100)
+    actualTwo, errorTwo = spice.tparse("1 DEC 1997 12:28:29.192")
     assert actualTwo == -65748690.808
-    actualThree, errorThree = spice.tparse("1997-162::12:18:28.827", 100)
+    actualThree, errorThree = spice.tparse("1997-162::12:18:28.827")
     assert actualThree == -80696491.173
 
 
@@ -6292,7 +6783,10 @@ def test_xposeg():
 
 
 def teardown_module(module):
-    cleanup_Cassini_Kernels()
-    cleanup_Mars_Kernels()
-    cleanup_Extra_Kernels()
-    cleanup_Core_Kernels()
+    # if you are developing spiceypy, and don't want to delete kernels each time you run the tests, set
+    # set the following environment variable "spiceypy_do_not_remove_kernels" to anything
+    if not os.environ.get('spiceypy_do_not_remove_kernels'):
+        cleanup_Cassini_Kernels()
+        cleanup_Mars_Kernels()
+        cleanup_Extra_Kernels()
+        cleanup_Core_Kernels()

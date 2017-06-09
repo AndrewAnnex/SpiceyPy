@@ -164,3 +164,18 @@ def test_toDoubleMatrix():
     assert len(madeFromNumpyMatrix) == 2
     with pytest.raises(TypeError):
         stypes.toDoubleMatrix("ABCD")
+
+
+def test_toIntMatrix():
+    madeFromList = stypes.toIntMatrix([[1, 2], [3, 4]])
+    assert len(madeFromList) == 2
+    madeFromTuple = stypes.toIntMatrix(((1, 2), (3, 4)))
+    assert len(madeFromTuple) == 2
+    madeFromNumpyArray = stypes.toIntMatrix(np.array([[1, 2], [3, 4]]))
+    assert len(madeFromNumpyArray) == 2
+    madeFromNumpyMatrix = stypes.toIntMatrix(np.matrix([[1, 2], [3, 4]]))
+    assert len(madeFromNumpyMatrix) == 2
+    with pytest.raises(TypeError):
+        stypes.toIntMatrix("ABCD")
+    with pytest.raises(TypeError):
+        stypes.toIntMatrix([[1.0, 2.0], [3.0, 4.0]])

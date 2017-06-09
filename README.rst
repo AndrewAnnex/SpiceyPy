@@ -1,7 +1,7 @@
 SpiceyPy
 ========
 
-SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N65),
+SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N66),
 compatible with Python 2 and 3, written using ctypes.
 
 +------------------------------------------------+---------------------+--------------------------+-------------------+------------+
@@ -75,7 +75,7 @@ utilize the zenodo DOI badge at the top of this readme.
 Known Working Environments:
 ---------------------------
 
-SpicyPy is now compatible with modern Linux, Mac, and Windows
+SpicyPy is compatible with modern Linux, Mac, and Windows
 environments. Since the package is a wrapper, any environment not
 supported by the NAIF is similarly not supported by SpiceyPy.
 If you run into issues with your system please submit an issue with details. 
