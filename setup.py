@@ -206,7 +206,7 @@ try:
 
     setup(
         name='spiceypy',
-        version='2.0.0.dev0',
+        version='2.0.0',
         license='MIT',
         author='Andrew Annex',
         author_email='ama6fy@virginia.edu',
