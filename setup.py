@@ -26,7 +26,6 @@ from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 from setuptools.dist import Distribution
 import sys
-import getspice
 import os
 import subprocess
 import platform
@@ -42,6 +41,10 @@ root_dir = os.path.dirname(os.path.realpath(__file__))
 cspice_dir = os.path.join(root_dir, 'cspice')
 # Make the directory path for cspice/lib
 lib_dir = os.path.join(cspice_dir, 'lib')
+
+TEST_DEPENDENCIES = ['numpy>=1.8.0', 'pytest>=2.9.0', 'six>=1.9.0']
+DEPENDENCIES      = ['numpy>=1.8.0', 'six>=1.9.0']
+REQUIRES          = ['numpy', 'six']
 
 # py.test integration from pytest.org
 class PyTest(TestCommand):
@@ -63,6 +66,7 @@ class BinaryDistribution(Distribution):
 
 def check_for_spice():
     if not os.path.exists(cspice_dir):
+        import getspice
         message = 'Unable to find CSPICE at {0}. Attempting to Download CSPICE For you:'.format(cspice_dir)
         print(message)
         # Download cspice using getspice.py
@@ -233,9 +237,10 @@ try:
         zip_safe=False,
         distclass=BinaryDistribution,
         package_data={'': ['*.so', "*.dll"]},
-        install_requires=['six'],
-        requires=['numpy', 'pytest', 'six'],
-        tests_require=['pytest', 'numpy', 'six'],
+        setup_requires=DEPENDENCIES,
+        install_requires=DEPENDENCIES,
+        requires=REQUIRES,
+        tests_require=TEST_DEPENDENCIES,
         cmdclass={'test': PyTest},
         test_suite='spiceypy.tests.test_wrapper.py',
         extras_require={'testing': ['pytest']}
