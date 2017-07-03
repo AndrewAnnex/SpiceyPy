@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
 ## [2.0.1] - UNRELEASED
+### Fixed
+- added six and numpy to setup_requires setup.py kwargs
 
 ## [2.0.0] - 2017-06-09
 ### Added
