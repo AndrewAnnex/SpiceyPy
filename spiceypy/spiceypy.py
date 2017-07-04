@@ -10989,23 +10989,19 @@ def spkezr(targ, et, ref, abcorr, obs):
             One way light time between observer and target.
     :rtype: tuple
     """
-    if hasattr(et, "__iter__"):
-        vlen = len(et)
-        state = numpy.zeros((vlen, 6), dtype=numpy.float)
-        times = numpy.zeros(vlen, dtype=numpy.float)
-        for (index, time) in enumerate(et):
-            state[index], times[index] = spkezr(targ, time, ref, abcorr, obs)
-
-        return state, times
     targ = stypes.stringToCharP(targ)
-    et = ctypes.c_double(et)
     ref = stypes.stringToCharP(ref)
     abcorr = stypes.stringToCharP(abcorr)
     obs = stypes.stringToCharP(obs)
     starg = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
-    libspice.spkezr_c(targ, et, ref, abcorr, obs, starg, ctypes.byref(lt))
-    return stypes.vectorToList(starg), lt.value
+    if not hasattr(et, "__iter__"):
+        et = [et]
+    res = []
+    for i, t in enumerate(et):
+        libspice.spkezr_c(targ, ctypes.c_double(t), ref, abcorr, obs, starg, ctypes.byref(lt))
+        res.append((stypes.vectorToList(starg), lt.value))
+    return numpy.array(res)
 
 
 @spiceErrorCheck
