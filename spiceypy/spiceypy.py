@@ -10997,11 +10997,13 @@ def spkezr(targ, et, ref, abcorr, obs):
     lt = ctypes.c_double()
     if not hasattr(et, "__iter__"):
         et = [et]
-    res = []
+    state = []
+    ltime = []
     for i, t in enumerate(et):
         libspice.spkezr_c(targ, ctypes.c_double(t), ref, abcorr, obs, starg, ctypes.byref(lt))
-        res.append((stypes.vectorToList(starg), lt.value))
-    return numpy.array(res)
+        state.append(stypes.vectorToList(starg))
+        ltime.append(lt.value)
+    return numpy.squeeze(state), numpy.squeeze(lt)
 
 
 @spiceErrorCheck
