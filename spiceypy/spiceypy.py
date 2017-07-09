@@ -2036,10 +2036,15 @@ def dasonw(fname, ftype, ifname, ncomch):
     Internal undocumented command for creating a new DAS file
     
     :param fname: filename
+    :type fname: str
     :param ftype: type
+    :type ftype: str
     :param ifname: internal file name
+    :type ifname: str
     :param ncomch: amount of comment area
-    :return: 
+    :type ncomch: int
+    :return: Handle to new DAS file
+    :rtype: int
     """
     fnamelen = ctypes.c_int(len(fname))
     ftypelen = ctypes.c_int(len(ftype))
