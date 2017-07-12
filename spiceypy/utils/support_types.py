@@ -129,6 +129,10 @@ def emptyCharArray(xLen=None, yLen=None):
 
 
 def emptyDoubleMatrix(x=3, y=3):
+    if isinstance(x, c_int):
+        xLen = x.value
+    if isinstance(y, c_int):
+        yLen = y.value
     return ((c_double * x) * y)()
 
 
