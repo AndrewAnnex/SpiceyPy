@@ -177,6 +177,7 @@ We will use matplotlib's 3D plotting to visualize Cassini's coordinates.
     ax  = fig.add_subplot(111, projection='3d')
     ax.plot(positions.T[0], positions.T[1], positions.T[2])
     plt.title('SpiceyPy Cassini Position Example from Jun 20, 2004 to Dec 1, 2005')
+    plt.show()
 
 .. image:: images/exampleoneplot_min.png
     :alt: plot of cassini positions over time using matplotlib
