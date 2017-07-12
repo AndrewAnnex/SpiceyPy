@@ -25,7 +25,7 @@ First import spiceypy and test it out.
 
 .. parsed-literal::
 
-    'CSPICE_N0065'
+    'CSPICE_N0066'
 
 
 We will need to load some kernels. You will need to download the following kernels
