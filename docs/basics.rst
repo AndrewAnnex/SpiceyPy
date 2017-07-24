@@ -50,4 +50,4 @@ This should output the following string:
 
 .. parsed-literal::
 
-    'CSPICE_N0065'
+    'CSPICE_N0066'
