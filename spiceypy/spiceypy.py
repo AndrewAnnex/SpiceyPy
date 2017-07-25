@@ -10995,14 +10995,21 @@ def spkezr(targ, et, ref, abcorr, obs):
     :rtype: tuple
     """
     targ = stypes.stringToCharP(targ)
-    et = ctypes.c_double(et)
     ref = stypes.stringToCharP(ref)
     abcorr = stypes.stringToCharP(abcorr)
     obs = stypes.stringToCharP(obs)
     starg = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
-    libspice.spkezr_c(targ, et, ref, abcorr, obs, starg, ctypes.byref(lt))
-    return stypes.vectorToList(starg), lt.value
+    if not hasattr(et, "__iter__"):
+        et = [et]
+    state = []
+    times = []
+    for t in et:
+        libspice.spkezr_c(targ, ctypes.c_double(t), ref, abcorr, obs, starg, ctypes.byref(lt))
+        checkForSpiceError(None)
+        state.append(stypes.vectorToList(starg))
+        times.append(lt.value)
+    return numpy.squeeze(state), numpy.squeeze(times)
 
 
 @spiceErrorCheck

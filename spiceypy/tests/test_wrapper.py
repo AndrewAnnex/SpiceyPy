@@ -5071,6 +5071,19 @@ def test_spkezr():
     npt.assert_array_almost_equal(state, expected_state)
     spice.kclear()
 
+def test_spkezr_vectorized():
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = np.full((100,), spice.str2et('July 4, 2003 11:00 AM PST'))
+    state, lt = spice.spkezr("Mars", et, "J2000", "LT+S", "Earth")
+    expected_lt = np.full((100,), 269.6898816177049)
+    expected_state = np.full((100, 6), [73822235.33116072, -27127919.178592984,
+                                        -18741306.284863796,
+                                        -6.808513317178952, 7.513996167680786,
+                                        3.001298515816776])
+    npt.assert_allclose(lt, expected_lt)
+    npt.assert_allclose(state, expected_state)
+    spice.kclear()
 
 def test_spkgeo():
     spice.kclear()
