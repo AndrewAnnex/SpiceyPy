@@ -113,7 +113,7 @@ class ExtraKernels(object):
     earthStnSpk_url     = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/stations/earthstns_itrf93_050714.bsp"
     earthGenPck_url     = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/earth_720101_070426.bpc"
     earthHighPerPck_url = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/earth_latest_high_prec.bpc"
-    phobosDsk_url       = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/dsk/phobos/phobos_3_3.bds"
+    phobosDsk_url       = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/dsk/satellites/phobos_3_3.bds"
     marsSpk_url         = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/a_old_versions/mar022-1.bsp"
     voyagerSclk         = getPathFromUrl(voyagerSclk_url)
     earthTopoTf         = getPathFromUrl(earthTopoTf_url)
