@@ -1260,8 +1260,8 @@ def test_dski02():
     dladsc = spice.dlabfs(handle)
     # Find the number of plates in the model
     # SPICE_DSK02_KWNP == 2
-    num_plates = spice.dski02(handle, dladsc, 2, 0, 1)
-    assert num_plates > 0
+    num_plates = spice.dski02(handle, dladsc, 2, 0, 3)
+    assert len(num_plates) > 0
     spice.dascls(handle)
     spice.kclear()
 

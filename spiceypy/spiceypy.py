@@ -2693,9 +2693,9 @@ def dski02(handle, dladsc, item, start, room):
     start = ctypes.c_int(start)
     room = ctypes.c_int(room)
     n = ctypes.c_int()
-    vrtces = stypes.emptyDoubleMatrix(room, 3)
-    libspice.dski02_c(handle, dladsc, item, start, room, ctypes.byref(n), vrtces)
-    return stypes.cMatrixToNumpy(vrtces)
+    values = stypes.emptyIntVector(room)
+    libspice.dski02_c(handle, dladsc, item, start, room, ctypes.byref(n), values)
+    return stypes.cMatrixToNumpy(values)
 
 
 def dskmi2():
