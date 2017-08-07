@@ -2668,16 +2668,62 @@ def dskgtl(keywrd):
     return dpval.value
 
 
-def dski02():
-    raise NotImplementedError
+@spiceErrorCheck
+def dski02(handle, dladsc, item, start, room):
+    """
+    Fetch integer data from a type 2 DSK segment.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dski02_c.html
+
+    :param handle: DSK file handle.
+    :type handle: int
+    :param dladsc: DLA descriptor.
+    :type dladsc: spiceypy.utils.support_types.SpiceDLADescr
+    :param item: Keyword identifying item to fetch.
+    :type item: int
+    :param start: Start index.
+    :type start: int
+    :param room: Amount of room in output array.
+    :type room: int
+    :return: Array containing requested item.
+    :rtype: array
+    """
+    handle = ctypes.c_int(handle)
+    item = ctypes.c_int(item)
+    start = ctypes.c_int(start)
+    room = ctypes.c_int(room)
+    n = ctypes.c_int()
+    values = stypes.emptyIntVector(room)
+    libspice.dski02_c(handle, dladsc, item, start, room, ctypes.byref(n), values)
+    return stypes.cMatrixToNumpy(values)
 
 
 def dskmi2():
     raise NotImplementedError
 
 
-def dskn02():
-    raise NotImplementedError
+@spiceErrorCheck
+def dskn02(handle, dladsc, plid):
+    """
+    Compute the unit normal vector for a specified plate from a type
+    2 DSK segment.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskn02_c.html
+
+    :param handle: DSK file handle.
+    :type handle: int
+    :param dladsc: DLA descriptor.
+    :type dladsc: spiceypy.utils.support_types.SpiceDLADescr
+    :param plid: Plate ID.
+    :type plid: int
+    :return: late's unit normal vector.
+    :rtype: 3-Element Array of floats.
+    """
+    handle = ctypes.c_int(handle)
+    plid   = ctypes.c_int(plid)
+    normal = stypes.emptyDoubleVector(3)
+    libspice.dskn02_c(handle, dladsc, plid, normal)
+    return stypes.vectorToList(normal)
 
 
 @spiceErrorCheck
@@ -2723,8 +2769,30 @@ def dskopn(fname, ifname, ncomch):
     return handle.value
 
 
-def dskp02():
-    raise NotImplementedError
+def dskp02(handle, dladsc, start, room):
+    """
+    Fetch triangular plates from a type 2 DSK segment.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskp02_c.html
+
+    :param handle: DSK file handle.
+    :type handle: int
+    :param dladsc: DLA descriptor.
+    :type dladsc: spiceypy.utils.support_types.SpiceDLADescr
+    :param start: Start index.
+    :type start: int
+    :param room: Amount of room in output array.
+    :type room: int
+    :return: Array containing plates.
+
+    """
+    handle = ctypes.c_int(handle)
+    start  = ctypes.c_int(start)
+    room   = ctypes.c_int(room)
+    n      = ctypes.c_int(0)
+    plates = stypes.emptyIntMatrix(3, room)
+    libspice.dskp02_c(handle, dladsc, start, room, ctypes.byref(n), plates)
+    return stypes.cMatrixToNumpy(plates)
 
 
 def dskrb2():
@@ -2770,8 +2838,31 @@ def dskstl(keywrd, dpval):
     libspice.dskstl_c(keywrd, dpval)
 
 
-def dskv02():
-    raise NotImplementedError
+@spiceErrorCheck
+def dskv02(handle, dladsc, start, room):
+    """
+    Fetch vertices from a type 2 DSK segment.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskv02_c.html
+
+    :param handle: DSK file handle.
+    :type handle: int
+    :param dladsc: DLA descriptor.
+    :type dladsc: spiceypy.utils.support_types.SpiceDLADescr
+    :param start: Start index.
+    :type start: int
+    :param room: Amount of room in output array.
+    :type room: int
+    :return: Array containing vertices.
+    :rtype: Room x 3-Element Array of floats
+    """
+    handle = ctypes.c_int(handle)
+    start  = ctypes.c_int(start)
+    room   = ctypes.c_int(room)
+    n      = ctypes.c_int()
+    vrtces = stypes.emptyDoubleMatrix(3, room)
+    libspice.dskv02_c(handle, dladsc, start, room, ctypes.byref(n), vrtces)
+    return stypes.cMatrixToNumpy(vrtces)
 
 
 def dskw02():
@@ -2790,8 +2881,26 @@ def dskxv():
     raise NotImplementedError
 
 
-def dskz02():
-    raise NotImplementedError
+@spiceErrorCheck
+def dskz02(handle, dladsc):
+    """
+    Return plate model size parameters---plate count and
+    vertex count---for a type 2 DSK segment.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskz02_c.html
+
+    :param handle: DSK file handle.
+    :type handle: int
+    :param dladsc: DLA descriptor.
+    :type dladsc: spiceypy.utils.support_types.SpiceDLADescr
+    :return: Number of vertices, Number of plates.
+    :rtype: tuple
+    """
+    handle = ctypes.c_int(handle)
+    nv = ctypes.c_int()
+    np = ctypes.c_int()
+    libspice.dskz02_c(handle, dladsc, ctypes.byref(nv), ctypes.byref(np))
+    return nv.value, np.value
 
 
 @spiceErrorCheck

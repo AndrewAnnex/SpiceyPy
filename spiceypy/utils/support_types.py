@@ -129,6 +129,10 @@ def emptyCharArray(xLen=None, yLen=None):
 
 
 def emptyDoubleMatrix(x=3, y=3):
+    if isinstance(x, c_int):
+        x = x.value
+    if isinstance(y, c_int):
+        y = y.value
     return ((c_double * x) * y)()
 
 
@@ -140,6 +144,10 @@ def emptyDoubleVector(n):
 
 
 def emptyIntMatrix(x=3, y=3):
+    if isinstance(x, c_int):
+        x = x.value
+    if isinstance(y, c_int):
+        y = y.value
     return ((c_int * x) * y)()
 
 def emptyIntVector(n):
