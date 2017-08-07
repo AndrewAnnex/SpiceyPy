@@ -2675,12 +2675,18 @@ def dski02(handle, dladsc, item, start, room):
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dski02_c.html
 
-    :param handle:
-    :param dladsc:
-    :param item:
-    :param start:
-    :param room:
-    :return:
+    :param handle: DSK file handle.
+    :type handle: int
+    :param dladsc: DLA descriptor.
+    :type dladsc: spiceypy.utils.support_types.SpiceDLADescr
+    :param item: Keyword identifying item to fetch.
+    :type item: int
+    :param start: Start index.
+    :type start: int
+    :param room: Amount of room in output array.
+    :type room: int
+    :return: Array containing requested item.
+    :rtype: array
     """
     handle = ctypes.c_int(handle)
     item = ctypes.c_int(item)
@@ -2704,10 +2710,14 @@ def dskn02(handle, dladsc, plid):
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskn02_c.html
 
-    :param handle:
-    :param dladsc:
-    :param plid:
-    :return:
+    :param handle: DSK file handle.
+    :type handle: int
+    :param dladsc: DLA descriptor.
+    :type dladsc: spiceypy.utils.support_types.SpiceDLADescr
+    :param plid: Plate ID.
+    :type plid: int
+    :return: late's unit normal vector.
+    :rtype: 3-Element Array of floats.
     """
     handle = ctypes.c_int(handle)
     plid   = ctypes.c_int(plid)
@@ -2759,8 +2769,30 @@ def dskopn(fname, ifname, ncomch):
     return handle.value
 
 
-def dskp02():
-    raise NotImplementedError
+def dskp02(handle, dladsc, start, room):
+    """
+    Fetch triangular plates from a type 2 DSK segment.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskp02_c.html
+
+    :param handle: DSK file handle.
+    :type handle: int
+    :param dladsc: DLA descriptor.
+    :type dladsc: spiceypy.utils.support_types.SpiceDLADescr
+    :param start: Start index.
+    :type start: int
+    :param room: Amount of room in output array.
+    :type room: int
+    :return: Array containing plates.
+
+    """
+    handle = ctypes.c_int(handle)
+    start  = ctypes.c_int(start)
+    room   = ctypes.c_int(room)
+    n      = ctypes.c_int(0)
+    plates = stypes.emptyIntMatrix(3, room)
+    libspice.dskp02_c(handle, dladsc, start, room, ctypes.byref(n), plates)
+    return stypes.cMatrixToNumpy(plates)
 
 
 def dskrb2():
@@ -2813,17 +2845,22 @@ def dskv02(handle, dladsc, start, room):
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskv02_c.html
 
-    :param handle:
-    :param dladsc:
-    :param start:
-    :param room:
-    :return:
+    :param handle: DSK file handle.
+    :type handle: int
+    :param dladsc: DLA descriptor.
+    :type dladsc: spiceypy.utils.support_types.SpiceDLADescr
+    :param start: Start index.
+    :type start: int
+    :param room: Amount of room in output array.
+    :type room: int
+    :return: Array containing vertices.
+    :rtype: Room x 3-Element Array of floats
     """
     handle = ctypes.c_int(handle)
     start  = ctypes.c_int(start)
     room   = ctypes.c_int(room)
     n      = ctypes.c_int()
-    vrtces = stypes.emptyDoubleMatrix(room, 3)
+    vrtces = stypes.emptyDoubleMatrix(3, room)
     libspice.dskv02_c(handle, dladsc, start, room, ctypes.byref(n), vrtces)
     return stypes.cMatrixToNumpy(vrtces)
 
