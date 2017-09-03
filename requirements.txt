@@ -4,9 +4,11 @@ pytest>=2.9.0
 coverage>=4.0
 coveralls>=1.1
 
-########################################################
-# Packages required for running getspice               #
-########################################################
-certifi
-pyOpenSSL
-urllib3>=1.22
+#########################################################
+# Packages required for running getspice                #
+#########################################################
+certifi                # Required by getspice
+cryptography>=1.9      # Required by urllib3
+idna>=2.0.0            # Required by urllib3
+pyOpenSSL              # Required by urllib3 and getspice
+urllib3>=1.22          # Required by getspice
