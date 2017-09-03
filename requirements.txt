@@ -3,3 +3,10 @@ six>=1.9.0
 pytest>=2.9.0
 coverage>=4.0
 coveralls>=1.1
+
+########################################################
+# Packages required for running getspice               #
+########################################################
+certifi
+pyOpenSSL
+urllib3>=1.22

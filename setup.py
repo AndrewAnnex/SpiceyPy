@@ -21,8 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from __future__ import print_function
 
 from setuptools import setup, find_packages
+from setuptools.command.install import install
 from setuptools.command.test import test as TestCommand
 from setuptools.dist import Distribution
 import sys
@@ -43,8 +45,20 @@ cspice_dir = os.path.join(root_dir, 'cspice')
 lib_dir = os.path.join(cspice_dir, 'lib')
 
 TEST_DEPENDENCIES = ['numpy>=1.8.0', 'pytest>=2.9.0', 'six>=1.9.0']
-DEPENDENCIES      = ['numpy>=1.8.0', 'six>=1.9.0']
-REQUIRES          = ['numpy', 'six']
+DEPENDENCIES = ['numpy>=1.8.0', 'six>=1.9.0', 'certifi']
+REQUIRES = ['numpy', 'six']
+
+
+# Set the CPPFLAGS and LDFLAGS environment variables before running the
+# SpiceyPy setup. This is required in order to fix issues with OpenSSL
+# on Mac OSX. Further information:
+# https://cryptography.io/en/latest/installation/#building-cryptography-on-macos
+# cryptograpy is required in order to run the 'download' method of the
+# GetCSPICE class of the getspice.py module, and it needs to be build
+# before if it is not preinstalled.
+# if host_OS == 'Darwin':
+#     os.environ['CPPFLAGS'] = '-I/usr/local/opt/openssl/include'
+#     os.environ['LDFLAGS'] = '-L/usr/local/opt/openssl/lib'
 
 # py.test integration from pytest.org
 class PyTest(TestCommand):
@@ -64,187 +78,193 @@ class BinaryDistribution(Distribution):
     def is_pure(self):
         return False
 
-def check_for_spice():
-    if not os.path.exists(cspice_dir):
-        import getspice
-        message = 'Unable to find CSPICE at {0}. Attempting to Download CSPICE For you:'.format(cspice_dir)
-        print(message)
-        # Download cspice using getspice.py
-        getspice.getSpice()
+
+class InstallSpiceyPy(install):
+    """Class that extends the install command and encapsulates the
+    process for installing the required CSPICE distribution at the
+    right place.
+    """
+
+    def run(self):
+        self.check_for_spice()
+    
+        print("Host OS: {}".format(host_OS))
+        if host_OS == "Linux" or host_OS == "Darwin":
+            self.mac_linux_method()
+        elif host_OS == "Windows":
+            self.windows_method()
+        else:
+            sys.exit("Unsupported OS: {0}".format(host_OS))
+
+        install.run(self)
+
+    @staticmethod
+    def check_for_spice():
+        print('Checking the path', cspice_dir)
         if not os.path.exists(cspice_dir):
-            message = 'Unable to find CSPICE at {0}. Exiting'.format(cspice_dir)
-            sys.exit(message)
+            import getspice
+            message = 'Unable to find CSPICE at {0}. Attempting to Download CSPICE For you:'.format(cspice_dir)
+            print(message)
+            # Download cspice using getspice.py
+            getspice.GetCSPICE(version='N0066')
+            if not os.path.exists(cspice_dir):
+                message = 'Unable to find CSPICE at {0}. Exiting'.format(cspice_dir)
+                sys.exit(message)
 
+    @staticmethod
+    def unpack_cspice():
+        if host_OS == "Linux" or host_OS == "Darwin":
+            cspice_lib = os.path.join(lib_dir, ("cspice.lib" if host_OS is "Windows" else "cspice.a"))
+            csupport_lib = os.path.join(lib_dir, ("csupport.lib" if host_OS is "Windows" else "csupport.a"))
 
-def unpack_cspice():
-    if host_OS == "Linux" or host_OS == "Darwin":
-        cspice_lib = os.path.join(lib_dir, ("cspice.lib" if host_OS is "Windows" else "cspice.a"))
-        csupport_lib = os.path.join(lib_dir, ("csupport.lib" if host_OS is "Windows" else "csupport.a"))
+            if os.path.exists(cspice_lib) and os.path.exists(csupport_lib):
+                cwd = os.getcwd()
+                try:
+                    os.chdir(lib_dir)
+                    if host_OS is "Windows":
+                        raise BaseException("Windows is not supported in this build method")
+                    elif host_OS == "Linux" or host_OS == "Darwin":
+                        for lib in ["ar -x cspice.a", "ar -x csupport.a"]:
+                            unpack_lib_process = subprocess.Popen(lib, shell=True)
+                            process_status = os.waitpid(unpack_lib_process.pid, 0)[1]
+                            if process_status != 0:
+                                raise BaseException('{0}'.format(process_status))
+                    else:
+                        raise BaseException("Unsupported OS: {0}".format(host_OS))
+                except BaseException as error:
+                    status = error.args
+                    sys.exit('Error: cspice object file extraction failed with exit status: {0}'.format(status))
+                finally:
+                    os.chdir(cwd)
+            else:
+                error_Message = "Error, cannot find CSPICE " \
+                                "static libraries at {0}".format(lib_dir)
+                sys.exit(error_Message)
 
-        if os.path.exists(cspice_lib) and os.path.exists(csupport_lib):
-            cwd = os.getcwd()
+    @staticmethod
+    def build_library():
+        if host_OS == "Linux" or host_OS == "Darwin":
+            currentDir = os.getcwd()
             try:
                 os.chdir(lib_dir)
-                if host_OS is "Windows":
-                    raise BaseException("Windows is not supported in this build method")
-                elif host_OS == "Linux" or host_OS == "Darwin":
-                    for lib in ["ar -x cspice.a", "ar -x csupport.a"]:
-                        unpack_lib_process = subprocess.Popen(lib, shell=True)
-                        process_status = os.waitpid(unpack_lib_process.pid, 0)[1]
-                        if process_status != 0:
-                            raise BaseException('{0}'.format(process_status))
-                else:
-                    raise BaseException("Unsupported OS: {0}".format(host_OS))
-            except BaseException as error:
-                status = error.args
-                sys.exit('Error: cspice object file extraction failed with exit status: {0}'.format(status))
+                # find a way to make this work via Extension and setuptools, not using popen.
+                build_lib = subprocess.Popen('gcc -shared -fPIC -lm *.o -o spice.so', shell=True)
+                status = os.waitpid(build_lib.pid, 0)[1]
+                if status != 0:
+                    raise BaseException('{0}'.format(status))
+                success = os.path.exists(os.path.join(os.getcwd(), 'spice.so'))
+                if not success:
+                    raise BaseException("Did not find spice.so, build went badly.")
+            except BaseException as errorInst:
+                status = errorInst.args
+                sys.exit('Error: compilation of shared spice.so build exit status: {0}'.format(status))
             finally:
-                os.chdir(cwd)
-        else:
-            error_Message = "Error, cannot find CSPICE " \
-                            "static libraries at {0}".format(lib_dir)
-            sys.exit(error_Message)
+                os.chdir(currentDir)
+        elif host_OS == "Windows":
+            currentDir = os.getcwd()
+            try:
+                destination = os.path.join(cspice_dir, "src", "cspice")
+                defFile = os.path.join(root_dir, "appveyor", "cspice.def")
+                makeBat = os.path.join(root_dir, "appveyor", "makeDynamicSpice.bat")
+                shutil.copy(defFile, destination)
+                shutil.copy(makeBat, destination)
+                # run the script
+                os.chdir(destination)
+                windows_build = subprocess.Popen("makeDynamicSpice.bat", shell=True)
+                status = windows_build.wait()
+                if status != 0:
+                    raise BaseException('{0}'.format(status))
+            except BaseException as error:
+                sys.exit("Build failed with: {0}".format(error.args))
+            finally:
+                os.chdir(currentDir)
 
+    @staticmethod
+    def move_to_root_directory():
+        sharedLib = 'spice.so' if host_OS == "Linux" or host_OS == "Darwin" else 'cspice.dll'
+        destination = os.path.join(root_dir, 'spiceypy', 'utils', sharedLib)
+        if not os.path.isfile(destination):
+            target = os.path.join(cspice_dir, 'lib', sharedLib) \
+                    if host_OS == "Linux" or host_OS == "Darwin" else \
+                    os.path.join(cspice_dir, 'src', 'cspice', sharedLib)
+            print("Attempting to move: {0}   to: {1}".format(target, destination))
+            try:
+                os.rename(target, destination)
+            except BaseException as e:
+                sys.exit('{0} file not found, what happend?: {1}'.format(sharedLib, e))
 
-def build_library():
-    if host_OS == "Linux" or host_OS == "Darwin":
-        currentDir = os.getcwd()
+    @staticmethod
+    def cleanup():
+        # Remove CSPICE folder
         try:
-            os.chdir(lib_dir)
-            #find a way to make this work via Extension and setuptools, not using popen.
-            build_lib = subprocess.Popen('gcc -shared -fPIC -lm *.o -o spice.so', shell=True)
-            status = os.waitpid(build_lib.pid, 0)[1]
-            if status != 0:
-                raise BaseException('{0}'.format(status))
-            success = os.path.exists(os.path.join(os.getcwd(), 'spice.so'))
-            if not success:
-                raise BaseException("Did not find spice.so, build went badly.")
-        except BaseException as errorInst:
-            status = errorInst.args
-            sys.exit('Error: compilation of shared spice.so build exit status: {0}'.format(status))
-        finally:
-            os.chdir(currentDir)
-    elif host_OS == "Windows":
-        currentDir = os.getcwd()
-        try:
-            destination = os.path.join(cspice_dir, "src", "cspice")
-            defFile = os.path.join(root_dir, "appveyor", "cspice.def")
-            makeBat = os.path.join(root_dir, "appveyor", "makeDynamicSpice.bat")
-            shutil.copy(defFile, destination)
-            shutil.copy(makeBat, destination)
-            # run the script
-            os.chdir(destination)
-            windows_build = subprocess.Popen("makeDynamicSpice.bat", shell=True)
-            status = windows_build.wait()
-            if status != 0:
-                raise BaseException('{0}'.format(status))
-        except BaseException as error:
-            sys.exit("Build failed with: {0}".format(error.args))
-        finally:
-            os.chdir(currentDir)
+            shutil.rmtree(os.path.join(os.getcwd(), "cspice"))
+        except OSError as e:
+            print("Error Cleaning up cspice folder")
+            raise e
 
-
-def move_to_root_directory():
-    sharedLib = 'spice.so' if host_OS == "Linux" or host_OS == "Darwin" else 'cspice.dll'
-    destination = os.path.join(root_dir, 'spiceypy', 'utils', sharedLib)
-    if not os.path.isfile(destination):
-        target = os.path.join(cspice_dir, 'lib', sharedLib) \
-                if host_OS == "Linux" or host_OS == "Darwin" else \
-                os.path.join(cspice_dir, 'src', 'cspice', sharedLib)
-        print("Attempting to move: {0}   to: {1}".format(target, destination))
-        try:
-            os.rename(target, destination)
-        except BaseException as e:
-            sys.exit('{0} file not found, what happend?: {1}'.format(sharedLib, e))
-
-
-def cleanup():
-    # Remove CSPICE folder
-    try:
-        shutil.rmtree(os.path.join(os.getcwd(), "cspice"))
-    except OSError as e:
-        print("Error Cleaning up cspice folder")
-        raise e
-
-
-def mac_linux_method():
-    if host_OS == "Linux" or host_OS == "Darwin":
-        # Next unpack cspice.a and csupport.a
-        unpack_cspice()
-        # Build the shared Library
-        build_library()
-        # Move to correct location (root of the distribution)
-        move_to_root_directory()
-
-
-def windows_method():
-    if host_OS == "Windows":
-        if os.path.exists(os.path.join(cspice_dir, "lib", "cspice.dll")):
-            print("Found premade cspice.dll, not building")
-            return
-        elif os.path.exists(os.path.join(root_dir, 'spiceypy', 'utils', 'cspice.dll')):
-            print("Found premade cspice.dll in spiceypy, not building")
-            return
-        else:
-            # Build the DLL
-            build_library()
+    def mac_linux_method(self):
+        if host_OS == "Linux" or host_OS == "Darwin":
+            # Next unpack cspice.a and csupport.a
+            self.unpack_cspice()
+            # Build the shared Library
+            self.build_library()
             # Move to correct location (root of the distribution)
-            move_to_root_directory()
+            self.move_to_root_directory()
+
+    def windows_method(self):
+        if host_OS == "Windows":
+            if os.path.exists(os.path.join(cspice_dir, "lib", "cspice.dll")):
+                print("Found premade cspice.dll, not building")
+                return
+            elif os.path.exists(os.path.join(root_dir, 'spiceypy', 'utils', 'cspice.dll')):
+                print("Found premade cspice.dll in spiceypy, not building")
+                return
+            else:
+                # Build the DLL
+                self.build_library()
+                # Move to correct location (root of the distribution)
+                self.move_to_root_directory()
 
 
-try:
-    # First check for spice
-    check_for_spice()
+readme = open('README.rst', 'r')
+readmetext = readme.read()
+readme.close()
 
-    print("Host OS: {}".format(host_OS))
-    if host_OS == "Linux" or host_OS == "Darwin":
-        mac_linux_method()
-    elif host_OS == "Windows":
-        windows_method()
-    else:
-        sys.exit("Unsupported OS: {0}".format(host_OS))
-
-    readme = open('README.rst', 'r')
-    readmetext = readme.read()
-    readme.close()
-
-    setup(
-        name='spiceypy',
-        version='2.0.1.dev0',
-        license='MIT',
-        author='Andrew Annex',
-        author_email='ama6fy@virginia.edu',
-        description='A Python Wrapper for the NAIF CSPICE Toolkit',
-        long_description=readmetext,
-        keywords=['spiceypy', 'spice', 'naif', 'jpl', 'space', 'geometry'],
-        url='https://github.com/AndrewAnnex/SpiceyPy',
-        classifiers=[
-            "Development Status :: 4 - Beta",
-            "Natural Language :: English",
-            "Topic :: Scientific/Engineering",
-            "Topic :: Scientific/Engineering :: Astronomy",
-            "License :: OSI Approved :: MIT License",
-            "Programming Language :: Python :: 2.7",
-            "Programming Language :: Python :: 3.3",
-            "Programming Language :: Python :: 3.4",
-            "Programming Language :: Python :: 3.5",
-            "Operating System :: MacOS :: MacOS X",
-            "Operating System :: POSIX :: Linux",
-            "Operating System :: Microsoft :: Windows"
-        ],
-        packages=find_packages(exclude=["*.tests"]),
-        include_package_data=True,
-        zip_safe=False,
-        distclass=BinaryDistribution,
-        package_data={'': ['*.so', "*.dll"]},
-        setup_requires=DEPENDENCIES,
-        install_requires=DEPENDENCIES,
-        requires=REQUIRES,
-        tests_require=TEST_DEPENDENCIES,
-        cmdclass={'test': PyTest},
-        test_suite='spiceypy.tests.test_wrapper.py',
-        extras_require={'testing': ['pytest']}
-    )
-finally:
-    pass
-
+setup(
+    name='spiceypy',
+    version='2.0.1.dev1',
+    license='MIT',
+    author='Andrew Annex',
+    author_email='ama6fy@virginia.edu',
+    description='A Python Wrapper for the NAIF CSPICE Toolkit',
+    long_description=readmetext,
+    keywords=['spiceypy', 'spice', 'naif', 'jpl', 'space', 'geometry'],
+    url='https://github.com/AndrewAnnex/SpiceyPy',
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Natural Language :: English",
+        "Topic :: Scientific/Engineering",
+        "Topic :: Scientific/Engineering :: Astronomy",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
+        "Operating System :: MacOS :: MacOS X",
+        "Operating System :: POSIX :: Linux",
+        "Operating System :: Microsoft :: Windows"
+    ],
+    packages=find_packages(exclude=["*.tests"]),
+    include_package_data=True,
+    zip_safe=False,
+    distclass=BinaryDistribution,
+    package_data={'': ['*.so', "*.dll"]},
+    setup_requires=DEPENDENCIES,
+    install_requires=DEPENDENCIES,
+    requires=REQUIRES,
+    tests_require=TEST_DEPENDENCIES,
+    cmdclass={
+        'install': InstallSpiceyPy,
+        'test': PyTest},
+    test_suite='spiceypy.tests.test_wrapper.py',
+    extras_require={'testing': ['pytest']})
