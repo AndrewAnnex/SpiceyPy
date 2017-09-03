@@ -7,8 +7,9 @@ coveralls>=1.1
 #########################################################
 # Packages required for running getspice                #
 #########################################################
-certifi                # Required by getspice
+certifi>=2017.7.27.1   # Required by getspice
+cffi>=1.10.0           # Required by cryptography
 cryptography>=1.9      # Required by urllib3
 idna>=2.0.0            # Required by urllib3
-pyOpenSSL              # Required by urllib3 and getspice
+pyOpenSSL>=17.2.0      # Required by urllib3 and getspice
 urllib3>=1.22          # Required by getspice

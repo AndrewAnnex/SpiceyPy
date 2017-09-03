@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) [2017] [ODC Space]
+Copyright (c) [2015-2017] [Andrew Annex]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -15,11 +15,59 @@ copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+Sources for this file are mostly from DaRasch, spiceminer/getcspice.py,
+with edits by me as needed for python2/3 compatibility
+https://github.com/DaRasch/spiceminer/blob/master/getcspice.py
+
+The MIT License (MIT)
+
+Copyright (c) 2013 Philipp Rasch
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+The MIT License (MIT)
+
+Copyright (c) 2017 ODC Space
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
 """
 from __future__ import print_function
 
@@ -33,91 +81,6 @@ from zipfile import ZipFile
 
 import six.moves.urllib as urllib
 
-__author__ = 'JorgeDiazdelRio'
-
-
-# =============================================================================
-# Handling of CSPICE downloads from HTTPS
-# ---------------------------------------
-#    Some Python distributions may be linked to an old version of OpenSSL
-#    which will not let you connect to NAIF server due to recent SSL cert
-#    upgrades on the JPL servers.  Moreover, versions older than
-#    OpenSSL 1.0.1g are known to contain the 'the Heartbleed Bug'.  Therefore
-#    this module provides two different implementations for the function
-#    __download_ssl (which implements the HTTPS GET call to the NAIF server
-#    to download the required CSPICE distribution package).
-#
-def _download_ssl(url):
-    """
-    Returns the CSPICE package located at the NAIF server using the input
-    ``url``.  This fuction is implemented using urllib3 and pyOpenSSL in
-    order to resolve the known issue with OpenSSL MacOS Python
-    distributions before Python3.6.x
-
-    Parameters
-    ----------
-    url: str
-       HTTPS URL where the CSPICE package is located within the NAIF
-       server.
-
-    Returns
-    -------
-    io.BytesIO
-       CSPICE package encapsulated within a io.BytesIO stream.
-
-    Note
-    ----
-       This function is a copy of the downloadSpice function existing in
-       the original getspice.py module provided in the SpiceyPy 2.0.1.dev0
-       (by Andrew Annex), with the required modifications to work within
-       this class.
-    """
-    # Send the request to get the CSPICE package.
-    response = urllib.request.urlopen(url, timeout=10)
-
-    # Convert the response.data to io.BytesIO and store it in local memory.
-    return io.BytesIO(response.read())
-
-if ssl.OPENSSL_VERSION < 'OpenSSL 1.0.1g':
-    import pip
-    pip.main(['install', 'pyOpenSSL'])
-    pip.main(['install', 'urllib3[secure]'])
-
-    # Force urllib3 to use pyOpenSSL
-    import urllib3.contrib.pyopenssl
-    urllib3.contrib.pyopenssl.inject_into_urllib3()
-
-    import certifi
-    import urllib3
-
-    def _download_ssl(url):
-        """
-        Returns the CSPICE package located at the NAIF server using the input
-        ``url``.  This fuction is implemented using urllib3 and pyOpenSSL in
-        order to resolve the known issue with OpenSSL MacOS Python
-        distributions before Python3.6.x
-
-        Parameters
-        ----------
-        url: str
-           HTTPS URL where the CSPICE package is located within the NAIF
-           server.
-
-        Returns
-        -------
-        io.BytesIO
-           CSPICE package encapsulated within a io.BytesIO stream.
-        """
-        # Create a PoolManager
-        https = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',
-                                    ca_certs=certifi.where())
-
-        # Send the request to get the CSPICE package.
-        response = https.request('GET', url, timeout=urllib3.Timeout(10))
-
-        # Convert the response.data to io.BytesIO and store it in local memory.
-        return io.BytesIO(response.data)
-
 
 class GetCSPICE(object):
     """
@@ -128,9 +91,9 @@ class GetCSPICE(object):
 
     Arguments
     ---------
-    version: str
-       String indicating the required version of the CSPICE Toolkit. By
-       default it is 'N0066'.
+    :argument version: String indicating the required version of the CSPICE
+                       Toolkit. By default it is 'N0066'.
+    :type: str
 
     """
     # This class variable will be used to store the CSPICE package in memory.
@@ -157,45 +120,48 @@ class GetCSPICE(object):
             # Get the remote file path for the Python architecture that
             # executes the script.
             distribution, self._ext = self._distribution_info()
+        except KeyError:
+            print('SpiceyPy currently does not support your system.')
 
+        else:
             cspice = 'cspice.{}'.format(self._ext)
             self._rcspice = ('https://naif.jpl.nasa.gov/pub/naif/misc'
-                             '/toolkit_{}/C/{}/packages'
-                             '/{}').format(version, distribution, cspice)
+                             '/toolkit_{0}/C/{1}/packages'
+                             '/{2}').format(version, distribution, cspice)
 
             # Setup the local directory (where the package will be downloaded)
             self._root = os.path.realpath(os.path.dirname(__file__))
 
             # Download the file
-            print('Downloading CSPICE for {}...'.format(distribution))
-            self._download()
+            print('Downloading CSPICE for {0}...'.format(distribution))
+            attempts = 10   # Let's try a maximum of attempts for getting SPICE
+            while attempts:
+                attempts -= 1
+                try:
+                    self._download()
+                except RuntimeError as error:
+                    print("Download failed with URLError: {0}, trying again after "
+                          "15 seconds!".format(error.message))
 
-            # Unpack the file
-            print('Unpacking... (this may take some time!)')
-            self._unpack()
+                # Unpack the file
+                print('Unpacking... (this may take some time!)')
+                self._unpack()
 
-        except KeyError:
-            print('SpiceyPy currently does not support your system.')
-
-        except RuntimeError as error:
-            print("CSPICE download failed with Error: {}!".format(error))
+                # We are done.  Let's return to the calling code.
+                break
 
     def _distribution_info(self):
         """Creates the distribution name and the expected extension for the
         CSPICE package and returns it.
 
-        Returns
-        -------
-        tuple
-           (distribution, extension) where distribution is the best guess from
-           the strings available within the platform_urls list of strings, and
-           extension is either "zip" or "tar.Z" depending on whether we are
-           dealing with a Windows platform or else.
+        :return (distribution, extension) tuple where distribution is the best
+                guess from the strings available within the platform_urls list
+                of strings, and extension is either "zip" or "tar.Z" depending
+                on whether we are dealing with a Windows platform or else.
+        :rtype: tuple (str, str)
 
-        Raises
-        ------
-        KeyError if the (system, machine) tuple does not correspond to any of
-                 the supported SpiceyPy environments.
+        :raises: KeyError if the (system, machine) tuple does not correspond
+                 to any of the supported SpiceyPy environments.
         """
 
         print('Gathering information...')
@@ -216,20 +182,64 @@ class GetCSPICE(object):
     def _download(self):
         """Support function that encapsulates the OpenSSL transfer of the CSPICE
         package to the self._local io.ByteIO stream.
+
+        :raises RuntimeError if there has been any issue with the HTTPS
+                             communication
+
+        .. note::
+
+           Handling of CSPICE downloads from HTTPS
+           ---------------------------------------
+           Some Python distributions may be linked to an old version of OpenSSL
+           which will not let you connect to NAIF server due to recent SSL cert
+           upgrades on the JPL servers.  Moreover, versions older than
+           OpenSSL 1.0.1g are known to contain the 'the Heartbleed Bug'.
+           Therefore this method provides two different implementations for the
+           HTTPS GET call to the NAIF server to download the required CSPICE
+           distribution package.
         """
-        self._local = _download_ssl(self._rcspice)
+        # Use urllib3 (based on PyOpenSSL).
+        if ssl.OPENSSL_VERSION < 'OpenSSL 1.0.1g':
+            import pip
+            pip.main(['install', 'pyOpenSSL'])
+            pip.main(['install', 'urllib3[secure]'])
+
+            # Force urllib3 to use pyOpenSSL
+            import urllib3.contrib.pyopenssl
+            urllib3.contrib.pyopenssl.inject_into_urllib3()
+
+            import certifi
+            import urllib3
+
+            try:
+                # Create a PoolManager
+                https = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',
+                                            ca_certs=certifi.where())
+
+                # Send the request to get the CSPICE package.
+                response = https.request('GET', self._rcspice,
+                                         timeout=urllib3.Timeout(10))
+            except urllib3.exceptions.HTTPError as err:
+                raise RuntimeError(err.message)
+
+            # Convert the response to io.BytesIO and store it in local memory.
+            self._local = io.BytesIO(response.data)
+
+        # Use the standard urllib (using system OpenSSL).
+        else:
+            try:
+                # Send the request to get the CSPICE package.
+                response = urllib.request.urlopen(self._rcspice, timeout=10)
+            except urllib.error.URLError as err:
+                raise RuntimeError(err.reason)
+
+            # Convert the response to io.BytesIO and store it in local memory.
+            self._local = io.BytesIO(response.read())
 
     def _unpack(self):
         """Unpacks the CSPICE package on the given root directory. Note that
         Package could either be the zipfile.ZipFile class for Windows platforms
         or tarfile.TarFile for other platforms.
-
-        Note
-        ----
-           This method is a copy of the equivalent code provided in the
-           SpiceyPy 2.0.1.dev0 (by Andrew Annex), with the required
-           modifications to work within this class.
-
         """
         if self._ext == 'zip':
             with ZipFile(self._local, 'r') as archive:

@@ -49,17 +49,6 @@ DEPENDENCIES = ['numpy>=1.8.0', 'six>=1.9.0', 'certifi']
 REQUIRES = ['numpy', 'six']
 
 
-# Set the CPPFLAGS and LDFLAGS environment variables before running the
-# SpiceyPy setup. This is required in order to fix issues with OpenSSL
-# on Mac OSX. Further information:
-# https://cryptography.io/en/latest/installation/#building-cryptography-on-macos
-# cryptograpy is required in order to run the 'download' method of the
-# GetCSPICE class of the getspice.py module, and it needs to be build
-# before if it is not preinstalled.
-# if host_OS == 'Darwin':
-#     os.environ['CPPFLAGS'] = '-I/usr/local/opt/openssl/include'
-#     os.environ['LDFLAGS'] = '-L/usr/local/opt/openssl/lib'
-
 # py.test integration from pytest.org
 class PyTest(TestCommand):
 
@@ -88,7 +77,7 @@ class InstallSpiceyPy(install):
     def run(self):
         self.check_for_spice()
     
-        print("Host OS: {}".format(host_OS))
+        print("Host OS: {0}".format(host_OS))
         if host_OS == "Linux" or host_OS == "Darwin":
             self.mac_linux_method()
         elif host_OS == "Windows":
@@ -143,8 +132,10 @@ class InstallSpiceyPy(install):
 
     @staticmethod
     def build_library():
+        # Get the current working directory
+        cwd = os.getcwd()
+
         if host_OS == "Linux" or host_OS == "Darwin":
-            currentDir = os.getcwd()
             try:
                 os.chdir(lib_dir)
                 # find a way to make this work via Extension and setuptools, not using popen.
@@ -158,10 +149,8 @@ class InstallSpiceyPy(install):
             except BaseException as errorInst:
                 status = errorInst.args
                 sys.exit('Error: compilation of shared spice.so build exit status: {0}'.format(status))
-            finally:
-                os.chdir(currentDir)
+
         elif host_OS == "Windows":
-            currentDir = os.getcwd()
             try:
                 destination = os.path.join(cspice_dir, "src", "cspice")
                 defFile = os.path.join(root_dir, "appveyor", "cspice.def")
@@ -176,8 +165,8 @@ class InstallSpiceyPy(install):
                     raise BaseException('{0}'.format(status))
             except BaseException as error:
                 sys.exit("Build failed with: {0}".format(error.args))
-            finally:
-                os.chdir(currentDir)
+        # Change back to the stored 'current working directory
+        os.chdir(cwd)
 
     @staticmethod
     def move_to_root_directory():
@@ -203,27 +192,23 @@ class InstallSpiceyPy(install):
             raise e
 
     def mac_linux_method(self):
-        if host_OS == "Linux" or host_OS == "Darwin":
-            # Next unpack cspice.a and csupport.a
-            self.unpack_cspice()
-            # Build the shared Library
+        # Unpack cspice.a and csupport.a
+        self.unpack_cspice()
+        # Build the shared Library
+        self.build_library()
+        # Move to correct location (root of the distribution)
+        self.move_to_root_directory()
+
+    def windows_method(self):
+        if os.path.exists(os.path.join(cspice_dir, "lib", "cspice.dll")):
+            print("Found premade cspice.dll, not building")
+        elif os.path.exists(os.path.join(root_dir, 'spiceypy', 'utils', 'cspice.dll')):
+            print("Found premade cspice.dll in spiceypy, not building")
+        else:
+            # Build the DLL
             self.build_library()
             # Move to correct location (root of the distribution)
             self.move_to_root_directory()
-
-    def windows_method(self):
-        if host_OS == "Windows":
-            if os.path.exists(os.path.join(cspice_dir, "lib", "cspice.dll")):
-                print("Found premade cspice.dll, not building")
-                return
-            elif os.path.exists(os.path.join(root_dir, 'spiceypy', 'utils', 'cspice.dll')):
-                print("Found premade cspice.dll in spiceypy, not building")
-                return
-            else:
-                # Build the DLL
-                self.build_library()
-                # Move to correct location (root of the distribution)
-                self.move_to_root_directory()
 
 
 readme = open('README.rst', 'r')
@@ -232,7 +217,7 @@ readme.close()
 
 setup(
     name='spiceypy',
-    version='2.0.1.dev1',
+    version='2.0.1.dev2',
     license='MIT',
     author='Andrew Annex',
     author_email='ama6fy@virginia.edu',
@@ -250,6 +235,7 @@ setup(
         "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
         "Operating System :: MacOS :: MacOS X",
         "Operating System :: POSIX :: Linux",
         "Operating System :: Microsoft :: Windows"
