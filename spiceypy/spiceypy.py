@@ -2769,6 +2769,7 @@ def dskopn(fname, ifname, ncomch):
     return handle.value
 
 
+@spiceErrorCheck
 def dskp02(handle, dladsc, start, room):
     """
     Fetch triangular plates from a type 2 DSK segment.
@@ -2873,12 +2874,77 @@ def dskx02():
     raise NotImplementedError
 
 
-def dskxsi():
-    raise NotImplementedError
+@spiceErrorCheck
+@spiceFoundExceptionThrower
+def dskxsi(pri, target, srflst, et, fixref, vertex, raydir):
+    """
+    Compute a ray-surface intercept using data provided by
+    multiple loaded DSK segments. Return information about
+    the source of the data defining the surface on which the
+    intercept was found: DSK handle, DLA and DSK descriptors,
+    and DSK data type-dependent parameters.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskxsi_c.html
+
+    :param pri:
+    :param target:
+    :param srflst:
+    :param et:
+    :param fixref:
+    :param vertex:
+    :param raydir:
+    :return:
+    """
+    pri = ctypes.c_bool(pri)
+    target = stypes.stringToCharP(target)
+    nsurf = ctypes.c_int(len(srflst))
+    srflst = stypes.toIntVector(srflst)
+    et = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    vertex = stypes.toDoubleVector(vertex)
+    raydir = stypes.toDoubleVector(raydir)
+    maxd = ctypes.c_int(0)
+    maxi = ctypes.c_int(0)
+    xpt  = stypes.emptyDoubleVector(3)
+    handle = ctypes.c_int(0)
+    dladsc = stypes.SpiceDLADescr()
+    dskdsc = stypes.SpiceDSKDescr()
+    dc     = stypes.emptyDoubleVector(1)
+    ic     = stypes.emptyIntVector(1)
+    found  = ctypes.c_bool()
+    libspice.dskxsi_c(pri, target, nsurf, srflst, et, fixref, vertex, raydir, maxd, maxi, xpt, handle, dladsc, dskdsc, dc, ic, found)
 
 
-def dskxv():
-    raise NotImplementedError
+@spiceErrorCheck
+def dskxv(pri, target, srflst, et, fixref, vtxarr, dirarr):
+    """
+    Compute ray-surface intercepts for a set of rays, using data
+    provided by multiple loaded DSK segments.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskxv_c.html
+
+    :param pri:
+    :param target:
+    :param srflst:
+    :param et:
+    :param fixref:
+    :param vtxarr:
+    :param dirarr:
+    :return:
+    """
+    pri    = ctypes.c_bool(pri)
+    target = stypes.stringToCharP(target)
+    nsurf  = ctypes.c_int(len(srflst))
+    srflst = stypes.toIntVector(srflst)
+    et     = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    nray   = ctypes.c_int(len(vtxarr))
+    vtxarr = stypes.toDoubleMatrix(vtxarr)
+    dirarr = stypes.toDoubleMatrix(dirarr)
+    xptarr = stypes.emptyDoubleMatrix(y=nray)
+    fndarr = stypes.emptyBoolVector(nray)
+    libspice.dskxv_c(pri, target, nsurf, srflst, et, fixref, nray, vtxarr, dirarr, xptarr, fndarr)
+    return stypes.cMatrixToNumpy(xptarr), stypes.cMatrixToNumpy(fndarr)
 
 
 @spiceErrorCheck

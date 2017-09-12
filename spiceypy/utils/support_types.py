@@ -150,11 +150,18 @@ def emptyIntMatrix(x=3, y=3):
         y = y.value
     return ((c_int * x) * y)()
 
+
 def emptyIntVector(n):
     if isinstance(n, c_int):
         n = n.value
     assert (isinstance(n, int))
     return (c_int * n)()
+
+
+def emptyBoolVector(n):
+    if isinstance(n, c_int):
+        n = n.value
+    return (c_bool * n)()
 
 
 def vectorToList(x):
@@ -453,6 +460,26 @@ class DataType(object):
         pass
 
 
+class SpiceDSKDescr(Structure):
+    _fields_ = [
+        ('surfce', c_int),
+        ('center', c_int),
+        ('dclass', c_int),
+        ('dtype', c_int),
+        ('frmcde', c_int),
+        ('corsys', c_int),
+        ('corpar', (c_double * 10)),
+        ('co1min', c_double),
+        ('co1max', c_double),
+        ('co2min', c_double),
+        ('co2max', c_double),
+        ('co3min', c_double),
+        ('co3max', c_double),
+        ('start', c_double),
+        ('stop', c_double),
+    ]
+
+
 class SpiceDLADescr(Structure):
     _fields_ = [
         ('bwdptr', c_int),
@@ -487,7 +514,6 @@ class SpiceDLADescr(Structure):
 
     def csize(self):
         return self._csize.value
-
 
 
 class SpiceEKDataType(c_int):
