@@ -150,11 +150,18 @@ def emptyIntMatrix(x=3, y=3):
         y = y.value
     return ((c_int * x) * y)()
 
+
 def emptyIntVector(n):
     if isinstance(n, c_int):
         n = n.value
     assert (isinstance(n, int))
     return (c_int * n)()
+
+
+def emptyBoolVector(n):
+    if isinstance(n, c_int):
+        n = n.value
+    return (c_bool * n)()
 
 
 def vectorToList(x):
@@ -453,41 +460,127 @@ class DataType(object):
         pass
 
 
+class SpiceDSKDescr(Structure):
+    _fields_ = [
+        ('_surfce', c_int),
+        ('_center', c_int),
+        ('_dclass', c_int),
+        ('_dtype', c_int),
+        ('_frmcde', c_int),
+        ('_corsys', c_int),
+        ('_corpar', c_double * 10),
+        ('_co1min', c_double),
+        ('_co1max', c_double),
+        ('_co2min', c_double),
+        ('_co2max', c_double),
+        ('_co3min', c_double),
+        ('_co3max', c_double),
+        ('_start', c_double),
+        ('_stop', c_double),
+    ]
+    @property
+    def surfce(self):
+        return self._surfce
+
+    @property
+    def center(self):
+        return self._center
+
+    @property
+    def dclass(self):
+        return self._dclass
+
+    @property
+    def dtype(self):
+        return self._dtype
+
+    @property
+    def frmcde(self):
+        return self._frmcde
+
+    @property
+    def corsys(self):
+        return self._corsys
+
+    @property
+    def corpar(self):
+        return vectorToList(self._corpar)
+
+    @property
+    def co1min(self):
+        return self._co1min
+
+    @property
+    def co1max(self):
+        return self._co1max
+
+    @property
+    def co2min(self):
+        return self._co2min
+
+    @property
+    def co2max(self):
+        return self._co2max
+
+    @property
+    def co3min(self):
+        return self._co3min
+
+    @property
+    def co3max(self):
+        return self._co3max
+
+    @property
+    def start(self):
+        return self._start
+
+    @property
+    def stop(self):
+        return self._stop
+
+
 class SpiceDLADescr(Structure):
     _fields_ = [
-        ('bwdptr', c_int),
-        ('fwdptr', c_int),
-        ('ibase', c_int),
-        ('isize', c_int),
-        ('dbase', c_int),
-        ('dsize', c_int),
-        ('cbase', c_int),
-        ('csize', c_int)
+        ('_bwdptr', c_int),
+        ('_fwdptr', c_int),
+        ('_ibase', c_int),
+        ('_isize', c_int),
+        ('_dbase', c_int),
+        ('_dsize', c_int),
+        ('_cbase', c_int),
+        ('_csize', c_int)
     ]
+    @property
     def bwdptr(self):
-        return self._bwdptr.value
+        return self._bwdptr
 
+    @property
     def fwdptr(self):
-        return self._fwdprt.value
+        return self._fwdprt
 
+    @property
     def ibase(self):
-        return self._ibase.value
+        return self._ibase
 
+    @property
     def isize(self):
-        return self._isize.value
+        return self._isize
 
+    @property
     def dbase(self):
-        return self._dbase.value
+        return self._dbase
 
+    @property
     def dsize(self):
-        return self._dsize.value
+        return self._dsize
 
+    @property
     def cbase(self):
-        return self._cbase.value
+        return self._cbase
 
+    @property
     def csize(self):
-        return self._csize.value
-
+        return self._csize
 
 
 class SpiceEKDataType(c_int):

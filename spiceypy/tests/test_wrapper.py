@@ -1249,8 +1249,32 @@ def test_dskd02():
         spice.dskd02()
 
 def test_dskgd():
-    with pytest.raises(NotImplementedError):
-        spice.dskgd()
+    spice.kclear()
+    # open the dsk file
+    handle = spice.dasopr(ExtraKernels.phobosDsk)
+    # get the dladsc from the file
+    dladsc = spice.dlabfs(handle)
+    # get dskdsc for target radius
+    dskdsc = spice.dskgd(handle, dladsc)
+    # test results
+    assert dskdsc.surfce == 401
+    assert dskdsc.center == 401
+    assert dskdsc.dclass == 1
+    assert dskdsc.dtype  == 2
+    assert dskdsc.frmcde == 10021
+    assert dskdsc.corsys == 1
+    npt.assert_almost_equal(dskdsc.corpar, np.zeros(10))
+    assert dskdsc.co1min == pytest.approx(-3.141593)
+    assert dskdsc.co1max == pytest.approx(3.141593)
+    assert dskdsc.co2min == pytest.approx(-1.570796)
+    assert dskdsc.co2max == pytest.approx(1.570796)
+    assert dskdsc.co3min == pytest.approx(8.125010)
+    assert dskdsc.co3max == pytest.approx(14.0117681)
+    assert dskdsc.start  == pytest.approx(-1577879958.816059)
+    assert dskdsc.stop   == pytest.approx(1577880066.183913)
+    # cleanup
+    spice.dascls(handle)
+    spice.kclear()
 
 def test_dski02():
     spice.kclear()
@@ -1315,16 +1339,75 @@ def test_dskw02():
         spice.dskw02()
 
 def test_dskx02():
-    with pytest.raises(NotImplementedError):
-        spice.dskx02()
+    spice.kclear()
+    # open the dsk file
+    handle = spice.dasopr(ExtraKernels.phobosDsk)
+    # get the dladsc from the file
+    dladsc = spice.dlabfs(handle)
+    # get dskdsc for target radius
+    dskdsc = spice.dskgd(handle, dladsc)
+    r = 2.0 * dskdsc.co3max
+    # Produce a ray vertex
+    vertex = spice.latrec(r, 0.0, 0.0)
+    raydir = spice.vminus(vertex)
+    plid, xpt, found = spice.dskx02(handle, dladsc, vertex, raydir)
+    # test results
+    assert found
+    assert plid == 180278
+    npt.assert_almost_equal(xpt, [12.53551674, 0.0, 0.0])
+    # cleanup
+    spice.dascls(handle)
+    spice.kclear()
 
 def test_dskxsi():
-    with pytest.raises(NotImplementedError):
-        spice.dskxsi()
+    spice.kclear()
+    # load kernels
+    spice.furnsh(ExtraKernels.phobosDsk)
+    # get handle
+    dsk1, filtyp, source, handle = spice.kdata(0, "DSK", 256, 5, 256)
+    # get the dladsc from the file
+    dladsc = spice.dlabfs(handle)
+    # get dskdsc for target radius
+    dskdsc = spice.dskgd(handle, dladsc)
+    target = spice.bodc2n(dskdsc.center)
+    fixref = spice.frmnam(dskdsc.frmcde)
+    r = 1.0e10
+    vertex = spice.latrec(r, 0.0, 0.0)
+    raydir = spice.vminus(vertex)
+    srflst = [dskdsc.surfce]
+    # call dskxsi
+    xpt, handle, dladsc2, dskdsc2, dc, ic  = spice.dskxsi(False, target, srflst, 0.0, fixref, vertex, raydir)
+    # check output
+    assert handle is not None
+    assert ic[0] == 180278
+    assert dc[0] == pytest.approx(0.0)
+    npt.assert_almost_equal(xpt, [12.53551674, 0.0, 0.0])
+    spice.kclear()
 
 def test_dskxv():
-    with pytest.raises(NotImplementedError):
-        spice.dskxv()
+    spice.kclear()
+    # load kernels
+    spice.furnsh(ExtraKernels.phobosDsk)
+    # get handle
+    dsk1, filtyp, source, handle = spice.kdata(0, "DSK", 256, 5, 256)
+    # get the dladsc from the file
+    dladsc = spice.dlabfs(handle)
+    # get dskdsc for target radius
+    dskdsc = spice.dskgd(handle, dladsc)
+    target = spice.bodc2n(dskdsc.center)
+    fixref = spice.frmnam(dskdsc.frmcde)
+    r = 1.0e10
+    vertex = spice.latrec(r, 0.0, 0.0)
+    raydir = spice.vminus(vertex)
+    srflst = [dskdsc.surfce]
+    # call dskxsi
+    xpt, foundarray = spice.dskxv(False, target, srflst, 0.0, fixref, [vertex], [raydir])
+    # check output
+    assert len(xpt) == 1
+    assert len(foundarray) == 1
+    assert foundarray[0]
+    npt.assert_almost_equal(xpt[0], [12.53551674, 0.0, 0.0])
+    spice.kclear()
 
 def test_dskz02():
     spice.kclear()
