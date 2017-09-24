@@ -2646,8 +2646,24 @@ def dskd02():
     raise NotImplementedError
 
 
-def dskgd():
-    raise NotImplementedError
+def dskgd(handle, dladsc):
+    """
+    Return the DSK descriptor from a DSK segment identified
+    by a DAS handle and DLA descriptor.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskgd_c.html
+
+    :param handle: Handle assigned to the opened DSK file.
+    :type handle: int
+    :param dladsc: DLA segment descriptor.
+    :type dladsc: spiceypy.utils.support_types.SpiceDLADescr
+    :return: DSK segment descriptor.
+    :rtype: stypes.SpiceDSKDescr
+    """
+    handle = ctypes.c_int(handle)
+    dskdsc = stypes.SpiceDSKDescr()
+    libspice.dskgd_c(handle, ctypes.byref(dladsc), ctypes.byref(dskdsc))
+    return dskdsc
 
 
 @spiceErrorCheck
@@ -2870,9 +2886,34 @@ def dskw02():
     raise NotImplementedError
 
 
-def dskx02():
-    raise NotImplementedError
+@spiceErrorCheck
+def dskx02(handle, dladsc, vertex, raydir):
+    """
+    Determine the plate ID and body-fixed coordinates of the
+    intersection of a specified ray with the surface defined by a
+    type 2 DSK plate model.
 
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskx02_c.html
+
+    :param handle: Handle of DSK kernel containing plate model.
+    :type handle: int
+    :param dladsc: DLA descriptor of plate model segment.
+    :type dladsc: spiceypy.utils.support_types.SpiceDLADescr
+    :param vertex: Ray's vertex in the  body fixed frame.
+    :type vertex: 3-Element Array of floats
+    :param raydir: Ray direction in the body fixed frame.
+    :type raydir: 3-Element Array of floats
+    :return: ID code of the plate intersected by the ray, Intercept, and Flag indicating whether intercept exists.
+    :rtype: tuple
+    """
+    handle = ctypes.c_int(handle)
+    vertex = stypes.toDoubleVector(vertex)
+    raydir = stypes.toDoubleVector(raydir)
+    plid   = ctypes.c_int()
+    xpt    = stypes.emptyDoubleVector(3)
+    found  = ctypes.c_bool()
+    libspice.dskx02_c(handle, ctypes.byref(dladsc), vertex, raydir, ctypes.byref(plid), xpt, ctypes.byref(found))
+    return plid.value, stypes.vectorToList(xpt), found.value
 
 @spiceErrorCheck
 @spiceFoundExceptionThrower
@@ -2886,14 +2927,22 @@ def dskxsi(pri, target, srflst, et, fixref, vertex, raydir):
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskxsi_c.html
 
-    :param pri:
-    :param target:
-    :param srflst:
-    :param et:
-    :param fixref:
-    :param vertex:
-    :param raydir:
-    :return:
+    :param pri: Data prioritization flag.
+    :type pri: bool
+    :param target: Target body name.
+    :type target: str
+    :param srflst: Surface ID list.
+    :type srflst: list of str
+    :param et: Epoch, expressed as seconds past J2000 TDB.
+    :type et: float
+    :param fixref: Name of target body-fixed reference frame.
+    :type fixref: str
+    :param vertex: Vertex of ray.
+    :type vertex: 3-Element Array of floats
+    :param raydir: Direction vector of ray.
+    :type raydir: 3-Element Array of floats
+    :return: Intercept point, Handle of segment contributing surface data, DLADSC, DSKDSC, Double precision component of source info, Integer component of source info
+    :rtype: tuple
     """
     pri = ctypes.c_bool(pri)
     target = stypes.stringToCharP(target)
@@ -2903,8 +2952,8 @@ def dskxsi(pri, target, srflst, et, fixref, vertex, raydir):
     fixref = stypes.stringToCharP(fixref)
     vertex = stypes.toDoubleVector(vertex)
     raydir = stypes.toDoubleVector(raydir)
-    maxd = ctypes.c_int(0)
-    maxi = ctypes.c_int(0)
+    maxd = ctypes.c_int(1)
+    maxi = ctypes.c_int(1)
     xpt  = stypes.emptyDoubleVector(3)
     handle = ctypes.c_int(0)
     dladsc = stypes.SpiceDLADescr()
@@ -2913,6 +2962,7 @@ def dskxsi(pri, target, srflst, et, fixref, vertex, raydir):
     ic     = stypes.emptyIntVector(1)
     found  = ctypes.c_bool()
     libspice.dskxsi_c(pri, target, nsurf, srflst, et, fixref, vertex, raydir, maxd, maxi, xpt, handle, dladsc, dskdsc, dc, ic, found)
+    return stypes.vectorToList(xpt), handle.value, dladsc, dskdsc, stypes.vectorToList(dc), stypes.vectorToList(ic), found.value
 
 
 @spiceErrorCheck
@@ -2923,14 +2973,22 @@ def dskxv(pri, target, srflst, et, fixref, vtxarr, dirarr):
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskxv_c.html
 
-    :param pri:
-    :param target:
-    :param srflst:
-    :param et:
-    :param fixref:
-    :param vtxarr:
-    :param dirarr:
-    :return:
+    :param pri: Data prioritization flag.
+    :type pri: bool
+    :param target: Target body name.
+    :type target: str
+    :param srflst: Surface ID list.
+    :type srflst: list of str
+    :param et: Epoch, expressed as seconds past J2000 TDB.
+    :type et: float
+    :param fixref: Name of target body-fixed reference frame.
+    :type fixref: str
+    :param vtxarr: Array of vertices of rays.
+    :type vtxarr: Nx3-Element Array of floats
+    :param dirarr: Array of direction vectors of rays.
+    :type dirarr: Nx3-Element Array of floats
+    :return: Intercept point array and Found flag array.
+    :rtype: tuple
     """
     pri    = ctypes.c_bool(pri)
     target = stypes.stringToCharP(target)
@@ -2944,7 +3002,7 @@ def dskxv(pri, target, srflst, et, fixref, vtxarr, dirarr):
     xptarr = stypes.emptyDoubleMatrix(y=nray)
     fndarr = stypes.emptyBoolVector(nray)
     libspice.dskxv_c(pri, target, nsurf, srflst, et, fixref, nray, vtxarr, dirarr, xptarr, fndarr)
-    return stypes.cMatrixToNumpy(xptarr), stypes.cMatrixToNumpy(fndarr)
+    return stypes.cMatrixToNumpy(xptarr), stypes.vectorToList(fndarr)
 
 
 @spiceErrorCheck
