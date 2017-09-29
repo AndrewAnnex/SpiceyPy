@@ -45,7 +45,6 @@ cwd = os.path.realpath(os.path.dirname(__file__))
 def setup_module(module):
     downloadKernels()
 
-
 def test_appndc():
     testCell = spice.stypes.SPICECHAR_CELL(10, 10)
     spice.appndc("one", testCell)
@@ -1315,10 +1314,6 @@ def test_dski02():
     spice.dascls(handle)
     spice.kclear()
 
-def test_dskmi2():
-    with pytest.raises(NotImplementedError):
-        spice.dskmi2()
-
 def test_dskn02():
     spice.kclear()
     # open the dsk file
@@ -1344,10 +1339,6 @@ def test_dskp02():
     spice.dascls(handle)
     spice.kclear()
 
-def test_dskrb2():
-    with pytest.raises(NotImplementedError):
-        spice.dskrb2()
-
 def test_dskv02():
     spice.kclear()
     # open the dsk file
@@ -1360,9 +1351,66 @@ def test_dskv02():
     spice.dascls(handle)
     spice.kclear()
 
-def test_dskw02():
-    with pytest.raises(NotImplementedError):
-        spice.dskw02()
+def test_dskw02_dskrb2_dskmi2():
+    spice.kclear()
+    dskpath = os.path.join(cwd, "TESTdskw02.dsk")
+    if spice.exists(dskpath):
+        os.remove(dskpath)  # pragma: no cover
+    # open the dsk file
+    handle = spice.dasopr(ExtraKernels.phobosDsk)
+    # get the dladsc from the file
+    dladsc = spice.dlabfs(handle)
+    # declare some variables
+    finscl = 5.0
+    corscl = 4
+    center = 401
+    surfid = 1
+    dclass = 2
+    frame = "IAU_PHOBOS"
+    first = -50 * spice.jyear()
+    last  =  50 * spice.jyear()
+    # stuff from spicedsk.h
+    SPICE_DSK02_MAXVRT = 16000002
+    SPICE_DSK02_MAXPLT = 2 * (SPICE_DSK02_MAXVRT - 2)
+    SPICE_DSK02_MAXVXP = SPICE_DSK02_MAXPLT // 2
+    SPICE_DSK02_MAXCEL = 60000000
+    SPICE_DSK02_MXNVLS = SPICE_DSK02_MAXCEL + (SPICE_DSK02_MAXVXP // 2)
+    SPICE_DSK02_MAXCGR = 100000
+    SPICE_DSK02_IXIFIX = SPICE_DSK02_MAXCGR + 7
+    SPICE_DSK02_MAXNPV = 3 * (SPICE_DSK02_MAXPLT // 2) + 1
+    SPICE_DSK02_SPAISZ = SPICE_DSK02_IXIFIX + SPICE_DSK02_MAXVXP + SPICE_DSK02_MXNVLS + SPICE_DSK02_MAXVRT + SPICE_DSK02_MAXNPV
+    worksz = SPICE_DSK02_MAXCEL
+    voxpsz = SPICE_DSK02_MAXVXP
+    voxlsz = SPICE_DSK02_MXNVLS
+    spaisz = SPICE_DSK02_SPAISZ
+    # get verts, number from dskb02 test
+    vrtces = spice.dskv02(handle, dladsc, 1, 164840)
+    # get plates, number from dskb02 test
+    plates = spice.dskp02(handle, dladsc, 1, 329676)
+    # open new dsk file
+    handle = spice.dskopn('TESTdskw02.dsk', 'TESTdskw02.dsk/AA/29-SEP-2017', 0)
+    # create spatial index
+    spaixd, spaixi = spice.dskmi2(vrtces, plates, finscl, corscl, worksz, voxpsz, voxlsz, False, spaisz)
+    # do stuff
+    corsys = 1
+    mncor1 = -spice.pi()
+    mxcor1 = spice.pi()
+    mncor2 = -spice.pi() / 2
+    mxcor2 = spice.pi() / 2
+    # Compute plate model radius bounds.
+    corpar = np.zeros(10)
+    mncor3, mxcor3 = spice.dskrb2(vrtces, plates, corsys, corpar)
+    # Write the segment to the file
+    spice.dskw02(handle, center, surfid, dclass, frame, corsys, corpar,
+                 mncor1, mxcor1, mncor2, mxcor2, mncor3, mxcor3, first,
+                 last, vrtces, plates, spaixd, spaixi)
+    # cose the dsk file
+    spice.dskcls(handle, optmiz=True)
+    # cleanup
+    if spice.exists(dskpath):
+        os.remove(dskpath)  # pragma: no cover
+    spice.kclear()
+
 
 def test_dskx02():
     spice.kclear()

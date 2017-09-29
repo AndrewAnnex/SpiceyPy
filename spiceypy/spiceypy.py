@@ -2769,7 +2769,7 @@ def dski02(handle, dladsc, item, start, room):
 
 
 @spiceErrorCheck
-def dskmi2(vrtces, plates, finscl, corscl, worksz, voxpsz, voxlsz, makvtl, spxisz, work, spaixd, spaixi):
+def dskmi2(vrtces, plates, finscl, corscl, worksz, voxpsz, voxlsz, makvtl, spxisz):
     """
     Make spatial index for a DSK type 2 segment. The index is returned
     as a pair of arrays, one of type int and one of type
@@ -2796,18 +2796,12 @@ def dskmi2(vrtces, plates, finscl, corscl, worksz, voxpsz, voxlsz, makvtl, spxis
     :type makvtl: bool
     :param spxisz: Spatial index integer component size
     :type spxisz: int
-    :param work: Workspace
-    :type  work: NxM-Element Array of ints
-    :param spaixd: Double precision component of spatial index
-    :type spaixd: N-Element Array of floats
-    :param spaixi: Integer component of spatial index
-    :type spaixi: N-Element Array of ints
-    :return: workspace array, double precision and integer components of the spatial index of the segment.
+    :return: double precision and integer components of the spatial index of the segment.
     :rtype: tuple
     """
-    nv = ctypes.c_int(len(vrtces))
+    nv     = ctypes.c_int(len(vrtces))
     vrtces = stypes.toDoubleMatrix(vrtces)
-    np = ctypes.c_int(len(plates))
+    np     = ctypes.c_int(len(plates))
     plates = stypes.toIntMatrix(plates)
     finscl = ctypes.c_double(finscl)
     corscl = ctypes.c_int(corscl)
@@ -2816,11 +2810,11 @@ def dskmi2(vrtces, plates, finscl, corscl, worksz, voxpsz, voxlsz, makvtl, spxis
     voxlsz = ctypes.c_int(voxlsz)
     makvtl = ctypes.c_bool(makvtl)
     spxisz = ctypes.c_int(spxisz)
-    work = stypes.toIntMatrix(work)
-    spaixd = stypes.toDoubleVector(spaixd)
-    spaixi = stypes.toIntVector(spaixi)
+    work   = stypes.emptyIntMatrix(2, worksz)
+    spaixd = stypes.emptyDoubleVector(10) # SPICE_DSK02_SPADSZ
+    spaixi = stypes.emptyIntVector(spxisz)
     libspice.dskmi2_c(nv, vrtces, np, plates, finscl, corscl, worksz, voxpsz, voxlsz, makvtl, spxisz, work, spaixd, spaixi)
-    return stypes.cMatrixToNumpy(work), stypes.cVectorToPython(spaixd), stypes.cVectorToPython(spaixi)
+    return stypes.cVectorToPython(spaixd), stypes.cVectorToPython(spaixi)
 
 
 @spiceErrorCheck
@@ -3053,12 +3047,8 @@ def dskw02(handle, center, surfid, dclass, fname, corsys, corpar, mncor1,
     :type first: float
     :param last: Coverage stop time
     :type last: float
-    :param nv: Number of vertices
-    :type nv: int
     :param vrtces: Vertices
     :type vrtces: NxM-Element Array of floats
-    :param np: Number of plates
-    :type np: int
     :param plates: Plates
     :type plates: NxM-Element Array of ints
     :param spaixd: Double precision component of spatial index
