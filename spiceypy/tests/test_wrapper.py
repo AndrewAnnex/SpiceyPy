@@ -1241,12 +1241,38 @@ def test_dskopn_dskcls():
 
 
 def test_dskb02():
-    with pytest.raises(NotImplementedError):
-        spice.dskb02()
+    spice.kclear()
+    # open the dsk file
+    handle = spice.dasopr(ExtraKernels.phobosDsk)
+    # get the dladsc from the file
+    dladsc = spice.dlabfs(handle)
+    # test dskb02
+    nv, nump, nvxtot, vtxbds, voxsiz, voxori, vgrext, cgscal, vtxnpl, voxnpt, voxnpl = spice.dskb02(handle, dladsc)
+    # test results
+    assert nv == 164840
+    assert nump == 329676
+    assert nvxtot == 1005480
+    assert cgscal == 3
+    assert vtxnpl == 1153868
+    assert voxnpt == 132624
+    assert voxnpl == 833661
+    assert voxsiz == pytest.approx(0.24102556320376828)
+    # cleanup
+    spice.dascls(handle)
+    spice.kclear()
 
 def test_dskd02():
-    with pytest.raises(NotImplementedError):
-        spice.dskd02()
+    spice.kclear()
+    # open the dsk file
+    handle = spice.dasopr(ExtraKernels.phobosDsk)
+    # get the dladsc from the file
+    dladsc = spice.dlabfs(handle)
+    # Fetch the vertex
+    values = spice.dskd02(handle, dladsc, 19, 0, 3)
+    assert len(values) > 0
+    npt.assert_almost_equal(values, [ 0.07271853, 0.0, -8.3327179])
+    spice.dascls(handle)
+    spice.kclear()
 
 def test_dskgd():
     spice.kclear()

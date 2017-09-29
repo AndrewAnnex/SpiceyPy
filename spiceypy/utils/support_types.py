@@ -164,7 +164,13 @@ def emptyBoolVector(n):
     return (c_bool * n)()
 
 
-def vectorToList(x):
+def cVectorToPython(x):
+    """
+    Convert the c vector data into the correct python data type
+    (numpy arrays or strings)
+    :param x:
+    :return:
+    """
     if isinstance(x[0], bool):
         return numpy.fromiter(x, numpy.bool, count=len(x))
     elif isinstance(x[0], int):
@@ -410,7 +416,7 @@ class Plane(Structure):
 
     @property
     def normal(self):
-        return vectorToList(self._normal)
+        return cVectorToPython(self._normal)
 
     @property
     def constant(self):
@@ -429,15 +435,15 @@ class Ellipse(Structure):
 
     @property
     def center(self):
-        return vectorToList(self._center)
+        return cVectorToPython(self._center)
 
     @property
     def semi_major(self):
-        return vectorToList(self._semi_major)
+        return cVectorToPython(self._semi_major)
 
     @property
     def semi_minor(self):
-        return vectorToList(self._semi_minor)
+        return cVectorToPython(self._semi_minor)
 
     def __str__(self):
         return '<SpiceEllipse: center = %s, semi_major = %s, semi_minor = %s>' % \
@@ -504,7 +510,7 @@ class SpiceDSKDescr(Structure):
 
     @property
     def corpar(self):
-        return vectorToList(self._corpar)
+        return cVectorToPython(self._corpar)
 
     @property
     def co1min(self):
@@ -663,7 +669,7 @@ class SpiceEKSegSum(Structure):
 
     @property
     def cnames(self):
-        return vectorToList(self._cnames)[0:self.ncols]
+        return cVectorToPython(self._cnames)[0:self.ncols]
 
     @property
     def cdescrs(self):
