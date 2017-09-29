@@ -1387,6 +1387,8 @@ def test_dskw02_dskrb2_dskmi2():
     vrtces = spice.dskv02(handle, dladsc, 1, 164840)
     # get plates, number from dskb02 test
     plates = spice.dskp02(handle, dladsc, 1, 329676)
+    # close the input kernel
+    spice.dskcls(handle)
     # open new dsk file
     handle = spice.dskopn('TESTdskw02.dsk', 'TESTdskw02.dsk/AA/29-SEP-2017', 0)
     # create spatial index
