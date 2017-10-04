@@ -6168,6 +6168,7 @@ def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
     return result
 
 
+@spiceErrorCheck
 def gfudb(udfuns, udfunb, step, cnfine, result):
     """
     Perform a GF search on a user defined boolean quantity.
@@ -6175,31 +6176,49 @@ def gfudb(udfuns, udfunb, step, cnfine, result):
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfudb_c.html
 
     :param udfuns: Name of the routine that computes a scalar quantity of interest corresponding to an `et'.
+    :type udfuns: ctypes.CFunctionType
     :param udfunb: Name of the routine returning the boolean value corresponding to an `et'.
+    :type udfunb: ctypes.CFunctionType
     :param step: Step size used for locating extrema and roots.
+    :type step: float
     :param cnfine: SPICE window to which the search is restricted.
+    :type cnfine: spiceypy.utils.support_types.SpiceCell
     :param result: SPICE window containing results.
+    :type result: spiceypy.utils.support_types.SpiceCell
+    :return: result
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     step = ctypes.c_double(step)
     libspice.gfudb_c(udfuns, udfunb, step, ctypes.byref(cnfine), ctypes.byref(result))
 
 
+@spiceErrorCheck
 def gfuds(udfuns, udqdec, relate, refval, adjust, step, nintvls, cnfine, result):
     """
     Perform a GF search on a user defined scalar quantity.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfuds_c.html
 
-    :param udfuns:
-    :param udqdec:
-    :param relate:
-    :param refval:
-    :param adjust:
-    :param step:
-    :param nintvls:
-    :param cnfine:
-    :param result:
-    :return:
+    :param udfuns: Name of the routine that computes the scalar quantity of interest at some time.
+    :type udfuns: ctypes.CFunctionType
+    :param udqdec: Name of the routine that computes whether the scalar quantity is decreasing.
+    :type udqdec: ctypes.CFunctionType
+    :param relate: Operator that either looks for an extreme value (max, min, local, absolute) or compares the geometric quantity value and a number.
+    :type relate: str
+    :param refval: Value used as reference for scalar quantity condition.
+    :type refval: float
+    :param adjust: Allowed variation for absolute extremal geometric conditions.
+    :type adjust: float
+    :param step: Step size used for locating extrema and roots.
+    :type step: float
+    :param nintvls: Workspace window interval count.
+    :type  nintvls: int
+    :param cnfine: SPICE window to which the search is restricted.
+    :type cnfine: spiceypy.utils.support_types.SpiceCell
+    :param result: SPICE window containing results.
+    :type result: spiceypy.utils.support_types.SpiceCell
+    :return: result
+    :rtype: spiceypy.utils.support_types.SpiceCell
     """
     relate  = stypes.stringToCharP(relate)
     refval  = ctypes.c_double(refval)
@@ -6208,7 +6227,6 @@ def gfuds(udfuns, udqdec, relate, refval, adjust, step, nintvls, cnfine, result)
     nintvls = ctypes.c_int(nintvls)
     libspice.gfuds_c(udfuns, udqdec, relate, refval, adjust, step, nintvls, ctypes.byref(cnfine), ctypes.byref(result))
     return result
-
 
 
 @spiceErrorCheck
