@@ -25,7 +25,7 @@ SOFTWARE.
 import ctypes
 from .utils import support_types as stypes
 from .utils.libspicehelper import libspice
-from .utils.callbacks import SpiceUDF
+from .utils.callbacks import SpiceUDFUNS, SpiceUDFUNB
 import functools
 import numpy
 
@@ -4047,7 +4047,6 @@ def ekifld(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls):
 
 @spiceErrorCheck
 def ekinsr(handle, segno, recno):
-    # Todo: test ekinsr
     """
     Add a new, empty record to a specified E-kernel segment at a specified
     index.
@@ -5723,7 +5722,6 @@ def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval,
 
 @spiceErrorCheck
 def gfrefn(t1, t2, s1, s2):
-    # Todo: test gfrefn
     """
     For those times when we can't do better, we use a bisection
     method to find the next time at which to test for state change.
@@ -5752,7 +5750,6 @@ def gfrefn(t1, t2, s1, s2):
 
 @spiceErrorCheck
 def gfrepf():
-    # Todo: test gfrepf
     """
     Finish a GF progress report.
 
@@ -5764,7 +5761,6 @@ def gfrepf():
 
 @spiceErrorCheck
 def gfrepi(window, begmss, endmss):
-    # Todo: test gfrepi
     """
     This entry point initializes a search progress report.
 
@@ -5786,7 +5782,6 @@ def gfrepi(window, begmss, endmss):
 
 @spiceErrorCheck
 def gfrepu(ivbeg, ivend, time):
-    # Todo: test gfrepu
     """
     This function tells the progress reporting system
     how far a search has progressed.
@@ -6173,12 +6168,47 @@ def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
     return result
 
 
-def gfudb():
-    raise NotImplementedError
+def gfudb(udfuns, udfunb, step, cnfine, result):
+    """
+    Perform a GF search on a user defined boolean quantity.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfudb_c.html
+
+    :param udfuns: Name of the routine that computes a scalar quantity of interest corresponding to an `et'.
+    :param udfunb: Name of the routine returning the boolean value corresponding to an `et'.
+    :param step: Step size used for locating extrema and roots.
+    :param cnfine: SPICE window to which the search is restricted.
+    :param result: SPICE window containing results.
+    """
+    step = ctypes.c_double(step)
+    libspice.gfudb_c(udfuns, udfunb, step, ctypes.byref(cnfine), ctypes.byref(result))
 
 
-def gfuds():
-    raise NotImplementedError
+def gfuds(udfuns, udqdec, relate, refval, adjust, step, nintvls, cnfine, result):
+    """
+    Perform a GF search on a user defined scalar quantity.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfuds_c.html
+
+    :param udfuns:
+    :param udqdec:
+    :param relate:
+    :param refval:
+    :param adjust:
+    :param step:
+    :param nintvls:
+    :param cnfine:
+    :param result:
+    :return:
+    """
+    relate  = stypes.stringToCharP(relate)
+    refval  = ctypes.c_double(refval)
+    adjust  = ctypes.c_double(adjust)
+    step    = ctypes.c_double(step)
+    nintvls = ctypes.c_int(nintvls)
+    libspice.gfuds_c(udfuns, udqdec, relate, refval, adjust, step, nintvls, ctypes.byref(cnfine), ctypes.byref(result))
+    return result
+
 
 
 @spiceErrorCheck
@@ -12419,7 +12449,6 @@ def spkw20(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
     libspice.spkw20_c(handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, dscale, tscale, initjd, initfr)
 
 
-
 @spiceErrorCheck
 @spiceFoundExceptionThrower
 def srfc2s(code, bodyid, srflen=_default_len_out):
@@ -13573,11 +13602,11 @@ def uddc(udfunc, x, dx):
     to time for 'et', then determines if the derivative has a
     negative value.
 
-    Use the @spiceypy.utils.callbacks.SpiceUDF dectorator to wrap
+    Use the @spiceypy.utils.callbacks.SpiceUDFUNS dectorator to wrap
     a given python function that takes one parameter (float) and
     returns a float. For example::
 
-        @spiceypy.utils.callbacks.SpiceUDF
+        @spiceypy.utils.callbacks.SpiceUDFUNS
         def udfunc(et_in):
             pos, new_et = spice.spkpos("MERCURY", et_in, "J2000", "LT+S", "MOON")
             return new_et
@@ -13608,11 +13637,11 @@ def uddf(udfunc, x, dx):
     Routine to calculate the first derivative of a caller-specified
     function using a three-point estimation.
 
-    Use the @spiceypy.utils.callbacks.SpiceUDF dectorator to wrap
+    Use the @spiceypy.utils.callbacks.SpiceUDFUNS dectorator to wrap
     a given python function that takes one parameter (float) and
     returns a float. For example::
 
-        @spiceypy.utils.callbacks.SpiceUDF
+        @spiceypy.utils.callbacks.SpiceUDFUNS
         def udfunc(et_in):
             pos, new_et = spice.spkpos("MERCURY", et_in, "J2000", "LT+S", "MOON")
             return new_et
