@@ -5773,11 +5773,86 @@ def test_spkw13():
 
 
 def test_spkw15():
-    assert 1
+    discrete_epochs = [100.0, 900.0]
+    spice.kclear()
+    #
+    SPK15 = os.path.join(cwd, "test15.bsp")
+    if spice.exists(SPK15):
+        os.remove(SPK15)  # pragma: no cover
+    # create the test kernel
+    handle = spice.spkopn(SPK15, 'Type 13 SPK internal file name.', 4)
+    init_size = os.path.getsize(SPK15)
+    # load kernels
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = spice.str2et('Dec 25, 2007')
+    state, ltime = spice.spkezr('Moon', et, 'J2000', 'NONE', 'EARTH')
+    dim, mu = spice.bodvrd('EARTH', 'GM', 1)
+    elts = spice.oscelt(state, et, mu[0])
+    # From these collect the eccentricity and semi-latus
+    ecc = elts[1]
+    p   = elts[0] * (1.0 + ecc)
+    # Next get the trajectory pole vector and the periapsis vector.
+    state = state[0:3]
+    tp = spice.ucrss(state, state+4)
+    pa = spice.vhat(state)
+    # Enable both J2 corrections.
+    j2flg = 0.0
+    # other constants, as I don't need real values
+    pv = [1.0, 2.0, 3.0]
+    gm = 398600.436
+    j2 = 1.0
+    radius = 6000.0
+    # now call spkw15
+    spice.spkw15(handle, 3, 10, 'J2000', discrete_epochs[0], discrete_epochs[-1], "Test SPKW15", et, tp, pa, p, ecc, j2flg, pv, gm, j2, radius)
+    # close the kernel
+    spice.spkcls(handle)
+    end_size = os.path.getsize(SPK15)
+    # cleanup
+    assert end_size != init_size
+    if spice.exists(SPK15):
+        os.remove(SPK15)  # pragma: no cover
+    #
+    spice.kclear()
 
 
 def test_spkw17():
-    assert 1
+    discrete_epochs = [100.0, 900.0]
+    spice.kclear()
+    #
+    SPK17 = os.path.join(cwd, "test17.bsp")
+    if spice.exists(SPK17):
+        os.remove(SPK17)  # pragma: no cover
+    # create the test kernel
+    handle = spice.spkopn(SPK17, 'Type 17 SPK internal file name.', 4)
+    init_size = os.path.getsize(SPK17)
+    # load kernels
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = spice.str2et('Dec 25, 2007')
+    # make the eqel vector and the rapol and decpol floats
+    p = 10000.0
+    gm = 398600.436
+    ecc = 0.1
+    a = p / (1.0 - ecc)
+    n = np.sqrt(gm / a) / a
+    argp   = 30. * spice.rpd()
+    node   = 15. * spice.rpd()
+    inc    = 10. * spice.rpd()
+    m0     = 45. * spice.rpd()
+    eqel   = [a, ecc * np.sin(argp + node), ecc * np.cos(argp + node), m0 + argp + node,
+              np.tan(inc / 2.0) * np.sin(node), np.tan(inc / 2.0) * np.cos(node), 0.0, n, 0.0]
+    rapol  = spice.halfpi() * -1
+    decpol = spice.halfpi()
+    # now call spkw17
+    spice.spkw17(handle, 3, 10, 'J2000', discrete_epochs[0], discrete_epochs[-1], "Test SPKW17", et, eqel, rapol, decpol)
+    # close the kernel
+    spice.spkcls(handle)
+    end_size = os.path.getsize(SPK17)
+    # cleanup
+    assert end_size != init_size
+    if spice.exists(SPK17):
+        os.remove(SPK17)  # pragma: no cover
+    #
+    spice.kclear()
 
 
 def test_spkw18():
@@ -5786,8 +5861,35 @@ def test_spkw18():
 
 
 def test_spkw20():
-    with pytest.raises(NotImplementedError):
-        spice.spkw20()
+    spice.kclear()
+    #
+    SPK20 = os.path.join(cwd, "test20.bsp")
+    if spice.exists(SPK20):
+        os.remove(SPK20)  # pragma: no cover
+    # create the test kernel
+    handle = spice.spkopn(SPK20, 'Type 20 SPK internal file name.', 4)
+    init_size = os.path.getsize(SPK20)
+    # now call spkw20, giving fake data from f_spk20.c from tspice
+    intlen = 5.0
+    n = 100
+    polydg = 1
+    cdata = np.arange(1.0, 198000.0) #
+    dscale = 1.0
+    tscale = 1.0
+    initjd = 2451545.0
+    initfr = 0.25
+    first  = (initjd - spice.j2000() + initfr) * spice.spd()
+    last   = ((initjd - spice.j2000()) + initfr + n*intlen) * spice.spd()
+    spice.spkw20(handle, 301, 3, "J2000", first, last, "Test SPKW20", intlen, n, polydg, cdata, dscale, tscale, initjd, initfr)
+    # close the kernel
+    spice.spkcls(handle)
+    end_size = os.path.getsize(SPK20)
+    # cleanup
+    assert end_size != init_size
+    if spice.exists(SPK20):
+        os.remove(SPK20)  # pragma: no cover
+    #
+    spice.kclear()
 
 
 def test_srfc2s():
