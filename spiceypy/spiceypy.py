@@ -12260,7 +12260,6 @@ def spkw13(handle, body, center, inframe, first, last, segid, degree, n, states,
 @spiceErrorCheck
 def spkw15(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p,
            ecc, j2flg, pv, gm, j2, radius):
-    # Todo: test spkw15
     """
     Write an SPK segment of type 15 given a type 15 data record.
 
@@ -12293,7 +12292,7 @@ def spkw15(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p,
     :param j2flg: J2 processing flag.
     :type j2flg: float
     :param pv: Central body pole vector.
-    :type pv: float
+    :type pv: 3-Element Array of floats
     :param gm: Central body GM.
     :type gm: float
     :param j2: Central body J2.
@@ -12314,7 +12313,7 @@ def spkw15(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p,
     p = ctypes.c_double(p)
     ecc = ctypes.c_double(ecc)
     j2flg = ctypes.c_double(j2flg)
-    pv = ctypes.c_double(pv)
+    pv = stypes.toDoubleVector(pv)
     gm = ctypes.c_double(gm)
     j2 = ctypes.c_double(j2)
     radius = ctypes.c_double(radius)
@@ -12325,7 +12324,6 @@ def spkw15(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p,
 @spiceErrorCheck
 def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel,
            rapol, decpol):
-    # Todo: test spkw17
     """
     Write an SPK segment of type 17 given a type 17 data record.
 
@@ -12373,8 +12371,53 @@ def spkw18():
     raise NotImplementedError
 
 
-def spkw20():
-    raise NotImplementedError
+@spiceErrorCheck
+def spkw20(handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, dscale, tscale, initjd, initfr):
+    """
+    Write a type 20 segment to an SPK file.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw20_c.html
+
+    :param handle: Handle of an SPK file open for writing.
+    :type handle: int
+    :param body: Body code for ephemeris object.
+    :type body: int
+    :param center: Body code for the center of motion of the body.
+    :type center: int
+    :param inframe: The reference frame of the states.
+    :type inframe: str
+    :param first: First valid time for which states can be computed.
+    :type first: float
+    :param last: Last valid time for which states can be computed.
+    :type last: float
+    :param segid: Segment identifier.
+    :type segid: str
+    :param intlen: Length of time covered by logical record (days).
+    :param n: Number of logical records in segment.
+    :param polydg: Chebyshev polynomial degree.
+    :param cdata: Array of Chebyshev coefficients and positions.
+    :param dscale: Distance scale of data.
+    :param tscale: Time scale of data.
+    :param initjd: Integer part of begin time (TDB Julian date) of first record.
+    :param initfr: Fractional part of begin time (TDB Julian date) of first record.
+    """
+    handle  = ctypes.c_int(handle)
+    body    = ctypes.c_int(body)
+    center  = ctypes.c_int(center)
+    inframe = stypes.stringToCharP(inframe)
+    first   = ctypes.c_double(first)
+    last    = ctypes.c_double(last)
+    segid   = stypes.stringToCharP(segid)
+    intlen  = ctypes.c_double(intlen)
+    n       = ctypes.c_int(n)
+    polydg  = ctypes.c_int(polydg)
+    cdata   = stypes.toDoubleVector(cdata)
+    dscale  = ctypes.c_double(dscale)
+    tscale  = ctypes.c_double(tscale)
+    initjd  = ctypes.c_double(initjd)
+    initfr  = ctypes.c_double(initfr)
+    libspice.spkw20_c(handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, dscale, tscale, initjd, initfr)
+
 
 
 @spiceErrorCheck
