@@ -317,7 +317,7 @@ libspice.getfat_c.argtypes = [c_char_p, c_int, c_int, c_char_p, c_char_p]
 libspice.getfov_c.argtypes = [c_int, c_int, c_int, c_int, c_char_p, c_char_p, (c_double * 3), POINTER(c_int),
                               POINTER(c_double * 3)]
 libspice.getmsg_c.argtypes = [c_char_p, c_int, c_char_p]
-libspice.gfbail_c.restype = c_bool
+libspice.gfbail_c.restype  = c_bool
 libspice.gfclrh_c.argtypes = None
 libspice.gfdist_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double, c_double, c_int,
                               POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
@@ -328,8 +328,8 @@ libspice.gfilum_c.argtupes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, 
 # libspice.gfocce_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double, c_double, c_double, c_double, c_bool, c_bool, c_double, c_bool, None, c_char_p, c_char_p, c_double, c_double, c_double, c_bool, c_bool, None, None]
 libspice.gfoclt_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p,
                               c_double, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
-libspice.gfpa_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double,
-                            c_double, c_int, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
+libspice.gfpa_c.argtypes   = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double,
+                              c_double, c_int, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
 libspice.gfposc_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double,
                               c_double, c_int, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
 libspice.gfrefn_c.argtypes = [c_double, c_double, c_bool, c_bool, POINTER(c_double)]
@@ -338,10 +338,10 @@ libspice.gfrepi_c.argtypes = [POINTER(stypes.SpiceCell), c_char_p, c_char_p]
 libspice.gfrepu_c.argtypes = [c_double, c_double, c_double]
 libspice.gfrfov_c.argtypes = [c_char_p, (c_double * 3), c_char_p, c_char_p, c_char_p, c_double,
                               POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
-libspice.gfrr_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double, c_double, c_int,
-                            POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
-libspice.gfsep_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p,
-                             c_double, c_double, c_double, c_int, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
+libspice.gfrr_c.argtypes   = [c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double, c_double, c_int,
+                              POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
+libspice.gfsep_c.argtypes  = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p,
+                              c_double, c_double, c_double, c_int, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
 libspice.gfsntc_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, (c_double * 3), c_char_p,
                               c_char_p, c_char_p, c_double, c_double, c_double, c_int, POINTER(stypes.SpiceCell),
                               POINTER(stypes.SpiceCell)]
@@ -352,7 +352,8 @@ libspice.gfsubc_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, 
                               c_double, c_double, c_int, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
 libspice.gftfov_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_double,
                               POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
-# libspice.gfuds_c.argtypes = [c_double, c_double, c_double, c_double, c_double, c_bool, c_char_p, c_double, c_double, c_double, c_int, None, None]
+libspice.gfudb_c.argtypes  = [callbacks.UDFUNS, callbacks.UDFUNB, c_double, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
+libspice.gfuds_c.argtypes  = [callbacks.UDFUNS, callbacks.UDFUNB, c_char_p, c_double, c_double, c_double, c_int, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
 libspice.gipool_c.argtypes = [c_char_p, c_int, c_int, POINTER(c_int), POINTER(c_int), POINTER(c_bool)]
 libspice.gnpool_c.argtypes = [c_char_p, c_int, c_int, c_int, POINTER(c_int), c_void_p, POINTER(c_bool)]
 
@@ -755,9 +756,9 @@ libspice.tyear_c.restype   = c_double
 
 libspice.ucase_c.argtypes  = [c_char_p, c_int, c_char_p]
 libspice.ucrss_c.argtypes  = [(c_double * 3), (c_double * 3), (c_double * 3)]
-libspice.uddc_c.argtypes   = [callbacks.UDFUNC, c_double, c_double, POINTER(c_bool)]
+libspice.uddc_c.argtypes   = [callbacks.UDFUNS, c_double, c_double, POINTER(c_bool)]
 libspice.uddc_c.restype    = None
-libspice.uddf_c.argtypes   = [callbacks.UDFUNC, c_double, c_double, POINTER(c_double)]
+libspice.uddf_c.argtypes   = [callbacks.UDFUNS, c_double, c_double, POINTER(c_double)]
 libspice.uddf_c.restype    = None
 libspice.udf_c.argtypes    = [c_double, POINTER(c_double)]
 libspice.udf_c.restype     = None

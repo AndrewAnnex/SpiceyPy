@@ -22,16 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import ctypes
 import functools
+from ctypes import c_bool, c_double, POINTER, CFUNCTYPE, byref
 
-UDFUNC = ctypes.CFUNCTYPE(None, ctypes.c_double,
-                          ctypes.POINTER(ctypes.c_double))
+UDFUNS = CFUNCTYPE(None, c_double, POINTER(c_double))
+UDFUNB = CFUNCTYPE(None, UDFUNS, c_double, POINTER(c_bool))
 
-
-def SpiceUDF(f):
+def SpiceUDFUNS(f):
     """
-    Decorator for wrapping python functions in spice udfunc callback type
+    Decorator for wrapping python functions in spice udfuns callback type
     :param f: function that has one argument of type float, and returns a float
     :type f: builtins.function
     :return: wrapped udfunc function
@@ -39,8 +38,38 @@ def SpiceUDF(f):
     """
 
     @functools.wraps(f)
-    def wrapping_udfunc(x, value):
+    def wrapping_udfuns(x, value):
         result = f(x)
-        value[0] = ctypes.c_double(result)
+        value[0] = c_double(result)
 
-    return UDFUNC(wrapping_udfunc)
+    return UDFUNS(wrapping_udfuns)
+
+def SpiceUDFUNB(f):
+    """
+    Decorator for wrapping python functions in spice udfunb callback type
+    :param f:
+    :type f: builtins.function
+    :return:
+    """
+
+    @functools.wraps(f)
+    def wrapping_udfunb(udf, et, xbool):
+        result = f(udf, et) # the function takes a udffunc as a argument
+        xbool[0] = c_bool(result)
+
+    return UDFUNB(wrapping_udfunb)
+
+def CallUDFUNS(f, x):
+    """
+    We are given a UDF CFUNCTYPE and want to call it in python
+
+    :param f: SpiceUDFUNS
+    :type f: CFUNCTYPE
+    :param x: some scalar
+    :type x: float
+    :return: value
+    :rtype: float
+    """
+    value = c_double()
+    f(x, byref(value))
+    return value.value

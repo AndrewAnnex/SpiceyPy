@@ -3042,13 +3042,97 @@ def test_gftfov():
 
 
 def test_gfudb():
-    with pytest.raises(NotImplementedError):
-        spice.gfudb()
+    spice.kclear()
+    # load kernels
+    spice.furnsh(CoreKernels.testMetaKernel)
+    # begin test
+    et_start = spice.str2et("Jan 1 2011")
+    et_end   = spice.str2et("Jan 1 2012")
+    result   = spice.stypes.SPICEDOUBLE_CELL(40000)
+    cnfine   = spice.stypes.SPICEDOUBLE_CELL(2)
+    spice.wninsd(et_start, et_end, cnfine)
+    step = 5.0 * spice.spd()
+
+    # make a udf callback
+    udf = spiceypy.utils.callbacks.SpiceUDFUNS(spice.udf)
+
+    # define gfq
+    @spiceypy.utils.callbacks.SpiceUDFUNB
+    def gfq(udfunc, et):
+        # we are not using udfunc in this example
+        state, lt = spice.spkez(301, et, 'IAU_EARTH', 'NONE', 399)
+        return state[2] >= 0.0 and state[5] > 0.0
+
+    # call gfudb
+    spice.gfudb(udf, gfq, step, cnfine, result)
+    # count
+    assert len(result) > 20 # true value is 28
+    spice.kclear()
+
+
+def test_gfudb2():
+    spice.kclear()
+    # load kernels
+    spice.furnsh(CoreKernels.testMetaKernel)
+    # begin test
+    et_start = spice.str2et("Jan 1 2011")
+    et_end = spice.str2et("Jan 1 2012")
+    result = spice.stypes.SPICEDOUBLE_CELL(40000)
+    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    spice.wninsd(et_start, et_end, cnfine)
+    step = 60.0 * 60.0
+
+    # define gfq
+    @spiceypy.utils.callbacks.SpiceUDFUNS
+    def gfq(et):
+        pos, lt = spice.spkezp(301, et, 'IAU_EARTH', 'NONE', 399)
+        return pos[2]
+
+    # define gfb
+    @spiceypy.utils.callbacks.SpiceUDFUNB
+    def gfb(udfuns, et):
+        value = spiceypy.utils.callbacks.CallUDFUNS(udfuns, et)
+        return -1000.0 <= value <= 1000.0
+
+    # call gfudb
+    spice.gfudb(gfq, gfb, step, cnfine, result)
+    # count
+    assert len(result) > 50  # true value is 56
+    spice.kclear()
 
 
 def test_gfuds():
-    with pytest.raises(NotImplementedError):
-        spice.gfuds()
+    relations = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
+    spice.kclear()
+    # load kernels
+    spice.furnsh(CoreKernels.testMetaKernel)
+    # begin test
+    et_start = spice.str2et("Jan 1 2007")
+    et_end = spice.str2et("Apr 1 2007")
+    # set up some constants
+    step = spice.spd()
+    adjust = 0.0
+    refval  = 0.3365
+    # declare the callbacks we will use in the test
+    @spiceypy.utils.callbacks.SpiceUDFUNS
+    def gfq(et):
+        state, lt = spice.spkez(301, et, 'J2000', 'NONE', 10)
+        return spice.dvnorm(state)
+
+    @spiceypy.utils.callbacks.SpiceUDFUNB
+    def gfdecrx(udfuns, et):
+        return spice.uddc(udfuns, et, 10.0)
+
+    # loop through to test each relation type
+    for i, r in enumerate(relations):
+        result = spice.stypes.SPICEDOUBLE_CELL(40000)
+        cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+        spice.wninsd(et_start, et_end, cnfine)
+        # call gfuds
+        result = spice.gfuds(gfq, gfdecrx, r, refval, adjust, step, 20000, cnfine, result)
+        assert len(result) > 0
+    # cleanup
+    spice.kclear()
 
 
 def test_gipool():
@@ -6461,7 +6545,7 @@ def test_uddc():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("JAN 1 2009")
 
-    @spiceypy.utils.callbacks.SpiceUDF
+    @spiceypy.utils.callbacks.SpiceUDFUNS
     def udfunc(et_in):
         pos, new_et = spice.spkpos("MERCURY", et_in, "J2000", "LT+S", "MOON")
         return new_et
@@ -6477,7 +6561,7 @@ def test_uddf():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("JAN 1 2009")
 
-    @spiceypy.utils.callbacks.SpiceUDF
+    @spiceypy.utils.callbacks.SpiceUDFUNS
     def udfunc(et_in):
         pos, new_et = spice.spkpos("MERCURY", et_in, "J2000", "LT+S", "MOON")
         return new_et
