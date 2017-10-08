@@ -1497,7 +1497,7 @@ def cylsph(r, lonc, z):
 # D
 
 @spiceErrorCheck
-def dafac(handle, n, lenvals, buffer):
+def dafac(handle, buffer):
     """
     Add comments from a buffer of character strings to the comment
     area of a binary DAF file, appending them to any comments which
@@ -1507,17 +1507,13 @@ def dafac(handle, n, lenvals, buffer):
 
     :param handle: handle of a DAF opened with write access.
     :type handle: int
-    :param n: Number of comments to put into the comment area.
-    :type n: int
-    :param lenvals: Length of elements
-    :type lenvals: int
     :param buffer: Buffer of comments to put into the comment area.
-    :type buffer: Array of strs
+    :type buffer: list[str]
     """
-    handle = ctypes.c_int(handle)
-    n = ctypes.c_int(n)
-    lenvals = ctypes.c_int(lenvals)
-    buffer = stypes.listToCharArrayPtr(buffer,xLen=lenvals,yLen=n)
+    handle  = ctypes.c_int(handle)
+    lenvals = ctypes.c_int(len(max(buffer, key=len)) + 1)
+    n       = ctypes.c_int(len(buffer))
+    buffer  = stypes.listToCharArrayPtr(buffer)
     libspice.dafac_c(handle, n, lenvals, buffer)
 
 
@@ -1798,7 +1794,6 @@ def dafopw(fname):
 
 @spiceErrorCheck
 def dafps(nd, ni, dc, ic):
-    # Todo: test dafps
     """
     Pack (assemble) an array summary from its double precision and
     integer components.
@@ -1821,8 +1816,7 @@ def dafps(nd, ni, dc, ic):
     outsum = stypes.emptyDoubleVector(nd + ni)
     nd = ctypes.c_int(nd)
     ni = ctypes.c_int(ni)
-    libspice.dafps_c(nd, ni, ctypes.byref(dc), ctypes.byref(ic),
-                     ctypes.byref(outsum))
+    libspice.dafps_c(nd, ni, dc, ic, outsum)
     return stypes.cVectorToPython(outsum)
 
 
@@ -1891,7 +1885,6 @@ def dafrfr(handle, lenout=_default_len_out):
 
 @spiceErrorCheck
 def dafrs(insum):
-    # Todo: test dafrs
     """
     Change the summary for the current array in the current DAF.
 
