@@ -736,40 +736,30 @@ def test_cylsph():
     np.testing.assert_almost_equal(b, a, decimal=4)
 
 
-### N.B. test_dafac (add DAF comments) is used by test_dafdc (delete comments)
-def test_dafac(earlyExit=False):
+def test_dafac():
     ### Create new DAF using CKOPN
     spice.kclear()
-    ckpath = os.path.join(cwd, "ex_dafac.bc")
-    if spice.exists(ckpath):
-      os.remove(ckpath) # pragma: no cover
-    ###
-    ### Open CK to get new DAF because DAFONW (Create DAF) is not available to CSPICE/spiceypy
-    handle = spice.ckopn(ckpath, "TEST_ex_dafac", 140)
+    dafpath = os.path.join(cwd, "ex_dafac.bc")
+    if spice.exists(dafpath):
+      os.remove(dafpath) # pragma: no cover
+    # Open CK to get new DAF because DAFONW (Create DAF) is not available to CSPICE/spiceypy
+    handle = spice.ckopn(dafpath, "TEST_ex_dafac", 140)
     assert handle is not None
-    ### Write some comments
-    cmnts = 'a bc def ghij'.split()
-    nCmnts = len(cmnts)
-    spice.dafac(handle, len(cmnts), max([len(cmnt) for cmnt in cmnts])+1, cmnts)
-    ### Use DAFCLS because CKCLS requires segments to be written before closing
+    # Write some comments
+    cmnts = ['a', 'bc', 'def', 'ghij']
+    spice.dafac(handle, cmnts)
+    # Use DAFCLS because CKCLS requires segments to be written before closing
     spice.dafcls(handle)
     assert not spice.failed()
     spice.kclear()
     spice.reset()
-    ###
-    ####################################################################
-    ### Early exit (if called from test_dafdc)
-    if earlyExit:
-      return ckpath,cmnts
-    ####################################################################
-    ###
-    ### Ensure all those DAF comments now exist in the new DAF
-    handle = spice.dafopr(ckpath)
+    # Ensure all those DAF comments now exist in the new DAF
+    handle = spice.dafopr(dafpath)
     assert handle is not None
-    ### Get up to 20 comments ...
-    nOut,cmntsOut,done = spice.dafec(handle,20,99)
-    ### ...  nOut will have actual number of comments
-    assert nOut==nCmnts
+    # Get up to 20 comments ...
+    nOut, cmntsOut, done = spice.dafec(handle, 20, 99)
+    # ...  nOut will have actual number of comments
+    assert nOut == 4
     assert cmntsOut[:4] == cmnts
     assert done
     assert 0 == max([len(cmnt) for cmnt in cmntsOut[4:]])
@@ -777,20 +767,19 @@ def test_dafac(earlyExit=False):
     assert not spice.failed()
     spice.kclear()
     spice.reset()
-    ###
-    ### Once more ...
-    handle = spice.dafopr(ckpath)
+    # Once more ...
+    handle = spice.dafopr(dafpath)
     assert handle is not None
-    ### ... to get fewer than the total number of comments
-    nOut,cmntsOut,done = spice.dafec(handle,nCmnts-1,99)
-    assert nOut==(nCmnts-1)
+    # ... to get fewer than the total number of comments
+    nOut, cmntsOut, done = spice.dafec(handle, 3, 99)
+    assert nOut == 3
     assert not done 
     spice.dafcls(handle)
     assert not spice.failed()
     spice.kclear()
     spice.reset()
-    if spice.exists(ckpath):
-      os.remove(ckpath) # pragma: no cover
+    if spice.exists(dafpath):
+      os.remove(dafpath) # pragma: no cover
 
 
 def test_dafbbs():
@@ -835,26 +824,32 @@ def test_dafcs():
 
 
 def test_dafdc():
-    ### Run test_dafac() to create DAF with comments
-    ### - DAF is not removed
-    ### - Returns DAF path name and comments inserted
-    dafpath,cmnts = test_dafac(earlyExit=True)
-    assert dafpath is not None
-    nCmnts = len(cmnts)
-    assert nCmnts > 0
-    ###
-    ### Open the DAF for reading
+    spice.kclear()
+    dafpath = os.path.join(cwd, "ex_dafdc.bc")
+    if spice.exists(dafpath):
+      os.remove(dafpath) # pragma: no cover
+    # Open CK to get new DAF because DAFONW (Create DAF) is not available to CSPICE/spiceypy
+    handle = spice.ckopn(dafpath, "TEST_ex_dafdc", 140)
+    assert handle is not None
+    # Write some comments
+    cmnts = ['a', 'bc', 'def', 'ghij']
+    spice.dafac(handle, cmnts)
+    # Use DAFCLS because CKCLS requires segments to be written before closing
+    spice.dafcls(handle)
+    assert not spice.failed()
+    spice.kclear()
+    spice.reset()
+    # Open the DAF for reading
     handle = spice.dafopr(dafpath)
     assert handle is not None
-    nOut,cmntsOut,done = spice.dafec(handle,20,99)
-    ### Confirm that the number of comments is greater than zero
+    nOut, cmntsOut, done = spice.dafec(handle,20,99)
+    # Confirm that the number of comments is greater than zero
     assert nOut > 0
     spice.dafcls(handle)
     assert not spice.failed()
     spice.kclear()
     spice.reset()
-    ###
-    ### Delete the comments
+    # Delete the comments
     handle = spice.dafopw(dafpath)
     assert handle is not None
     spice.dafdc(handle)
@@ -862,8 +857,7 @@ def test_dafdc():
     assert not spice.failed()
     spice.kclear()
     spice.reset()
-    ###
-    ### Confirm there are no more comments
+    # Confirm there are no more comments
     handle = spice.dafopr(dafpath)
     assert handle is not None
     nOut,cmntsOut,done = spice.dafec(handle,20,99)
@@ -988,8 +982,52 @@ def test_dafopw():
     spice.kclear()
 
 
-def test_dafps():
-    assert 1
+def test_dafps_dafrs():
+    spice.kclear()
+    dafpath = os.path.join(cwd, "ckopenkernel_dafps.bc")
+    if spice.exists(dafpath):
+        os.remove(dafpath) # pragma: no cover
+    IFNAME = "Test CK type 1 segment created by cspice_ckw01"
+    handle = spice.ckopn(dafpath, IFNAME, 10)
+    spice.ckw01(handle, 1.0, 10.0, -77701, "J2000", True, "Test type 1 CK segment",
+                2 - 1, [1.1, 4.1], [[1.0, 1.0, 1.0, 1.0], [2.0, 2.0, 2.0, 2.0]],
+                [[0.0, 0.0, 1.0], [0.0, 0.0, 2.0]])
+
+    spice.ckcls(handle)
+    spice.kclear()
+    # reload
+    handle = spice.dafopw(dafpath)
+    assert handle is not None
+    # begin forward search
+    spice.dafbfs(handle)
+    found = spice.daffna()
+    assert found
+    out = spice.dafgs(n=124)
+    dc, ic = spice.dafus(out, 2, 6)
+    # change the id code and repack
+    ic[0] = -1999
+    ic[1] = -2999
+    summ = spice.dafps(2, 6, dc, ic)
+    spice.dafrs(summ)
+    # finished.
+    spice.dafcls(handle)
+    spice.kclear()
+    # reload the kernel and verify the ic's got updated
+    handle = spice.dafopr(dafpath)
+    assert handle is not None
+    # begin forward search
+    spice.dafbfs(handle)
+    found = spice.daffna()
+    assert found
+    out = spice.dafgs(n=124)
+    dc, ic = spice.dafus(out, 2, 6)
+    assert ic[0] == -1999
+    assert ic[1] == -2999
+    # cleanup
+    spice.dafcls(handle)
+    spice.kclear()
+    if spice.exists(dafpath):
+        os.remove(dafpath) # pragma: no cover
 
 
 def test_dafrda():
@@ -1007,10 +1045,6 @@ def test_dafrfr():
     assert fward == 4
     assert bward == 4
     spice.kclear()
-
-
-def test_dafrs():
-    assert 1
 
 
 def test_dafus():
