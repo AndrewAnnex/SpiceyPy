@@ -1515,10 +1515,10 @@ def dafac(handle, n, lenvals, buffer):
     :type buffer: Array of strs
     """
     handle = ctypes.c_int(handle)
-    buffer = stypes.listToCharArrayPtr(buffer)
     n = ctypes.c_int(n)
     lenvals = ctypes.c_int(lenvals)
-    libspice.dafac_c(handle, n, lenvals, ctypes.byref(buffer))
+    buffer = stypes.listToCharArrayPtr(buffer,xLen=lenvals,yLen=n)
+    libspice.dafac_c(handle, n, lenvals, buffer)
 
 
 @spiceErrorCheck
@@ -1590,7 +1590,7 @@ def dafdc(handle):
     :type handle: int
     """
     handle = ctypes.c_int(handle)
-    libspice.dafcc_c(handle)
+    libspice.dafdc_c(handle)
 
 
 @spiceErrorCheck
