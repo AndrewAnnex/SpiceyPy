@@ -5737,13 +5737,13 @@ def gfrefn(t1, t2, s1, s2):
     :param s2: State at t2.
     :type s2: bool
     :return: New value at which to check for transition.
-    :rtype: bool
+    :rtype: float
     """
     t1 = ctypes.c_double(t1)
     t2 = ctypes.c_double(t2)
     s1 = ctypes.c_bool(s1)
     s2 = ctypes.c_bool(s2)
-    t = ctypes.c_bool()
+    t = ctypes.c_double()
     libspice.gfrefn_c(t1, t2, s1, s2, ctypes.byref(t))
     return t.value
 
@@ -6055,6 +6055,8 @@ def gfstol(value):
     """
     Override the default GF convergence
     value used in the high level GF routines.
+
+    Default value is 1.0e-6
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfstol_c.html
 
@@ -13494,9 +13496,10 @@ def trcoff():
 
 @spiceErrorCheck
 def tsetyr(year):
-    # Todo: test tsetyr
     """
     Set the lower bound on the 100 year range.
+
+    Default value is 1969
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tsetyr_c.html
 
