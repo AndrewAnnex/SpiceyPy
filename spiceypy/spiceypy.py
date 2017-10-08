@@ -1590,7 +1590,7 @@ def dafdc(handle):
     :type handle: int
     """
     handle = ctypes.c_int(handle)
-    libspice.dafcc_c(handle)
+    libspice.dafdc_c(handle)
 
 
 @spiceErrorCheck

@@ -736,8 +736,61 @@ def test_cylsph():
     np.testing.assert_almost_equal(b, a, decimal=4)
 
 
-def test_dafac():
-    assert 1
+### N.B. test_dafac (add DAF comments) is used by test_dafdc (delete comments)
+def test_dafac(earlyExit=False):
+    ### Create new DAF using CKOPN
+    spice.kclear()
+    ckpath = os.path.join(cwd, "ex_dafac.bc")
+    if spice.exists(ckpath):
+      os.remove(ckpath) # pragma: no cover
+    ###
+    ### Open CK to get new DAF because DAFONW (Create DAF) is not available to CSPICE/spiceypy
+    handle = spice.ckopn(ckpath, "TEST_ex_dafac", 140)
+    assert handle is not None
+    ### Write some comments
+    cmnts = 'a bc def ghij'.split()
+    nCmnts = len(cmnts)
+    spice.dafac(handle, len(cmnts), max([len(cmnt) for cmnt in cmnts])+1, cmnts)
+    ### Use DAFCLS because CKCLS requires segments to be written before closing
+    spice.dafcls(handle)
+    assert not spice.failed()
+    spice.kclear()
+    spice.reset()
+    ###
+    ####################################################################
+    ### Early exit (if called from test_dafdc)
+    if earlyExit:
+      return ckpath,cmnts
+    ####################################################################
+    ###
+    ### Ensure all those DAF comments now exist in the new DAF
+    handle = spice.dafopr(ckpath)
+    assert handle is not None
+    ### Get up to 20 comments ...
+    nOut,cmntsOut,done = spice.dafec(handle,20,99)
+    ### ...  nOut will have actual number of comments
+    assert nOut==nCmnts
+    assert cmntsOut[:4] == cmnts
+    assert done
+    assert 0 == max([len(cmnt) for cmnt in cmntsOut[4:]])
+    spice.dafcls(handle)
+    assert not spice.failed()
+    spice.kclear()
+    spice.reset()
+    ###
+    ### Once more ...
+    handle = spice.dafopr(ckpath)
+    assert handle is not None
+    ### ... to get fewer than the total number of comments
+    nOut,cmntsOut,done = spice.dafec(handle,nCmnts-1,99)
+    assert nOut==(nCmnts-1)
+    assert not done 
+    spice.dafcls(handle)
+    assert not spice.failed()
+    spice.kclear()
+    spice.reset()
+    if spice.exists(ckpath):
+      os.remove(ckpath) # pragma: no cover
 
 
 def test_dafbbs():
@@ -782,7 +835,45 @@ def test_dafcs():
 
 
 def test_dafdc():
-    assert 1
+    ### Run test_dafac() to create DAF with comments
+    ### - DAF is not removed
+    ### - Returns DAF path name and comments inserted
+    dafpath,cmnts = test_dafac(earlyExit=True)
+    assert dafpath is not None
+    nCmnts = len(cmnts)
+    assert nCmnts > 0
+    ###
+    ### Open the DAF for reading
+    handle = spice.dafopr(dafpath)
+    assert handle is not None
+    nOut,cmntsOut,done = spice.dafec(handle,20,99)
+    ### Confirm that the number of comments is greater than zero
+    assert nOut > 0
+    spice.dafcls(handle)
+    assert not spice.failed()
+    spice.kclear()
+    spice.reset()
+    ###
+    ### Delete the comments
+    handle = spice.dafopw(dafpath)
+    assert handle is not None
+    spice.dafdc(handle)
+    spice.dafcls(handle)
+    assert not spice.failed()
+    spice.kclear()
+    spice.reset()
+    ###
+    ### Confirm there are no more comments
+    handle = spice.dafopr(dafpath)
+    assert handle is not None
+    nOut,cmntsOut,done = spice.dafec(handle,20,99)
+    assert nOut == 0
+    spice.dafcls(handle)
+    assert not spice.failed()
+    spice.kclear()
+    spice.reset()
+    if spice.exists(dafpath):
+      os.remove(dafpath) # pragma: no cover
 
 
 def test_dafec():
@@ -1231,7 +1322,7 @@ def test_dskopn_dskcls():
     dskpath = os.path.join(cwd, "TEST.dsk")
     if spice.exists(dskpath):
         os.remove(dskpath) # pragma: no cover
-    handle = spice.dskopn('TEST.dsk', 'TEST.DSK/NAIF/NJB/20-OCT-2006/14:37:00', 0)
+    handle = spice.dskopn(dskpath, 'TEST.DSK/NAIF/NJB/20-OCT-2006/14:37:00', 0)
     assert handle is not None
     spice.dskcls(handle)
     if spice.exists(dskpath):
@@ -1391,7 +1482,7 @@ def test_dskw02_dskrb2_dskmi2():
     spice.dskcls(handle)
     spice.kclear()
     # open new dsk file
-    handle = spice.dskopn('TESTdskw02.dsk', 'TESTdskw02.dsk/AA/29-SEP-2017', 0)
+    handle = spice.dskopn(dskpath, 'TESTdskw02.dsk/AA/29-SEP-2017', 0)
     # create spatial index
     spaixd, spaixi = spice.dskmi2(vrtces, plates, finscl, corscl, worksz, voxpsz, voxlsz, False, spaisz)
     # do stuff
@@ -4195,7 +4286,7 @@ def test_pckopn_pckw02_pckcls():
     if spice.exists(pck):
         os.remove(pck) # pragma: no cover
     spice.kclear()
-    handle = spice.pckopn("test_pck.pck", "Test PCK file", 5000)
+    handle = spice.pckopn(pck, "Test PCK file", 5000)
     spice.pckw02(handle, 301, "j2000", 0.0, 3.0, "segid", 1.0, 3, 1, [1.0, 2.0, 3.0], 0.0)
     spice.pckcls(handle)
     spice.kclear()
