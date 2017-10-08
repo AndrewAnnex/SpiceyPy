@@ -2802,8 +2802,29 @@ def test_gfposc():
 
 
 def test_gfrefn():
-    assert 1
-
+    s1 = [True, False]
+    s2 = [True, False]
+    for i in range(0, 2):
+        for j in range(0, 2):
+            scale = 10.0 * i + j
+            t1 = 5.0 * scale
+            t2 = 7.0 * scale
+            t  = spice.gfrefn(t1, t2, s1[i], s2[j])
+            assert t == pytest.approx(scale*6.0)
+    for i in range(0, 2):
+        for j in range(0, 2):
+            scale = 10.0 * i + j
+            t1 = 15.0 * scale
+            t2 = 7.0 * scale
+            t  = spice.gfrefn(t1, t2, s1[i], s2[j])
+            assert t == pytest.approx(scale*11.0)
+    for i in range(0, 2):
+        for j in range(0, 2):
+            scale = 10.0 * i + j
+            t1 = -scale
+            t2 = -scale
+            t  = spice.gfrefn(t1, t2, s1[i], s2[j])
+            assert t == pytest.approx(-scale)
 
 def test_gfrepf():
     assert 1
@@ -2996,7 +3017,8 @@ def test_gfstep():
 
 
 def test_gfstol():
-    assert 1
+    spice.gfstol(1.0e-16)
+    spice.gfstol(1.0e-6)
 
 
 def test_gfsubc():
@@ -6508,7 +6530,9 @@ def test_trcoff():
 
 
 def test_tsetyr():
-    assert 1
+    spice.tsetyr(1969)
+    spice.tsetyr(2100)
+    spice.tsetyr(1969)
 
 
 def test_twopi():
