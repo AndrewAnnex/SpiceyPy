@@ -138,7 +138,7 @@ libspice.dafgs_c.argtypes = [POINTER(c_double)]
 libspice.dafgsr_c.argtypes = [c_int, c_int, c_int, c_int, POINTER(c_double), POINTER(c_bool)]
 libspice.dafopr_c.argtypes = [c_char_p, POINTER(c_int)]
 libspice.dafopw_c.argtypes = [c_char_p, POINTER(c_int)]
-libspice.dafps_c.argtypes = [c_int, c_int, POINTER(c_double), POINTER(c_double), POINTER(c_double)]
+libspice.dafps_c.argtypes = [c_int, c_int, POINTER(c_double), POINTER(c_int), POINTER(c_double)]
 libspice.dafrda_c.argtypes = [c_int, c_int, c_int, POINTER(c_double)]
 libspice.dafrfr_c.argtypes = [c_int, c_int, POINTER(c_int), POINTER(c_int), c_char_p, POINTER(c_int), POINTER(c_int),
                               POINTER(c_int)]
