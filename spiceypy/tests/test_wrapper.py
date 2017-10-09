@@ -44,6 +44,63 @@ cwd = os.path.realpath(os.path.dirname(__file__))
 
 def setup_module(module):
     downloadKernels()
+    setup_trace_set()
+
+
+def setup_trace_set():
+    ###
+    ### Create set variable traceSet, during setup, of all SPICE traceback
+    ### routine names; see [def do_test_trcoff_last():] below
+    ###
+    global traceSet
+    traceSet = set('chkin chkout qcktrc trcdep trcnam trcoff'.split())
+
+
+def do_test_trcoff_last(discardTracebackName):
+    ###
+    ### Actual test of spice.trcoff, called by all traceback-related tests,
+    ### which ensures that the test of trcoff will only be run by the
+    ### last-tested traceback-related test
+    ###
+    ### N.B. This is necssary because once trcoff is called during this
+    ###      test and tracebacks are turned off, it is not possible to turn
+    ###      tracebacks back on.  So if any other test, which relies on
+    ###      tracebacks, was run after trcoff, then it would fail
+    ### 
+    global traceSet
+    traceSet.discard(discardTracebackName)
+    ###
+    if len(traceSet):
+        ### Skip this test of TRCOFF until all traceback routine names
+        ### have been removed from the set variable traceSet
+        return
+    ###
+    spice.reset()
+    spice.kclear()
+    ###
+    ### Initialize stack trace with two values, and test
+    spice.chkin('A')
+    spice.chkin('B')
+    assert 2 == spice.trcdep()
+    assert 'B' == spice.trcnam(1)
+    assert 'A' == spice.trcnam(0)
+    ###
+    ### Turn off tracing and test
+    spice.trcoff()
+    assert 0 == spice.trcdep()
+    assert '' == spice.qcktrc(2)
+    ###
+    ### Ensure subsequent checkins are also ignored
+    spice.chkin('C')
+    assert 0 == spice.trcdep()
+    ###
+    ### Cleanup
+    spice.reset()
+    spice.kclear()
+
+
+########################################################################
+### Start of tests
 
 def test_appndc():
     testCell = spice.stypes.SPICECHAR_CELL(10, 10)
@@ -310,6 +367,7 @@ def test_chkin():
     spice.chkout("test")
     assert spice.trcdep() == 0
     spice.reset()
+    do_test_trcoff_last('chkin')
 
 
 def test_chkout():
@@ -324,6 +382,7 @@ def test_chkout():
     spice.chkout("test")
     assert spice.trcdep() == 0
     spice.reset()
+    do_test_trcoff_last('chkout')
 
 
 def test_cidfrm():
@@ -2618,7 +2677,50 @@ def test_frmnam():
 
 
 def test_ftncls():
-    assert 1
+    import datetime
+    spice.reset()
+    spice.kclear()
+    ###
+    ### Create emporary filename
+    FTNCLS=os.path.join(cwd,'ex_ftncls.txt')
+    ###
+    ### Ensure file does not exist
+    if spice.exists(FTNCLS):
+        os.remove(FTNCLS)  # pragma no cover
+    assert not spice.failed()
+    ###
+    ### Filename as C (char*); FORTRAN logical unit & filename length as C int
+    CharP_FTNCLS=spice.spiceypy.stypes.stringToCharP(FTNCLS+'\0')
+    c_int_FTNCLS_unit=spice.spiceypy.ctypes.c_int()
+    c_int_FTNCLS_len=spice.spiceypy.ctypes.c_int(len(CharP_FTNCLS))
+    ###
+    ### Open new file using FORTRAN SPICE TXTOPN
+    assert 0 == spice.spiceypy.libspice.txtopn_(CharP_FTNCLS,spice.spiceypy.ctypes.byref(c_int_FTNCLS_unit),c_int_FTNCLS_len)
+    assert not spice.failed()
+    ###
+    ### Get the FORTRAN logical unit of the open file using FORTRAN SPICE FN2LEN
+    c_int_FTNCLS_unit_check=spice.spiceypy.ctypes.c_int()
+    assert 0 == spice.spiceypy.libspice.fn2lun_(CharP_FTNCLS,spice.spiceypy.ctypes.byref(c_int_FTNCLS_unit_check),c_int_FTNCLS_len)
+    assert not spice.failed()
+    assert c_int_FTNCLS_unit_check.value == c_int_FTNCLS_unit.value
+    ###
+    ### Close the FORTRAN logical unit using ftncls, the subject of this test
+    spice.ftncls(c_int_FTNCLS_unit.value)
+    assert not spice.failed()
+    ###
+    ### Ensure the FORTRAN logical unit can no longer be retrieved
+    spice.spiceypy.libspice.fn2lun_(CharP_FTNCLS,spice.spiceypy.ctypes.byref(c_int_FTNCLS_unit_check),c_int_FTNCLS_len)
+    assert spice.failed()
+    assert spice.getmsg("SHORT",99) == 'SPICE(FILENOTOPEN)'
+    ###
+    ### Cleanup
+    spice.reset()
+    spice.kclear()
+    ###
+    if spice.exists(FTNCLS):
+      os.remove(FTNCLS)  # pragma no cover
+    ###
+    assert not spice.failed()
 
 
 def test_furnsh():
@@ -4637,6 +4739,7 @@ def test_qcktrc():
     spice.chkout("qcktrc")
     spice.chkout("test")
     spice.reset()
+    do_test_trcoff_last('qcktrc')
 
 
 def test_qdq2av():
@@ -6576,6 +6679,7 @@ def test_trcdep():
     spice.chkout("test")
     assert spice.trcdep() == 0
     spice.reset()
+    do_test_trcoff_last('trcdep')
 
 
 def test_trcnam():
@@ -6592,14 +6696,53 @@ def test_trcnam():
     spice.chkout("test")
     assert spice.trcdep() == 0
     spice.reset()
+    do_test_trcoff_last('trcnam')
 
 
 def test_trcoff():
-    assert 1
+    do_test_trcoff_last('trcoff')
 
 
 def test_tsetyr():
-    assert 1
+    spice.reset()
+
+    ### Expand 2-digit year to full year, typically 4-digit
+    tmp_getyr4 = lambda iy2: int(spice.etcal(spice.tparse('3/3/%02d' % (iy2,),22)[0]).split()[0])
+    ###
+    ### Find current lower bound on the 100 year interval of expansion,
+    ### so it can be restored on exit
+    tsetyr_lowerbound = tmp_getyr4(0)
+    for iy2_test in xrange(100):
+      tmp_lowerbound =  tmp_getyr4(iy2_test)
+      if tmp_lowerbound < tsetyr_lowerbound:
+         tsetyr_lowerbound = tmp_lowerbound
+         break
+    ###
+    ### Run first case with a year not ending in 00
+    tsetyr_y2 = tsetyr_lowerbound % 100
+    if tsetyr_y2: tsetyr_y4 = tsetyr_lowerbound + 200
+    else        : tsetyr_y4 = tsetyr_lowerbound + 250
+    ###
+    spice.tsetyr(tsetyr_y4)
+    assert tmp_getyr4(tsetyr_y4 % 100) == tsetyr_y4
+    assert tmp_getyr4((tsetyr_y4-1) % 100) == (tsetyr_y4+99)
+    ###
+    ### Run first case with a year ending in 00
+    tsetyr_y4 -= (tsetyr_y4 % 100)
+    ###
+    spice.tsetyr(tsetyr_y4)
+    assert tmp_getyr4(tsetyr_y4 % 100) == tsetyr_y4
+    assert tmp_getyr4((tsetyr_y4-1) % 100) == (tsetyr_y4+99)
+    ###
+    ### Cleanup:  reset lowerbound to what it was when this routine started
+    tsetyr_y4 = tsetyr_lowerbound
+    spice.tsetyr(tsetyr_y4)
+    assert tmp_getyr4(tsetyr_y4 % 100) == tsetyr_y4
+    assert tmp_getyr4((tsetyr_y4-1) % 100) == (tsetyr_y4+99)
+    ###
+    assert not spice.failed()
+    ###
+    spice.reset()
 
 
 def test_twopi():
@@ -7276,6 +7419,7 @@ def test_xposeg():
 
 
 def teardown_module(module):
+    assert 0 == len(traceSet)
     # if you are developing spiceypy, and don't want to delete kernels each time you run the tests, set
     # set the following environment variable "spiceypy_do_not_remove_kernels" to anything
     if not os.environ.get('spiceypy_do_not_remove_kernels'):
