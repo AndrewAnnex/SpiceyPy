@@ -48,59 +48,49 @@ def setup_module(module):
 
 
 def setup_trace_set():
-    ###
-    ### Create set variable traceSet, during setup, of all SPICE traceback
-    ### routine names; see [def do_test_trcoff_last():] below
-    ###
+    # Create set variable traceSet, during setup, of all SPICE traceback
+    # routine names; see [def do_test_trcoff_last():] below
     global traceSet
     traceSet = set('chkin chkout qcktrc trcdep trcnam trcoff'.split())
 
 
 def do_test_trcoff_last(discardTracebackName):
-    ###
-    ### Actual test of spice.trcoff, called by all traceback-related tests,
-    ### which ensures that the test of trcoff will only be run by the
-    ### last-tested traceback-related test
-    ###
-    ### N.B. This is necssary because once trcoff is called during this
-    ###      test and tracebacks are turned off, it is not possible to turn
-    ###      tracebacks back on.  So if any other test, which relies on
-    ###      tracebacks, was run after trcoff, then it would fail
-    ### 
+    # Actual test of spice.trcoff, called by all traceback-related tests,
+    # which ensures that the test of trcoff will only be run by the
+    # last-tested traceback-related test
+    #
+    # N.B. This is necssary because once trcoff is called during this
+    #      test and tracebacks are turned off, it is not possible to turn
+    #      tracebacks back on.  So if any other test, which relies on
+    #      tracebacks, was run after trcoff, then it would fail
     global traceSet
     traceSet.discard(discardTracebackName)
-    ###
     if len(traceSet):
-        ### Skip this test of TRCOFF until all traceback routine names
-        ### have been removed from the set variable traceSet
+        # Skip this test of TRCOFF until all traceback routine names
+        # have been removed from the set variable traceSet
         return
-    ###
     spice.reset()
     spice.kclear()
-    ###
-    ### Initialize stack trace with two values, and test
+    # Initialize stack trace with two values, and test
     spice.chkin('A')
     spice.chkin('B')
     assert 2 == spice.trcdep()
     assert 'B' == spice.trcnam(1)
     assert 'A' == spice.trcnam(0)
-    ###
-    ### Turn off tracing and test
+    # Turn off tracing and test
     spice.trcoff()
     assert 0 == spice.trcdep()
     assert '' == spice.qcktrc(2)
-    ###
-    ### Ensure subsequent checkins are also ignored
+    # Ensure subsequent checkins are also ignored
     spice.chkin('C')
     assert 0 == spice.trcdep()
-    ###
-    ### Cleanup
+    # Cleanup
     spice.reset()
     spice.kclear()
 
 
 ########################################################################
-### Start of tests
+# Start of tests
 
 def test_appndc():
     testCell = spice.stypes.SPICECHAR_CELL(10, 10)
@@ -795,40 +785,30 @@ def test_cylsph():
     np.testing.assert_almost_equal(b, a, decimal=4)
 
 
-### N.B. test_dafac (add DAF comments) is used by test_dafdc (delete comments)
-def test_dafac(earlyExit=False):
-    ### Create new DAF using CKOPN
+def test_dafac():
+    # Create new DAF using CKOPN
     spice.kclear()
-    ckpath = os.path.join(cwd, "ex_dafac.bc")
-    if spice.exists(ckpath):
-      os.remove(ckpath) # pragma: no cover
-    ###
-    ### Open CK to get new DAF because DAFONW (Create DAF) is not available to CSPICE/spiceypy
-    handle = spice.ckopn(ckpath, "TEST_ex_dafac", 140)
+    dafpath = os.path.join(cwd, "ex_dafac.bc")
+    if spice.exists(dafpath):
+      os.remove(dafpath) # pragma: no cover
+    # Open CK to get new DAF because DAFONW (Create DAF) is not available to CSPICE/spiceypy
+    handle = spice.ckopn(dafpath, "TEST_ex_dafac", 140)
     assert handle is not None
-    ### Write some comments
-    cmnts = 'a bc def ghij'.split()
-    nCmnts = len(cmnts)
-    spice.dafac(handle, len(cmnts), max([len(cmnt) for cmnt in cmnts])+1, cmnts)
-    ### Use DAFCLS because CKCLS requires segments to be written before closing
+    # Write some comments
+    cmnts = ['a', 'bc', 'def', 'ghij']
+    spice.dafac(handle, cmnts)
+    # Use DAFCLS because CKCLS requires segments to be written before closing
     spice.dafcls(handle)
     assert not spice.failed()
     spice.kclear()
     spice.reset()
-    ###
-    ####################################################################
-    ### Early exit (if called from test_dafdc)
-    if earlyExit:
-      return ckpath,cmnts
-    ####################################################################
-    ###
-    ### Ensure all those DAF comments now exist in the new DAF
-    handle = spice.dafopr(ckpath)
+    # Ensure all those DAF comments now exist in the new DAF
+    handle = spice.dafopr(dafpath)
     assert handle is not None
-    ### Get up to 20 comments ...
-    nOut,cmntsOut,done = spice.dafec(handle,20,99)
-    ### ...  nOut will have actual number of comments
-    assert nOut==nCmnts
+    # Get up to 20 comments ...
+    nOut, cmntsOut, done = spice.dafec(handle, 20, 99)
+    # ...  nOut will have actual number of comments
+    assert nOut == 4
     assert cmntsOut[:4] == cmnts
     assert done
     assert 0 == max([len(cmnt) for cmnt in cmntsOut[4:]])
@@ -836,20 +816,19 @@ def test_dafac(earlyExit=False):
     assert not spice.failed()
     spice.kclear()
     spice.reset()
-    ###
-    ### Once more ...
-    handle = spice.dafopr(ckpath)
+    # Once more ...
+    handle = spice.dafopr(dafpath)
     assert handle is not None
-    ### ... to get fewer than the total number of comments
-    nOut,cmntsOut,done = spice.dafec(handle,nCmnts-1,99)
-    assert nOut==(nCmnts-1)
+    # ... to get fewer than the total number of comments
+    nOut, cmntsOut, done = spice.dafec(handle, 3, 99)
+    assert nOut == 3
     assert not done 
     spice.dafcls(handle)
     assert not spice.failed()
     spice.kclear()
     spice.reset()
-    if spice.exists(ckpath):
-      os.remove(ckpath) # pragma: no cover
+    if spice.exists(dafpath):
+      os.remove(dafpath) # pragma: no cover
 
 
 def test_dafbbs():
@@ -894,26 +873,32 @@ def test_dafcs():
 
 
 def test_dafdc():
-    ### Run test_dafac() to create DAF with comments
-    ### - DAF is not removed
-    ### - Returns DAF path name and comments inserted
-    dafpath,cmnts = test_dafac(earlyExit=True)
-    assert dafpath is not None
-    nCmnts = len(cmnts)
-    assert nCmnts > 0
-    ###
-    ### Open the DAF for reading
+    spice.kclear()
+    dafpath = os.path.join(cwd, "ex_dafdc.bc")
+    if spice.exists(dafpath):
+      os.remove(dafpath) # pragma: no cover
+    # Open CK to get new DAF because DAFONW (Create DAF) is not available to CSPICE/spiceypy
+    handle = spice.ckopn(dafpath, "TEST_ex_dafdc", 140)
+    assert handle is not None
+    # Write some comments
+    cmnts = ['a', 'bc', 'def', 'ghij']
+    spice.dafac(handle, cmnts)
+    # Use DAFCLS because CKCLS requires segments to be written before closing
+    spice.dafcls(handle)
+    assert not spice.failed()
+    spice.kclear()
+    spice.reset()
+    # Open the DAF for reading
     handle = spice.dafopr(dafpath)
     assert handle is not None
-    nOut,cmntsOut,done = spice.dafec(handle,20,99)
-    ### Confirm that the number of comments is greater than zero
+    nOut, cmntsOut, done = spice.dafec(handle,20,99)
+    # Confirm that the number of comments is greater than zero
     assert nOut > 0
     spice.dafcls(handle)
     assert not spice.failed()
     spice.kclear()
     spice.reset()
-    ###
-    ### Delete the comments
+    # Delete the comments
     handle = spice.dafopw(dafpath)
     assert handle is not None
     spice.dafdc(handle)
@@ -921,8 +906,7 @@ def test_dafdc():
     assert not spice.failed()
     spice.kclear()
     spice.reset()
-    ###
-    ### Confirm there are no more comments
+    # Confirm there are no more comments
     handle = spice.dafopr(dafpath)
     assert handle is not None
     nOut,cmntsOut,done = spice.dafec(handle,20,99)
@@ -1047,8 +1031,52 @@ def test_dafopw():
     spice.kclear()
 
 
-def test_dafps():
-    assert 1
+def test_dafps_dafrs():
+    spice.kclear()
+    dafpath = os.path.join(cwd, "ckopenkernel_dafps.bc")
+    if spice.exists(dafpath):
+        os.remove(dafpath) # pragma: no cover
+    IFNAME = "Test CK type 1 segment created by cspice_ckw01"
+    handle = spice.ckopn(dafpath, IFNAME, 10)
+    spice.ckw01(handle, 1.0, 10.0, -77701, "J2000", True, "Test type 1 CK segment",
+                2 - 1, [1.1, 4.1], [[1.0, 1.0, 1.0, 1.0], [2.0, 2.0, 2.0, 2.0]],
+                [[0.0, 0.0, 1.0], [0.0, 0.0, 2.0]])
+
+    spice.ckcls(handle)
+    spice.kclear()
+    # reload
+    handle = spice.dafopw(dafpath)
+    assert handle is not None
+    # begin forward search
+    spice.dafbfs(handle)
+    found = spice.daffna()
+    assert found
+    out = spice.dafgs(n=124)
+    dc, ic = spice.dafus(out, 2, 6)
+    # change the id code and repack
+    ic[0] = -1999
+    ic[1] = -2999
+    summ = spice.dafps(2, 6, dc, ic)
+    spice.dafrs(summ)
+    # finished.
+    spice.dafcls(handle)
+    spice.kclear()
+    # reload the kernel and verify the ic's got updated
+    handle = spice.dafopr(dafpath)
+    assert handle is not None
+    # begin forward search
+    spice.dafbfs(handle)
+    found = spice.daffna()
+    assert found
+    out = spice.dafgs(n=124)
+    dc, ic = spice.dafus(out, 2, 6)
+    assert ic[0] == -1999
+    assert ic[1] == -2999
+    # cleanup
+    spice.dafcls(handle)
+    spice.kclear()
+    if spice.exists(dafpath):
+        os.remove(dafpath) # pragma: no cover
 
 
 def test_dafrda():
@@ -1066,10 +1094,6 @@ def test_dafrfr():
     assert fward == 4
     assert bward == 4
     spice.kclear()
-
-
-def test_dafrs():
-    assert 1
 
 
 def test_dafus():
@@ -2680,46 +2704,36 @@ def test_ftncls():
     import datetime
     spice.reset()
     spice.kclear()
-    ###
-    ### Create emporary filename
+    # Create temporary filename
     FTNCLS=os.path.join(cwd,'ex_ftncls.txt')
-    ###
-    ### Ensure file does not exist
+    # Ensure file does not exist
     if spice.exists(FTNCLS):
         os.remove(FTNCLS)  # pragma no cover
     assert not spice.failed()
-    ###
-    ### Filename as C (char*); FORTRAN logical unit & filename length as C int
+    # Filename as C (char*); FORTRAN logical unit & filename length as C int
     CharP_FTNCLS=spice.spiceypy.stypes.stringToCharP(FTNCLS+'\0')
     c_int_FTNCLS_unit=spice.spiceypy.ctypes.c_int()
     c_int_FTNCLS_len=spice.spiceypy.ctypes.c_int(len(CharP_FTNCLS))
-    ###
-    ### Open new file using FORTRAN SPICE TXTOPN
+    # Open new file using FORTRAN SPICE TXTOPN
     assert 0 == spice.spiceypy.libspice.txtopn_(CharP_FTNCLS,spice.spiceypy.ctypes.byref(c_int_FTNCLS_unit),c_int_FTNCLS_len)
     assert not spice.failed()
-    ###
-    ### Get the FORTRAN logical unit of the open file using FORTRAN SPICE FN2LEN
+    # Get the FORTRAN logical unit of the open file using FORTRAN SPICE FN2LEN
     c_int_FTNCLS_unit_check=spice.spiceypy.ctypes.c_int()
     assert 0 == spice.spiceypy.libspice.fn2lun_(CharP_FTNCLS,spice.spiceypy.ctypes.byref(c_int_FTNCLS_unit_check),c_int_FTNCLS_len)
     assert not spice.failed()
     assert c_int_FTNCLS_unit_check.value == c_int_FTNCLS_unit.value
-    ###
-    ### Close the FORTRAN logical unit using ftncls, the subject of this test
+    # Close the FORTRAN logical unit using ftncls, the subject of this test
     spice.ftncls(c_int_FTNCLS_unit.value)
     assert not spice.failed()
-    ###
-    ### Ensure the FORTRAN logical unit can no longer be retrieved
+    # Ensure the FORTRAN logical unit can no longer be retrieved
     spice.spiceypy.libspice.fn2lun_(CharP_FTNCLS,spice.spiceypy.ctypes.byref(c_int_FTNCLS_unit_check),c_int_FTNCLS_len)
     assert spice.failed()
     assert spice.getmsg("SHORT",99) == 'SPICE(FILENOTOPEN)'
-    ###
-    ### Cleanup
+    # Cleanup
     spice.reset()
     spice.kclear()
-    ###
     if spice.exists(FTNCLS):
       os.remove(FTNCLS)  # pragma no cover
-    ###
     assert not spice.failed()
 
 
@@ -2995,8 +3009,29 @@ def test_gfposc():
 
 
 def test_gfrefn():
-    assert 1
-
+    s1 = [True, False]
+    s2 = [True, False]
+    for i in range(0, 2):
+        for j in range(0, 2):
+            scale = 10.0 * i + j
+            t1 = 5.0 * scale
+            t2 = 7.0 * scale
+            t  = spice.gfrefn(t1, t2, s1[i], s2[j])
+            assert t == pytest.approx(scale*6.0)
+    for i in range(0, 2):
+        for j in range(0, 2):
+            scale = 10.0 * i + j
+            t1 = 15.0 * scale
+            t2 = 7.0 * scale
+            t  = spice.gfrefn(t1, t2, s1[i], s2[j])
+            assert t == pytest.approx(scale*11.0)
+    for i in range(0, 2):
+        for j in range(0, 2):
+            scale = 10.0 * i + j
+            t1 = -scale
+            t2 = -scale
+            t  = spice.gfrefn(t1, t2, s1[i], s2[j])
+            assert t == pytest.approx(-scale)
 
 def test_gfrepf():
     assert 1
@@ -3189,7 +3224,8 @@ def test_gfstep():
 
 
 def test_gfstol():
-    assert 1
+    spice.gfstol(1.0e-16)
+    spice.gfstol(1.0e-6)
 
 
 def test_gfsubc():
@@ -6705,43 +6741,34 @@ def test_trcoff():
 
 def test_tsetyr():
     spice.reset()
-
-    ### Expand 2-digit year to full year, typically 4-digit
+    # Expand 2-digit year to full year, typically 4-digit
     tmp_getyr4 = lambda iy2: int(spice.etcal(spice.tparse('3/3/%02d' % (iy2,),22)[0]).split()[0])
-    ###
-    ### Find current lower bound on the 100 year interval of expansion,
-    ### so it can be restored on exit
+    # Find current lower bound on the 100 year interval of expansion,
+    # so it can be restored on exit
     tsetyr_lowerbound = tmp_getyr4(0)
     for iy2_test in xrange(100):
       tmp_lowerbound =  tmp_getyr4(iy2_test)
       if tmp_lowerbound < tsetyr_lowerbound:
          tsetyr_lowerbound = tmp_lowerbound
          break
-    ###
-    ### Run first case with a year not ending in 00
+    # Run first case with a year not ending in 00
     tsetyr_y2 = tsetyr_lowerbound % 100
     if tsetyr_y2: tsetyr_y4 = tsetyr_lowerbound + 200
     else        : tsetyr_y4 = tsetyr_lowerbound + 250
-    ###
     spice.tsetyr(tsetyr_y4)
     assert tmp_getyr4(tsetyr_y4 % 100) == tsetyr_y4
     assert tmp_getyr4((tsetyr_y4-1) % 100) == (tsetyr_y4+99)
-    ###
-    ### Run first case with a year ending in 00
+    # Run first case with a year ending in 00
     tsetyr_y4 -= (tsetyr_y4 % 100)
-    ###
     spice.tsetyr(tsetyr_y4)
     assert tmp_getyr4(tsetyr_y4 % 100) == tsetyr_y4
     assert tmp_getyr4((tsetyr_y4-1) % 100) == (tsetyr_y4+99)
-    ###
-    ### Cleanup:  reset lowerbound to what it was when this routine started
+    # Cleanup:  reset lowerbound to what it was when this routine started
     tsetyr_y4 = tsetyr_lowerbound
     spice.tsetyr(tsetyr_y4)
     assert tmp_getyr4(tsetyr_y4 % 100) == tsetyr_y4
     assert tmp_getyr4((tsetyr_y4-1) % 100) == (tsetyr_y4+99)
-    ###
     assert not spice.failed()
-    ###
     spice.reset()
 
 
