@@ -4831,13 +4831,50 @@ def test_raxisa():
 
 
 def test_rdtext():
-    assert 1
-    # This technically works, but there is no way to reset the read position between runs that I could find.
-    # spice.kclear()
-    # line, eof = spice.rdtext(CoreKernels.testMetaKernel, 100)
-    # assert not eof
-    # assert line == '\\begindata'
-    # spice.kclear()
+    import datetime
+    spice.reset()
+    spice.kclear()
+    # Create temporary filename
+    RDTEXT=os.path.join(cwd, 'ex_rdtext.txt')
+    # Ensure file does not exist
+    if spice.exists(RDTEXT):
+        os.remove(RDTEXT)  # pragma no cover
+    assert not spice.failed()
+    # Filename as C (char*); FORTRAN logical unit & filename length as C int
+    CharP_RDTEXT=spice.spiceypy.stypes.stringToCharP(RDTEXT+'\0')
+    c_int_RDTEXT_unit=spice.spiceypy.ctypes.c_int()
+    c_int_RDTEXT_len=spice.spiceypy.ctypes.c_int(len(CharP_RDTEXT))
+    # Open new file using FORTRAN SPICE TXTOPN
+    assert 0 == spice.spiceypy.libspice.txtopn_(CharP_RDTEXT, spice.spiceypy.ctypes.byref(c_int_RDTEXT_unit), c_int_RDTEXT_len)
+    assert not spice.failed()
+    # Get the FORTRAN logical unit of the open file using FORTRAN SPICE FN2LEN
+    c_int_RDTEXT_unit_check=spice.spiceypy.ctypes.c_int()
+    assert 0 == spice.spiceypy.libspice.fn2lun_(CharP_RDTEXT, spice.spiceypy.ctypes.byref(c_int_RDTEXT_unit_check), c_int_RDTEXT_len)
+    assert not spice.failed()
+    assert c_int_RDTEXT_unit_check.value == c_int_RDTEXT_unit.value
+    ### Strings and C (char*) pointers to two lines to write
+    isonow = datetime.datetime.now().isoformat()
+    writln_lines = ['%d writln_ to x.txt %s' % (i, isonow,) for i in xrange(2)]
+    writln_linesP = map(spice.spiceypy.stypes.stringToCharP, writln_lines)
+    ### C ints of lengths of those lines
+    writln_lines_lens = [spice.spiceypy.ctypes.c_int(len(writln_line)) for writln_line in writln_lines]
+    ### Write the lines to the file using FORTRAN SPICE WRITLN
+    for writln_line, writln_line_len in zip(writln_lines, writln_lines_lens):
+        assert 0 == spice.spiceypy.libspice.writln_(writln_line, spice.spiceypy.ctypes.byref(c_int_FTNCLS_unit), writln_line_len)
+        assert not spice.failed()
+    # Close the FORTRAN logical unit using ftncls
+    spice.ftncls(c_int_RDTEXT_unit.value)
+    assert not spice.failed()
+    # Ensure the FORTRAN logical unit can no longer be retrieved
+    spice.spiceypy.libspice.fn2lun_(CharP_RDTEXT, spice.spiceypy.ctypes.byref(c_int_RDTEXT_unit_check), c_int_RDTEXT_len)
+    assert spice.failed()
+    assert spice.getmsg("SHORT", 99) == 'SPICE(FILENOTOPEN)'
+    # Cleanup
+    spice.reset()
+    spice.kclear()
+    if spice.exists(RDTEXT):
+      os.remove(RDTEXT)  # pragma no cover
+    assert not spice.failed()
 
 
 def test_reccyl():
