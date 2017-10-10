@@ -105,6 +105,7 @@ libspice.ckw05_c.argtypes = [c_int, c_int, c_double, c_double, c_int, c_char_p, 
 libspice.clight_c.argtypes = None
 libspice.clight_c.restype = c_double
 libspice.clpool_c.argtypes = None
+libspice.cltext_.argtypes = [c_char_p, c_int]
 libspice.cmprss_c.argtypes = [c_char, c_int, c_char_p, c_int, c_char_p]
 libspice.cnmfrm_c.argtypes = [c_char_p, c_int, POINTER(c_int), c_char_p, POINTER(c_bool)]
 libspice.conics_c.argtypes = [(c_double * 8), c_double, (c_double * 6)]
@@ -295,6 +296,7 @@ libspice.expool_c.argtypes = [c_char_p, POINTER(c_bool)]
 
 libspice.failed_c.argtypes = None
 libspice.failed_c.restype = c_bool
+libspice.fn2lun_.argtypes = [c_char_p, POINTER(c_int), c_int]
 libspice.fovray_c.argtypes = [c_char_p, (c_double * 3), c_char_p, c_char_p, c_char_p,
                               POINTER(c_double), POINTER(c_bool)]
 libspice.fovtrg_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p,
@@ -749,6 +751,7 @@ libspice.trcoff_c.argtypes = None
 libspice.tsetyr_c.argtypes = [c_int]
 libspice.twopi_c.restype   = c_double
 libspice.twovec_c.argtypes = [(c_double * 3), c_int, (c_double * 3), c_int, (c_double * 3) * 3]
+libspice.txtopn_.argtypes   = [c_char_p, POINTER(c_int), c_int]
 libspice.tyear_c.restype   = c_double
 
 ########################################################################################################################
@@ -851,6 +854,7 @@ libspice.wnsumd_c.argtypes = [POINTER(stypes.SpiceCell), POINTER(c_double), POIN
                               POINTER(c_int), POINTER(c_int)]
 libspice.wnunid_c.argtypes = [POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
 libspice.wnvald_c.argtypes = [c_int, c_int, POINTER(stypes.SpiceCell)]
+libspice.writln_.argtypes = [c_char_p, POINTER(c_int), c_int]
 ########################################################################################################################
 # X
 

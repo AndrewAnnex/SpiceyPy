@@ -2666,9 +2666,9 @@ def test_ftncls():
     # Ensure file does not exist
     if spice.exists(FTNCLS):
         os.remove(FTNCLS)  # pragma no cover
-    # Open new file using FORTRAN SPICE TXTOPN
     # What is the name of the spiceypy routine normally called txtopn_?
-    assert [s for s in vars(spiceypy).keys() if s.find('txtopn') > -1] == ['txtopn_']
+    assert [s for s in spice.libspice.__dict__.keys() if s.find('txtopn') > -1] == ['xtxtopn_']
+    # Open new file using FORTRAN SPICE TXTOPN
     unit = spice.txtopn_(FTNCLS)
     # Get the FORTRAN logical unit of the open file using FORTRAN SPICE FN2LEN
     assert unit == spice.fn2lun_(FTNCLS)
