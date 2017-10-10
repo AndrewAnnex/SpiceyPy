@@ -4806,7 +4806,8 @@ def test_rdtext():
         spice.writln_(writln_line, unit)
         spice.writln_(xwritln_line, xunit)
     # Close the FORTRAN logical units using ftncls
-    map(spice.ftncls,(unit,xunit,))
+    spice.ftncls(unit)
+    spice.ftncls(xunit)
     # Ensure the FORTRAN logical units can no longer be retrieved
     closed_unit = None
     try:
