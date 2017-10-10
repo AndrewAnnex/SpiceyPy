@@ -41,52 +41,10 @@ from spiceypy.tests.gettestkernels import downloadKernels,\
 
 cwd = os.path.realpath(os.path.dirname(__file__))
 
+skipSlowTests = "SKIP_SLOW_TESTS" in os.environ
 
 def setup_module(module):
     downloadKernels()
-    setup_trace_set()
-
-
-def setup_trace_set():
-    # Create set variable traceSet, during setup, of all SPICE traceback
-    # routine names; see [def do_test_trcoff_last():] below
-    global traceSet
-    traceSet = set('chkin chkout qcktrc trcdep trcnam trcoff'.split())
-
-
-def do_test_trcoff_last(discardTracebackName):
-    # Actual test of spice.trcoff, called by all traceback-related tests,
-    # which ensures that the test of trcoff will only be run by the
-    # last-tested traceback-related test
-    #
-    # N.B. This is necssary because once trcoff is called during this
-    #      test and tracebacks are turned off, it is not possible to turn
-    #      tracebacks back on.  So if any other test, which relies on
-    #      tracebacks, was run after trcoff, then it would fail
-    global traceSet
-    traceSet.discard(discardTracebackName)
-    if len(traceSet):
-        # Skip this test of TRCOFF until all traceback routine names
-        # have been removed from the set variable traceSet
-        return
-    spice.reset()
-    spice.kclear()
-    # Initialize stack trace with two values, and test
-    spice.chkin('A')
-    spice.chkin('B')
-    assert 2 == spice.trcdep()
-    assert 'B' == spice.trcnam(1)
-    assert 'A' == spice.trcnam(0)
-    # Turn off tracing and test
-    spice.trcoff()
-    assert 0 == spice.trcdep()
-    assert '' == spice.qcktrc(2)
-    # Ensure subsequent checkins are also ignored
-    spice.chkin('C')
-    assert 0 == spice.trcdep()
-    # Cleanup
-    spice.reset()
-    spice.kclear()
 
 
 ########################################################################
@@ -357,7 +315,6 @@ def test_chkin():
     spice.chkout("test")
     assert spice.trcdep() == 0
     spice.reset()
-    do_test_trcoff_last('chkin')
 
 
 def test_chkout():
@@ -372,7 +329,6 @@ def test_chkout():
     spice.chkout("test")
     assert spice.trcdep() == 0
     spice.reset()
-    do_test_trcoff_last('chkout')
 
 
 def test_cidfrm():
@@ -1526,6 +1482,7 @@ def test_dskv02():
     spice.kclear()
 
 def test_dskw02_dskrb2_dskmi2():
+    if skipSlowTests: return
     spice.kclear()
     dskpath = os.path.join(cwd, "TESTdskw02.dsk")
     if spice.exists(dskpath):
@@ -1581,7 +1538,7 @@ def test_dskw02_dskrb2_dskmi2():
     spice.dskw02(handle, center, surfid, dclass, frame, corsys, corpar,
                  mncor1, mxcor1, mncor2, mxcor2, mncor3, mxcor3, first,
                  last, vrtces, plates, spaixd, spaixi)
-    # cose the dsk file
+    # Close the dsk file
     spice.dskcls(handle, optmiz=True)
     # cleanup
     if spice.exists(dskpath):
@@ -2709,32 +2666,25 @@ def test_ftncls():
     # Ensure file does not exist
     if spice.exists(FTNCLS):
         os.remove(FTNCLS)  # pragma no cover
-    assert not spice.failed()
-    # Filename as C (char*); FORTRAN logical unit & filename length as C int
-    CharP_FTNCLS=spice.spiceypy.stypes.stringToCharP(FTNCLS+'\0')
-    c_int_FTNCLS_unit=spice.spiceypy.ctypes.c_int()
-    c_int_FTNCLS_len=spice.spiceypy.ctypes.c_int(len(CharP_FTNCLS))
     # Open new file using FORTRAN SPICE TXTOPN
-    assert 0 == spice.spiceypy.libspice.txtopn_(CharP_FTNCLS,spice.spiceypy.ctypes.byref(c_int_FTNCLS_unit),c_int_FTNCLS_len)
-    assert not spice.failed()
+    unit = spice.txtopn_(FTNCLS)
     # Get the FORTRAN logical unit of the open file using FORTRAN SPICE FN2LEN
-    c_int_FTNCLS_unit_check=spice.spiceypy.ctypes.c_int()
-    assert 0 == spice.spiceypy.libspice.fn2lun_(CharP_FTNCLS,spice.spiceypy.ctypes.byref(c_int_FTNCLS_unit_check),c_int_FTNCLS_len)
+    assert unit == spice.fn2lun_(FTNCLS)
     assert not spice.failed()
-    assert c_int_FTNCLS_unit_check.value == c_int_FTNCLS_unit.value
     # Close the FORTRAN logical unit using ftncls, the subject of this test
-    spice.ftncls(c_int_FTNCLS_unit.value)
-    assert not spice.failed()
-    # Ensure the FORTRAN logical unit can no longer be retrieved
-    spice.spiceypy.libspice.fn2lun_(CharP_FTNCLS,spice.spiceypy.ctypes.byref(c_int_FTNCLS_unit_check),c_int_FTNCLS_len)
-    assert spice.failed()
-    assert spice.getmsg("SHORT",99) == 'SPICE(FILENOTOPEN)'
+    spice.ftncls(unit)
+    try:
+        # Ensure the FORTRAN logical unit can no longer be retrieved
+        closed_unit = None
+        closed_unit = spice.fn2lun_(FTNCLS)
+        assert False  # Guard:  code will never get here
+    except:
+        assert closed_unit is None
     # Cleanup
     spice.reset()
     spice.kclear()
     if spice.exists(FTNCLS):
-      os.remove(FTNCLS)  # pragma no cover
-    assert not spice.failed()
+        os.remove(FTNCLS)  # pragma no cover
 
 
 def test_furnsh():
@@ -2890,6 +2840,7 @@ def test_gffove():
 
 
 def test_gfilum():
+    if skipSlowTests: return
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(MarsKernels.merExt10)
@@ -4775,7 +4726,6 @@ def test_qcktrc():
     spice.chkout("qcktrc")
     spice.chkout("test")
     spice.reset()
-    do_test_trcoff_last('qcktrc')
 
 
 def test_qdq2av():
@@ -4832,49 +4782,81 @@ def test_raxisa():
 
 def test_rdtext():
     import datetime
+    # Create ISO UTC datetime string using current time
+    utcnow = datetime.datetime.utcnow().isoformat()
     spice.reset()
     spice.kclear()
-    # Create temporary filename
+    # Create temporary filenames
     RDTEXT=os.path.join(cwd, 'ex_rdtext.txt')
-    # Ensure file does not exist
+    xRDTEXT=os.path.join(cwd, 'xex_rdtext.txt')
+    # Ensure files do not exist
     if spice.exists(RDTEXT):
         os.remove(RDTEXT)  # pragma no cover
-    assert not spice.failed()
-    # Filename as C (char*); FORTRAN logical unit & filename length as C int
-    CharP_RDTEXT=spice.spiceypy.stypes.stringToCharP(RDTEXT+'\0')
-    c_int_RDTEXT_unit=spice.spiceypy.ctypes.c_int()
-    c_int_RDTEXT_len=spice.spiceypy.ctypes.c_int(len(CharP_RDTEXT))
+    if spice.exists(xRDTEXT):
+        os.remove(xRDTEXT)  # pragma no cover
     # Open new file using FORTRAN SPICE TXTOPN
-    assert 0 == spice.spiceypy.libspice.txtopn_(CharP_RDTEXT, spice.spiceypy.ctypes.byref(c_int_RDTEXT_unit), c_int_RDTEXT_len)
-    assert not spice.failed()
-    # Get the FORTRAN logical unit of the open file using FORTRAN SPICE FN2LEN
-    c_int_RDTEXT_unit_check=spice.spiceypy.ctypes.c_int()
-    assert 0 == spice.spiceypy.libspice.fn2lun_(CharP_RDTEXT, spice.spiceypy.ctypes.byref(c_int_RDTEXT_unit_check), c_int_RDTEXT_len)
-    assert not spice.failed()
-    assert c_int_RDTEXT_unit_check.value == c_int_RDTEXT_unit.value
-    ### Strings and C (char*) pointers to two lines to write
-    isonow = datetime.datetime.now().isoformat()
-    writln_lines = ['%d writln_ to x.txt %s' % (i, isonow,) for i in xrange(2)]
-    writln_linesP = map(spice.spiceypy.stypes.stringToCharP, writln_lines)
-    ### C ints of lengths of those lines
-    writln_lines_lens = [spice.spiceypy.ctypes.c_int(len(writln_line)) for writln_line in writln_lines]
-    ### Write the lines to the file using FORTRAN SPICE WRITLN
-    for writln_line, writln_line_len in zip(writln_lines, writln_lines_lens):
-        assert 0 == spice.spiceypy.libspice.writln_(writln_line, spice.spiceypy.ctypes.byref(c_int_FTNCLS_unit), writln_line_len)
-        assert not spice.failed()
-    # Close the FORTRAN logical unit using ftncls
-    spice.ftncls(c_int_RDTEXT_unit.value)
-    assert not spice.failed()
-    # Ensure the FORTRAN logical unit can no longer be retrieved
-    spice.spiceypy.libspice.fn2lun_(CharP_RDTEXT, spice.spiceypy.ctypes.byref(c_int_RDTEXT_unit_check), c_int_RDTEXT_len)
-    assert spice.failed()
-    assert spice.getmsg("SHORT", 99) == 'SPICE(FILENOTOPEN)'
+    unit = spice.txtopn_(RDTEXT)
+    xunit = spice.txtopn_(xRDTEXT)
+    # Build base lines
+    writln_lines = ['%s writln_ to x.txt %s' % (c, utcnow,) for c in '12']
+    xwritln_lines = ['x%s' % (writln_line,) for writln_line in writln_lines]
+    # Write lines to the files using FORTRAN SPICE WRITLN
+    for writln_line in writln_lines:
+        xwritln_line = 'x%s' % (writln_line,)
+        spice.writln_(writln_line, unit)
+        spice.writln_(xwritln_line, xunit)
+    # Close the FORTRAN logical units using ftncls
+    map(spice.ftncls,(unit,xunit,))
+    # Ensure the FORTRAN logical units can no longer be retrieved
+    closed_unit = None
+    try:
+        closed_unit = spice.fn2lun_(RDTEXT)
+        assert False  # Guard:  code will never get here
+    except:
+        assert closed_unit is None
+    spice.reset()
+    # ... second file
+    xclosed_unit = None
+    try:
+        xclosed_unit = spice.fn2lun_(xRDTEXT)
+        assert False  # Guard:  code will never get here
+    except:
+        assert xclosed_unit is None
+    spice.reset()
+    # Read two lines
+    read_line, done = spice.rdtext(RDTEXT,99)
+    assert read_line == writln_lines[0] and (not done)
+    read_line, done = spice.rdtext(RDTEXT,99)
+    assert read_line == writln_lines[1] and (not done)
+    # Read another time to confirm done will be set at end of file
+    read_line, done = spice.rdtext(RDTEXT,99)
+    assert '' == read_line and done
+    # Read another time to confirm file will be re-opened
+    read_line, done = spice.rdtext(RDTEXT,99)
+    assert read_line == writln_lines[0] and (not done)
+    # Close text file.
+    spice.cltext_(RDTEXT)
+    # Read two files in interleaved (1,2,2,1) sequence to verify that can be done
+    read_line, done = spice.rdtext(RDTEXT,99)
+    assert read_line == writln_lines[0] and (not done)
+    read_line, done = spice.rdtext(xRDTEXT,99)
+    assert read_line == xwritln_lines[0] and (not done)
+    read_line, done = spice.rdtext(xRDTEXT,99)
+    assert read_line == xwritln_lines[1] and (not done)
+    read_line, done = spice.rdtext(RDTEXT,99)
+    assert read_line == writln_lines[1] and (not done)
+    read_line, done = spice.rdtext(RDTEXT,99)
+    assert read_line == '' and done
+    read_line, done = spice.rdtext(xRDTEXT,99)
+    assert read_line == '' and done
     # Cleanup
     spice.reset()
     spice.kclear()
     if spice.exists(RDTEXT):
       os.remove(RDTEXT)  # pragma no cover
     assert not spice.failed()
+    if spice.exists(xRDTEXT):
+      os.remove(xRDTEXT)  # pragma no cover
 
 
 def test_reccyl():
@@ -6752,7 +6734,6 @@ def test_trcdep():
     spice.chkout("test")
     assert spice.trcdep() == 0
     spice.reset()
-    do_test_trcoff_last('trcdep')
 
 
 def test_trcnam():
@@ -6769,11 +6750,28 @@ def test_trcnam():
     spice.chkout("test")
     assert spice.trcdep() == 0
     spice.reset()
-    do_test_trcoff_last('trcnam')
 
 
-def test_trcoff():
-    do_test_trcoff_last('trcoff')
+# test_trcoff() cannot be done anywhere but last
+def teardown_test_trcoff():
+    spice.reset()
+    spice.kclear()
+    # Initialize stack trace with two values, and test
+    spice.chkin('A')
+    spice.chkin('B')
+    assert 2 == spice.trcdep()
+    assert 'B' == spice.trcnam(1)
+    assert 'A' == spice.trcnam(0)
+    # Turn off tracing and test
+    spice.trcoff()
+    assert 0 == spice.trcdep()
+    assert '' == spice.qcktrc(2)
+    # Ensure subsequent checkins are also ignored
+    spice.chkin('C')
+    assert 0 == spice.trcdep()
+    # Cleanup
+    spice.reset()
+    spice.kclear()
 
 
 def test_tsetyr():
@@ -6783,7 +6781,7 @@ def test_tsetyr():
     # Find current lower bound on the 100 year interval of expansion,
     # so it can be restored on exit
     tsetyr_lowerbound = tmp_getyr4(0)
-    for iy2_test in xrange(100):
+    for iy2_test in range(100):
       tmp_lowerbound =  tmp_getyr4(iy2_test)
       if tmp_lowerbound < tsetyr_lowerbound:
          tsetyr_lowerbound = tmp_lowerbound
@@ -7482,8 +7480,13 @@ def test_xposeg():
     npt.assert_array_almost_equal(spice.xposeg(np.array(m1), 3, 3), [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]])
 
 
+def teardown_tests():
+    # Tests that must be done last are put here and
+    # scheduled in teardown_module()
+    teardown_test_trcoff()
+
 def teardown_module(module):
-    assert 0 == len(traceSet)
+    teardown_tests()
     # if you are developing spiceypy, and don't want to delete kernels each time you run the tests, set
     # set the following environment variable "spiceypy_do_not_remove_kernels" to anything
     if not os.environ.get('spiceypy_do_not_remove_kernels'):
