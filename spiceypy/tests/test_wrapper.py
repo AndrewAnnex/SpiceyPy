@@ -2666,8 +2666,6 @@ def test_ftncls():
     # Ensure file does not exist
     if spice.exists(FTNCLS):
         os.remove(FTNCLS)  # pragma no cover
-    # What is the name of the spiceypy routine normally called txtopn_?
-    assert [s for s in spice.libspice.__dict__.keys() if s.find('txtopn') > -1] == ['xtxtopn_']
     # Open new file using FORTRAN SPICE TXTOPN
     unit = spice.txtopn_(FTNCLS)
     # Get the FORTRAN logical unit of the open file using FORTRAN SPICE FN2LEN
@@ -2676,12 +2674,12 @@ def test_ftncls():
     # Close the FORTRAN logical unit using ftncls, the subject of this test
     spice.ftncls(unit)
     try:
-        # Ensure the FORTRAN logical unit can no longer be retrieved
-        closed_unit = None
-        closed_unit = spice.fn2lun_(FTNCLS)
-        assert False  # Guard:  code will never get here
+        # Ensure the FORTRAN logical unit can no longer be retrieved:
+        closed_unit = None                   # 1)  Set closed_unit to None
+        closed_unit = spice.fn2lun_(FTNCLS)  # 2)  Try to assign LUN to closed_unit; this should throw an exception
+        assert False                         # 3)  Guard line; code should never get here
     except:
-        assert closed_unit is None
+        assert closed_unit is None           # 4)  closed_unit should still be None
     # Cleanup
     spice.reset()
     spice.kclear()
