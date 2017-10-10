@@ -1211,6 +1211,37 @@ def clpool():
 
 
 @spiceErrorCheck
+def cltext_(fname):
+    """
+    Close a text file currently opened by RDTEXT.
+
+    No URL available; relevant lines from SPICE source:
+
+    FORTRAN SPICE, rdtext.f:
+
+        C$Procedure  CLTEXT ( Close a text file opened by RDTEXT)
+              ENTRY  CLTEXT ( FILE )
+              CHARACTER*(*)       FILE
+        C     VARIABLE  I/O  DESCRIPTION
+        C     --------  ---  --------------------------------------------------
+        C     FILE       I   Text file to be closed.
+
+    CSPICE, rdtext.c:
+
+        /* $Procedure  CLTEXT ( Close a text file opened by RDTEXT) */
+        /* Subroutine */ int cltext_(char *file, ftnlen file_len)
+
+
+    :param fname: Text file to be closed.
+    :type line: str
+    """
+
+    fnameP    = stypes.stringToCharP(fname+'\0')
+    fname_len = ctypes.c_int(len(fname)+1)
+    libspice.cltext_(fnameP, fname_len)
+
+
+@spiceErrorCheck
 def cmprss(delim, n, instr, lenout=_default_len_out):
     """
     Compress a character string by removing occurrences of
@@ -5015,6 +5046,26 @@ def failed():
     :rtype: bool
     """
     return libspice.failed_c()
+
+
+@spiceErrorCheck
+def fn2lun_(fname):
+    """
+    Map name of open file to its FORTRAN (F2C) logical unit.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/fn2lun.html
+
+    :param fname: name of the file to be mapped to its logical unit.
+    :type fname: str
+    :return: the FORTRAN (F2C) logical unit associated with the filename.
+    :rtype: int
+    """
+
+    fnameP    = stypes.stringToCharP(fname+'\0')
+    unit_out  = ctypes.c_int()
+    fname_len = ctypes.c_int(len(fname)+1)
+    libspice.fn2lun_(fnameP,ctypes.byref(unit_out),fname_len)
+    return unit_out.value
 
 
 @spiceErrorCheck
@@ -13547,6 +13598,26 @@ def twovec(axdef, indexa, plndef, indexp):
 
 
 @spiceErrorCheck
+def txtopn_(fname):
+    """
+    Open a new text file for subsequent write access.
+
+    ftp://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ftncls_c.html
+
+    :param fname: name of the new text file to be opened.
+    :type fname: str
+    :return: FORTRAN logical unit of opened file
+    :rtype: int
+    """
+
+    fnameP    = stypes.stringToCharP(fname+'\0')
+    unit_out  = ctypes.c_int()
+    fname_len = ctypes.c_int(len(fname)+1)
+    libspice.txtopn_(fnameP,ctypes.byref(unit_out),fname_len)
+    return unit_out.value
+
+
+@spiceErrorCheck
 def tyear():
     """
     Return the number of seconds in a tropical year.
@@ -15069,6 +15140,42 @@ def wnvald(insize, n, window):
     n = ctypes.c_int(n)
     libspice.wnvald_c(insize, n, ctypes.byref(window))
     return window
+
+
+@spiceErrorCheck
+def writln_(line, unit):
+    """
+    Write a text line to a logical unit
+
+    No URL available; relevant lines from SPICE source:
+
+    FORTRAN SPICE, writln.f:
+
+        C$Procedure      WRITLN ( Write a text line to a logical unit )
+              SUBROUTINE WRITLN ( LINE, UNIT )
+              CHARACTER*(*)      LINE
+              INTEGER            UNIT
+
+        C     Variable  I/O  Description
+        C     --------  ---  --------------------------------------------------
+        C     LINE       I   The line which is to be written to UNIT.
+        C     UNIT       I   The Fortran unit number to use for output.
+
+    CSPICE, writln.c:
+
+        /* $Procedure      WRITLN ( Write a text line to a logical unit ) */
+        /* Subroutine */ int writln_(char *line, integer *unit, ftnlen line_len)
+
+    :param line: The line which is to be written to UNIT.
+    :type line: str
+    :param unit: The Fortran unit number to use for output.
+    :type line: int
+    """
+
+    lineP    = stypes.stringToCharP(line+'\0')
+    unit     = ctypes.c_int(unit)
+    line_len = ctypes.c_int(len(line)+1)
+    libspice.writln_(lineP, ctypes.byref(unit), line_len)
 
 
 ################################################################################
