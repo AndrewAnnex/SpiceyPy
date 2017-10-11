@@ -245,7 +245,12 @@ def writeTestMetaKernel():
 
 
 def downloadKernels():
-    if 'SKIP_DOWNLOAD_KERNELS' in os.environ: return
+    # Code to enable a caller to complete code coverage in this file
+    if 'SKIP_DOWNLOAD_KERNELS' in os.environ:
+        # import datetime
+        # with open('skipped_download_kernels.txt','wb') as fSDK:
+        #     fSDK.write('skipped_download_kernels[%s]\n' % (datetime.datetime.utcnow().isoformat(),))
+        return
     # Download the kernels listed in kernelList and kernelURLlist
     getStandardKernels()
     # Now grab any extra test kernels we need

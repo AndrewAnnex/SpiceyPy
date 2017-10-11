@@ -7473,6 +7473,7 @@ def test_gettestkernels():
     # Machinations needed to get 100% coverage in gettestkernels.py
     os.environ["SKIP_DOWNLOAD_KERNELS"]=''
     import spiceypy.tests.gettestkernels
+    reload(spiceypy.tests.gettestkernels)
     del os.environ["SKIP_DOWNLOAD_KERNELS"]
     tmpgtk = reload(spiceypy.tests.gettestkernels)
 
