@@ -2677,9 +2677,9 @@ def test_ftncls():
         # Ensure the FORTRAN logical unit can no longer be retrieved:
         closed_unit = None                   # 1)  Set closed_unit to None
         closed_unit = spice.fn2lun_(FTNCLS)  # 2)  Try to assign LUN to closed_unit; this should throw an exception
-        assert False                         # 3)  Guard line; code should never get here
     except:
-        assert closed_unit is None           # 4)  closed_unit should still be None
+        pass
+    assert closed_unit is None               # 3)  closed_unit should still be None
     # Cleanup
     spice.reset()
     spice.kclear()
@@ -4811,18 +4811,22 @@ def test_rdtext():
     # Ensure the FORTRAN logical units can no longer be retrieved
     closed_unit = None
     try:
-        closed_unit = spice.fn2lun_(RDTEXT)
-        assert False  # Guard:  code will never get here
+        # Ensure the FORTRAN logical unit can no longer be retrieved:
+        closed_unit = None                   # 1)  Set closed_unit to None
+        closed_unit = spice.fn2lun_(RDTEXT)  # 2)  Try to assign LUN to closed_unit; this should throw an exception
     except:
-        assert closed_unit is None
+        pass
+    assert closed_unit is None               # 3)  closed_unit should still be None
     spice.reset()
     # ... second file
     xclosed_unit = None
     try:
-        xclosed_unit = spice.fn2lun_(xRDTEXT)
-        assert False  # Guard:  code will never get here
+        # Ensure the FORTRAN logical unit can no longer be retrieved:
+        xclosed_unit = None                    # 1)  Set xclosed_unit to None
+        xclosed_unit = spice.fn2lun_(xRDTEXT)  # 2)  Try to assign LUN to xclosed_unit; this should throw an exception
     except:
-        assert xclosed_unit is None
+        pass
+    assert xclosed_unit is None                # 3)  closed_unit should still be None
     spice.reset()
     # Read two lines
     read_line, done = spice.rdtext(RDTEXT,99)
@@ -6789,12 +6793,11 @@ def test_tsetyr():
          break
     # Run first case with a year not ending in 00
     tsetyr_y2 = tsetyr_lowerbound % 100
-    if tsetyr_y2: tsetyr_y4 = tsetyr_lowerbound + 200
-    else        : tsetyr_y4 = tsetyr_lowerbound + 250
+    tsetyr_y4 = tsetyr_lowerbound + 200 + ((tsetyr_y2 == 0) and 50 or 0)
     spice.tsetyr(tsetyr_y4)
     assert tmp_getyr4(tsetyr_y4 % 100) == tsetyr_y4
     assert tmp_getyr4((tsetyr_y4-1) % 100) == (tsetyr_y4+99)
-    # Run first case with a year ending in 00
+    # Run second case with a year ending in 00
     tsetyr_y4 -= (tsetyr_y4 % 100)
     spice.tsetyr(tsetyr_y4)
     assert tmp_getyr4(tsetyr_y4 % 100) == tsetyr_y4
