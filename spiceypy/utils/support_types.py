@@ -562,7 +562,7 @@ class SpiceDLADescr(Structure):
 
     @property
     def fwdptr(self):
-        return self._fwdprt
+        return self._fwdptr
 
     @property
     def ibase(self):

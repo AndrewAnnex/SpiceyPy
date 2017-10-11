@@ -179,3 +179,36 @@ def test_toIntMatrix():
         stypes.toIntMatrix("ABCD")
     with pytest.raises(TypeError):
         stypes.toIntMatrix([[1.0, 2.0], [3.0, 4.0]])
+
+
+def test_to_improve_coverage():
+    # SpiceyError().__str__()
+    xsept = spice.stypes.SpiceyError('abc')
+    assert str(xsept) == 'abc'
+    # emptyCharArray when missing keyword arguments
+    eca = stypes.emptyCharArray()
+    # emptyDoubleMatrix when x is c_int
+    edm = stypes.emptyDoubleMatrix(x=ctypes.c_int(4))
+    # stypes.*MatrixType().from_param(param) when isinstance(param,Array)
+    for stmt,typ in zip((stypes.DoubleMatrixType(), stypes.IntMatrixType(),)
+                   ,(float                        , int,)
+                   ):
+        madeFromList = stmt.from_param([[typ(1),typ(2),typ(3)],[typ(6),typ(4),typ(0)]])
+        assert madeFromList is stmt.from_param(madeFromList)
+    # DataType.__init__()
+    assert stypes.DataType()
+    # SpiceDLADescr methods
+    stsdlad = stypes.SpiceDLADescr()
+    assert type(stsdlad.bwdptr) is int
+    assert type(stsdlad.fwdptr) is int
+    assert type(stsdlad.ibase) is int
+    assert type(stsdlad.isize) is int
+    assert type(stsdlad.dbase) is int
+    assert type(stsdlad.cbase) is int
+    assert type(stsdlad.csize) is int
+    # __str__ methods in multiple classes
+    for obj in (stypes.SpiceEKAttDsc(),stypes.SpiceEKSegSum(),):
+        assert type(obj.__str__()) is str
+    # SpiceCell methods:  .is_time; .is_set; .reset.
+    stsc = stypes.SpiceCell(dtype=stypes.SpiceCell.DATATYPES_ENUM['time'],length=10,size=10,card=0,isSet=1)
+    assert stsc.is_time() and stsc.is_set() and (stsc.reset() is None)
