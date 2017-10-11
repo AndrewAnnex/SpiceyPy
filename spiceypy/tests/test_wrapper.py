@@ -51,15 +51,6 @@ def setup_module(module):
 ########################################################################
 # Start of tests
 
-def test_gettestkernels():
-    # To complete code coverage in spiceypy.tests.gettestkernels.py
-    with pytest.raises(BaseException):
-        # Generate .HTTPError, return BaseException
-        gtkAttemptDownload('https://naif.jpl.nasa.gov/404','httperror.txt','httperror.txt',1)
-    with pytest.raises(BaseException):
-        # Generate .URLError, return BaseException
-        gtkAttemptDownload('https://no_such_host.naif.jpl.nasa.gov/404','urlerror.txt','urlerror.txt',1)
-
 
 def test_appndc():
     testCell = spice.stypes.SPICECHAR_CELL(10, 10)
@@ -7469,6 +7460,21 @@ def test_xposeg():
     m1 = [[1.0, 2.0, 3.0], [0.0, 4.0, 5.0], [0.0, 6.0, 0.0]]
     npt.assert_array_almost_equal(spice.xposeg(m1, 3, 3), [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]])
     npt.assert_array_almost_equal(spice.xposeg(np.array(m1), 3, 3), [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]])
+
+
+def test_gettestkernels():
+    # To complete code coverage in spiceypy.tests.gettestkernels.py
+    with pytest.raises(BaseException):
+        # Generate .HTTPError, return BaseException
+        gtkAttemptDownload('https://naif.jpl.nasa.gov/404','httperror.txt','httperror.txt',1)
+    with pytest.raises(BaseException):
+        # Generate .URLError, return BaseException
+        gtkAttemptDownload('https://no_such_host.naif.jpl.nasa.gov/404','urlerror.txt','urlerror.txt',1)
+    # Machinations needed to get 100% coverage in gettestkernels.py
+    os.environ["SKIP_DOWNLOAD_KERNELS"]=''
+    import spiceypy.tests.gettestkernels
+    del os.environ["SKIP_DOWNLOAD_KERNELS"]
+    tmpgtk = reload(spiceypy.tests.gettestkernels)
 
 
 def teardown_tests():

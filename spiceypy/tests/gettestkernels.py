@@ -245,6 +245,7 @@ def writeTestMetaKernel():
 
 
 def downloadKernels():
+    if 'SKIP_DOWNLOAD_KERNELS' in os.environ: return
     # Download the kernels listed in kernelList and kernelURLlist
     getStandardKernels()
     # Now grab any extra test kernels we need
@@ -257,5 +258,5 @@ def downloadKernels():
     getCassiniTestKernels()
 
 
-if __name__ == '__main__':
+if __name__ == '__main__' or 'SKIP_DOWNLOAD_KERNELS' in os.environ:
     downloadKernels()
