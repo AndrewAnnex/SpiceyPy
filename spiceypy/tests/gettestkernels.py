@@ -172,10 +172,13 @@ def attemptDownload(url, kernelName, targetFileName, num_attempts):
                 kernel.write(current_kernel.read())
             six_print("Downloaded kernel: {}".format(kernelName), flush=True)
             break
-        except urllib.error.URLError:
-            six_print("Download of kernel: {} failed with URLError, trying agian after a bit.".format(kernelName), flush=True)
+        # N.B. .HTTPError inherits from .URLError, so [except:....HTTPError]
+        #      must be listed before [except:....URLError], otherwise the
+        #      .HTTPError exception cannot be caught
         except urllib.error.HTTPError as h:
-            print("Some http error when downloading kernel {}, error: ".format(kernelName), h, ", trying agian after a bit.")
+            print("Some http error when downloading kernel {}, error: ".format(kernelName), h, ", trying again after a bit.")
+        except urllib.error.URLError:
+            six_print("Download of kernel: {} failed with URLError, trying again after a bit.".format(kernelName), flush=True)
         current_attempt += 1
         six_print("\t Attempting to Download kernel again...", flush=True)
         time.sleep(2 + current_attempt)

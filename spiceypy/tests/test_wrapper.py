@@ -30,6 +30,7 @@ import os
 
 import spiceypy.utils.callbacks
 from spiceypy.tests.gettestkernels import downloadKernels,\
+    attemptDownload as gtkAttemptDownload,\
     CoreKernels,\
     MarsKernels, \
     CassiniKernels,\
@@ -49,6 +50,16 @@ def setup_module(module):
 
 ########################################################################
 # Start of tests
+
+def test_gettestkernels():
+    # To complete code coverage in spiceypy.tests.gettestkernels.py
+    with pytest.raises(BaseException):
+        # Generate .HTTPError, return BaseException
+        gtkAttemptDownload('https://naif.jpl.nasa.gov/404','httperror.txt','httperror.txt',1)
+    with pytest.raises(BaseException):
+        # Generate .URLError, return BaseException
+        gtkAttemptDownload('https://no_such_host.naif.jpl.nasa.gov/404','urlerror.txt','urlerror.txt',1)
+
 
 def test_appndc():
     testCell = spice.stypes.SPICECHAR_CELL(10, 10)
