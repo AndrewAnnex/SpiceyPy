@@ -7463,6 +7463,7 @@ def test_xposeg():
 
 
 def test_gettestkernels():
+    global reload
     # To complete code coverage in spiceypy.tests.gettestkernels.py
     with pytest.raises(BaseException):
         # Generate .HTTPError, return BaseException
@@ -7471,11 +7472,13 @@ def test_gettestkernels():
         # Generate .URLError, return BaseException
         gtkAttemptDownload('https://no_such_host.naif.jpl.nasa.gov/404','urlerror.txt','urlerror.txt',1)
     # Machinations needed to get 100% coverage in gettestkernels.py
-    os.environ["SKIP_DOWNLOAD_KERNELS"]=''
-    import spiceypy.tests.gettestkernels
-    reload(spiceypy.tests.gettestkernels)
+    os.environ["SKIP_DOWNLOAD_KERNELS"] = ''
+    import spiceypy.tests.gettestkernels as stg
+    try: reload(stg)
+    except: import importlib.reload as reload
+    tmpgtk = reload(stg)
     del os.environ["SKIP_DOWNLOAD_KERNELS"]
-    tmpgtk = reload(spiceypy.tests.gettestkernels)
+    tmpgtk = reload(stg)
 
 
 def teardown_tests():
