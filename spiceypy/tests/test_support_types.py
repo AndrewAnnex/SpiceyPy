@@ -185,10 +185,11 @@ def test_to_improve_coverage():
     # SpiceyError().__str__()
     xsept = spice.stypes.SpiceyError('abc')
     assert str(xsept) == 'abc'
-    # emptyCharArray when missing keyword arguments
+    # stypes.emptyCharArray when missing keyword arguments
     eca = stypes.emptyCharArray()
-    # emptyDoubleMatrix when x is c_int
+    # stypes.emptyDoubleMatrix and stypes.emptyIntMatrix when x is c_int
     edm = stypes.emptyDoubleMatrix(x=ctypes.c_int(4))
+    eim = stypes.emptyIntMatrix(x=ctypes.c_int(4))
     # stypes.*MatrixType().from_param(param) when isinstance(param,Array)
     for stmt,typ in zip((stypes.DoubleMatrixType(), stypes.IntMatrixType(),)
                    ,(float                        , int,)
@@ -209,6 +210,9 @@ def test_to_improve_coverage():
     # __str__ methods in multiple classes
     for obj in (stypes.SpiceEKAttDsc(),stypes.SpiceEKSegSum(),):
         assert type(obj.__str__()) is str
-    # SpiceCell methods:  .is_time; .is_set; .reset.
-    stsc = stypes.SpiceCell(dtype=stypes.SpiceCell.DATATYPES_ENUM['time'],length=10,size=10,card=0,isSet=1)
-    assert stsc.is_time() and stsc.is_set() and (stsc.reset() is None)
+    # SpiceCell methods:  .is_time; .is_bool; .reset.
+    stsc = stypes.SpiceCell(dtype=stypes.SpiceCell.DATATYPES_ENUM['time'],length=10,size=10,card=0,isSet=0)
+    assert stsc.is_time() and (not stsc.is_bool())
+    stsc = stypes.SpiceCell(dtype=stypes.SpiceCell.DATATYPES_ENUM['bool'],length=10,size=10,card=0,isSet=0)
+    assert (not stsc.is_time()) and stsc.is_bool()
+    assert stsc.reset() is None
