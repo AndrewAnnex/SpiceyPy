@@ -2673,13 +2673,8 @@ def test_ftncls():
     assert not spice.failed()
     # Close the FORTRAN logical unit using ftncls, the subject of this test
     spice.ftncls(unit)
-    try:
-        # Ensure the FORTRAN logical unit can no longer be retrieved:
-        closed_unit = None                   # 1)  Set closed_unit to None
-        closed_unit = spice.fn2lun_(FTNCLS)  # 2)  Try to assign LUN to closed_unit; this should throw an exception
-    except:
-        pass
-    assert closed_unit is None               # 3)  closed_unit should still be None
+    with pytest.raises(spice.stypes.SpiceyError):
+        closed_unit = spice.fn2lun_(FTNCLS)
     # Cleanup
     spice.reset()
     spice.kclear()
@@ -4808,60 +4803,41 @@ def test_rdtext():
     # Close the FORTRAN logical units using ftncls
     spice.ftncls(unit)
     spice.ftncls(xunit)
-    # Ensure the FORTRAN logical units can no longer be retrieved
-    closed_unit = None
-    try:
-        # Ensure the FORTRAN logical unit can no longer be retrieved:
-        closed_unit = None                   # 1)  Set closed_unit to None
-        closed_unit = spice.fn2lun_(RDTEXT)  # 2)  Try to assign LUN to closed_unit; this should throw an exception
-    except:
-        pass
-    assert closed_unit is None               # 3)  closed_unit should still be None
+    # Ensure the FORTRAN logical units can no longer be retrieved ...
+    # ... first file, RDTEXT
+    with pytest.raises(spice.stypes.SpiceyError):
+        closed_unit = spice.fn2lun_(RDTEXT)
     spice.reset()
-    # ... second file
-    xclosed_unit = None
-    try:
-        # Ensure the FORTRAN logical unit can no longer be retrieved:
-        xclosed_unit = None                    # 1)  Set xclosed_unit to None
-        xclosed_unit = spice.fn2lun_(xRDTEXT)  # 2)  Try to assign LUN to xclosed_unit; this should throw an exception
-    except:
-        pass
-    assert xclosed_unit is None                # 3)  closed_unit should still be None
+    # ... second file, xRDTEXT
+    with pytest.raises(spice.stypes.SpiceyError):
+        xclosed_unit = spice.fn2lun_(xRDTEXT)
     spice.reset()
-    # Read two lines
-    read_line, done = spice.rdtext(RDTEXT,99)
-    assert read_line == writln_lines[0] and (not done)
-    read_line, done = spice.rdtext(RDTEXT,99)
-    assert read_line == writln_lines[1] and (not done)
-    # Read another time to confirm done will be set at end of file
-    read_line, done = spice.rdtext(RDTEXT,99)
-    assert '' == read_line and done
-    # Read another time to confirm file will be re-opened
-    read_line, done = spice.rdtext(RDTEXT,99)
-    assert read_line == writln_lines[0] and (not done)
-    # Close text file.
-    spice.cltext_(RDTEXT)
+    # Simple function to call spice.rdtext and assert expected result
+    def rdtext_helper(filename, expected_line, expected_done):
+        read_line, done = spice.rdtext(filename,99)
+        assert (read_line == expected_line) and (done is expected_done)
+    #
+    rdtext_helper(RDTEXT, writln_lines[0], False)  # Read first line from RDTEXT
+    rdtext_helper(RDTEXT, writln_lines[1], False)  # Read second line from RDTEXT
+    rdtext_helper(RDTEXT,              '', True)   # Read another time from RDTEXT to confirm done will be set to True at end of file
+    rdtext_helper(RDTEXT, writln_lines[0], False)  # Read another time from RDTEXT to confirm file will be re-opened
+    spice.cltext_(RDTEXT)                          # Close text file.
     # Read two files in interleaved (1,2,2,1) sequence to verify that can be done
-    read_line, done = spice.rdtext(RDTEXT,99)
-    assert read_line == writln_lines[0] and (not done)
-    read_line, done = spice.rdtext(xRDTEXT,99)
-    assert read_line == xwritln_lines[0] and (not done)
-    read_line, done = spice.rdtext(xRDTEXT,99)
-    assert read_line == xwritln_lines[1] and (not done)
-    read_line, done = spice.rdtext(RDTEXT,99)
-    assert read_line == writln_lines[1] and (not done)
-    read_line, done = spice.rdtext(RDTEXT,99)
-    assert read_line == '' and done
-    read_line, done = spice.rdtext(xRDTEXT,99)
-    assert read_line == '' and done
+    rdtext_helper( RDTEXT,  writln_lines[0], False)  # Read first  line from RDTEXT
+    rdtext_helper(xRDTEXT, xwritln_lines[0], False)  # Read first  line from xRDTEXT
+    rdtext_helper(xRDTEXT, xwritln_lines[1], False)  # Read second line from xRDTEXT
+    rdtext_helper( RDTEXT,  writln_lines[1], False)  # Read second line from RDTEXT
+    # Check end-of-file cases
+    rdtext_helper( RDTEXT, '', True)
+    rdtext_helper(xRDTEXT, '', True)
     # Cleanup
     spice.reset()
     spice.kclear()
     if spice.exists(RDTEXT):
-      os.remove(RDTEXT)  # pragma no cover
+        os.remove(RDTEXT)  # pragma no cover
     assert not spice.failed()
     if spice.exists(xRDTEXT):
-      os.remove(xRDTEXT)  # pragma no cover
+        os.remove(xRDTEXT)  # pragma no cover
 
 
 def test_reccyl():
