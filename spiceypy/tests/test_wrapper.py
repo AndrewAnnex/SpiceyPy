@@ -7475,8 +7475,9 @@ def test_gettestkernels():
     os.environ["SKIP_DOWNLOAD_KERNELS"] = ''
     import spiceypy.tests.gettestkernels as stg
     try: reload(stg)
-    except: import importlib.reload as reload
-    tmpgtk = reload(stg)
+    except:
+        from importlib import reload
+        tmpgtk = reload(stg)
     del os.environ["SKIP_DOWNLOAD_KERNELS"]
     tmpgtk = reload(stg)
 

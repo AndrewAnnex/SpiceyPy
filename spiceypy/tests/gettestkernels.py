@@ -247,6 +247,8 @@ def writeTestMetaKernel():
 def downloadKernels():
     # Code to enable a caller to complete code coverage in this file
     if 'SKIP_DOWNLOAD_KERNELS' in os.environ:
+        # Commented code to test if kernel downloads are skipped because
+        # the code in this path is run
         # import datetime
         # with open('skipped_download_kernels.txt','wb') as fSDK:
         #     fSDK.write('skipped_download_kernels[%s]\n' % (datetime.datetime.utcnow().isoformat(),))
