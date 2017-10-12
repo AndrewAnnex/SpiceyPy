@@ -1020,13 +1020,13 @@ def test_dafgsr():
         # Set index to first word of first summary
         firstWord = 4
         # Set DAF record before daf421.bsp next summary record's first record (641)
-        lastIEndRecno = 640
+        lastIEndWord = 640
         for iSS in range(1, nSS+1):
             # Get packed summary
             drec = spice.dafgsr(handle, iRecno, firstWord, firstWord+ss-1)
             # Unpack summary
             dc, ic = spice.dafus(drec, nd, ni)
-            iBody, iCenter, iFrame, iSPKtype, iStartRecno, iEndRecno = ic
+            iBody, iCenter, iFrame, iSPKtype, iStartWord, iEndWord = ic
             #DISABLED:  if doLog: print((iSS, dc, ic, spice.failed(),))
             # SPK de421.bsp ephemerides run from [1899 JUL 29 00:00:00 TDB] to [2052 OCT 09 00:00:00 TDB]
             assert dc[0] == -3169195200.0 and dc[1] == 1696852800.0
@@ -1035,10 +1035,10 @@ def test_dafgsr():
             assert (iBody/100) == iCenter
             # All de421.bsp ephemerides are in the J2000 frame (ID 1), use Type 2 SPK records,
             # and start after the last record for the previous ephemeris
-            assert iFrame == 1 and iSPKtype == 2 and (lastIEndRecno+1) == iStartRecno
+            assert iFrame == 1 and iSPKtype == 2 and (lastIEndWord+1) == iStartWord
             # Set up for next pa through loop
             firstWord += ss
-            lastIEndRecno = iEndRecno
+            lastIEndWord = iEndWord
         # There is only one summary record in de421.bsp
         assert fward is 0
     # Cleanup
@@ -1116,7 +1116,72 @@ def test_dafps_dafrs():
 
 
 def test_dafrda():
-    assert 1
+    spice.reset()
+    spice.kclear()
+    #DISABLED:  doLog = "DO_DAFRDA_LOG" in os.environ
+    # Open DAF
+    # N.B. The SPK used must use the LTL-IEEE double byte-ordering and format
+    try:
+      # This should be de421.bsp from the test kernel set
+      handle = spice.dafopr(CoreKernels.spk)
+    except:
+      # try relative path e.g. from [build/lib*/] to [../../spiceypy/tests]
+      handle = spice.dafopr('../../spiceypy/tests/de421.bsp')
+    # get ND, NI (N.B. for SPKs, ND=2 and NI=6),
+    # and first, last and free record numbers
+    nd, ni, ifname, fward, bward, free = rtnDafrfr = spice.dafrfr(handle)
+    assert nd == 2 and ni == 6
+    # Calculate Single Summary size
+    ss = nd + ((ni+1) >> 1) 
+    iRecno = fward
+    # Get first three words at summary record (DAF record iRecno)
+    # * drec(1) NEXT forward pointer to next summary record
+    # * drec(2) PREV backward pointer (not used here)
+    # * drec(3) NSUM Number of single summaries in this DAF record
+    fward, bward, nSS = drec = map(int, spice.dafgsr(handle, iRecno, 1, 3))
+    #DISABLED:  if doLog: print((iRecno, drec, spice.failed(),))
+    # There is only one summary record in de421.bsp
+    assert iRecno == 4 and fward is 0 and bward is 0 and nSS == 15
+    # Set index to first word of first summary
+    firstWord = 4
+    # Set DAF word before first segments first word (641 for de421.bsp)
+    lastIEndWord = 640
+    # Loop over single summaries
+    for iSS in range(int(nSS)):
+        # Get packed summary
+        drec = spice.dafgsr(handle, iRecno, firstWord, firstWord+ss-1)
+        # Unpack summary
+        dc, ic = spice.dafus(drec, nd, ni)
+        iBody, iCenter, iFrame, iSPKtype, iStartWord, iEndWord = ic
+        #DISABLED:  if doLog: print((dc, ic, spice.failed(),))
+        # SPK de421.bsp ephemerides run from [1899 JUL 29 00:00:00 TDB] to [2052 OCT 09 00:00:00 TDB]
+        assert dc[0] == -3169195200.0 and dc[1] == 1696852800.0
+        # Solar System body barycenters (IDs 1-10) centers are the Solar System Barycenter (ID=0)
+        # All other bodies' centers (e.g. 301; Moon) are their systems barycenter (e.g. 3 Earth-Moon Barycenter)
+        assert (iBody/100) == iCenter
+        # All de421.bsp ephemeris segments are in the J2000 frame (ID 1),
+        # are Type 2 SPK segments, and start immediately after the last
+        # word (lastIEndWord) for the previous segment
+        assert iFrame == 1 and iSPKtype == 2 and (lastIEndWord+1) == iStartWord
+        # Get the four-word directory at the end of the segment
+        segmentInit, segmentIntlen, segmentRsize, segmentN = segmentLast4 = spice.dafrda(handle, ic[5]-3, ic[5])
+        #DISABLED:  if doLog:
+        #DISABLED:      print(segmentLast4)
+        #DISABLED:      print(1+ic[5]-ic[4],3 + (segmentRsize*segmentN) + ic[4] - ic[5])
+        # Check segment word count (1+END-BEGIN) against directory word content
+        # Type 2 SPK segment word count:
+        # - A count of [segmentN] Chebyshev polynomial records @ RSIZE words per Cheby. poly. record
+        # - A four-word directory at the end of the segment
+        # So ((RSIZE * N) + 4) == (1 + END - BEGIN)
+        # - cf. https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/spk.html#Type%202:%20Chebyshev%20%28position%20only%29
+        assert (3 + (segmentRsize * segmentN)) == (ic[5] - ic[4])
+        # Setup for next segment:  advance BEGIN word of next single summary
+        firstWord += ss
+        lastIEndWord = iEndWord
+    # Cleanup
+    spice.dafcls(handle)
+    spice.reset()
+    spice.kclear()
 
 
 def test_dafrfr():

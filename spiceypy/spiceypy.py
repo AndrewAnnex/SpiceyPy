@@ -1875,8 +1875,8 @@ def dafrda(handle, begin, end):
     handle = ctypes.c_int(handle)
     begin = ctypes.c_int(begin)
     end = ctypes.c_int(end)
-    data = stypes.emptyDoubleVector(8)  # value of 8 from help file
-    libspice.dafrda_c(handle, begin, end, ctypes.byref(data))
+    data = stypes.emptyDoubleVector(1+end.value-begin.value)
+    libspice.dafrda_c(handle, begin, end, data)
     return stypes.cVectorToPython(data)
 
 
