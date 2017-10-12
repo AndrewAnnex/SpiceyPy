@@ -1344,6 +1344,7 @@ def test_diags2():
 
 
 def test_diff():
+    # SPICEINT_CELL
     testCellOne = spice.stypes.SPICEINT_CELL(8)
     testCellTwo = spice.stypes.SPICEINT_CELL(8)
     spice.insrti(1, testCellOne)
@@ -1354,6 +1355,39 @@ def test_diff():
     spice.insrti(4, testCellTwo)
     outCell = spice.diff(testCellOne, testCellTwo)
     assert [x for x in outCell] == [1]
+    outCell = spice.diff(testCellTwo, testCellOne)
+    assert [x for x in outCell] == [4]
+    # SPICECHAR_CELL
+    testCellOne = spice.stypes.SPICECHAR_CELL(8,8)
+    testCellTwo = spice.stypes.SPICECHAR_CELL(8,8)
+    spice.insrtc('1', testCellOne)
+    spice.insrtc('2', testCellOne)
+    spice.insrtc('3', testCellOne)
+    spice.insrtc('2', testCellTwo)
+    spice.insrtc('3', testCellTwo)
+    spice.insrtc('4', testCellTwo)
+    outCell = spice.diff(testCellOne, testCellTwo)
+    assert [x for x in outCell] == ['1']
+    outCell = spice.diff(testCellTwo, testCellOne)
+    assert [x for x in outCell] == ['4']
+    # SPICEDOUBLE_CELL
+    testCellOne = spice.stypes.SPICEDOUBLE_CELL(8)
+    testCellTwo = spice.stypes.SPICEDOUBLE_CELL(8)
+    spice.insrtd(1.0, testCellOne)
+    spice.insrtd(2.0, testCellOne)
+    spice.insrtd(3.0, testCellOne)
+    spice.insrtd(2.0, testCellTwo)
+    spice.insrtd(3.0, testCellTwo)
+    spice.insrtd(4.0, testCellTwo)
+    outCell = spice.diff(testCellOne, testCellTwo)
+    assert [x for x in outCell] == [1.0]
+    outCell = spice.diff(testCellTwo, testCellOne)
+    assert [x for x in outCell] == [4.0]
+    # SPICEBOOLEAN_CELL; dtype=4
+    testCellOne = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'],size=9,length=0,card=0,isSet=False)
+    testCellTwo = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'],size=9,length=0,card=0,isSet=False)
+    with pytest.raises(NotImplementedError):
+        cellCopy = spice.diff(testCellOne,testCellTwo)
 
 
 def test_dlabfs():

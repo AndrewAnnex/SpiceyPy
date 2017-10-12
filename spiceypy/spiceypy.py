@@ -2277,7 +2277,8 @@ def diff(a, b):
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
-    assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
+    # The next line was redundant with the [raise NotImplementedError] line below
+    # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     if a.dtype is 0:
         c = stypes.SPICECHAR_CELL(max(a.size, b.size), max(a.length, b.length))
     elif a.dtype is 1:
