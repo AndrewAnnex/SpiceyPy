@@ -1774,9 +1774,7 @@ def dafgsr(handle, recno, begin, end):
     :type begin: int
     :param end: Last word to read from record.
     :type end: int
-    :return:
-            Contents of request sub-record, array of floats
-            Flag indicating whether anything was found
+    :return: Contents of request sub-record
     :rtype: float numpy.ndarray
     """
     handle = ctypes.c_int(handle)
