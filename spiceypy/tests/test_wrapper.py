@@ -672,11 +672,34 @@ def test_convrt():
 
 
 def test_copy():
+    # SPICEINT_CELL; dtype=2
     outCell = spice.bltfrm(-1)
     assert outCell.size >= 126
     cellCopy = spice.copy(outCell)
     assert cellCopy.size >= 126
     assert cellCopy is not outCell
+    assert cellCopy.dtype is 2
+    # SPICECHAR_CELL; dtype=0
+    cellSrc = spice.stypes.SPICECHAR_CELL(10,10)
+    tmpRtn = [spice.appndc('%d' % (i,),cellSrc) for i in range(5)]
+    cellCopy = spice.copy(cellSrc)
+    assert cellCopy.dtype is 0
+    assert cellCopy.size == cellSrc.size
+    assert cellCopy.card == cellSrc.card
+    assert cellCopy[:] == cellSrc[:]
+    assert cellCopy.length >= cellSrc.length
+    # SPICEDOUBLE_CELL; dtype=1
+    cellSrc = spice.stypes.SPICEDOUBLE_CELL(10)
+    tmpRtn = [spice.appndd(float(i),cellSrc) for i in range(8)]
+    cellCopy = spice.copy(cellSrc)
+    assert cellCopy.dtype is 1
+    assert cellCopy.size == cellSrc.size
+    assert cellCopy.card == cellSrc.card
+    assert cellCopy[:] == cellSrc[:]
+    # SPICEBOOLEAN_CELL; dtype=4
+    cellSrc = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'],size=9,length=0,card=0,isSet=False)
+    with pytest.raises(NotImplementedError):
+        cellCopy = spice.copy(cellSrc)
 
 
 def test_cpos():
@@ -966,7 +989,62 @@ def test_dafgsstress():
 
 
 def test_dafgsr():
-    assert 1
+    spice.reset()
+    spice.kclear()
+    #DISABLED:  doLog = "DO_DAFGSR_LOG" in os.environ
+    # Open DAF
+    # N.B. The SPK used must use the LTL-IEEE double byte-ordering and format
+    try:
+      # This should be de421.bsp from the test kernel set
+      handle = spice.dafopr(CoreKernels.spk)
+    except:
+      # try relative path e.g. from [build/lib*/] to [../../spiceypy/tests]
+      handle = spice.dafopr('../../spiceypy/tests/de421.bsp')
+    # get ND, NI (N.B. for SPKs, ND=2 and NI=6),
+    # and first, last and free record numbers
+    nd, ni, ifname, fward, bward, free = rtnDafrfr = spice.dafrfr(handle)
+    assert nd == 2 and ni == 6
+    # Calculate Single Summary size
+    ss = nd + ((ni+1) >> 1) 
+    # Loop over Summary records
+    while fward > 0:
+        iRecno = fward
+        # Get first three words at summary record (DAF record iRecno)
+        # * drec(1) NEXT forward pointer to next summary record
+        # * drec(2) PREV backward pointer (not used here)
+        # * drec(3) NSUM Number of single summaries in this DAF record
+        fward, bward, nSS = drec = map(int, spice.dafgsr(handle, iRecno, 1, 3))
+        #DISABLED:  if doLog: print((iRecno, drec, spice.failed(),))
+        # There is only one summary record in de431.bsp
+        assert iRecno == 4 and fward is 0 and bward is 0 and nSS == 15
+        # Set index to first word of first summary
+        firstWord = 4
+        # Set DAF record before daf421.bsp next summary record's first record (641)
+        lastIEndRecno = 640
+        for iSS in range(1, nSS+1):
+            # Get packed summary
+            drec = spice.dafgsr(handle, iRecno, firstWord, firstWord+ss-1)
+            # Unpack summary
+            dc, ic = spice.dafus(drec, nd, ni)
+            iBody, iCenter, iFrame, iSPKtype, iStartRecno, iEndRecno = ic
+            #DISABLED:  if doLog: print((iSS, dc, ic, spice.failed(),))
+            # SPK de421.bsp ephemerides run from [1899 JUL 29 00:00:00 TDB] to [2052 OCT 09 00:00:00 TDB]
+            assert dc[0] == -3169195200.0 and dc[1] == 1696852800.0
+            # Solar System body barycenters (IDs 1-10) centers are the Solar System Barycenter (ID=0)
+            # All other bodies' centers (e.g. 301; Moon) are their systems barycenter (e.g. 3 Earth-Moon Barycenter)
+            assert (iBody/100) == iCenter
+            # All de421.bsp ephemerides are in the J2000 frame (ID 1), use Type 2 SPK records,
+            # and start after the last record for the previous ephemeris
+            assert iFrame == 1 and iSPKtype == 2 and (lastIEndRecno+1) == iStartRecno
+            # Set up for next pa through loop
+            firstWord += ss
+            lastIEndRecno = iEndRecno
+        # There is only one summary record in de421.bsp
+        assert fward is 0
+    # Cleanup
+    spice.dafcls(handle)
+    spice.reset()
+    spice.kclear()
 
 
 def test_dafopr():
@@ -7471,6 +7549,7 @@ def test_gettestkernels():
     with pytest.raises(BaseException):
         # Generate .URLError, return BaseException
         gtkAttemptDownload('https://no_such_host.naif.jpl.nasa.gov/404','urlerror.txt','urlerror.txt',1)
+    if skipSlowTests: return
     # Machinations needed to get 100% coverage in gettestkernels.py
     os.environ["SKIP_DOWNLOAD_KERNELS"] = ''
     import spiceypy.tests.gettestkernels as stg

@@ -1359,7 +1359,8 @@ def copy(cell):
     :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cell, stypes.SpiceCell)
-    assert cell.dtype == 0 or cell.dtype == 1 or cell.dtype == 2
+    # Next line was redundant with [raise NotImpImplementedError] below
+    # assert cell.dtype == 0 or cell.dtype == 1 or cell.dtype == 2
     if cell.dtype is 0:
         newcopy = stypes.SPICECHAR_CELL(cell.size, cell.length)
     elif cell.dtype is 1:
@@ -1773,18 +1774,20 @@ def dafgsr(handle, recno, begin, end):
     :type begin: int
     :param end: Last word to read from record.
     :type end: int
-    :return: Contents of record.
-    :rtype: float
+    :return:
+            Contents of request sub-record, array of floats
+            Flag indicating whether anything was found
+    :rtype: float numpy.ndarray
     """
     handle = ctypes.c_int(handle)
     recno = ctypes.c_int(recno)
     begin = ctypes.c_int(begin)
     end = ctypes.c_int(end)
-    data = ctypes.c_double()
+    data = stypes.emptyDoubleVector(125)
     found = ctypes.c_bool()
-    libspice.dafgsr_c(handle, recno, begin, end, ctypes.byref(data),
+    libspice.dafgsr_c(handle, recno, begin, end, data,
                       ctypes.byref(found))
-    return data.value, found.value
+    return stypes.cVectorToPython(data)[:end.value+1-begin.value], found.value
 
 
 @spiceErrorCheck
