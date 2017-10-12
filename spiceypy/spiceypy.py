@@ -1760,7 +1760,6 @@ def dafgs(n=125):
 @spiceErrorCheck
 @spiceFoundExceptionThrower
 def dafgsr(handle, recno, begin, end):
-    # Todo test dafgsr
     """
     Read a portion of the contents of a summary record in a DAF file.
 
