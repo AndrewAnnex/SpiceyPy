@@ -1608,7 +1608,6 @@ def dafcs(handle):
 
 @spiceErrorCheck
 def dafdc(handle):
-    # Todo: test dafdc
     """
     Delete the entire comment area of a specified DAF file.
 
@@ -1853,7 +1852,6 @@ def dafps(nd, ni, dc, ic):
 
 @spiceErrorCheck
 def dafrda(handle, begin, end):
-    # Todo: test dafrda
     """
     Read the double precision data bounded by two addresses within a DAF.
 
@@ -7218,6 +7216,7 @@ def ktotal(kind):
 @spiceErrorCheck
 @spiceFoundExceptionThrower
 def kxtrct(keywd, terms, nterms, instring, termlen=_default_len_out, stringlen=_default_len_out, substrlen=_default_len_out):
+    # Todo: test kxtrct
     """
     Locate a keyword in a string and extract the substring from
     the beginning of the first word following the keyword to the
@@ -7586,9 +7585,11 @@ def lparsm(inlist, delims, nmax, lenout=None):
     """
     if lenout is None:
         lenout = ctypes.c_int(len(inlist) + 1)
+    else:
+        lenout = ctypes.c_int(lenout)
     inlist = stypes.stringToCharP(inlist)
     delims = stypes.stringToCharP(delims)
-    items = stypes.emptyCharArray(nmax, lenout)
+    items = stypes.emptyCharArray(lenout.value, nmax)
     nmax = ctypes.c_int(nmax)
     n = ctypes.c_int()
     libspice.lparsm_c(inlist, delims, nmax, lenout, ctypes.byref(n), items)
@@ -13531,7 +13532,6 @@ def trcnam(index, namlen=_default_len_out):
 
 @spiceErrorCheck
 def trcoff():
-    # Todo: test trcoff
     """
     Disable tracing.
 

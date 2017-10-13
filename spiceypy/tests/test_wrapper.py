@@ -3050,7 +3050,9 @@ def test_gfilum():
 
 
 def test_gfinth():
-    assert 1
+    spice.gfinth(2)
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.gfinth(0)
 
 
 def test_gfocce():
@@ -3533,6 +3535,9 @@ def test_hx2dp():
     assert spice.hx2dp('1^1') == 1.0
     assert spice.hx2dp('7F5EB^5') == 521707.0
     assert spice.hx2dp('+1B^+2') == 27.0
+    # Bad value
+    badReturn = "ERROR: Illegal character 'Z' encountered."
+    assert spice.hx2dp('1Z^+2')[:len(badReturn)] == badReturn
 
 
 def test_ident():
@@ -4051,7 +4056,12 @@ def test_lparse():
 
 def test_lparsm():
     stringtest = "  A number of words   separated   by spaces   "
-    items = spice.lparsm(stringtest, " ", 20, lenout=20)
+    # Test with nmax (20) not equal to lenout (23), to ensure that
+    # their purposes have not been switched within spice.lparsm()
+    items = spice.lparsm(stringtest, " ", 20, lenout=23)
+    assert items == ['A', 'number', 'of', 'words', 'separated', 'by', 'spaces']
+    # Test without lenout
+    items = spice.lparsm(stringtest, " ", len(stringtest)+10)
     assert items == ['A', 'number', 'of', 'words', 'separated', 'by', 'spaces']
 
 
@@ -4501,6 +4511,9 @@ def test_orderc():
     expectedOrder = [0, 2, 1]
     order = spice.orderc(inarray)
     npt.assert_array_almost_equal(expectedOrder, order)
+    # Using ndim
+    order = spice.orderc(inarray,ndim=len(inarray))
+    npt.assert_array_almost_equal(expectedOrder, order)
 
 
 def test_orderd():
@@ -4508,12 +4521,18 @@ def test_orderd():
     expectedOrder = [0, 2, 1]
     order = spice.orderd(inarray)
     npt.assert_array_almost_equal(expectedOrder, order)
+    # Using ndim
+    order = spice.orderd(inarray,ndim=len(inarray))
+    npt.assert_array_almost_equal(expectedOrder, order)
 
 
 def test_orderi():
     inarray = [0, 2, 1]
     expectedOrder = [0, 2, 1]
     order = spice.orderi(inarray)
+    npt.assert_array_almost_equal(expectedOrder, order)
+    # Using ndim
+    order = spice.orderi(inarray,ndim=len(inarray))
     npt.assert_array_almost_equal(expectedOrder, order)
 
 
