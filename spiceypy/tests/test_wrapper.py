@@ -699,7 +699,7 @@ def test_copy():
     # SPICEBOOLEAN_CELL; dtype=4
     cellSrc = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'],size=9,length=0,card=0,isSet=False)
     with pytest.raises(NotImplementedError):
-        cellCopy = spice.copy(cellSrc)
+        spice.copy(cellSrc)
 
 
 def test_cpos():
@@ -1387,7 +1387,7 @@ def test_diff():
     testCellOne = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'],size=9,length=0,card=0,isSet=False)
     testCellTwo = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'],size=9,length=0,card=0,isSet=False)
     with pytest.raises(NotImplementedError):
-        cellCopy = spice.diff(testCellOne,testCellTwo)
+        spice.diff(testCellOne,testCellTwo)
 
 
 def test_dlabfs():
@@ -2740,6 +2740,10 @@ def test_etcal():
     et = np.arange(0, 20)
     cal = spice.etcal(et[0])
     assert cal == '2000 JAN 01 12:00:00.000'
+    calArr = spice.etcal(et)
+    assert calArr[0] == cal
+    assert calArr[1] == '2000 JAN 01 12:00:01.000'
+    assert calArr[-1] == '2000 JAN 01 12:00:19.000'
 
 
 def test_eul2m():
@@ -5360,14 +5364,44 @@ def test_sctiks():
 
 
 def test_sdiff():
+    # SPICEINT_CELL
     a = spice.stypes.SPICEINT_CELL(8)
     b = spice.stypes.SPICEINT_CELL(8)
     spice.insrti(1, a)
     spice.insrti(2, a)
+    spice.insrti(5, a)
     spice.insrti(3, b)
     spice.insrti(4, b)
+    spice.insrti(5, b)
     c = spice.sdiff(a, b)
     assert [x for x in c] == [1, 2, 3, 4]
+    # SPICECHAR_CELL
+    a = spice.stypes.SPICECHAR_CELL(8,8)
+    b = spice.stypes.SPICECHAR_CELL(8,8)
+    spice.insrtc('1', a)
+    spice.insrtc('2', a)
+    spice.insrtc('5', a)
+    spice.insrtc('3', b)
+    spice.insrtc('4', b)
+    spice.insrtc('5', b)
+    c = spice.sdiff(a, b)
+    assert [x for x in c] == ['1', '2', '3', '4']
+    # SPICEDOUBLE_CELL
+    a = spice.stypes.SPICEDOUBLE_CELL(8)
+    b = spice.stypes.SPICEDOUBLE_CELL(8)
+    spice.insrtd(1., a)
+    spice.insrtd(2., a)
+    spice.insrtd(5., a)
+    spice.insrtd(3., b)
+    spice.insrtd(4., b)
+    spice.insrtd(5., b)
+    c = spice.sdiff(a, b)
+    assert [x for x in c] == [1., 2., 3., 4.]
+    # SPICEBOOLEAN_CELL
+    testCellOne = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'],size=9,length=0,card=0,isSet=False)
+    testCellTwo = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'],size=9,length=0,card=0,isSet=False)
+    with pytest.raises(NotImplementedError):
+        spice.sdiff(testCellOne,testCellTwo)
 
 
 def test_set_c():
@@ -6538,6 +6572,16 @@ def test_srfxpt():
     expected_obspos = [-2088.42506636, -718.58930162, -3034.7654842 ]
     npt.assert_array_almost_equal(spoint, expected_spoint)
     npt.assert_array_almost_equal(obspos, expected_obspos)
+    # Iterable ET argument:  et-10, et, et+10
+    ets = et - 10. + (np.arange(3) * 10.)
+    assert 3 == len(ets)
+    sdtoArr = spice.srfxpt("Ellipsoid", 'Mars', ets, "LT+S", "MGS", frame, bsight)
+    assert (3,4,) == sdtoArr.shape
+    assert 0. == spice.vnorm(spice.vsub(sdtoArr[1,0],spoint))
+    assert 0. == (sdtoArr[1,1] - dist)
+    assert 0. == (sdtoArr[1,2] - trgepc)
+    assert 0. == spice.vnorm(spice.vsub(sdtoArr[1,3],obspos))
+    # Cleanup
     spice.kclear()
 
 
@@ -6648,6 +6692,12 @@ def test_subpt():
     sep = spice.vsep(point1, point2) * spice.dpr()
     npt.assert_almost_equal(dist, 16.705476097706171)
     npt.assert_almost_equal(sep, 0.15016657506598063)
+    # Iterable ET argument to spice.subpt()
+    point1Alt1Arr = spice.subpt("near point", "earth", [et-20.,et,et+20.], "lt+s", "moon")
+    assert (3,2,) == point1Alt1Arr.shape
+    assert 0. == spice.vnorm(spice.vsub(point1Alt1Arr[1,0],point1))
+    assert 0. == (point1Alt1Arr[1,1] - alt1)
+    # Cleanup
     spice.kclear()
 
 
@@ -6806,8 +6856,24 @@ def test_termpt():
 
 
 def test_timdef():
+    spice.kclear()
+    LSK = os.path.join(cwd, CoreKernels.currentLSK)
+    spice.furnsh(LSK)
+    # Calendar - default is Gregorian
     value = spice.timdef('GET', 'CALENDAR', 10)
     assert value == 'GREGORIAN' or 'JULIAN' or 'MIXED'
+    # System - ensure it changes the str2et results
+    assert 'UTC' == spice.timdef('GET', 'SYSTEM', 10)
+    # Approximately 64.184
+    saveET = spice.str2et('2000-01-01T12:00:00')
+    # Change to TDB system
+    assert 'TDB' == spice.timdef('SET', 'SYSTEM', 10, 'TDB')
+    assert 0.0 == spice.str2et('2000-01-01T12:00:00')
+    # Change back to UTC system
+    assert 'UTC' == spice.timdef('SET', 'SYSTEM', 10, 'UTC')
+    assert saveET == spice.str2et('2000-01-01T12:00:00')
+    # Cleanup
+    spice.kclear()
 
 
 def test_timout():
@@ -7032,14 +7098,44 @@ def test_udf():
 
 
 def test_union():
+    # SPICEINT_CELL
     testCellOne = spice.stypes.SPICEINT_CELL(8)
     testCellTwo = spice.stypes.SPICEINT_CELL(8)
     spice.insrti(1, testCellOne)
     spice.insrti(2, testCellOne)
+    spice.insrti(3, testCellOne)
+    spice.insrti(2, testCellTwo)
     spice.insrti(3, testCellTwo)
     spice.insrti(4, testCellTwo)
     outCell = spice.union(testCellOne, testCellTwo)
     assert [x for x in outCell] == [1, 2, 3, 4]
+    # SPICECHAR_CELL
+    testCellOne = spice.stypes.SPICECHAR_CELL(8,8)
+    testCellTwo = spice.stypes.SPICECHAR_CELL(8,8)
+    spice.insrtc('1', testCellOne)
+    spice.insrtc('2', testCellOne)
+    spice.insrtc('3', testCellOne)
+    spice.insrtc('2', testCellTwo)
+    spice.insrtc('3', testCellTwo)
+    spice.insrtc('4', testCellTwo)
+    outCell = spice.union(testCellOne, testCellTwo)
+    assert [x for x in outCell] == ['1', '2', '3', '4']
+    # SPICEDOUBLE_CELL
+    testCellOne = spice.stypes.SPICEDOUBLE_CELL(8)
+    testCellTwo = spice.stypes.SPICEDOUBLE_CELL(8)
+    spice.insrtd(1., testCellOne)
+    spice.insrtd(2., testCellOne)
+    spice.insrtd(3., testCellOne)
+    spice.insrtd(2., testCellTwo)
+    spice.insrtd(3., testCellTwo)
+    spice.insrtd(4., testCellTwo)
+    outCell = spice.union(testCellOne, testCellTwo)
+    assert [x for x in outCell] == [1., 2., 3., 4.]
+    # SPICEBOOLEAN_CELL
+    testCellOne = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'],size=9,length=0,card=0,isSet=False)
+    testCellTwo = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'],size=9,length=0,card=0,isSet=False)
+    with pytest.raises(NotImplementedError):
+        spice.union(testCellOne,testCellTwo)
 
 
 def test_unitim():
@@ -7056,9 +7152,22 @@ def test_unload():
     spice.furnsh(CoreKernels.testMetaKernel)
     # 4 kernels + the meta kernel = 5
     assert spice.ktotal("ALL") == 5
+    # Make list of FURNSHed non-meta-kernels
+    kernelList = [filnam for filnam,filtyp,srcnam,handle in
+                  [spice.kdata(iKernel,"ALL",999,999,999) for iKernel in range(spice.ktotal("ALL"))]
+                  if filtyp != "META"
+                 ]
     spice.unload(CoreKernels.testMetaKernel)
     assert spice.ktotal("ALL") == 0
+    assert len(kernelList) > 0
     spice.kclear()
+    # Test passing [list of kernels] as argument to spice.unload
+    spice.furnsh(kernelList)
+    assert spice.ktotal("ALL") == len(kernelList)
+    spice.unload(kernelList[1:])
+    assert spice.ktotal("ALL") == 1
+    spice.unload(kernelList[:1])
+    assert spice.ktotal("ALL") == 0
 
 
 def test_unload_emptystring():
@@ -7641,14 +7750,6 @@ def test_xposeg():
 
 def test_gettestkernels():
     global reload
-    # To complete code coverage in spiceypy.tests.gettestkernels.py
-    with pytest.raises(BaseException):
-        # Generate .HTTPError, return BaseException
-        gtkAttemptDownload('https://naif.jpl.nasa.gov/404','httperror.txt','httperror.txt',1)
-    with pytest.raises(BaseException):
-        # Generate .URLError, return BaseException
-        gtkAttemptDownload('https://no_such_host.naif.jpl.nasa.gov/404','urlerror.txt','urlerror.txt',1)
-    if skipSlowTests: return
     # Machinations needed to get 100% coverage in gettestkernels.py
     os.environ["SKIP_DOWNLOAD_KERNELS"] = ''
     import spiceypy.tests.gettestkernels as stg
@@ -7658,6 +7759,15 @@ def test_gettestkernels():
         tmpgtk = reload(stg)
     del os.environ["SKIP_DOWNLOAD_KERNELS"]
     tmpgtk = reload(stg)
+    # Force exceptions in gettestkernels.py
+    if skipSlowTests: return
+    # To complete code coverage in spiceypy.tests.gettestkernels.py
+    with pytest.raises(BaseException):
+        # Generate .HTTPError, return BaseException
+        gtkAttemptDownload('https://naif.jpl.nasa.gov/404','httperror.txt','httperror.txt',1)
+    with pytest.raises(BaseException):
+        # Generate .URLError, return BaseException
+        gtkAttemptDownload('https://no_such_host.naif.jpl.nasa.gov/404','urlerror.txt','urlerror.txt',1)
 
 
 def teardown_tests():

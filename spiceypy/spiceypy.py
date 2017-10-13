@@ -6798,7 +6798,8 @@ def inter(a, b):
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
-    assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
+    # Next line was redundant with [raise NotImpImplementedError] below
+    # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     if a.dtype is 0:
         c = stypes.SPICECHAR_CELL(max(a.size, b.size), max(a.length, b.length))
     elif a.dtype is 1:
@@ -10665,7 +10666,8 @@ def sdiff(a, b):
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
-    assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
+    # The next line was redundant with the [raise NotImplementedError] line below
+    # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     if a.dtype is 0:
         c = stypes.SPICECHAR_CELL(a.size, a.length)
     elif a.dtype is 1:
@@ -12720,7 +12722,7 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
     if hasattr(et, "__iter__"):
         return numpy.array(
                 [srfxpt(method, target, t, abcorr, obsrvr, dref, dvec) for t in
-                 et])
+                 et]), True  # Need trailing True to spoof @spiceError* above
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
@@ -13787,7 +13789,8 @@ def union(a, b):
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
-    assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
+    # Next line was redundant with [raise NotImpImplementedError] below
+    # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     if a.dtype is 0:
         c = stypes.SPICECHAR_CELL(max(a.size, b.size), max(a.length, b.length))
     elif a.dtype is 1:
@@ -13838,6 +13841,7 @@ def unload(filename):
     if isinstance(filename, list):
         for f in filename:
             libspice.unload_c(stypes.stringToCharP(f))
+        return
     filename = stypes.stringToCharP(filename)
     libspice.unload_c(filename)
 
