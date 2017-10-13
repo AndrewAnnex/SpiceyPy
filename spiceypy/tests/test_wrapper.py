@@ -1032,7 +1032,7 @@ def test_dafgsr():
             assert dc[0] == -3169195200.0 and dc[1] == 1696852800.0
             # Solar System body barycenters (IDs 1-10) centers are the Solar System Barycenter (ID=0)
             # All other bodies' centers (e.g. 301; Moon) are their systems barycenter (e.g. 3 Earth-Moon Barycenter)
-            assert (iBody/100) == iCenter
+            assert (iBody // 100) == iCenter
             # All de421.bsp ephemerides are in the J2000 frame (ID 1), use Type 2 SPK records,
             # and start after the last record for the previous ephemeris
             assert iFrame == 1 and iSPKtype == 2 and (lastIEndWord+1) == iStartWord
