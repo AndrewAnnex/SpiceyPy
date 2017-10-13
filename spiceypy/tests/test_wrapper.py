@@ -3165,15 +3165,38 @@ def test_gfrefn():
             assert t == pytest.approx(-scale)
 
 def test_gfrepf():
-    assert 1
+    # Minimal test; gfrepf does nothing PyTest can notice
+    spice.gfrepf()
+    # Pass bad argument list
+    with pytest.raises(TypeError):
+        spice.gfrepf(0)
 
 
 def test_gfrepi():
-    assert 1
+    window = spice.stypes.SPICEDOUBLE_CELL(4)
+    spice.wninsd(0.,100.,window)
+    spice.gfrepi(window,'x','y')
+    # BEGMSS or ENDMSS empty, too long, or containing non-printing characters
+    with pytest.raises(spice.stypes.SpiceyError): spice.gfrepi(window,'','y')
+    with pytest.raises(spice.stypes.SpiceyError): spice.gfrepi(window,'x','')
+    with pytest.raises(spice.stypes.SpiceyError): spice.gfrepi(window,'x'*1000,'y')
+    with pytest.raises(spice.stypes.SpiceyError): spice.gfrepi(window,'x','y'*1000)
+    with pytest.raises(spice.stypes.SpiceyError): spice.gfrepi(window,'y\n','y')
+    with pytest.raises(spice.stypes.SpiceyError): spice.gfrepi(window,'x','y\n')
+    spice.gfrepf()
 
 
 def test_gfrepu():
-    assert 1
+    window = spice.stypes.SPICEDOUBLE_CELL(4)
+    spice.wninsd(0.,100.,window)
+    spice.gfrepi(window,'x','y')
+    spice.gfrepu(0.,100.,50.)
+    spice.gfrepu(0.,100.,100.)
+    with pytest.raises(spice.stypes.SpiceyError): spice.gfrepu(100.,0.,100.)
+    with pytest.raises(spice.stypes.SpiceyError): spice.gfrepu(0.,100.,-1.)
+    with pytest.raises(spice.stypes.SpiceyError): spice.gfrepu(0.,100.,1011.)
+    spice.gfrepu(0.,100.,100.)
+    spice.gfrepf()
 
 
 def test_gfrfov():
