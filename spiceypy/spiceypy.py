@@ -7242,7 +7242,7 @@ def kxtrct(keywd, terms, nterms, instring, termlen=_default_len_out, stringlen=_
             String containing a sequence of words,
             String from end of keywd to beginning of first terms item found.
     :rtype: tuple
-    """
+OLD:
     keywd = stypes.stringToCharP(keywd)
     termlen = ctypes.c_int(termlen)
     terms = stypes.listToCharArrayPtr(terms)
@@ -7253,6 +7253,38 @@ def kxtrct(keywd, terms, nterms, instring, termlen=_default_len_out, stringlen=_
     substrlen = ctypes.c_int(substrlen)
     found = ctypes.c_bool()
     libspice.kxtrct_c(keywd, termlen, ctypes.byref(terms), nterms,
+                      stringlen, substrlen, instring, ctypes.byref(found),
+                      substr)
+    return stypes.toPythonString(instring), stypes.toPythonString(
+            substr), found.value
+WORKS:
+    lclKeywd = stypes.stringToCharP(keywd)
+    lclTermlen = ctypes.c_int(termlen)
+    lclTerms = stypes.listToCharArrayPtr(terms[:nterms],xLen=termlen,yLen=nterms)
+    lclNterms = ctypes.c_int(nterms)
+    lclInstring = ('.%s.' % (instring,))[1:-1]
+    lclInstring = stypes.stringToCharP(lclInstring,stringlen)
+    substr = stypes.stringToCharP(substrlen,substrlen)
+    lclStringlen = ctypes.c_int(stringlen)
+    lclSubstrlen = ctypes.c_int(substrlen)
+    found = ctypes.c_bool()
+    libspice.kxtrct_c(lclKeywd, lclTermlen, lclTerms, lclNterms,
+                      lclStringlen, lclSubstrlen, lclInstring, ctypes.byref(found),
+                      substr)
+    return stypes.toPythonString(lclInstring), stypes.toPythonString(substr), found.value
+    """
+    assert nterms <= len(terms)
+    keywd = stypes.stringToCharP(keywd)
+    terms = stypes.listToCharArrayPtr([s[:termlen-1] for s in terms[:nterms]],xLen=termlen,yLen=nterms)
+    instring = stypes.stringToCharP(instring[:stringlen-1],inlen=stringlen)
+    substr = stypes.stringToCharP(substrlen)
+    # int => .c_int
+    termlen = ctypes.c_int(termlen)
+    nterms = ctypes.c_int(nterms)
+    stringlen = ctypes.c_int(stringlen)
+    substrlen = ctypes.c_int(substrlen)
+    found = ctypes.c_bool()
+    libspice.kxtrct_c(keywd, termlen, terms, nterms,
                       stringlen, substrlen, instring, ctypes.byref(found),
                       substr)
     return stypes.toPythonString(instring), stypes.toPythonString(
