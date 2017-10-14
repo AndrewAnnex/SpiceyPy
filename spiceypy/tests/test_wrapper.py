@@ -994,12 +994,8 @@ def test_dafgsr():
     #DISABLED:  doLog = "DO_DAFGSR_LOG" in os.environ
     # Open DAF
     # N.B. The SPK used must use the LTL-IEEE double byte-ordering and format
-    try:
-      # This should be de421.bsp from the test kernel set
-      handle = spice.dafopr(CoreKernels.spk)
-    except:
-      # try relative path e.g. from [build/lib*/] to [../../spiceypy/tests]
-      handle = spice.dafopr('../../spiceypy/tests/de421.bsp')
+    # This should be de421.bsp from the test kernel set
+    handle = spice.dafopr(CoreKernels.spk)
     # get ND, NI (N.B. for SPKs, ND=2 and NI=6),
     # and first, last and free record numbers
     nd, ni, ifname, fward, bward, free = rtnDafrfr = spice.dafrfr(handle)
@@ -1121,12 +1117,8 @@ def test_dafrda():
     #DISABLED:  doLog = "DO_DAFRDA_LOG" in os.environ
     # Open DAF
     # N.B. The SPK used must use the LTL-IEEE double byte-ordering and format
-    try:
-      # This should be de421.bsp from the test kernel set
-      handle = spice.dafopr(CoreKernels.spk)
-    except:
-      # try relative path e.g. from [build/lib*/] to [../../spiceypy/tests]
-      handle = spice.dafopr('../../spiceypy/tests/de421.bsp')
+    # This should be de421.bsp from the test kernel set
+    handle = spice.dafopr(CoreKernels.spk)
     # get ND, NI (N.B. for SPKs, ND=2 and NI=6),
     # and first, last and free record numbers
     nd, ni, ifname, fward, bward, free = rtnDafrfr = spice.dafrfr(handle)
@@ -3773,6 +3765,29 @@ def test_inter():
     spice.insrti(3, testCellTwo)
     outCell = spice.inter(testCellOne, testCellTwo)
     assert [x for x in outCell] == [1]
+    # SPICECHAR_CELL
+    testCellOne = spice.stypes.SPICECHAR_CELL(8,8)
+    testCellTwo = spice.stypes.SPICECHAR_CELL(8,8)
+    spice.insrtc('1', testCellOne)
+    spice.insrtc('2', testCellOne)
+    spice.insrtc('1', testCellTwo)
+    spice.insrtc('3', testCellTwo)
+    outCell = spice.inter(testCellOne, testCellTwo)
+    assert [x for x in outCell] == ['1']
+    # SPICEDOUBLE_CELL
+    testCellOne = spice.stypes.SPICEDOUBLE_CELL(8)
+    testCellTwo = spice.stypes.SPICEDOUBLE_CELL(8)
+    spice.insrtd(1.0, testCellOne)
+    spice.insrtd(2.0, testCellOne)
+    spice.insrtd(1.0, testCellTwo)
+    spice.insrtd(3.0, testCellTwo)
+    outCell = spice.inter(testCellOne, testCellTwo)
+    assert [x for x in outCell] == [1.0]
+    # SPICEBOOLEAN_CELL; dtype=4
+    testCellOne = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'],size=9,length=0,card=0,isSet=False)
+    testCellTwo = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'],size=9,length=0,card=0,isSet=False)
+    with pytest.raises(NotImplementedError):
+        spice.inter(testCellOne,testCellTwo)
 
 
 def test_intmax():
@@ -3897,7 +3912,7 @@ def test_ktotal():
 def test_kxtrct():
     # Tests from examples at this URL:  https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/kxtrct_c.html#Examples
     i = 0
-    while i < ("KXTRACT_STRESS" in os.environ and 500 or 50000):
+    while i < ("KXTRACT_STRESS" in os.environ and 50000 or 500):
         i += 1
         assert (' TO 1 January 1987', '1 October 1984 12:00:00',)  == spice.kxtrct('FROM','from to beginning ending'.upper().split(),4,'FROM 1 October 1984 12:00:00 TO 1 January 1987')
         assert ('FROM 1 October 1984 12:00:00', '1 January 1987',) == spice.kxtrct('TO','from to beginning ending'.upper().split(),4,'FROM 1 October 1984 12:00:00 TO 1 January 1987')
