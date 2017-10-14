@@ -3895,18 +3895,29 @@ def test_ktotal():
 
 
 def test_kxtrct():
-    assert 1
-    # Unstable, not sure why but I am getting segfaults
-    # instring = "FROM 1 October 1984 12:00:00 TO 1 January 1987"
-    # outstring, found, substr = spice.kxtrct("TO", 13, ["FROM", "TO", "BEGINNING", "ENDING"], 5, 120, 120, instring)
-    # assert found
-    # assert outstring == 'FROM 1 October 1984 12:00:00'
-    # assert substr == '1 January 1987'
-
-
-# def test_kxtrctstress():
-# for i in range(500):
-#         test_kxtrct()
+    """
+#
+instring1 = "FROM 1 October 1984 12:00:00 TO 1 January 1987"
+terms1    = 'from to beginning ending'.upper().split()
+nterms1   = len(terms1)
+keywd1a   = terms1[0]
+keywd1b   = terms1[1]
+#
+instring2 = "ADDRESS: 4800 OAK GROVE DRIVE PHONE: 354-4321 "
+terms2    = 'address: phone: name:'.upper().split()
+nterms2   = len(terms2)
+keywd2a   = terms2[0]
+keywd2b   = terms2[1]
+keywd2c   = terms2[2]
+#
+    """
+    for i in xrange("KXTRACT_STRESS" in os.environ and 500 or 50000):
+        assert (' TO 1 January 1987', '1 October 1984 12:00:00',)  == spice.kxtrct('FROM','from to beginning ending'.upper().split(),4,'FROM 1 October 1984 12:00:00 TO 1 January 1987')
+        assert ('FROM 1 October 1984 12:00:00', '1 January 1987',) == spice.kxtrct('TO','from to beginning ending'.upper().split(),4,'FROM 1 October 1984 12:00:00 TO 1 January 1987')
+        assert (' PHONE: 354-4321', '4800 OAK GROVE DRIVE',)  == spice.kxtrct('ADDRESS:','address: phone: name:'.upper().split(),3,'ADDRESS: 4800 OAK GROVE DRIVE PHONE: 354-4321 ')
+        assert ('ADDRESS: 4800 OAK GROVE DRIVE', '354-4321',) == spice.kxtrct('PHONE:','address: phone: name:'.upper().split(),3,'ADDRESS: 4800 OAK GROVE DRIVE PHONE: 354-4321 ')
+        with pytest.raises(spice.stypes.SpiceyError):
+            spice.kxtrct('NAME:','address: phone: name:'.upper().split(),3,'ADDRESS: 4800 OAK GROVE DRIVE PHONE: 354-4321 ')
 
 
 def test_lastnb():
