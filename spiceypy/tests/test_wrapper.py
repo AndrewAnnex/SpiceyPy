@@ -2033,6 +2033,7 @@ def test_ekacei_ekinsr():
         # Insert records:  1, 2, and 3 entries at rows 0, 1, 2, respectively
         # - Integer values are final record number + 1000
         spice.ekacei(handle, segno, insertrecno, "c1", finalrecno+1, [100+finalrecno]*(finalrecno+1), False)
+        assert not spice.failed()
     # Try record insertion beyond the next available, verify the exception
     with pytest.raises(spice.stypes.SpiceyError):
         spice.ekinsr(handle, segno, 4)
@@ -2048,17 +2049,19 @@ def test_ekacei_ekinsr():
     assert '' == errmsg
     # Validate the content of each field, including exceptions when
     for recno in range(nmrows+1):
-        for iElement in range(recno+1):
-            if iElement == (recno+1) or recno == nmrows:
+        for iElement in range(recno+2):
+            if iElement > recno or recno == nmrows:
                 with pytest.raises(spice.stypes.SpiceyError):
                     spice.ekgi(0,recno,iElement)
+                if spice.failed():
+                    spice.reset()
             else:
                 iData,iNull = spice.ekgi(0,recno,iElement)
                 assert iData == (100+recno)
                 assert iNull == False
-    # cleanup
+    # Cleanup
     spice.ekuef(handle)
-    spice.kclear()
+    assert not spice.failed()
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
 
