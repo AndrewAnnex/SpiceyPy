@@ -219,7 +219,7 @@ libspice.edterm_c.argtypes = [c_char_p, c_char_p, c_char_p, c_double, c_char_p,
                               (c_double * 3), c_void_p]
 libspice.ekacec_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, c_int, c_void_p, c_bool]
 libspice.ekaced_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, POINTER(c_double), c_bool]
-libspice.ekacei_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, POINTER(c_int), c_bool]
+libspice.ekacei_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, POINTER(c_int), c_int]
 libspice.ekaclc_c.argtypes = [c_int, c_int, c_char_p, c_int, c_void_p, POINTER(c_int), POINTER(c_bool), POINTER(c_int),
                               POINTER(c_int)]
 libspice.ekacld_c.argtypes = [c_int, c_int, c_char_p, POINTER(c_double), POINTER(c_int), POINTER(c_bool),

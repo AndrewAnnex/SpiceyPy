@@ -3546,7 +3546,7 @@ def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     nvals = ctypes.c_int(nvals)
     vallen = ctypes.c_int(vallen)
     cvals = stypes.listToCharArrayPtr(cvals)
-    isnull = ctypes.c_bool(isnull)
+    isnull = ctypes.c_int(isnull and 1 or 0)
     libspice.ekacec_c(handle, segno, recno, column, nvals, vallen, cvals,
                       isnull)
 
@@ -3579,7 +3579,7 @@ def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
     dvals = stypes.toDoubleVector(dvals)
-    isnull = ctypes.c_bool(isnull)
+    isnull = ctypes.c_int(isnull and 1 or 0)
     libspice.ekaced_c(handle, segno, recno, column, nvals, dvals, isnull)
 
 
@@ -3611,7 +3611,7 @@ def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
     ivals = stypes.toIntVector(ivals)
-    isnull = ctypes.c_bool(isnull)
+    isnull = ctypes.c_int(isnull and 1 or 0)
     libspice.ekacei_c(handle, segno, recno, column, nvals, ivals, isnull)
 
 

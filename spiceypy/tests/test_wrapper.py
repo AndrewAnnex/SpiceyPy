@@ -2015,21 +2015,52 @@ def test_ekaced():
     assert not spice.exists(ekpath)
 
 
-def test_ekacei():
+def test_ekacei_ekinsr():
     spice.kclear()
-    ekpath = os.path.join(cwd, "example_ekacei.ek")
+    ekpath = os.path.join(cwd, "example_ekinsr.ek")
+    tablename = "test_table_ekinsr"
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
+    # Create new EK and new segment with table
     handle = spice.ekopn(ekpath, ekpath, 0)
-    segno = spice.ekbseg(handle, "test_table_ekacei", 1, 10, ["c1"], 200,
-                         ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
-    recno = spice.ekappr(handle, segno)
-    spice.ekacei(handle, segno, recno, "c1", 2, [1, 2], False)
+    segno = spice.ekbseg(handle, tablename, 1, 10, ["c1"], 200,
+                         ["DATATYPE  = INTEGER, NULLS_OK = FALSE, SIZE = VARIABLE"])
+    # Use EKINSR to insert two records at recno 0, one at recno 2
+    # - First inserted record will become final record 1
+    for insertrecno,finalrecno in ((0,1,), (0,0,), (2,2,),):
+        assert None is spice.ekinsr(handle, segno, insertrecno)
+        assert not spice.failed()
+        # Insert records:  1, 2, and 3 entries at rows 0, 1, 2, respectively
+        # - Integer values are final record number + 1000
+        spice.ekacei(handle, segno, insertrecno, "c1", finalrecno+1, [100+finalrecno]*(finalrecno+1), False)
+    # Try record insertion beyond the next available, verify the exception
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.ekinsr(handle, segno, 4)
+    # Close EK, then reopen for reading
     spice.ekcls(handle)
     spice.kclear()
+    handle = spice.eklef(ekpath)
+    assert handle is not None
+    # SELECT to retrieve the row count
+    nmrows,error,errmsg = spice.ekfind('SELECT c1 from %s' % (tablename,), 99)
+    assert nmrows == 3
+    assert not error
+    assert '' == errmsg
+    # Validate the content of each field, including exceptions when
+    for recno in range(nmrows+1):
+        for iElement in range(recno+1):
+            if iElement == (recno+1) or recno == nmrows:
+                with pytest.raises(spice.stypes.SpiceyError):
+                    spice.ekgi(0,recno,iElement)
+            else:
+                iData,iNull = spice.ekgi(0,recno,iElement)
+                assert iData == (100+recno)
+                assert iNull == False
+    # cleanup
+    spice.ekuef(handle)
+    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
-    assert not spice.exists(ekpath)
 
 
 def test_ekaclc():
@@ -2367,8 +2398,8 @@ def test_ekifld():
     assert not spice.exists(ekpath)
 
 
-def test_ekinsr():
-    assert 1
+def test_ekinsr():  ### See test_ekacei_tkinsr()
+    pass
 
 
 def test_eklef():
