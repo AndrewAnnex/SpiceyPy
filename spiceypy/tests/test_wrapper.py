@@ -3895,23 +3895,11 @@ def test_ktotal():
 
 
 def test_kxtrct():
+    # Tests from examples at this URL:  https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/kxtrct_c.html#Examples
     """
-#
-instring1 = "FROM 1 October 1984 12:00:00 TO 1 January 1987"
-terms1    = 'from to beginning ending'.upper().split()
-nterms1   = len(terms1)
-keywd1a   = terms1[0]
-keywd1b   = terms1[1]
-#
-instring2 = "ADDRESS: 4800 OAK GROVE DRIVE PHONE: 354-4321 "
-terms2    = 'address: phone: name:'.upper().split()
-nterms2   = len(terms2)
-keywd2a   = terms2[0]
-keywd2b   = terms2[1]
-keywd2c   = terms2[2]
-#
-    """
-    for i in xrange("KXTRACT_STRESS" in os.environ and 500 or 50000):
+    i = 0
+    while i < ("KXTRACT_STRESS" in os.environ and 500 or 50000):
+        i += 1
         assert (' TO 1 January 1987', '1 October 1984 12:00:00',)  == spice.kxtrct('FROM','from to beginning ending'.upper().split(),4,'FROM 1 October 1984 12:00:00 TO 1 January 1987')
         assert ('FROM 1 October 1984 12:00:00', '1 January 1987',) == spice.kxtrct('TO','from to beginning ending'.upper().split(),4,'FROM 1 October 1984 12:00:00 TO 1 January 1987')
         assert (' PHONE: 354-4321', '4800 OAK GROVE DRIVE',)  == spice.kxtrct('ADDRESS:','address: phone: name:'.upper().split(),3,'ADDRESS: 4800 OAK GROVE DRIVE PHONE: 354-4321 ')
