@@ -3896,7 +3896,6 @@ def test_ktotal():
 
 def test_kxtrct():
     # Tests from examples at this URL:  https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/kxtrct_c.html#Examples
-    """
     i = 0
     while i < ("KXTRACT_STRESS" in os.environ and 500 or 50000):
         i += 1
