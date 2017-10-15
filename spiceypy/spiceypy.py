@@ -35,7 +35,8 @@ __author__ = 'AndrewAnnex'
 
 _default_len_out = 256
 
-_SPICE_EK_MAXQSEL = 100   # Twice the 50 in gcc-linux-64
+_SPICE_EK_MAXQSEL             = 100   # Twice the 50 in gcc-linux-64
+_SPICE_EK_EKRCEX_ROOM_DEFAULT = 100   # Enough?
 
 def checkForSpiceError(f):
     """
@@ -3546,7 +3547,7 @@ def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
     vallen = ctypes.c_int(vallen)
-    cvals = stypes.listToCharArrayPtr(cvals)
+    cvals = stypes.listToCharArrayPtr(cvals,xLen=vallen.value)
     isnull = ctypes.c_int(isnull and 1 or 0)
     libspice.ekacec_c(handle, segno, recno, column, nvals, vallen, cvals,
                       isnull)
@@ -3796,9 +3797,9 @@ def ekbseg(handle, tabnam, ncols, cnmlen, cnames, declen, decls):
     handle = ctypes.c_int(handle)
     tabnam = stypes.stringToCharP(tabnam)
     cnmlen = ctypes.c_int(cnmlen)
-    cnames = stypes.listToCharArray(cnames)  # not sure if this works
+    cnames = stypes.listToCharArray(cnames,xLen=cnmlen.value)  # not sure if this works
     declen = ctypes.c_int(declen)
-    decls = stypes.listToCharArray(decls)
+    decls = stypes.listToCharArray(decls,xLen=declen.value)
     segno = ctypes.c_int()
     libspice.ekbseg_c(handle, tabnam, ncols, cnmlen, cnames, declen, decls,
                       ctypes.byref(segno))
@@ -3960,7 +3961,7 @@ def ekgc(selidx, row, element, lenout=_default_len_out):
     lenout = ctypes.c_int(lenout)
     null = ctypes.c_bool()
     found = ctypes.c_bool()
-    cdata = stypes.stringToCharP(lenout)
+    cdata = stypes.stringToCharP(" " * lenout.value)
     libspice.ekgc_c(selidx, row, element, lenout, cdata, ctypes.byref(null),
                     ctypes.byref(found))
     return stypes.toPythonString(cdata), null.value, found.value
@@ -4272,8 +4273,6 @@ def ekpsel(query, msglen, tablen, collen):
     n = ctypes.c_int()
     xbegs = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
     xends = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
-    #xtypes = stypes.emptySpiceEKDataTypeVector(_SPICE_EK_MAXQSEL)
-    #xclass = stypes.emptySpiceEKExprClassVector(_SPICE_EK_MAXQSEL)
     xtypes = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
     xclass = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
     tabs = stypes.charvector(ndim=_SPICE_EK_MAXQSEL, lenvals=tablen.value)
@@ -4298,7 +4297,7 @@ def ekpsel(query, msglen, tablen, collen):
 
 
 @spiceErrorCheck
-def ekrcec(handle, segno, recno, column, lenout, nelts=3):
+def ekrcec(handle, segno, recno, column, lenout, nelts=_SPICE_EK_EKRCEX_ROOM_DEFAULT):
     # Todo: test ekrcec , possible new way to get back 2d char arrays
     """
     Read data from a character column in a specified EK record.
@@ -4315,29 +4314,30 @@ def ekrcec(handle, segno, recno, column, lenout, nelts=3):
     :type column: str
     :param lenout: Maximum length of output strings.
     :type lenout: int
-    :param nelts: ???
+    :param nelts: Number of elements to allow for (default=%d)
     :type nelts: int
     :return:
             Number of values in column entry,
             Character values in column entry,
             Flag indicating whether column entry is null.
     :rtype: tuple
-    """
+    """ % (_SPICE_EK_EKRCEX_ROOM_DEFAULT,)
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
     column = stypes.stringToCharP(column)
     lenout = ctypes.c_int(lenout)
     nvals = ctypes.c_int()
-    cvals = stypes.charvector(ndim=nelts, lenvals=lenout)
+    cvals = stypes.charvector(ndim=nelts, lenvals=lenout.value)
     isnull = ctypes.c_bool()
     libspice.ekrcec_c(handle, segno, recno, column, lenout, ctypes.byref(nvals),
                       ctypes.byref(cvals), ctypes.byref(isnull))
+    if failed(): return
     return nvals.value, stypes.cVectorToPython(cvals), isnull.value
 
 
 @spiceErrorCheck
-def ekrced(handle, segno, recno, column):
+def ekrced(handle, segno, recno, column, nelts=_SPICE_EK_EKRCEX_ROOM_DEFAULT):
     # Todo: test ekrced
     """
     Read data from a double precision column in a specified EK record.
@@ -4362,16 +4362,17 @@ def ekrced(handle, segno, recno, column):
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
     column = stypes.stringToCharP(column)
-    nvals = ctypes.c_int()
-    dvals = ctypes.POINTER(ctypes.c_double)  # array of length nvals
+    nvals = ctypes.c_int(0)
+    dvals = stypes.emptyDoubleVector(nelts)
     isnull = ctypes.c_bool()
-    libspice.ekrced_c(handle, segno, recno, column, ctypes.byref(nvals),
-                      ctypes.byref(dvals), ctypes.byref(isnull))
-    return nvals.value, stypes.cVectorToPython(dvals), isnull.value
+    libspice.ekrced_c(handle, segno, recno, column, ctypes.byref(nvals), dvals,
+                      ctypes.byref(isnull))
+    assert failed() or (nvals.value <= nelts)
+    return nvals.value, stypes.cVectorToPython(dvals)[:nvals.value], isnull.value
 
 
 @spiceErrorCheck
-def ekrcei(handle, segno, recno, column):
+def ekrcei(handle, segno, recno, column, nelts=_SPICE_EK_EKRCEX_ROOM_DEFAULT):
     # Todo: test ekrcei
     """
     Read data from an integer column in a specified EK record.
@@ -4397,11 +4398,12 @@ def ekrcei(handle, segno, recno, column):
     recno = ctypes.c_int(recno)
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int()
-    ivals = ctypes.pointer(ctypes.c_int)  # array of length nvals
+    ivals = stypes.emptyIntVector(nelts)
     isnull = ctypes.c_bool()
     libspice.ekrcei_c(handle, segno, recno, column, ctypes.byref(nvals), ivals,
                       ctypes.byref(isnull))
-    return nvals.value, stypes.cVectorToPython(ivals), isnull.value
+    assert nvals.value <= nelts
+    return nvals.value, stypes.cVectorToPython(ivals)[:nvals.value], isnull.value
 
 
 @spiceErrorCheck
@@ -6333,7 +6335,7 @@ def gnpool(name, start, room, lenout=_default_len_out):
     """
     name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
-    kvars = stypes.charvector(room, lenout)
+    kvars = stypes.charvector(ndim=room, lenvals=lenout)
     room = ctypes.c_int(room)
     lenout = ctypes.c_int(lenout)
     n = ctypes.c_int()

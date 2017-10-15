@@ -208,7 +208,7 @@ def test_to_improve_coverage():
     assert type(stsdlad.cbase) is int
     assert type(stsdlad.csize) is int
     # __str__ methods in multiple classes
-    for obj in (stypes.SpiceEKAttDsc(),stypes.SpiceEKSegSum(),stypes.emptySpiceEKExprClassVector(1),stypes.emptySpiceEKDataTypeVector(1),):
+    for obj in (stypes.SpiceEKAttDsc(),stypes.SpiceEKSegSum(),stypes.emptySpiceEKExprClassVector(1),stypes.emptySpiceEKDataTypeVector(1),stypes.emptySpiceEKExprClassVector(ctypes.c_int(1)),stypes.emptySpiceEKDataTypeVector(ctypes.c_int(1)),):
         assert type(obj.__str__()) is str
     # SpiceCell methods:  .is_time; .is_bool; .reset.
     stsc = stypes.SpiceCell(dtype=stypes.SpiceCell.DATATYPES_ENUM['time'],length=10,size=10,card=0,isSet=0)
