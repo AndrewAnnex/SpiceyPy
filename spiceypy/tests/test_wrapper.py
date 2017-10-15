@@ -2037,9 +2037,10 @@ def test_ekmany():
         # Insert records:  1, 2, and 3 entries at rows 0, 1, 2, respectively
         # - Integer values are final record number + 100
         iBaseVals = [100+finalrecno]*(finalrecno+1)
-        spice.ekacec(handle, segno, insertrecno, "c1", finalrecno+1, 11, map(str,iBaseVals)  , False)
-        spice.ekaced(handle, segno, insertrecno, "d1", finalrecno+1,     map(float,iBaseVals), False)
-        spice.ekacei(handle, segno, insertrecno, "i1", finalrecno+1,     iBaseVals           , False)
+        # List-ify map to ensure listToCharArrayPtr sees list, not map object
+        spice.ekacec(handle, segno, insertrecno, "c1", finalrecno+1, 11, list(map(str,iBaseVals))  , False)
+        spice.ekaced(handle, segno, insertrecno, "d1", finalrecno+1,     list(map(float,iBaseVals)), False)
+        spice.ekacei(handle, segno, insertrecno, "i1", finalrecno+1,     iBaseVals                 , False)
         assert not spice.failed()
     # Try record insertion beyond the next available, verify the exception
     with pytest.raises(spice.stypes.SpiceyError):
