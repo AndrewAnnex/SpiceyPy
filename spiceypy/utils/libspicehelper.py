@@ -222,7 +222,7 @@ libspice.ekaced_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, POINTER(c_do
 libspice.ekacei_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, POINTER(c_int), c_int]
 libspice.ekaclc_c.argtypes = [c_int, c_int, c_char_p, c_int, c_void_p, POINTER(c_int), POINTER(c_bool), POINTER(c_int),
                               POINTER(c_int)]
-libspice.ekacld_c.argtypes = [c_int, c_int, c_char_p, POINTER(c_double), POINTER(c_int), POINTER(c_bool),
+libspice.ekacld_c.argtypes = [c_int, c_int, c_char_p, POINTER(c_double), POINTER(c_int), POINTER(c_int),
                               POINTER(c_int), POINTER(c_int)]
 libspice.ekacli_c.argtypes = [c_int, c_int, c_char_p, POINTER(c_int), POINTER(c_int), POINTER(c_int), POINTER(c_int),
                               POINTER(c_int)]
