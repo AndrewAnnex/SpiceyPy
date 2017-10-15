@@ -3690,7 +3690,7 @@ def ekacld(handle, segno, column, dvals, entszs, nlflgs, rcptrs, wkindx):
     column = stypes.stringToCharP(column)
     dvals = stypes.toDoubleVector(dvals)
     entszs = stypes.toIntVector(entszs)
-    nlflgs = stypes.toBoolVector(nlflgs)
+    nlflgs = stypes.toIntVector(nlflgs)
     rcptrs = stypes.toIntVector(rcptrs)
     wkindx = stypes.toIntVector(wkindx)
     libspice.ekacld_c(handle, segno, column, dvals, entszs, nlflgs, rcptrs,

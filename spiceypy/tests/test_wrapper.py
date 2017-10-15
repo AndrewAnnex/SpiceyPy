@@ -2100,7 +2100,7 @@ def test_ekacld():
         os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno, rcptrs = spice.ekifld(handle, "test_table_ekacld", 1, 2, 200, ["c1"], 200,
-                                 ["DATATYPE = DOUBLE PRECISION, NULLS_OK = TRUE"])
+                                 ["DATATYPE = DOUBLE PRECISION, NULLS_OK = FALSE"])
     spice.ekacld(handle, segno, "c1", [1.0, 2.0], [1, 1], [False, False], rcptrs, [0, 0])
     spice.ekffld(handle, segno, rcptrs)
     spice.ekcls(handle)
