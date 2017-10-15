@@ -2015,7 +2015,7 @@ def test_ekaced():
     assert not spice.exists(ekpath)
 
 
-def test_ekacei_ekinsr():
+def test_ekacei_ekinsr_eknelt():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekinsr.ek")
     tablename = "test_table_ekinsr"
@@ -2042,8 +2042,18 @@ def test_ekacei_ekinsr():
     spice.kclear()
     handle = spice.eklef(ekpath)
     assert handle is not None
-    # SELECT to retrieve the row count
-    nmrows,error,errmsg = spice.ekfind('SELECT c1 from %s' % (tablename,), 99)
+    # Test query using ekpsel
+    query = "SELECT c1 from %s" % (tablename,)
+    n,xbegs,xends,xtypes,xclass,tabs,cols,err,errmsg = spice.ekpsel(query,99,99,99)
+    assert 1 == n
+    assert dict(spice.stypes.SpiceEKDataType._fields_)['SPICE_INT'].value == xtypes[0]
+    assert dict(spice.stypes.SpiceEKExprClass._fields_)['SPICE_EK_EXP_COL'].value == xclass[0]
+    assert "TEST_TABLE_EKINSR" == tabs[0]
+    assert "C1" == cols[0]
+    assert not err
+    assert "" == errmsg
+    # Run query to retrieve the row count
+    nmrows,error,errmsg = spice.ekfind(query, 99)
     assert nmrows == 3
     assert not error
     assert '' == errmsg
@@ -2363,7 +2373,7 @@ def test_ekgi():
         os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno, rcptrs = spice.ekifld(handle, "test_table_ekgi", 1, 2, 200, ["c1"], 200,
-                                 ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
+                                 ["DATATYPE = INTEGER, NULLS_OK = FALSE"])
     spice.ekacli(handle, segno, "c1", [1, 2], [1, 1], [False, False], rcptrs, [0, 0])
     spice.ekffld(handle, segno, rcptrs)
     spice.ekcls(handle)

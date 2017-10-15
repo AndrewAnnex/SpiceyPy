@@ -35,6 +35,7 @@ __author__ = 'AndrewAnnex'
 
 _default_len_out = 256
 
+_SPICE_EK_MAXQSEL = 100   # Twice the 50 in gcc-linux-64
 
 def checkForSpiceError(f):
     """
@@ -3727,7 +3728,7 @@ def ekacli(handle, segno, column, ivals, entszs, nlflgs, rcptrs, wkindx):
     column = stypes.stringToCharP(column)
     ivals = stypes.toIntVector(ivals)
     entszs = stypes.toIntVector(entszs)
-    nlflgs = stypes.toBoolVector(nlflgs)
+    nlflgs = stypes.toIntVector(nlflgs)
     rcptrs = stypes.toIntVector(rcptrs)
     wkindx = stypes.toIntVector(wkindx)
     libspice.ekacli_c(handle, segno, column, ivals, entszs, nlflgs, rcptrs,
@@ -4269,22 +4270,31 @@ def ekpsel(query, msglen, tablen, collen):
     tablen = ctypes.c_int(tablen)
     collen = ctypes.c_int(collen)
     n = ctypes.c_int()
-    xbegs = ctypes.c_int()
-    xends = ctypes.c_int()
-    xtypes = stypes.SpiceEKDataType()
-    xclass = stypes.SpiceEKExprClass()
-    tabs = stypes.charvector(100, 33)
-    cols = stypes.charvector(100, 65)
+    xbegs = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
+    xends = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
+    #xtypes = stypes.emptySpiceEKDataTypeVector(_SPICE_EK_MAXQSEL)
+    #xclass = stypes.emptySpiceEKExprClassVector(_SPICE_EK_MAXQSEL)
+    xtypes = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
+    xclass = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
+    tabs = stypes.charvector(ndim=_SPICE_EK_MAXQSEL, lenvals=tablen.value)
+    cols = stypes.charvector(ndim=_SPICE_EK_MAXQSEL, lenvals=collen.value)
     error = ctypes.c_bool()
-    errmsg = stypes.stringToCharP(msglen)
+    errmsg = stypes.stringToCharP(" " * msglen.value)
     libspice.ekpsel_c(query, msglen, tablen, collen, ctypes.byref(n),
-                      ctypes.byref(xbegs), ctypes.byref(xends),
-                      ctypes.byref(xtypes), ctypes.byref(xclass),
+                      xbegs, xends,
+                      xtypes, xclass,
                       ctypes.byref(tabs), ctypes.byref(cols),
-                      ctypes.byref(error), ctypes.byref(errmsg))
-    return n.value, xbegs.value, xends.value, xtypes.value, xclass.value, \
-           stypes.cVectorToPython(tabs), stypes.cVectorToPython(cols), error.value, \
-           stypes.toPythonString(errmsg)
+                      ctypes.byref(error), errmsg)
+    return (n.value
+           , stypes.cVectorToPython(xbegs)[:n.value]
+           , stypes.cVectorToPython(xends)[:n.value]
+           , stypes.cVectorToPython(xtypes)[:n.value]
+           , stypes.cVectorToPython(xclass)[:n.value]
+           , stypes.cVectorToPython(tabs)[:n.value]
+           , stypes.cVectorToPython(cols)[:n.value]
+           , error.value
+           , stypes.toPythonString(errmsg)
+           ,)
 
 
 @spiceErrorCheck
