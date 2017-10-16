@@ -2127,7 +2127,7 @@ def test_ekmany():
     spice.ekuef(handle)
     handle = spice.ekopw(ekpath)
     # Loop over rows, update values using .ekucec/.ekuced/.ekucei
-    for recno in range(nmrows):
+    for recno in range(nmrows+1):
         iBaseVals = [200+recno]*(recno+1)
         if recno == nmrows:
             #with pytest.raises(spice.stypes.SpiceyError): spice.ekucec(handle, segno, recno, "c1", recno+1, 11, list(map(str,iBaseVals))  , False)
