@@ -4479,15 +4479,14 @@ def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
     vallen = ctypes.c_int(vallen)
-    isnull = ctypes.c_bool(isnull)
-    cvals = stypes.listToCharArrayPtr(cvals, xLen=vallen, yLen=nvals)
+    cvals = stypes.listToCharArrayPtr(cvals,xLen=vallen.value)
+    isnull = ctypes.c_int(isnull and 1 or 0)
     libspice.ekucec_c(handle, segno, recno, column, nvals, vallen, cvals,
                       isnull)
 
 
 @spiceErrorCheck
 def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
-    # Todo: test ekucei
     """
     Update a double precision column entry in a specified EK record.
 
@@ -4513,15 +4512,13 @@ def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
     recno = ctypes.c_int(recno)
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
-    isnull = ctypes.c_bool(isnull)
     dvals = stypes.toDoubleVector(dvals)
-    libspice.ekuced_c(handle, segno, recno, column, nvals, ctypes.byref(dvals),
-                      isnull)
+    isnull = ctypes.c_int(isnull and 1 or 0)
+    libspice.ekaced_c(handle, segno, recno, column, nvals, dvals, isnull)
 
 
 @spiceErrorCheck
 def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
-    # Todo: test ekucei
     """
     Update an integer column entry in a specified EK record.
 
@@ -4547,10 +4544,9 @@ def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
     recno = ctypes.c_int(recno)
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
-    isnull = ctypes.c_bool(isnull)
     ivals = stypes.toIntVector(ivals)
-    libspice.ekucei_c(handle, segno, recno, column, nvals, ctypes.byref(ivals),
-                      isnull)
+    isnull = ctypes.c_int(isnull and 1 or 0)
+    libspice.ekucei_c(handle, segno, recno, column, nvals, ivals, isnull)
 
 
 @spiceErrorCheck

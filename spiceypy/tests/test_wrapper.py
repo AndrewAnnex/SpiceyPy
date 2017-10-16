@@ -2017,8 +2017,8 @@ def test_ekaced():
 
 def test_ekmany():
     spice.kclear()
-    ekpath = os.path.join(cwd, "example_ekinsr.ek")
-    tablename = "test_table_ekinsr"
+    ekpath = os.path.join(cwd, "example_ekmany.ek")
+    tablename = "test_table_ekmany"
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
     # Create new EK and new segment with table
@@ -2058,7 +2058,7 @@ def test_ekmany():
     assert dict(spice.stypes.SpiceEKDataType._fields_)['SPICE_DP'].value == xtypes[1]
     assert dict(spice.stypes.SpiceEKDataType._fields_)['SPICE_INT'].value == xtypes[2]
     assert ([dict(spice.stypes.SpiceEKExprClass._fields_)['SPICE_EK_EXP_COL'].value]*3) == list(xclass)
-    assert (["TEST_TABLE_EKINSR"]*3) == tabs
+    assert (["TEST_TABLE_EKMANY"]*3) == tabs
     assert "C1 D1 I1".split() == cols
     assert not err
     assert "" == errmsg
@@ -2123,8 +2123,39 @@ def test_ekmany():
             nvals, altIData, isNull = spice.ekrcei(handle, segno, recno, "i1", nelts=len(saveIData[recno]))
             assert (recno+1) == nvals
             assert list(altIData) == saveIData[recno]
-    # Cleanup
+    # Close file, re-open for writing
     spice.ekuef(handle)
+    handle = spice.ekopw(ekpath)
+    # Loop over rows, update values using .ekucec/.ekuced/.ekucei
+    for recno in range(nmrows):
+        iBaseVals = [200+recno]*(recno+1)
+        if recno == nmrows:
+            #with pytest.raises(spice.stypes.SpiceyError): spice.ekucec(handle, segno, recno, "c1", recno+1, 11, list(map(str,iBaseVals))  , False)
+            #if spice.failed(): spice.reset()
+            with pytest.raises(spice.stypes.SpiceyError): spice.ekuced(handle, segno, recno, "d1", recno+1,     list(map(float,iBaseVals)), False)
+            if spice.failed(): spice.reset()
+            with pytest.raises(spice.stypes.SpiceyError): spice.ekucei(handle, segno, recno, "i1", recno+1,     iBaseVals                 , False)
+            if spice.failed(): spice.reset()
+        else:
+            # List-ify map to ensure listToCharArrayPtr sees list, not map object
+            spice.ekucec(handle, segno, recno, "c1", recno+1, 11, list(map(str,iBaseVals))  , False)
+            spice.ekuced(handle, segno, recno, "d1", recno+1,     list(map(float,iBaseVals)), False)
+            spice.ekucei(handle, segno, recno, "i1", recno+1,     iBaseVals                 , False)
+            assert not spice.failed()
+    # Loop over rows, use .ekrcec/.ekrced/.ekrcei to test updates
+    for recno in range(nmrows):
+        iBaseVals = [200+recno]*(recno+1)
+        nvals, altCData, isNull = spice.ekrcec(handle, segno, recno, "c1", 11, nelts=len(saveCData[recno]))
+        assert (recno+1) == nvals
+        assert list(altCData) == list(map(str,iBaseVals))
+        nvals, altDData, isNull = spice.ekrced(handle, segno, recno, "d1", nelts=len(saveDData[recno]))
+        assert (recno+1) == nvals
+        assert list(altDData) == iBaseVals
+        nvals, altIData, isNull = spice.ekrcei(handle, segno, recno, "i1", nelts=len(saveIData[recno]))
+        assert (recno+1) == nvals
+        assert list(altIData) == list(map(float,iBaseVals))
+    # Cleanup
+    spice.ekcls(handle)
     assert not spice.failed()
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
