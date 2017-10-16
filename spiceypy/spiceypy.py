@@ -35,6 +35,8 @@ __author__ = 'AndrewAnnex'
 
 _default_len_out = 256
 
+_SPICE_EK_MAXQSEL             = 100   # Twice the 50 in gcc-linux-64
+_SPICE_EK_EKRCEX_ROOM_DEFAULT = 100   # Enough?
 
 def checkForSpiceError(f):
     """
@@ -1211,6 +1213,37 @@ def clpool():
 
 
 @spiceErrorCheck
+def cltext_(fname):
+    """
+    Close a text file currently opened by RDTEXT.
+
+    No URL available; relevant lines from SPICE source:
+
+    FORTRAN SPICE, rdtext.f:
+
+        C$Procedure  CLTEXT ( Close a text file opened by RDTEXT)
+              ENTRY  CLTEXT ( FILE )
+              CHARACTER*(*)       FILE
+        C     VARIABLE  I/O  DESCRIPTION
+        C     --------  ---  --------------------------------------------------
+        C     FILE       I   Text file to be closed.
+
+    CSPICE, rdtext.c:
+
+        /* $Procedure  CLTEXT ( Close a text file opened by RDTEXT) */
+        /* Subroutine */ int cltext_(char *file, ftnlen file_len)
+
+
+    :param fname: Text file to be closed.
+    :type line: str
+    """
+
+    fnameP    = stypes.stringToCharP(fname+'\0')
+    fname_len = ctypes.c_int(len(fname)+1)
+    libspice.cltext_(fnameP, fname_len)
+
+
+@spiceErrorCheck
 def cmprss(delim, n, instr, lenout=_default_len_out):
     """
     Compress a character string by removing occurrences of
@@ -1328,7 +1361,8 @@ def copy(cell):
     :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cell, stypes.SpiceCell)
-    assert cell.dtype == 0 or cell.dtype == 1 or cell.dtype == 2
+    # Next line was redundant with [raise NotImpImplementedError] below
+    # assert cell.dtype == 0 or cell.dtype == 1 or cell.dtype == 2
     if cell.dtype is 0:
         newcopy = stypes.SPICECHAR_CELL(cell.size, cell.length)
     elif cell.dtype is 1:
@@ -1576,7 +1610,6 @@ def dafcs(handle):
 
 @spiceErrorCheck
 def dafdc(handle):
-    # Todo: test dafdc
     """
     Delete the entire comment area of a specified DAF file.
 
@@ -1728,7 +1761,6 @@ def dafgs(n=125):
 @spiceErrorCheck
 @spiceFoundExceptionThrower
 def dafgsr(handle, recno, begin, end):
-    # Todo test dafgsr
     """
     Read a portion of the contents of a summary record in a DAF file.
 
@@ -1742,18 +1774,18 @@ def dafgsr(handle, recno, begin, end):
     :type begin: int
     :param end: Last word to read from record.
     :type end: int
-    :return: Contents of record.
-    :rtype: float
+    :return: Contents of request sub-record
+    :rtype: float numpy.ndarray
     """
     handle = ctypes.c_int(handle)
     recno = ctypes.c_int(recno)
     begin = ctypes.c_int(begin)
     end = ctypes.c_int(end)
-    data = ctypes.c_double()
+    data = stypes.emptyDoubleVector(125)
     found = ctypes.c_bool()
-    libspice.dafgsr_c(handle, recno, begin, end, ctypes.byref(data),
+    libspice.dafgsr_c(handle, recno, begin, end, data,
                       ctypes.byref(found))
-    return data.value, found.value
+    return stypes.cVectorToPython(data)[:end.value+1-begin.value], found.value
 
 
 @spiceErrorCheck
@@ -1822,7 +1854,6 @@ def dafps(nd, ni, dc, ic):
 
 @spiceErrorCheck
 def dafrda(handle, begin, end):
-    # Todo: test dafrda
     """
     Read the double precision data bounded by two addresses within a DAF.
 
@@ -1844,8 +1875,8 @@ def dafrda(handle, begin, end):
     handle = ctypes.c_int(handle)
     begin = ctypes.c_int(begin)
     end = ctypes.c_int(end)
-    data = stypes.emptyDoubleVector(8)  # value of 8 from help file
-    libspice.dafrda_c(handle, begin, end, ctypes.byref(data))
+    data = stypes.emptyDoubleVector(1+end.value-begin.value)
+    libspice.dafrda_c(handle, begin, end, data)
     return stypes.cVectorToPython(data)
 
 
@@ -2246,7 +2277,8 @@ def diff(a, b):
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
-    assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
+    # The next line was redundant with the [raise NotImplementedError] line below
+    # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     if a.dtype is 0:
         c = stypes.SPICECHAR_CELL(max(a.size, b.size), max(a.length, b.length))
     elif a.dtype is 1:
@@ -3515,8 +3547,8 @@ def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
     vallen = ctypes.c_int(vallen)
-    cvals = stypes.listToCharArrayPtr(cvals)
-    isnull = ctypes.c_bool(isnull)
+    cvals = stypes.listToCharArrayPtr(cvals,xLen=vallen.value)
+    isnull = ctypes.c_int(isnull and 1 or 0)
     libspice.ekacec_c(handle, segno, recno, column, nvals, vallen, cvals,
                       isnull)
 
@@ -3549,7 +3581,7 @@ def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
     dvals = stypes.toDoubleVector(dvals)
-    isnull = ctypes.c_bool(isnull)
+    isnull = ctypes.c_int(isnull and 1 or 0)
     libspice.ekaced_c(handle, segno, recno, column, nvals, dvals, isnull)
 
 
@@ -3581,7 +3613,7 @@ def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
     ivals = stypes.toIntVector(ivals)
-    isnull = ctypes.c_bool(isnull)
+    isnull = ctypes.c_int(isnull and 1 or 0)
     libspice.ekacei_c(handle, segno, recno, column, nvals, ivals, isnull)
 
 
@@ -3659,7 +3691,7 @@ def ekacld(handle, segno, column, dvals, entszs, nlflgs, rcptrs, wkindx):
     column = stypes.stringToCharP(column)
     dvals = stypes.toDoubleVector(dvals)
     entszs = stypes.toIntVector(entszs)
-    nlflgs = stypes.toBoolVector(nlflgs)
+    nlflgs = stypes.toIntVector(nlflgs)
     rcptrs = stypes.toIntVector(rcptrs)
     wkindx = stypes.toIntVector(wkindx)
     libspice.ekacld_c(handle, segno, column, dvals, entszs, nlflgs, rcptrs,
@@ -3697,7 +3729,7 @@ def ekacli(handle, segno, column, ivals, entszs, nlflgs, rcptrs, wkindx):
     column = stypes.stringToCharP(column)
     ivals = stypes.toIntVector(ivals)
     entszs = stypes.toIntVector(entszs)
-    nlflgs = stypes.toBoolVector(nlflgs)
+    nlflgs = stypes.toIntVector(nlflgs)
     rcptrs = stypes.toIntVector(rcptrs)
     wkindx = stypes.toIntVector(wkindx)
     libspice.ekacli_c(handle, segno, column, ivals, entszs, nlflgs, rcptrs,
@@ -3765,9 +3797,9 @@ def ekbseg(handle, tabnam, ncols, cnmlen, cnames, declen, decls):
     handle = ctypes.c_int(handle)
     tabnam = stypes.stringToCharP(tabnam)
     cnmlen = ctypes.c_int(cnmlen)
-    cnames = stypes.listToCharArray(cnames)  # not sure if this works
+    cnames = stypes.listToCharArray(cnames,xLen=cnmlen.value)  # not sure if this works
     declen = ctypes.c_int(declen)
-    decls = stypes.listToCharArray(decls)
+    decls = stypes.listToCharArray(decls,xLen=declen.value)
     segno = ctypes.c_int()
     libspice.ekbseg_c(handle, tabnam, ncols, cnmlen, cnames, declen, decls,
                       ctypes.byref(segno))
@@ -3929,7 +3961,7 @@ def ekgc(selidx, row, element, lenout=_default_len_out):
     lenout = ctypes.c_int(lenout)
     null = ctypes.c_bool()
     found = ctypes.c_bool()
-    cdata = stypes.stringToCharP(lenout)
+    cdata = stypes.stringToCharP(" " * lenout.value)
     libspice.ekgc_c(selidx, row, element, lenout, cdata, ctypes.byref(null),
                     ctypes.byref(found))
     return stypes.toPythonString(cdata), null.value, found.value
@@ -4239,26 +4271,33 @@ def ekpsel(query, msglen, tablen, collen):
     tablen = ctypes.c_int(tablen)
     collen = ctypes.c_int(collen)
     n = ctypes.c_int()
-    xbegs = ctypes.c_int()
-    xends = ctypes.c_int()
-    xtypes = stypes.SpiceEKDataType()
-    xclass = stypes.SpiceEKExprClass()
-    tabs = stypes.charvector(100, 33)
-    cols = stypes.charvector(100, 65)
+    xbegs = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
+    xends = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
+    xtypes = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
+    xclass = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
+    tabs = stypes.charvector(ndim=_SPICE_EK_MAXQSEL, lenvals=tablen.value)
+    cols = stypes.charvector(ndim=_SPICE_EK_MAXQSEL, lenvals=collen.value)
     error = ctypes.c_bool()
-    errmsg = stypes.stringToCharP(msglen)
+    errmsg = stypes.stringToCharP(" " * msglen.value)
     libspice.ekpsel_c(query, msglen, tablen, collen, ctypes.byref(n),
-                      ctypes.byref(xbegs), ctypes.byref(xends),
-                      ctypes.byref(xtypes), ctypes.byref(xclass),
+                      xbegs, xends,
+                      xtypes, xclass,
                       ctypes.byref(tabs), ctypes.byref(cols),
-                      ctypes.byref(error), ctypes.byref(errmsg))
-    return n.value, xbegs.value, xends.value, xtypes.value, xclass.value, \
-           stypes.cVectorToPython(tabs), stypes.cVectorToPython(cols), error.value, \
-           stypes.toPythonString(errmsg)
+                      ctypes.byref(error), errmsg)
+    return (n.value
+           , stypes.cVectorToPython(xbegs)[:n.value]
+           , stypes.cVectorToPython(xends)[:n.value]
+           , stypes.cVectorToPython(xtypes)[:n.value]
+           , stypes.cVectorToPython(xclass)[:n.value]
+           , stypes.cVectorToPython(tabs)[:n.value]
+           , stypes.cVectorToPython(cols)[:n.value]
+           , error.value
+           , stypes.toPythonString(errmsg)
+           ,)
 
 
 @spiceErrorCheck
-def ekrcec(handle, segno, recno, column, lenout, nelts=3):
+def ekrcec(handle, segno, recno, column, lenout, nelts=_SPICE_EK_EKRCEX_ROOM_DEFAULT):
     # Todo: test ekrcec , possible new way to get back 2d char arrays
     """
     Read data from a character column in a specified EK record.
@@ -4275,29 +4314,30 @@ def ekrcec(handle, segno, recno, column, lenout, nelts=3):
     :type column: str
     :param lenout: Maximum length of output strings.
     :type lenout: int
-    :param nelts: ???
+    :param nelts: Number of elements to allow for (default=%d)
     :type nelts: int
     :return:
             Number of values in column entry,
             Character values in column entry,
             Flag indicating whether column entry is null.
     :rtype: tuple
-    """
+    """ % (_SPICE_EK_EKRCEX_ROOM_DEFAULT,)
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
     column = stypes.stringToCharP(column)
     lenout = ctypes.c_int(lenout)
     nvals = ctypes.c_int()
-    cvals = stypes.charvector(ndim=nelts, lenvals=lenout)
+    cvals = stypes.charvector(ndim=nelts, lenvals=lenout.value)
     isnull = ctypes.c_bool()
     libspice.ekrcec_c(handle, segno, recno, column, lenout, ctypes.byref(nvals),
                       ctypes.byref(cvals), ctypes.byref(isnull))
+    if failed(): return
     return nvals.value, stypes.cVectorToPython(cvals), isnull.value
 
 
 @spiceErrorCheck
-def ekrced(handle, segno, recno, column):
+def ekrced(handle, segno, recno, column, nelts=_SPICE_EK_EKRCEX_ROOM_DEFAULT):
     # Todo: test ekrced
     """
     Read data from a double precision column in a specified EK record.
@@ -4322,16 +4362,17 @@ def ekrced(handle, segno, recno, column):
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
     column = stypes.stringToCharP(column)
-    nvals = ctypes.c_int()
-    dvals = ctypes.POINTER(ctypes.c_double)  # array of length nvals
+    nvals = ctypes.c_int(0)
+    dvals = stypes.emptyDoubleVector(nelts)
     isnull = ctypes.c_bool()
-    libspice.ekrced_c(handle, segno, recno, column, ctypes.byref(nvals),
-                      ctypes.byref(dvals), ctypes.byref(isnull))
-    return nvals.value, stypes.cVectorToPython(dvals), isnull.value
+    libspice.ekrced_c(handle, segno, recno, column, ctypes.byref(nvals), dvals,
+                      ctypes.byref(isnull))
+    assert failed() or (nvals.value <= nelts)
+    return nvals.value, stypes.cVectorToPython(dvals)[:nvals.value], isnull.value
 
 
 @spiceErrorCheck
-def ekrcei(handle, segno, recno, column):
+def ekrcei(handle, segno, recno, column, nelts=_SPICE_EK_EKRCEX_ROOM_DEFAULT):
     # Todo: test ekrcei
     """
     Read data from an integer column in a specified EK record.
@@ -4357,11 +4398,12 @@ def ekrcei(handle, segno, recno, column):
     recno = ctypes.c_int(recno)
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int()
-    ivals = ctypes.pointer(ctypes.c_int)  # array of length nvals
+    ivals = stypes.emptyIntVector(nelts)
     isnull = ctypes.c_bool()
     libspice.ekrcei_c(handle, segno, recno, column, ctypes.byref(nvals), ivals,
                       ctypes.byref(isnull))
-    return nvals.value, stypes.cVectorToPython(ivals), isnull.value
+    assert nvals.value <= nelts
+    return nvals.value, stypes.cVectorToPython(ivals)[:nvals.value], isnull.value
 
 
 @spiceErrorCheck
@@ -4437,15 +4479,14 @@ def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
     vallen = ctypes.c_int(vallen)
-    isnull = ctypes.c_bool(isnull)
-    cvals = stypes.listToCharArrayPtr(cvals, xLen=vallen, yLen=nvals)
+    cvals = stypes.listToCharArrayPtr(cvals,xLen=vallen.value)
+    isnull = ctypes.c_int(isnull and 1 or 0)
     libspice.ekucec_c(handle, segno, recno, column, nvals, vallen, cvals,
                       isnull)
 
 
 @spiceErrorCheck
 def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
-    # Todo: test ekucei
     """
     Update a double precision column entry in a specified EK record.
 
@@ -4471,15 +4512,13 @@ def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
     recno = ctypes.c_int(recno)
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
-    isnull = ctypes.c_bool(isnull)
     dvals = stypes.toDoubleVector(dvals)
-    libspice.ekuced_c(handle, segno, recno, column, nvals, ctypes.byref(dvals),
-                      isnull)
+    isnull = ctypes.c_int(isnull and 1 or 0)
+    libspice.ekaced_c(handle, segno, recno, column, nvals, dvals, isnull)
 
 
 @spiceErrorCheck
 def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
-    # Todo: test ekucei
     """
     Update an integer column entry in a specified EK record.
 
@@ -4505,10 +4544,9 @@ def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
     recno = ctypes.c_int(recno)
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
-    isnull = ctypes.c_bool(isnull)
     ivals = stypes.toIntVector(ivals)
-    libspice.ekucei_c(handle, segno, recno, column, nvals, ctypes.byref(ivals),
-                      isnull)
+    isnull = ctypes.c_int(isnull and 1 or 0)
+    libspice.ekucei_c(handle, segno, recno, column, nvals, ivals, isnull)
 
 
 @spiceErrorCheck
@@ -5015,6 +5053,26 @@ def failed():
     :rtype: bool
     """
     return libspice.failed_c()
+
+
+@spiceErrorCheck
+def fn2lun_(fname):
+    """
+    Map name of open file to its FORTRAN (F2C) logical unit.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/fn2lun.html
+
+    :param fname: name of the file to be mapped to its logical unit.
+    :type fname: str
+    :return: the FORTRAN (F2C) logical unit associated with the filename.
+    :rtype: int
+    """
+
+    fnameP    = stypes.stringToCharP(fname+'\0')
+    unit_out  = ctypes.c_int()
+    fname_len = ctypes.c_int(len(fname)+1)
+    libspice.fn2lun_(fnameP,ctypes.byref(unit_out),fname_len)
+    return unit_out.value
 
 
 @spiceErrorCheck
@@ -6273,7 +6331,7 @@ def gnpool(name, start, room, lenout=_default_len_out):
     """
     name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
-    kvars = stypes.charvector(room, lenout)
+    kvars = stypes.charvector(ndim=room, lenvals=lenout)
     room = ctypes.c_int(room)
     lenout = ctypes.c_int(lenout)
     n = ctypes.c_int()
@@ -6746,7 +6804,8 @@ def inter(a, b):
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
-    assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
+    # Next line was redundant with [raise NotImpImplementedError] below
+    # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     if a.dtype is 0:
         c = stypes.SPICECHAR_CELL(max(a.size, b.size), max(a.length, b.length))
     elif a.dtype is 1:
@@ -7165,6 +7224,7 @@ def ktotal(kind):
 @spiceErrorCheck
 @spiceFoundExceptionThrower
 def kxtrct(keywd, terms, nterms, instring, termlen=_default_len_out, stringlen=_default_len_out, substrlen=_default_len_out):
+    # Todo: test kxtrct
     """
     Locate a keyword in a string and extract the substring from
     the beginning of the first word following the keyword to the
@@ -7191,16 +7251,19 @@ def kxtrct(keywd, terms, nterms, instring, termlen=_default_len_out, stringlen=_
             String from end of keywd to beginning of first terms item found.
     :rtype: tuple
     """
+    assert nterms <= len(terms)
+    # Python strings and string arrays => to C char pointers
     keywd = stypes.stringToCharP(keywd)
-    termlen = ctypes.c_int(termlen)
-    terms = stypes.listToCharArrayPtr(terms)
-    nterms = ctypes.c_int(nterms)
-    instring = stypes.stringToCharP(instring)
+    terms = stypes.listToCharArrayPtr([s[:termlen-1] for s in terms[:nterms]],xLen=termlen,yLen=nterms)
+    instring = stypes.stringToCharP(instring[:stringlen-1],inlen=stringlen)
     substr = stypes.stringToCharP(substrlen)
+    # Python ints => to C ints
+    termlen = ctypes.c_int(termlen)
+    nterms = ctypes.c_int(nterms)
     stringlen = ctypes.c_int(stringlen)
     substrlen = ctypes.c_int(substrlen)
     found = ctypes.c_bool()
-    libspice.kxtrct_c(keywd, termlen, ctypes.byref(terms), nterms,
+    libspice.kxtrct_c(keywd, termlen, terms, nterms,
                       stringlen, substrlen, instring, ctypes.byref(found),
                       substr)
     return stypes.toPythonString(instring), stypes.toPythonString(
@@ -7533,9 +7596,11 @@ def lparsm(inlist, delims, nmax, lenout=None):
     """
     if lenout is None:
         lenout = ctypes.c_int(len(inlist) + 1)
+    else:
+        lenout = ctypes.c_int(lenout)
     inlist = stypes.stringToCharP(inlist)
     delims = stypes.stringToCharP(delims)
-    items = stypes.emptyCharArray(nmax, lenout)
+    items = stypes.emptyCharArray(lenout.value, nmax)
     nmax = ctypes.c_int(nmax)
     n = ctypes.c_int()
     libspice.lparsm_c(inlist, delims, nmax, lenout, ctypes.byref(n), items)
@@ -10613,7 +10678,8 @@ def sdiff(a, b):
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
-    assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
+    # The next line was redundant with the [raise NotImplementedError] line below
+    # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     if a.dtype is 0:
         c = stypes.SPICECHAR_CELL(a.size, a.length)
     elif a.dtype is 1:
@@ -12668,7 +12734,7 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
     if hasattr(et, "__iter__"):
         return numpy.array(
                 [srfxpt(method, target, t, abcorr, obsrvr, dref, dvec) for t in
-                 et])
+                 et]), True  # Need trailing True to spoof @spiceError* above
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
@@ -13477,7 +13543,6 @@ def trcnam(index, namlen=_default_len_out):
 
 @spiceErrorCheck
 def trcoff():
-    # Todo: test trcoff
     """
     Disable tracing.
 
@@ -13544,6 +13609,26 @@ def twovec(axdef, indexa, plndef, indexp):
     mout = stypes.emptyDoubleMatrix()
     libspice.twovec_c(axdef, indexa, plndef, indexp, mout)
     return stypes.cMatrixToNumpy(mout)
+
+
+@spiceErrorCheck
+def txtopn_(fname):
+    """
+    Open a new text file for subsequent write access.
+
+    ftp://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ftncls_c.html
+
+    :param fname: name of the new text file to be opened.
+    :type fname: str
+    :return: FORTRAN logical unit of opened file
+    :rtype: int
+    """
+
+    fnameP    = stypes.stringToCharP(fname+'\0')
+    unit_out  = ctypes.c_int()
+    fname_len = ctypes.c_int(len(fname)+1)
+    libspice.txtopn_(fnameP,ctypes.byref(unit_out),fname_len)
+    return unit_out.value
 
 
 @spiceErrorCheck
@@ -13715,7 +13800,8 @@ def union(a, b):
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
-    assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
+    # Next line was redundant with [raise NotImpImplementedError] below
+    # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     if a.dtype is 0:
         c = stypes.SPICECHAR_CELL(max(a.size, b.size), max(a.length, b.length))
     elif a.dtype is 1:
@@ -13766,6 +13852,7 @@ def unload(filename):
     if isinstance(filename, list):
         for f in filename:
             libspice.unload_c(stypes.stringToCharP(f))
+        return
     filename = stypes.stringToCharP(filename)
     libspice.unload_c(filename)
 
@@ -15069,6 +15156,42 @@ def wnvald(insize, n, window):
     n = ctypes.c_int(n)
     libspice.wnvald_c(insize, n, ctypes.byref(window))
     return window
+
+
+@spiceErrorCheck
+def writln_(line, unit):
+    """
+    Write a text line to a logical unit
+
+    No URL available; relevant lines from SPICE source:
+
+    FORTRAN SPICE, writln.f:
+
+        C$Procedure      WRITLN ( Write a text line to a logical unit )
+              SUBROUTINE WRITLN ( LINE, UNIT )
+              CHARACTER*(*)      LINE
+              INTEGER            UNIT
+
+        C     Variable  I/O  Description
+        C     --------  ---  --------------------------------------------------
+        C     LINE       I   The line which is to be written to UNIT.
+        C     UNIT       I   The Fortran unit number to use for output.
+
+    CSPICE, writln.c:
+
+        /* $Procedure      WRITLN ( Write a text line to a logical unit ) */
+        /* Subroutine */ int writln_(char *line, integer *unit, ftnlen line_len)
+
+    :param line: The line which is to be written to UNIT.
+    :type line: str
+    :param unit: The Fortran unit number to use for output.
+    :type line: int
+    """
+
+    lineP    = stypes.stringToCharP(line+'\0')
+    unit     = ctypes.c_int(unit)
+    line_len = ctypes.c_int(len(line)+1)
+    libspice.writln_(lineP, ctypes.byref(unit), line_len)
 
 
 ################################################################################

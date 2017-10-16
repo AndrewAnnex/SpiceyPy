@@ -172,10 +172,13 @@ def attemptDownload(url, kernelName, targetFileName, num_attempts):
                 kernel.write(current_kernel.read())
             six_print("Downloaded kernel: {}".format(kernelName), flush=True)
             break
-        except urllib.error.URLError:
-            six_print("Download of kernel: {} failed with URLError, trying agian after a bit.".format(kernelName), flush=True)
+        # N.B. .HTTPError inherits from .URLError, so [except:....HTTPError]
+        #      must be listed before [except:....URLError], otherwise the
+        #      .HTTPError exception cannot be caught
         except urllib.error.HTTPError as h:
-            print("Some http error when downloading kernel {}, error: ".format(kernelName), h, ", trying agian after a bit.")
+            print("Some http error when downloading kernel {}, error: ".format(kernelName), h, ", trying again after a bit.")
+        except urllib.error.URLError:
+            six_print("Download of kernel: {} failed with URLError, trying again after a bit.".format(kernelName), flush=True)
         current_attempt += 1
         six_print("\t Attempting to Download kernel again...", flush=True)
         time.sleep(2 + current_attempt)
@@ -242,6 +245,14 @@ def writeTestMetaKernel():
 
 
 def downloadKernels():
+    # Code to enable a caller to complete code coverage in this file
+    if 'SKIP_DOWNLOAD_KERNELS' in os.environ:
+        # Commented code to test if kernel downloads are skipped because
+        # the code in this path is run
+        # import datetime
+        # with open('skipped_download_kernels.txt','wb') as fSDK:
+        #     fSDK.write('skipped_download_kernels[%s]\n' % (datetime.datetime.utcnow().isoformat(),))
+        return
     # Download the kernels listed in kernelList and kernelURLlist
     getStandardKernels()
     # Now grab any extra test kernels we need
@@ -254,5 +265,5 @@ def downloadKernels():
     getCassiniTestKernels()
 
 
-if __name__ == '__main__':
+if __name__ == '__main__' or 'SKIP_DOWNLOAD_KERNELS' in os.environ:
     downloadKernels()

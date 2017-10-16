@@ -562,7 +562,7 @@ class SpiceDLADescr(Structure):
 
     @property
     def fwdptr(self):
-        return self._fwdprt
+        return self._fwdptr
 
     @property
     def ibase(self):
@@ -599,12 +599,26 @@ class SpiceEKDataType(c_int):
     ]
 
 
+def emptySpiceEKDataTypeVector(n):
+    if isinstance(n, c_int):
+        n = n.value
+    assert(isinstance(n, int))
+    return (SpiceEKDataType * n)()
+
+
 class SpiceEKExprClass(c_int):
     _fields_ = [
         ('SPICE_EK_EXP_COL', c_int(0)),
         ('SPICE_EK_EXP_FUNC', c_int(1)),
         ('SPICE_EK_EXP_EXPR', c_int(2))
     ]
+
+
+def emptySpiceEKExprClassVector(n):
+    if isinstance(n, c_int):
+        n = n.value
+    assert(isinstance(n, int))
+    return (SpiceEKExprClass * n)()
 
 
 class SpiceEKAttDsc(Structure):
