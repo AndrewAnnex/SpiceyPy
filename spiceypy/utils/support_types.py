@@ -112,10 +112,6 @@ def toPythonString(inString):
         return bytes.decode(string_at(inString)).rstrip()
 
 
-def charvector(ndim=1, lenvals=10):
-    return ((c_char * lenvals) * ndim)()
-
-
 def emptyCharArray(xLen=None, yLen=None):
     if not yLen:
         yLen = 1

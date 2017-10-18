@@ -1642,7 +1642,7 @@ def dafec(handle, bufsiz, lenout=_default_len_out):
     :rtype: tuple
     """
     handle = ctypes.c_int(handle)
-    buffer = stypes.charvector(bufsiz, lenout)
+    buffer = stypes.emptyCharArray(yLen=bufsiz, xLen=lenout)
     bufsiz = ctypes.c_int(bufsiz)
     lenout = ctypes.c_int(lenout)
     n = ctypes.c_int()
@@ -4273,8 +4273,8 @@ def ekpsel(query, msglen, tablen, collen):
     xends = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
     xtypes = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
     xclass = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
-    tabs = stypes.charvector(ndim=_SPICE_EK_MAXQSEL, lenvals=tablen.value)
-    cols = stypes.charvector(ndim=_SPICE_EK_MAXQSEL, lenvals=collen.value)
+    tabs = stypes.emptyCharArray(yLen=_SPICE_EK_MAXQSEL, xLen=tablen.value)
+    cols = stypes.emptyCharArray(yLen=_SPICE_EK_MAXQSEL, xLen=collen.value)
     error = ctypes.c_bool()
     errmsg = stypes.stringToCharP(" " * msglen.value)
     libspice.ekpsel_c(query, msglen, tablen, collen, ctypes.byref(n),
@@ -4324,7 +4324,7 @@ def ekrcec(handle, segno, recno, column, lenout, nelts=_SPICE_EK_EKRCEX_ROOM_DEF
     column = stypes.stringToCharP(column)
     lenout = ctypes.c_int(lenout)
     nvals = ctypes.c_int()
-    cvals = stypes.charvector(ndim=nelts, lenvals=lenout.value)
+    cvals = stypes.emptyCharArray(yLen=nelts, xLen=lenout.value)
     isnull = ctypes.c_bool()
     libspice.ekrcec_c(handle, segno, recno, column, lenout, ctypes.byref(nvals),
                       ctypes.byref(cvals), ctypes.byref(isnull))
@@ -6324,7 +6324,7 @@ def gnpool(name, start, room, lenout=_default_len_out):
     """
     name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
-    kvars = stypes.charvector(ndim=room, lenvals=lenout)
+    kvars = stypes.emptyCharArray(yLen=room, xLen=lenout)
     room = ctypes.c_int(room)
     lenout = ctypes.c_int(lenout)
     n = ctypes.c_int()

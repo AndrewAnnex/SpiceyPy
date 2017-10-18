@@ -7344,15 +7344,16 @@ def test_unload():
     # 4 kernels + the meta kernel = 5
     assert spice.ktotal("ALL") == 5
     # Make list of FURNSHed non-meta-kernels
-    kernelList = [filnam for filnam, filtyp, srcnam, handle in
-                  [spice.kdata(iKernel, "ALL", 999, 999, 999) for iKernel in range(spice.ktotal("ALL"))]
-                  if filtyp != "META"
-                 ]
+    kernelList = []
+    for iKernel in range(spice.ktotal("ALL")):
+        filnam, filtyp, srcnam, handle = spice.kdata(iKernel, "ALL", 999, 999, 999)
+        if filtyp != "META": kernelList.append(filnam)
+    assert len(kernelList) > 0
+    # Unload all kernels
     spice.unload(CoreKernels.testMetaKernel)
     assert spice.ktotal("ALL") == 0
-    assert len(kernelList) > 0
     spice.kclear()
-    # Test passing [list of kernels] as argument to spice.unload
+    # Test passing the [list of kernels] as an argument to spice.unload
     spice.furnsh(kernelList)
     assert spice.ktotal("ALL") == len(kernelList)
     spice.unload(kernelList[1:])
