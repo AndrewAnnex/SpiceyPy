@@ -1238,7 +1238,7 @@ def cltext_(fname):
     :type fname: str
     """
 
-    fnameP    = stypes.stringToCharP(fname+'\0')
+    fnameP    = stypes.stringToCharP(fname)
     fname_len = ctypes.c_int(len(fname)+1)
     libspice.cltext_(fnameP, fname_len)
 
@@ -1742,7 +1742,7 @@ def dafgn(lenout=_default_len_out):
 @spiceErrorCheck
 def dafgs(n=125):
     # The 125 may be a hard set,
-    # I got strange errors that occasionally happend without it
+    # I got strange errors that occasionally happened without it
     """
     Return (get) the summary for the current array in the current DAF.
 
@@ -1762,17 +1762,17 @@ def dafgs(n=125):
 @spiceFoundExceptionThrower
 def dafgsr(handle, recno, begin, end):
     """
-    Read a portion of the contents of a summary record in a DAF file.
+    Read a portion of the contents of (words in) a summary record in a DAF file.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgsr_c.html
 
     :param handle: Handle of DAF.
     :type handle: int
-    :param recno: Record number.
+    :param recno: Record number; word indices are 1-based, 1 to 128 inclusive.
     :type recno: int
-    :param begin: First word to read from record.
+    :param begin: Index of first word to read from record, will be clamped > 0.
     :type begin: int
-    :param end: Last word to read from record.
+    :param end: Index of last word to read, wll be clamped < 129
     :type end: int
     :return: Contents of request sub-record
     :rtype: float numpy.ndarray
@@ -1781,11 +1781,11 @@ def dafgsr(handle, recno, begin, end):
     recno = ctypes.c_int(recno)
     begin = ctypes.c_int(begin)
     end = ctypes.c_int(end)
-    data = stypes.emptyDoubleVector(125)
+    # dafgsr_c will retrieve no more than 128 words
+    data = stypes.emptyDoubleVector(1 + min([128,end.value]) - max([begin.value,1]))
     found = ctypes.c_bool()
-    libspice.dafgsr_c(handle, recno, begin, end, data,
-                      ctypes.byref(found))
-    return stypes.cVectorToPython(data)[:end.value+1-begin.value], found.value
+    libspice.dafgsr_c(handle, recno, begin, end, data, ctypes.byref(found))
+    return stypes.cVectorToPython(data), found.value
 
 
 @spiceErrorCheck
@@ -5062,7 +5062,7 @@ def fn2lun_(fname):
     :rtype: int
     """
 
-    fnameP    = stypes.stringToCharP(fname+'\0')
+    fnameP    = stypes.stringToCharP(fname)
     unit_out  = ctypes.c_int()
     fname_len = ctypes.c_int(len(fname)+1)
     libspice.fn2lun_(fnameP,ctypes.byref(unit_out),fname_len)
@@ -13618,7 +13618,7 @@ def txtopn_(fname):
     :rtype: int
     """
 
-    fnameP    = stypes.stringToCharP(fname+'\0')
+    fnameP    = stypes.stringToCharP(fname)
     unit_out  = ctypes.c_int()
     fname_len = ctypes.c_int(len(fname)+1)
     libspice.txtopn_(fnameP,ctypes.byref(unit_out),fname_len)
@@ -15182,7 +15182,7 @@ def writln_(line, unit):
     :type unit: int
     """
 
-    lineP    = stypes.stringToCharP(line+'\0')
+    lineP    = stypes.stringToCharP(line)
     unit     = ctypes.c_int(unit)
     line_len = ctypes.c_int(len(line)+1)
     libspice.writln_(lineP, ctypes.byref(unit), line_len)
