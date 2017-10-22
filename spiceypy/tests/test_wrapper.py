@@ -41,9 +41,9 @@ from spiceypy.tests.gettestkernels import downloadKernels,\
 
 cwd = os.path.realpath(os.path.dirname(__file__))
 
-
 def setup_module(module):
     downloadKernels()
+
 
 def test_appndc():
     testCell = spice.stypes.SPICECHAR_CELL(10, 10)
@@ -665,11 +665,34 @@ def test_convrt():
 
 
 def test_copy():
+    # SPICEINT_CELL; dtype=2
     outCell = spice.bltfrm(-1)
     assert outCell.size >= 126
     cellCopy = spice.copy(outCell)
     assert cellCopy.size >= 126
     assert cellCopy is not outCell
+    assert cellCopy.dtype is 2
+    # SPICECHAR_CELL; dtype=0
+    cellSrc = spice.stypes.SPICECHAR_CELL(10,10)
+    tmpRtn = [spice.appndc('%d' % (i,), cellSrc) for i in range(5)]
+    cellCopy = spice.copy(cellSrc)
+    assert cellCopy.dtype is 0
+    assert cellCopy.size == cellSrc.size
+    assert cellCopy.card == cellSrc.card
+    assert cellCopy[:] == cellSrc[:]
+    assert cellCopy.length >= cellSrc.length
+    # SPICEDOUBLE_CELL; dtype=1
+    cellSrc = spice.stypes.SPICEDOUBLE_CELL(10)
+    tmpRtn = [spice.appndd(float(i), cellSrc) for i in range(8)]
+    cellCopy = spice.copy(cellSrc)
+    assert cellCopy.dtype is 1
+    assert cellCopy.size == cellSrc.size
+    assert cellCopy.card == cellSrc.card
+    assert cellCopy[:] == cellSrc[:]
+    # SPICEBOOLEAN_CELL; dtype=4
+    cellSrc = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'], size=9, length=0, card=0, isSet=False)
+    with pytest.raises(NotImplementedError):
+        spice.copy(cellSrc)
 
 
 def test_cpos():
@@ -737,7 +760,7 @@ def test_cylsph():
 
 
 def test_dafac():
-    ### Create new DAF using CKOPN
+    # Create new DAF using CKOPN
     spice.kclear()
     dafpath = os.path.join(cwd, "ex_dafac.bc")
     if spice.exists(dafpath):
@@ -842,7 +865,7 @@ def test_dafdc():
     # Open the DAF for reading
     handle = spice.dafopr(dafpath)
     assert handle is not None
-    nOut, cmntsOut, done = spice.dafec(handle,20,99)
+    nOut, cmntsOut, done = spice.dafec(handle, 20, 99)
     # Confirm that the number of comments is greater than zero
     assert nOut > 0
     spice.dafcls(handle)
@@ -860,7 +883,7 @@ def test_dafdc():
     # Confirm there are no more comments
     handle = spice.dafopr(dafpath)
     assert handle is not None
-    nOut,cmntsOut,done = spice.dafec(handle,20,99)
+    nOut, cmntsOut, done = spice.dafec(handle, 20, 99)
     assert nOut == 0
     spice.dafcls(handle)
     assert not spice.failed()
@@ -959,7 +982,55 @@ def test_dafgsstress():
 
 
 def test_dafgsr():
-    assert 1
+    spice.reset()
+    spice.kclear()
+    # Open DAF
+    # N.B. The SPK used must use the LTL-IEEE double byte-ordering and format
+    # This should be de421.bsp from the test kernel set
+    handle = spice.dafopr(CoreKernels.spk)
+    # get ND, NI (N.B. for SPKs, ND=2 and NI=6),
+    # and first, last and free record numbers
+    nd, ni, ifname, fward, bward, free = rtnDafrfr = spice.dafrfr(handle)
+    assert nd == 2 and ni == 6
+    # Calculate Single Summary size
+    ss = nd + ((ni+1) >> 1) 
+    # Loop over Summary records
+    while fward > 0:
+        iRecno = fward
+        # Get first three words at summary record (DAF record iRecno)
+        # * drec(1) NEXT forward pointer to next summary record
+        # * drec(2) PREV backward pointer (not used here)
+        # * drec(3) NSUM Number of single summaries in this DAF record
+        fward, bward, nSS = drec = map(int, spice.dafgsr(handle, iRecno, 1, 3))
+        # There is only one summary record in de431.bsp
+        assert iRecno == 4 and fward is 0 and bward is 0 and nSS == 15
+        # Set index to first word of first summary
+        firstWord = 4
+        # Set DAF record before daf421.bsp next summary record's first record (641)
+        lastIEndWord = 640
+        for iSS in range(1, nSS+1):
+            # Get packed summary
+            drec = spice.dafgsr(handle, iRecno, firstWord, firstWord+ss-1)
+            # Unpack summary
+            dc, ic = spice.dafus(drec, nd, ni)
+            iBody, iCenter, iFrame, iSPKtype, iStartWord, iEndWord = ic
+            # SPK de421.bsp ephemerides run from [1899 JUL 29 00:00:00 TDB] to [2052 OCT 09 00:00:00 TDB]
+            assert dc[0] == -3169195200.0 and dc[1] == 1696852800.0
+            # Solar System body barycenters (IDs 1-10) centers are the Solar System Barycenter (ID=0)
+            # All other bodies' centers (e.g. 301; Moon) are their systems barycenter (e.g. 3 Earth-Moon Barycenter)
+            assert (iBody // 100) == iCenter
+            # All de421.bsp ephemerides are in the J2000 frame (ID 1), use Type 2 SPK records,
+            # and start after the last record for the previous ephemeris
+            assert iFrame == 1 and iSPKtype == 2 and (lastIEndWord+1) == iStartWord
+            # Set up for next pa through loop
+            firstWord += ss
+            lastIEndWord = iEndWord
+        # There is only one summary record in de421.bsp
+        assert fward is 0
+    # Cleanup
+    spice.dafcls(handle)
+    spice.reset()
+    spice.kclear()
 
 
 def test_dafopr():
@@ -1031,7 +1102,62 @@ def test_dafps_dafrs():
 
 
 def test_dafrda():
-    assert 1
+    spice.reset()
+    spice.kclear()
+    # Open DAF
+    # N.B. The SPK used must use the LTL-IEEE double byte-ordering and format
+    # This should be de421.bsp from the test kernel set
+    handle = spice.dafopr(CoreKernels.spk)
+    # get ND, NI (N.B. for SPKs, ND=2 and NI=6),
+    # and first, last and free record numbers
+    nd, ni, ifname, fward, bward, free = rtnDafrfr = spice.dafrfr(handle)
+    assert nd == 2 and ni == 6
+    # Calculate Single Summary size
+    ss = nd + ((ni+1) >> 1) 
+    iRecno = fward
+    # Get first three words at summary record (DAF record iRecno)
+    # * drec(1) NEXT forward pointer to next summary record
+    # * drec(2) PREV backward pointer (not used here)
+    # * drec(3) NSUM Number of single summaries in this DAF record
+    fward, bward, nSS = drec = map(int, spice.dafgsr(handle, iRecno, 1, 3))
+    # There is only one summary record in de421.bsp
+    assert iRecno == 4 and fward is 0 and bward is 0 and nSS == 15
+    # Set index to first word of first summary
+    firstWord = 4
+    # Set DAF word before first segments first word (641 for de421.bsp)
+    lastIEndWord = 640
+    # Loop over single summaries
+    for iSS in range(int(nSS)):
+        # Get packed summary
+        drec = spice.dafgsr(handle, iRecno, firstWord, firstWord+ss-1)
+        # Unpack summary
+        dc, ic = spice.dafus(drec, nd, ni)
+        iBody, iCenter, iFrame, iSPKtype, iStartWord, iEndWord = ic
+        # SPK de421.bsp ephemerides run from [1899 JUL 29 00:00:00 TDB] to [2052 OCT 09 00:00:00 TDB]
+        assert dc[0] == -3169195200.0 and dc[1] == 1696852800.0
+        # Solar System body barycenters (IDs 1-10) centers are the Solar System Barycenter (ID=0)
+        # All other bodies' centers (e.g. 301; Moon) are their systems barycenter (e.g. 3 Earth-Moon Barycenter)
+        assert (iBody // 100) == iCenter
+        # All de421.bsp ephemeris segments are in the J2000 frame (ID 1),
+        # are Type 2 SPK segments, and start immediately after the last
+        # word (lastIEndWord) for the previous segment
+        assert iFrame == 1 and iSPKtype == 2 and (lastIEndWord+1) == iStartWord
+        # Get the four-word directory at the end of the segment
+        segmentInit, segmentIntlen, segmentRsize, segmentN = segmentLast4 = spice.dafrda(handle, ic[5]-3, ic[5])
+        # Check segment word count (1+END-BEGIN) against directory word content
+        # Type 2 SPK segment word count:
+        # - A count of [segmentN] Chebyshev polynomial records @ RSIZE words per Cheby. poly. record
+        # - A four-word directory at the end of the segment
+        # So ((RSIZE * N) + 4) == (1 + END - BEGIN)
+        # - cf. https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/spk.html#Type%202:%20Chebyshev%20%28position%20only%29
+        assert (3 + (segmentRsize * segmentN)) == (ic[5] - ic[4])
+        # Setup for next segment:  advance BEGIN word of next single summary
+        firstWord += ss
+        lastIEndWord = iEndWord
+    # Cleanup
+    spice.dafcls(handle)
+    spice.reset()
+    spice.kclear()
 
 
 def test_dafrfr():
@@ -1194,6 +1320,7 @@ def test_diags2():
 
 
 def test_diff():
+    # SPICEINT_CELL
     testCellOne = spice.stypes.SPICEINT_CELL(8)
     testCellTwo = spice.stypes.SPICEINT_CELL(8)
     spice.insrti(1, testCellOne)
@@ -1204,6 +1331,39 @@ def test_diff():
     spice.insrti(4, testCellTwo)
     outCell = spice.diff(testCellOne, testCellTwo)
     assert [x for x in outCell] == [1]
+    outCell = spice.diff(testCellTwo, testCellOne)
+    assert [x for x in outCell] == [4]
+    # SPICECHAR_CELL
+    testCellOne = spice.stypes.SPICECHAR_CELL(8, 8)
+    testCellTwo = spice.stypes.SPICECHAR_CELL(8, 8)
+    spice.insrtc('1', testCellOne)
+    spice.insrtc('2', testCellOne)
+    spice.insrtc('3', testCellOne)
+    spice.insrtc('2', testCellTwo)
+    spice.insrtc('3', testCellTwo)
+    spice.insrtc('4', testCellTwo)
+    outCell = spice.diff(testCellOne, testCellTwo)
+    assert [x for x in outCell] == ['1']
+    outCell = spice.diff(testCellTwo, testCellOne)
+    assert [x for x in outCell] == ['4']
+    # SPICEDOUBLE_CELL
+    testCellOne = spice.stypes.SPICEDOUBLE_CELL(8)
+    testCellTwo = spice.stypes.SPICEDOUBLE_CELL(8)
+    spice.insrtd(1.0, testCellOne)
+    spice.insrtd(2.0, testCellOne)
+    spice.insrtd(3.0, testCellOne)
+    spice.insrtd(2.0, testCellTwo)
+    spice.insrtd(3.0, testCellTwo)
+    spice.insrtd(4.0, testCellTwo)
+    outCell = spice.diff(testCellOne, testCellTwo)
+    assert [x for x in outCell] == [1.0]
+    outCell = spice.diff(testCellTwo, testCellOne)
+    assert [x for x in outCell] == [4.0]
+    # SPICEBOOLEAN_CELL; dtype=4
+    testCellOne = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'], size=9, length=0, card=0, isSet=False)
+    testCellTwo = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'], size=9, length=0, card=0, isSet=False)
+    with pytest.raises(NotImplementedError):
+        spice.diff(testCellOne, testCellTwo)
 
 
 def test_dlabfs():
@@ -1532,7 +1692,7 @@ def test_dskw02_dskrb2_dskmi2():
     spice.dskw02(handle, center, surfid, dclass, frame, corsys, corpar,
                  mncor1, mxcor1, mncor2, mxcor2, mncor3, mxcor3, first,
                  last, vrtces, plates, spaixd, spaixi)
-    # cose the dsk file
+    # Close the dsk file
     spice.dskcls(handle, optmiz=True)
     # cleanup
     if spice.exists(dskpath):
@@ -1838,21 +1998,158 @@ def test_ekaced():
     assert not spice.exists(ekpath)
 
 
-def test_ekacei():
+def test_ekmany():
     spice.kclear()
-    ekpath = os.path.join(cwd, "example_ekacei.ek")
+    ekpath = os.path.join(cwd, "example_ekmany.ek")
+    tablename = "test_table_ekmany"
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
+    # Create new EK and new segment with table
     handle = spice.ekopn(ekpath, ekpath, 0)
-    segno = spice.ekbseg(handle, "test_table_ekacei", 1, 10, ["c1"], 200,
-                         ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
-    recno = spice.ekappr(handle, segno)
-    spice.ekacei(handle, segno, recno, "c1", 2, [1, 2], False)
+    segno = spice.ekbseg(handle, tablename, 3, 10, "c1 d1 i1".split(), 200,
+                         ["DATATYPE = CHARACTER*(10),   NULLS_OK = FALSE, SIZE = VARIABLE",
+                          "DATATYPE = DOUBLE PRECISION, NULLS_OK = FALSE, SIZE = VARIABLE",
+                          "DATATYPE = INTEGER,          NULLS_OK = FALSE, SIZE = VARIABLE"]
+                        )
+    # Use EKINSR to insert two records at recno 0, one at recno 2
+    # - First inserted record will become final record 1
+    for insertrecno, finalrecno in ((0, 1), (0, 0), (2, 2)):
+        assert None is spice.ekinsr(handle, segno, insertrecno)
+        assert not spice.failed()
+        # Insert records:  1, 2, and 3 entries at rows 0, 1, 2, respectively
+        # - Integer values are final record number + 100
+        iBaseVals = [100+finalrecno]*(finalrecno+1)
+        # List-ify map to ensure listToCharArrayPtr sees list, not map object
+        spice.ekacec(handle, segno, insertrecno, "c1", finalrecno+1, 11, list(map(str, iBaseVals)),   False)
+        spice.ekaced(handle, segno, insertrecno, "d1", finalrecno+1,     list(map(float, iBaseVals)), False)
+        spice.ekacei(handle, segno, insertrecno, "i1", finalrecno+1,     iBaseVals,                   False)
+        assert not spice.failed()
+    # Try record insertion beyond the next available, verify the exception
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.ekinsr(handle, segno, 4)
+    # Close EK, then reopen for reading
     spice.ekcls(handle)
     spice.kclear()
+    handle = spice.eklef(ekpath)
+    assert handle is not None
+    # Test query using ekpsel
+    query = "SELECT c1, d1, i1 from %s" % (tablename,)
+    n, xbegs, xends, xtypes, xclass, tabs, cols, err, errmsg = spice.ekpsel(query, 99, 99, 99)
+    assert 3 == n
+    assert dict(spice.stypes.SpiceEKDataType._fields_)['SPICE_CHR'].value == xtypes[0]
+    assert dict(spice.stypes.SpiceEKDataType._fields_)['SPICE_DP'].value == xtypes[1]
+    assert dict(spice.stypes.SpiceEKDataType._fields_)['SPICE_INT'].value == xtypes[2]
+    assert ([dict(spice.stypes.SpiceEKExprClass._fields_)['SPICE_EK_EXP_COL'].value]*3) == list(xclass)
+    assert (["TEST_TABLE_EKMANY"]*3) == tabs
+    assert "C1 D1 I1".split() == cols
+    assert not err
+    assert "" == errmsg
+    # Run query to retrieve the row count
+    nmrows, error, errmsg = spice.ekfind(query, 99)
+    assert nmrows == 3
+    assert not error
+    assert '' == errmsg
+    # Validate the content of each field, including exceptions when
+    saveCData = []
+    saveDData = []
+    saveIData = []
+    # Loop over rows, test .ekgc/.ekgd/.ekgi
+    for recno in range(nmrows+1):
+        # Confirm number of elements in each row
+        if recno == nmrows:
+            with pytest.raises(spice.stypes.SpiceyError):
+                spice.eknelt(0, recno)
+        else:
+            assert (recno+1) == spice.eknelt(0, recno)
+        # Confirm the elements' values
+        saveCData.append([])
+        saveDData.append([])
+        saveIData.append([])
+        for iElement in range(recno+2):
+            if iElement > recno or recno == nmrows:
+                with pytest.raises(spice.stypes.SpiceyError):
+                    spice.ekgc(0, recno, iElement, lenout=11)
+                if spice.failed(): spice.reset()
+                with pytest.raises(spice.stypes.SpiceyError):
+                    spice.ekgd(1, recno, iElement)
+                if spice.failed(): spice.reset()
+                with pytest.raises(spice.stypes.SpiceyError):
+                    spice.ekgi(2, recno, iElement)
+                if spice.failed(): spice.reset()
+            else:
+                cData, iNull = spice.ekgc(0, recno, iElement, lenout=11)
+                assert cData == str(100+recno)
+                assert iNull == False
+                saveCData[-1].append(cData)
+                dData, iNull = spice.ekgd(1, recno, iElement)
+                assert dData == (100.+recno)
+                assert iNull == False
+                saveDData[-1].append(dData)
+                iData, iNull = spice.ekgi(2, recno, iElement)
+                assert iData == (100+recno)
+                assert iNull == False
+                saveIData[-1].append(iData)
+    # Loop over rows, test .ekrcec/.ekrced/.ekrcei
+    for recno in range(nmrows+1):
+        if recno == nmrows:
+            #with pytest.raises(spice.stypes.SpiceyError):
+            #    spice.ekrcec(handle, segno, recno, "c1", 20, nelts=2222)
+            #if spice.failed(): spice.reset()
+            with pytest.raises(spice.stypes.SpiceyError):
+                spice.ekrced(handle, segno, recno, "d1")
+            if spice.failed(): spice.reset()
+            with pytest.raises(spice.stypes.SpiceyError):
+                spice.ekrcei(handle, segno, recno, "i1")
+            if spice.failed(): spice.reset()
+        else:
+            nvals, altCData, isNull = spice.ekrcec(handle, segno, recno, "c1", 11, nelts=len(saveCData[recno]))
+            assert (recno+1) == nvals
+            assert list(altCData) == saveCData[recno]
+            nvals, altDData, isNull = spice.ekrced(handle, segno, recno, "d1", nelts=len(saveDData[recno]))
+            assert (recno+1) == nvals
+            assert list(altDData) == saveDData[recno]
+            nvals, altIData, isNull = spice.ekrcei(handle, segno, recno, "i1", nelts=len(saveIData[recno]))
+            assert (recno+1) == nvals
+            assert list(altIData) == saveIData[recno]
+    # Close file, re-open for writing
+    spice.ekuef(handle)
+    handle = spice.ekopw(ekpath)
+    # Loop over rows, update values using .ekucec/.ekuced/.ekucei
+    for recno in range(nmrows+1):
+        iBaseVals = [200+recno]*(recno+1)
+        if recno == nmrows:
+            #with pytest.raises(spice.stypes.SpiceyError):
+            #    spice.ekucec(handle, segno, recno, "c1", recno+1, 11, list(map(str, iBaseVals)), False)
+            #if spice.failed(): spice.reset()
+            with pytest.raises(spice.stypes.SpiceyError):
+                spice.ekuced(handle, segno, recno, "d1", recno+1, list(map(float, iBaseVals)), False)
+            if spice.failed(): spice.reset()
+            with pytest.raises(spice.stypes.SpiceyError):
+                spice.ekucei(handle, segno, recno, "i1", recno+1, iBaseVals, False)
+            if spice.failed(): spice.reset()
+        else:
+            # List-ify map to ensure listToCharArrayPtr sees list, not map object
+            spice.ekucec(handle, segno, recno, "c1", recno+1, 11, list(map(str, iBaseVals)), False)
+            spice.ekuced(handle, segno, recno, "d1", recno+1, list(map(float, iBaseVals)), False)
+            spice.ekucei(handle, segno, recno, "i1", recno+1, iBaseVals, False)
+            assert not spice.failed()
+    # Loop over rows, use .ekrcec/.ekrced/.ekrcei to test updates
+    for recno in range(nmrows):
+        iBaseVals = [200+recno]*(recno+1)
+        nvals, altCData, isNull = spice.ekrcec(handle, segno, recno, "c1", 11, nelts=len(saveCData[recno]))
+        assert (recno+1) == nvals
+        assert list(altCData) == list(map(str, iBaseVals))
+        nvals, altDData, isNull = spice.ekrced(handle, segno, recno, "d1", nelts=len(saveDData[recno]))
+        assert (recno+1) == nvals
+        assert list(altDData) == iBaseVals
+        nvals, altIData, isNull = spice.ekrcei(handle, segno, recno, "i1", nelts=len(saveIData[recno]))
+        assert (recno+1) == nvals
+        assert list(altIData) == list(map(float, iBaseVals))
+    # Cleanup
+    spice.ekcls(handle)
+    assert not spice.failed()
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
-    assert not spice.exists(ekpath)
 
 
 def test_ekaclc():
@@ -1879,7 +2176,7 @@ def test_ekacld():
         os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno, rcptrs = spice.ekifld(handle, "test_table_ekacld", 1, 2, 200, ["c1"], 200,
-                                 ["DATATYPE = DOUBLE PRECISION, NULLS_OK = TRUE"])
+                                 ["DATATYPE = DOUBLE PRECISION, NULLS_OK = FALSE"])
     spice.ekacld(handle, segno, "c1", [1.0, 2.0], [1, 1], [False, False], rcptrs, [0, 0])
     spice.ekffld(handle, segno, rcptrs)
     spice.ekcls(handle)
@@ -2152,7 +2449,7 @@ def test_ekgi():
         os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
     segno, rcptrs = spice.ekifld(handle, "test_table_ekgi", 1, 2, 200, ["c1"], 200,
-                                 ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
+                                 ["DATATYPE = INTEGER, NULLS_OK = FALSE"])
     spice.ekacli(handle, segno, "c1", [1, 2], [1, 1], [False, False], rcptrs, [0, 0])
     spice.ekffld(handle, segno, rcptrs)
     spice.ekcls(handle)
@@ -2190,10 +2487,6 @@ def test_ekifld():
     assert not spice.exists(ekpath)
 
 
-def test_ekinsr():
-    assert 1
-
-
 def test_eklef():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_eklef.ek")
@@ -2211,10 +2504,6 @@ def test_eklef():
     spice.ekuef(handle)
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
-
-
-def test_eknelt():
-    assert 1
 
 
 def test_eknseg():
@@ -2293,37 +2582,6 @@ def test_ekopw():
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
     spice.kclear()
-
-
-def test_ekpsel():
-    assert 1
-
-
-def test_ekrcec():
-    assert 1
-
-
-def test_ekrced():
-    assert 1
-
-
-def test_ekrcei():
-    assert 1
-    # spice.kclear()
-    # ekpath = os.path.join(cwd, "example_ekrcei.ek")
-    # if spice.exists(ekpath):
-    # os.remove(ekpath) # pragma: no cover
-    # handle = spice.ekopn(ekpath, ekpath, 0)
-    # segno, rcptrs = spice.ekifld(handle, "test_table_ekrcei", 1, 2, 200, ["c1"], 200,
-    #                              ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
-    # spice.ekacli(handle, segno, "c1", [1, 2], [1, 1], [False, False], rcptrs, [0, 0])
-    # spice.ekffld(handle, segno, rcptrs)
-    # nvals, ivals, isnull = spice.ekrcei(handle, 0, 0, "C1")
-    # spice.ekcls(handle)
-    # spice.kclear()
-    # if spice.exists(ekpath):
-    #     os.remove(ekpath) # pragma: no cover
-    # assert not spice.exists(ekpath)
 
 
 def test_ekssum():
@@ -2555,6 +2813,10 @@ def test_etcal():
     et = np.arange(0, 20)
     cal = spice.etcal(et[0])
     assert cal == '2000 JAN 01 12:00:00.000'
+    calArr = spice.etcal(et)
+    assert calArr[0] == cal
+    assert calArr[1] == '2000 JAN 01 12:00:01.000'
+    assert calArr[-1] == '2000 JAN 01 12:00:19.000'
 
 
 def test_eul2m():
@@ -2652,7 +2914,28 @@ def test_frmnam():
 
 
 def test_ftncls():
-    assert 1
+    import datetime
+    spice.reset()
+    spice.kclear()
+    # Create temporary filename
+    FTNCLS=os.path.join(cwd, 'ex_ftncls.txt')
+    # Ensure file does not exist
+    if spice.exists(FTNCLS):
+        os.remove(FTNCLS)  # pragma no cover
+    # Open new file using FORTRAN SPICE TXTOPN
+    unit = spice.txtopn(FTNCLS)
+    # Get the FORTRAN logical unit of the open file using FORTRAN SPICE FN2LEN
+    assert unit == spice.fn2lun(FTNCLS)
+    assert not spice.failed()
+    # Close the FORTRAN logical unit using ftncls, the subject of this test
+    spice.ftncls(unit)
+    with pytest.raises(spice.stypes.SpiceyError):
+        closed_unit = spice.fn2lun(FTNCLS)
+    # Cleanup
+    spice.reset()
+    spice.kclear()
+    if spice.exists(FTNCLS):
+        os.remove(FTNCLS)  # pragma no cover
 
 
 def test_furnsh():
@@ -2839,7 +3122,9 @@ def test_gfilum():
 
 
 def test_gfinth():
-    assert 1
+    spice.gfinth(2)
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.gfinth(0)
 
 
 def test_gfocce():
@@ -2952,15 +3237,47 @@ def test_gfrefn():
             assert t == pytest.approx(-scale)
 
 def test_gfrepf():
-    assert 1
+    # Minimal test; gfrepf does nothing PyTest can notice
+    spice.gfrepf()
+    # Pass bad argument list
+    with pytest.raises(TypeError):
+        spice.gfrepf(0)
 
 
 def test_gfrepi():
-    assert 1
+    window = spice.stypes.SPICEDOUBLE_CELL(4)
+    spice.wninsd(0., 100., window)
+    spice.gfrepi(window, 'x', 'y')
+    # BEGMSS or ENDMSS empty, too long, or containing non-printing characters
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.gfrepi(window, '', 'y')
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.gfrepi(window, 'x', '')
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.gfrepi(window, 'x'*1000, 'y')
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.gfrepi(window, 'x', 'y'*1000)
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.gfrepi(window, 'y\n', 'y')
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.gfrepi(window, 'x', 'y\n')
+    spice.gfrepf()
 
 
 def test_gfrepu():
-    assert 1
+    window = spice.stypes.SPICEDOUBLE_CELL(4)
+    spice.wninsd(0., 100., window)
+    spice.gfrepi(window, 'x', 'y')
+    spice.gfrepu(0., 100., 50.)
+    spice.gfrepu(0., 100., 100.)
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.gfrepu(100., 0., 100.)
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.gfrepu(0., 100., -1.)
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.gfrepu(0., 100., 1011.)
+    spice.gfrepu(0., 100., 100.)
+    spice.gfrepf()
 
 
 def test_gfrfov():
@@ -3322,6 +3639,9 @@ def test_hx2dp():
     assert spice.hx2dp('1^1') == 1.0
     assert spice.hx2dp('7F5EB^5') == 521707.0
     assert spice.hx2dp('+1B^+2') == 27.0
+    # Bad value
+    badReturn = "ERROR: Illegal character 'Z' encountered."
+    assert spice.hx2dp('1Z^+2')[:len(badReturn)] == badReturn
 
 
 def test_ident():
@@ -3534,6 +3854,29 @@ def test_inter():
     spice.insrti(3, testCellTwo)
     outCell = spice.inter(testCellOne, testCellTwo)
     assert [x for x in outCell] == [1]
+    # SPICECHAR_CELL
+    testCellOne = spice.stypes.SPICECHAR_CELL(8, 8)
+    testCellTwo = spice.stypes.SPICECHAR_CELL(8, 8)
+    spice.insrtc('1', testCellOne)
+    spice.insrtc('2', testCellOne)
+    spice.insrtc('1', testCellTwo)
+    spice.insrtc('3', testCellTwo)
+    outCell = spice.inter(testCellOne, testCellTwo)
+    assert [x for x in outCell] == ['1']
+    # SPICEDOUBLE_CELL
+    testCellOne = spice.stypes.SPICEDOUBLE_CELL(8)
+    testCellTwo = spice.stypes.SPICEDOUBLE_CELL(8)
+    spice.insrtd(1.0, testCellOne)
+    spice.insrtd(2.0, testCellOne)
+    spice.insrtd(1.0, testCellTwo)
+    spice.insrtd(3.0, testCellTwo)
+    outCell = spice.inter(testCellOne, testCellTwo)
+    assert [x for x in outCell] == [1.0]
+    # SPICEBOOLEAN_CELL; dtype=4
+    testCellOne = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'], size=9, length=0, card=0, isSet=False)
+    testCellTwo = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'], size=9, length=0, card=0, isSet=False)
+    with pytest.raises(NotImplementedError):
+        spice.inter(testCellOne, testCellTwo)
 
 
 def test_intmax():
@@ -3656,18 +3999,16 @@ def test_ktotal():
 
 
 def test_kxtrct():
-    assert 1
-    # Unstable, not sure why but I am getting segfaults
-    # instring = "FROM 1 October 1984 12:00:00 TO 1 January 1987"
-    # outstring, found, substr = spice.kxtrct("TO", 13, ["FROM", "TO", "BEGINNING", "ENDING"], 5, 120, 120, instring)
-    # assert found
-    # assert outstring == 'FROM 1 October 1984 12:00:00'
-    # assert substr == '1 January 1987'
-
-
-# def test_kxtrctstress():
-# for i in range(500):
-#         test_kxtrct()
+    # Tests from examples at this URL:  https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/kxtrct_c.html#Examples
+    i = 0
+    while i < 500:
+        i += 1
+        assert (' TO 1 January 1987', '1 October 1984 12:00:00')  == spice.kxtrct('FROM', 'from to beginning ending'.upper().split(), 4, 'FROM 1 October 1984 12:00:00 TO 1 January 1987')
+        assert ('FROM 1 October 1984 12:00:00', '1 January 1987') == spice.kxtrct('TO', 'from to beginning ending'.upper().split(), 4, 'FROM 1 October 1984 12:00:00 TO 1 January 1987')
+        assert (' PHONE: 354-4321', '4800 OAK GROVE DRIVE')  == spice.kxtrct('ADDRESS:', 'address: phone: name:'.upper().split(), 3, 'ADDRESS: 4800 OAK GROVE DRIVE PHONE: 354-4321 ')
+        assert ('ADDRESS: 4800 OAK GROVE DRIVE', '354-4321') == spice.kxtrct('PHONE:', 'address: phone: name:'.upper().split(), 3, 'ADDRESS: 4800 OAK GROVE DRIVE PHONE: 354-4321 ')
+        with pytest.raises(spice.stypes.SpiceyError):
+            spice.kxtrct('NAME:', 'address: phone: name:'.upper().split(), 3, 'ADDRESS: 4800 OAK GROVE DRIVE PHONE: 354-4321 ')
 
 
 def test_lastnb():
@@ -3840,7 +4181,12 @@ def test_lparse():
 
 def test_lparsm():
     stringtest = "  A number of words   separated   by spaces   "
-    items = spice.lparsm(stringtest, " ", 20, lenout=20)
+    # Test with nmax (20) not equal to lenout (23), to ensure that
+    # their purposes have not been switched within spice.lparsm()
+    items = spice.lparsm(stringtest, " ", 20, lenout=23)
+    assert items == ['A', 'number', 'of', 'words', 'separated', 'by', 'spaces']
+    # Test without lenout
+    items = spice.lparsm(stringtest, " ", len(stringtest)+10)
     assert items == ['A', 'number', 'of', 'words', 'separated', 'by', 'spaces']
 
 
@@ -4290,6 +4636,9 @@ def test_orderc():
     expectedOrder = [0, 2, 1]
     order = spice.orderc(inarray)
     npt.assert_array_almost_equal(expectedOrder, order)
+    # Using ndim
+    order = spice.orderc(inarray, ndim=len(inarray))
+    npt.assert_array_almost_equal(expectedOrder, order)
 
 
 def test_orderd():
@@ -4297,12 +4646,18 @@ def test_orderd():
     expectedOrder = [0, 2, 1]
     order = spice.orderd(inarray)
     npt.assert_array_almost_equal(expectedOrder, order)
+    # Using ndim
+    order = spice.orderd(inarray, ndim=len(inarray))
+    npt.assert_array_almost_equal(expectedOrder, order)
 
 
 def test_orderi():
     inarray = [0, 2, 1]
     expectedOrder = [0, 2, 1]
     order = spice.orderi(inarray)
+    npt.assert_array_almost_equal(expectedOrder, order)
+    # Using ndim
+    order = spice.orderi(inarray, ndim=len(inarray))
     npt.assert_array_almost_equal(expectedOrder, order)
 
 
@@ -4748,13 +5103,68 @@ def test_raxisa():
 
 
 def test_rdtext():
-    assert 1
-    # This technically works, but there is no way to reset the read position between runs that I could find.
-    # spice.kclear()
-    # line, eof = spice.rdtext(CoreKernels.testMetaKernel, 100)
-    # assert not eof
-    # assert line == '\\begindata'
-    # spice.kclear()
+    import datetime
+    # Create ISO UTC datetime string using current time
+    utcnow = datetime.datetime.utcnow().isoformat()
+    spice.reset()
+    spice.kclear()
+    # Create temporary filenames
+    RDTEXT=os.path.join(cwd, 'ex_rdtext.txt')
+    xRDTEXT=os.path.join(cwd, 'xex_rdtext.txt')
+    # Ensure files do not exist
+    if spice.exists(RDTEXT):
+        os.remove(RDTEXT)  # pragma no cover
+    if spice.exists(xRDTEXT):
+        os.remove(xRDTEXT)  # pragma no cover
+    # Open new file using FORTRAN SPICE TXTOPN
+    unit = spice.txtopn(RDTEXT)
+    xunit = spice.txtopn(xRDTEXT)
+    # Build base lines
+    writln_lines = ['%s writln_ to x.txt %s' % (c, utcnow) for c in '12']
+    xwritln_lines = ['x%s' % (writln_line,) for writln_line in writln_lines]
+    # Write lines to the files using FORTRAN SPICE WRITLN
+    for writln_line in writln_lines:
+        xwritln_line = 'x%s' % (writln_line,)
+        spice.writln(writln_line, unit)
+        spice.writln(xwritln_line, xunit)
+    # Close the FORTRAN logical units using ftncls
+    spice.ftncls(unit)
+    spice.ftncls(xunit)
+    # Ensure the FORTRAN logical units can no longer be retrieved ...
+    # ... first file, RDTEXT
+    with pytest.raises(spice.stypes.SpiceyError):
+        closed_unit = spice.fn2lun(RDTEXT)
+    spice.reset()
+    # ... second file, xRDTEXT
+    with pytest.raises(spice.stypes.SpiceyError):
+        xclosed_unit = spice.fn2lun(xRDTEXT)
+    spice.reset()
+    # Wrapper function to call spice.rdtext and assert expected result
+    def rdtext_helper(filename, expected_line, expected_done):
+        read_line, done = spice.rdtext(filename, 99)
+        assert (read_line == expected_line) and (done is expected_done)
+    #
+    rdtext_helper(RDTEXT, writln_lines[0], False)  # Read first line from RDTEXT
+    rdtext_helper(RDTEXT, writln_lines[1], False)  # Read second line from RDTEXT
+    rdtext_helper(RDTEXT,              '', True)   # Read another time from RDTEXT to confirm done will be set to True at end of file
+    rdtext_helper(RDTEXT, writln_lines[0], False)  # Read another time from RDTEXT to confirm file will be re-opened
+    spice.cltext(RDTEXT)  # Close text file.
+    # Read two files in interleaved (1, 2, 2, 1) sequence to verify that can be done
+    rdtext_helper( RDTEXT,  writln_lines[0], False)  # Read first  line from RDTEXT
+    rdtext_helper(xRDTEXT, xwritln_lines[0], False)  # Read first  line from xRDTEXT
+    rdtext_helper(xRDTEXT, xwritln_lines[1], False)  # Read second line from xRDTEXT
+    rdtext_helper( RDTEXT,  writln_lines[1], False)  # Read second line from RDTEXT
+    # Check end-of-file cases
+    rdtext_helper( RDTEXT, '', True)
+    rdtext_helper(xRDTEXT, '', True)
+    # Cleanup
+    spice.reset()
+    spice.kclear()
+    if spice.exists(RDTEXT):
+        os.remove(RDTEXT)  # pragma no cover
+    assert not spice.failed()
+    if spice.exists(xRDTEXT):
+        os.remove(xRDTEXT)  # pragma no cover
 
 
 def test_reccyl():
@@ -5098,14 +5508,44 @@ def test_sctiks():
 
 
 def test_sdiff():
+    # SPICEINT_CELL
     a = spice.stypes.SPICEINT_CELL(8)
     b = spice.stypes.SPICEINT_CELL(8)
     spice.insrti(1, a)
     spice.insrti(2, a)
+    spice.insrti(5, a)
     spice.insrti(3, b)
     spice.insrti(4, b)
+    spice.insrti(5, b)
     c = spice.sdiff(a, b)
     assert [x for x in c] == [1, 2, 3, 4]
+    # SPICECHAR_CELL
+    a = spice.stypes.SPICECHAR_CELL(8, 8)
+    b = spice.stypes.SPICECHAR_CELL(8, 8)
+    spice.insrtc('1', a)
+    spice.insrtc('2', a)
+    spice.insrtc('5', a)
+    spice.insrtc('3', b)
+    spice.insrtc('4', b)
+    spice.insrtc('5', b)
+    c = spice.sdiff(a, b)
+    assert [x for x in c] == ['1', '2', '3', '4']
+    # SPICEDOUBLE_CELL
+    a = spice.stypes.SPICEDOUBLE_CELL(8)
+    b = spice.stypes.SPICEDOUBLE_CELL(8)
+    spice.insrtd(1., a)
+    spice.insrtd(2., a)
+    spice.insrtd(5., a)
+    spice.insrtd(3., b)
+    spice.insrtd(4., b)
+    spice.insrtd(5., b)
+    c = spice.sdiff(a, b)
+    assert [x for x in c] == [1., 2., 3., 4.]
+    # SPICEBOOLEAN_CELL
+    testCellOne = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'], size=9, length=0, card=0, isSet=False)
+    testCellTwo = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'], size=9, length=0, card=0, isSet=False)
+    with pytest.raises(NotImplementedError):
+        spice.sdiff(testCellOne, testCellTwo)
 
 
 def test_set_c():
@@ -6276,6 +6716,15 @@ def test_srfxpt():
     expected_obspos = [-2088.42506636, -718.58930162, -3034.7654842 ]
     npt.assert_array_almost_equal(spoint, expected_spoint)
     npt.assert_array_almost_equal(obspos, expected_obspos)
+    # Iterable ET argument:  et-10, et, et+10
+    ets = [et - 10.0, et, et + 10.0]
+    sdtoArr = spice.srfxpt("Ellipsoid", 'Mars', ets, "LT+S", "MGS", frame, bsight)
+    assert (3, 4) == sdtoArr.shape
+    assert 0. == spice.vnorm(spice.vsub(sdtoArr[1, 0], spoint))
+    assert 0. == sdtoArr[1, 1] - dist
+    assert 0. == sdtoArr[1, 2] - trgepc
+    assert 0. == spice.vnorm(spice.vsub(sdtoArr[1, 3], obspos))
+    # Cleanup
     spice.kclear()
 
 
@@ -6386,6 +6835,12 @@ def test_subpt():
     sep = spice.vsep(point1, point2) * spice.dpr()
     npt.assert_almost_equal(dist, 16.705476097706171)
     npt.assert_almost_equal(sep, 0.15016657506598063)
+    # Iterable ET argument to spice.subpt()
+    point1Alt1Arr = spice.subpt("near point", "earth", [et-20., et, et+20.], "lt+s", "moon")
+    assert (3, 2) == point1Alt1Arr.shape
+    assert 0. == spice.vnorm(spice.vsub(point1Alt1Arr[1, 0], point1))
+    assert 0. == (point1Alt1Arr[1, 1] - alt1)
+    # Cleanup
     spice.kclear()
 
 
@@ -6421,7 +6876,6 @@ def test_subslr():
         npt.assert_almost_equal(supcln * spice.dpr(), expected[7], decimal=5)
         npt.assert_almost_equal(supclt * spice.dpr(), expected[8], decimal=5)
     spice.kclear()
-    assert 1
 
 
 def test_subsol():
@@ -6544,8 +6998,24 @@ def test_termpt():
 
 
 def test_timdef():
+    spice.kclear()
+    LSK = os.path.join(cwd, CoreKernels.currentLSK)
+    spice.furnsh(LSK)
+    # Calendar - default is Gregorian
     value = spice.timdef('GET', 'CALENDAR', 10)
     assert value == 'GREGORIAN' or 'JULIAN' or 'MIXED'
+    # System - ensure it changes the str2et results
+    assert 'UTC' == spice.timdef('GET', 'SYSTEM', 10)
+    # Approximately 64.184
+    saveET = spice.str2et('2000-01-01T12:00:00')
+    # Change to TDB system
+    assert 'TDB' == spice.timdef('SET', 'SYSTEM', 10, 'TDB')
+    assert 0.0 == spice.str2et('2000-01-01T12:00:00')
+    # Change back to UTC system
+    assert 'UTC' == spice.timdef('SET', 'SYSTEM', 10, 'UTC')
+    assert saveET == spice.str2et('2000-01-01T12:00:00')
+    # Cleanup
+    spice.kclear()
 
 
 def test_timout():
@@ -6650,14 +7120,58 @@ def test_trcnam():
     spice.reset()
 
 
-def test_trcoff():
-    assert 1
+# test_trcoff() cannot be done anywhere but last
+def teardown_test_trcoff():
+    spice.reset()
+    spice.kclear()
+    # Initialize stack trace with two values, and test
+    spice.chkin('A')
+    spice.chkin('B')
+    assert 2 == spice.trcdep()
+    assert 'B' == spice.trcnam(1)
+    assert 'A' == spice.trcnam(0)
+    # Turn off tracing and test
+    spice.trcoff()
+    assert 0 == spice.trcdep()
+    assert '' == spice.qcktrc(2)
+    # Ensure subsequent checkins are also ignored
+    spice.chkin('C')
+    assert 0 == spice.trcdep()
+    # Cleanup
+    spice.reset()
+    spice.kclear()
 
 
 def test_tsetyr():
-    spice.tsetyr(1969)
-    spice.tsetyr(2100)
-    spice.tsetyr(1969)
+    spice.reset()
+    # Expand 2-digit year to full year, typically 4-digit
+    tmp_getyr4 = lambda iy2: int(spice.etcal(spice.tparse('3/3/%02d' % (iy2,), 22)[0]).split()[0])
+    # Find current lower bound on the 100 year interval of expansion,
+    # so it can be restored on exit
+    tsetyr_lowerbound = tmp_getyr4(0)
+    for iy2_test in range(100):
+      tmp_lowerbound =  tmp_getyr4(iy2_test)
+      if tmp_lowerbound < tsetyr_lowerbound:
+         tsetyr_lowerbound = tmp_lowerbound
+         break
+    # Run first case with a year not ending in 00
+    tsetyr_y2 = tsetyr_lowerbound % 100
+    tsetyr_y4 = tsetyr_lowerbound + 200 + ((tsetyr_y2 == 0) and 50 or 0)
+    spice.tsetyr(tsetyr_y4)
+    assert tmp_getyr4(tsetyr_y4 % 100) == tsetyr_y4
+    assert tmp_getyr4((tsetyr_y4-1) % 100) == (tsetyr_y4+99)
+    # Run second case with a year ending in 00
+    tsetyr_y4 -= (tsetyr_y4 % 100)
+    spice.tsetyr(tsetyr_y4)
+    assert tmp_getyr4(tsetyr_y4 % 100) == tsetyr_y4
+    assert tmp_getyr4((tsetyr_y4-1) % 100) == (tsetyr_y4+99)
+    # Cleanup:  reset lowerbound to what it was when this routine started
+    tsetyr_y4 = tsetyr_lowerbound
+    spice.tsetyr(tsetyr_y4)
+    assert tmp_getyr4(tsetyr_y4 % 100) == tsetyr_y4
+    assert tmp_getyr4((tsetyr_y4-1) % 100) == (tsetyr_y4+99)
+    assert not spice.failed()
+    spice.reset()
 
 
 def test_twopi():
@@ -6726,14 +7240,44 @@ def test_udf():
 
 
 def test_union():
+    # SPICEINT_CELL
     testCellOne = spice.stypes.SPICEINT_CELL(8)
     testCellTwo = spice.stypes.SPICEINT_CELL(8)
     spice.insrti(1, testCellOne)
     spice.insrti(2, testCellOne)
+    spice.insrti(3, testCellOne)
+    spice.insrti(2, testCellTwo)
     spice.insrti(3, testCellTwo)
     spice.insrti(4, testCellTwo)
     outCell = spice.union(testCellOne, testCellTwo)
     assert [x for x in outCell] == [1, 2, 3, 4]
+    # SPICECHAR_CELL
+    testCellOne = spice.stypes.SPICECHAR_CELL(8, 8)
+    testCellTwo = spice.stypes.SPICECHAR_CELL(8, 8)
+    spice.insrtc('1', testCellOne)
+    spice.insrtc('2', testCellOne)
+    spice.insrtc('3', testCellOne)
+    spice.insrtc('2', testCellTwo)
+    spice.insrtc('3', testCellTwo)
+    spice.insrtc('4', testCellTwo)
+    outCell = spice.union(testCellOne, testCellTwo)
+    assert [x for x in outCell] == ['1', '2', '3', '4']
+    # SPICEDOUBLE_CELL
+    testCellOne = spice.stypes.SPICEDOUBLE_CELL(8)
+    testCellTwo = spice.stypes.SPICEDOUBLE_CELL(8)
+    spice.insrtd(1., testCellOne)
+    spice.insrtd(2., testCellOne)
+    spice.insrtd(3., testCellOne)
+    spice.insrtd(2., testCellTwo)
+    spice.insrtd(3., testCellTwo)
+    spice.insrtd(4., testCellTwo)
+    outCell = spice.union(testCellOne, testCellTwo)
+    assert [x for x in outCell] == [1., 2., 3., 4.]
+    # SPICEBOOLEAN_CELL
+    testCellOne = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'], size=9, length=0, card=0, isSet=False)
+    testCellTwo = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'], size=9, length=0, card=0, isSet=False)
+    with pytest.raises(NotImplementedError):
+        spice.union(testCellOne, testCellTwo)
 
 
 def test_unitim():
@@ -6750,9 +7294,23 @@ def test_unload():
     spice.furnsh(CoreKernels.testMetaKernel)
     # 4 kernels + the meta kernel = 5
     assert spice.ktotal("ALL") == 5
+    # Make list of FURNSHed non-meta-kernels
+    kernelList = []
+    for iKernel in range(spice.ktotal("ALL")):
+        filnam, filtyp, srcnam, handle = spice.kdata(iKernel, "ALL", 999, 999, 999)
+        if filtyp != "META": kernelList.append(filnam)
+    assert len(kernelList) > 0
+    # Unload all kernels
     spice.unload(CoreKernels.testMetaKernel)
     assert spice.ktotal("ALL") == 0
     spice.kclear()
+    # Test passing the [list of kernels] as an argument to spice.unload
+    spice.furnsh(kernelList)
+    assert spice.ktotal("ALL") == len(kernelList)
+    spice.unload(kernelList[1:])
+    assert spice.ktotal("ALL") == 1
+    spice.unload(kernelList[:1])
+    assert spice.ktotal("ALL") == 0
 
 
 def test_unload_emptystring():
@@ -7333,7 +7891,13 @@ def test_xposeg():
     npt.assert_array_almost_equal(spice.xposeg(np.array(m1), 3, 3), [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]])
 
 
+def teardown_tests():
+    # Tests that must be done last are put here and
+    # scheduled in teardown_module()
+    teardown_test_trcoff()
+
 def teardown_module(module):
+    teardown_tests()
     # if you are developing spiceypy, and don't want to delete kernels each time you run the tests, set
     # set the following environment variable "spiceypy_do_not_remove_kernels" to anything
     if not os.environ.get('spiceypy_do_not_remove_kernels'):
