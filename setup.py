@@ -151,7 +151,6 @@ def move_to_root_directory():
         target = os.path.join(cspice_dir, 'lib', sharedLib) \
                 if host_OS in ("Linux", "Darwin", "FreeBSD") else \
                 os.path.join(cspice_dir, 'src', 'cspice', sharedLib)
-        os.makedirs(destination)
         print("Attempting to move: {0}   to: {1}".format(target, destination))
         try:
             os.rename(target, destination)
