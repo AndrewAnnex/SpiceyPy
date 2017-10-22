@@ -15,6 +15,9 @@ requirements:
         - six
         - numpy
         - certifi
+        - cffi
+        - cryptography
+        - idna
         - pyOpenSSL
         - urllib3
     run:
