@@ -101,7 +101,7 @@ after_test:
   - set PATH=%CONDA%;%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
   # Update to a known good conda, found from https://github.com/numba/numba/blob/master/appveyor.yml
   - "conda install -q -y conda=4.3.14"
-  - "conda install -q -y -c anaconda pysocks"
+  - "pip install pysocks"
   - "conda install -q -y conda-build anaconda-client numpy wheel six pytest certifi pyopenssl urllib3"
   - "conda update -q -y pyopenssl"
   - "conda build appveyor -q --no-anaconda-upload"
