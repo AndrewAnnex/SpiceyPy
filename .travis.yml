@@ -36,8 +36,11 @@ before_install:
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then pyenv versions; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then python --version; fi
 - pip install -U pip
+- pip install -U wheel
+- pip wheel numpy
+- pip install --use-wheel numpy
 - pip install twine
-- pip install -r requirements.txt
+- pip install --use-wheel -r requirements.txt
 install:
 - python setup.py install
 script:
