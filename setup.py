@@ -77,7 +77,7 @@ def check_for_spice():
 
 
 def unpack_cspice():
-    if host_OS == "Linux" or host_OS == "Darwin":
+    if host_OS in ("Linux", "Darwin", "FreeBSD"):
         cspice_lib = os.path.join(lib_dir, ("cspice.lib" if host_OS is "Windows" else "cspice.a"))
         csupport_lib = os.path.join(lib_dir, ("csupport.lib" if host_OS is "Windows" else "csupport.a"))
 
@@ -87,7 +87,7 @@ def unpack_cspice():
                 os.chdir(lib_dir)
                 if host_OS is "Windows":
                     raise BaseException("Windows is not supported in this build method")
-                elif host_OS == "Linux" or host_OS == "Darwin":
+                elif host_OS in ("Linux", "Darwin", "FreeBSD"):
                     for lib in ["ar -x cspice.a", "ar -x csupport.a"]:
                         unpack_lib_process = subprocess.Popen(lib, shell=True)
                         process_status = os.waitpid(unpack_lib_process.pid, 0)[1]
@@ -107,7 +107,7 @@ def unpack_cspice():
 
 
 def build_library():
-    if host_OS == "Linux" or host_OS == "Darwin":
+    if host_OS in ("Linux", "Darwin", "FreeBSD"):
         currentDir = os.getcwd()
         try:
             os.chdir(lib_dir)
@@ -145,12 +145,13 @@ def build_library():
 
 
 def move_to_root_directory():
-    sharedLib = 'spice.so' if host_OS == "Linux" or host_OS == "Darwin" else 'cspice.dll'
+    sharedLib = 'spice.so' if host_OS in ("Linux", "Darwin", "FreeBSD") else 'cspice.dll'
     destination = os.path.join(root_dir, 'spiceypy', 'utils', sharedLib)
     if not os.path.isfile(destination):
         target = os.path.join(cspice_dir, 'lib', sharedLib) \
-                if host_OS == "Linux" or host_OS == "Darwin" else \
+                if host_OS in ("Linux", "Darwin", "FreeBSD") else \
                 os.path.join(cspice_dir, 'src', 'cspice', sharedLib)
+        os.makedirs(destination)
         print("Attempting to move: {0}   to: {1}".format(target, destination))
         try:
             os.rename(target, destination)
@@ -168,7 +169,7 @@ def cleanup():
 
 
 def mac_linux_method():
-    if host_OS == "Linux" or host_OS == "Darwin":
+    if host_OS in ("Linux", "Darwin", "FreeBSD"):
         # Next unpack cspice.a and csupport.a
         unpack_cspice()
         # Build the shared Library
@@ -197,7 +198,7 @@ try:
     check_for_spice()
 
     print("Host OS: {}".format(host_OS))
-    if host_OS == "Linux" or host_OS == "Darwin":
+    if host_OS in ("Linux", "Darwin", "FreeBSD"):
         mac_linux_method()
     elif host_OS == "Windows":
         windows_method()
@@ -230,6 +231,7 @@ try:
             "Programming Language :: Python :: 3.5",
             "Operating System :: MacOS :: MacOS X",
             "Operating System :: POSIX :: Linux",
+            "Operating System :: POSIX :: FreeBSD",
             "Operating System :: Microsoft :: Windows"
         ],
         packages=find_packages(exclude=["*.tests"]),
