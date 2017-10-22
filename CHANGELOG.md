@@ -5,16 +5,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
 ## [2.0.1] - UNRELEASED
+### Added
+- Completed wrapping of all needed new N66 functions
+
+### Fixed
+- added six and numpy to setup_requires setup.py kwargs
+
 ### Changed
+- changed naming of vectorToList to cVectorToPython
 - Updated getspice module to use urllib3 for OpenSSL library versions older
   than OpenSSL 1.0.1g.
 - getspice module provides now a class that handles the downloading and
   unpacking of N066 CSPICE distribution.
 - Updated setup to pack the CSPICE installation code into a class that
   extends the setuptools.command.install command.
-
-### Fixed
-- added six and numpy to setup_requires setup.py kwargs
 
 ## [2.0.0] - 2017-06-09
 ### Added

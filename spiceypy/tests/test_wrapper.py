@@ -45,7 +45,6 @@ cwd = os.path.realpath(os.path.dirname(__file__))
 def setup_module(module):
     downloadKernels()
 
-
 def test_appndc():
     testCell = spice.stypes.SPICECHAR_CELL(10, 10)
     spice.appndc("one", testCell)
@@ -738,7 +737,49 @@ def test_cylsph():
 
 
 def test_dafac():
-    assert 1
+    ### Create new DAF using CKOPN
+    spice.kclear()
+    dafpath = os.path.join(cwd, "ex_dafac.bc")
+    if spice.exists(dafpath):
+      os.remove(dafpath) # pragma: no cover
+    # Open CK to get new DAF because DAFONW (Create DAF) is not available to CSPICE/spiceypy
+    handle = spice.ckopn(dafpath, "TEST_ex_dafac", 140)
+    assert handle is not None
+    # Write some comments
+    cmnts = ['a', 'bc', 'def', 'ghij']
+    spice.dafac(handle, cmnts)
+    # Use DAFCLS because CKCLS requires segments to be written before closing
+    spice.dafcls(handle)
+    assert not spice.failed()
+    spice.kclear()
+    spice.reset()
+    # Ensure all those DAF comments now exist in the new DAF
+    handle = spice.dafopr(dafpath)
+    assert handle is not None
+    # Get up to 20 comments ...
+    nOut, cmntsOut, done = spice.dafec(handle, 20, 99)
+    # ...  nOut will have actual number of comments
+    assert nOut == 4
+    assert cmntsOut[:4] == cmnts
+    assert done
+    assert 0 == max([len(cmnt) for cmnt in cmntsOut[4:]])
+    spice.dafcls(handle)
+    assert not spice.failed()
+    spice.kclear()
+    spice.reset()
+    # Once more ...
+    handle = spice.dafopr(dafpath)
+    assert handle is not None
+    # ... to get fewer than the total number of comments
+    nOut, cmntsOut, done = spice.dafec(handle, 3, 99)
+    assert nOut == 3
+    assert not done 
+    spice.dafcls(handle)
+    assert not spice.failed()
+    spice.kclear()
+    spice.reset()
+    if spice.exists(dafpath):
+      os.remove(dafpath) # pragma: no cover
 
 
 def test_dafbbs():
@@ -783,7 +824,50 @@ def test_dafcs():
 
 
 def test_dafdc():
-    assert 1
+    spice.kclear()
+    dafpath = os.path.join(cwd, "ex_dafdc.bc")
+    if spice.exists(dafpath):
+      os.remove(dafpath) # pragma: no cover
+    # Open CK to get new DAF because DAFONW (Create DAF) is not available to CSPICE/spiceypy
+    handle = spice.ckopn(dafpath, "TEST_ex_dafdc", 140)
+    assert handle is not None
+    # Write some comments
+    cmnts = ['a', 'bc', 'def', 'ghij']
+    spice.dafac(handle, cmnts)
+    # Use DAFCLS because CKCLS requires segments to be written before closing
+    spice.dafcls(handle)
+    assert not spice.failed()
+    spice.kclear()
+    spice.reset()
+    # Open the DAF for reading
+    handle = spice.dafopr(dafpath)
+    assert handle is not None
+    nOut, cmntsOut, done = spice.dafec(handle,20,99)
+    # Confirm that the number of comments is greater than zero
+    assert nOut > 0
+    spice.dafcls(handle)
+    assert not spice.failed()
+    spice.kclear()
+    spice.reset()
+    # Delete the comments
+    handle = spice.dafopw(dafpath)
+    assert handle is not None
+    spice.dafdc(handle)
+    spice.dafcls(handle)
+    assert not spice.failed()
+    spice.kclear()
+    spice.reset()
+    # Confirm there are no more comments
+    handle = spice.dafopr(dafpath)
+    assert handle is not None
+    nOut,cmntsOut,done = spice.dafec(handle,20,99)
+    assert nOut == 0
+    spice.dafcls(handle)
+    assert not spice.failed()
+    spice.kclear()
+    spice.reset()
+    if spice.exists(dafpath):
+      os.remove(dafpath) # pragma: no cover
 
 
 def test_dafec():
@@ -898,8 +982,52 @@ def test_dafopw():
     spice.kclear()
 
 
-def test_dafps():
-    assert 1
+def test_dafps_dafrs():
+    spice.kclear()
+    dafpath = os.path.join(cwd, "ckopenkernel_dafps.bc")
+    if spice.exists(dafpath):
+        os.remove(dafpath) # pragma: no cover
+    IFNAME = "Test CK type 1 segment created by cspice_ckw01"
+    handle = spice.ckopn(dafpath, IFNAME, 10)
+    spice.ckw01(handle, 1.0, 10.0, -77701, "J2000", True, "Test type 1 CK segment",
+                2 - 1, [1.1, 4.1], [[1.0, 1.0, 1.0, 1.0], [2.0, 2.0, 2.0, 2.0]],
+                [[0.0, 0.0, 1.0], [0.0, 0.0, 2.0]])
+
+    spice.ckcls(handle)
+    spice.kclear()
+    # reload
+    handle = spice.dafopw(dafpath)
+    assert handle is not None
+    # begin forward search
+    spice.dafbfs(handle)
+    found = spice.daffna()
+    assert found
+    out = spice.dafgs(n=124)
+    dc, ic = spice.dafus(out, 2, 6)
+    # change the id code and repack
+    ic[0] = -1999
+    ic[1] = -2999
+    summ = spice.dafps(2, 6, dc, ic)
+    spice.dafrs(summ)
+    # finished.
+    spice.dafcls(handle)
+    spice.kclear()
+    # reload the kernel and verify the ic's got updated
+    handle = spice.dafopr(dafpath)
+    assert handle is not None
+    # begin forward search
+    spice.dafbfs(handle)
+    found = spice.daffna()
+    assert found
+    out = spice.dafgs(n=124)
+    dc, ic = spice.dafus(out, 2, 6)
+    assert ic[0] == -1999
+    assert ic[1] == -2999
+    # cleanup
+    spice.dafcls(handle)
+    spice.kclear()
+    if spice.exists(dafpath):
+        os.remove(dafpath) # pragma: no cover
 
 
 def test_dafrda():
@@ -917,10 +1045,6 @@ def test_dafrfr():
     assert fward == 4
     assert bward == 4
     spice.kclear()
-
-
-def test_dafrs():
-    assert 1
 
 
 def test_dafus():
@@ -1232,7 +1356,7 @@ def test_dskopn_dskcls():
     dskpath = os.path.join(cwd, "TEST.dsk")
     if spice.exists(dskpath):
         os.remove(dskpath) # pragma: no cover
-    handle = spice.dskopn('TEST.dsk', 'TEST.DSK/NAIF/NJB/20-OCT-2006/14:37:00', 0)
+    handle = spice.dskopn(dskpath, 'TEST.DSK/NAIF/NJB/20-OCT-2006/14:37:00', 0)
     assert handle is not None
     spice.dskcls(handle)
     if spice.exists(dskpath):
@@ -1241,16 +1365,66 @@ def test_dskopn_dskcls():
 
 
 def test_dskb02():
-    with pytest.raises(NotImplementedError):
-        spice.dskb02()
+    spice.kclear()
+    # open the dsk file
+    handle = spice.dasopr(ExtraKernels.phobosDsk)
+    # get the dladsc from the file
+    dladsc = spice.dlabfs(handle)
+    # test dskb02
+    nv, nump, nvxtot, vtxbds, voxsiz, voxori, vgrext, cgscal, vtxnpl, voxnpt, voxnpl = spice.dskb02(handle, dladsc)
+    # test results
+    assert nv == 164840
+    assert nump == 329676
+    assert nvxtot == 1005480
+    assert cgscal == 3
+    assert vtxnpl == 1153868
+    assert voxnpt == 132624
+    assert voxnpl == 833661
+    assert voxsiz == pytest.approx(0.24102556320376828)
+    # cleanup
+    spice.dascls(handle)
+    spice.kclear()
 
 def test_dskd02():
-    with pytest.raises(NotImplementedError):
-        spice.dskd02()
+    spice.kclear()
+    # open the dsk file
+    handle = spice.dasopr(ExtraKernels.phobosDsk)
+    # get the dladsc from the file
+    dladsc = spice.dlabfs(handle)
+    # Fetch the vertex
+    values = spice.dskd02(handle, dladsc, 19, 0, 3)
+    assert len(values) > 0
+    npt.assert_almost_equal(values, [ 0.07271853, 0.0, -8.3327179])
+    spice.dascls(handle)
+    spice.kclear()
 
 def test_dskgd():
-    with pytest.raises(NotImplementedError):
-        spice.dskgd()
+    spice.kclear()
+    # open the dsk file
+    handle = spice.dasopr(ExtraKernels.phobosDsk)
+    # get the dladsc from the file
+    dladsc = spice.dlabfs(handle)
+    # get dskdsc for target radius
+    dskdsc = spice.dskgd(handle, dladsc)
+    # test results
+    assert dskdsc.surfce == 401
+    assert dskdsc.center == 401
+    assert dskdsc.dclass == 1
+    assert dskdsc.dtype  == 2
+    assert dskdsc.frmcde == 10021
+    assert dskdsc.corsys == 1
+    npt.assert_almost_equal(dskdsc.corpar, np.zeros(10))
+    assert dskdsc.co1min == pytest.approx(-3.141593)
+    assert dskdsc.co1max == pytest.approx(3.141593)
+    assert dskdsc.co2min == pytest.approx(-1.570796)
+    assert dskdsc.co2max == pytest.approx(1.570796)
+    assert dskdsc.co3min == pytest.approx(8.125010)
+    assert dskdsc.co3max == pytest.approx(14.0117681)
+    assert dskdsc.start  == pytest.approx(-1577879958.816059)
+    assert dskdsc.stop   == pytest.approx(1577880066.183913)
+    # cleanup
+    spice.dascls(handle)
+    spice.kclear()
 
 def test_dski02():
     spice.kclear()
@@ -1264,10 +1438,6 @@ def test_dski02():
     assert len(num_plates) > 0
     spice.dascls(handle)
     spice.kclear()
-
-def test_dskmi2():
-    with pytest.raises(NotImplementedError):
-        spice.dskmi2()
 
 def test_dskn02():
     spice.kclear()
@@ -1294,10 +1464,6 @@ def test_dskp02():
     spice.dascls(handle)
     spice.kclear()
 
-def test_dskrb2():
-    with pytest.raises(NotImplementedError):
-        spice.dskrb2()
-
 def test_dskv02():
     spice.kclear()
     # open the dsk file
@@ -1310,21 +1476,140 @@ def test_dskv02():
     spice.dascls(handle)
     spice.kclear()
 
-def test_dskw02():
-    with pytest.raises(NotImplementedError):
-        spice.dskw02()
+def test_dskw02_dskrb2_dskmi2():
+    spice.kclear()
+    dskpath = os.path.join(cwd, "TESTdskw02.dsk")
+    if spice.exists(dskpath):
+        os.remove(dskpath)  # pragma: no cover
+    # open the dsk file
+    handle = spice.dasopr(ExtraKernels.phobosDsk)
+    # get the dladsc from the file
+    dladsc = spice.dlabfs(handle)
+    # declare some variables
+    finscl = 5.0
+    corscl = 4
+    center = 401
+    surfid = 1
+    dclass = 2
+    frame = "IAU_PHOBOS"
+    first = -50 * spice.jyear()
+    last  =  50 * spice.jyear()
+    # stuff from spicedsk.h
+    SPICE_DSK02_MAXVRT = 16000002 // 4 # divide to lower memory usage
+    SPICE_DSK02_MAXPLT = 2 * (SPICE_DSK02_MAXVRT - 2)
+    SPICE_DSK02_MAXVXP = SPICE_DSK02_MAXPLT // 2
+    SPICE_DSK02_MAXCEL = 60000000 // 4 # divide to lower memory usage
+    SPICE_DSK02_MXNVLS = SPICE_DSK02_MAXCEL + (SPICE_DSK02_MAXVXP // 2)
+    SPICE_DSK02_MAXCGR = 100000   // 4 # divide to lower memory usage
+    SPICE_DSK02_IXIFIX = SPICE_DSK02_MAXCGR + 7
+    SPICE_DSK02_MAXNPV = 3 * (SPICE_DSK02_MAXPLT // 2) + 1
+    SPICE_DSK02_SPAISZ = SPICE_DSK02_IXIFIX + SPICE_DSK02_MAXVXP + SPICE_DSK02_MXNVLS + SPICE_DSK02_MAXVRT + SPICE_DSK02_MAXNPV
+    worksz = SPICE_DSK02_MAXCEL
+    voxpsz = SPICE_DSK02_MAXVXP
+    voxlsz = SPICE_DSK02_MXNVLS
+    spaisz = SPICE_DSK02_SPAISZ
+    # get verts, number from dskb02 test
+    vrtces = spice.dskv02(handle, dladsc, 1, 164840)
+    # get plates, number from dskb02 test
+    plates = spice.dskp02(handle, dladsc, 1, 329676)
+    # close the input kernel
+    spice.dskcls(handle)
+    spice.kclear()
+    # open new dsk file
+    handle = spice.dskopn(dskpath, 'TESTdskw02.dsk/AA/29-SEP-2017', 0)
+    # create spatial index
+    spaixd, spaixi = spice.dskmi2(vrtces, plates, finscl, corscl, worksz, voxpsz, voxlsz, False, spaisz)
+    # do stuff
+    corsys = 1
+    mncor1 = -spice.pi()
+    mxcor1 = spice.pi()
+    mncor2 = -spice.pi() / 2
+    mxcor2 = spice.pi() / 2
+    # Compute plate model radius bounds.
+    corpar = np.zeros(10)
+    mncor3, mxcor3 = spice.dskrb2(vrtces, plates, corsys, corpar)
+    # Write the segment to the file
+    spice.dskw02(handle, center, surfid, dclass, frame, corsys, corpar,
+                 mncor1, mxcor1, mncor2, mxcor2, mncor3, mxcor3, first,
+                 last, vrtces, plates, spaixd, spaixi)
+    # cose the dsk file
+    spice.dskcls(handle, optmiz=True)
+    # cleanup
+    if spice.exists(dskpath):
+        os.remove(dskpath)  # pragma: no cover
+    spice.kclear()
+
 
 def test_dskx02():
-    with pytest.raises(NotImplementedError):
-        spice.dskx02()
+    spice.kclear()
+    # open the dsk file
+    handle = spice.dasopr(ExtraKernels.phobosDsk)
+    # get the dladsc from the file
+    dladsc = spice.dlabfs(handle)
+    # get dskdsc for target radius
+    dskdsc = spice.dskgd(handle, dladsc)
+    r = 2.0 * dskdsc.co3max
+    # Produce a ray vertex
+    vertex = spice.latrec(r, 0.0, 0.0)
+    raydir = spice.vminus(vertex)
+    plid, xpt, found = spice.dskx02(handle, dladsc, vertex, raydir)
+    # test results
+    assert found
+    assert plid == 180278
+    npt.assert_almost_equal(xpt, [12.53551674, 0.0, 0.0])
+    # cleanup
+    spice.dascls(handle)
+    spice.kclear()
 
 def test_dskxsi():
-    with pytest.raises(NotImplementedError):
-        spice.dskxsi()
+    spice.kclear()
+    # load kernels
+    spice.furnsh(ExtraKernels.phobosDsk)
+    # get handle
+    dsk1, filtyp, source, handle = spice.kdata(0, "DSK", 256, 5, 256)
+    # get the dladsc from the file
+    dladsc = spice.dlabfs(handle)
+    # get dskdsc for target radius
+    dskdsc = spice.dskgd(handle, dladsc)
+    target = spice.bodc2n(dskdsc.center)
+    fixref = spice.frmnam(dskdsc.frmcde)
+    r = 1.0e10
+    vertex = spice.latrec(r, 0.0, 0.0)
+    raydir = spice.vminus(vertex)
+    srflst = [dskdsc.surfce]
+    # call dskxsi
+    xpt, handle, dladsc2, dskdsc2, dc, ic  = spice.dskxsi(False, target, srflst, 0.0, fixref, vertex, raydir)
+    # check output
+    assert handle is not None
+    assert ic[0] == 180278
+    assert dc[0] == pytest.approx(0.0)
+    npt.assert_almost_equal(xpt, [12.53551674, 0.0, 0.0])
+    spice.kclear()
 
 def test_dskxv():
-    with pytest.raises(NotImplementedError):
-        spice.dskxv()
+    spice.kclear()
+    # load kernels
+    spice.furnsh(ExtraKernels.phobosDsk)
+    # get handle
+    dsk1, filtyp, source, handle = spice.kdata(0, "DSK", 256, 5, 256)
+    # get the dladsc from the file
+    dladsc = spice.dlabfs(handle)
+    # get dskdsc for target radius
+    dskdsc = spice.dskgd(handle, dladsc)
+    target = spice.bodc2n(dskdsc.center)
+    fixref = spice.frmnam(dskdsc.frmcde)
+    r = 1.0e10
+    vertex = spice.latrec(r, 0.0, 0.0)
+    raydir = spice.vminus(vertex)
+    srflst = [dskdsc.surfce]
+    # call dskxsi
+    xpt, foundarray = spice.dskxv(False, target, srflst, 0.0, fixref, [vertex], [raydir])
+    # check output
+    assert len(xpt) == 1
+    assert len(foundarray) == 1
+    assert foundarray[0]
+    npt.assert_almost_equal(xpt[0], [12.53551674, 0.0, 0.0])
+    spice.kclear()
 
 def test_dskz02():
     spice.kclear()
@@ -2642,8 +2927,29 @@ def test_gfposc():
 
 
 def test_gfrefn():
-    assert 1
-
+    s1 = [True, False]
+    s2 = [True, False]
+    for i in range(0, 2):
+        for j in range(0, 2):
+            scale = 10.0 * i + j
+            t1 = 5.0 * scale
+            t2 = 7.0 * scale
+            t  = spice.gfrefn(t1, t2, s1[i], s2[j])
+            assert t == pytest.approx(scale*6.0)
+    for i in range(0, 2):
+        for j in range(0, 2):
+            scale = 10.0 * i + j
+            t1 = 15.0 * scale
+            t2 = 7.0 * scale
+            t  = spice.gfrefn(t1, t2, s1[i], s2[j])
+            assert t == pytest.approx(scale*11.0)
+    for i in range(0, 2):
+        for j in range(0, 2):
+            scale = 10.0 * i + j
+            t1 = -scale
+            t2 = -scale
+            t  = spice.gfrefn(t1, t2, s1[i], s2[j])
+            assert t == pytest.approx(-scale)
 
 def test_gfrepf():
     assert 1
@@ -2836,7 +3142,8 @@ def test_gfstep():
 
 
 def test_gfstol():
-    assert 1
+    spice.gfstol(1.0e-16)
+    spice.gfstol(1.0e-6)
 
 
 def test_gfsubc():
@@ -2882,13 +3189,97 @@ def test_gftfov():
 
 
 def test_gfudb():
-    with pytest.raises(NotImplementedError):
-        spice.gfudb()
+    spice.kclear()
+    # load kernels
+    spice.furnsh(CoreKernels.testMetaKernel)
+    # begin test
+    et_start = spice.str2et("Jan 1 2011")
+    et_end   = spice.str2et("Jan 1 2012")
+    result   = spice.stypes.SPICEDOUBLE_CELL(40000)
+    cnfine   = spice.stypes.SPICEDOUBLE_CELL(2)
+    spice.wninsd(et_start, et_end, cnfine)
+    step = 5.0 * spice.spd()
+
+    # make a udf callback
+    udf = spiceypy.utils.callbacks.SpiceUDFUNS(spice.udf)
+
+    # define gfq
+    @spiceypy.utils.callbacks.SpiceUDFUNB
+    def gfq(udfunc, et):
+        # we are not using udfunc in this example
+        state, lt = spice.spkez(301, et, 'IAU_EARTH', 'NONE', 399)
+        return state[2] >= 0.0 and state[5] > 0.0
+
+    # call gfudb
+    spice.gfudb(udf, gfq, step, cnfine, result)
+    # count
+    assert len(result) > 20 # true value is 28
+    spice.kclear()
+
+
+def test_gfudb2():
+    spice.kclear()
+    # load kernels
+    spice.furnsh(CoreKernels.testMetaKernel)
+    # begin test
+    et_start = spice.str2et("Jan 1 2011")
+    et_end = spice.str2et("Jan 1 2012")
+    result = spice.stypes.SPICEDOUBLE_CELL(40000)
+    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    spice.wninsd(et_start, et_end, cnfine)
+    step = 60.0 * 60.0
+
+    # define gfq
+    @spiceypy.utils.callbacks.SpiceUDFUNS
+    def gfq(et):
+        pos, lt = spice.spkezp(301, et, 'IAU_EARTH', 'NONE', 399)
+        return pos[2]
+
+    # define gfb
+    @spiceypy.utils.callbacks.SpiceUDFUNB
+    def gfb(udfuns, et):
+        value = spiceypy.utils.callbacks.CallUDFUNS(udfuns, et)
+        return -1000.0 <= value <= 1000.0
+
+    # call gfudb
+    spice.gfudb(gfq, gfb, step, cnfine, result)
+    # count
+    assert len(result) > 50  # true value is 56
+    spice.kclear()
 
 
 def test_gfuds():
-    with pytest.raises(NotImplementedError):
-        spice.gfuds()
+    relations = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
+    spice.kclear()
+    # load kernels
+    spice.furnsh(CoreKernels.testMetaKernel)
+    # begin test
+    et_start = spice.str2et("Jan 1 2007")
+    et_end = spice.str2et("Apr 1 2007")
+    # set up some constants
+    step = spice.spd()
+    adjust = 0.0
+    refval  = 0.3365
+    # declare the callbacks we will use in the test
+    @spiceypy.utils.callbacks.SpiceUDFUNS
+    def gfq(et):
+        state, lt = spice.spkez(301, et, 'J2000', 'NONE', 10)
+        return spice.dvnorm(state)
+
+    @spiceypy.utils.callbacks.SpiceUDFUNB
+    def gfdecrx(udfuns, et):
+        return spice.uddc(udfuns, et, 10.0)
+
+    # loop through to test each relation type
+    for i, r in enumerate(relations):
+        result = spice.stypes.SPICEDOUBLE_CELL(40000)
+        cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+        spice.wninsd(et_start, et_end, cnfine)
+        # call gfuds
+        result = spice.gfuds(gfq, gfdecrx, r, refval, adjust, step, 20000, cnfine, result)
+        assert len(result) > 0
+    # cleanup
+    spice.kclear()
 
 
 def test_gipool():
@@ -3951,7 +4342,7 @@ def test_pckopn_pckw02_pckcls():
     if spice.exists(pck):
         os.remove(pck) # pragma: no cover
     spice.kclear()
-    handle = spice.pckopn("test_pck.pck", "Test PCK file", 5000)
+    handle = spice.pckopn(pck, "Test PCK file", 5000)
     spice.pckw02(handle, 301, "j2000", 0.0, 3.0, "segid", 1.0, 3, 1, [1.0, 2.0, 3.0], 0.0)
     spice.pckcls(handle)
     spice.kclear()
@@ -5613,11 +6004,86 @@ def test_spkw13():
 
 
 def test_spkw15():
-    assert 1
+    discrete_epochs = [100.0, 900.0]
+    spice.kclear()
+    #
+    SPK15 = os.path.join(cwd, "test15.bsp")
+    if spice.exists(SPK15):
+        os.remove(SPK15)  # pragma: no cover
+    # create the test kernel
+    handle = spice.spkopn(SPK15, 'Type 13 SPK internal file name.', 4)
+    init_size = os.path.getsize(SPK15)
+    # load kernels
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = spice.str2et('Dec 25, 2007')
+    state, ltime = spice.spkezr('Moon', et, 'J2000', 'NONE', 'EARTH')
+    dim, mu = spice.bodvrd('EARTH', 'GM', 1)
+    elts = spice.oscelt(state, et, mu[0])
+    # From these collect the eccentricity and semi-latus
+    ecc = elts[1]
+    p   = elts[0] * (1.0 + ecc)
+    # Next get the trajectory pole vector and the periapsis vector.
+    state = state[0:3]
+    tp = spice.ucrss(state, state+4)
+    pa = spice.vhat(state)
+    # Enable both J2 corrections.
+    j2flg = 0.0
+    # other constants, as I don't need real values
+    pv = [1.0, 2.0, 3.0]
+    gm = 398600.436
+    j2 = 1.0
+    radius = 6000.0
+    # now call spkw15
+    spice.spkw15(handle, 3, 10, 'J2000', discrete_epochs[0], discrete_epochs[-1], "Test SPKW15", et, tp, pa, p, ecc, j2flg, pv, gm, j2, radius)
+    # close the kernel
+    spice.spkcls(handle)
+    end_size = os.path.getsize(SPK15)
+    # cleanup
+    assert end_size != init_size
+    if spice.exists(SPK15):
+        os.remove(SPK15)  # pragma: no cover
+    #
+    spice.kclear()
 
 
 def test_spkw17():
-    assert 1
+    discrete_epochs = [100.0, 900.0]
+    spice.kclear()
+    #
+    SPK17 = os.path.join(cwd, "test17.bsp")
+    if spice.exists(SPK17):
+        os.remove(SPK17)  # pragma: no cover
+    # create the test kernel
+    handle = spice.spkopn(SPK17, 'Type 17 SPK internal file name.', 4)
+    init_size = os.path.getsize(SPK17)
+    # load kernels
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = spice.str2et('Dec 25, 2007')
+    # make the eqel vector and the rapol and decpol floats
+    p = 10000.0
+    gm = 398600.436
+    ecc = 0.1
+    a = p / (1.0 - ecc)
+    n = np.sqrt(gm / a) / a
+    argp   = 30. * spice.rpd()
+    node   = 15. * spice.rpd()
+    inc    = 10. * spice.rpd()
+    m0     = 45. * spice.rpd()
+    eqel   = [a, ecc * np.sin(argp + node), ecc * np.cos(argp + node), m0 + argp + node,
+              np.tan(inc / 2.0) * np.sin(node), np.tan(inc / 2.0) * np.cos(node), 0.0, n, 0.0]
+    rapol  = spice.halfpi() * -1
+    decpol = spice.halfpi()
+    # now call spkw17
+    spice.spkw17(handle, 3, 10, 'J2000', discrete_epochs[0], discrete_epochs[-1], "Test SPKW17", et, eqel, rapol, decpol)
+    # close the kernel
+    spice.spkcls(handle)
+    end_size = os.path.getsize(SPK17)
+    # cleanup
+    assert end_size != init_size
+    if spice.exists(SPK17):
+        os.remove(SPK17)  # pragma: no cover
+    #
+    spice.kclear()
 
 
 def test_spkw18():
@@ -5626,8 +6092,35 @@ def test_spkw18():
 
 
 def test_spkw20():
-    with pytest.raises(NotImplementedError):
-        spice.spkw20()
+    spice.kclear()
+    #
+    SPK20 = os.path.join(cwd, "test20.bsp")
+    if spice.exists(SPK20):
+        os.remove(SPK20)  # pragma: no cover
+    # create the test kernel
+    handle = spice.spkopn(SPK20, 'Type 20 SPK internal file name.', 4)
+    init_size = os.path.getsize(SPK20)
+    # now call spkw20, giving fake data from f_spk20.c from tspice
+    intlen = 5.0
+    n = 100
+    polydg = 1
+    cdata = np.arange(1.0, 198000.0) #
+    dscale = 1.0
+    tscale = 1.0
+    initjd = 2451545.0
+    initfr = 0.25
+    first  = (initjd - spice.j2000() + initfr) * spice.spd()
+    last   = ((initjd - spice.j2000()) + initfr + n*intlen) * spice.spd()
+    spice.spkw20(handle, 301, 3, "J2000", first, last, "Test SPKW20", intlen, n, polydg, cdata, dscale, tscale, initjd, initfr)
+    # close the kernel
+    spice.spkcls(handle)
+    end_size = os.path.getsize(SPK20)
+    # cleanup
+    assert end_size != init_size
+    if spice.exists(SPK20):
+        os.remove(SPK20)  # pragma: no cover
+    #
+    spice.kclear()
 
 
 def test_srfc2s():
@@ -6162,7 +6655,9 @@ def test_trcoff():
 
 
 def test_tsetyr():
-    assert 1
+    spice.tsetyr(1969)
+    spice.tsetyr(2100)
+    spice.tsetyr(1969)
 
 
 def test_twopi():
@@ -6199,7 +6694,7 @@ def test_uddc():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("JAN 1 2009")
 
-    @spiceypy.utils.callbacks.SpiceUDF
+    @spiceypy.utils.callbacks.SpiceUDFUNS
     def udfunc(et_in):
         pos, new_et = spice.spkpos("MERCURY", et_in, "J2000", "LT+S", "MOON")
         return new_et
@@ -6215,7 +6710,7 @@ def test_uddf():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("JAN 1 2009")
 
-    @spiceypy.utils.callbacks.SpiceUDF
+    @spiceypy.utils.callbacks.SpiceUDFUNS
     def udfunc(et_in):
         pos, new_et = spice.spkpos("MERCURY", et_in, "J2000", "LT+S", "MOON")
         return new_et
