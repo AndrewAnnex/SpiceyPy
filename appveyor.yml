@@ -62,7 +62,7 @@ install:
   - set PATH=%PYTHON%\\scripts;%PATH%
 
   # Download things we absolutely need
-  - pip install wheel twine six pytest certifi pyOpenSSL urllib3
+  - pip install wheel twine six pytest certifi pyopenssl urllib3
   # coveralls and or coverage fail to install for 3.4 64bit python builds so don't bother for now.
 
   # Check for numpy wheel, compile if absent
@@ -101,7 +101,8 @@ after_test:
   - set PATH=%CONDA%;%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
   # Update to a known good conda, found from https://github.com/numba/numba/blob/master/appveyor.yml
   - "conda install -q -y conda=4.3.14"
-  - "conda install -q -y conda-build anaconda-client numpy wheel six pytest certifi pyOpenSSL urllib3"
+  - "conda install -q -y conda-build anaconda-client numpy wheel six pytest certifi pyopenssl urllib3"
+  - "CONDA_SSL_VERIFY=false conda update pyopenssl"
   - "conda build appveyor -q --no-anaconda-upload"
   - ps: ls $env:CONDA_BUILDS
   - ps: mv $env:CONDA_BUILDS ./
