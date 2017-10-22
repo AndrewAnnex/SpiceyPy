@@ -7,6 +7,7 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 ## [2.0.1] - UNRELEASED
 ### Added
 - Completed wrapping of all needed new N66 functions
+- added 3.6 classifier
 
 ### Fixed
 - added six and numpy to setup_requires setup.py kwargs
