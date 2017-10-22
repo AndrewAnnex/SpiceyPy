@@ -35,6 +35,7 @@ before_install:
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then pyenv global $PYVERSION; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then pyenv versions; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then python --version; fi
+- pip install -U wheel
 - pip install twine
 - pip install -r requirements.txt
 install:
