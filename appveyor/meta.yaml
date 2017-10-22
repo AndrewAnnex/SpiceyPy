@@ -25,6 +25,9 @@ requirements:
         - setuptools
         - six
         - numpy
+        - certifi
+        - pyOpenSSL
+        - urllib3
 
 test:
     imports:
