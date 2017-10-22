@@ -97,6 +97,8 @@ def getSpice():
     system = platform.system()
     if system == 'Darwin':
         system = 'Mac'
+    if system == 'FreeBSD':
+        system = 'Linux'
     print('SYSTEM:   ', system)
     give_points(points, system)
 
