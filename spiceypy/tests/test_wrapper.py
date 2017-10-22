@@ -41,14 +41,8 @@ from spiceypy.tests.gettestkernels import downloadKernels,\
 
 cwd = os.path.realpath(os.path.dirname(__file__))
 
-skipSlowTests = "SKIP_SLOW_TESTS" in os.environ
-
 def setup_module(module):
     downloadKernels()
-
-
-########################################################################
-# Start of tests
 
 
 def test_appndc():
@@ -1643,7 +1637,6 @@ def test_dskv02():
     spice.kclear()
 
 def test_dskw02_dskrb2_dskmi2():
-    if skipSlowTests: return
     spice.kclear()
     dskpath = os.path.join(cwd, "TESTdskw02.dsk")
     if spice.exists(dskpath):
@@ -2494,10 +2487,6 @@ def test_ekifld():
     assert not spice.exists(ekpath)
 
 
-def test_ekinsr():  ### See test_ekacei_tkinsr()
-    pass
-
-
 def test_eklef():
     spice.kclear()
     ekpath = os.path.join(cwd, "example_eklef.ek")
@@ -2515,10 +2504,6 @@ def test_eklef():
     spice.ekuef(handle)
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
-
-
-def test_eknelt():
-    assert 1
 
 
 def test_eknseg():
@@ -2597,37 +2582,6 @@ def test_ekopw():
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
     spice.kclear()
-
-
-def test_ekpsel():
-    assert 1
-
-
-def test_ekrcec():
-    assert 1
-
-
-def test_ekrced():
-    assert 1
-
-
-def test_ekrcei():
-    assert 1
-    # spice.kclear()
-    # ekpath = os.path.join(cwd, "example_ekrcei.ek")
-    # if spice.exists(ekpath):
-    # os.remove(ekpath) # pragma: no cover
-    # handle = spice.ekopn(ekpath, ekpath, 0)
-    # segno, rcptrs = spice.ekifld(handle, "test_table_ekrcei", 1, 2, 200, ["c1"], 200,
-    #                              ["DATATYPE = INTEGER, NULLS_OK = TRUE"])
-    # spice.ekacli(handle, segno, "c1", [1, 2], [1, 1], [False, False], rcptrs, [0, 0])
-    # spice.ekffld(handle, segno, rcptrs)
-    # nvals, ivals, isnull = spice.ekrcei(handle, 0, 0, "C1")
-    # spice.ekcls(handle)
-    # spice.kclear()
-    # if spice.exists(ekpath):
-    #     os.remove(ekpath) # pragma: no cover
-    # assert not spice.exists(ekpath)
 
 
 def test_ekssum():
@@ -2969,14 +2923,14 @@ def test_ftncls():
     if spice.exists(FTNCLS):
         os.remove(FTNCLS)  # pragma no cover
     # Open new file using FORTRAN SPICE TXTOPN
-    unit = spice.txtopn_(FTNCLS)
+    unit = spice.txtopn(FTNCLS)
     # Get the FORTRAN logical unit of the open file using FORTRAN SPICE FN2LEN
-    assert unit == spice.fn2lun_(FTNCLS)
+    assert unit == spice.fn2lun(FTNCLS)
     assert not spice.failed()
     # Close the FORTRAN logical unit using ftncls, the subject of this test
     spice.ftncls(unit)
     with pytest.raises(spice.stypes.SpiceyError):
-        closed_unit = spice.fn2lun_(FTNCLS)
+        closed_unit = spice.fn2lun(FTNCLS)
     # Cleanup
     spice.reset()
     spice.kclear()
@@ -3137,7 +3091,6 @@ def test_gffove():
 
 
 def test_gfilum():
-    if skipSlowTests: return
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(MarsKernels.merExt10)
@@ -5164,27 +5117,27 @@ def test_rdtext():
     if spice.exists(xRDTEXT):
         os.remove(xRDTEXT)  # pragma no cover
     # Open new file using FORTRAN SPICE TXTOPN
-    unit = spice.txtopn_(RDTEXT)
-    xunit = spice.txtopn_(xRDTEXT)
+    unit = spice.txtopn(RDTEXT)
+    xunit = spice.txtopn(xRDTEXT)
     # Build base lines
     writln_lines = ['%s writln_ to x.txt %s' % (c, utcnow) for c in '12']
     xwritln_lines = ['x%s' % (writln_line,) for writln_line in writln_lines]
     # Write lines to the files using FORTRAN SPICE WRITLN
     for writln_line in writln_lines:
         xwritln_line = 'x%s' % (writln_line,)
-        spice.writln_(writln_line, unit)
-        spice.writln_(xwritln_line, xunit)
+        spice.writln(writln_line, unit)
+        spice.writln(xwritln_line, xunit)
     # Close the FORTRAN logical units using ftncls
     spice.ftncls(unit)
     spice.ftncls(xunit)
     # Ensure the FORTRAN logical units can no longer be retrieved ...
     # ... first file, RDTEXT
     with pytest.raises(spice.stypes.SpiceyError):
-        closed_unit = spice.fn2lun_(RDTEXT)
+        closed_unit = spice.fn2lun(RDTEXT)
     spice.reset()
     # ... second file, xRDTEXT
     with pytest.raises(spice.stypes.SpiceyError):
-        xclosed_unit = spice.fn2lun_(xRDTEXT)
+        xclosed_unit = spice.fn2lun(xRDTEXT)
     spice.reset()
     # Wrapper function to call spice.rdtext and assert expected result
     def rdtext_helper(filename, expected_line, expected_done):
@@ -5195,7 +5148,7 @@ def test_rdtext():
     rdtext_helper(RDTEXT, writln_lines[1], False)  # Read second line from RDTEXT
     rdtext_helper(RDTEXT,              '', True)   # Read another time from RDTEXT to confirm done will be set to True at end of file
     rdtext_helper(RDTEXT, writln_lines[0], False)  # Read another time from RDTEXT to confirm file will be re-opened
-    spice.cltext_(RDTEXT)                          # Close text file.
+    spice.cltext(RDTEXT)  # Close text file.
     # Read two files in interleaved (1, 2, 2, 1) sequence to verify that can be done
     rdtext_helper( RDTEXT,  writln_lines[0], False)  # Read first  line from RDTEXT
     rdtext_helper(xRDTEXT, xwritln_lines[0], False)  # Read first  line from xRDTEXT
@@ -6764,13 +6717,12 @@ def test_srfxpt():
     npt.assert_array_almost_equal(spoint, expected_spoint)
     npt.assert_array_almost_equal(obspos, expected_obspos)
     # Iterable ET argument:  et-10, et, et+10
-    ets = et - 10. + (np.arange(3) * 10.)
-    assert 3 == len(ets)
+    ets = [et - 10.0, et, et + 10.0]
     sdtoArr = spice.srfxpt("Ellipsoid", 'Mars', ets, "LT+S", "MGS", frame, bsight)
     assert (3, 4) == sdtoArr.shape
     assert 0. == spice.vnorm(spice.vsub(sdtoArr[1, 0], spoint))
-    assert 0. == (sdtoArr[1, 1] - dist)
-    assert 0. == (sdtoArr[1, 2] - trgepc)
+    assert 0. == sdtoArr[1, 1] - dist
+    assert 0. == sdtoArr[1, 2] - trgepc
     assert 0. == spice.vnorm(spice.vsub(sdtoArr[1, 3], obspos))
     # Cleanup
     spice.kclear()
@@ -6924,7 +6876,6 @@ def test_subslr():
         npt.assert_almost_equal(supcln * spice.dpr(), expected[7], decimal=5)
         npt.assert_almost_equal(supclt * spice.dpr(), expected[8], decimal=5)
     spice.kclear()
-    assert 1
 
 
 def test_subsol():

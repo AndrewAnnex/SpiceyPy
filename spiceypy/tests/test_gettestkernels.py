@@ -27,19 +27,9 @@ import pytest
 
 from spiceypy.tests.gettestkernels import attemptDownload
 
-skipSlowTests = "SKIP_SLOW_TESTS" in os.environ
-
-def setup_module(module):
-    pass
-
-
-########################################################################
-# Start of tests
-
 
 def test_gettestkernels():
     # Force exceptions in gettestkernels.py to get complete coverage there
-    if skipSlowTests: return
     # To complete code coverage in spiceypy.tests.gettestkernels.py
     with pytest.raises(BaseException):
         # Generate .HTTPError, return BaseException
@@ -48,6 +38,3 @@ def test_gettestkernels():
         # Generate .URLError, return BaseException
         attemptDownload('https://no_such_host.naif.jpl.nasa.gov/404', 'urlerror.txt', 'urlerror.txt', 1)
 
-
-def teardown_module(module):
-    pass

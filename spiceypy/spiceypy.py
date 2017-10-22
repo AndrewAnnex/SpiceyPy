@@ -1213,13 +1213,13 @@ def clpool():
 
 
 @spiceErrorCheck
-def cltext_(fname):
+def cltext(fname):
     """
     Internal undocumented command for closing a text file opened by RDTEXT.
 
     No URL available; relevant lines from SPICE source:
 
-    FORTRAN SPICE, rdtext.f:
+    FORTRAN SPICE, rdtext.f::
 
         C$Procedure  CLTEXT ( Close a text file opened by RDTEXT)
               ENTRY  CLTEXT ( FILE )
@@ -1228,7 +1228,7 @@ def cltext_(fname):
         C     --------  ---  --------------------------------------------------
         C     FILE       I   Text file to be closed.
 
-    CSPICE, rdtext.c:
+    CSPICE, rdtext.c::
 
         /* $Procedure  CLTEXT ( Close a text file opened by RDTEXT) */
         /* Subroutine */ int cltext_(char *file, ftnlen file_len)
@@ -1237,9 +1237,8 @@ def cltext_(fname):
     :param fname: Text file to be closed.
     :type fname: str
     """
-
     fnameP    = stypes.stringToCharP(fname)
-    fname_len = ctypes.c_int(len(fname)+1)
+    fname_len = ctypes.c_int(len(fname))
     libspice.cltext_(fnameP, fname_len)
 
 
@@ -4310,14 +4309,14 @@ def ekrcec(handle, segno, recno, column, lenout, nelts=_SPICE_EK_EKRCEX_ROOM_DEF
     :type column: str
     :param lenout: Maximum length of output strings.
     :type lenout: int
-    :param nelts: Number of elements to allow for (default=%d)
+    :param nelts: Number of elements to allow for (default=100)
     :type nelts: int
     :return:
             Number of values in column entry,
             Character values in column entry,
             Flag indicating whether column entry is null.
     :rtype: tuple
-    """ % (_SPICE_EK_EKRCEX_ROOM_DEFAULT,)
+    """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
@@ -5049,7 +5048,7 @@ def failed():
 
 
 @spiceErrorCheck
-def fn2lun_(fname):
+def fn2lun(fname):
     """
     Internal undocumented command for mapping name of open file to
     its FORTRAN (F2C) logical unit.
@@ -5061,7 +5060,6 @@ def fn2lun_(fname):
     :return: the FORTRAN (F2C) logical unit associated with the filename.
     :rtype: int
     """
-
     fnameP    = stypes.stringToCharP(fname)
     unit_out  = ctypes.c_int()
     fname_len = ctypes.c_int(len(fname)+1)
@@ -13604,7 +13602,7 @@ def twovec(axdef, indexa, plndef, indexp):
 
 
 @spiceErrorCheck
-def txtopn_(fname):
+def txtopn(fname):
     """
     Internal undocumented command for opening a new text file for
     subsequent write access.
@@ -13617,11 +13615,10 @@ def txtopn_(fname):
     :return: FORTRAN logical unit of opened file
     :rtype: int
     """
-
     fnameP    = stypes.stringToCharP(fname)
     unit_out  = ctypes.c_int()
-    fname_len = ctypes.c_int(len(fname)+1)
-    libspice.txtopn_(fnameP,ctypes.byref(unit_out),fname_len)
+    fname_len = ctypes.c_int(len(fname))
+    libspice.txtopn_(fnameP, ctypes.byref(unit_out), fname_len)
     return unit_out.value
 
 
@@ -15153,13 +15150,13 @@ def wnvald(insize, n, window):
 
 
 @spiceErrorCheck
-def writln_(line, unit):
+def writln(line, unit):
     """
     Internal undocumented command for writing a text line to a logical unit
 
     No URL available; relevant lines from SPICE source:
 
-    FORTRAN SPICE, writln.f:
+    FORTRAN SPICE, writln.f::
 
         C$Procedure      WRITLN ( Write a text line to a logical unit )
               SUBROUTINE WRITLN ( LINE, UNIT )
@@ -15171,7 +15168,7 @@ def writln_(line, unit):
         C     LINE       I   The line which is to be written to UNIT.
         C     UNIT       I   The Fortran unit number to use for output.
 
-    CSPICE, writln.c:
+    CSPICE, writln.c::
 
         /* $Procedure      WRITLN ( Write a text line to a logical unit ) */
         /* Subroutine */ int writln_(char *line, integer *unit, ftnlen line_len)
@@ -15181,10 +15178,9 @@ def writln_(line, unit):
     :param unit: The Fortran unit number to use for output.
     :type unit: int
     """
-
     lineP    = stypes.stringToCharP(line)
     unit     = ctypes.c_int(unit)
-    line_len = ctypes.c_int(len(line)+1)
+    line_len = ctypes.c_int(len(line))
     libspice.writln_(lineP, ctypes.byref(unit), line_len)
 
 
