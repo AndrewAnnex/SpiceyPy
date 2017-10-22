@@ -10,7 +10,7 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
   than OpenSSL 1.0.1g.
 - getspice module provides now a class that handles the downloading and
   unpacking of N066 CSPICE distribution.
-- Updated setup to packe the CSPICE installation code into a class that
+- Updated setup to pack the CSPICE installation code into a class that
   extends the setuptools.command.install command.
 
 ### Fixed
