@@ -105,6 +105,7 @@ libspice.ckw05_c.argtypes = [c_int, c_int, c_double, c_double, c_int, c_char_p, 
 libspice.clight_c.argtypes = None
 libspice.clight_c.restype = c_double
 libspice.clpool_c.argtypes = None
+libspice.cltext_.argtypes = [c_char_p, c_int]
 libspice.cmprss_c.argtypes = [c_char, c_int, c_char_p, c_int, c_char_p]
 libspice.cnmfrm_c.argtypes = [c_char_p, c_int, POINTER(c_int), c_char_p, POINTER(c_bool)]
 libspice.conics_c.argtypes = [(c_double * 8), c_double, (c_double * 6)]
@@ -151,7 +152,7 @@ libspice.dasec_c.argtypes = [c_int, c_int, c_int, POINTER(c_int), c_void_p, POIN
 libspice.dashfn_c.argtypes = [c_int, c_int, c_char_p]
 libspice.dasopr_c.argtypes = [c_char_p, POINTER(c_int)]
 libspice.dasopw_c.argtypes = [c_char_p, POINTER(c_int)]
-libspice.dasonw_.argetypes = [c_char_p, c_char_p, c_char_p, POINTER(c_int), POINTER(c_int), c_int, c_int, c_int]
+libspice.dasonw_.argtypes = [c_char_p, c_char_p, c_char_p, POINTER(c_int), POINTER(c_int), c_int, c_int, c_int]
 libspice.dasrfr_c.argtypes = [c_int, c_int, c_int, c_char_p, c_char_p, POINTER(c_int), POINTER(c_int), POINTER(c_int), POINTER(c_int)]
 libspice.dcyldr_c.argtypes = [c_double, c_double, c_double, (c_double * 3) * 3]
 libspice.deltet_c.argtypes = [c_double, c_char_p, POINTER(c_double)]
@@ -216,14 +217,14 @@ libspice.edlimb_c.argtypes = [c_double, c_double, c_double, (c_double * 3), POIN
 libspice.edterm_c.argtypes = [c_char_p, c_char_p, c_char_p, c_double, c_char_p,
                               c_char_p, c_char_p, c_int, POINTER(c_double),
                               (c_double * 3), c_void_p]
-libspice.ekacec_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, c_int, c_void_p, c_bool]
-libspice.ekaced_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, POINTER(c_double), c_bool]
-libspice.ekacei_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, POINTER(c_int), c_bool]
+libspice.ekacec_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, c_int, c_void_p, c_int]
+libspice.ekaced_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, POINTER(c_double), c_int]
+libspice.ekacei_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, POINTER(c_int), c_int]
 libspice.ekaclc_c.argtypes = [c_int, c_int, c_char_p, c_int, c_void_p, POINTER(c_int), POINTER(c_bool), POINTER(c_int),
                               POINTER(c_int)]
-libspice.ekacld_c.argtypes = [c_int, c_int, c_char_p, POINTER(c_double), POINTER(c_int), POINTER(c_bool),
+libspice.ekacld_c.argtypes = [c_int, c_int, c_char_p, POINTER(c_double), POINTER(c_int), POINTER(c_int),
                               POINTER(c_int), POINTER(c_int)]
-libspice.ekacli_c.argtypes = [c_int, c_int, c_char_p, POINTER(c_int), POINTER(c_int), POINTER(c_bool), POINTER(c_int),
+libspice.ekacli_c.argtypes = [c_int, c_int, c_char_p, POINTER(c_int), POINTER(c_int), POINTER(c_int), POINTER(c_int),
                               POINTER(c_int)]
 libspice.ekappr_c.argtypes = [c_int, c_int, POINTER(c_int)]
 libspice.ekbseg_c.argtypes = [c_int, c_char_p, c_int, c_int, c_void_p, c_int, c_void_p, POINTER(c_int)]
@@ -250,16 +251,17 @@ libspice.ekopr_c.argtypes = [c_char_p, POINTER(c_int)]
 libspice.ekops_c.argtypes = [POINTER(c_int)]
 libspice.ekopw_c.argtypes = [c_char_p, POINTER(c_int)]
 libspice.ekpsel_c.argtypes = [c_char_p, c_int, c_int, c_int, POINTER(c_int), POINTER(c_int), POINTER(c_int),
-                              POINTER(stypes.SpiceEKDataType), POINTER(stypes.SpiceEKExprClass), c_void_p, c_void_p,
+                              POINTER(c_int), POINTER(c_int), c_void_p, c_void_p,
                               POINTER(c_bool), c_char_p]
-libspice.ekrcec_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, POINTER(c_int), c_char_p, POINTER(c_bool)]
+#                              POINTER(stypes.SpiceEKDataType), POINTER(stypes.SpiceEKExprClass), c_void_p, c_void_p,
+libspice.ekrcec_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, POINTER(c_int), c_void_p, POINTER(c_bool)]
 libspice.ekrced_c.argtypes = [c_int, c_int, c_int, c_char_p, POINTER(c_int), POINTER(c_double), POINTER(c_bool)]
 libspice.ekrcei_c.argtypes = [c_int, c_int, c_int, c_char_p, POINTER(c_int), POINTER(c_int), POINTER(c_bool)]
 libspice.ekssum_c.argtypes = [c_int, c_int, POINTER(stypes.SpiceEKSegSum)]
 libspice.ektnam_c.argtypes = [c_int, c_int, c_char_p]
-libspice.ekucec_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, c_int, c_void_p, c_bool]
-libspice.ekuced_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, POINTER(c_double), c_bool]
-libspice.ekucei_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, POINTER(c_int), c_bool]
+libspice.ekucec_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, c_int, c_void_p, c_int]
+libspice.ekuced_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, POINTER(c_double), c_int]
+libspice.ekucei_c.argtypes = [c_int, c_int, c_int, c_char_p, c_int, POINTER(c_int), c_int]
 libspice.ekuef_c.argtypes = [c_int]
 libspice.el2cgv_c.argtypes = [POINTER(stypes.Ellipse), (c_double * 3), (c_double * 3), (c_double * 3)]
 libspice.elemc_c.argtypes = [c_char_p, POINTER(stypes.SpiceCell)]
@@ -295,6 +297,7 @@ libspice.expool_c.argtypes = [c_char_p, POINTER(c_bool)]
 
 libspice.failed_c.argtypes = None
 libspice.failed_c.restype = c_bool
+libspice.fn2lun_.argtypes = [c_char_p, POINTER(c_int), c_int]
 libspice.fovray_c.argtypes = [c_char_p, (c_double * 3), c_char_p, c_char_p, c_char_p,
                               POINTER(c_double), POINTER(c_bool)]
 libspice.fovtrg_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p,
@@ -749,6 +752,7 @@ libspice.trcoff_c.argtypes = None
 libspice.tsetyr_c.argtypes = [c_int]
 libspice.twopi_c.restype   = c_double
 libspice.twovec_c.argtypes = [(c_double * 3), c_int, (c_double * 3), c_int, (c_double * 3) * 3]
+libspice.txtopn_.argtypes   = [c_char_p, POINTER(c_int), c_int]
 libspice.tyear_c.restype   = c_double
 
 ########################################################################################################################
@@ -851,6 +855,7 @@ libspice.wnsumd_c.argtypes = [POINTER(stypes.SpiceCell), POINTER(c_double), POIN
                               POINTER(c_int), POINTER(c_int)]
 libspice.wnunid_c.argtypes = [POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
 libspice.wnvald_c.argtypes = [c_int, c_int, POINTER(stypes.SpiceCell)]
+libspice.writln_.argtypes = [c_char_p, POINTER(c_int), c_int]
 ########################################################################################################################
 # X
 

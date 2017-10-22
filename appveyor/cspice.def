@@ -44,6 +44,7 @@ EXPORTS			appndc_c
 				ckw05_c
 				clight_c
 				clpool_c
+				cltext_
 				cmprss_c
 				cnmfrm_c
 				conics_c
@@ -195,6 +196,7 @@ EXPORTS			appndc_c
 				exists_c
 				expool_c
 				failed_c
+				fn2lun_
 				fovray_c
 				fovtrg_c
 				frame_c
@@ -511,6 +513,7 @@ EXPORTS			appndc_c
 				tsetyr_c
 				twopi_c
 				twovec_c
+				txtopn_
 				tyear_c
 				ucase_c
 				ucrss_c
@@ -578,6 +581,7 @@ EXPORTS			appndc_c
 				wnsumd_c
 				wnunid_c
 				wnvald_c
+				writln_
 				xf2eul_c
 				xf2rav_c
 				xfmsta_c

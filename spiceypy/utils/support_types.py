@@ -112,10 +112,6 @@ def toPythonString(inString):
         return bytes.decode(string_at(inString)).rstrip()
 
 
-def charvector(ndim=1, lenvals=10):
-    return ((c_char * lenvals) * ndim)()
-
-
 def emptyCharArray(xLen=None, yLen=None):
     if not yLen:
         yLen = 1
@@ -562,7 +558,7 @@ class SpiceDLADescr(Structure):
 
     @property
     def fwdptr(self):
-        return self._fwdprt
+        return self._fwdptr
 
     @property
     def ibase(self):
@@ -599,12 +595,26 @@ class SpiceEKDataType(c_int):
     ]
 
 
+def emptySpiceEKDataTypeVector(n):
+    if isinstance(n, c_int):
+        n = n.value
+    assert(isinstance(n, int))
+    return (SpiceEKDataType * n)()
+
+
 class SpiceEKExprClass(c_int):
     _fields_ = [
         ('SPICE_EK_EXP_COL', c_int(0)),
         ('SPICE_EK_EXP_FUNC', c_int(1)),
         ('SPICE_EK_EXP_EXPR', c_int(2))
     ]
+
+
+def emptySpiceEKExprClassVector(n):
+    if isinstance(n, c_int):
+        n = n.value
+    assert(isinstance(n, int))
+    return (SpiceEKExprClass * n)()
 
 
 class SpiceEKAttDsc(Structure):
