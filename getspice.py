@@ -219,6 +219,9 @@ class GetCSPICE(object):
             except urllib3.exceptions.HTTPError as err:
                 raise RuntimeError(err.message)
 
+            # Convert the response to io.BytesIO and store it in local memory.
+            self._local = io.BytesIO(response.data)
+
         # Use the standard urllib (using system OpenSSL).
         else:
             try:
@@ -227,8 +230,8 @@ class GetCSPICE(object):
             except urllib.error.URLError as err:
                 raise RuntimeError(err.reason)
 
-        # Convert the response to io.BytesIO and store it in local memory.
-        self._local = io.BytesIO(response.read())
+            # Convert the response to io.BytesIO and store it in local memory.
+            self._local = io.BytesIO(response.read())
 
     def _unpack(self):
         """Unpacks the CSPICE package on the given root directory. Note that
