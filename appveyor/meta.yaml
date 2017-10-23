@@ -14,12 +14,6 @@ requirements:
         - setuptools
         - six
         - numpy
-        - certifi
-        - cffi
-        - cryptography
-        - idna
-        - pyopenssl
-        - urllib3
     run:
         - python
         - setuptools

@@ -141,11 +141,12 @@ class GetCSPICE(object):
                     self._download()
                 except RuntimeError as error:
                     print("Download failed with URLError: {0}, trying again after "
-                          "15 seconds!".format(error.message))
+                          "15 seconds!".format(error))
+                else:
 
-                # Unpack the file
-                print('Unpacking... (this may take some time!)')
-                self._unpack()
+                    # Unpack the file
+                    print('Unpacking... (this may take some time!)')
+                    self._unpack()
 
                 # We are done.  Let's return to the calling code.
                 break

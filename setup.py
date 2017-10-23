@@ -45,7 +45,7 @@ cspice_dir = os.path.join(root_dir, 'cspice')
 lib_dir = os.path.join(cspice_dir, 'lib')
 
 TEST_DEPENDENCIES = ['numpy>=1.8.0', 'pytest>=2.9.0', 'six>=1.9.0']
-DEPENDENCIES = ['numpy>=1.8.0', 'six>=1.9.0', 'certifi']
+DEPENDENCIES = ['numpy>=1.8.0', 'six>=1.9.0']
 REQUIRES = ['numpy', 'six']
 
 
