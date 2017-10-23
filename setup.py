@@ -38,6 +38,8 @@ __author__ = 'AndrewAnnex'
 
 # Get OS platform
 host_OS = platform.system()
+# Get platform is Unix-like OS or not
+is_unix = host_OS in ("Linux", "Darwin", "FreeBSD")
 # Get current working directory
 root_dir = os.path.dirname(os.path.realpath(__file__))
 # Make the directory path for cspice
@@ -85,8 +87,8 @@ class InstallSpiceyPy(install):
         self.check_for_spice()
 
         print("Host OS: {0}".format(host_OS))
-        if host_OS == "Linux" or host_OS == "Darwin":
-            self.mac_linux_method()
+        if is_unix:
+            self.unix_method()
         elif host_OS == "Windows":
             self.windows_method()
         else:
@@ -109,7 +111,7 @@ class InstallSpiceyPy(install):
 
     @staticmethod
     def unpack_cspice():
-        if host_OS == "Linux" or host_OS == "Darwin":
+        if is_unix:
             cspice_lib = os.path.join(lib_dir, ("cspice.lib" if host_OS is "Windows" else "cspice.a"))
             csupport_lib = os.path.join(lib_dir, ("csupport.lib" if host_OS is "Windows" else "csupport.a"))
 
@@ -119,7 +121,7 @@ class InstallSpiceyPy(install):
                     os.chdir(lib_dir)
                     if host_OS is "Windows":
                         raise BaseException("Windows is not supported in this build method")
-                    elif host_OS == "Linux" or host_OS == "Darwin":
+                    elif is_unix:
                         for lib in ["ar -x cspice.a", "ar -x csupport.a"]:
                             unpack_lib_process = subprocess.Popen(lib, shell=True)
                             process_status = os.waitpid(unpack_lib_process.pid, 0)[1]
@@ -142,7 +144,7 @@ class InstallSpiceyPy(install):
         # Get the current working directory
         cwd = os.getcwd()
 
-        if host_OS == "Linux" or host_OS == "Darwin":
+        if is_unix:
             try:
                 os.chdir(lib_dir)
                 # find a way to make this work via Extension and setuptools, not using popen.
@@ -177,17 +179,18 @@ class InstallSpiceyPy(install):
 
     @staticmethod
     def move_to_root_directory():
-        sharedLib = 'spice.so' if host_OS == "Linux" or host_OS == "Darwin" else 'cspice.dll'
-        destination = os.path.join(root_dir, 'spiceypy', 'utils', sharedLib)
+        sharedlib = 'spice.so' if is_unix else 'cspice.dll'
+        destination = os.path.join(root_dir, 'spiceypy', 'utils', sharedlib)
         if not os.path.isfile(destination):
-            target = os.path.join(cspice_dir, 'lib', sharedLib) \
-                    if host_OS == "Linux" or host_OS == "Darwin" else \
-                    os.path.join(cspice_dir, 'src', 'cspice', sharedLib)
+            if is_unix:
+                target = os.path.join(cspice_dir, 'lib', sharedlib)
+            else:
+                target = os.path.join(cspice_dir, 'src', 'cspice', sharedlib)
             print("Attempting to move: {0}   to: {1}".format(target, destination))
             try:
                 os.rename(target, destination)
             except BaseException as e:
-                sys.exit('{0} file not found, what happend?: {1}'.format(sharedLib, e))
+                sys.exit('{0} file not found, what happend?: {1}'.format(sharedlib, e))
 
     @staticmethod
     def cleanup():
@@ -198,7 +201,7 @@ class InstallSpiceyPy(install):
             print("Error Cleaning up cspice folder")
             raise e
 
-    def mac_linux_method(self):
+    def unix_method(self):
         # Unpack cspice.a and csupport.a
         self.unpack_cspice()
         # Build the shared Library
@@ -208,9 +211,9 @@ class InstallSpiceyPy(install):
 
     def windows_method(self):
         if os.path.exists(os.path.join(cspice_dir, "lib", "cspice.dll")):
-            print("Found premade cspice.dll, not building")
+            print("Found pre-made cspice.dll, not building")
         elif os.path.exists(os.path.join(root_dir, 'spiceypy', 'utils', 'cspice.dll')):
-            print("Found premade cspice.dll in spiceypy, not building")
+            print("Found pre-made cspice.dll in spiceypy, not building")
         else:
             # Build the DLL
             self.build_library()
@@ -245,6 +248,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Operating System :: MacOS :: MacOS X",
         "Operating System :: POSIX :: Linux",
+        "Operating System :: POSIX :: FreeBSD",
         "Operating System :: Microsoft :: Windows"
     ],
     packages=find_packages(exclude=["*.tests"]),

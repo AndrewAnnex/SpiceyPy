@@ -107,6 +107,8 @@ class GetCSPICE(object):
         ('Darwin', '64bit'): ('MacIntel_OSX_AppleC_64bit', 'tar.Z'),
         ('cygwin', '32bit'): ('PC_Cygwin_GCC_32bit', 'tar.Z'),
         ('cygwin', '64bit'): ('PC_Cygwin_GCC_64bit', 'tar.Z'),
+        ('FreeBSD', '32bit'): ('PC_Linux_GCC_32bit', 'tar.Z'),
+        ('FreeBSD', '64bit'): ('PC_Linux_GCC_64bit', 'tar.Z'),
         ('Linux', '32bit'): ('PC_Linux_GCC_32bit', 'tar.Z'),
         ('Linux', '64bit'): ('PC_Linux_GCC_64bit', 'tar.Z'),
         ('Windows', '32bit'): ('PC_Windows_VisualC_32bit', 'zip'),
