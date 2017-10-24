@@ -256,7 +256,7 @@ setup(
     zip_safe=False,
     distclass=BinaryDistribution,
     package_data={'': ['*.so', "*.dll"]},
-    setup_requires=[],
+    setup_requires=DEPENDENCIES,
     install_requires=DEPENDENCIES,
     requires=REQUIRES,
     tests_require=TEST_DEPENDENCIES,
