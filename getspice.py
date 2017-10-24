@@ -15,7 +15,7 @@ copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
@@ -41,7 +41,7 @@ copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
@@ -62,21 +62,20 @@ copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 """
-from __future__ import print_function
-
 import io
 import platform
 import os
 import subprocess
 import ssl
 import sys
+import time
 from zipfile import ZipFile
 
 import six.moves.urllib as urllib
@@ -124,7 +123,6 @@ class GetCSPICE(object):
             distribution, self._ext = self._distribution_info()
         except KeyError:
             print('SpiceyPy currently does not support your system.')
-
         else:
             cspice = 'cspice.{}'.format(self._ext)
             self._rcspice = ('https://naif.jpl.nasa.gov/pub/naif/misc'
@@ -144,14 +142,13 @@ class GetCSPICE(object):
                 except RuntimeError as error:
                     print("Download failed with URLError: {0}, trying again after "
                           "15 seconds!".format(error))
+                    time.sleep(15)
                 else:
-
                     # Unpack the file
                     print('Unpacking... (this may take some time!)')
                     self._unpack()
-
-                # We are done.  Let's return to the calling code.
-                break
+                    # We are done.  Let's return to the calling code.
+                    break
 
     def _distribution_info(self):
         """Creates the distribution name and the expected extension for the
@@ -214,7 +211,6 @@ class GetCSPICE(object):
                 # Create a PoolManager
                 https = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',
                                             ca_certs=certifi.where())
-
                 # Send the request to get the CSPICE package.
                 response = https.request('GET', self._rcspice,
                                          timeout=urllib3.Timeout(10))

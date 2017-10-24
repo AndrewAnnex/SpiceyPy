@@ -3,6 +3,3 @@ six>=1.9.0
 pytest>=2.9.0
 coverage>=4.0
 coveralls>=1.1
-certifi>=2017.7.27.1
-urllib3[secure]>=1.22
-pyOpenSSL>=17.3.0
