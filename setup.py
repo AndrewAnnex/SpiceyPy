@@ -247,7 +247,10 @@ try:
         tests_require=TEST_DEPENDENCIES,
         cmdclass={'test': PyTest},
         test_suite='spiceypy.tests.test_wrapper.py',
-        extras_require={'testing': ['pytest']}
+        extras_require={
+            'testing': ['pytest'],
+            'security': ['requests[security]']
+        }
     )
 finally:
     pass
