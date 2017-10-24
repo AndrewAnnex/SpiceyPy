@@ -14,13 +14,11 @@ requirements:
         - setuptools
         - six
         - numpy
-        - certifi
     run:
         - python
         - setuptools
         - six
         - numpy
-        - certify
 
 test:
     imports:
