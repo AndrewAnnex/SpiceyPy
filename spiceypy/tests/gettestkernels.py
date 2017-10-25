@@ -41,13 +41,13 @@ def cleanupFile(path):
         os.remove(path)
 
 class CassiniKernels(object):
-    cassPck_url     = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/cpck05Mar2004.tpc"
-    satSpk_url      = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/130220AP_SE_13043_13073.bsp"
-    cassTourSpk_url = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/130212AP_SK_13043_13058.bsp"
-    cassFk_url      = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/cas_v40.tf"
-    cassCk_url      = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/13056_13057ra.bc"
-    cassSclk_url    = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/cas00167.tsc"
-    cassIk_url      = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/cas_iss_v10.ti"
+    cassPck_url     = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/cpck05Mar2004.tpc"
+    satSpk_url      = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/130220AP_SE_13043_13073.bsp"
+    cassTourSpk_url = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/130212AP_SK_13043_13058.bsp"
+    cassFk_url      = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/cas_v40.tf"
+    cassCk_url      = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/13056_13057ra.bc"
+    cassSclk_url    = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/cas00167.tsc"
+    cassIk_url      = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/cas_iss_v10.ti"
     cassPck         = getPathFromUrl(cassPck_url)
     satSpk          = getPathFromUrl(satSpk_url)
     cassTourSpk     = getPathFromUrl(cassTourSpk_url)
@@ -67,12 +67,12 @@ def cleanup_Cassini_Kernels():
 
 
 class ExtraKernels(object):
-    voyagerSclk_url     = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/vg200022.tsc"
-    earthTopoTf_url     = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/earth_topo_050714.tf"
-    earthStnSpk_url     = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/earthstns_itrf93_050714.bsp"
-    earthHighPerPck_url = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/earth_031228_231229_predict.bpc"
-    phobosDsk_url       = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/phobos_lores.bds"
-    marsSpk_url         = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/mar022-1.bsp"
+    voyagerSclk_url     = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/vg200022.tsc"
+    earthTopoTf_url     = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/earth_topo_050714.tf"
+    earthStnSpk_url     = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/earthstns_itrf93_050714.bsp"
+    earthHighPerPck_url = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/earth_031228_231229_predict.bpc"
+    phobosDsk_url       = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/phobos_lores.bds"
+    marsSpk_url         = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/mar022-1.bsp"
     voyagerSclk         = getPathFromUrl(voyagerSclk_url)
     earthTopoTf         = getPathFromUrl(earthTopoTf_url)
     earthStnSpk         = getPathFromUrl(earthStnSpk_url)
@@ -94,10 +94,10 @@ class CoreKernels(object):
     # note this gets updated
     currentLSK = 'naif0012.tls'
     #
-    pck_url    = 'https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/pck00010.tpc'
-    spk_url    = 'https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/de405s_{}endian.bsp'.format(sys.byteorder)
-    gm_pck_url = 'https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/gm_de431.tpc'
-    lsk_url    = 'https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/{}'.format(currentLSK)
+    pck_url    = 'https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/pck00010.tpc'
+    spk_url    = 'https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/de405s_{}endian.bsp'.format(sys.byteorder)
+    gm_pck_url = 'https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/gm_de431.tpc'
+    lsk_url    = 'https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/{}'.format(currentLSK)
     pck        = getPathFromUrl(pck_url)
     spk        = getPathFromUrl(spk_url)
     gm_pck     = getPathFromUrl(gm_pck_url)
