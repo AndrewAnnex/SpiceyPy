@@ -56,6 +56,7 @@ import platform
 import time
 
 import six.moves.urllib as urllib
+from six import print_ as six_print
 import io
 import zipfile
 import subprocess
@@ -129,17 +130,20 @@ def getSpice():
 def downloadSpice(urlpath):
     if ssl.OPENSSL_VERSION < 'OpenSSL 1.0.1g':
         try:
-            print("Warning! Your OpenSSL is Older than OpenSSL 1.0.1g", flush=True)
-            print("Attempting to import requests to continue installation", flush=True)
+            six_print("Warning! Your OpenSSL is Older than OpenSSL 1.0.1g", flush=True)
+            six_print("Attempting to import requests to continue installation", flush=True)
             import requests
             # attempt to download with requests, given that it was
             # installed with security it should be using pyopenssl
             return requests.get(urlpath, timeout=10).content
         except ImportError as ie:
-            print("Error importing requests. Try installing spiceypy with 'pip install spiceypy[security]'", flush=True)
+            six_print("Error importing requests. Try installing spiceypy with 'pip install spiceypy[security]'", flush=True)
             raise ie
     else:
-        return urllib.request.urlopen(urlpath, timeout=10).read()
+        r = urllib.request.urlopen(urlpath, timeout=10)
+        content = r.read()
+        r.close()
+        return content
 
 
 def attemptSpiceDownloadXTimes(x, root_url, result, root_dir):
@@ -158,7 +162,6 @@ def attemptSpiceDownloadXTimes(x, root_url, result, root_dir):
                 cmd = 'gunzip | tar xC ' + root_dir
                 proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE)
                 proc.stdin.write(download)
-            download.close()
             break
         except urllib.error.URLError as err:
             print("Download failed with URLError: {}, trying again after 15 seconds!".format(err.reason))
