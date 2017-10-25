@@ -90,15 +90,16 @@ def cleanup_Extra_Kernels():
 
 
 class CoreKernels(object):
+    import sys
     # note this gets updated
     currentLSK = 'naif0012.tls'
     #
     pck_url    = 'https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/pck00010.tpc'
-    spk_url    = 'https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/de405s_bigendian.bsp'
+    spk_url    = 'https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/de405s_{}endian.bsp'.format(sys.byteorder)
     gm_pck_url = 'https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/gm_de431.tpc'
     lsk_url    = 'https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/{}'.format(currentLSK)
     pck        = getPathFromUrl(pck_url)
-    spk        = getPathFromUrl(spk_url.replace('_bigendian.bsp','.bsp'))
+    spk        = getPathFromUrl(spk_url)
     gm_pck     = getPathFromUrl(gm_pck_url)
     lsk        = getPathFromUrl(lsk_url)
     standardKernelList = [pck, spk, gm_pck, lsk]
@@ -107,19 +108,15 @@ class CoreKernels(object):
 def cleanup_Core_Kernels():
     cleanupFile(CoreKernels.pck)
     cleanupFile(CoreKernels.spk)
-    cleanupFile(CoreKernels.spk[:-4] + '_bigendian.bsp')
     cleanupFile(CoreKernels.gm_pck)
     cleanupFile(CoreKernels.lsk)
 
-def getKernel(url,localKernelName=''):
+def getKernel(url):
     kernelName = getKernelNameFromURL(url)
     kernelFile = os.path.join(cwd, kernelName)
     # does not download if files are present, which allows us to potentially cache kernels
     if not os.path.isfile(kernelFile):
         attemptDownload(url, kernelName, kernelFile, 5)
-        if kernelName ==  'de405s_bigendian.bsp':
-            from spiceypy.tests import make_de405s_native as mdn
-            mdn.make_de405s_native()
 
 
 def attemptDownload(url, kernelName, targetFileName, num_attempts):

@@ -810,7 +810,7 @@ def test_dafac():
 
 def test_dafbbs():
     spice.kclear()
-    handle = spice.dafopr(os.path.join(cwd, "de405s.bsp"))
+    handle = spice.dafopr(CoreKernels.spk)
     spice.dafbbs(handle)
     found = spice.daffpa()
     assert found
@@ -820,7 +820,7 @@ def test_dafbbs():
 
 def test_dafbfs():
     spice.kclear()
-    handle = spice.dafopr(os.path.join(cwd, "de405s.bsp"))
+    handle = spice.dafopr(CoreKernels.spk)
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
@@ -830,7 +830,7 @@ def test_dafbfs():
 
 def test_dafcls():
     spice.kclear()
-    handle = spice.dafopr(os.path.join(cwd, "de405s.bsp"))
+    handle = spice.dafopr(CoreKernels.spk)
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
@@ -840,7 +840,7 @@ def test_dafcls():
 
 def test_dafcs():
     spice.kclear()
-    handle = spice.dafopr(os.path.join(cwd, "de405s.bsp"))
+    handle = spice.dafopr(CoreKernels.spk)
     spice.dafbbs(handle)
     spice.dafcs(handle)
     found = spice.daffpa()
@@ -898,7 +898,7 @@ def test_dafdc():
 
 def test_dafec():
     spice.kclear()
-    handle = spice.dafopr(os.path.join(cwd, "de405s.bsp"))
+    handle = spice.dafopr(CoreKernels.spk)
     n, buffer, done = spice.dafec(handle, 13)
     assert n == 13
     assert buffer == ['; de405s.bsp LOG FILE', ';', '; Created 1997-12-19/18:07:31.00.', ';',
@@ -914,7 +914,7 @@ def test_dafec():
 
 def test_daffna():
     spice.kclear()
-    handle = spice.dafopr(os.path.join(cwd, "de405s.bsp"))
+    handle = spice.dafopr(CoreKernels.spk)
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
@@ -924,7 +924,7 @@ def test_daffna():
 
 def test_daffpa():
     spice.kclear()
-    handle = spice.dafopr(os.path.join(cwd, "de405s.bsp"))
+    handle = spice.dafopr(CoreKernels.spk)
     spice.dafbbs(handle)
     found = spice.daffpa()
     assert found
@@ -935,7 +935,7 @@ def test_daffpa():
 def test_dafgda():
     # not a very good test...
     spice.kclear()
-    handle = spice.dafopr(os.path.join(cwd, "de405s.bsp"))
+    handle = spice.dafopr(CoreKernels.spk)
     elements = spice.dafgda(handle, 20, 21)
     assert elements == [0.0]
     spice.dafcls(handle)
@@ -944,7 +944,7 @@ def test_dafgda():
 
 def test_dafgh():
     spice.kclear()
-    handle = spice.dafopr(os.path.join(cwd, "de405s.bsp"))
+    handle = spice.dafopr(CoreKernels.spk)
     spice.dafbbs(handle)
     spice.dafcs(handle)
     searchHandle = spice.dafgh()
@@ -955,7 +955,7 @@ def test_dafgh():
 
 def test_dafgn():
     spice.kclear()
-    handle = spice.dafopr(os.path.join(cwd, "de405s.bsp"))
+    handle = spice.dafopr(CoreKernels.spk)
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
@@ -969,7 +969,7 @@ def test_dafgn():
 
 def test_dafgs():
     spice.kclear()
-    handle = spice.dafopr(os.path.join(cwd, "de405s.bsp"))
+    handle = spice.dafopr(CoreKernels.spk)
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
@@ -991,7 +991,6 @@ def test_dafgsr():
     # Open DAF
     # N.B. The SPK used must use the LTL-IEEE double byte-ordering and format
     # This should be de405s.bsp from the test kernel set
-    #handle = spice.dafopr(CoreKernels.spk)
     handle = spice.dafopr(CoreKernels.spk)
     # get ND, NI (N.B. for SPKs, ND=2 and NI=6),
     # and first, last and free record numbers
@@ -1040,7 +1039,7 @@ def test_dafgsr():
 
 def test_dafopr():
     spice.kclear()
-    handle = spice.dafopr(os.path.join(cwd, "de405s.bsp"))
+    handle = spice.dafopr(CoreKernels.spk)
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
@@ -1050,7 +1049,7 @@ def test_dafopr():
 
 def test_dafopw():
     spice.kclear()
-    handle = spice.dafopw(os.path.join(cwd, "de405s.bsp"))
+    handle = spice.dafopw(CoreKernels.spk)
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
@@ -1167,7 +1166,7 @@ def test_dafrda():
 
 def test_dafrfr():
     spice.kclear()
-    handle = spice.dafopr(os.path.join(cwd, "de405s.bsp"))
+    handle = spice.dafopr(CoreKernels.spk)
     nd, ni, ifname, fward, bward, free = spice.dafrfr(handle)
     spice.dafcls(handle)
     assert nd == 2
@@ -1180,7 +1179,7 @@ def test_dafrfr():
 
 def test_dafus():
     spice.kclear()
-    handle = spice.dafopr(os.path.join(cwd, "de405s.bsp"))
+    handle = spice.dafopr(CoreKernels.spk)
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
@@ -6791,8 +6790,7 @@ def test_srfxpt():
     npt.assert_array_almost_equal(spoint, expected_spoint)
     npt.assert_array_almost_equal(obspos, expected_obspos)
     # Iterable ET argument:  et-10, et, et+10
-    ets = et - 10. + (np.arange(3) * 10.)
-    assert 3 == len(ets)
+    ets = [et - 10.0, et, et + 10.0]
     sdtoArr = spice.srfxpt("Ellipsoid", 'Enceladus', ets, "LT+S", "CASSINI", frame, bsight)
     assert (3, 4) == sdtoArr.shape
     assert 0. == spice.vnorm(spice.vsub(sdtoArr[1, 0], spoint))
