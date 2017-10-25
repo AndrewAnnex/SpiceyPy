@@ -48,13 +48,13 @@ cspice_dir = os.path.join(root_dir, 'cspice')
 lib_dir = os.path.join(cspice_dir, 'lib')
 
 TEST_DEPENDENCIES = ['numpy>=1.8.0', 'pytest>=2.9.0', 'six>=1.9.0']
-DEPENDENCIES = ['certifi>=2017.7.27.1', 'numpy>=1.8.0', 'six>=1.9.0']
+DEPENDENCIES = ['numpy>=1.8.0', 'six>=1.9.0']
 REQUIRES = ['numpy', 'six']
 
 # If we have an old version of OpenSSL, CSPICE will be downloaded
 # (if required) using urllib3.  Extend the list of required packages.
 if ssl.OPENSSL_VERSION < 'OpenSSL 1.0.1g':
-    DEPENDENCIES.extend(['urllib3[secure]>=1.22',
+    DEPENDENCIES.extend(['urllib3[secure]>=1.22', 'certifi>=2017.7.27.1',
                          'pyOpenSSL>=17.3.0'])
 
 
