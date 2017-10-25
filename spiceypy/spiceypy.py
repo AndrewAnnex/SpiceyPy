@@ -1276,8 +1276,60 @@ def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
                      sclkdp, quats, avvs, nints, starts)
 
 
-def ckw05():
-    raise NotImplementedError
+@spiceErrorCheck
+def ckw05(handle, subtype, degree, begtim, endtim, inst, ref, avflag, segid,
+          sclkdp, packts, rate, nints, starts):
+    """
+    Write a type 5 segment to a CK file.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckw05_c.html
+
+    :param handle: Handle of an open CK file.
+    :type handle: int
+    :param subtype: CK type 5 subtype code. Can be: 0, 1, 2, 3 see naif docs via link above.
+    :type subtype: int
+    :param degree: Degree of interpolating polynomials.
+    :type degree: int
+    :param begtim: The beginning encoded SCLK of the segment.
+    :type begtim: float
+    :param endtim: The ending encoded SCLK of the segment.
+    :type endtim: float
+    :param inst: The NAIF instrument ID code.
+    :type inst: int
+    :param ref: The reference frame of the segment.
+    :type ref: str
+    :param avflag: True if the segment will contain angular velocity.
+    :type avflag: bool
+    :param segid: Segment identifier.
+    :type segid: str
+    :param sclkdp: Encoded SCLK times.
+    :type sclkdp: Array of floats
+    :param packts: Array of packets.
+    :type packts: Some NxM vector of floats
+    :param rate: Nominal SCLK rate in seconds per tick.
+    :type rate: float
+    :param nints: Number of intervals.
+    :type nints: int
+    :param starts: Encoded SCLK interval start times.
+    :type starts: Array of floats
+    """
+    handle  = ctypes.c_int(handle)
+    subtype = ctypes.c_int(subtype)
+    degree  = ctypes.c_int(degree)
+    begtim  = ctypes.c_double(begtim)
+    endtim  = ctypes.c_double(endtim)
+    inst    = ctypes.c_int(inst)
+    ref     = stypes.stringToCharP(ref)
+    avflag  = ctypes.c_bool(avflag)
+    segid   = stypes.stringToCharP(segid)
+    n       = ctypes.c_int(len(packts))
+    sclkdp  = stypes.toDoubleVector(sclkdp)
+    packts  = stypes.toDoubleMatrix(packts)
+    rate    = ctypes.c_double(rate)
+    nints   = ctypes.c_int(nints)
+    starts  = stypes.toDoubleVector(starts)
+    libspice.ckw05_c(handle, subtype, degree, begtim, endtim, inst, ref, avflag,
+                     segid, n, sclkdp, packts, rate, nints, starts)
 
 
 def cleard():

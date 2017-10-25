@@ -603,8 +603,61 @@ def test_ckw03():
 
 
 def test_ckw05():
-    with pytest.raises(NotImplementedError):
-        spice.ckw05()
+    spice.kclear()
+    CK5 = os.path.join(cwd, "type5.bc")
+    if spice.exists(CK5):
+        os.remove(CK5)  # pragma: no cover
+    # constants
+    scale_s = 1.0e-9
+    z = [0.0, 0.0, 1.0]
+    avflag = True
+    sn = 20
+    epochs = np.arange(0.0, 20.0)
+    inst = [-41000, -41001, -41002, -41003]
+    segid = "CK type 05 test segment"
+    # make type 1 data
+    type0data = []
+    type1data = []
+    type2data = []
+    type3data = []
+    angle = 0.0
+    for i in range(0, sn):
+        # make type 1 data
+        angle -= i * scale_s
+        cmat = spice.axisar(z, angle)
+        type1 = spice.m2q(cmat)
+        type1data.append(type1) # should be length 4
+        # make type 3 data
+        avrate = i * scale_s / 1000.0
+        av = spice.vscl(avrate, z)
+        type3 = np.concatenate((type1, av)) # should be length 7
+        type3data.append(type3)
+        # make type 0 data
+        q = type1
+        qav = [0.0, av[0], av[1], av[2]]
+        dq = spice.qxq(q, qav)
+        dq = spice.vsclg(-0.5, dq, 4)
+        type0 = np.concatenate((type1, dq)) # should be length 8
+        type0data.append(type0)
+        # make type 2 data
+        type2 = np.concatenate((type1, dq, av, spice.vscl(1.0e-12, av))) # should be length 14
+        type2data.append(type2)
+    # begin testing ckw05
+    handle = spice.ckopn(CK5, " ", 0)
+    # test subtype 0
+    spice.ckw05(handle, 0, 7, epochs[0], epochs[-1], inst[0], "J2000", avflag, segid, epochs, type0data, 1000.0, 1, [epochs[0]])
+    # test subtype 1
+    spice.ckw05(handle, 1, 3, epochs[0], epochs[-1], inst[1], "J2000", avflag, segid, epochs, type1data, 1000.0, 1, [epochs[0]])
+    # test subtype 2
+    spice.ckw05(handle, 2, 15, epochs[0], epochs[-1], inst[2], "J2000", avflag, segid, epochs, type2data, 1000.0, 1, [epochs[0]])
+    # test subtype 3
+    spice.ckw05(handle, 0, 11, epochs[0], epochs[-1], inst[3], "J2000", avflag, segid, epochs, type3data, 1000.0, 1, [epochs[0]])
+    # close up
+    spice.ckcls(handle)
+
+    if spice.exists(CK5):
+        os.remove(CK5)  # pragma: no cover
+    spice.kclear()
 
 
 def test_cleard():
