@@ -41,13 +41,13 @@ def cleanupFile(path):
         os.remove(path)
 
 class CassiniKernels(object):
-    cassPck_url     = "https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/pck/cpck05Mar2004.tpc"
-    satSpk_url      = "https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/130220AP_SE_13043_13073.bsp"
-    cassTourSpk_url = "https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/130212AP_SK_13043_13058.bsp"
-    cassFk_url      = "https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/fk/cas_v40.tf"
-    cassCk_url      = "https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/ck/13056_13057ra.bc"
-    cassSclk_url    = "https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/sclk/cas00167.tsc"
-    cassIk_url      = "https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/ik/cas_iss_v10.ti"
+    cassPck_url     = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/cpck05Mar2004.tpc"
+    satSpk_url      = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/130220AP_SE_13043_13073.bsp"
+    cassTourSpk_url = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/130212AP_SK_13043_13058.bsp"
+    cassFk_url      = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/cas_v40.tf"
+    cassCk_url      = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/13056_13057ra.bc"
+    cassSclk_url    = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/cas00167.tsc"
+    cassIk_url      = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/cas_iss_v10.ti"
     cassPck         = getPathFromUrl(cassPck_url)
     satSpk          = getPathFromUrl(satSpk_url)
     cassTourSpk     = getPathFromUrl(cassTourSpk_url)
@@ -67,12 +67,12 @@ def cleanup_Cassini_Kernels():
 
 
 class ExtraKernels(object):
-    voyagerSclk_url     = "https://naif.jpl.nasa.gov/pub/naif/VOYAGER/kernels/sclk/vg200022.tsc"
-    earthTopoTf_url     = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/fk/stations/earth_topo_050714.tf"
-    earthStnSpk_url     = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/stations/earthstns_itrf93_050714.bsp"
-    earthHighPerPck_url = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/a_old_versions/earth_031228_231229_predict.bpc"
-    phobosDsk_url       = "http://www.astro.cornell.edu/~carcich/MISC/phobos_lores_dsk/phobos_lores.bds"
-    marsSpk_url         = "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/a_old_versions/mar022-1.bsp"
+    voyagerSclk_url     = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/vg200022.tsc"
+    earthTopoTf_url     = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/earth_topo_050714.tf"
+    earthStnSpk_url     = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/earthstns_itrf93_050714.bsp"
+    earthHighPerPck_url = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/earth_031228_231229_predict.bpc"
+    phobosDsk_url       = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/phobos_lores.bds"
+    marsSpk_url         = "https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/mar022-1.bsp"
     voyagerSclk         = getPathFromUrl(voyagerSclk_url)
     earthTopoTf         = getPathFromUrl(earthTopoTf_url)
     earthStnSpk         = getPathFromUrl(earthStnSpk_url)
@@ -93,12 +93,12 @@ class CoreKernels(object):
     # note this gets updated
     currentLSK = 'naif0012.tls'
     #
-    pck_url    = 'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/pck00010.tpc'
-    spk_url    = 'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/a_old_versions/de405s.bsp'
-    gm_pck_url = 'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/gm_de431.tpc'
-    lsk_url    = 'https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/{}'.format(currentLSK)
+    pck_url    = 'https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/pck00010.tpc'
+    spk_url    = 'https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/de405s_bigendian.bsp'
+    gm_pck_url = 'https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/gm_de431.tpc'
+    lsk_url    = 'https://raw.githubusercontent.com/drbitboy/SpiceyPyTestKernels/master/{}'.format(currentLSK)
     pck        = getPathFromUrl(pck_url)
-    spk        = getPathFromUrl(spk_url)
+    spk        = getPathFromUrl(spk_url.replace('_bigendian.bsp','.bsp'))
     gm_pck     = getPathFromUrl(gm_pck_url)
     lsk        = getPathFromUrl(lsk_url)
     standardKernelList = [pck, spk, gm_pck, lsk]
@@ -107,19 +107,19 @@ class CoreKernels(object):
 def cleanup_Core_Kernels():
     cleanupFile(CoreKernels.pck)
     cleanupFile(CoreKernels.spk)
+    cleanupFile(CoreKernels.spk[:-4] + '_bigendian.bsp')
     cleanupFile(CoreKernels.gm_pck)
     cleanupFile(CoreKernels.lsk)
 
 def getKernel(url,localKernelName=''):
     kernelName = getKernelNameFromURL(url)
-    kernelFile = os.path.join(cwd, localKernelName if localKernelName else kernelName)
+    kernelFile = os.path.join(cwd, kernelName)
     # does not download if files are present, which allows us to potentially cache kernels
     if not os.path.isfile(kernelFile):
         attemptDownload(url, kernelName, kernelFile, 5)
-        if localKernelName:
-            if kernelName ==  'de405s.bsp' and localKernelName == 'de405s_bigendian.bsp':
-                from spiceypy.tests import make_de405s_native as mdn
-                mdn.make_de405s_native()
+        if kernelName ==  'de405s_bigendian.bsp':
+            from spiceypy.tests import make_de405s_native as mdn
+            mdn.make_de405s_native()
 
 
 def attemptDownload(url, kernelName, targetFileName, num_attempts):
@@ -149,7 +149,7 @@ def attemptDownload(url, kernelName, targetFileName, num_attempts):
 def getStandardKernels():
     six_print("\tChecking for kernels...\n", flush=True)
     getKernel(CoreKernels.pck_url)
-    getKernel(CoreKernels.spk_url,getKernelNameFromURL(CoreKernels.spk_url)[:-4]+'_bigendian.bsp')
+    getKernel(CoreKernels.spk_url)
     getKernel(CoreKernels.gm_pck_url)
     getKernel(CoreKernels.lsk_url)
 
