@@ -100,8 +100,8 @@ libspice.ckw02_c.argtypes = [c_int, c_double, c_double, c_int, c_char_p, c_char_
                              POINTER(c_double), POINTER(c_double * 4), POINTER(c_double * 3), POINTER(c_double)]
 libspice.ckw03_c.argtypes = [c_int, c_double, c_double, c_int, c_char_p, c_bool, c_char_p, c_int, POINTER(c_double),
                              POINTER(c_double * 4), POINTER(c_double * 3), c_int, POINTER(c_double)]
-libspice.ckw05_c.argtypes = [c_int, c_int, c_double, c_double, c_int, c_char_p, c_bool, c_char_p, c_int, c_double,
-                             c_int]
+libspice.ckw05_c.argtypes = [c_int, c_int, c_int, c_double, c_double, c_int, c_char_p, c_bool, c_char_p, c_int,
+                             POINTER(c_double), c_void_p, c_double, c_int, POINTER(c_double)]
 libspice.clight_c.argtypes = None
 libspice.clight_c.restype = c_double
 libspice.clpool_c.argtypes = None
