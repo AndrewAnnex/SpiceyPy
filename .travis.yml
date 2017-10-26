@@ -43,7 +43,6 @@ before_install:
 - pip install --use-wheel -r requirements.txt
 install:
 - python setup.py install
-- pytest -s
 script:
 - coverage run --source=spiceypy setup.py test
 after_success:

@@ -1644,7 +1644,6 @@ def test_dskv02():
     spice.kclear()
 
 def test_dskw02_dskrb2_dskmi2():
-    print("in dskw02 test")
     spice.kclear()
     dskpath = os.path.join(cwd, "TESTdskw02.dsk")
     if spice.exists(dskpath):
@@ -1706,7 +1705,6 @@ def test_dskw02_dskrb2_dskmi2():
     if spice.exists(dskpath):
         os.remove(dskpath)  # pragma: no cover
     spice.kclear()
-    print("done dskw02 test")
 
 
 def test_dskx02():
@@ -2007,19 +2005,16 @@ def test_ekaced():
 
 
 def test_ekmany():
-    print("in ekmany")
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekmany.ek")
     tablename = "test_table_ekmany"
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
     # Create new EK and new segment with table
-    print("call ekopn")
     handle = spice.ekopn(ekpath, ekpath, 0)
     decls = ["DATATYPE = CHARACTER*(10),   NULLS_OK = FALSE, SIZE = VARIABLE",
              "DATATYPE = DOUBLE PRECISION, NULLS_OK = FALSE, SIZE = VARIABLE",
              "DATATYPE = INTEGER,          NULLS_OK = FALSE, SIZE = VARIABLE"]
-    print("call ekbseg")
     segno = spice.ekbseg(handle, tablename, ['c1', 'd1', 'i1'], decls)
     # Insert records:  1, 2, and 3 entries at rows 0, 1, 2, respectively
     c_data = [['100'], ['101', '101'], ['102', '102', '102']]
@@ -2032,27 +2027,23 @@ def test_ekmany():
         spice.ekacei(handle, segno, r, "i1", len(i_data[r]), i_data[r], False)
     # Try record insertion beyond the next available, verify the exception
     with pytest.raises(spice.stypes.SpiceyError):
-        print("call ekinsr")
         spice.ekinsr(handle, segno, 4)
     # Close EK, then reopen for reading
-    print("call ekcls")
     spice.ekcls(handle)
     spice.kclear()
     #
     # Start of part two
     #
-    print("call eklef")
     handle = spice.eklef(ekpath)
     assert handle is not None
     # Test query using ekpsel
     query = "SELECT c1, d1, i1 from {}".format(tablename)
-    print("call ekpsel")
     n, xbegs, xends, xtypes, xclass, tabs, cols, err, errmsg = spice.ekpsel(query, 99, 99, 99)
     assert n == 3
-    assert spice.stypes.SpiceEKDataType._SPICE_CHR.value == xtypes[0]
-    assert spice.stypes.SpiceEKDataType._SPICE_DP.value  == xtypes[1]
-    assert spice.stypes.SpiceEKDataType._SPICE_INT.value == xtypes[2]
-    assert ([dict(spice.stypes.SpiceEKExprClass._fields_)['SPICE_EK_EXP_COL'].value]*3) == list(xclass)
+    assert spice.stypes.SpiceEKDataType.SPICE_CHR == xtypes[0]
+    assert spice.stypes.SpiceEKDataType.SPICE_DP  == xtypes[1]
+    assert spice.stypes.SpiceEKDataType.SPICE_INT == xtypes[2]
+    assert ([spice.stypes.SpiceEKExprClass.SPICE_EK_EXP_COL]*3) == list(xclass)
     assert (["TEST_TABLE_EKMANY"]*3) == tabs
     assert "C1 D1 I1".split() == cols
     assert not err
@@ -2108,7 +2099,6 @@ def test_ekmany():
         spice.ekrced(handle, segno, 3, "d1")
     #with pytest.raises(spice.stypes.SpiceyError): TODO: FIX
     #    spice.ekrcec(handle, segno, 4, "c1", 4) # this causes a SIGSEGV
-
     #
     # Part 3
     #
@@ -2152,7 +2142,6 @@ def test_ekmany():
     assert not spice.failed()
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
-    print("finished ekmany")
 
 
 def test_ekaclc():
