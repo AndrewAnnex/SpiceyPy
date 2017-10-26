@@ -1662,12 +1662,12 @@ def test_dskw02_dskrb2_dskmi2():
     first = -50 * spice.jyear()
     last  =  50 * spice.jyear()
     # stuff from spicedsk.h
-    SPICE_DSK02_MAXVRT = 16000002 // 4 # divide to lower memory usage
+    SPICE_DSK02_MAXVRT = 16000002 // 16 # divide to lower memory usage
     SPICE_DSK02_MAXPLT = 2 * (SPICE_DSK02_MAXVRT - 2)
     SPICE_DSK02_MAXVXP = SPICE_DSK02_MAXPLT // 2
-    SPICE_DSK02_MAXCEL = 60000000 // 4 # divide to lower memory usage
+    SPICE_DSK02_MAXCEL = 60000000 // 16 # divide to lower memory usage
     SPICE_DSK02_MXNVLS = SPICE_DSK02_MAXCEL + (SPICE_DSK02_MAXVXP // 2)
-    SPICE_DSK02_MAXCGR = 100000   // 4 # divide to lower memory usage
+    SPICE_DSK02_MAXCGR = 100000   // 16 # divide to lower memory usage
     SPICE_DSK02_IXIFIX = SPICE_DSK02_MAXCGR + 7
     SPICE_DSK02_MAXNPV = 3 * (SPICE_DSK02_MAXPLT // 2) + 1
     SPICE_DSK02_SPAISZ = SPICE_DSK02_IXIFIX + SPICE_DSK02_MAXVXP + SPICE_DSK02_MXNVLS + SPICE_DSK02_MAXVRT + SPICE_DSK02_MAXNPV
