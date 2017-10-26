@@ -1644,6 +1644,7 @@ def test_dskv02():
     spice.kclear()
 
 def test_dskw02_dskrb2_dskmi2():
+    print("in dskw02 test")
     spice.kclear()
     dskpath = os.path.join(cwd, "TESTdskw02.dsk")
     if spice.exists(dskpath):
@@ -1662,12 +1663,12 @@ def test_dskw02_dskrb2_dskmi2():
     first = -50 * spice.jyear()
     last  =  50 * spice.jyear()
     # stuff from spicedsk.h
-    SPICE_DSK02_MAXVRT = 16000002 // 16 # divide to lower memory usage
+    SPICE_DSK02_MAXVRT = 16000002 // 128 # divide to lower memory usage
     SPICE_DSK02_MAXPLT = 2 * (SPICE_DSK02_MAXVRT - 2)
     SPICE_DSK02_MAXVXP = SPICE_DSK02_MAXPLT // 2
-    SPICE_DSK02_MAXCEL = 60000000 // 16 # divide to lower memory usage
+    SPICE_DSK02_MAXCEL = 60000000 // 128 # divide to lower memory usage
     SPICE_DSK02_MXNVLS = SPICE_DSK02_MAXCEL + (SPICE_DSK02_MAXVXP // 2)
-    SPICE_DSK02_MAXCGR = 100000   // 16 # divide to lower memory usage
+    SPICE_DSK02_MAXCGR = 100000   // 128 # divide to lower memory usage
     SPICE_DSK02_IXIFIX = SPICE_DSK02_MAXCGR + 7
     SPICE_DSK02_MAXNPV = 3 * (SPICE_DSK02_MAXPLT // 2) + 1
     SPICE_DSK02_SPAISZ = SPICE_DSK02_IXIFIX + SPICE_DSK02_MAXVXP + SPICE_DSK02_MXNVLS + SPICE_DSK02_MAXVRT + SPICE_DSK02_MAXNPV
@@ -1705,6 +1706,7 @@ def test_dskw02_dskrb2_dskmi2():
     if spice.exists(dskpath):
         os.remove(dskpath)  # pragma: no cover
     spice.kclear()
+    print("done dskw02 test")
 
 
 def test_dskx02():
@@ -2007,6 +2009,7 @@ def test_ekaced():
 
 
 def test_ekmany():
+    print("in ekmany")
     spice.kclear()
     ekpath = os.path.join(cwd, "example_ekmany.ek")
     tablename = "test_table_ekmany"
@@ -2158,6 +2161,7 @@ def test_ekmany():
     assert not spice.failed()
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
+    print("finished ekmany")
 
 
 def test_ekaclc():
