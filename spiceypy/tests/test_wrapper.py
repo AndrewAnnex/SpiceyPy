@@ -2016,40 +2016,44 @@ def test_ekmany():
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
     # Create new EK and new segment with table
+    print("call ekopn")
     handle = spice.ekopn(ekpath, ekpath, 0)
-    segno = spice.ekbseg(handle, tablename, 3, 10, "c1 d1 i1".split(), 200,
-                         ["DATATYPE = CHARACTER*(10),   NULLS_OK = FALSE, SIZE = VARIABLE",
-                          "DATATYPE = DOUBLE PRECISION, NULLS_OK = FALSE, SIZE = VARIABLE",
-                          "DATATYPE = INTEGER,          NULLS_OK = FALSE, SIZE = VARIABLE"]
-                        )
-    # Use EKINSR to insert two records at recno 0, one at recno 2
-    # - First inserted record will become final record 1
-    for insertrecno, finalrecno in ((0, 1), (0, 0), (2, 2)):
-        assert None is spice.ekinsr(handle, segno, insertrecno)
-        assert not spice.failed()
-        # Insert records:  1, 2, and 3 entries at rows 0, 1, 2, respectively
-        # - Integer values are final record number + 100
-        iBaseVals = [100+finalrecno]*(finalrecno+1)
-        # List-ify map to ensure listToCharArrayPtr sees list, not map object
-        spice.ekacec(handle, segno, insertrecno, "c1", finalrecno+1, 11, list(map(str, iBaseVals)),   False)
-        spice.ekaced(handle, segno, insertrecno, "d1", finalrecno+1,     list(map(float, iBaseVals)), False)
-        spice.ekacei(handle, segno, insertrecno, "i1", finalrecno+1,     iBaseVals,                   False)
-        assert not spice.failed()
+    decls = ["DATATYPE = CHARACTER*(10),   NULLS_OK = FALSE, SIZE = VARIABLE",
+             "DATATYPE = DOUBLE PRECISION, NULLS_OK = FALSE, SIZE = VARIABLE",
+             "DATATYPE = INTEGER,          NULLS_OK = FALSE, SIZE = VARIABLE"]
+    print("call ekbseg")
+    segno = spice.ekbseg(handle, tablename, ['c1', 'd1', 'i1'], decls)
+    # Insert records:  1, 2, and 3 entries at rows 0, 1, 2, respectively
+    c_data = [['100'], ['101', '101'], ['102', '102', '102']]
+    d_data = [[100.0], [101.0, 101.0], [102.0, 102.0, 102.0]]
+    i_data = [[100], [101, 101], [102, 102, 102]]
+    for r in range(0, 3):
+        spice.ekinsr(handle, segno, r)
+        spice.ekacec(handle, segno, r, "c1", len(c_data[r]), c_data[r], False)
+        spice.ekaced(handle, segno, r, "d1", len(d_data[r]), d_data[r], False)
+        spice.ekacei(handle, segno, r, "i1", len(i_data[r]), i_data[r], False)
     # Try record insertion beyond the next available, verify the exception
     with pytest.raises(spice.stypes.SpiceyError):
+        print("call ekinsr")
         spice.ekinsr(handle, segno, 4)
     # Close EK, then reopen for reading
+    print("call ekcls")
     spice.ekcls(handle)
     spice.kclear()
+    #
+    # Start of part two
+    #
+    print("call eklef")
     handle = spice.eklef(ekpath)
     assert handle is not None
     # Test query using ekpsel
     query = "SELECT c1, d1, i1 from {}".format(tablename)
+    print("call ekpsel")
     n, xbegs, xends, xtypes, xclass, tabs, cols, err, errmsg = spice.ekpsel(query, 99, 99, 99)
-    assert 3 == n
-    assert dict(spice.stypes.SpiceEKDataType._fields_)['SPICE_CHR'].value == xtypes[0]
-    assert dict(spice.stypes.SpiceEKDataType._fields_)['SPICE_DP'].value == xtypes[1]
-    assert dict(spice.stypes.SpiceEKDataType._fields_)['SPICE_INT'].value == xtypes[2]
+    assert n == 3
+    assert spice.stypes.SpiceEKDataType._SPICE_CHR.value == xtypes[0]
+    assert spice.stypes.SpiceEKDataType._SPICE_DP.value  == xtypes[1]
+    assert spice.stypes.SpiceEKDataType._SPICE_INT.value == xtypes[2]
     assert ([dict(spice.stypes.SpiceEKExprClass._fields_)['SPICE_EK_EXP_COL'].value]*3) == list(xclass)
     assert (["TEST_TABLE_EKMANY"]*3) == tabs
     assert "C1 D1 I1".split() == cols
@@ -2060,102 +2064,91 @@ def test_ekmany():
     assert nmrows == 3
     assert not error
     assert '' == errmsg
+    # test fail case for eknelt
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.eknelt(0, nmrows+1)
     # Validate the content of each field, including exceptions when
-    saveCData = []
-    saveDData = []
-    saveIData = []
     # Loop over rows, test .ekgc/.ekgd/.ekgi
-    for recno in range(nmrows+1):
-        # Confirm number of elements in each row
-        if recno == nmrows:
-            with pytest.raises(spice.stypes.SpiceyError):
-                spice.eknelt(0, recno)
-        else:
-            assert (recno+1) == spice.eknelt(0, recno)
-        # Confirm the elements' values
-        saveCData.append([])
-        saveDData.append([])
-        saveIData.append([])
-        for iElement in range(recno+2):
-            if iElement > recno or recno == nmrows:
-                with pytest.raises(spice.stypes.SpiceyError):
-                    spice.ekgc(0, recno, iElement, lenout=11)
-                if spice.failed(): spice.reset()
-                with pytest.raises(spice.stypes.SpiceyError):
-                    spice.ekgd(1, recno, iElement)
-                if spice.failed(): spice.reset()
-                with pytest.raises(spice.stypes.SpiceyError):
-                    spice.ekgi(2, recno, iElement)
-                if spice.failed(): spice.reset()
-            else:
-                cData, iNull = spice.ekgc(0, recno, iElement, lenout=11)
-                assert cData == str(100+recno)
-                assert iNull == False
-                saveCData[-1].append(cData)
-                dData, iNull = spice.ekgd(1, recno, iElement)
-                assert dData == (100.+recno)
-                assert iNull == False
-                saveDData[-1].append(dData)
-                iData, iNull = spice.ekgi(2, recno, iElement)
-                assert iData == (100+recno)
-                assert iNull == False
-                saveIData[-1].append(iData)
+    for r in range(nmrows):
+        # get number of elements in this row
+        n_elm = spice.eknelt(0, r)
+        assert  n_elm == r + 1
+        for e in range(0, n_elm):
+            # get row int data
+            i_datum, i_null = spice.ekgi(2, r, e)
+            assert not i_null
+            assert i_datum == i_data[r][e]
+            # get row double data
+            d_datum, d_null = spice.ekgd(1, r, e)
+            assert not d_null
+            assert d_datum == d_data[r][e]
+            # get row char data
+            c_datum, c_null = spice.ekgc(0, r, e)
+            assert not c_null
+            assert c_datum == c_data[r][e]
     # Loop over rows, test .ekrcec/.ekrced/.ekrcei
-    for recno in range(nmrows+1):
-        if recno == nmrows:
-            #with pytest.raises(spice.stypes.SpiceyError):
-            #    spice.ekrcec(handle, segno, recno, "c1", 20, nelts=2222)
-            #if spice.failed(): spice.reset()
-            with pytest.raises(spice.stypes.SpiceyError):
-                spice.ekrced(handle, segno, recno, "d1")
-            if spice.failed(): spice.reset()
-            with pytest.raises(spice.stypes.SpiceyError):
-                spice.ekrcei(handle, segno, recno, "i1")
-            if spice.failed(): spice.reset()
-        else:
-            nvals, altCData, isNull = spice.ekrcec(handle, segno, recno, "c1", 11, nelts=len(saveCData[recno]))
-            assert (recno+1) == nvals
-            assert list(altCData) == saveCData[recno]
-            nvals, altDData, isNull = spice.ekrced(handle, segno, recno, "d1", nelts=len(saveDData[recno]))
-            assert (recno+1) == nvals
-            assert list(altDData) == saveDData[recno]
-            nvals, altIData, isNull = spice.ekrcei(handle, segno, recno, "i1", nelts=len(saveIData[recno]))
-            assert (recno+1) == nvals
-            assert list(altIData) == saveIData[recno]
+    for r in range(nmrows):
+        # get row int data
+        ni_vals, ri_data, i_null = spice.ekrcei(handle, segno, r, "i1")
+        assert not i_null
+        assert ni_vals == r + 1
+        npt.assert_array_equal(ri_data, i_data[r])
+        # get row double data
+        nd_vals, rd_data, d_null = spice.ekrced(handle, segno, r, "d1")
+        assert not d_null
+        assert nd_vals == r + 1
+        npt.assert_array_equal(rd_data, d_data[r])
+        # get row char data
+        nc_vals, rc_data, c_null = spice.ekrcec(handle, segno, r, "c1", 11)
+        assert not c_null
+        assert nc_vals == r + 1
+        assert rc_data == c_data[r]
+    # test out of bounds
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.ekrcei(handle, segno, 3, "i1")
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.ekrced(handle, segno, 3, "d1")
+    #with pytest.raises(spice.stypes.SpiceyError): TODO: FIX
+    #    spice.ekrcec(handle, segno, 4, "c1", 4) # this causes a SIGSEGV
+
+    #
+    # Part 3
+    #
     # Close file, re-open for writing
     spice.ekuef(handle)
     handle = spice.ekopw(ekpath)
     # Loop over rows, update values using .ekucec/.ekuced/.ekucei
-    for recno in range(nmrows+1):
-        iBaseVals = [200+recno]*(recno+1)
-        if recno == nmrows:
-            #with pytest.raises(spice.stypes.SpiceyError):
-            #    spice.ekucec(handle, segno, recno, "c1", recno+1, 11, list(map(str, iBaseVals)), False)
-            #if spice.failed(): spice.reset()
-            with pytest.raises(spice.stypes.SpiceyError):
-                spice.ekuced(handle, segno, recno, "d1", recno+1, list(map(float, iBaseVals)), False)
-            if spice.failed(): spice.reset()
-            with pytest.raises(spice.stypes.SpiceyError):
-                spice.ekucei(handle, segno, recno, "i1", recno+1, iBaseVals, False)
-            if spice.failed(): spice.reset()
-        else:
-            # List-ify map to ensure listToCharArrayPtr sees list, not map object
-            spice.ekucec(handle, segno, recno, "c1", recno+1, 11, list(map(str, iBaseVals)), False)
-            spice.ekuced(handle, segno, recno, "d1", recno+1, list(map(float, iBaseVals)), False)
-            spice.ekucei(handle, segno, recno, "i1", recno+1, iBaseVals, False)
-            assert not spice.failed()
+    c_data = [['200'], ['201', '201'], ['202', '202', '202']]
+    d_data = [[200.0], [201.0, 201.0], [202.0, 202.0, 202.0]]
+    i_data = [[200], [201, 201], [202, 202, 202]]
+    for r in range(0, 3):
+        spice.ekucec(handle, segno, r, "c1", len(c_data[r]), c_data[r], False)
+        spice.ekuced(handle, segno, r, "d1", len(d_data[r]), d_data[r], False)
+        spice.ekucei(handle, segno, r, "i1", len(i_data[r]), i_data[r], False)
+    # Test invalid updates
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.ekucec(handle, segno, 3, "c1", 1, ['300'], False)
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.ekuced(handle, segno, 3, "d1", 1, [300.0], False)
+    with pytest.raises(spice.stypes.SpiceyError):
+        spice.ekucei(handle, segno, 3, "i1", 1, [300], False)
     # Loop over rows, use .ekrcec/.ekrced/.ekrcei to test updates
-    for recno in range(nmrows):
-        iBaseVals = [200+recno]*(recno+1)
-        nvals, altCData, isNull = spice.ekrcec(handle, segno, recno, "c1", 11, nelts=len(saveCData[recno]))
-        assert (recno+1) == nvals
-        assert list(altCData) == list(map(str, iBaseVals))
-        nvals, altDData, isNull = spice.ekrced(handle, segno, recno, "d1", nelts=len(saveDData[recno]))
-        assert (recno+1) == nvals
-        assert list(altDData) == iBaseVals
-        nvals, altIData, isNull = spice.ekrcei(handle, segno, recno, "i1", nelts=len(saveIData[recno]))
-        assert (recno+1) == nvals
-        assert list(altIData) == list(map(float, iBaseVals))
+    for r in range(nmrows):
+        # get row int data
+        ni_vals, ri_data, i_null = spice.ekrcei(handle, segno, r, "i1")
+        assert not i_null
+        assert ni_vals == r + 1
+        npt.assert_array_equal(ri_data, i_data[r])
+        # get row double data
+        nd_vals, rd_data, d_null = spice.ekrced(handle, segno, r, "d1")
+        assert not d_null
+        assert nd_vals == r + 1
+        npt.assert_array_equal(rd_data, d_data[r])
+        # get row char data
+        nc_vals, rc_data, c_null = spice.ekrcec(handle, segno, r, "c1", 11)
+        assert not c_null
+        assert nc_vals == r + 1
+        assert rc_data == c_data[r]
     # Cleanup
     spice.ekcls(handle)
     assert not spice.failed()

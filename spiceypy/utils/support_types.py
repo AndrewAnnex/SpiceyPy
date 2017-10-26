@@ -109,7 +109,7 @@ def toPythonString(inString):
     elif six.PY3:
         if isinstance(inString, c_char_p):
             return toPythonString(inString.value)
-        return bytes.decode(string_at(inString)).rstrip()
+        return bytes.decode(string_at(inString), encoding='utf-8', errors="ignore").rstrip()
 
 
 def emptyCharArray(xLen=None, yLen=None):
@@ -586,12 +586,18 @@ class SpiceDLADescr(Structure):
 
 
 class SpiceEKDataType(c_int):
+    _SPICE_CHR = c_int(0)
+    _SPICE_DP  = c_int(1)
+    _SPICE_INT = c_int(2)
+    _SPICE_TIME = c_int(3)
+    _SPICE_BOOL = c_int(4)
+
     _fields_ = [
-        ('SPICE_CHR', c_int(0)),
-        ('SPICE_DP', c_int(1)),
-        ('SPICE_INT', c_int(2)),
-        ('SPICE_TIME', c_int(3)),
-        ('SPICE_BOOL', c_int(4)),
+        ('SPICE_CHR', _SPICE_CHR),
+        ('SPICE_DP', _SPICE_DP),
+        ('SPICE_INT', _SPICE_INT),
+        ('SPICE_TIME', _SPICE_TIME),
+        ('SPICE_BOOL', _SPICE_BOOL),
     ]
 
 
