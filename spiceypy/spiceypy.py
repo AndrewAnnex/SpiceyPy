@@ -3765,14 +3765,8 @@ def ekbseg(handle, tabnam, cnames, decls):
     :type handle: int
     :param tabnam: Table name.
     :type tabnam: str
-    :param ncols: Number of columns in the segment.
-    :type ncols: int
-    :param cnmlen: Length of names in in column name array.
-    :type cnmlen: int
     :param cnames: Names of columns.
     :type cnames: list of str.
-    :param declen: Length of declaration strings in declaration array.
-    :type declen: int
     :param decls: Declarations of columns.
     :type decls: list of str.
     :return: Segment number.

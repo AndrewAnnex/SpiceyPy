@@ -1980,10 +1980,9 @@ def test_ekacec():
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
-    segno = spice.ekbseg(handle, "test_table_ekacec", 1, 10, ["c1"], 200,
-                         ["DATATYPE = CHARACTER*(*), NULLS_OK = TRUE"])
+    segno = spice.ekbseg(handle, "test_table_ekacec", ["c1"], ["DATATYPE = CHARACTER*(*), NULLS_OK = TRUE"])
     recno = spice.ekappr(handle, segno)
-    spice.ekacec(handle, segno, recno, "c1", 2, 10, ["1.0", "2.0"], False)
+    spice.ekacec(handle, segno, recno, "c1", 2, ["1.0", "2.0"], False)
     spice.ekcls(handle)
     spice.kclear()
     if spice.exists(ekpath):
@@ -1997,8 +1996,7 @@ def test_ekaced():
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
-    segno = spice.ekbseg(handle, "test_table_ekaced", 1, 10, ["c1"], 200,
-                         ["DATATYPE = DOUBLE PRECISION, NULLS_OK = TRUE"])
+    segno = spice.ekbseg(handle, "test_table_ekaced", ["c1"], ["DATATYPE = DOUBLE PRECISION, NULLS_OK = TRUE"])
     recno = spice.ekappr(handle, segno)
     spice.ekaced(handle, segno, recno, "c1", 2, [1.0, 2.0], False)
     spice.ekcls(handle)
@@ -2219,8 +2217,7 @@ def test_ekappr():
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
-    segno = spice.ekbseg(handle, "test_table_ekappr", 1, 10, ["c1"], 200,
-                         ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
+    segno = spice.ekbseg(handle, "test_table_ekappr", ["c1"], ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
     recno = spice.ekappr(handle, segno)
     spice.ekacei(handle, segno, recno, "c1", 2, [1, 2], False)
     spice.ekcls(handle)
@@ -2238,7 +2235,7 @@ def test_ekbseg():
     handle = spice.ekopn(ekpath, "Test EK", 100)
     cnames = ['INT_COL_1']
     cdecls = ["DATATYPE=INTEGER, INDEXED=TRUE, NULLS_OK=TRUE"]
-    segno = spice.ekbseg(handle, "SCALAR_DATA", 1, 100, cnames, 200, cdecls)
+    segno = spice.ekbseg(handle, "SCALAR_DATA", cnames, cdecls)
     recno = spice.ekappr(handle, segno)
     assert recno != -1
     ordids = [x for x in range(5)]
@@ -2261,8 +2258,7 @@ def test_ekccnt():
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
-    segno = spice.ekbseg(handle, "TEST_TABLE_EKCCNT", 1, 10, ["c1"], 200,
-                         ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
+    segno = spice.ekbseg(handle, "TEST_TABLE_EKCCNT", ["c1"], ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
     recno = spice.ekappr(handle, segno)
     spice.ekacei(handle, segno, recno, "c1", 2, [1, 2], False)
     spice.ekcls(handle)
@@ -2283,8 +2279,7 @@ def test_ekcii():
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
-    segno = spice.ekbseg(handle, "TEST_TABLE_EKCII", 1, 10, ["c1"], 200,
-                         ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
+    segno = spice.ekbseg(handle, "TEST_TABLE_EKCII", ["c1"], ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
     recno = spice.ekappr(handle, segno)
     spice.ekacei(handle, segno, recno, "c1", 2, [1, 2], False)
     spice.ekcls(handle)
@@ -2498,8 +2493,7 @@ def test_eklef():
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
-    segno = spice.ekbseg(handle, "test_table_eklef", 1, 10, ["c1"], 200,
-                         ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
+    segno = spice.ekbseg(handle, "test_table_eklef", ["c1"], ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
     recno = spice.ekappr(handle, segno)
     spice.ekacei(handle, segno, recno, "c1", 2, [1, 2], False)
     spice.ekcls(handle)
@@ -2517,8 +2511,7 @@ def test_eknseg():
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
-    segno = spice.ekbseg(handle, "TEST_TABLE_EKNSEG", 1, 10, ["c1"], 200,
-                         ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
+    segno = spice.ekbseg(handle, "TEST_TABLE_EKNSEG", ["c1"], ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
     recno = spice.ekappr(handle, segno)
     spice.ekacei(handle, segno, recno, "c1", 2, [1, 2], False)
     spice.ekcls(handle)
@@ -2621,8 +2614,7 @@ def test_ektnam():
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 0)
-    segno = spice.ekbseg(handle, "TEST_TABLE_EKTNAM", 1, 10, ["c1"], 200,
-                         ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
+    segno = spice.ekbseg(handle, "TEST_TABLE_EKTNAM", ["c1"], ["DATATYPE  = INTEGER, NULLS_OK = TRUE"])
     recno = spice.ekappr(handle, segno)
     spice.ekacei(handle, segno, recno, "c1", 2, [1, 2], False)
     spice.ekcls(handle)
