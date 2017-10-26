@@ -109,7 +109,7 @@ def toPythonString(inString):
     elif six.PY3:
         if isinstance(inString, c_char_p):
             return toPythonString(inString.value)
-        return bytes.decode(string_at(inString), encoding='utf-8', errors="ignore").rstrip()
+        return bytes.decode(string_at(inString), errors="ignore").rstrip()
 
 
 def emptyCharArray(xLen=None, yLen=None):
