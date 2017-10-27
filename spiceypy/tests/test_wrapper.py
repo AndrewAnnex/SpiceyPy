@@ -6078,7 +6078,7 @@ def test_spkopa():
     # create empty spk kernel
     handle_test = spice.spkopn(SPKOPA, 'Test Kernel for spkopa unit test.', 4)
     # created empty spk kernel, write to it
-    spice.spksub(handle, descr, ident, begin, end, handle_test)
+    spice.spksub(handle, descr, ident, first, last, handle_test)
     # close kernel
     spice.spkcls(handle_test)
     # open the file to append to it
@@ -6086,7 +6086,7 @@ def test_spkopa():
     et2 = spice.str2et("2003 APR 27 00:00:00.000 TDB")
     handle, descr, ident = spice.spksfs(5, et2, 41)
     body, center, frame, otype, first, last, begin, end = spice.spkuds(descr)
-    spice.spksub(handle, descr, ident, begin, end, handle_spkopa)
+    spice.spksub(handle, descr, ident, first, last, handle_spkopa)
     spice.spkcls(handle_spkopa)
     # clean up
     if spice.exists(SPKOPA):
@@ -6210,7 +6210,7 @@ def test_spksub():
     # create empty spk kernel
     handle_test = spice.spkopn(SPKSUB, 'Test Kernel for spksub unit test.', 4)
     # created empty spk kernel, write to it
-    spice.spksub(handle, descr, ident, begin, end, handle_test)
+    spice.spksub(handle, descr, ident, first, last, handle_test)
     # close kernel
     spice.spkcls(handle_test)
     if spice.exists(SPKSUB):
