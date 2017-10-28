@@ -12620,7 +12620,7 @@ def spkw18(handle, subtyp, body, center, inframe, first, last, segid, degree, pa
     :param degree:  Degree of interpolating polynomials.
     :type degree: int
     :param packts: data packets
-    :type packts:
+    :type packts: 2D Array of floats
     :param epochs: Array of epochs corresponding to states.
     :type epochs: N-Element Array of floats
     """
