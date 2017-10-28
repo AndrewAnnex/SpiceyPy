@@ -6683,8 +6683,46 @@ def test_spkw17():
 
 
 def test_spkw18():
-    with pytest.raises(NotImplementedError):
-        spice.spkw18()
+    spice.kclear()
+    #
+    SPK18 = os.path.join(cwd, "test18.bsp")
+    if spice.exists(SPK18):
+        os.remove(SPK18)  # pragma: no cover
+    # make a new kernel
+    handle = spice.spkopn(SPK18, 'Type 18 SPK internal file name.', 4)
+    init_size = os.path.getsize(SPK18)
+    # test data
+    body = 3
+    center = 10
+    ref =  "J2000"
+    epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
+    states = [
+        [101., 201., 301., 401., 501., 601., 1., 1., 1., 1., 1., 1.],
+        [102., 202., 302., 402., 502., 602., 1., 1., 1., 1., 1., 1.],
+        [103., 203., 303., 403., 503., 603., 1., 1., 1., 1., 1., 1.],
+        [104., 204., 304., 404., 504., 604., 1., 1., 1., 1., 1., 1.],
+        [105., 205., 305., 405., 505., 605., 1., 1., 1., 1., 1., 1.],
+        [106., 206., 306., 406., 506., 606., 1., 1., 1., 1., 1., 1.],
+        [107., 207., 307., 407., 507., 607., 1., 1., 1., 1., 1., 1.],
+        [108., 208., 308., 408., 508., 608., 1., 1., 1., 1., 1., 1.],
+        [109., 209., 309., 409., 509., 609., 1., 1., 1., 1., 1., 1.],
+    ]
+    # test spkw18 with S18TP0
+    spice.spkw18(handle, spice.stypes.SpiceSPK18Subtype.S18TP0, body, center, ref, epochs[0], epochs[-1], "SPK type 18 test segment", 3, states, epochs)
+    # close the kernel
+    spice.spkcls(handle)
+    end_size = os.path.getsize(SPK18)
+    assert end_size != init_size
+    # test reading data
+    spice.spklef(SPK18)
+    state, lt = spice.spkgeo(body, epochs[0], ref, center)
+    npt.assert_array_equal(state, [101., 201., 301., 1., 1., 1., ])
+    state, lt = spice.spkgeo(body, epochs[1], ref, center)
+    npt.assert_array_equal(state, [102., 202., 302., 1., 1., 1., ])
+    spice.kclear()
+    # cleanup
+    if spice.exists(SPK18):
+        os.remove(SPK18)  # pragma: no cover
 
 
 def test_spkw20():
