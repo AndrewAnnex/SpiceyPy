@@ -631,6 +631,17 @@ class SpiceEKExprClass(c_int):
     SPICE_EK_EXP_EXPR = _SPICE_EK_EXP_EXPR.value
 
 
+class SpiceSPK18Subtype(c_int):
+    _S18TP0 = c_int(0)
+    _S18TP1 = c_int(1)
+    S18TP0  = _S18TP0.value
+    S18TP1  = _S18TP1.value
+    _fields_ = [
+        ('S18TP0', _S18TP0),
+        ('S18TP1', _S18TP1)
+    ]
+
+
 def emptySpiceEKExprClassVector(n):
     if isinstance(n, c_int):
         n = n.value
@@ -714,7 +725,7 @@ class SpiceEKSegSum(Structure):
 # and modified as needed for this author, maybe we should work together?
 
 ### helper classes/functions ###
-BITSIZE = {'char': sizeof(c_char), 'int': sizeof(c_int), 'double': sizeof(c_double)}
+BITSIZE = {'char': sizeof(c_char), 'int': sizeof(c_int), 'double': sizeof(c_double), 'bool': sizeof(c_int), 'time': sizeof(c_int)}
 
 
 def _char_getter(data_p, index, length):
@@ -739,6 +750,12 @@ def SPICEINT_CELL(size):
 
 def SPICECHAR_CELL(size, length):
     return SpiceCell.character(size, length)
+
+def SPICEBOOL_CELL(size):
+    return SpiceCell.bool(size)
+
+def SPICETIME_CELL(size):
+    return SpiceCell.time(size)
 
 
 class SpiceCell(Structure):
@@ -822,6 +839,26 @@ class SpiceCell(Structure):
         data = (c_double * size).from_buffer(
             base, cls.CTRLBLOCK * BITSIZE['double'])
         instance = cls(cls.DATATYPES_ENUM['double'], 0, size, 0, 1,
+                       cast(base, c_void_p),
+                       cast(data, c_void_p))
+        return instance
+
+    @classmethod
+    def bool(cls, size):
+        base = (c_int * (cls.CTRLBLOCK + size))()
+        data = (c_int * size).from_buffer(
+            base, cls.CTRLBLOCK * BITSIZE['bool'])
+        instance = cls(cls.DATATYPES_ENUM['bool'], 0, size, 0, 1,
+                       cast(base, c_void_p),
+                       cast(data, c_void_p))
+        return instance
+
+    @classmethod
+    def time(cls, size):
+        base = (c_int * (cls.CTRLBLOCK + size))()
+        data = (c_int * size).from_buffer(
+            base, cls.CTRLBLOCK * BITSIZE['time'])
+        instance = cls(cls.DATATYPES_ENUM['time'], 0, size, 0, 1,
                        cast(base, c_void_p),
                        cast(data, c_void_p))
         return instance

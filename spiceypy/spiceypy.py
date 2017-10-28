@@ -12489,8 +12489,49 @@ def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel,
                       eqel, rapol, decpol)
 
 
-def spkw18():
-    raise NotImplementedError
+@spiceErrorCheck
+def spkw18(handle, subtyp, body, center, inframe, first, last, segid, degree, packts, epochs):
+    """
+    Write a type 18 segment to an SPK file.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkw18_c.html
+
+    :param handle: Handle of an SPK file open for writing.
+    :type handle: int
+    :param subtyp: SPK type 18 subtype code.
+    :type subtyp: int
+    :param body: Body code for ephemeris object.
+    :type body: int
+    :param center: Body code for the center of motion of the body.
+    :type center: int
+    :param inframe: The reference frame of the states.
+    :type inframe: str
+    :param first: First valid time for which states can be computed.
+    :type first: float
+    :param last: Last valid time for which states can be computed.
+    :type last: float
+    :param segid: Segment identifier.
+    :type segid: str
+    :param degree:  Degree of interpolating polynomials.
+    :type degree: int
+    :param packts: data packets
+    :type packts:
+    :param epochs: Array of epochs corresponding to states.
+    :type epochs: N-Element Array of floats
+    """
+    handle = ctypes.c_int(handle)
+    subtyp = ctypes.c_int(subtyp)
+    body   = ctypes.c_int(body)
+    center = ctypes.c_int(center)
+    inframe = stypes.stringToCharP(inframe)
+    first  = ctypes.c_double(first)
+    last   = ctypes.c_double(last)
+    segid  = stypes.stringToCharP(segid)
+    degree = ctypes.c_int(degree)
+    n = ctypes.c_int(len(packts))
+    packts = stypes.toDoubleMatrix(packts)
+    epochs = stypes.toDoubleVector(epochs)
+    libspice.spkw18_c(handle, subtyp, body, center, inframe, first, last, segid, degree, n, packts, epochs)
 
 
 @spiceErrorCheck

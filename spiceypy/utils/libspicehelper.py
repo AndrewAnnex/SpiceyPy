@@ -697,7 +697,7 @@ libspice.spkw15_c.argtypes = [c_int, c_int, c_int, c_char_p, c_double, c_double,
                               c_double]
 libspice.spkw17_c.argtypes = [c_int, c_int, c_int, c_char_p, c_double, c_double, c_char_p, c_double, (c_double * 9),
                               c_double, c_double]
-libspice.spkw18_c.argtypes = [c_int, c_int, c_int, c_char_p, c_double, c_double, c_char_p, c_int, c_int]
+libspice.spkw18_c.argtypes = [c_int, c_int, c_int, c_int, c_char_p, c_double, c_double, c_char_p, c_int, c_int, c_void_p, POINTER(c_double)]
 libspice.spkw20_c.argtypes = [c_int, c_int, c_int, c_char_p, c_double, c_double, c_char_p, c_double, c_int, c_int, POINTER(c_double), c_double, c_double, c_double, c_double]
 libspice.srfc2s_c.argtypes = [c_int, c_int, c_int, c_char_p, POINTER(c_bool)]
 libspice.srfcss_c.argtypes = [c_int, c_char_p, c_int, c_char_p, POINTER(c_bool)]
