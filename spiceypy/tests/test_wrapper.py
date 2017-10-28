@@ -608,11 +608,11 @@ def test_ckw05():
     if spice.exists(CK5):
         os.remove(CK5)  # pragma: no cover
     # constants
-    scale_s = 1.0e-9
-    z = [0.0, 0.0, 1.0]
+    scale_s = 1.0e-3
+    z = [0.3234, 0.17, 0.991]
     avflag = True
-    sn = 20
-    epochs = np.arange(0.0, 20.0)
+    sn = 10
+    epochs = np.arange(0.0, float(sn))
     inst = [-41000, -41001, -41002, -41003]
     segid = "CK type 05 test segment"
     # make type 1 data
@@ -623,7 +623,7 @@ def test_ckw05():
     angle = 0.0
     for i in range(0, sn):
         # make type 1 data
-        angle -= i * scale_s
+        angle -= (i+1) * scale_s
         cmat = spice.axisar(z, angle)
         type1 = spice.m2q(cmat)
         type1data.append(type1) # should be length 4
@@ -644,21 +644,27 @@ def test_ckw05():
         type2data.append(type2)
     # begin testing ckw05
     handle = spice.ckopn(CK5, " ", 0)
+    init_size = os.path.getsize(CK5)
     # test subtype 0
-    spice.ckw05(handle, 0, 7, epochs[0], epochs[-1], inst[0], "J2000", avflag, segid, epochs, type0data, 1000.0, 1, [epochs[0]])
+    spice.ckw05(handle, 0, 15, epochs[0], epochs[-1], inst[0], "J2000", avflag, segid, epochs, type0data, 1000.0, 1, [epochs[0]])
     # test subtype 1
-    spice.ckw05(handle, 1, 3, epochs[0], epochs[-1], inst[1], "J2000", avflag, segid, epochs, type1data, 1000.0, 1, [epochs[0]])
+    spice.ckw05(handle, 1, 15, epochs[0], epochs[-1], inst[1], "J2000", avflag, segid, epochs, type1data, 1000.0, 1, [epochs[0]])
     # test subtype 2
     spice.ckw05(handle, 2, 15, epochs[0], epochs[-1], inst[2], "J2000", avflag, segid, epochs, type2data, 1000.0, 1, [epochs[0]])
     # test subtype 3
-    spice.ckw05(handle, 0, 11, epochs[0], epochs[-1], inst[3], "J2000", avflag, segid, epochs, type3data, 1000.0, 1, [epochs[0]])
-    # close up
+    spice.ckw05(handle, 0, 15, epochs[0], epochs[-1], inst[3], "J2000", avflag, segid, epochs, type3data, 1000.0, 1, [epochs[0]])
     spice.ckcls(handle)
+    # test size
+    end_size = os.path.getsize(CK5)
+    assert end_size != init_size
 
     if spice.exists(CK5):
         os.remove(CK5)  # pragma: no cover
     spice.kclear()
 
+def test_stress_ckw05():
+    for i in range(1000):
+        test_ckw05()
 
 def test_cleard():
     with pytest.raises(NotImplementedError):
