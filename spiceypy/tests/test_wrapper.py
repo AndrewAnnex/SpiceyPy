@@ -608,56 +608,34 @@ def test_ckw05():
     if spice.exists(CK5):
         os.remove(CK5)  # pragma: no cover
     # constants
-    scale_s = 1.0e-3
-    z = [0.3234, 0.17, 0.991]
     avflag = True
-    sn = 10
-    epochs = np.arange(0.0, float(sn))
+    epochs = np.arange(0.0, 2.0)
     inst = [-41000, -41001, -41002, -41003]
     segid = "CK type 05 test segment"
     # make type 1 data
-    type0data = []
-    type1data = []
-    type2data = []
-    type3data = []
-    angle = 0.0
-    for i in range(0, sn):
-        # make type 1 data
-        angle -= (i+1) * scale_s
-        cmat = spice.axisar(z, angle)
-        type1 = spice.m2q(cmat)
-        type1data.append(type1) # should be length 4
-        # make type 3 data
-        avrate = i * scale_s / 1000.0
-        av = spice.vscl(avrate, z)
-        type3 = np.concatenate((type1, av)) # should be length 7
-        type3data.append(type3)
-        # make type 0 data
-        q = type1
-        qav = [0.0, av[0], av[1], av[2]]
-        dq = spice.qxq(q, qav)
-        dq = spice.vsclg(-0.5, dq, 4)
-        type0 = np.concatenate((type1, dq)) # should be length 8
-        type0data.append(type0)
-        # make type 2 data
-        type2 = np.concatenate((type1, dq, av, spice.vscl(1.0e-12, av))) # should be length 14
-        type2data.append(type2)
+    type0data = [[ 9.999e-1, -1.530e-4, -8.047e-5, -4.691e-4, 0.0, 0.0, 0.0, 0.0],
+                  [9.999e-1, -4.592e-4, -2.414e-4, -1.407e-3, -7.921e-10, -1.616e-7, -8.499e-8,  -4.954e-7]]
+    type1data = [[ 9.999e-1, -1.530e-4, -8.047e-5, -4.691e-4],
+                  [9.999e-1, -4.592e-4, -2.414e-4, -1.407e-3]]
+    type2data = [[0.959, -0.00015309, -8.04768139e-5, -0.0004691324, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                 [0.959, -0.00045928, -0.00024143, -0.001407396, -7.921e-10, -1.616e-7, -8.499e-8, -4.954e-7, 3.234e-7, 1.7e-7, 9.91e-7, 3.234e-7, 1.7e-9, 9.91e-9]]
+    type3data = [[0.959, -0.00015309, -8.0476e-05, -0.00046913, 0.0, 0.0, 0.0],
+                 [0.959, -0.00045928, -0.00024143, -0.0014073, 3.234e-7, 1.7e-7, 9.91e-7]]
     # begin testing ckw05
     handle = spice.ckopn(CK5, " ", 0)
     init_size = os.path.getsize(CK5)
     # test subtype 0
-    spice.ckw05(handle, 0, 15, epochs[0], epochs[-1], inst[0], "J2000", avflag, segid, epochs, type0data, 1000.0, 1, [epochs[0]])
+    spice.ckw05(handle, 0, 15, epochs[0], epochs[-1], inst[0], "J2000", avflag, segid, epochs, type0data, 1000.0, 1, epochs)
     # test subtype 1
-    spice.ckw05(handle, 1, 15, epochs[0], epochs[-1], inst[1], "J2000", avflag, segid, epochs, type1data, 1000.0, 1, [epochs[0]])
+    spice.ckw05(handle, 1, 15, epochs[0], epochs[-1], inst[1], "J2000", avflag, segid, epochs, type1data, 1000.0, 1, epochs)
     # test subtype 2
-    spice.ckw05(handle, 2, 15, epochs[0], epochs[-1], inst[2], "J2000", avflag, segid, epochs, type2data, 1000.0, 1, [epochs[0]])
+    spice.ckw05(handle, 2, 15, epochs[0], epochs[-1], inst[2], "J2000", avflag, segid, epochs, type2data, 1000.0, 1, epochs)
     # test subtype 3
-    spice.ckw05(handle, 0, 15, epochs[0], epochs[-1], inst[3], "J2000", avflag, segid, epochs, type3data, 1000.0, 1, [epochs[0]])
+    spice.ckw05(handle, 0, 15, epochs[0], epochs[-1], inst[3], "J2000", avflag, segid, epochs, type3data, 1000.0, 1, epochs)
     spice.ckcls(handle)
     # test size
     end_size = os.path.getsize(CK5)
     assert end_size != init_size
-
     if spice.exists(CK5):
         os.remove(CK5)  # pragma: no cover
     spice.kclear()
