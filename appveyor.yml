@@ -99,10 +99,19 @@ after_test:
 
   # try conda thing
   - set PATH=%CONDA%;%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
-  # Update to a known good conda, found from https://github.com/numba/numba/blob/master/appveyor.yml
+  # from conda-forge
+  - cmd: set CONDA_NPY=19
+  # from conda-forge
+  - cmd: rmdir C:\cygwin /s /q
   - "conda config --add channels conda-forge"
-  - "conda install -q -y conda"
-  - "conda install -q -y conda-build anaconda-client numpy wheel six pytest"
+  # from conda-forge
+  - "conda config --set show_channel_urls true"
+  # from conda-forge
+  - "appveyor-retry conda update --yes --quiet conda"
+  - "appveyor-retry conda install --yes --quiet conda-build"
+  - "appveyor-retry conda install -q -y anaconda-client"
+  - "appveyor-retry conda install -q -y numpy wheel six pytest"
+  # build spiceypy
   - "conda build appveyor -q --no-anaconda-upload"
   - ps: ls $env:CONDA_BUILDS
   - ps: mv $env:CONDA_BUILDS ./

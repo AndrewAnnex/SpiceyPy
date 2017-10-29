@@ -14,6 +14,7 @@ requirements:
         - setuptools
         - six
         - numpy
+        - certifi
     run:
         - python
         - setuptools
@@ -27,6 +28,7 @@ test:
         - numpy
         - pytest
         - six
+        - certifi
 
 about:
     home: https://github.com/AndrewAnnex/SpiceyPy
