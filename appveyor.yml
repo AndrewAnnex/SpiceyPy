@@ -99,6 +99,8 @@ after_test:
 
   # try conda thing
   - set PATH=%CONDA%;%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
+  # make sure python now maps to miniconda
+  - cmd: call %CONDA%\Scripts\activate.bat
   # from conda-forge
   - cmd: set CONDA_NPY=19
   # from conda-forge

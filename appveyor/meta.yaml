@@ -20,6 +20,7 @@ requirements:
         - setuptools
         - six
         - numpy
+        - certifi
 
 test:
     imports:
