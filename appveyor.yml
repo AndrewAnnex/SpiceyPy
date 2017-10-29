@@ -103,13 +103,13 @@ after_test:
   - cmd: set CONDA_NPY=19
   # from conda-forge
   - cmd: rmdir C:\cygwin /s /q
-  - "conda config --add channels conda-forge"
   # from conda-forge
   - "conda config --set show_channel_urls true"
   # from conda-forge
   - "appveyor-retry conda update --yes --quiet conda"
   - "appveyor-retry conda install --yes --quiet conda-build"
   - "appveyor-retry conda install -q -y anaconda-client"
+  - "conda config --add channels conda-forge"
   - "appveyor-retry conda install -q -y numpy wheel six pytest"
   # build spiceypy
   - "conda build appveyor -q --no-anaconda-upload"
