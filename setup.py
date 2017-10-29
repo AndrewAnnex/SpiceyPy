@@ -47,8 +47,8 @@ cspice_dir = os.path.join(root_dir, 'cspice')
 # Make the directory path for cspice/lib
 lib_dir = os.path.join(cspice_dir, 'lib')
 
-TEST_DEPENDENCIES = ['numpy>=1.8.0', 'pytest>=2.9.0', 'six>=1.9.0']
-DEPENDENCIES = ['certifi>=2017.7.27.1', 'numpy>=1.8.0', 'six>=1.9.0']
+TEST_DEPENDENCIES = ['numpy>=1.13.0', 'pytest>=2.9.0', 'six>=1.9.0']
+DEPENDENCIES = ['certifi>=2017.1.23', 'numpy>=1.13.0', 'six>=1.9.0']
 REQUIRES = ['numpy', 'six']
 
 # If we have an old version of OpenSSL, CSPICE will be downloaded

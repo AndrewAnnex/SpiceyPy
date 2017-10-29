@@ -102,13 +102,11 @@ after_test:
   # make sure python now maps to miniconda
   - cmd: call %CONDA%\Scripts\activate.bat
   # from conda-forge
-  - cmd: set CONDA_NPY=19
-  # from conda-forge
   - cmd: rmdir C:\cygwin /s /q
   # from conda-forge
   - "conda config --set show_channel_urls true"
   # from conda-forge
-  - "appveyor-retry conda install --yes --quiet conda=4.3.25"
+  - "appveyor-retry conda install --yes --quiet conda=4.3.30"
   - "appveyor-retry conda install --yes --quiet conda-build"
   - "appveyor-retry conda install --yes --quiet wheel"
   - "appveyor-retry conda install --yes --quiet six"
