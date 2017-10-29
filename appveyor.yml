@@ -106,7 +106,7 @@ after_test:
   # from conda-forge
   - "conda config --set show_channel_urls true"
   # from conda-forge
-  - "appveyor-retry conda update --yes --quiet  conda=4.3.25"
+  - "appveyor-retry conda install --yes --quiet conda=4.3.25"
   - "appveyor-retry conda install --yes --quiet conda-build"
   - "appveyor-retry conda install --yes --quiet wheel"
   - "appveyor-retry conda install --yes --quiet six"
