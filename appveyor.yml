@@ -110,7 +110,7 @@ after_test:
   - "appveyor-retry conda install --yes --quiet conda-build"
   - "appveyor-retry conda install -q -y anaconda-client"
   - "conda config --add channels conda-forge"
-  - "appveyor-retry conda install -q -y numpy wheel six pytest"
+  - "appveyor-retry conda install -q -y numpy six pytest"
   # build spiceypy
   - "conda build appveyor -q --no-anaconda-upload"
   - ps: ls $env:CONDA_BUILDS
