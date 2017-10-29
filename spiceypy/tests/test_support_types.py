@@ -199,15 +199,16 @@ def test_to_improve_coverage():
     assert stypes.DataType()
     # SpiceDLADescr methods
     stsdlad = stypes.SpiceDLADescr()
-    assert type(stsdlad.bwdptr) is int
-    assert type(stsdlad.fwdptr) is int
-    assert type(stsdlad.ibase) is int
-    assert type(stsdlad.isize) is int
-    assert type(stsdlad.dbase) is int
-    assert type(stsdlad.cbase) is int
-    assert type(stsdlad.csize) is int
+    assert isinstance(stsdlad.bwdptr, int)
+    assert isinstance(stsdlad.fwdptr, int)
+    assert isinstance(stsdlad.ibase, int)
+    assert isinstance(stsdlad.isize, int)
+    assert isinstance(stsdlad.dbase, int)
+    assert isinstance(stsdlad.cbase, int)
+    assert isinstance(stsdlad.csize, int)
     # __str__ methods in multiple classes
-    for obj in (stypes.SpiceEKAttDsc(),stypes.SpiceEKSegSum(),stypes.emptySpiceEKExprClassVector(1),stypes.emptySpiceEKDataTypeVector(1),stypes.emptySpiceEKExprClassVector(ctypes.c_int(1)),stypes.emptySpiceEKDataTypeVector(ctypes.c_int(1)),):
+    for obj in (stypes.SpiceEKAttDsc(), stypes.SpiceEKSegSum(), stypes.emptySpiceEKExprClassVector(1),
+                stypes.emptySpiceEKDataTypeVector(1), stypes.emptySpiceEKExprClassVector(ctypes.c_int(1)), stypes.emptySpiceEKDataTypeVector(ctypes.c_int(1))):
         assert type(obj.__str__()) is str
     # SpiceCell methods:  .is_time; .is_bool; .reset.
     stsct = stypes.SPICETIME_CELL(10)
