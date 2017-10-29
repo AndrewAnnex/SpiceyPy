@@ -13,23 +13,23 @@ requirements:
         - python
         - setuptools
         - six
-        - numpy>=1.13
-        - certifi>=2017.1.23
+        - numpy
+        - certifi
     run:
         - python
         - setuptools
         - six
-        - numpy>=1.13
-        - certifi>=2017.1.23
+        - numpy
+        - certifi
 
 test:
     imports:
         - spiceypy
     requires:
-        - numpy>=1.13
+        - numpy
         - pytest
         - six
-        - certifi>=2017.1.23
+        - certifi
 
 about:
     home: https://github.com/AndrewAnnex/SpiceyPy

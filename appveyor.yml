@@ -106,15 +106,15 @@ after_test:
   # from conda-forge
   - "conda config --set show_channel_urls true"
   # from conda-forge
-  - "appveyor-retry conda install --yes --quiet conda=4.3.30"
+  - "appveyor-retry conda install --yes --quiet conda>=4.3.30"
   - "appveyor-retry conda install --yes --quiet conda-build"
   - "appveyor-retry conda install --yes --quiet wheel"
   - "appveyor-retry conda install --yes --quiet six"
-  - "appveyor-retry conda install --yes --quiet numpy"
+  - "appveyor-retry conda install --yes --quiet numpy>=1.13"
   - "appveyor-retry conda install --yes --quiet anaconda-client"
   - "conda config --add channels conda-forge"
   - "conda config --set channel_priority false"
-  - "appveyor-retry conda install -q -y certifi"
+  - "appveyor-retry conda install -q -y certifi>=2017.1.23"
   # build spiceypy
   - "conda build appveyor -q --no-anaconda-upload"
   - ps: ls $env:CONDA_BUILDS
