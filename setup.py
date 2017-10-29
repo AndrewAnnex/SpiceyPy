@@ -47,15 +47,14 @@ cspice_dir = os.path.join(root_dir, 'cspice')
 # Make the directory path for cspice/lib
 lib_dir = os.path.join(cspice_dir, 'lib')
 
-TEST_DEPENDENCIES = ['numpy>=1.13.0', 'pytest>=2.9.0', 'six>=1.9.0']
-DEPENDENCIES = ['certifi>=2017.1.23', 'numpy>=1.13.0', 'six>=1.9.0']
+TEST_DEPENDENCIES = ['numpy>=1.13.0', 'six>=1.9.0', 'pytest>=2.9.0']
+DEPENDENCIES = ['numpy>=1.13.0', 'six>=1.9.0', 'certifi>=2017.1.23']
 REQUIRES = ['numpy', 'six']
 
 # If we have an old version of OpenSSL, CSPICE will be downloaded
 # (if required) using urllib3.  Extend the list of required packages.
 if ssl.OPENSSL_VERSION < 'OpenSSL 1.0.1g':
-    DEPENDENCIES.extend(['urllib3[secure]>=1.22',
-                         'pyOpenSSL>=17.3.0'])
+    DEPENDENCIES.extend(['urllib3[secure]>=1.22', 'pyOpenSSL>=17.3.0'])
 
 
 # py.test integration from pytest.org
@@ -264,4 +263,5 @@ setup(
         'install': InstallSpiceyPy,
         'test': PyTest},
     test_suite='spiceypy.tests.test_wrapper.py',
-    extras_require={'testing': ['pytest']})
+    extras_require={'testing': ['pytest']}
+)
