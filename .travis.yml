@@ -19,10 +19,10 @@ matrix:
           env: PYVERSION='2.7.13'
         - os: osx
           language: generic
-          env: PYVERSION='3.4.0'
+          env: PYVERSION='3.4.7'
         - os: osx
           language: generic
-          env: PYVERSION='3.5.0'
+          env: PYVERSION='3.5.4'
         - os: osx
           language: generic
           env: PYVERSION='3.6.0'
@@ -44,7 +44,7 @@ before_install:
 install:
 - python setup.py install
 script:
-- if [ "$TRAVIS_OS_NAME" == "osx" ]; then travis_wait 30 coverage run --source=spiceypy setup.py test; else coverage run --source=spiceypy setup.py test; fi
+- coverage run --source=spiceypy setup.py test
 after_success:
 - coveralls
 deploy:

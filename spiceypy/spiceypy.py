@@ -3517,7 +3517,7 @@ def edterm(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts):
 
 
 @spiceErrorCheck
-def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
+def ekacec(handle, segno, recno, column, nvals, cvals, isnull):
     """
     Add data to a character column in a specified EK record.
 
@@ -3533,8 +3533,6 @@ def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     :type column: str
     :param nvals: Number of values to add to column.
     :type nvals: int
-    :param vallen: Declared length of character values.
-    :type vallen: int
     :param cvals: Character values to add to column.
     :type cvals: list of str.
     :param isnull: Flag indicating whether column entry is null.
@@ -3545,11 +3543,10 @@ def ekacec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     recno = ctypes.c_int(recno)
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
-    vallen = ctypes.c_int(vallen)
-    cvals = stypes.listToCharArrayPtr(cvals,xLen=vallen.value)
+    vallen = ctypes.c_int(len(max(cvals, key=len)) + 1)
+    cvals = stypes.listToCharArrayPtr(cvals)
     isnull = ctypes.c_int(1 if isnull else 0)
-    libspice.ekacec_c(handle, segno, recno, column, nvals, vallen, cvals,
-                      isnull)
+    libspice.ekacec_c(handle, segno, recno, column, nvals, vallen, cvals, isnull)
 
 
 @spiceErrorCheck
@@ -3758,19 +3755,7 @@ def ekappr(handle, segno):
 
 
 @spiceErrorCheck
-def ekbseg(handle, tabnam, ncols, cnmlen, cnames, declen, decls):
-    # if 'cnmlen' in kwargs:
-    # cnmlen = kwargs['cnmlen']
-    # else:
-    # cnmlen = len(max(cnames, key=len)) + 1
-    # if 'declen' in kwargs:
-    #     declen = kwargs['declen']
-    # else:
-    #     declen = len(max(decls, key=len)) + 1
-    # if 'ncols' in kwargs:
-    #     ncols = kwargs['ncols']
-    # else:
-    #     ncols = len(cnames)
+def ekbseg(handle, tabnam, cnames, decls):
     """
     Start a new segment in an E-kernel.
 
@@ -3780,14 +3765,8 @@ def ekbseg(handle, tabnam, ncols, cnmlen, cnames, declen, decls):
     :type handle: int
     :param tabnam: Table name.
     :type tabnam: str
-    :param ncols: Number of columns in the segment.
-    :type ncols: int
-    :param cnmlen: Length of names in in column name array.
-    :type cnmlen: int
     :param cnames: Names of columns.
     :type cnames: list of str.
-    :param declen: Length of declaration strings in declaration array.
-    :type declen: int
     :param decls: Declarations of columns.
     :type decls: list of str.
     :return: Segment number.
@@ -3795,13 +3774,13 @@ def ekbseg(handle, tabnam, ncols, cnmlen, cnames, declen, decls):
     """
     handle = ctypes.c_int(handle)
     tabnam = stypes.stringToCharP(tabnam)
-    cnmlen = ctypes.c_int(cnmlen)
-    cnames = stypes.listToCharArray(cnames,xLen=cnmlen.value)  # not sure if this works
-    declen = ctypes.c_int(declen)
-    decls = stypes.listToCharArray(decls,xLen=declen.value)
+    ncols  = ctypes.c_int(len(cnames))
+    cnmlen = ctypes.c_int(len(max(cnames, key=len)) + 1) # needs to be len(name)+1 ie 'c1' to 3 for ekbseg do not fail
+    cnames = stypes.listToCharArrayPtr(cnames)
+    declen = ctypes.c_int(len(max(decls, key=len)) + 1)
+    decls = stypes.listToCharArrayPtr(decls)
     segno = ctypes.c_int()
-    libspice.ekbseg_c(handle, tabnam, ncols, cnmlen, cnames, declen, decls,
-                      ctypes.byref(segno))
+    libspice.ekbseg_c(handle, tabnam, ncols, cnmlen, cnames, declen, decls, ctypes.byref(segno))
     return segno.value
 
 
@@ -3934,7 +3913,6 @@ def ekfind(query, lenout=_default_len_out):
 @spiceErrorCheck
 @spiceFoundExceptionThrower
 def ekgc(selidx, row, element, lenout=_default_len_out):
-    # ekgc has issues grabbing last element/row in column
     """
     Return an element of an entry in a column of character type in a specified
     row.
@@ -3960,9 +3938,8 @@ def ekgc(selidx, row, element, lenout=_default_len_out):
     lenout = ctypes.c_int(lenout)
     null = ctypes.c_bool()
     found = ctypes.c_bool()
-    cdata = stypes.stringToCharP(" " * lenout.value)
-    libspice.ekgc_c(selidx, row, element, lenout, cdata, ctypes.byref(null),
-                    ctypes.byref(found))
+    cdata = stypes.stringToCharP(lenout)
+    libspice.ekgc_c(selidx, row, element, lenout, cdata, ctypes.byref(null), ctypes.byref(found))
     return stypes.toPythonString(cdata), null.value, found.value
 
 
@@ -4104,7 +4081,7 @@ def eklef(fname):
     """
     fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
-    libspice.eklef_c(fname, handle)
+    libspice.eklef_c(fname, ctypes.byref(handle))
     return handle.value
 
 
@@ -4179,7 +4156,7 @@ def ekopn(fname, ifname, ncomch):
     ifname = stypes.stringToCharP(ifname)
     ncomch = ctypes.c_int(ncomch)
     handle = ctypes.c_int()
-    libspice.ekopn_c(fname, ifname, ncomch, handle)
+    libspice.ekopn_c(fname, ifname, ncomch, ctypes.byref(handle))
     return handle.value
 
 
@@ -4272,15 +4249,13 @@ def ekpsel(query, msglen, tablen, collen):
     xends = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
     xtypes = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
     xclass = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
-    tabs = stypes.emptyCharArray(yLen=_SPICE_EK_MAXQSEL, xLen=tablen.value)
-    cols = stypes.emptyCharArray(yLen=_SPICE_EK_MAXQSEL, xLen=collen.value)
+    tabs = stypes.emptyCharArray(yLen=_SPICE_EK_MAXQSEL, xLen=tablen)
+    cols = stypes.emptyCharArray(yLen=_SPICE_EK_MAXQSEL, xLen=collen)
     error = ctypes.c_bool()
-    errmsg = stypes.stringToCharP(" " * msglen.value)
+    errmsg = stypes.stringToCharP(msglen)
     libspice.ekpsel_c(query, msglen, tablen, collen, ctypes.byref(n),
-                      xbegs, xends,
-                      xtypes, xclass,
-                      ctypes.byref(tabs), ctypes.byref(cols),
-                      ctypes.byref(error), errmsg)
+                      xbegs, xends, xtypes, xclass, ctypes.byref(tabs),
+                      ctypes.byref(cols), ctypes.byref(error), errmsg)
     return (n.value,
             stypes.cVectorToPython(xbegs)[:n.value],
             stypes.cVectorToPython(xends)[:n.value],
@@ -4323,10 +4298,9 @@ def ekrcec(handle, segno, recno, column, lenout, nelts=_SPICE_EK_EKRCEX_ROOM_DEF
     column = stypes.stringToCharP(column)
     lenout = ctypes.c_int(lenout)
     nvals = ctypes.c_int()
-    cvals = stypes.emptyCharArray(yLen=nelts, xLen=lenout.value)
+    cvals = stypes.emptyCharArray(yLen=nelts, xLen=lenout)
     isnull = ctypes.c_bool()
-    libspice.ekrcec_c(handle, segno, recno, column, lenout, ctypes.byref(nvals),
-                      ctypes.byref(cvals), ctypes.byref(isnull))
+    libspice.ekrcec_c(handle, segno, recno, column, lenout, ctypes.byref(nvals), ctypes.byref(cvals), ctypes.byref(isnull))
     assert failed() or (nvals.value <= nelts)
     return nvals.value, stypes.cVectorToPython(cvals)[:nvals.value], isnull.value
 
@@ -4442,7 +4416,7 @@ def ektnam(n, lenout=_default_len_out):
 
 
 @spiceErrorCheck
-def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
+def ekucec(handle, segno, recno, column, nvals, cvals, isnull):
     """
     Update a character column entry in a specified EK record.
 
@@ -4458,8 +4432,6 @@ def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     :type column: str
     :param nvals: Number of values in new column entry.
     :type nvals: int
-    :param vallen: Declared length of character values.
-    :type vallen: int
     :param cvals: Character values comprising new column entry.
     :type cvals: list of str.
     :param isnull: Flag indicating whether column entry is null.
@@ -4470,11 +4442,10 @@ def ekucec(handle, segno, recno, column, nvals, vallen, cvals, isnull):
     recno = ctypes.c_int(recno)
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
-    vallen = ctypes.c_int(vallen)
-    cvals = stypes.listToCharArrayPtr(cvals,xLen=vallen.value)
+    vallen = ctypes.c_int(len(max(cvals, key=len)) + 1)
+    cvals = stypes.listToCharArrayPtr(cvals, xLen=vallen)
     isnull = ctypes.c_int(1 if isnull else 0)
-    libspice.ekucec_c(handle, segno, recno, column, nvals, vallen, cvals,
-                      isnull)
+    libspice.ekucec_c(handle, segno, recno, column, nvals, vallen, cvals, isnull)
 
 
 @spiceErrorCheck
