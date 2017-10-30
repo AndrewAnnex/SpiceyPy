@@ -100,7 +100,7 @@ after_test:
   # try conda thing
   - set PATH=%CONDA%;%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
   # make sure python now maps to miniconda
-  - cmd: call %CONDA%\Scripts\activate.bat
+  #- cmd: call %CONDA%\Scripts\activate.bat
   # from conda-forge
   - cmd: rmdir C:\cygwin /s /q
   # from conda-forge
@@ -111,7 +111,7 @@ after_test:
   - "appveyor-retry conda install --yes --quiet wheel"
   - "appveyor-retry conda install --yes --quiet six"
   - "appveyor-retry conda install --yes --quiet pytest"
-  - "appveyor-retry conda install --yes --quiet numpy>=1.13"
+  - "appveyor-retry conda install --yes --quiet numpy>=1.12"
   - "appveyor-retry conda install --yes --quiet anaconda-client"
   - "conda config --add channels conda-forge"
   - "conda config --set channel_priority false"

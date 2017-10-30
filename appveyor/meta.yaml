@@ -13,14 +13,14 @@ requirements:
         - python
         - setuptools
         - six
-        - numpy >=1.13
+        - numpy >=1.12
         - certifi >=2017.1.23
         - pytest
     run:
         - python
         - setuptools
         - six
-        - numpy >=1.13
+        - numpy >=1.12
         - certifi >=2017.1.23
         - pytest
 
@@ -28,7 +28,7 @@ test:
     imports:
         - spiceypy
     requires:
-        - numpy >=1.13
+        - numpy >=1.12
         - pytest
         - six
         - certifi >=2017.1.23
