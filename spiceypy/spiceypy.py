@@ -104,10 +104,10 @@ def spiceFoundExceptionThrower(f):
 
 
 @contextmanager
-def disable_found_catch():
+def no_found_check():
     """
     Temporarily disables spiceypy default behavior which raises exceptions for
-    false found flags in certain spice functions returned parameters. All spice
+    false found flags for certain spice functions. All spice
     functions executed within the context manager will no longer check the found
     flag return parameter and the found flag will be included in the return for
     the given function.
@@ -121,8 +121,8 @@ def disable_found_catch():
 
     With this function however, we can use it as a context manager to do this::
 
-        with spice.disable_found_catch():
-            name, found = spice.bodc2n(-999991) # found is false, not an exception!
+        with spice.no_found_check():
+            name, found = spice.bodc2n(-999991) # found is false, no exception raised!
 
     Within the context any spice functions called that normally check the found
     flags will pass through the check without raising an exception if they are false.
@@ -130,6 +130,22 @@ def disable_found_catch():
     """
     config.catch_false_founds = False
     yield
+    config.catch_false_founds = True
+
+
+def found_check_off():
+    """
+    Method that turns off found catching
+
+    """
+    config.catch_false_founds = False
+
+
+def found_check_on():
+    """
+    Method that turns on found catching
+
+    """
     config.catch_false_founds = True
 
 

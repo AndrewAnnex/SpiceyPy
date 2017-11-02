@@ -55,10 +55,16 @@ def test_foundErrorChecker():
     spice.reset()
 
 def test_disable_found_catch():
-    with spice.disable_found_catch():
+    with spice.no_found_check():
         name, found = spice.bodc2n(-9991)
         assert not found
     spice.reset()
     with pytest.raises(spice.stypes.SpiceyError):
         spice.bodc2n(-9991)
+    spice.reset()
+    # try more hands on method
+    spice.found_check_off()
+    name, found = spice.bodc2n(-9991)
+    assert not found
+    spice.found_check_on()
     spice.reset()
