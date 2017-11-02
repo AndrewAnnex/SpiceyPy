@@ -68,3 +68,4 @@ def test_disable_found_catch():
     assert not found
     spice.found_check_on()
     spice.reset()
+    
