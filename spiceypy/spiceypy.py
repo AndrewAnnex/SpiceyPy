@@ -25,9 +25,12 @@ SOFTWARE.
 import ctypes
 from .utils import support_types as stypes
 from .utils.libspicehelper import libspice
+from . import config
 from .utils.callbacks import SpiceUDFUNS, SpiceUDFUNB
 import functools
 import numpy
+from contextlib import contextmanager
+
 
 __author__ = 'AndrewAnnex'
 
@@ -85,16 +88,49 @@ def spiceFoundExceptionThrower(f):
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
         res = f(*args, **kwargs)
-        found = res[-1]
-        if isinstance(found, bool) and not found:
-            raise stypes.SpiceyError("Spice returns not found for function: {}".format(f.__name__))
-        else:
-            actualres = res[0:-1]
-            if len(actualres) == 1:
-                return actualres[0]
+        if config.catch_false_founds:
+            found = res[-1]
+            if isinstance(found, bool) and not found:
+                raise stypes.SpiceyError("Spice returns not found for function: {}".format(f.__name__))
             else:
-                return actualres
+                actualres = res[0:-1]
+                if len(actualres) == 1:
+                    return actualres[0]
+                else:
+                    return actualres
+        else:
+            return res
     return wrapper
+
+
+@contextmanager
+def disable_found_catch():
+    """
+    Temporarily disables spiceypy default behavior which raises exceptions for
+    false found flags in certain spice functions returned parameters. All spice
+    functions executed within the context manager will no longer check the found
+    flag return parameter and the found flag will be included in the return for
+    the given function.
+    For Example bodc2n in spiceypy is normally called like::
+
+        name = spice.bodc2n(399)
+
+    With the possibility that an exception is thrown in the even of a invalid ID::
+
+        name = spice.bodc2n(-999991) # throws a SpiceyError
+
+    With this function however, we can use it as a context manager to do this::
+
+        with spice.disable_found_catch():
+            name, found = spice.bodc2n(-999991) # found is false, not an exception!
+
+    Within the context any spice functions called that normally check the found
+    flags will pass through the check without raising an exception if they are false.
+
+    """
+    config.catch_false_founds = False
+    yield
+    config.catch_false_founds = True
 
 
 ################################################################################
