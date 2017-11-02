@@ -6826,12 +6826,11 @@ def test_srfxpt():
     npt.assert_array_almost_equal(obspos, expected_obspos)
     # Iterable ET argument:  et-10, et, et+10
     ets = [et - 10.0, et, et + 10.0]
-    sdtoArr = spice.srfxpt("Ellipsoid", 'Enceladus', ets, "LT+S", "CASSINI", frame, bsight)
-    assert (3, 4) == sdtoArr.shape
-    assert 0. == spice.vnorm(spice.vsub(sdtoArr[1, 0], spoint))
-    assert 0. == (sdtoArr[1, 1] - dist)
-    assert 0. == (sdtoArr[1, 2] - trgepc)
-    assert 0. == spice.vnorm(spice.vsub(sdtoArr[1, 3], obspos))
+    spoints, dists, trgepcs, obsposs = spice.srfxpt("Ellipsoid", 'Enceladus', ets, "LT+S", "CASSINI", frame, bsight)
+    assert 0. == spice.vnorm(spice.vsub(spoints[1], spoint))
+    assert 0. == (dists[1] - dist)
+    assert 0. == (trgepcs[1] - trgepc)
+    assert 0. == spice.vnorm(spice.vsub(obsposs[1], obspos))
     # Cleanup
     spice.kclear()
 
@@ -6944,10 +6943,9 @@ def test_subpt():
     npt.assert_almost_equal(dist, 16.705476097706171)
     npt.assert_almost_equal(sep, 0.15016657506598063)
     # Iterable ET argument to spice.subpt()
-    point1Alt1Arr = spice.subpt("near point", "earth", [et-20., et, et+20.], "lt+s", "moon")
-    assert (3, 2) == point1Alt1Arr.shape
-    assert 0. == spice.vnorm(spice.vsub(point1Alt1Arr[1, 0], point1))
-    assert 0. == (point1Alt1Arr[1, 1] - alt1)
+    points, alts = spice.subpt("near point", "earth", [et-20., et, et+20.], "lt+s", "moon")
+    assert 0. == spice.vnorm(spice.vsub(points[1], point1))
+    assert 0. == (alts[1] - alt1)
     # Cleanup
     spice.kclear()
 
