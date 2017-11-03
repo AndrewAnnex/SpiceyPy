@@ -54,18 +54,54 @@ def test_foundErrorChecker():
         spice.bodc2n(-9991)
     spice.reset()
 
+
 def test_disable_found_catch():
+    spice.kclear()
     with spice.no_found_check():
         name, found = spice.bodc2n(-9991)
         assert not found
-    spice.reset()
     with pytest.raises(spice.stypes.SpiceyError):
         spice.bodc2n(-9991)
-    spice.reset()
     # try more hands on method
     spice.found_check_off()
     name, found = spice.bodc2n(-9991)
     assert not found
     spice.found_check_on()
-    spice.reset()
-    
+    spice.kclear()
+
+
+def test_recursive_disable_found_catch():
+    spice.kclear()
+    assert spice.config.catch_false_founds
+    def _recursive_call(i):
+        if i <= 0:
+            return
+        else:
+            with spice.no_found_check():
+                name, found = spice.bodc2n(-9991)
+                assert not found
+                _recursive_call(i-1)
+    assert spice.config.catch_false_founds
+    _recursive_call(100)
+    spice.kclear()
+    spice.found_check_off()
+    _recursive_call(100)
+    spice.kclear()
+    spice.found_check_on()
+    _recursive_call(100)
+    spice.kclear()
+
+
+def test_found_chekc():
+    spice.kclear()
+    spice.found_check_off()
+    name, found = spice.bodc2n(-9991)
+    assert not found
+    spice.kclear()
+    with spice.found_check():
+        with pytest.raises(spice.stypes.SpiceyError):
+            name = spice.bodc2n(-9991)
+    assert not spice.get_found_catch_state()
+    spice.found_check_on()
+    assert spice.get_found_catch_state()
+    spice.kclear()
