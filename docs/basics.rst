@@ -78,3 +78,19 @@ flag to be returned to the user for action. Outside the context SpiceyPy functio
         assert not found # found is going to be False in this case.
 
     spice.bodc2n(-9991) # will raise an exception again
+
+There is also an accompanying context manager for enabling the default spiceypy behavior within a code block like so:
+
+.. code:: python
+
+    import spiceypy as spice
+
+    spice.bodc2n(-9991) # will raise an exception
+
+    with spice.found_check():
+        name = spice.bodc2n(-9991) # will also raise an exception
+
+
+In addition, for advanced users there are two function :py:meth:`spiceypy.spiceypy.found_check_off` and :py:meth:`spiceypy.spiceypy.found_check_on`
+which will disable and enable the behavior without use of the context manager. Additionally, a method :py:meth:`spiceypy.spiceypy.get_found_catch_state` allows users
+to query the current state of found flag catching setting.

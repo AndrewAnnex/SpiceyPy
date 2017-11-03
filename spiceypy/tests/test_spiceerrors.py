@@ -92,7 +92,7 @@ def test_recursive_disable_found_catch():
     spice.kclear()
 
 
-def test_found_chekc():
+def test_found_check():
     spice.kclear()
     spice.found_check_off()
     name, found = spice.bodc2n(-9991)
