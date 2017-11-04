@@ -636,6 +636,11 @@ def test_ckw05():
     # test size
     end_size = os.path.getsize(CK5)
     assert end_size != init_size
+    # try reading using ck kernel
+    spice.furnsh(CK5)
+    cmat, av, clk = spice.ckgpav(-41000, epochs[0]+0.5, 1.0, "J2000")
+    assert clk == pytest.approx(0.5)
+    spice.kclear()
     if spice.exists(CK5):
         os.remove(CK5)  # pragma: no cover
     spice.kclear()
