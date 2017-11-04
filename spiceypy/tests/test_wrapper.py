@@ -617,8 +617,8 @@ def test_ckw05():
                   [9.999e-1, -4.592e-4, -2.414e-4, -1.407e-3, -7.921e-10, -1.616e-7, -8.499e-8,  -4.954e-7]]
     type1data = [[ 9.999e-1, -1.530e-4, -8.047e-5, -4.691e-4],
                   [9.999e-1, -4.592e-4, -2.414e-4, -1.407e-3]]
-    type2data = [[0.959, -0.00015309, -8.04768139e-5, -0.0004691324, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                 [0.959, -0.00045928, -0.00024143, -0.001407396, -7.921e-10, -1.616e-7, -8.499e-8, -4.954e-7, 3.234e-7, 1.7e-7, 9.91e-7, 3.234e-7, 1.7e-9, 9.91e-9]]
+    type2data = [[0.959, -0.00015309, -8.0476e-5, -0.00046913, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                 [0.959, -0.00045928, -0.00024143, -0.0014073, -7.921e-10, -1.616e-7, -8.499e-8, -4.954e-7, 3.234e-7, 1.7e-7, 9.91e-7, 3.234e-7, 1.7e-9, 9.91e-9]]
     type3data = [[0.959, -0.00015309, -8.0476e-05, -0.00046913, 0.0, 0.0, 0.0],
                  [0.959, -0.00045928, -0.00024143, -0.0014073, 3.234e-7, 1.7e-7, 9.91e-7]]
     # begin testing ckw05
@@ -6698,11 +6698,12 @@ def test_spkw18():
     end_size = os.path.getsize(SPK18)
     assert end_size != init_size
     # test reading data
-    spice.spklef(SPK18)
+    handle = spice.spklef(SPK18)
     state, lt = spice.spkgeo(body, epochs[0], ref, center)
     npt.assert_array_equal(state, [101., 201., 301., 1., 1., 1., ])
     state, lt = spice.spkgeo(body, epochs[1], ref, center)
     npt.assert_array_equal(state, [102., 202., 302., 1., 1., 1., ])
+    spice.spkcls(handle)
     spice.kclear()
     # cleanup
     if spice.exists(SPK18):
