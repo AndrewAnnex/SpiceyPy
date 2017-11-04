@@ -105,3 +105,18 @@ def test_found_check():
     spice.found_check_on()
     assert spice.get_found_catch_state()
     spice.kclear()
+
+
+def test_multiple_founds():
+    success = spice.stypes.SpiceyError(value="test", found=(True, True))
+    assert all(success.found)
+    failed = spice.stypes.SpiceyError(value="test",found=(True, False))
+    assert not all(failed.found)
+    # def test_fun
+    @spice.spiceFoundExceptionThrower
+    def test_fun():
+        return [0, 0], [False, True]
+    # test it
+    with pytest.raises(spice.stypes.SpiceyError):
+        a = test_fun()
+

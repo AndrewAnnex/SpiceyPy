@@ -91,7 +91,9 @@ def spiceFoundExceptionThrower(f):
         if config.catch_false_founds:
             found = res[-1]
             if isinstance(found, bool) and not found:
-                raise stypes.SpiceyError("Spice returns not found for function: {}".format(f.__name__))
+                raise stypes.SpiceyError("Spice returns not found for function: {}".format(f.__name__), found=found)
+            elif hasattr(found, '__iter__') and not all(found):
+                raise stypes.SpiceyError("Spice returns not found in a series of calls for function: {}".format(f.__name__), found=found)
             else:
                 actualres = res[0:-1]
                 if len(actualres) == 1:
@@ -100,6 +102,7 @@ def spiceFoundExceptionThrower(f):
                     return actualres
         else:
             return res
+
     return wrapper
 
 
@@ -222,7 +225,7 @@ def appndd(item, cell):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/appndd_c.html
 
     :param item: The item to append.
-    :type item: float or list
+    :type item: Union[float,Iterable[float]]
     :param cell: The cell to append to.
     :type cell: spiceypy.utils.support_types.SpiceCell
     """
@@ -243,7 +246,7 @@ def appndi(item, cell):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/appndi_c.html
 
     :param item: The item to append.
-    :type item: int or list
+    :type item: Union[float,Iterable[int]]
     :param cell: The cell to append to.
     :type cell: spiceypy.utils.support_types.SpiceCell
     """
@@ -4984,19 +4987,25 @@ def etcal(et, lenout=_default_len_out):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/etcal_c.html
 
     :param et: Ephemeris time measured in seconds past J2000.
-    :type et: float or iterable of float
+    :type et: Union[float,Iterable[float]]
     :param lenout: Length of output string.
     :type lenout: int
     :return: A standard calendar representation of et.
     :rtype: str
     """
-    if hasattr(et, "__iter__"):
-        return [etcal(t) for t in et]
-    et = ctypes.c_double(et)
     lenout = ctypes.c_int(lenout)
     string = stypes.stringToCharP(lenout)
-    libspice.etcal_c(et, lenout, string)
-    return stypes.toPythonString(string)
+    if hasattr(et, "__iter__"):
+        strings = []
+        for t in et:
+            libspice.etcal_c(t, lenout, string)
+            checkForSpiceError(None)
+            strings.append(stypes.toPythonString(string))
+        return strings
+    else:
+        et = ctypes.c_double(et)
+        libspice.etcal_c(et, lenout, string)
+        return stypes.toPythonString(string)
 
 
 @spiceErrorCheck
@@ -6808,7 +6817,7 @@ def insrtd(item, inset):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/insrtd_c.html
 
     :param item: Item to be inserted.
-    :type item: float or list of floats
+    :type item: Union[float,Iterable[float]]
     :param inset: Insertion set.
     :type inset: spiceypy.utils.support_types.SpiceCell
     """
@@ -6829,7 +6838,7 @@ def insrti(item, inset):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/insrti_c.html
 
     :param item: Item to be inserted.
-    :type item: int or list of ints
+    :type item: Union[float,Iterable[int]]
     :param inset: Insertion set.
     :type inset: spiceypy.utils.support_types.SpiceCell
     """
@@ -11574,7 +11583,7 @@ def spkezr(targ, et, ref, abcorr, obs):
     :param targ: Target body name.
     :type targ: str
     :param et: Observer epoch.
-    :type et: float
+    :type et: Union[float,Iterable[float]]
     :param ref: Reference frame of output state vector.
     :type ref: str
     :param abcorr: Aberration correction flag.
@@ -11592,17 +11601,18 @@ def spkezr(targ, et, ref, abcorr, obs):
     obs = stypes.stringToCharP(obs)
     starg = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
-    if not hasattr(et, "__iter__"):
-        et = [et]
-    state = []
-    times = []
-    for t in et:
-        libspice.spkezr_c(targ, ctypes.c_double(t), ref, abcorr, obs, starg, ctypes.byref(lt))
-        checkForSpiceError(None)
-        state.append(stypes.cVectorToPython(starg))
-        times.append(lt.value)
-    return numpy.squeeze(state), numpy.squeeze(times)
-
+    if hasattr(et, "__iter__"):
+        states = []
+        times = []
+        for t in et:
+            libspice.spkezr_c(targ, ctypes.c_double(t), ref, abcorr, obs, starg, ctypes.byref(lt))
+            checkForSpiceError(None)
+            states.append(stypes.cVectorToPython(starg))
+            times.append(lt.value)
+        return states, times
+    else:
+        libspice.spkezr_c(targ, ctypes.c_double(et), ref, abcorr, obs, starg, ctypes.byref(lt))
+        return stypes.cVectorToPython(starg), lt.value
 
 @spiceErrorCheck
 def spkgeo(targ, et, ref, obs):
@@ -11828,7 +11838,7 @@ def spkpos(targ, et, ref, abcorr, obs):
     :param targ: Target body name.
     :type targ: str
     :param et: Observer epoch.
-    :type et: float or List of Floats
+    :type et: Union[float,Iterable[float]]
     :param ref: Reference frame of output position vector.
     :type ref: str
     :param abcorr: Aberration correction flag.
@@ -11840,22 +11850,24 @@ def spkpos(targ, et, ref, abcorr, obs):
             One way light time between observer and target.
     :rtype: tuple
     """
-    if hasattr(et, "__iter__"):
-        vlen = len(et)
-        positions = numpy.zeros((vlen, 3), dtype=numpy.float)
-        times = numpy.zeros(vlen, dtype=numpy.float)
-        for (index, time) in enumerate(et):
-            positions[index], times[index] = spkpos(targ, time, ref, abcorr,
-                                                    obs)
-        return positions, times
     targ = stypes.stringToCharP(targ)
     ref = stypes.stringToCharP(ref)
     abcorr = stypes.stringToCharP(abcorr)
     obs = stypes.stringToCharP(obs)
     ptarg = stypes.emptyDoubleVector(3)
     lt = ctypes.c_double()
-    libspice.spkpos_c(targ, et, ref, abcorr, obs, ptarg, ctypes.byref(lt))
-    return stypes.cVectorToPython(ptarg), lt.value
+    if hasattr(et, "__iter__"):
+        ptargs = []
+        lts    = []
+        for t in et:
+            libspice.spkpos_c(targ, t, ref, abcorr, obs, ptarg, ctypes.byref(lt))
+            checkForSpiceError(None)
+            ptargs.append(stypes.cVectorToPython(ptarg))
+            lts.append(lt.value)
+        return ptargs, lts
+    else:
+        libspice.spkpos_c(targ, et, ref, abcorr, obs, ptarg, ctypes.byref(lt))
+        return stypes.cVectorToPython(ptarg), lt.value
 
 
 @spiceErrorCheck
@@ -12769,7 +12781,7 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
     :param target: Name of target body.
     :type target: str
     :param et: Epoch in ephemeris seconds past J2000 TDB.
-    :type et: float
+    :type et: Union[float,Iterable[float]]
     :param abcorr: Aberration correction.
     :type abcorr: str
     :param obsrvr: Name of observing body.
@@ -12785,13 +12797,8 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
             Observer position relative to target center.
     :rtype: tuple
     """
-    if hasattr(et, "__iter__"):
-        return numpy.array(
-                [srfxpt(method, target, t, abcorr, obsrvr, dref, dvec) for t in
-                 et]), True  # Need trailing True to spoof @spiceError* above
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
-    et = ctypes.c_double(et)
     abcorr = stypes.stringToCharP(abcorr)
     obsrvr = stypes.stringToCharP(obsrvr)
     dref = stypes.stringToCharP(dref)
@@ -12801,12 +12808,28 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
     dist = ctypes.c_double()
     obspos = stypes.emptyDoubleVector(3)
     found = ctypes.c_bool()
-    libspice.srfxpt_c(method, target, et, abcorr, obsrvr, dref, dvec,
-                      spoint, ctypes.byref(dist), ctypes.byref(trgepc), obspos,
-                      ctypes.byref(found))
-    return stypes.cVectorToPython(
-            spoint), dist.value, trgepc.value, stypes.cVectorToPython(
-            obspos), found.value
+    if hasattr(et, "__iter__"):
+        spoints = []
+        dists = []
+        trgepcs = []
+        obsposs = []
+        founds = []
+        for t in et:
+            libspice.srfxpt_c(method, target, t, abcorr, obsrvr, dref, dvec,
+                              spoint, ctypes.byref(dist), ctypes.byref(trgepc),
+                              obspos, ctypes.byref(found))
+            checkForSpiceError(None)
+            spoints.append(stypes.cVectorToPython(spoint))
+            dists.append(dist.value)
+            trgepcs.append(trgepc.value)
+            obsposs.append(stypes.cVectorToPython(obspos))
+            founds.append(found.value)
+        return spoints, dists, trgepcs, obsposs, founds
+    else:
+        et = ctypes.c_double(et)
+        libspice.srfxpt_c(method, target, et, abcorr, obsrvr, dref, dvec, spoint,
+                          ctypes.byref(dist), ctypes.byref(trgepc), obspos, ctypes.byref(found))
+        return stypes.cVectorToPython(spoint), dist.value, trgepc.value, stypes.cVectorToPython(obspos), found.value
 
 
 @spiceErrorCheck
@@ -12977,7 +13000,7 @@ def subpt(method, target, et, abcorr, obsrvr):
     :param target: Name of target body.
     :type target: str
     :param et: Epoch in ephemeris seconds past J2000 TDB.
-    :type et: float or  Array of floats
+    :type et: Union[float,Iterable[float]]
     :param abcorr: Aberration correction.
     :type abcorr: str
     :param obsrvr: Name of observing body.
@@ -12987,19 +13010,25 @@ def subpt(method, target, et, abcorr, obsrvr):
             Altitude of the observer above the target body.
     :rtype: tuple
     """
-    if hasattr(et, "__iter__"):
-        return numpy.array(
-                [subpt(method, target, t, abcorr, obsrvr) for t in et])
     method = stypes.stringToCharP(method)
     target = stypes.stringToCharP(target)
-    et = ctypes.c_double(et)
     abcorr = stypes.stringToCharP(abcorr)
     obsrvr = stypes.stringToCharP(obsrvr)
     spoint = stypes.emptyDoubleVector(3)
     alt = ctypes.c_double()
-    libspice.subpt_c(method, target, et, abcorr, obsrvr, spoint,
-                     ctypes.byref(alt))
-    return stypes.cVectorToPython(spoint), alt.value
+    if hasattr(et, "__iter__"):
+        points = []
+        alts = []
+        for t in et:
+            libspice.subpt_c(method, target, ctypes.c_double(t), abcorr, obsrvr, spoint, ctypes.byref(alt))
+            checkForSpiceError(None)
+            points.append(stypes.cVectorToPython(spoint))
+            alts.append(alt.value)
+        return points, alts
+    else:
+        et = ctypes.c_double(et)
+        libspice.subpt_c(method, target, et, abcorr, obsrvr, spoint, ctypes.byref(alt))
+        return stypes.cVectorToPython(spoint), alt.value
 
 
 @spiceErrorCheck
@@ -13249,18 +13278,24 @@ def sxform(instring, tostring, et):
     :param tostring: Name of the frame to transform to.
     :type tostring: str
     :param et: Epoch of the state transformation matrix.
-    :type et: float
+    :type et: Union[float,Iterable[float]]
     :return: A state transformation matrix.
     :rtype: 6x6-Element Array of floats
     """
-    if hasattr(et, "__iter__"):
-        return numpy.array([sxform(instring, tostring, t) for t in et])
     instring = stypes.stringToCharP(instring)
     tostring = stypes.stringToCharP(tostring)
-    et = ctypes.c_double(et)
     xform = stypes.emptyDoubleMatrix(x=6, y=6)
-    libspice.sxform_c(instring, tostring, et, xform)
-    return stypes.cMatrixToNumpy(xform)
+    if hasattr(et, "__iter__"):
+        xforms = []
+        for t in et:
+            libspice.sxform_c(instring, tostring, ctypes.c_double(t), xform)
+            checkForSpiceError(None)
+            xforms.append(stypes.cMatrixToNumpy(xform))
+        return xforms
+    else:
+        et = ctypes.c_double(et)
+        libspice.sxform_c(instring, tostring, et, xform)
+        return stypes.cMatrixToNumpy(xform)
 
 
 @spiceErrorCheck
@@ -13401,7 +13436,7 @@ def timout(et, pictur, lenout=_default_len_out):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/timout_c.html
 
     :param et: An epoch in seconds past the ephemeris epoch J2000.
-    :type et: float or  Array of floats
+    :type et: Union[float,Iterable[float]]
     :param pictur: A format specification for the output string.
     :type pictur: str
     :param lenout: The length of the output string plus 1.
@@ -13409,14 +13444,20 @@ def timout(et, pictur, lenout=_default_len_out):
     :return: A string representation of the input epoch.
     :rtype: str or array of str
     """
-    if hasattr(et, "__iter__"):
-        return numpy.array([timout(t, pictur, lenout) for t in et])
     pictur = stypes.stringToCharP(pictur)
     output = stypes.stringToCharP(lenout)
     lenout = ctypes.c_int(lenout)
-    et = ctypes.c_double(et)
-    libspice.timout_c(et, pictur, lenout, output)
-    return stypes.toPythonString(output)
+    if hasattr(et, "__iter__"):
+        times = []
+        for t in et:
+            libspice.timout_c(ctypes.c_double(t), pictur, lenout, output)
+            checkForSpiceError(None)
+            times.append(stypes.toPythonString(output))
+        return times
+    else:
+        et = ctypes.c_double(et)
+        libspice.timout_c(et, pictur, lenout, output)
+        return stypes.toPythonString(output)
 
 
 @spiceErrorCheck

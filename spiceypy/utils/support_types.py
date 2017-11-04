@@ -74,8 +74,9 @@ class SpiceyError(Exception):
     SpiceyError wraps CSPICE errors.
     :type value: str
     """
-    def __init__(self, value):
+    def __init__(self, value, found=None):
         self.value = value
+        self.found = found
 
     def __str__(self):
         return self.value
