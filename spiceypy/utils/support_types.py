@@ -632,6 +632,17 @@ class SpiceEKExprClass(c_int):
     SPICE_EK_EXP_EXPR = _SPICE_EK_EXP_EXPR.value
 
 
+class SpiceSPK18Subtype(c_int):
+    _S18TP0 = c_int(0)
+    _S18TP1 = c_int(1)
+    S18TP0  = _S18TP0.value
+    S18TP1  = _S18TP1.value
+    _fields_ = [
+        ('S18TP0', _S18TP0),
+        ('S18TP1', _S18TP1)
+    ]
+
+
 def emptySpiceEKExprClassVector(n):
     if isinstance(n, c_int):
         n = n.value

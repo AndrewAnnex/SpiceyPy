@@ -603,9 +603,51 @@ def test_ckw03():
 
 
 def test_ckw05():
-    with pytest.raises(NotImplementedError):
-        spice.ckw05()
+    spice.kclear()
+    CK5 = os.path.join(cwd, "type5.bc")
+    if spice.exists(CK5):
+        os.remove(CK5)  # pragma: no cover
+    # constants
+    avflag = True
+    epochs = np.arange(0.0, 2.0)
+    inst = [-41000, -41001, -41002, -41003]
+    segid = "CK type 05 test segment"
+    # make type 1 data
+    type0data = [[ 9.999e-1, -1.530e-4, -8.047e-5, -4.691e-4, 0.0, 0.0, 0.0, 0.0],
+                  [9.999e-1, -4.592e-4, -2.414e-4, -1.407e-3, -7.921e-10, -1.616e-7, -8.499e-8,  -4.954e-7]]
+    type1data = [[ 9.999e-1, -1.530e-4, -8.047e-5, -4.691e-4],
+                  [9.999e-1, -4.592e-4, -2.414e-4, -1.407e-3]]
+    type2data = [[0.959, -0.00015309, -8.0476e-5, -0.00046913, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                 [0.959, -0.00045928, -0.00024143, -0.0014073, -7.921e-10, -1.616e-7, -8.499e-8, -4.954e-7, 3.234e-7, 1.7e-7, 9.91e-7, 3.234e-7, 1.7e-9, 9.91e-9]]
+    type3data = [[0.959, -0.00015309, -8.0476e-05, -0.00046913, 0.0, 0.0, 0.0],
+                 [0.959, -0.00045928, -0.00024143, -0.0014073, 3.234e-7, 1.7e-7, 9.91e-7]]
+    # begin testing ckw05
+    handle = spice.ckopn(CK5, " ", 0)
+    init_size = os.path.getsize(CK5)
+    # test subtype 0
+    spice.ckw05(handle, 0, 15, epochs[0], epochs[-1], inst[0], "J2000", avflag, segid, epochs, type0data, 1000.0, 1, epochs)
+    # test subtype 1
+    spice.ckw05(handle, 1, 15, epochs[0], epochs[-1], inst[1], "J2000", avflag, segid, epochs, type1data, 1000.0, 1, epochs)
+    # test subtype 2
+    spice.ckw05(handle, 2, 15, epochs[0], epochs[-1], inst[2], "J2000", avflag, segid, epochs, type2data, 1000.0, 1, epochs)
+    # test subtype 3
+    spice.ckw05(handle, 0, 15, epochs[0], epochs[-1], inst[3], "J2000", avflag, segid, epochs, type3data, 1000.0, 1, epochs)
+    spice.ckcls(handle)
+    # test size
+    end_size = os.path.getsize(CK5)
+    assert end_size != init_size
+    # try reading using ck kernel
+    spice.furnsh(CK5)
+    cmat, av, clk = spice.ckgpav(-41000, epochs[0]+0.5, 1.0, "J2000")
+    assert clk == pytest.approx(0.5)
+    spice.kclear()
+    if spice.exists(CK5):
+        os.remove(CK5)  # pragma: no cover
+    spice.kclear()
 
+def test_stress_ckw05():
+    for i in range(1000):
+        test_ckw05()
 
 def test_cleard():
     with pytest.raises(NotImplementedError):
@@ -6630,8 +6672,47 @@ def test_spkw17():
 
 
 def test_spkw18():
-    with pytest.raises(NotImplementedError):
-        spice.spkw18()
+    spice.kclear()
+    #
+    SPK18 = os.path.join(cwd, "test18.bsp")
+    if spice.exists(SPK18):
+        os.remove(SPK18)  # pragma: no cover
+    # make a new kernel
+    handle = spice.spkopn(SPK18, 'Type 18 SPK internal file name.', 4)
+    init_size = os.path.getsize(SPK18)
+    # test data
+    body = 3
+    center = 10
+    ref =  "J2000"
+    epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
+    states = [
+        [101., 201., 301., 401., 501., 601., 1., 1., 1., 1., 1., 1.],
+        [102., 202., 302., 402., 502., 602., 1., 1., 1., 1., 1., 1.],
+        [103., 203., 303., 403., 503., 603., 1., 1., 1., 1., 1., 1.],
+        [104., 204., 304., 404., 504., 604., 1., 1., 1., 1., 1., 1.],
+        [105., 205., 305., 405., 505., 605., 1., 1., 1., 1., 1., 1.],
+        [106., 206., 306., 406., 506., 606., 1., 1., 1., 1., 1., 1.],
+        [107., 207., 307., 407., 507., 607., 1., 1., 1., 1., 1., 1.],
+        [108., 208., 308., 408., 508., 608., 1., 1., 1., 1., 1., 1.],
+        [109., 209., 309., 409., 509., 609., 1., 1., 1., 1., 1., 1.],
+    ]
+    # test spkw18 with S18TP0
+    spice.spkw18(handle, spice.stypes.SpiceSPK18Subtype.S18TP0, body, center, ref, epochs[0], epochs[-1], "SPK type 18 test segment", 3, states, epochs)
+    # close the kernel
+    spice.spkcls(handle)
+    end_size = os.path.getsize(SPK18)
+    assert end_size != init_size
+    # test reading data
+    handle = spice.spklef(SPK18)
+    state, lt = spice.spkgeo(body, epochs[0], ref, center)
+    npt.assert_array_equal(state, [101., 201., 301., 1., 1., 1., ])
+    state, lt = spice.spkgeo(body, epochs[1], ref, center)
+    npt.assert_array_equal(state, [102., 202., 302., 1., 1., 1., ])
+    spice.spkcls(handle)
+    spice.kclear()
+    # cleanup
+    if spice.exists(SPK18):
+        os.remove(SPK18)  # pragma: no cover
 
 
 def test_spkw20():
