@@ -54,9 +54,9 @@ Another solution is to configure a new python installation that is linked agains
 of OpenSSL, the easiest way to do this is to install python using homebrew, once this is done spiceypy
 can be installed to this new installation of python (IMHO this is the best option).
 
-If your python distribution was installed from the packages available at python.org an included command
+If your python 3.6 distribution was installed from the packages available at python.org an included command
 ``Install Certificates.command`` should be run before attempting to install SpiceyPy again.
-That command installs the certifi package that can also be install using pip.
+That command installs the certifi package that can also be install using pip. 
 
 Alternatively, installing an anaconda or miniconda
 python distribution and installing SpiceyPy using the conda command above is another possible work around.
