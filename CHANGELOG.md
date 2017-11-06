@@ -6,11 +6,16 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
 ## [2.0.1] - UNRELEASED
 ### Added
-- Completed wrapping of all needed new N66 functions
-- added 3.6 classifier
+- Completed wrapping of all new N66 DSK functions
+- 3.6 classifier
+- context manager for turning on/off found flag catches
+- contributor guide
+- freebsd support
+- added tests for dozens of functions, wrapped almost all remaining functions
 
 ### Fixed
 - added six and numpy to setup_requires setup.py kwargs
+- bugs in some tests
 
 ### Changed
 - changed naming of vectorToList to cVectorToPython
@@ -20,6 +25,8 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
   unpacking of N066 CSPICE distribution.
 - Updated setup to pack the CSPICE installation code into a class that
   extends the setuptools.command.install command.
+- made vectorized functions more consistent
+- changed tests to point to smaller kernel set hosted on github
 
 ## [2.0.0] - 2017-06-09
 ### Added
