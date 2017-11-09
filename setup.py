@@ -243,7 +243,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Operating System :: MacOS :: MacOS X",
         "Operating System :: POSIX :: Linux",
-        "Operating System :: POSIX :: FreeBSD",
+        "Operating System :: POSIX :: BSD :: FreeBSD",
         "Operating System :: Microsoft :: Windows"
     ],
     packages=find_packages(exclude=["*.tests"]),
