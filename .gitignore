@@ -41,3 +41,4 @@ __pycache__/
 spiceypy/__pycache__/
 spiceypy/utils/__pycache__/
 .eggs/
+*.whl

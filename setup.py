@@ -72,6 +72,8 @@ class PyTest(TestCommand):
 class BinaryDistribution(Distribution):
     def is_pure(self):
         return False
+    def root_is_pure(self):
+        return False
 
 
 class InstallSpiceyPy(install):
@@ -218,6 +220,32 @@ class InstallSpiceyPy(install):
             self.move_to_root_directory()
 
 
+cmdclass = { 'install': InstallSpiceyPy, 'test': PyTest }
+
+
+try:
+    from wheel.bdist_wheel import bdist_wheel
+
+    class _bdist_wheel(bdist_wheel):
+        def finalize_options(self):
+            bdist_wheel.finalize_options(self)
+            self.root_is_pure = False # hack to ensure platform info is included
+
+        def get_tag(self):
+            tag = bdist_wheel.get_tag(self)
+            repl = 'macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64'
+            if tag[2] == 'macosx_10_6_intel':
+                tag = (tag[0], tag[1], repl)
+            return tag
+
+    # add our override to the cmdclass dict so we can inject this behavior
+    cmdclass['bdist_wheel'] = _bdist_wheel
+
+except ImportError:
+    # we don't have wheel installed so there is nothing to change
+    pass
+
+
 readme = open('README.rst', 'r')
 readmetext = readme.read()
 readme.close()
@@ -246,18 +274,16 @@ setup(
         "Operating System :: POSIX :: BSD :: FreeBSD",
         "Operating System :: Microsoft :: Windows"
     ],
-    packages=find_packages(exclude=["*.tests"]),
+    packages=['spiceypy', 'spiceypy.utils'],
     include_package_data=True,
     zip_safe=False,
-    distclass=BinaryDistribution,
-    package_data={'': ['*.so', "*.dll"]},
+    #distclass=BinaryDistribution, #TODO experiment with removal
+    package_data={'spiceypy.utils': ['*.so', "*.dll"]},
     setup_requires=DEPENDENCIES,
     install_requires=DEPENDENCIES,
     requires=REQUIRES,
     tests_require=TEST_DEPENDENCIES,
-    cmdclass={
-        'install': InstallSpiceyPy,
-        'test': PyTest},
+    cmdclass=cmdclass,
     test_suite='spiceypy.tests.test_wrapper.py',
     extras_require={'testing': ['pytest']}
 )
