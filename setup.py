@@ -233,9 +233,10 @@ try:
 
         def get_tag(self):
             tag = bdist_wheel.get_tag(self)
-            repl = 'macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64'
-            if tag[2] == 'macosx_10_6_intel':
-                tag = (tag[0], tag[1], repl)
+            #if tag[2] == 'macosx_10_6_intel': # currently 'macosx_10_#_x86_64' for my mac, not sure if this really needed though
+            if 'macosx_10' in tag[2]:
+                plat = 'macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64'
+                tag  = (tag[0], tag[1], plat)
             return tag
 
     # add our override to the cmdclass dict so we can inject this behavior
@@ -252,7 +253,7 @@ readme.close()
 
 setup(
     name='spiceypy',
-    version='2.1.0',
+    version='2.1.1',
     license='MIT',
     author='Andrew Annex',
     author_email='ama6fy@virginia.edu',
