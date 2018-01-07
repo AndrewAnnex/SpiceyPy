@@ -24,6 +24,7 @@ SOFTWARE.
 from setuptools import setup
 from setuptools.command.install import install
 from setuptools.command.test import test as TestCommand
+from setuptools.dist import Distribution
 import ssl
 import sys
 import os
@@ -66,6 +67,13 @@ class PyTest(TestCommand):
         import pytest
         errcode = pytest.main(self.test_args)
         sys.exit(errcode)
+
+
+class BinaryDistribution(Distribution):
+    def is_pure(self):
+        return False
+    def root_is_pure(self):
+        return False
 
 
 class InstallSpiceyPy(install):
@@ -271,6 +279,7 @@ setup(
     packages=['spiceypy', 'spiceypy.utils'],
     include_package_data=True,
     zip_safe=False,
+    distclass=BinaryDistribution,
     package_data={'spiceypy.utils': ['*.so', "*.dll"]},
     setup_requires=DEPENDENCIES,
     install_requires=DEPENDENCIES,
