@@ -271,7 +271,6 @@ setup(
     packages=['spiceypy', 'spiceypy.utils'],
     include_package_data=True,
     zip_safe=False,
-    #distclass=BinaryDistribution, #TODO experiment with removal
     package_data={'spiceypy.utils': ['*.so', "*.dll"]},
     setup_requires=DEPENDENCIES,
     install_requires=DEPENDENCIES,
