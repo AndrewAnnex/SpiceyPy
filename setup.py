@@ -21,10 +21,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from setuptools import setup, find_packages
+from setuptools import setup
 from setuptools.command.install import install
 from setuptools.command.test import test as TestCommand
-from setuptools.dist import Distribution
 import ssl
 import sys
 import os
@@ -67,13 +66,6 @@ class PyTest(TestCommand):
         import pytest
         errcode = pytest.main(self.test_args)
         sys.exit(errcode)
-
-
-class BinaryDistribution(Distribution):
-    def is_pure(self):
-        return False
-    def root_is_pure(self):
-        return False
 
 
 class InstallSpiceyPy(install):
@@ -222,21 +214,22 @@ class InstallSpiceyPy(install):
 
 cmdclass = { 'install': InstallSpiceyPy, 'test': PyTest }
 
-
+# https://stackoverflow.com/questions/45150304/how-to-force-a-python-wheel-to-be-platform-specific-when-building-it
+# http://lepture.com/en/2014/python-on-a-hard-wheel
 try:
     from wheel.bdist_wheel import bdist_wheel
 
     class _bdist_wheel(bdist_wheel):
         def finalize_options(self):
             bdist_wheel.finalize_options(self)
-            self.root_is_pure = False # hack to ensure platform info is included
+            self.root_is_pure = False
 
         def get_tag(self):
+            # TODO: since I use six, in future consider replacing first two tags with py2.py3 and none
             tag = bdist_wheel.get_tag(self)
-            #if tag[2] == 'macosx_10_6_intel': # currently 'macosx_10_#_x86_64' for my mac, not sure if this really needed though
+            repl = 'macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64'
             if 'macosx_10' in tag[2]:
-                plat = 'macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64'
-                tag  = (tag[0], tag[1], plat)
+                tag  = (tag[0], tag[1], repl)
             return tag
 
     # add our override to the cmdclass dict so we can inject this behavior
