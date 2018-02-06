@@ -198,6 +198,14 @@ class GetCSPICE(object):
            HTTPS GET call to the NAIF server to download the required CSPICE
            distribution package.
         """
+        # Search proxy in ENV variables
+        proxy = False
+        try:
+            proxy = os.environ['HTTP_PROXY']
+            proxy = os.environ['HTTPS_PROXY']
+        except KeyError:
+            pass
+
         # Use urllib3 (based on PyOpenSSL).
         if ssl.OPENSSL_VERSION < 'OpenSSL 1.0.1g':
             # Force urllib3 to use pyOpenSSL
@@ -208,9 +216,15 @@ class GetCSPICE(object):
             import urllib3
 
             try:
-                # Create a PoolManager
-                https = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',
-                                            ca_certs=certifi.where())
+                if proxy:
+                    # Create a ProxyManager
+                    https = urllib3.ProxyManager(proxy,
+                                                cert_reqs='CERT_REQUIRED',
+                                                ca_certs=certifi.where())
+                else:
+                    # Create a PoolManager
+                    https = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',
+                                                ca_certs=certifi.where())
                 # Send the request to get the CSPICE package.
                 response = https.request('GET', self._rcspice,
                                          timeout=urllib3.Timeout(10))
@@ -223,7 +237,7 @@ class GetCSPICE(object):
         # Use the standard urllib (using system OpenSSL).
         else:
             try:
-                # Send the request to get the CSPICE package.
+                # Send the request to get the CSPICE package (proxy auto detected).
                 response = urllib.request.urlopen(self._rcspice, timeout=10)
             except urllib.error.URLError as err:
                 raise RuntimeError(err.reason)
