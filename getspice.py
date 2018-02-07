@@ -208,9 +208,24 @@ class GetCSPICE(object):
             import urllib3
 
             try:
-                # Create a PoolManager
-                https = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',
-                                            ca_certs=certifi.where())
+                # Search proxy in ENV variables
+                proxies = {}
+                for key, value in os.environ.items():
+                    if '_proxy' in key.lower():
+                        proxies[key.lower().replace('_proxy','')] = value
+
+                # Create a ProolManager
+                if 'https' in proxies:
+                    https = urllib3.ProxyManager(proxies['https'],
+                                                cert_reqs='CERT_REQUIRED',
+                                                ca_certs=certifi.where())
+                elif 'http' in proxies:
+                    https = urllib3.ProxyManager(proxies['http'],
+                                                cert_reqs='CERT_REQUIRED',
+                                                ca_certs=certifi.where())
+                else:
+                    https = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',
+                                                ca_certs=certifi.where())
                 # Send the request to get the CSPICE package.
                 response = https.request('GET', self._rcspice,
                                          timeout=urllib3.Timeout(10))
@@ -223,7 +238,7 @@ class GetCSPICE(object):
         # Use the standard urllib (using system OpenSSL).
         else:
             try:
-                # Send the request to get the CSPICE package.
+                # Send the request to get the CSPICE package (proxy auto detected).
                 response = urllib.request.urlopen(self._rcspice, timeout=10)
             except urllib.error.URLError as err:
                 raise RuntimeError(err.reason)
