@@ -210,7 +210,7 @@ class GetCSPICE(object):
             try:
                 # Search proxy in ENV variables
                 proxies = {}
-                for key, value in os.environ.iteritems():
+                for key, value in os.environ.items():
                     if '_proxy' in key.lower():
                         proxies[key.lower().replace('_proxy','')] = value
 
