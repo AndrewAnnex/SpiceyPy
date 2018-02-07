@@ -13419,15 +13419,21 @@ def szpool(name):
 def termpt(method, ilusrc, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp,
            ncuts, schstp, soltol, maxn):
     """
-    Find limb points on a target body. The limb is the set of points 
-    of tangency on the target of rays emanating from the observer. 
-    The caller specifies half-planes bounded by the observer-target 
-    center vector in which to search for limb points. 
+    Find terminator points on a target body. The caller specifies
+    half-planes, bounded by the illumination source center-target center
+    vector, in which to search for terminator points.
+
+    The terminator can be either umbral or penumbral. The umbral 
+    terminator is the boundary of the region on the target surface 
+    where no light from the source is visible. The penumbral 
+    terminator is the boundary of the region on the target surface 
+    where none of the light from the source is blocked by the target 
+    itself.
 
     The surface of the target body may be represented either by a 
-    triaxial ellipsoid or by topographic data. 
+    triaxial ellipsoid or by topographic data.  
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/limbpt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/termpt_c.html
 
     :param method: Computation method. 
     :type method: str
