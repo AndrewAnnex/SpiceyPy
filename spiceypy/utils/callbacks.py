@@ -23,10 +23,17 @@ SOFTWARE.
 """
 
 import functools
-from ctypes import c_bool, c_double, POINTER, CFUNCTYPE, byref
+from ctypes import c_bool, c_double, c_char_p, POINTER, CFUNCTYPE, byref
+from .support_types import SpiceCell
 
 UDFUNS = CFUNCTYPE(None, c_double, POINTER(c_double))
 UDFUNB = CFUNCTYPE(None, UDFUNS, c_double, POINTER(c_bool))
+UDSTEP = CFUNCTYPE(None, c_double, POINTER(c_double))
+UDREFN = CFUNCTYPE(None, c_double, c_double, c_bool, c_bool, POINTER(c_double))
+UDREPI = CFUNCTYPE(None, POINTER(SpiceCell), c_char_p, c_char_p)
+UDREPU = CFUNCTYPE(None, c_double, c_double, c_double)
+UDREPF = CFUNCTYPE(None)
+UDBAIL = CFUNCTYPE(c_bool)
 
 def SpiceUDFUNS(f):
     """
@@ -58,6 +65,52 @@ def SpiceUDFUNB(f):
         xbool[0] = c_bool(result)
 
     return UDFUNB(wrapping_udfunb)
+
+def SpiceUDSTEP(f):
+
+    @functools.wraps(f)
+    def wrapping_udstep(x, value):
+        result = f(x)
+        value[0] = c_double(result)
+
+    return UDSTEP(wrapping_udstep)
+
+def SpiceUDREFN(f):
+    @functools.wraps(f)
+    def wrapping_udrefn(t1, t2, s1, s2, t):
+        result = f(t1, t2, s1, s2)
+        t[0] = c_double(result)
+
+    return UDREFN(wrapping_udrefn)
+
+def SpiceUDREPI(f):
+    @functools.wraps(f)
+    def wrapping_udrepi(cnfine, srcpre, srcsurf):
+        f(cnfine, srcpre, srcsurf)
+
+    return UDREPI(wrapping_udrepi)
+
+def SpiceUDREPU(f):
+    @functools.wraps(f)
+    def wrapping_udrepu(beg, end, et):
+        f(beg, end, et)
+
+    return UDREPU(wrapping_udrepu)
+
+def SpiceUDREPF(f):
+    @functools.wraps(f)
+    def wrapping_udrepf():
+        f()
+    return UDREPF(wrapping_udrepf)
+
+
+def SpiceUDBAIL(f):
+    @functools.wraps(f)
+    def wrapping_udbail():
+        result = f()
+        return c_bool(result)
+    return UDBAIL(wrapping_udbail)
+
 
 def CallUDFUNS(f, x):
     """

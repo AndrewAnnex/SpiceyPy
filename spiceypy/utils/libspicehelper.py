@@ -324,11 +324,23 @@ libspice.gfbail_c.restype  = c_bool
 libspice.gfclrh_c.argtypes = None
 libspice.gfdist_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double, c_double, c_int,
                               POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
-# libspice.gfevnt_c.argtypes = [c_double, c_double, c_double, c_double, c_bool, c_bool, c_double, c_char_p, c_int, c_int, c_char_p, c_double, c_double, c_double, c_bool, None, c_char_p, c_char_p, c_double, c_double, c_double, c_int, c_bool, c_bool, None, None]
-# libspice.gffove_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double, c_double, c_double,  c_double, c_bool, c_bool, c_double, c_bool, None,  c_char_p, c_char_p, c_double, c_double, c_double,  c_bool, c_bool, None, None]
+# libspice.gfevnt_c.argtypes = [callbacks.UDSTEP, callbacks.UDREFN, c_char_p, c_int, c_int,
+#                               c_void_p, c_void_p, POINTER(c_double), POINTER(c_int), POINTER(c_bool),
+#                               c_char_p, c_double, c_double, c_double, c_bool, callbacks.UDREPI, callbacks.UDREPU,
+#                               callbacks.UDREPF, c_int, c_bool, callbacks.UDBAIL, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
+
+libspice.gffove_c.argtypes = [c_char_p, c_char_p, (c_double*3),
+                              c_char_p, c_char_p, c_char_p, c_char_p, c_double,
+                              callbacks.UDSTEP, callbacks.UDREFN, c_bool, callbacks.UDREPI, callbacks.UDREPU,
+                              callbacks.UDREPF, c_bool, callbacks.UDBAIL, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
 libspice.gfinth_c.argtypes = [c_int]
-libspice.gfilum_c.argtupes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, (c_double * 3), c_char_p, c_double, c_double, c_double, c_int, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
-# libspice.gfocce_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double, c_double, c_double, c_double, c_bool, c_bool, c_double, c_bool, None, c_char_p, c_char_p, c_double, c_double, c_double, c_bool, c_bool, None, None]
+libspice.gfilum_c.argtupes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p,
+                              c_char_p, (c_double * 3), c_char_p, c_double, c_double,
+                              c_double, c_int, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
+libspice.gfocce_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p,
+                              c_char_p, c_char_p, c_char_p, c_char_p, c_double,
+                              callbacks.UDSTEP, callbacks.UDREFN, c_bool, callbacks.UDREPI, callbacks.UDREPU,
+                              callbacks.UDREPF, c_bool, callbacks.UDBAIL, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
 libspice.gfoclt_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p,
                               c_double, POINTER(stypes.SpiceCell), POINTER(stypes.SpiceCell)]
 libspice.gfpa_c.argtypes   = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double,

@@ -3120,8 +3120,46 @@ def test_gfevnt():
 
 
 def test_gffove():
-    with pytest.raises(NotImplementedError):
-        spice.gffove()
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(CassiniKernels.cassCk)
+    spice.furnsh(CassiniKernels.cassFk)
+    spice.furnsh(CassiniKernels.cassIk)
+    spice.furnsh(CassiniKernels.cassPck)
+    spice.furnsh(CassiniKernels.cassSclk)
+    spice.furnsh(CassiniKernels.cassTourSpk)
+    spice.furnsh(CassiniKernels.satSpk)
+    # Changed ABCORR to NONE from S for this test, so we do not need SSB
+    # begin test
+    # Cassini ISS NAC observed Enceladus on 2013-FEB-25 from ~11:00 to ~12:00
+    # Split confinement window, from continuous CK coverage, into two pieces
+    et_start = spice.str2et("2013-FEB-25 10:00:00.000")
+    et_end   = spice.str2et("2013-FEB-25 11:45:00.000")
+    cnfine    = spice.stypes.SPICEDOUBLE_CELL(2)
+    spice.wninsd(et_start, et_end, cnfine)
+    result   = spice.stypes.SPICEDOUBLE_CELL(1000)
+    # call gffove
+    udstep = spiceypy.utils.callbacks.SpiceUDSTEP(spice.gfstep)
+    udrefn = spiceypy.utils.callbacks.SpiceUDREFN(spice.gfrefn)
+    udrepi = spiceypy.utils.callbacks.SpiceUDREPI(spice.gfrepi)
+    udrepu = spiceypy.utils.callbacks.SpiceUDREPU(spice.gfrepu)
+    udrepf = spiceypy.utils.callbacks.SpiceUDREPF(spice.gfrepf)
+    udbail = spiceypy.utils.callbacks.SpiceUDBAIL(spice.gfbail)
+    spice.gfsstp(1.0)
+    spice.gffove('CASSINI_ISS_NAC', 'ELLIPSOID', [0.0, 0.0, 0.0], 'ENCELADUS', 'IAU_ENCELADUS',
+                 'LT+S', 'CASSINI', 1.e-6, udstep, udrefn, True,
+                 udrepi, udrepu, udrepf, True, udbail,
+                 cnfine, result)
+    # Verify the expected results
+    assert len(result) == 2
+    sTimout = "YYYY-MON-DD HR:MN:SC UTC ::RND"
+    assert spice.timout(result[0], sTimout) == '2013-FEB-25 10:42:33 UTC'
+    assert spice.timout(result[1], sTimout) == '2013-FEB-25 11:45:00 UTC'
+    # Cleanup
+    if spice.gfbail():
+        spice.gfclrh()
+    spice.gfsstp(0.5)
+    spice.kclear()
 
 
 def test_gfilum():
@@ -3170,8 +3208,32 @@ def test_gfinth():
 
 
 def test_gfocce():
-    with pytest.raises(NotImplementedError):
-        spice.gfocce()
+    spice.kclear()
+    if spice.gfbail():
+        spice.gfclrh()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et0 = spice.str2et('2001 DEC 01 00:00:00 TDB')
+    et1 = spice.str2et('2002 JAN 01 00:00:00 TDB')
+    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    spice.wninsd(et0, et1, cnfine)
+    result = spice.stypes.SPICEDOUBLE_CELL(1000)
+    spice.gfsstp(20.0)
+    udstep = spiceypy.utils.callbacks.SpiceUDSTEP(spice.gfstep)
+    udrefn = spiceypy.utils.callbacks.SpiceUDREFN(spice.gfrefn)
+    udrepi = spiceypy.utils.callbacks.SpiceUDREPI(spice.gfrepi)
+    udrepu = spiceypy.utils.callbacks.SpiceUDREPU(spice.gfrepu)
+    udrepf = spiceypy.utils.callbacks.SpiceUDREPF(spice.gfrepf)
+    udbail = spiceypy.utils.callbacks.SpiceUDBAIL(spice.gfbail)
+    # call gfocce
+    spice.gfocce("Any", "moon", "ellipsoid", "iau_moon", "sun",
+                 "ellipsoid", "iau_sun", "lt", "earth", 1.e-6,
+                 udstep, udrefn, True, udrepi, udrepu, udrepf,
+                 True, udbail, cnfine, result)
+    if spice.gfbail():
+        spice.gfclrh()
+    count = spice.wncard(result)
+    assert count == 1
+    spice.kclear()
 
 
 def test_gfoclt():
