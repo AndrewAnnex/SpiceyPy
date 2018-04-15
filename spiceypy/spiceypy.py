@@ -5642,8 +5642,68 @@ def gfevnt():
     raise NotImplementedError
 
 
-def gffove():
-    raise NotImplementedError
+@spiceErrorCheck
+def gffove(inst, tshape, raydir, target, tframe, abcorr, obsrvr,
+           tol, udstep, udrefn, rpt, udrepi, udrepu, udrepf, bail, udbail, cnfine, result):
+    """
+    Determine time intervals when a specified target body or ray
+    intersects the space bounded by the field-of-view (FOV) of a
+    specified instrument. Report progress and handle interrupts if so
+    commanded.
+
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gffove_c.html
+
+    :param inst: Name of the instrument
+    :type inst: str
+    :param tshape: Type of shape model used for target body
+    :type tshape: str
+    :param raydir: Ray s direction vector
+    :type raydir: N-Element Array of floats
+    :param target: Name of the target body
+    :type target: str
+    :param tframe: Body fixed body centered frame for target body
+    :type tframe: str
+    :param abcorr: Aberration correction flag
+    :type abcorr: str
+    :param obsrvr: Name of the observing body
+    :type obsrvr: str
+    :param tol: Convergence tolerance in seconds
+    :type tol: float
+    :param udstep: Name of the routine that returns a time step
+    :type udstep: spiceypy.utils.callbacks.UDSTEP
+    :param udrefn: Name of the routine that computes a refined time
+    :type udrefn: spiceypy.utils.callbacks.UDREFN
+    :param rpt:  Progress report flag
+    :type rpt: bool
+    :param udrepi: Function that initializes progress reporting.
+    :type udrepi: spiceypy.utils.callbacks.UDREP
+    :param udrepu: Function that updates the progress report
+    :type udrepu: spiceypy.utils.callbacks.UDREPU
+    :param udrepf: Function that finalizes progress reporting
+    :type udrepf: spiceypy.utils.callbacks.UDREPF
+    :param bail: Logical indicating program interrupt monitoring
+    :type bail: bool
+    :param udbail: Name of a routine that signals a program interrupt
+    :type udbail: spiceypy.utils.callbacks.UDBAIL
+    :param cnfine: SPICE window to which the search is restricted
+    :type cnfine: spiceypy.utils.support_types.SpiceCell
+    :param result: SPICE window containing results
+    :type result: spiceypy.utils.support_types.SpiceCell
+    """
+    inst = stypes.stringToCharP(inst)
+    tshape = stypes.stringToCharP(tshape)
+    raydir = stypes.toDoubleVector(raydir)
+    target = stypes.stringToCharP(target)
+    tframe = stypes.stringToCharP(tframe)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    tol = ctypes.c_double(tol)
+    rpt = ctypes.c_bool(rpt)
+    bail = ctypes.c_bool(bail)
+    libspice.gffove_c(inst, tshape, raydir, target, tframe,
+                      abcorr, obsrvr, tol, udstep, udrefn, rpt,
+                      udrepi, udrepu, udrepf, bail, udbail,
+                      ctypes.byref(cnfine), ctypes.byref(result))
 
 
 @spiceErrorCheck
@@ -5723,9 +5783,78 @@ def gfinth(sigcode):
     libspice.gfinth_c(sigcode)
 
 
-def gfocce():
-    raise NotImplementedError
+@spiceErrorCheck
+def gfocce(occtyp, front, fshape, fframe, back,
+           bshape, bframe, abcorr, obsrvr, tol,
+           udstep, udrefn, rpt, udrepi, udrepu,
+           udrepf, bail, udbail, cnfine, result):
+    """
+    Determine time intervals when an observer sees one target
+    occulted by another. Report progress and handle interrupts
+    if so commanded.
 
+    The surfaces of the target bodies may be represented by triaxial
+    ellipsoids or by topographic data provided by DSK files.
+
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfocce_c.html
+
+    :param occtyp: Type of occultation
+    :type occtyp: str
+    :param front: Name of body occulting the other
+    :type front: str
+    :param fshape: Type of shape model used for front body
+    :type fshape: str
+    :param fframe: Body fixed body centered frame for front body
+    :type fframe: str
+    :param back: Name of body occulted by the other
+    :type back: str
+    :param bshape: Type of shape model used for back body
+    :type bshape: str
+    :param bframe: Body fixed body centered frame for back body
+    :type bframe: str
+    :param abcorr: Aberration correction flag
+    :type abcorr: str
+    :param obsrvr: Name of the observing body
+    :type obsrvr: str
+    :param tol: Convergence tolerance in seconds
+    :type tol: float
+    :param udstep: Name of the routine that returns a time step
+    :type udstep: spiceypy.utils.callbacks.UDSTEP
+    :param udrefn: Name of the routine that computes a refined time
+    :type udrefn: spiceypy.utils.callbacks.UDREFN
+    :param rpt: Progress report flag
+    :type rpt: bool
+    :param udrepi: Function that initializes progress reporting.
+    :type udrepi: spiceypy.utils.callbacks.UDREP
+    :param udrepu: Function that updates the progress report
+    :type udrepu: spiceypy.utils.callbacks.UDREPU
+    :param udrepf: Function that finalizes progress reporting
+    :type udrepf: spiceypy.utils.callbacks.UDREPF
+    :param bail: Logical indicating program interrupt monitoring
+    :type bail: bool
+    :param udbail: Name of a routine that signals a program interrupt
+    :type udbail: spiceypy.utils.callbacks.UDBAIL
+    :param cnfine: SPICE window to which the search is restricted
+    :type cnfine: spiceypy.utils.support_types.SpiceCell
+    :param result: SPICE window containing results.
+    :type result: spiceypy.utils.support_types.SpiceCell
+    """
+    occtyp = stypes.stringToCharP(occtyp)
+    front = stypes.stringToCharP(front)
+    fshape = stypes.stringToCharP(fshape)
+    fframe = stypes.stringToCharP(fframe)
+    back = stypes.stringToCharP(back)
+    bshape = stypes.stringToCharP(bshape)
+    bframe = stypes.stringToCharP(bframe)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    tol = ctypes.c_double(tol)
+    rpt = ctypes.c_bool(rpt)
+    bail = ctypes.c_bool(bail)
+    libspice.gfocce_c(occtyp, front, fshape, fframe, back,
+                      bshape, bframe, abcorr, obsrvr, tol,
+                      udstep, udrefn, rpt, udrepi, udrepu, udrepf,
+                      bail, udbail, ctypes.byref(cnfine), ctypes.byref(result))
 
 @spiceErrorCheck
 def gfoclt(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr,
@@ -5940,11 +6069,15 @@ def gfrepi(window, begmss, endmss):
     :param endmss: End of the text portion of the output message.
     :type endmss: str
     """
-    assert isinstance(window, stypes.SpiceCell)
-    assert window.is_double()
+
     begmss = stypes.stringToCharP(begmss)
     endmss = stypes.stringToCharP(endmss)
-    libspice.gfrepi_c(ctypes.byref(window), begmss, endmss)
+    # don't do anything if we were given a pointer to a SpiceCell, like if we were in a callback
+    if not isinstance(window, ctypes.POINTER(stypes.SpiceCell)):
+        assert isinstance(window, stypes.SpiceCell)
+        assert window.is_double()
+        window = ctypes.byref(window)
+    libspice.gfrepi_c(window, begmss, endmss)
 
 
 @spiceErrorCheck
