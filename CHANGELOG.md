@@ -4,6 +4,18 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [2.1.1] - UNRELEASED
+### Added
+- wrapper functions for gffove and gfocce and associated callbacks
+- proxymanager for spice download by B. Seignovert
+### Changed
+- simplifications in libspicehelper
+### Deprecated
+### Removed
+### Fixed
+- termpt docstring by Marcel Stefko
+- various things in ci build configs
+
 ## [2.1.0] - 2017-11-09
 ### Added
 - Completed wrapping of all new N66 DSK functions
