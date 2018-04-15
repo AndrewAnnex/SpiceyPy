@@ -3129,13 +3129,11 @@ def test_gffove():
     spice.furnsh(CassiniKernels.cassSclk)
     spice.furnsh(CassiniKernels.cassTourSpk)
     spice.furnsh(CassiniKernels.satSpk)
-    # Changed ABCORR to NONE from S for this test, so we do not need SSB
-    # begin test
     # Cassini ISS NAC observed Enceladus on 2013-FEB-25 from ~11:00 to ~12:00
     # Split confinement window, from continuous CK coverage, into two pieces
     et_start = spice.str2et("2013-FEB-25 10:00:00.000")
     et_end   = spice.str2et("2013-FEB-25 11:45:00.000")
-    cnfine    = spice.stypes.SPICEDOUBLE_CELL(2)
+    cnfine   = spice.stypes.SPICEDOUBLE_CELL(2)
     spice.wninsd(et_start, et_end, cnfine)
     result   = spice.stypes.SPICEDOUBLE_CELL(1000)
     # call gffove

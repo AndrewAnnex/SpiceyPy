@@ -54,9 +54,10 @@ def SpiceUDFUNS(f):
 def SpiceUDFUNB(f):
     """
     Decorator for wrapping python functions in spice udfunb callback type
-    :param f:
+    :param f: function to be wrapped
     :type f: builtins.function
-    :return:
+    :return: wrapped udfunb function
+    :rtype: builtins.function
     """
 
     @functools.wraps(f)
@@ -67,6 +68,13 @@ def SpiceUDFUNB(f):
     return UDFUNB(wrapping_udfunb)
 
 def SpiceUDSTEP(f):
+    """
+    Decorator for wrapping python functions in spice udstep callback type
+    :param f: function to be wrapped
+    :type f: builtins.function
+    :return: wrapped udstep function
+    :rtype: builtins.function
+    """
 
     @functools.wraps(f)
     def wrapping_udstep(x, value):
@@ -76,6 +84,13 @@ def SpiceUDSTEP(f):
     return UDSTEP(wrapping_udstep)
 
 def SpiceUDREFN(f):
+    """
+    Decorator for wrapping python functions in spice udrefn callback type
+    :param f: function to be wrapped
+    :type f: builtins.function
+    :return: wrapped udrefn function
+    :rtype: builtins.function
+    """
     @functools.wraps(f)
     def wrapping_udrefn(t1, t2, s1, s2, t):
         result = f(t1, t2, s1, s2)
@@ -84,6 +99,13 @@ def SpiceUDREFN(f):
     return UDREFN(wrapping_udrefn)
 
 def SpiceUDREPI(f):
+    """
+    Decorator for wrapping python functions in spice udfrepi callback type
+    :param f: function to be wrapped
+    :type f: builtins.function
+    :return: wrapped udrepi function
+    :rtype: builtins.function
+    """
     @functools.wraps(f)
     def wrapping_udrepi(cnfine, srcpre, srcsurf):
         f(cnfine, srcpre, srcsurf)
@@ -91,6 +113,13 @@ def SpiceUDREPI(f):
     return UDREPI(wrapping_udrepi)
 
 def SpiceUDREPU(f):
+    """
+    Decorator for wrapping python functions in spice udrepu callback type
+    :param f: function to be wrapped
+    :type f: builtins.function
+    :return: wrapped udrepu function
+    :rtype: builtins.function
+    """
     @functools.wraps(f)
     def wrapping_udrepu(beg, end, et):
         f(beg, end, et)
@@ -98,6 +127,13 @@ def SpiceUDREPU(f):
     return UDREPU(wrapping_udrepu)
 
 def SpiceUDREPF(f):
+    """
+    Decorator for wrapping python functions in spice udrepf callback type
+    :param f: function to be wrapped
+    :type f: builtins.function
+    :return: wrapped udrepf function
+    :rtype: builtins.function
+    """
     @functools.wraps(f)
     def wrapping_udrepf():
         f()
@@ -105,6 +141,13 @@ def SpiceUDREPF(f):
 
 
 def SpiceUDBAIL(f):
+    """
+    Decorator for wrapping python functions in spice udbail callback type
+    :param f: function to be wrapped
+    :type f: builtins.function
+    :return: wrapped udbail function
+    :rtype: builtins.function
+    """
     @functools.wraps(f)
     def wrapping_udbail():
         result = f()

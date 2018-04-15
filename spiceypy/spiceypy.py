@@ -5669,29 +5669,27 @@ def gffove(inst, tshape, raydir, target, tframe, abcorr, obsrvr,
     :type obsrvr: str
     :param tol: Convergence tolerance in seconds
     :type tol: float
-    :param udstep: Name of the routine returns a time step
-    :type udstep:
+    :param udstep: Name of the routine that returns a time step
+    :type udstep: spiceypy.utils.callbacks.UDSTEP
     :param udrefn: Name of the routine that computes a refined time
-    :type udrefn: float
+    :type udrefn: spiceypy.utils.callbacks.UDREFN
     :param rpt:  Progress report flag
     :type rpt: bool
-    :param udrepi: Function that initializes progress reporting
-    :type udrepi:
+    :param udrepi: Function that initializes progress reporting.
+    :type udrepi: spiceypy.utils.callbacks.UDREP
     :param udrepu: Function that updates the progress report
-    :type udrepu: float
+    :type udrepu: spiceypy.utils.callbacks.UDREPU
     :param udrepf: Function that finalizes progress reporting
-    :type udrepf: bool
+    :type udrepf: spiceypy.utils.callbacks.UDREPF
     :param bail: Logical indicating program interrupt monitoring
     :type bail: bool
     :param udbail: Name of a routine that signals a program interrupt
-    :type udbail: float
+    :type udbail: spiceypy.utils.callbacks.UDBAIL
     :param cnfine: SPICE window to which the search is restricted
     :type cnfine: spiceypy.utils.support_types.SpiceCell
     :param result: SPICE window containing results
     :type result: spiceypy.utils.support_types.SpiceCell
     """
-    assert isinstance(cnfine, stypes.SpiceCell)
-    assert isinstance(result, stypes.SpiceCell)
     inst = stypes.stringToCharP(inst)
     tshape = stypes.stringToCharP(tshape)
     raydir = stypes.toDoubleVector(raydir)
@@ -5784,6 +5782,7 @@ def gfinth(sigcode):
     sigcode = ctypes.c_int(sigcode)
     libspice.gfinth_c(sigcode)
 
+
 @spiceErrorCheck
 def gfocce(occtyp, front, fshape, fframe, back,
            bshape, bframe, abcorr, obsrvr, tol,
@@ -5819,27 +5818,27 @@ def gfocce(occtyp, front, fshape, fframe, back,
     :type obsrvr: str
     :param tol: Convergence tolerance in seconds
     :type tol: float
+    :param udstep: Name of the routine that returns a time step
+    :type udstep: spiceypy.utils.callbacks.UDSTEP
     :param udrefn: Name of the routine that computes a refined time
-    :type udrefn:
+    :type udrefn: spiceypy.utils.callbacks.UDREFN
     :param rpt: Progress report flag
-    :type rpt: float
+    :type rpt: bool
+    :param udrepi: Function that initializes progress reporting.
+    :type udrepi: spiceypy.utils.callbacks.UDREP
     :param udrepu: Function that updates the progress report
-    :type udrepu:
+    :type udrepu: spiceypy.utils.callbacks.UDREPU
     :param udrepf: Function that finalizes progress reporting
-    :type udrepf: float
+    :type udrepf: spiceypy.utils.callbacks.UDREPF
     :param bail: Logical indicating program interrupt monitoring
     :type bail: bool
     :param udbail: Name of a routine that signals a program interrupt
-    :type udbail: bool
+    :type udbail: spiceypy.utils.callbacks.UDBAIL
     :param cnfine: SPICE window to which the search is restricted
     :type cnfine: spiceypy.utils.support_types.SpiceCell
     :param result: SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
-    assert isinstance(cnfine, stypes.SpiceCell)
-    assert cnfine.is_double()
-    assert isinstance(result, stypes.SpiceCell)
-    assert result.is_double()
     occtyp = stypes.stringToCharP(occtyp)
     front = stypes.stringToCharP(front)
     fshape = stypes.stringToCharP(fshape)
