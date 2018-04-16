@@ -245,6 +245,7 @@ try:
 
 except ImportError:
     # we don't have wheel installed so there is nothing to change
+    print("Wheel is not installed...")
     pass
 
 
@@ -254,7 +255,7 @@ readme.close()
 
 setup(
     name='spiceypy',
-    version='2.1.2',
+    version='2.1.1',
     license='MIT',
     author='Andrew Annex',
     author_email='ama6fy@virginia.edu',
