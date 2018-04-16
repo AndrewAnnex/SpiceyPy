@@ -41,6 +41,8 @@ script:
 - coverage run --source=spiceypy setup.py test
 after_success:
 - coveralls
+- pip install cibuildwheel==0.7.1
+- cibuildwheel --output-dir wheelhouse
 deploy:
   provider: pypi
   user: andrewannex
