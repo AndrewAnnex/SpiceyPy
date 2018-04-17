@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from setuptools import setup, find_packages
+from setuptools import setup
 from setuptools.command.install import install
 from setuptools.command.test import test as TestCommand
 from setuptools.dist import Distribution
@@ -72,6 +72,8 @@ class PyTest(TestCommand):
 class BinaryDistribution(Distribution):
     def is_pure(self):
         return False
+    def root_is_pure(self):
+        return False
 
 
 class InstallSpiceyPy(install):
@@ -79,6 +81,9 @@ class InstallSpiceyPy(install):
     process for installing the required CSPICE distribution at the
     right place.
     """
+    def finalize_options(self):
+        install.finalize_options(self)
+        self.install_lib = self.install_platlib
 
     def run(self):
         self.check_for_spice()
@@ -218,13 +223,42 @@ class InstallSpiceyPy(install):
             self.move_to_root_directory()
 
 
+cmdclass = { 'install': InstallSpiceyPy, 'test': PyTest }
+
+# https://stackoverflow.com/questions/45150304/how-to-force-a-python-wheel-to-be-platform-specific-when-building-it
+# http://lepture.com/en/2014/python-on-a-hard-wheel
+try:
+    from wheel.bdist_wheel import bdist_wheel
+
+    class _bdist_wheel(bdist_wheel):
+        def finalize_options(self):
+            bdist_wheel.finalize_options(self)
+            self.root_is_pure = False
+
+        def get_tag(self):
+            # TODO: since I use six, in future consider replacing first two tags with py2.py3 and none
+            tag = bdist_wheel.get_tag(self)
+            repl = 'macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64'
+            if 'macosx_10' in tag[2]:
+                tag  = (tag[0], tag[1], repl)
+            return tag
+
+    # add our override to the cmdclass dict so we can inject this behavior
+    cmdclass['bdist_wheel'] = _bdist_wheel
+
+except ImportError:
+    # we don't have wheel installed so there is nothing to change
+    print("Wheel is not installed...")
+    pass
+
+
 readme = open('README.rst', 'r')
 readmetext = readme.read()
 readme.close()
 
 setup(
     name='spiceypy',
-    version='2.1.0',
+    version='2.1.1',
     license='MIT',
     author='Andrew Annex',
     author_email='ama6fy@virginia.edu',
@@ -246,18 +280,16 @@ setup(
         "Operating System :: POSIX :: BSD :: FreeBSD",
         "Operating System :: Microsoft :: Windows"
     ],
-    packages=find_packages(exclude=["*.tests"]),
+    packages=['spiceypy', 'spiceypy.utils'],
     include_package_data=True,
     zip_safe=False,
     distclass=BinaryDistribution,
-    package_data={'': ['*.so', "*.dll"]},
+    package_data={'spiceypy.utils': ['*.so', "*.dll"]},
     setup_requires=DEPENDENCIES,
     install_requires=DEPENDENCIES,
     requires=REQUIRES,
     tests_require=TEST_DEPENDENCIES,
-    cmdclass={
-        'install': InstallSpiceyPy,
-        'test': PyTest},
+    cmdclass=cmdclass,
     test_suite='spiceypy.tests.test_wrapper.py',
     extras_require={'testing': ['pytest']}
 )

@@ -1,25 +1,49 @@
 language: python
-sudo: false
+
 matrix:
     include:
         - os: linux
           dist: trusty
           python: 2.7
+          sudo: required
+          services:
+            - docker
+          env:
+            - PIP=pip
+            - CIBW_SKIP="cp33-* cp34-* *i686"
         - os: linux
           dist: trusty
           python: 3.5
+          sudo: required
+          services:
+            - docker
+          env:
+            - PIP=pip
+            - CIBW_SKIP="cp33-* cp34-* *i686"
         - os: linux
           dist: trusty
           python: 3.6
+          sudo: required
+          services:
+            - docker
+          env:
+            - PIP=pip
+            - CIBW_SKIP="cp33-* cp34-* *i686"
         - os: osx
           language: generic
-          env: PYVERSION='2.7.13'
+          env:
+            - PYVERSION='2.7.13'
+            - CIBW_SKIP="cp33-* cp34-* *i686"
         - os: osx
           language: generic
-          env: PYVERSION='3.5.4'
+          env:
+            - PYVERSION='3.5.4'
+            - CIBW_SKIP="cp33-* cp34-* *i686"
         - os: osx
           language: generic
-          env: PYVERSION='3.6.0'
+          env:
+            - PYVERSION='3.6.0'
+            - CIBW_SKIP="cp33-* cp34-* *i686"
 
 before_install:
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
@@ -41,9 +65,12 @@ script:
 - coverage run --source=spiceypy setup.py test
 after_success:
 - coveralls
+- pip install cibuildwheel==0.7.1
+- cibuildwheel --output-dir wheelhouse
 deploy:
   provider: pypi
   user: andrewannex
+  distributions: "sdist bdist_wheel"
   password:
     secure: YXA8LYIyAZ5HA2In4H/vUaCaVow9HbvKNT/TTT9OaH91Fszspr1uFo9mRQLNJlBViGgy2SaqNQITzlRdFyIcDstqRGPDQUw3xNIKvZ7YuHIzG1TVWNVpJsZf2ha1+JxozPTS2c2tlrS/LR7N4hYVtLOipaYAK2ucmB8sDu4dkws=
   on:
