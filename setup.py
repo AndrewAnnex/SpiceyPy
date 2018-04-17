@@ -81,11 +81,9 @@ class InstallSpiceyPy(install):
     process for installing the required CSPICE distribution at the
     right place.
     """
-
     def finalize_options(self):
         install.finalize_options(self)
-        if self.distribution.has_ext_modules():
-            self.install_lib = self.install_platlib
+        self.install_lib = self.install_platlib
 
     def run(self):
         self.check_for_spice()
