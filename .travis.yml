@@ -8,30 +8,42 @@ matrix:
           sudo: required
           services:
             - docker
-          env: PIP=pip
+          env:
+            - PIP=pip
+            - CIBW_SKIP="cp33-* cp34-*"
         - os: linux
           dist: trusty
           python: 3.5
           sudo: required
           services:
             - docker
-          env: PIP=pip
+          env:
+            - PIP=pip
+            - CIBW_SKIP="cp33-* cp34-*"
         - os: linux
           dist: trusty
           python: 3.6
           sudo: required
           services:
             - docker
-          env: PIP=pip
+          env:
+            - PIP=pip
+            - CIBW_SKIP="cp33-* cp34-*"
         - os: osx
           language: generic
-          env: PYVERSION='2.7.13'
+          env:
+            - PYVERSION='2.7.13'
+            - CIBW_SKIP="cp33-* cp34-*"
         - os: osx
           language: generic
-          env: PYVERSION='3.5.4'
+          env:
+            - PYVERSION='3.5.4'
+            - CIBW_SKIP="cp33-* cp34-*"
         - os: osx
           language: generic
-          env: PYVERSION='3.6.0'
+          env:
+            - PYVERSION='3.6.0'
+            - CIBW_SKIP="cp33-* cp34-*"
 
 before_install:
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
