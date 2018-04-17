@@ -82,6 +82,11 @@ class InstallSpiceyPy(install):
     right place.
     """
 
+    def finalize_options(self):
+        install.finalize_options(self)
+        if self.distribution.has_ext_modules():
+            self.install_lib = self.install_platlib
+
     def run(self):
         self.check_for_spice()
 
