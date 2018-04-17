@@ -44,7 +44,6 @@ after_success:
 deploy:
   provider: pypi
   user: andrewannex
-  distributions: "sdist bdist_wheel"
   password:
     secure: YXA8LYIyAZ5HA2In4H/vUaCaVow9HbvKNT/TTT9OaH91Fszspr1uFo9mRQLNJlBViGgy2SaqNQITzlRdFyIcDstqRGPDQUw3xNIKvZ7YuHIzG1TVWNVpJsZf2ha1+JxozPTS2c2tlrS/LR7N4hYVtLOipaYAK2ucmB8sDu4dkws=
   on:
