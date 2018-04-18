@@ -64,15 +64,14 @@ class Install_C_Spice(object):
 
     @staticmethod
     def get_cspice():
-        Install_C_Spice.check_for_spice()
-
-        print("Host OS: {0}".format(host_OS))
-        if is_unix:
-            Install_C_Spice.unix_method()
-        elif host_OS == "Windows":
-            Install_C_Spice.windows_method()
-        else:
-            sys.exit("Unsupported OS: {0}".format(host_OS))
+        if Install_C_Spice.check_for_spice():
+            print("Host OS: {0}".format(host_OS))
+            if is_unix:
+                Install_C_Spice.unix_method()
+            elif host_OS == "Windows":
+                Install_C_Spice.windows_method()
+            else:
+                sys.exit("Unsupported OS: {0}".format(host_OS))
 
     @staticmethod
     def check_for_spice():
@@ -86,6 +85,7 @@ class Install_C_Spice(object):
             if not os.path.exists(cspice_dir):
                 message = 'Unable to find CSPICE at {0}. Exiting'.format(cspice_dir)
                 sys.exit(message)
+            return True
 
     @staticmethod
     def unpack_cspice():
@@ -241,14 +241,19 @@ class Get_CSPICE_command(Command):
     def run(self):
         Install_C_Spice.get_cspice()
 
+
 cmdclass = { 'install': InstallSpiceyPy, 'test': PyTest, 'get_cspice': Get_CSPICE_command}
 
 # https://stackoverflow.com/questions/45150304/how-to-force-a-python-wheel-to-be-platform-specific-when-building-it
 # http://lepture.com/en/2014/python-on-a-hard-wheel
 try:
     from wheel.bdist_wheel import bdist_wheel
-
+    print("Wheel is Present")
     class _bdist_wheel(bdist_wheel):
+        def __init__(self, dist):
+            super().__init__(dist)
+            Install_C_Spice.get_cspice()
+
         def finalize_options(self):
             bdist_wheel.finalize_options(self)
             self.root_is_pure = False
