@@ -86,6 +86,7 @@ class Install_C_Spice(object):
                 message = 'Unable to find CSPICE at {0}. Exiting'.format(cspice_dir)
                 sys.exit(message)
             return True
+        return False
 
     @staticmethod
     def unpack_cspice():
@@ -250,9 +251,10 @@ try:
     from wheel.bdist_wheel import bdist_wheel
     print("Wheel is Present")
     class _bdist_wheel(bdist_wheel):
-        def __init__(self, dist):
-            super().__init__(dist)
+
+        def initialize_options(self):
             Install_C_Spice.get_cspice()
+            bdist_wheel.initialize_options(self)
 
         def finalize_options(self):
             bdist_wheel.finalize_options(self)
