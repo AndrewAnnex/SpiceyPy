@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from setuptools import setup
+from setuptools import setup, Command
 from setuptools.command.install import install
 from setuptools.command.test import test as TestCommand
 from setuptools.dist import Distribution
@@ -54,49 +54,25 @@ REQUIRES = ['numpy', 'six']
 if ssl.OPENSSL_VERSION < 'OpenSSL 1.0.1g':
     DEPENDENCIES.extend(['urllib3[secure]>=1.22', 'pyOpenSSL>=17.3.0'])
 
-
-# py.test integration from pytest.org
-class PyTest(TestCommand):
-
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
-
-    def run_tests(self):
-        import pytest
-        errcode = pytest.main(self.test_args)
-        sys.exit(errcode)
-
-
-class BinaryDistribution(Distribution):
+class SpiceyPyBinaryDistribution(Distribution):
     def is_pure(self):
         return False
     def root_is_pure(self):
         return False
 
+class Install_C_Spice(object):
 
-class InstallSpiceyPy(install):
-    """Class that extends the install command and encapsulates the
-    process for installing the required CSPICE distribution at the
-    right place.
-    """
-    def finalize_options(self):
-        install.finalize_options(self)
-        self.install_lib = self.install_platlib
-
-    def run(self):
-        self.check_for_spice()
+    @staticmethod
+    def get_cspice():
+        Install_C_Spice.check_for_spice()
 
         print("Host OS: {0}".format(host_OS))
         if is_unix:
-            self.unix_method()
+            Install_C_Spice.unix_method()
         elif host_OS == "Windows":
-            self.windows_method()
+            Install_C_Spice.windows_method()
         else:
             sys.exit("Unsupported OS: {0}".format(host_OS))
-
-        install.run(self)
 
     @staticmethod
     def check_for_spice():
@@ -203,27 +179,69 @@ class InstallSpiceyPy(install):
             print("Error Cleaning up cspice folder")
             raise e
 
-    def unix_method(self):
+    @staticmethod
+    def unix_method():
         # Unpack cspice.a and csupport.a
-        self.unpack_cspice()
+        Install_C_Spice.unpack_cspice()
         # Build the shared Library
-        self.build_library()
+        Install_C_Spice.build_library()
         # Move to correct location (root of the distribution)
-        self.move_to_root_directory()
+        Install_C_Spice.move_to_root_directory()
 
-    def windows_method(self):
+    @staticmethod
+    def windows_method():
         if os.path.exists(os.path.join(cspice_dir, "lib", "cspice.dll")):
             print("Found pre-made cspice.dll, not building")
         elif os.path.exists(os.path.join(root_dir, 'spiceypy', 'utils', 'cspice.dll')):
             print("Found pre-made cspice.dll in spiceypy, not building")
         else:
             # Build the DLL
-            self.build_library()
+            Install_C_Spice.build_library()
             # Move to correct location (root of the distribution)
-            self.move_to_root_directory()
+            Install_C_Spice.move_to_root_directory()
 
+# py.test integration from pytest.org
+class PyTest(TestCommand):
 
-cmdclass = { 'install': InstallSpiceyPy, 'test': PyTest }
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        import pytest
+        errcode = pytest.main(self.test_args)
+        sys.exit(errcode)
+
+class InstallSpiceyPy(install):
+    """Class that extends the install command and encapsulates the
+    process for installing the required CSPICE distribution at the
+    right place.
+    """
+
+    def finalize_options(self):
+        install.finalize_options(self)
+        self.install_lib = self.install_platlib
+
+    def run(self):
+        Install_C_Spice.get_cspice()
+        install.run(self)
+
+class Get_CSPICE_command(Command):
+    """ Custom command to get the correct cspice and build the shared library for spiceypy """
+    description = 'downloads cspice and builds the shared library'
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        Install_C_Spice.get_cspice()
+
+cmdclass = { 'install': InstallSpiceyPy, 'test': PyTest, 'get_cspice': Get_CSPICE_command}
 
 # https://stackoverflow.com/questions/45150304/how-to-force-a-python-wheel-to-be-platform-specific-when-building-it
 # http://lepture.com/en/2014/python-on-a-hard-wheel
@@ -283,7 +301,7 @@ setup(
     packages=['spiceypy', 'spiceypy.utils'],
     include_package_data=True,
     zip_safe=False,
-    distclass=BinaryDistribution,
+    distclass=SpiceyPyBinaryDistribution,
     package_data={'spiceypy.utils': ['*.so', "*.dll"]},
     setup_requires=DEPENDENCIES,
     install_requires=DEPENDENCIES,
