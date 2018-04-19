@@ -309,7 +309,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     distclass=SpiceyPyBinaryDistribution,
-    package_data={'spiceypy.utils': ['*.so', "*.dll"]},
+    package_data={'spiceypy': ['utils/*.so', "utils/*.dll"]},
     setup_requires=DEPENDENCIES,
     install_requires=DEPENDENCIES,
     requires=REQUIRES,
