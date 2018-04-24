@@ -23,6 +23,7 @@ SOFTWARE.
 """
 from setuptools import setup, Command
 from setuptools.command.install import install
+from setuptools.command.build_py import build_py
 from setuptools.command.test import test as TestCommand
 from setuptools.dist import Distribution
 import ssl
@@ -54,22 +55,17 @@ REQUIRES = ['numpy', 'six']
 if ssl.OPENSSL_VERSION < 'OpenSSL 1.0.1g':
     DEPENDENCIES.extend(['urllib3[secure]>=1.22', 'pyOpenSSL>=17.3.0'])
 
-class SpiceyPyBinaryDistribution(Distribution):
-    def is_pure(self):
-        return False
-    def root_is_pure(self):
-        return False
 
-class Install_C_Spice(object):
+class InstallCSpice(object):
 
     @staticmethod
     def get_cspice():
-        if Install_C_Spice.check_for_spice():
+        if InstallCSpice.check_for_spice():
             print("Host OS: {0}".format(host_OS))
             if is_unix:
-                Install_C_Spice.unix_method()
+                InstallCSpice.unix_method()
             elif host_OS == "Windows":
-                Install_C_Spice.windows_method()
+                InstallCSpice.windows_method()
             else:
                 sys.exit("Unsupported OS: {0}".format(host_OS))
 
@@ -183,11 +179,11 @@ class Install_C_Spice(object):
     @staticmethod
     def unix_method():
         # Unpack cspice.a and csupport.a
-        Install_C_Spice.unpack_cspice()
+        InstallCSpice.unpack_cspice()
         # Build the shared Library
-        Install_C_Spice.build_library()
+        InstallCSpice.build_library()
         # Move to correct location (root of the distribution)
-        Install_C_Spice.move_to_root_directory()
+        InstallCSpice.move_to_root_directory()
 
     @staticmethod
     def windows_method():
@@ -197,13 +193,20 @@ class Install_C_Spice(object):
             print("Found pre-made cspice.dll in spiceypy, not building")
         else:
             # Build the DLL
-            Install_C_Spice.build_library()
+            InstallCSpice.build_library()
             # Move to correct location (root of the distribution)
-            Install_C_Spice.move_to_root_directory()
+            InstallCSpice.move_to_root_directory()
 
-# py.test integration from pytest.org
+
+class SpiceyPyBinaryDistribution(Distribution):
+    def is_pure(self):
+        return False
+    def root_is_pure(self):
+        return False
+
+
 class PyTest(TestCommand):
-
+    # py.test integration from pytest.org
     def finalize_options(self):
         TestCommand.finalize_options(self)
         self.test_args = []
@@ -213,6 +216,7 @@ class PyTest(TestCommand):
         import pytest
         errcode = pytest.main(self.test_args)
         sys.exit(errcode)
+
 
 class InstallSpiceyPy(install):
     """Class that extends the install command and encapsulates the
@@ -225,10 +229,10 @@ class InstallSpiceyPy(install):
         self.install_lib = self.install_platlib
 
     def run(self):
-        Install_C_Spice.get_cspice()
+        InstallCSpice.get_cspice()
         install.run(self)
 
-class Get_CSPICE_command(Command):
+class GetCSPICECommand(Command):
     """ Custom command to get the correct cspice and build the shared library for spiceypy """
     description = 'downloads cspice and builds the shared library'
     user_options = []
@@ -240,10 +244,21 @@ class Get_CSPICE_command(Command):
         pass
 
     def run(self):
-        Install_C_Spice.get_cspice()
+        InstallCSpice.get_cspice()
+
+class BuildPyCommand(build_py):
+    """ Custom build command to ensure cspice is built and packaged """
+
+    def run(self):
+        InstallCSpice.get_cspice()
+        build_py.run(self)
 
 
-cmdclass = { 'install': InstallSpiceyPy, 'test': PyTest, 'get_cspice': Get_CSPICE_command}
+
+cmdclass = { 'install': InstallSpiceyPy,
+             'test': PyTest,
+             'build_py': BuildPyCommand,
+             'get_cspice': GetCSPICECommand }
 
 # https://stackoverflow.com/questions/45150304/how-to-force-a-python-wheel-to-be-platform-specific-when-building-it
 # http://lepture.com/en/2014/python-on-a-hard-wheel
@@ -253,7 +268,7 @@ try:
     class _bdist_wheel(bdist_wheel):
 
         def initialize_options(self):
-            Install_C_Spice.get_cspice()
+            InstallCSpice.get_cspice()
             bdist_wheel.initialize_options(self)
 
         def finalize_options(self):
