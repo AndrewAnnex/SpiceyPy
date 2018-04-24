@@ -267,10 +267,6 @@ try:
     print("Wheel is Present")
     class _bdist_wheel(bdist_wheel):
 
-        def initialize_options(self):
-            InstallCSpice.get_cspice()
-            bdist_wheel.initialize_options(self)
-
         def finalize_options(self):
             bdist_wheel.finalize_options(self)
             self.root_is_pure = False
