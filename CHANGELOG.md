@@ -8,13 +8,15 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 ### Added
 - wrapper functions for gffove and gfocce and associated callbacks
 - proxymanager for spice download by B. Seignovert
+
 ### Changed
 - simplifications in libspicehelper
-### Deprecated
-### Removed
+
 ### Fixed
 - termpt docstring by Marcel Stefko
 - various things in ci build configs
+- missing dll/so file issue with pip installs
+
 
 ## [2.1.0] - 2017-11-09
 ### Added
