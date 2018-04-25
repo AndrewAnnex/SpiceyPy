@@ -21,8 +21,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from setuptools import setup, find_packages
+from setuptools import setup, Command
 from setuptools.command.install import install
+from setuptools.command.build_py import build_py
 from setuptools.command.test import test as TestCommand
 from setuptools.dist import Distribution
 import ssl
@@ -55,43 +56,18 @@ if ssl.OPENSSL_VERSION < 'OpenSSL 1.0.1g':
     DEPENDENCIES.extend(['urllib3[secure]>=1.22', 'pyOpenSSL>=17.3.0'])
 
 
-# py.test integration from pytest.org
-class PyTest(TestCommand):
+class InstallCSpice(object):
 
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
-
-    def run_tests(self):
-        import pytest
-        errcode = pytest.main(self.test_args)
-        sys.exit(errcode)
-
-
-class BinaryDistribution(Distribution):
-    def is_pure(self):
-        return False
-
-
-class InstallSpiceyPy(install):
-    """Class that extends the install command and encapsulates the
-    process for installing the required CSPICE distribution at the
-    right place.
-    """
-
-    def run(self):
-        self.check_for_spice()
-
-        print("Host OS: {0}".format(host_OS))
-        if is_unix:
-            self.unix_method()
-        elif host_OS == "Windows":
-            self.windows_method()
-        else:
-            sys.exit("Unsupported OS: {0}".format(host_OS))
-
-        install.run(self)
+    @staticmethod
+    def get_cspice():
+        if InstallCSpice.check_for_spice():
+            print("Host OS: {0}".format(host_OS))
+            if is_unix:
+                InstallCSpice.unix_method()
+            elif host_OS == "Windows":
+                InstallCSpice.windows_method()
+            else:
+                sys.exit("Unsupported OS: {0}".format(host_OS))
 
     @staticmethod
     def check_for_spice():
@@ -105,6 +81,8 @@ class InstallSpiceyPy(install):
             if not os.path.exists(cspice_dir):
                 message = 'Unable to find CSPICE at {0}. Exiting'.format(cspice_dir)
                 sys.exit(message)
+            return True
+        return False
 
     @staticmethod
     def unpack_cspice():
@@ -198,24 +176,116 @@ class InstallSpiceyPy(install):
             print("Error Cleaning up cspice folder")
             raise e
 
-    def unix_method(self):
+    @staticmethod
+    def unix_method():
         # Unpack cspice.a and csupport.a
-        self.unpack_cspice()
+        InstallCSpice.unpack_cspice()
         # Build the shared Library
-        self.build_library()
+        InstallCSpice.build_library()
         # Move to correct location (root of the distribution)
-        self.move_to_root_directory()
+        InstallCSpice.move_to_root_directory()
 
-    def windows_method(self):
+    @staticmethod
+    def windows_method():
         if os.path.exists(os.path.join(cspice_dir, "lib", "cspice.dll")):
             print("Found pre-made cspice.dll, not building")
         elif os.path.exists(os.path.join(root_dir, 'spiceypy', 'utils', 'cspice.dll')):
             print("Found pre-made cspice.dll in spiceypy, not building")
         else:
             # Build the DLL
-            self.build_library()
+            InstallCSpice.build_library()
             # Move to correct location (root of the distribution)
-            self.move_to_root_directory()
+            InstallCSpice.move_to_root_directory()
+
+
+class SpiceyPyBinaryDistribution(Distribution):
+    def is_pure(self):
+        return False
+    def root_is_pure(self):
+        return False
+
+
+class PyTest(TestCommand):
+    # py.test integration from pytest.org
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        import pytest
+        errcode = pytest.main(self.test_args)
+        sys.exit(errcode)
+
+
+class InstallSpiceyPy(install):
+    """Class that extends the install command and encapsulates the
+    process for installing the required CSPICE distribution at the
+    right place.
+    """
+
+    def finalize_options(self):
+        install.finalize_options(self)
+        self.install_lib = self.install_platlib
+
+    def run(self):
+        InstallCSpice.get_cspice()
+        install.run(self)
+
+class GetCSPICECommand(Command):
+    """ Custom command to get the correct cspice and build the shared library for spiceypy """
+    description = 'downloads cspice and builds the shared library'
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        InstallCSpice.get_cspice()
+
+class BuildPyCommand(build_py):
+    """ Custom build command to ensure cspice is built and packaged """
+
+    def run(self):
+        InstallCSpice.get_cspice()
+        build_py.run(self)
+
+
+
+cmdclass = { 'install': InstallSpiceyPy,
+             'test': PyTest,
+             'build_py': BuildPyCommand,
+             'get_cspice': GetCSPICECommand }
+
+# https://stackoverflow.com/questions/45150304/how-to-force-a-python-wheel-to-be-platform-specific-when-building-it
+# http://lepture.com/en/2014/python-on-a-hard-wheel
+try:
+    from wheel.bdist_wheel import bdist_wheel
+    print("Wheel is Present")
+    class _bdist_wheel(bdist_wheel):
+
+        def finalize_options(self):
+            bdist_wheel.finalize_options(self)
+            self.root_is_pure = False
+
+        def get_tag(self):
+            # TODO: since I use six, in future consider replacing first two tags with py2.py3 and none
+            tag = bdist_wheel.get_tag(self)
+            repl = 'macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64'
+            if 'macosx_10' in tag[2]:
+                tag  = (tag[0], tag[1], repl)
+            return tag
+
+    # add our override to the cmdclass dict so we can inject this behavior
+    cmdclass['bdist_wheel'] = _bdist_wheel
+
+except ImportError:
+    # we don't have wheel installed so there is nothing to change
+    print("Wheel is not installed...")
+    pass
 
 
 readme = open('README.rst', 'r')
@@ -224,7 +294,7 @@ readme.close()
 
 setup(
     name='spiceypy',
-    version='2.1.0',
+    version='2.1.1',
     license='MIT',
     author='Andrew Annex',
     author_email='ama6fy@virginia.edu',
@@ -246,18 +316,16 @@ setup(
         "Operating System :: POSIX :: BSD :: FreeBSD",
         "Operating System :: Microsoft :: Windows"
     ],
-    packages=find_packages(exclude=["*.tests"]),
+    packages=['spiceypy', 'spiceypy.utils'],
     include_package_data=True,
     zip_safe=False,
-    distclass=BinaryDistribution,
-    package_data={'': ['*.so', "*.dll"]},
+    distclass=SpiceyPyBinaryDistribution,
+    package_data={'spiceypy': ['utils/*.so', "utils/*.dll"]},
     setup_requires=DEPENDENCIES,
     install_requires=DEPENDENCIES,
     requires=REQUIRES,
     tests_require=TEST_DEPENDENCIES,
-    cmdclass={
-        'install': InstallSpiceyPy,
-        'test': PyTest},
+    cmdclass=cmdclass,
     test_suite='spiceypy.tests.test_wrapper.py',
     extras_require={'testing': ['pytest']}
 )
