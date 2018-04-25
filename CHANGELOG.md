@@ -4,7 +4,7 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## [2.1.1] - UNRELEASED
+## [2.1.1] - 2018-04-24
 ### Added
 - wrapper functions for gffove and gfocce and associated callbacks
 - proxymanager for spice download by B. Seignovert
@@ -13,6 +13,7 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 - simplifications in libspicehelper
 
 ### Fixed
+- issue with cassini example in doc
 - termpt docstring by Marcel Stefko
 - various things in ci build configs
 - missing dll/so file issue with pip installs
