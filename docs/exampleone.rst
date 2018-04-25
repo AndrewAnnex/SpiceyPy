@@ -169,13 +169,15 @@ meta kernels in spice, please consult the `Kernel Required Reading <https://naif
     # Clean up the kernels
     spice.kclear()
 
-We will use matplotlib's 3D plotting to visualize Cassini's coordinates.
+We will use matplotlib's 3D plotting to visualize Cassini's coordinates. We first convert the
+positions list to a 2D numpy array for easier indexing in the plot.
 
 .. code:: python
 
+    positions = np.asarray(positions).T # positions is a list, make it an ndarray for easier indexing
     fig = plt.figure(figsize=(9, 9))
     ax  = fig.add_subplot(111, projection='3d')
-    ax.plot(positions.T[0], positions.T[1], positions.T[2])
+    ax.plot(positions[0], positions[1], positions[2])
     plt.title('SpiceyPy Cassini Position Example from Jun 20, 2004 to Dec 1, 2005')
     plt.show()
 
