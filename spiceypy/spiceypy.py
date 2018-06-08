@@ -383,7 +383,7 @@ def bodc2n(code, lenout=_default_len_out):
     code = ctypes.c_int(code)
     name = stypes.stringToCharP(" " * lenout)
     lenout = ctypes.c_int(lenout)
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.bodc2n_c(code, lenout, name, ctypes.byref(found))
     return stypes.toPythonString(name), found.value
 
@@ -465,7 +465,7 @@ def bodn2c(name):
     """
     name = stypes.stringToCharP(name)
     code = ctypes.c_int(0)
-    found = ctypes.c_bool(0)
+    found = stypes.s_bool(0)
     libspice.bodn2c_c(name, ctypes.byref(code), ctypes.byref(found))
     return code.value, found.value
 
@@ -485,7 +485,7 @@ def bods2c(name):
     """
     name = stypes.stringToCharP(name)
     code = ctypes.c_int(0)
-    found = ctypes.c_bool(0)
+    found = stypes.s_bool(0)
     libspice.bods2c_c(name, ctypes.byref(code), ctypes.byref(found))
     return code.value, found.value
 
@@ -805,7 +805,7 @@ def ccifrm(frclss, clssid, lenout=_default_len_out):
     frcode = ctypes.c_int()
     frname = stypes.stringToCharP(lenout)
     center = ctypes.c_int()
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.ccifrm_c(frclss, clssid, lenout, ctypes.byref(frcode), frname,
                       ctypes.byref(center), ctypes.byref(found))
     return frcode.value, stypes.toPythonString(
@@ -917,7 +917,7 @@ def cidfrm(cent, lenout=_default_len_out):
     lenout = ctypes.c_int(lenout)
     frcode = ctypes.c_int()
     frname = stypes.stringToCharP(lenout)
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.cidfrm_c(cent, lenout, ctypes.byref(frcode), frname,
                       ctypes.byref(found))
     return frcode.value, stypes.toPythonString(frname), found.value
@@ -963,7 +963,7 @@ def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
     """
     ck = stypes.stringToCharP(ck)
     idcode = ctypes.c_int(idcode)
-    needav = ctypes.c_bool(needav)
+    needav = stypes.s_bool(needav)
     level = stypes.stringToCharP(level)
     tol = ctypes.c_double(tol)
     timsys = stypes.stringToCharP(timsys)
@@ -1003,7 +1003,7 @@ def ckgp(inst, sclkdp, tol, ref):
     ref = stypes.stringToCharP(ref)
     cmat = stypes.emptyDoubleMatrix()
     clkout = ctypes.c_double()
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.ckgp_c(inst, sclkdp, tol, ref, cmat, ctypes.byref(clkout),
                     ctypes.byref(found))
     return stypes.cMatrixToNumpy(cmat), clkout.value, found.value
@@ -1039,7 +1039,7 @@ def ckgpav(inst, sclkdp, tol, ref):
     cmat = stypes.emptyDoubleMatrix()
     av = stypes.emptyDoubleVector(3)
     clkout = ctypes.c_double()
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.ckgpav_c(inst, sclkdp, tol, ref, cmat, av, ctypes.byref(clkout),
                       ctypes.byref(found))
     return stypes.cMatrixToNumpy(cmat), stypes.cVectorToPython(
@@ -1165,7 +1165,7 @@ def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
     endtim = ctypes.c_double(endtim)
     inst = ctypes.c_int(inst)
     ref = stypes.stringToCharP(ref)
-    avflag = ctypes.c_bool(avflag)
+    avflag = stypes.s_bool(avflag)
     segid = stypes.stringToCharP(segid)
     sclkdp = stypes.toDoubleVector(sclkdp)
     quats = stypes.toDoubleMatrix(quats)
@@ -1264,7 +1264,7 @@ def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
     endtim = ctypes.c_double(endtim)
     inst = ctypes.c_int(inst)
     ref = stypes.stringToCharP(ref)
-    avflag = ctypes.c_bool(avflag)
+    avflag = stypes.s_bool(avflag)
     segid = stypes.stringToCharP(segid)
     sclkdp = stypes.toDoubleVector(sclkdp)
     quats = stypes.toDoubleMatrix(quats)
@@ -1320,7 +1320,7 @@ def ckw05(handle, subtype, degree, begtim, endtim, inst, ref, avflag, segid,
     endtim  = ctypes.c_double(endtim)
     inst    = ctypes.c_int(inst)
     ref     = stypes.stringToCharP(ref)
-    avflag  = ctypes.c_bool(avflag)
+    avflag  = stypes.s_bool(avflag)
     segid   = stypes.stringToCharP(segid)
     n       = ctypes.c_int(len(packts))
     sclkdp  = stypes.toDoubleVector(sclkdp)
@@ -1438,7 +1438,7 @@ def cnmfrm(cname, lenout=_default_len_out):
     lenout = ctypes.c_int(lenout)
     frname = stypes.stringToCharP(lenout)
     cname = stypes.stringToCharP(cname)
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     frcode = ctypes.c_int()
     libspice.cnmfrm_c(cname, lenout, ctypes.byref(frcode), frname,
                       ctypes.byref(found))
@@ -1588,7 +1588,7 @@ def cvpool(agent):
     :rtype: bool
     """
     agent = stypes.stringToCharP(agent)
-    update = ctypes.c_bool()
+    update = stypes.s_bool()
     libspice.cvpool_c(agent, ctypes.byref(update))
     return update.value
 
@@ -1793,7 +1793,7 @@ def dafec(handle, bufsiz, lenout=_default_len_out):
     bufsiz = ctypes.c_int(bufsiz)
     lenout = ctypes.c_int(lenout)
     n = ctypes.c_int()
-    done = ctypes.c_bool()
+    done = stypes.s_bool()
     libspice.dafec_c(handle, bufsiz, lenout, ctypes.byref(n),
                      ctypes.byref(buffer), ctypes.byref(done))
     return n.value, stypes.cVectorToPython(buffer), done.value
@@ -1809,7 +1809,7 @@ def daffna():
     :return: True if an array was found.
     :rtype: bool
     """
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.daffna_c(ctypes.byref(found))
     return found.value
 
@@ -1824,7 +1824,7 @@ def daffpa():
     :return: True if an array was found.
     :rtype: bool
     """
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.daffpa_c(ctypes.byref(found))
     return found.value
 
@@ -1930,7 +1930,7 @@ def dafgsr(handle, recno, begin, end):
     end = ctypes.c_int(end)
     # dafgsr_c will retrieve no more than 128 words
     data = stypes.emptyDoubleVector(1 + min([128,end.value]) - max([begin.value,1]))
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.dafgsr_c(handle, recno, begin, end, data, ctypes.byref(found))
     return stypes.cVectorToPython(data), found.value
 
@@ -2174,7 +2174,7 @@ def dasec(handle, bufsiz=_default_len_out, buflen=_default_len_out):
     bufsiz = ctypes.c_int(bufsiz)
     buflen = ctypes.c_int(buflen)
     n = ctypes.c_int(0)
-    done = ctypes.c_bool()
+    done = stypes.s_bool()
     libspice.dasec_c(handle, bufsiz, buflen, ctypes.byref(n),
                      ctypes.byref(buffer), ctypes.byref(done))
     return n.value, stypes.cVectorToPython(buffer), done.value
@@ -2453,7 +2453,7 @@ def dlabbs(handle):
     """
     handle = ctypes.c_int(handle)
     descr  = stypes.SpiceDLADescr()
-    found  = ctypes.c_bool()
+    found  = stypes.s_bool()
     libspice.dlabbs_c(handle, ctypes.byref(descr), ctypes.byref(found))
     return descr, found.value
 
@@ -2473,7 +2473,7 @@ def dlabfs(handle):
     """
     handle = ctypes.c_int(handle)
     descr  = stypes.SpiceDLADescr()
-    found  = ctypes.c_bool()
+    found  = stypes.s_bool()
     libspice.dlabfs_c(handle, ctypes.byref(descr), ctypes.byref(found))
     return descr, found.value
 
@@ -2496,7 +2496,7 @@ def dlafns(handle, descr):
     assert isinstance(descr, stypes.SpiceDLADescr)
     handle = ctypes.c_int(handle)
     nxtdsc = stypes.SpiceDLADescr()
-    found  = ctypes.c_bool()
+    found  = stypes.s_bool()
     libspice.dlafns_c(handle, ctypes.byref(descr), ctypes.byref(nxtdsc), ctypes.byref(found))
     return nxtdsc, found.value
 
@@ -2519,7 +2519,7 @@ def dlafps(handle, descr):
     assert isinstance(descr, stypes.SpiceDLADescr)
     handle = ctypes.c_int(handle)
     prvdsc = stypes.SpiceDLADescr()
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.dlafps_c(handle, ctypes.byref(descr), ctypes.byref(prvdsc),
                       ctypes.byref(found))
     return prvdsc, found.value
@@ -2836,7 +2836,7 @@ def dskcls(handle, optmiz=False):
     :return: 
     """
     handle = ctypes.c_int(handle)
-    optmiz = ctypes.c_bool(optmiz)
+    optmiz = stypes.s_bool(optmiz)
     libspice.dskcls_c(handle, optmiz)
 
 
@@ -2980,7 +2980,7 @@ def dskmi2(vrtces, plates, finscl, corscl, worksz, voxpsz, voxlsz, makvtl, spxis
     worksz = ctypes.c_int(worksz)
     voxpsz = ctypes.c_int(voxpsz)
     voxlsz = ctypes.c_int(voxlsz)
-    makvtl = ctypes.c_bool(makvtl)
+    makvtl = stypes.s_bool(makvtl)
     spxisz = ctypes.c_int(spxisz)
     work   = stypes.emptyIntMatrix(2, worksz)
     spaixd = stypes.emptyDoubleVector(10) # SPICE_DSK02_SPADSZ
@@ -3279,7 +3279,7 @@ def dskx02(handle, dladsc, vertex, raydir):
     raydir = stypes.toDoubleVector(raydir)
     plid   = ctypes.c_int()
     xpt    = stypes.emptyDoubleVector(3)
-    found  = ctypes.c_bool()
+    found  = stypes.s_bool()
     libspice.dskx02_c(handle, ctypes.byref(dladsc), vertex, raydir, ctypes.byref(plid), xpt, ctypes.byref(found))
     return plid.value, stypes.cVectorToPython(xpt), found.value
 
@@ -3300,7 +3300,7 @@ def dskxsi(pri, target, srflst, et, fixref, vertex, raydir):
     :param target: Target body name.
     :type target: str
     :param srflst: Surface ID list.
-    :type srflst: list of str
+    :type srflst: list of int
     :param et: Epoch, expressed as seconds past J2000 TDB.
     :type et: float
     :param fixref: Name of target body-fixed reference frame.
@@ -3312,7 +3312,7 @@ def dskxsi(pri, target, srflst, et, fixref, vertex, raydir):
     :return: Intercept point, Handle of segment contributing surface data, DLADSC, DSKDSC, Double precision component of source info, Integer component of source info
     :rtype: tuple
     """
-    pri = ctypes.c_bool(pri)
+    pri = stypes.s_bool(pri)
     target = stypes.stringToCharP(target)
     nsurf = ctypes.c_int(len(srflst))
     srflst = stypes.toIntVector(srflst)
@@ -3328,7 +3328,7 @@ def dskxsi(pri, target, srflst, et, fixref, vertex, raydir):
     dskdsc = stypes.SpiceDSKDescr()
     dc     = stypes.emptyDoubleVector(1)
     ic     = stypes.emptyIntVector(1)
-    found  = ctypes.c_bool()
+    found  = stypes.s_bool()
     libspice.dskxsi_c(pri, target, nsurf, srflst, et, fixref, vertex, raydir, maxd, maxi, xpt, handle, dladsc, dskdsc, dc, ic, found)
     return stypes.cVectorToPython(xpt), handle.value, dladsc, dskdsc, stypes.cVectorToPython(dc), stypes.cVectorToPython(ic), found.value
 
@@ -3346,7 +3346,7 @@ def dskxv(pri, target, srflst, et, fixref, vtxarr, dirarr):
     :param target: Target body name.
     :type target: str
     :param srflst: Surface ID list.
-    :type srflst: list of str
+    :type srflst: list of int
     :param et: Epoch, expressed as seconds past J2000 TDB.
     :type et: float
     :param fixref: Name of target body-fixed reference frame.
@@ -3358,7 +3358,7 @@ def dskxv(pri, target, srflst, et, fixref, vtxarr, dirarr):
     :return: Intercept point array and Found flag array.
     :rtype: tuple
     """
-    pri    = ctypes.c_bool(pri)
+    pri    = ctypes.c_int(pri)
     target = stypes.stringToCharP(target)
     nsurf  = ctypes.c_int(len(srflst))
     srflst = stypes.toIntVector(srflst)
@@ -3368,7 +3368,7 @@ def dskxv(pri, target, srflst, et, fixref, vtxarr, dirarr):
     vtxarr = stypes.toDoubleMatrix(vtxarr)
     dirarr = stypes.toDoubleMatrix(dirarr)
     xptarr = stypes.emptyDoubleMatrix(y=nray)
-    fndarr = stypes.emptyBoolVector(nray)
+    fndarr = stypes.emptyIntVector(nray)
     libspice.dskxv_c(pri, target, nsurf, srflst, et, fixref, nray, vtxarr, dirarr, xptarr, fndarr)
     return stypes.cMatrixToNumpy(xptarr), stypes.cVectorToPython(fndarr)
 
@@ -3437,7 +3437,7 @@ def dtpool(name):
     :rtype: tuple
     """
     name = stypes.stringToCharP(name)
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     n = ctypes.c_int()
     typeout = ctypes.c_char()
     libspice.dtpool_c(name, ctypes.byref(found), ctypes.byref(n),
@@ -3693,7 +3693,7 @@ def ekacec(handle, segno, recno, column, nvals, cvals, isnull):
     nvals = ctypes.c_int(nvals)
     vallen = ctypes.c_int(len(max(cvals, key=len)) + 1)
     cvals = stypes.listToCharArrayPtr(cvals)
-    isnull = ctypes.c_int(1 if isnull else 0)
+    isnull = ctypes.c_int(isnull)
     libspice.ekacec_c(handle, segno, recno, column, nvals, vallen, cvals, isnull)
 
 
@@ -3725,7 +3725,7 @@ def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
     dvals = stypes.toDoubleVector(dvals)
-    isnull = ctypes.c_int(1 if isnull else 0)
+    isnull = ctypes.c_int(isnull)
     libspice.ekaced_c(handle, segno, recno, column, nvals, dvals, isnull)
 
 
@@ -3757,7 +3757,7 @@ def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
     ivals = stypes.toIntVector(ivals)
-    isnull = ctypes.c_int(1 if isnull else 0)
+    isnull = ctypes.c_int(isnull)
     libspice.ekacei_c(handle, segno, recno, column, nvals, ivals, isnull)
 
 
@@ -3796,7 +3796,7 @@ def ekaclc(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs,
     vallen = ctypes.c_int(vallen)
     cvals = stypes.listToCharArrayPtr(cvals)
     entszs = stypes.toIntVector(entszs)
-    nlflgs = stypes.toBoolVector(nlflgs)
+    nlflgs = stypes.toIntVector(nlflgs)
     rcptrs = stypes.toIntVector(rcptrs)
     wkindx = stypes.toIntVector(wkindx)
     libspice.ekaclc_c(handle, segno, column, vallen, cvals, entszs, nlflgs,
@@ -4051,7 +4051,7 @@ def ekfind(query, lenout=_default_len_out):
     query = stypes.stringToCharP(query)
     lenout = ctypes.c_int(lenout)
     nmrows = ctypes.c_int()
-    error = ctypes.c_bool()
+    error = stypes.s_bool()
     errmsg = stypes.stringToCharP(lenout)
     libspice.ekfind_c(query, lenout, ctypes.byref(nmrows), ctypes.byref(error),
                       errmsg)
@@ -4084,8 +4084,8 @@ def ekgc(selidx, row, element, lenout=_default_len_out):
     row = ctypes.c_int(row)
     element = ctypes.c_int(element)
     lenout = ctypes.c_int(lenout)
-    null = ctypes.c_bool()
-    found = ctypes.c_bool()
+    null = stypes.s_bool()
+    found = stypes.s_bool()
     cdata = stypes.stringToCharP(lenout)
     libspice.ekgc_c(selidx, row, element, lenout, cdata, ctypes.byref(null), ctypes.byref(found))
     return stypes.toPythonString(cdata), null.value, found.value
@@ -4115,8 +4115,8 @@ def ekgd(selidx, row, element):
     row = ctypes.c_int(row)
     element = ctypes.c_int(element)
     ddata = ctypes.c_double()
-    null = ctypes.c_bool()
-    found = ctypes.c_bool()
+    null = stypes.s_bool()
+    found = stypes.s_bool()
     libspice.ekgd_c(selidx, row, element, ctypes.byref(ddata),
                     ctypes.byref(null), ctypes.byref(found))
     return ddata.value, null.value, found.value
@@ -4146,8 +4146,8 @@ def ekgi(selidx, row, element):
     row = ctypes.c_int(row)
     element = ctypes.c_int(element)
     idata = ctypes.c_int()
-    null = ctypes.c_bool()
-    found = ctypes.c_bool()
+    null = stypes.s_bool()
+    found = stypes.s_bool()
     libspice.ekgi_c(selidx, row, element, ctypes.byref(idata),
                     ctypes.byref(null), ctypes.byref(found))
     return idata.value, null.value, found.value
@@ -4399,7 +4399,7 @@ def ekpsel(query, msglen, tablen, collen):
     xclass = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
     tabs = stypes.emptyCharArray(yLen=_SPICE_EK_MAXQSEL, xLen=tablen)
     cols = stypes.emptyCharArray(yLen=_SPICE_EK_MAXQSEL, xLen=collen)
-    error = ctypes.c_bool()
+    error = stypes.s_bool()
     errmsg = stypes.stringToCharP(msglen)
     libspice.ekpsel_c(query, msglen, tablen, collen, ctypes.byref(n),
                       xbegs, xends, xtypes, xclass, ctypes.byref(tabs),
@@ -4447,7 +4447,7 @@ def ekrcec(handle, segno, recno, column, lenout, nelts=_SPICE_EK_EKRCEX_ROOM_DEF
     lenout = ctypes.c_int(lenout)
     nvals = ctypes.c_int()
     cvals = stypes.emptyCharArray(yLen=nelts, xLen=lenout)
-    isnull = ctypes.c_bool()
+    isnull = stypes.s_bool()
     libspice.ekrcec_c(handle, segno, recno, column, lenout, ctypes.byref(nvals), ctypes.byref(cvals), ctypes.byref(isnull))
     assert failed() or (nvals.value <= nelts)
     return nvals.value, stypes.cVectorToPython(cvals)[:nvals.value], isnull.value
@@ -4480,7 +4480,7 @@ def ekrced(handle, segno, recno, column, nelts=_SPICE_EK_EKRCEX_ROOM_DEFAULT):
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(0)
     dvals = stypes.emptyDoubleVector(nelts)
-    isnull = ctypes.c_bool()
+    isnull = stypes.s_bool()
     libspice.ekrced_c(handle, segno, recno, column, ctypes.byref(nvals), dvals,
                       ctypes.byref(isnull))
     assert failed() or (nvals.value <= nelts)
@@ -4514,7 +4514,7 @@ def ekrcei(handle, segno, recno, column, nelts=_SPICE_EK_EKRCEX_ROOM_DEFAULT):
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int()
     ivals = stypes.emptyIntVector(nelts)
-    isnull = ctypes.c_bool()
+    isnull = stypes.s_bool()
     libspice.ekrcei_c(handle, segno, recno, column, ctypes.byref(nvals), ivals,
                       ctypes.byref(isnull))
     assert failed() or (nvals.value <= nelts)
@@ -4592,7 +4592,7 @@ def ekucec(handle, segno, recno, column, nvals, cvals, isnull):
     nvals = ctypes.c_int(nvals)
     vallen = ctypes.c_int(len(max(cvals, key=len)) + 1)
     cvals = stypes.listToCharArrayPtr(cvals, xLen=vallen)
-    isnull = ctypes.c_int(1 if isnull else 0)
+    isnull = ctypes.c_int(isnull)
     libspice.ekucec_c(handle, segno, recno, column, nvals, vallen, cvals, isnull)
 
 
@@ -4624,7 +4624,7 @@ def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
     dvals = stypes.toDoubleVector(dvals)
-    isnull = ctypes.c_int(1 if isnull else 0)
+    isnull = ctypes.c_int(isnull)
     libspice.ekaced_c(handle, segno, recno, column, nvals, dvals, isnull)
 
 
@@ -4656,7 +4656,7 @@ def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
     column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
     ivals = stypes.toIntVector(ivals)
-    isnull = ctypes.c_int(1 if isnull else 0)
+    isnull = ctypes.c_int(isnull)
     libspice.ekucei_c(handle, segno, recno, column, nvals, ivals, isnull)
 
 
@@ -5151,7 +5151,7 @@ def expool(name):
     :rtype: bool
     """
     name = stypes.stringToCharP(name)
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.expool_c(name, ctypes.byref(found))
     return found.value
 
@@ -5221,7 +5221,7 @@ def fovray(inst, raydir, rframe, abcorr, observer, et):
     abcorr = stypes.stringToCharP(abcorr)
     observer = stypes.stringToCharP(observer)
     et = ctypes.c_double(et)
-    visible = ctypes.c_bool()
+    visible = stypes.s_bool()
     libspice.fovray_c(inst, raydir, rframe, abcorr, observer, ctypes.byref(et),
                       ctypes.byref(visible))
     return visible.value
@@ -5259,7 +5259,7 @@ def fovtrg(inst, target, tshape, tframe, abcorr, observer, et):
     abcorr = stypes.stringToCharP(abcorr)
     observer = stypes.stringToCharP(observer)
     et = ctypes.c_double(et)
-    visible = ctypes.c_bool()
+    visible = stypes.s_bool()
     libspice.fovtrg_c(inst, target, tshape, tframe, abcorr, observer,
                       ctypes.byref(et), ctypes.byref(visible))
     return visible.value
@@ -5298,7 +5298,7 @@ def frinfo(frcode):
     cent = ctypes.c_int()
     frclss = ctypes.c_int()
     clssid = ctypes.c_int()
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.frinfo_c(frcode, ctypes.byref(cent), ctypes.byref(frclss),
                       ctypes.byref(clssid), ctypes.byref(found))
     return cent.value, frclss.value, clssid.value, found.value
@@ -5386,7 +5386,7 @@ def gcpool(name, start, room, lenout=_default_len_out):
     lenout = ctypes.c_int(lenout)
     n = ctypes.c_int()
     cvals = stypes.emptyCharArray(lenout, room)
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.gcpool_c(name, start, room, lenout, ctypes.byref(n),
                       ctypes.byref(cvals), ctypes.byref(found))
     return [stypes.toPythonString(x.value) for x in
@@ -5415,7 +5415,7 @@ def gdpool(name, start, room):
     values = stypes.emptyDoubleVector(room)
     room = ctypes.c_int(room)
     n = ctypes.c_int()
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.gdpool_c(name, start, room, ctypes.byref(n),
                       ctypes.cast(values, ctypes.POINTER(ctypes.c_double)),
                       ctypes.byref(found))
@@ -5698,8 +5698,8 @@ def gffove(inst, tshape, raydir, target, tframe, abcorr, obsrvr,
     abcorr = stypes.stringToCharP(abcorr)
     obsrvr = stypes.stringToCharP(obsrvr)
     tol = ctypes.c_double(tol)
-    rpt = ctypes.c_bool(rpt)
-    bail = ctypes.c_bool(bail)
+    rpt = stypes.s_bool(rpt)
+    bail = stypes.s_bool(bail)
     libspice.gffove_c(inst, tshape, raydir, target, tframe,
                       abcorr, obsrvr, tol, udstep, udrefn, rpt,
                       udrepi, udrepu, udrepf, bail, udbail,
@@ -5849,8 +5849,8 @@ def gfocce(occtyp, front, fshape, fframe, back,
     abcorr = stypes.stringToCharP(abcorr)
     obsrvr = stypes.stringToCharP(obsrvr)
     tol = ctypes.c_double(tol)
-    rpt = ctypes.c_bool(rpt)
-    bail = ctypes.c_bool(bail)
+    rpt = stypes.s_bool(rpt)
+    bail = stypes.s_bool(bail)
     libspice.gfocce_c(occtyp, front, fshape, fframe, back,
                       bshape, bframe, abcorr, obsrvr, tol,
                       udstep, udrefn, rpt, udrepi, udrepu, udrepf,
@@ -6037,8 +6037,8 @@ def gfrefn(t1, t2, s1, s2):
     """
     t1 = ctypes.c_double(t1)
     t2 = ctypes.c_double(t2)
-    s1 = ctypes.c_bool(s1)
-    s2 = ctypes.c_bool(s2)
+    s1 = stypes.s_bool(s1)
+    s2 = stypes.s_bool(s2)
     t = ctypes.c_double()
     libspice.gfrefn_c(t1, t2, s1, s2, ctypes.byref(t))
     return t.value
@@ -6553,7 +6553,7 @@ def gipool(name, start, room):
     ivals = stypes.emptyIntVector(room)
     room = ctypes.c_int(room)
     n = ctypes.c_int()
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.gipool_c(name, start, room, ctypes.byref(n), ivals,
                       ctypes.byref(found))
     return stypes.cVectorToPython(ivals)[0:n.value], found.value
@@ -6584,7 +6584,7 @@ def gnpool(name, start, room, lenout=_default_len_out):
     room = ctypes.c_int(room)
     lenout = ctypes.c_int(lenout)
     n = ctypes.c_int()
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.gnpool_c(name, start, room, lenout, ctypes.byref(n), kvars,
                       ctypes.byref(found))
     return stypes.cVectorToPython(kvars)[0:n.value], found.value
@@ -6654,7 +6654,7 @@ def hx2dp(string):
     lenout = ctypes.c_int(80)
     errmsg = stypes.stringToCharP(lenout)
     number = ctypes.c_double()
-    error = ctypes.c_bool()
+    error = stypes.s_bool()
     libspice.hx2dp_c(string, lenout, ctypes.byref(number), ctypes.byref(error),
                      errmsg)
     if not error.value:
@@ -6774,8 +6774,8 @@ def illumf(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint):
     phase  = ctypes.c_double(0)
     incdnc = ctypes.c_double(0)
     emissn = ctypes.c_double(0)
-    visibl = ctypes.c_bool()
-    lit    = ctypes.c_bool()
+    visibl = stypes.s_bool()
+    lit    = stypes.s_bool()
     libspice.illumf_c(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint,
                       ctypes.byref(trgepc), srfvec, ctypes.byref(phase),
                       ctypes.byref(incdnc), ctypes.byref(emissn),
@@ -6911,7 +6911,7 @@ def inedpl(a, b, c, plane):
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
     c = ctypes.c_double(c)
-    found = ctypes.c_bool() #TODO: throw exception?
+    found = stypes.s_bool()
     libspice.inedpl_c(a, b, c, ctypes.byref(plane), ctypes.byref(ellipse),
                       ctypes.byref(found))
     return ellipse, found.value
@@ -7389,7 +7389,7 @@ def kdata(which, kind, fillen=_default_len_out, typlen=_default_len_out, srclen=
     filtyp = stypes.stringToCharP(typlen)
     source = stypes.stringToCharP(srclen)
     handle = ctypes.c_int()
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.kdata_c(which, kind, fillen, typlen, srclen, file, filtyp, source,
                      ctypes.byref(handle), ctypes.byref(found))
     return stypes.toPythonString(file), stypes.toPythonString(
@@ -7422,7 +7422,7 @@ def kinfo(file, typlen=_default_len_out, srclen=_default_len_out):
     filtyp = stypes.stringToCharP(" " * typlen.value)
     source = stypes.stringToCharP(" " * srclen.value)
     handle = ctypes.c_int()
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.kinfo_c(file, typlen, srclen, filtyp, source, ctypes.byref(handle),
                      ctypes.byref(found))
     return stypes.toPythonString(filtyp), stypes.toPythonString(
@@ -7510,7 +7510,7 @@ def kxtrct(keywd, terms, nterms, instring, termlen=_default_len_out, stringlen=_
     nterms = ctypes.c_int(nterms)
     stringlen = ctypes.c_int(stringlen)
     substrlen = ctypes.c_int(substrlen)
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.kxtrct_c(keywd, termlen, terms, nterms,
                       stringlen, substrlen, instring, ctypes.byref(found),
                       substr)
@@ -9989,7 +9989,7 @@ def rdtext(file, lenout=_default_len_out):  # pragma: no cover
     file = stypes.stringToCharP(file)
     line = stypes.stringToCharP(lenout)
     lenout = ctypes.c_int(lenout)
-    eof = ctypes.c_bool()
+    eof = stypes.s_bool()
     libspice.rdtext_c(file, lenout, line, ctypes.byref(eof))
     return stypes.toPythonString(line), eof.value
 
@@ -10224,9 +10224,9 @@ def reordc(iorder, ndim, lenvals, array):
     :rtype: Array of strs
     """
     iorder = stypes.toIntVector(iorder)
-    array = stypes.listToCharArray(array)
     ndim = ctypes.c_int(ndim)
-    lenvals = ctypes.c_int(lenvals)
+    lenvals = ctypes.c_int(lenvals + 1)
+    array = stypes.listToCharArray(array, xLen=lenvals, yLen=ndim)
     libspice.reordc_c(iorder, ndim, lenvals, array)
     return [stypes.toPythonString(x.value) for x in array]
 
@@ -10298,9 +10298,9 @@ def reordl(iorder, ndim, array):
     """
     iorder = stypes.toIntVector(iorder)
     ndim = ctypes.c_int(ndim)
-    array = stypes.toBoolVector(array)
+    array = stypes.toIntVector(array)
     libspice.reordl_c(iorder, ndim, array)
-    return stypes.cVectorToPython(array)
+    return stypes.cIntVectorToBoolPython(array)
 
 
 @spiceErrorCheck
@@ -11105,7 +11105,7 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
     spoint = stypes.emptyDoubleVector(3)
     trgepc = ctypes.c_double(0)
     srfvec = stypes.emptyDoubleVector(3)
-    found = ctypes.c_bool(0)
+    found = stypes.s_bool(0)
     libspice.sincpt_c(method, target, et, fixref, abcorr, obsrvr, dref, dvec,
                       spoint, ctypes.byref(trgepc), srfvec, ctypes.byref(found))
     return stypes.cVectorToPython(spoint), trgepc.value, stypes.cVectorToPython(
@@ -12116,7 +12116,7 @@ def spksfs(body, et, idlen):
     handle = ctypes.c_int()
     descr = stypes.emptyDoubleVector(5)
     identstring = stypes.stringToCharP(idlen)
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.spksfs_c(body, et, idlen, ctypes.byref(handle), descr, identstring,
                       ctypes.byref(found))
     return handle.value, stypes.cVectorToPython(descr), \
@@ -12845,7 +12845,7 @@ def srfc2s(code, bodyid, srflen=_default_len_out):
     bodyid = ctypes.c_int(bodyid)
     srfstr = stypes.stringToCharP(srflen)
     srflen = ctypes.c_int(srflen)
-    isname = ctypes.c_bool()
+    isname = stypes.s_bool()
     libspice.srfc2s_c(code, bodyid, srflen, srfstr, ctypes.byref(isname))
     return stypes.toPythonString(srfstr), isname.value
 
@@ -12873,7 +12873,7 @@ def srfcss(code, bodstr, srflen=_default_len_out):
     bodstr = stypes.stringToCharP(bodstr)
     srfstr = stypes.stringToCharP(srflen)
     srflen = ctypes.c_int(srflen)
-    isname = ctypes.c_bool()
+    isname = stypes.s_bool()
     libspice.srfcss_c(code, bodstr, srflen, srfstr, ctypes.byref(isname))
     return stypes.toPythonString(srfstr), isname.value
 
@@ -12958,7 +12958,7 @@ def srfs2c(srfstr, bodstr):
     srfstr = stypes.stringToCharP(srfstr)
     bodstr = stypes.stringToCharP(bodstr)
     code   = ctypes.c_int()
-    isname = ctypes.c_bool()
+    isname = stypes.s_bool()
     libspice.srfs2c_c(srfstr, bodstr, ctypes.byref(code), ctypes.byref(isname))
     return code.value, isname.value
 
@@ -12983,7 +12983,7 @@ def srfscc(srfstr, bodyid):
     srfstr = stypes.stringToCharP(srfstr)
     bodyid = ctypes.c_int(bodyid)
     code = ctypes.c_int()
-    isname = ctypes.c_bool()
+    isname = stypes.s_bool()
     libspice.srfscc_c(srfstr, bodyid, ctypes.byref(code), ctypes.byref(isname))
     return code.value, isname.value
 
@@ -13033,7 +13033,7 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
     trgepc = ctypes.c_double()
     dist = ctypes.c_double()
     obspos = stypes.emptyDoubleVector(3)
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     if hasattr(et, "__iter__"):
         spoints = []
         dists = []
@@ -13132,7 +13132,7 @@ def stpool(item, nth, contin, lenout=_default_len_out):
     nth = ctypes.c_int(nth)
     strout = stypes.stringToCharP(lenout)
     lenout = ctypes.c_int(lenout)
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     sizet = ctypes.c_int()
     libspice.stpool_c(item, nth, contin, lenout, strout, ctypes.byref(sizet),
                       ctypes.byref(found))
@@ -13428,7 +13428,7 @@ def surfpt(positn, u, a, b, c):
     positn = stypes.toDoubleVector(positn)
     u = stypes.toDoubleVector(u)
     point = stypes.emptyDoubleVector(3)
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.surfpt_c(positn, u, a, b, c, point, ctypes.byref(found))
     return stypes.cVectorToPython(point), found.value
 
@@ -13461,7 +13461,7 @@ def surfpv(stvrtx, stdir, a, b, c):
     stvrtx = stypes.toDoubleVector(stvrtx)
     stdir = stypes.toDoubleVector(stdir)
     stx = stypes.emptyDoubleVector(6)
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.surfpv_c(stvrtx, stdir, a, b, c, stx, ctypes.byref(found))
     return stypes.cVectorToPython(stx), found.value
 
@@ -13539,7 +13539,7 @@ def szpool(name):
     """
     name = stypes.stringToCharP(name)
     n = ctypes.c_int()
-    found = ctypes.c_bool(0)
+    found = stypes.s_bool(0)
     libspice.szpool_c(name, ctypes.byref(n), ctypes.byref(found))
     return n.value, found.value
 
@@ -13808,7 +13808,7 @@ def tpictr(sample, lenout=_default_len_out, lenerr=_default_len_out):
     errmsg = stypes.stringToCharP(lenerr)
     lenout = ctypes.c_int(lenout)
     lenerr = ctypes.c_int(lenerr)
-    ok = ctypes.c_bool()
+    ok = stypes.s_bool()
     libspice.tpictr_c(sample, lenout, lenerr, pictur, ctypes.byref(ok), errmsg)
     return stypes.toPythonString(pictur), ok.value, stypes.toPythonString(
             errmsg)
@@ -14053,7 +14053,7 @@ def uddc(udfunc, x, dx):
     """
     x = ctypes.c_double(x)
     dx = ctypes.c_double(dx)
-    isdescr = ctypes.c_bool()
+    isdescr = stypes.s_bool()
     libspice.uddc_c(udfunc, x, dx, ctypes.byref(isdescr))
     return isdescr.value
 
@@ -14748,7 +14748,7 @@ def vprjpi(vin, projpl, invpl):
     """
     vin = stypes.toDoubleVector(vin)
     vout = stypes.emptyDoubleVector(3)
-    found = ctypes.c_bool()
+    found = stypes.s_bool()
     libspice.vprjpi_c(vin, ctypes.byref(projpl), ctypes.byref(invpl), vout,
                       ctypes.byref(found))
     return stypes.cVectorToPython(vout), found.value
@@ -15545,7 +15545,7 @@ def xf2eul(xform, axisa, axisb, axisc):
     axisb = ctypes.c_int(axisb)
     axisc = ctypes.c_int(axisc)
     eulang = stypes.emptyDoubleVector(6)
-    unique = ctypes.c_bool()
+    unique = stypes.s_bool()
     libspice.xf2eul_c(xform, axisa, axisb, axisc, eulang, unique)
     return stypes.cVectorToPython(eulang), unique.value
 

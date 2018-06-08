@@ -1820,6 +1820,65 @@ def test_dskxv():
     npt.assert_almost_equal(xpt[0], [12.36679999999999957083, 0.0, 0.0])
     spice.kclear()
 
+def test_dskxv_2():
+    spice.kclear()
+    # load kernels
+    spice.furnsh(ExtraKernels.phobosDsk)
+    # get handle
+    dsk1, filtyp, source, handle = spice.kdata(0, "DSK", 256, 5, 256)
+    # get the dladsc from the file
+    dladsc = spice.dlabfs(handle)
+    # get dskdsc for target radius
+    dskdsc = spice.dskgd(handle, dladsc)
+    target = spice.bodc2n(dskdsc.center)
+    fixref = spice.frmnam(dskdsc.frmcde)
+    r = 1.0e10
+    polmrg = 0.5
+    latstp = 1.0
+    lonstp = 2.0
+
+    nhits = 0
+    nderr = 0
+
+    lon = -180.0
+    lat = 90.0
+    nlstep = 0
+    nrays = 0
+    verticies = []
+    raydirs = []
+
+    while lon < 180.0:
+        while nlstep <= 180:
+            if lon == 180.0:
+                lat = 90.0 - nlstep*latstp
+            else:
+                if nlstep == 0:
+                    lat = 90.0 - polmrg
+                elif nlstep == 180:
+                    lat = -90.0 + polmrg
+                else:
+                    lat = 90.0 - nlstep*latstp
+                vertex = spice.latrec(r, np.radians(lon), np.radians(lat))
+                raydir = spice.vminus(vertex)
+                verticies.append(vertex)
+                raydirs.append(raydir)
+                nrays += 1
+                nlstep += 1
+        lon += lonstp
+        lat = 90.0
+        nlstep = 0
+
+    srflst = [dskdsc.surfce]
+    # call dskxsi
+    #verticies = np.asarray(verticies)
+    #raydirs = np.asarray(raydirs)
+    xpt, foundarray = spice.dskxv(False, target, srflst, 0.0, fixref, verticies, raydirs)
+    # check output
+    assert len(xpt) == 32580
+    assert len(foundarray) == 32580
+    assert foundarray.all()
+    spice.kclear()
+
 def test_dskz02():
     spice.kclear()
     # open the dsk file
@@ -5393,8 +5452,9 @@ def test_reordc():
     array = ["one", "three", "two", "zero"]
     iorder = [3, 0, 2, 1]
     outarray = spice.reordc(iorder, 4, 5, array)
-    assert outarray == array  # reordc appears to be broken...
-
+    # reordc appears to be broken...
+    with pytest.raises(AssertionError):
+        assert outarray == ["zero", "one", "two", "three"]
 
 def test_reordd():
     array = [1.0, 3.0, 2.0]
@@ -5414,7 +5474,7 @@ def test_reordl():
     array = [True, True, False]
     iorder = [0, 2, 1]
     outarray = spice.reordl(iorder, 3, array)
-    npt.assert_array_almost_equal(outarray, array)  # reordl has the same issue as reordc
+    npt.assert_array_almost_equal(outarray, [True, False, True])
 
 
 def test_repmc():
