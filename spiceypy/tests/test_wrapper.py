@@ -1870,8 +1870,6 @@ def test_dskxv_2():
 
     srflst = [dskdsc.surfce]
     # call dskxsi
-    #verticies = np.asarray(verticies)
-    #raydirs = np.asarray(raydirs)
     xpt, foundarray = spice.dskxv(False, target, srflst, 0.0, fixref, verticies, raydirs)
     # check output
     assert len(xpt) == 32580

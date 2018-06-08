@@ -366,12 +366,6 @@ class IntMatrixType:
     def from_matrix(self, param):
         return numpy.ctypeslib.as_ctypes(param)
 
-class s_bool(c_int):
-
-    @property
-    def value(self):
-        return bool(self)
-
 
 class BoolArrayType:
     # Class type that will handle all int vectors,
