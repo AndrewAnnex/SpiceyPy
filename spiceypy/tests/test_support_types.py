@@ -144,7 +144,7 @@ def test_toIntVector():
     assert len(madeFromNumpyArray) == 3
     madeFromPythonArray = stypes.toIntVector(array.array('i', [1, 2, 3]))
     assert len(madeFromPythonArray) == 3
-    TestArray3 = ctypes.c_int * 3
+    TestArray3 = ctypes.c_int32 * 3
     madeFromCtypesArray = stypes.toIntVector(TestArray3(1, 2, 3))
     assert len(madeFromCtypesArray) == 3
     with pytest.raises(TypeError):
@@ -187,9 +187,9 @@ def test_to_improve_coverage():
     assert str(xsept) == 'abc'
     # stypes.emptyCharArray when missing keyword arguments
     eca = stypes.emptyCharArray()
-    # stypes.emptyDoubleMatrix and stypes.emptyIntMatrix when x is c_int
-    edm = stypes.emptyDoubleMatrix(x=ctypes.c_int(4))
-    eim = stypes.emptyIntMatrix(x=ctypes.c_int(4))
+    # stypes.emptyDoubleMatrix and stypes.emptyIntMatrix when x is c_int32
+    edm = stypes.emptyDoubleMatrix(x=ctypes.c_int32(4))
+    eim = stypes.emptyIntMatrix(x=ctypes.c_int32(4))
     # stypes.*MatrixType().from_param(param) when isinstance(param,Array)
     for stmt,typ in zip((stypes.DoubleMatrixType(), stypes.IntMatrixType(),),
                         (float, int,)):
@@ -208,7 +208,7 @@ def test_to_improve_coverage():
     assert isinstance(stsdlad.csize, int)
     # __str__ methods in multiple classes
     for obj in (stypes.SpiceEKAttDsc(), stypes.SpiceEKSegSum(), stypes.emptySpiceEKExprClassVector(1),
-                stypes.emptySpiceEKDataTypeVector(1), stypes.emptySpiceEKExprClassVector(ctypes.c_int(1)), stypes.emptySpiceEKDataTypeVector(ctypes.c_int(1))):
+                stypes.emptySpiceEKDataTypeVector(1), stypes.emptySpiceEKExprClassVector(ctypes.c_int32(1)), stypes.emptySpiceEKDataTypeVector(ctypes.c_int32(1))):
         assert type(obj.__str__()) is str
     # SpiceCell methods:  .is_time; .is_bool; .reset.
     stsct = stypes.SPICETIME_CELL(10)

@@ -43,7 +43,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-from ctypes import c_char_p, c_bool, c_int, c_double,\
+from ctypes import c_char_p, c_bool, c_int32, c_double,\
     c_char, c_void_p, sizeof, \
     Array, create_string_buffer, cast, Structure, \
     string_at
@@ -118,41 +118,41 @@ def emptyCharArray(xLen=None, yLen=None):
         yLen = 1
     if not xLen:
         xLen = 1
-    if isinstance(xLen, c_int):
+    if isinstance(xLen, c_int32):
         xLen = xLen.value
-    if isinstance(yLen, c_int):
+    if isinstance(yLen, c_int32):
         yLen = yLen.value
     return ((c_char * xLen) * yLen)()
 
 
 def emptyDoubleMatrix(x=3, y=3):
-    if isinstance(x, c_int):
+    if isinstance(x, c_int32):
         x = x.value
-    if isinstance(y, c_int):
+    if isinstance(y, c_int32):
         y = y.value
     return ((c_double * x) * y)()
 
 
 def emptyDoubleVector(n):
-    if isinstance(n, c_int):
+    if isinstance(n, c_int32):
         n = n.value
     assert(isinstance(n, int))
     return (c_double * n)()
 
 
 def emptyIntMatrix(x=3, y=3):
-    if isinstance(x, c_int):
+    if isinstance(x, c_int32):
         x = x.value
-    if isinstance(y, c_int):
+    if isinstance(y, c_int32):
         y = y.value
-    return ((c_int * x) * y)()
+    return ((c_int32 * x) * y)()
 
 
 def emptyIntVector(n):
-    if isinstance(n, c_int):
+    if isinstance(n, c_int32):
         n = n.value
     assert (isinstance(n, int))
-    return (c_int * n)()
+    return (c_int32 * n)()
 
 
 def cVectorToPython(x):
@@ -172,7 +172,7 @@ def cVectorToPython(x):
         return [toPythonString(y) for y in x]
 
 def cIntVectorToBoolPython(x):
-    return numpc.as_array(x).astype(bool)
+    return numpc.as_array(x).copy().astype(bool)
 
 def cMatrixToNumpy(x):
     """
@@ -180,7 +180,7 @@ def cMatrixToNumpy(x):
     :param x: thing to convert
     :return: numpy.ndarray
     """
-    return numpc.as_array(x)
+    return numpc.as_array(x).copy()
 
 
 def stringToCharP(inobject, inlen=None):
@@ -194,7 +194,7 @@ def stringToCharP(inobject, inlen=None):
         return create_string_buffer(inobject.encode(encoding='UTF-8'), inlen)
     if isinstance(inobject, bytes):
         return inobject
-    if isinstance(inobject, c_int):
+    if isinstance(inobject, c_int32):
         return stringToCharP(" " * inobject.value)
     if isinstance(inobject, int):
         return stringToCharP(" " * inobject)
@@ -207,9 +207,9 @@ def listToCharArray(inList, xLen=None, yLen=None):
         yLen = len(inList)
     if not xLen:
         xLen = max(len(s) for s in inList) + 1
-    if isinstance(xLen, c_int):
+    if isinstance(xLen, c_int32):
         xLen = xLen.value
-    if isinstance(yLen, c_int):
+    if isinstance(yLen, c_int32):
         yLen = yLen.value
     return ((c_char * xLen) * yLen)(*[stringToCharP(l, inlen=xLen) for l in inList])
 
@@ -220,9 +220,9 @@ def listToCharArrayPtr(inList, xLen=None, yLen=None):
         yLen = len(inList)
     if not xLen:
         xLen = max(len(s) for s in inList) + 1
-    if isinstance(xLen, c_int):
+    if isinstance(xLen, c_int32):
         xLen = xLen.value
-    if isinstance(yLen, c_int):
+    if isinstance(yLen, c_int32):
         yLen = yLen.value
     return cast(((c_char * xLen) * yLen)(*[stringToCharP(l, inlen=xLen) for l in inList]), c_char_p)
 
@@ -308,12 +308,12 @@ class IntArrayType:
 
     # Cast from lists/tuples
     def from_list(self, param):
-        val = ((c_int) * len(param))(*param)
+        val = ((c_int32) * len(param))(*param)
         return val
 
     # Cast from Tuple
     def from_tuple(self, param):
-        val = ((c_int) * len(param))(*param)
+        val = ((c_int32) * len(param))(*param)
         return val
 
     # Cast from a numpy array
@@ -342,12 +342,12 @@ class IntMatrixType:
 
     # Cast from lists/tuples
     def from_list(self, param):
-        val = ((c_int * len(param[0])) * len(param))(*[IntArray.from_param(x) for x in param])
+        val = ((c_int32 * len(param[0])) * len(param))(*[IntArray.from_param(x) for x in param])
         return val
 
     # Cast from Tuple
     def from_tuple(self, param):
-        val = ((c_int * len(param[0])) * len(param))(*[IntArray.from_param(x) for x in param])
+        val = ((c_int32 * len(param[0])) * len(param))(*[IntArray.from_param(x) for x in param])
         return val
 
     # Cast from a numpy array
@@ -385,7 +385,7 @@ class BoolArrayType:
 
     # Cast from a numpy array
     def from_ndarray(self, param):
-        # return param.data_as(POINTER(c_int))
+        # return param.data_as(POINTER(c_int32))
         # not sure if long is same as int, it should be..
         # return numpy.ctypeslib.as_ctypes(param)
         return self.from_param(param.tolist())
@@ -462,12 +462,12 @@ class DataType(object):
 
 class SpiceDSKDescr(Structure):
     _fields_ = [
-        ('_surfce', c_int),
-        ('_center', c_int),
-        ('_dclass', c_int),
-        ('_dtype', c_int),
-        ('_frmcde', c_int),
-        ('_corsys', c_int),
+        ('_surfce', c_int32),
+        ('_center', c_int32),
+        ('_dclass', c_int32),
+        ('_dtype', c_int32),
+        ('_frmcde', c_int32),
+        ('_corsys', c_int32),
         ('_corpar', c_double * 10),
         ('_co1min', c_double),
         ('_co1max', c_double),
@@ -541,14 +541,14 @@ class SpiceDSKDescr(Structure):
 
 class SpiceDLADescr(Structure):
     _fields_ = [
-        ('_bwdptr', c_int),
-        ('_fwdptr', c_int),
-        ('_ibase', c_int),
-        ('_isize', c_int),
-        ('_dbase', c_int),
-        ('_dsize', c_int),
-        ('_cbase', c_int),
-        ('_csize', c_int)
+        ('_bwdptr', c_int32),
+        ('_fwdptr', c_int32),
+        ('_ibase', c_int32),
+        ('_isize', c_int32),
+        ('_dbase', c_int32),
+        ('_dsize', c_int32),
+        ('_cbase', c_int32),
+        ('_csize', c_int32)
     ]
     @property
     def bwdptr(self):
@@ -583,12 +583,12 @@ class SpiceDLADescr(Structure):
         return self._csize
 
 
-class SpiceEKDataType(c_int):
-    _SPICE_CHR = c_int(0)
-    _SPICE_DP  = c_int(1)
-    _SPICE_INT = c_int(2)
-    _SPICE_TIME = c_int(3)
-    _SPICE_BOOL = c_int(4)
+class SpiceEKDataType(c_int32):
+    _SPICE_CHR = c_int32(0)
+    _SPICE_DP  = c_int32(1)
+    _SPICE_INT = c_int32(2)
+    _SPICE_TIME = c_int32(3)
+    _SPICE_BOOL = c_int32(4)
 
 
     _fields_ = [
@@ -607,16 +607,16 @@ class SpiceEKDataType(c_int):
 
 
 def emptySpiceEKDataTypeVector(n):
-    if isinstance(n, c_int):
+    if isinstance(n, c_int32):
         n = n.value
     assert(isinstance(n, int))
     return (SpiceEKDataType * n)()
 
 
-class SpiceEKExprClass(c_int):
-    _SPICE_EK_EXP_COL = c_int(0)
-    _SPICE_EK_EXP_FUNC = c_int(1)
-    _SPICE_EK_EXP_EXPR = c_int(2)
+class SpiceEKExprClass(c_int32):
+    _SPICE_EK_EXP_COL = c_int32(0)
+    _SPICE_EK_EXP_FUNC = c_int32(1)
+    _SPICE_EK_EXP_EXPR = c_int32(2)
 
     _fields_ = [
         ('SPICE_EK_EXP_COL',  _SPICE_EK_EXP_COL),
@@ -629,9 +629,9 @@ class SpiceEKExprClass(c_int):
     SPICE_EK_EXP_EXPR = _SPICE_EK_EXP_EXPR.value
 
 
-class SpiceSPK18Subtype(c_int):
-    _S18TP0 = c_int(0)
-    _S18TP1 = c_int(1)
+class SpiceSPK18Subtype(c_int32):
+    _S18TP0 = c_int32(0)
+    _S18TP1 = c_int32(1)
     S18TP0  = _S18TP0.value
     S18TP1  = _S18TP1.value
     _fields_ = [
@@ -641,7 +641,7 @@ class SpiceSPK18Subtype(c_int):
 
 
 def emptySpiceEKExprClassVector(n):
-    if isinstance(n, c_int):
+    if isinstance(n, c_int32):
         n = n.value
     assert(isinstance(n, int))
     return (SpiceEKExprClass * n)()
@@ -649,10 +649,10 @@ def emptySpiceEKExprClassVector(n):
 
 class SpiceEKAttDsc(Structure):
     _fields_ = [
-        ('_cclass', c_int),
+        ('_cclass', c_int32),
         ('_dtype', SpiceEKDataType),
-        ('_strlen', c_int),
-        ('_size', c_int),
+        ('_strlen', c_int32),
+        ('_size', c_int32),
         ('_indexd', c_bool),
         ('_nullok', c_bool)
     ]
@@ -689,8 +689,8 @@ class SpiceEKAttDsc(Structure):
 class SpiceEKSegSum(Structure):
     _fields_ = [
         ('_tabnam', c_char * 65),
-        ('_nrows', c_int),
-        ('_ncols', c_int),
+        ('_nrows', c_int32),
+        ('_ncols', c_int32),
         ('_cnames', (c_char * 100) * 33),
         ('_cdescrs', SpiceEKAttDsc * 100)
     ]
@@ -723,7 +723,7 @@ class SpiceEKSegSum(Structure):
 # and modified as needed for this author, maybe we should work together?
 
 ### helper classes/functions ###
-BITSIZE = {'char': sizeof(c_char), 'int': sizeof(c_int), 'double': sizeof(c_double), 'bool': sizeof(c_int), 'time': sizeof(c_int)}
+BITSIZE = {'char': sizeof(c_char), 'int': sizeof(c_int32), 'double': sizeof(c_double), 'bool': sizeof(c_int32), 'time': sizeof(c_int32)}
 
 
 def _char_getter(data_p, index, length):
@@ -735,7 +735,7 @@ def _double_getter(data_p, index, length):
 
 
 def _int_getter(data_p, index, length):
-    return c_int.from_address(data_p + index * BITSIZE['int']).value
+    return c_int32.from_address(data_p + index * BITSIZE['int']).value
 
 
 def SPICEDOUBLE_CELL(size):
@@ -764,13 +764,13 @@ class SpiceCell(Structure):
     minCharLen = 6
     CTRLBLOCK = 6
     _fields_ = [
-        ('dtype', c_int),
-        ('length', c_int),
-        ('size', c_int),
-        ('card', c_int),
-        ('isSet', c_int),
-        ('adjust', c_int),
-        ('init', c_int),
+        ('dtype', c_int32),
+        ('length', c_int32),
+        ('size', c_int32),
+        ('card', c_int32),
+        ('isSet', c_int32),
+        ('adjust', c_int32),
+        ('init', c_int32),
         ('base', c_void_p),
         ('data', c_void_p)
     ]
@@ -823,8 +823,8 @@ class SpiceCell(Structure):
 
     @classmethod
     def integer(cls, size):
-        base = (c_int * (cls.CTRLBLOCK + size))()
-        data = (c_int * size).from_buffer(
+        base = (c_int32 * (cls.CTRLBLOCK + size))()
+        data = (c_int32 * size).from_buffer(
             base, cls.CTRLBLOCK * BITSIZE['int'])
         instance = cls(cls.DATATYPES_ENUM['int'], 0, size, 0, 1,
                        cast(base, c_void_p),
@@ -843,8 +843,8 @@ class SpiceCell(Structure):
 
     @classmethod
     def bool(cls, size):
-        base = (c_int * (cls.CTRLBLOCK + size))()
-        data = (c_int * size).from_buffer(
+        base = (c_int32 * (cls.CTRLBLOCK + size))()
+        data = (c_int32 * size).from_buffer(
             base, cls.CTRLBLOCK * BITSIZE['bool'])
         instance = cls(cls.DATATYPES_ENUM['bool'], 0, size, 0, 1,
                        cast(base, c_void_p),
@@ -853,8 +853,8 @@ class SpiceCell(Structure):
 
     @classmethod
     def time(cls, size):
-        base = (c_int * (cls.CTRLBLOCK + size))()
-        data = (c_int * size).from_buffer(
+        base = (c_int32 * (cls.CTRLBLOCK + size))()
+        data = (c_int32 * size).from_buffer(
             base, cls.CTRLBLOCK * BITSIZE['time'])
         instance = cls(cls.DATATYPES_ENUM['time'], 0, size, 0, 1,
                        cast(base, c_void_p),
