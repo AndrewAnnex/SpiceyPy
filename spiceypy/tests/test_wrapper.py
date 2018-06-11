@@ -787,7 +787,7 @@ def test_cvpool():
     assert value[0] == 565.0
     spice.clpool()
     spice.kclear()
-    assert updated
+    assert updated is True
 
 
 def test_cyllat():
@@ -7236,7 +7236,7 @@ def test_swpool():
     assert value[0] == 555.0
     spice.clpool()
     spice.kclear()
-    assert updated
+    assert updated is True
 
 
 def test_sxform():

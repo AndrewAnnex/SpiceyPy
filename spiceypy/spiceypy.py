@@ -1590,7 +1590,7 @@ def cvpool(agent):
     agent = stypes.stringToCharP(agent)
     update = ctypes.c_int()
     libspice.cvpool_c(agent, ctypes.byref(update))
-    return update.value
+    return bool(update.value)
 
 
 @spiceErrorCheck
