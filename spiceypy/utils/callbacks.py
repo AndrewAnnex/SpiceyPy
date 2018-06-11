@@ -23,17 +23,17 @@ SOFTWARE.
 """
 
 import functools
-from ctypes import c_bool, c_double, c_char_p, POINTER, CFUNCTYPE, byref
+from ctypes import c_int, c_double, c_char_p, POINTER, CFUNCTYPE, byref
 from .support_types import SpiceCell
 
 UDFUNS = CFUNCTYPE(None, c_double, POINTER(c_double))
-UDFUNB = CFUNCTYPE(None, UDFUNS, c_double, POINTER(c_bool))
+UDFUNB = CFUNCTYPE(None, UDFUNS, c_double, POINTER(c_int))
 UDSTEP = CFUNCTYPE(None, c_double, POINTER(c_double))
-UDREFN = CFUNCTYPE(None, c_double, c_double, c_bool, c_bool, POINTER(c_double))
+UDREFN = CFUNCTYPE(None, c_double, c_double, c_int, c_int, POINTER(c_double))
 UDREPI = CFUNCTYPE(None, POINTER(SpiceCell), c_char_p, c_char_p)
 UDREPU = CFUNCTYPE(None, c_double, c_double, c_double)
 UDREPF = CFUNCTYPE(None)
-UDBAIL = CFUNCTYPE(c_bool)
+UDBAIL = CFUNCTYPE(c_int)
 
 def SpiceUDFUNS(f):
     """
@@ -63,7 +63,7 @@ def SpiceUDFUNB(f):
     @functools.wraps(f)
     def wrapping_udfunb(udf, et, xbool):
         result = f(udf, et) # the function takes a udffunc as a argument
-        xbool[0] = c_bool(result)
+        xbool[0] = c_int(result)
 
     return UDFUNB(wrapping_udfunb)
 
@@ -151,7 +151,7 @@ def SpiceUDBAIL(f):
     @functools.wraps(f)
     def wrapping_udbail():
         result = f()
-        return c_bool(result)
+        return int(result)
     return UDBAIL(wrapping_udbail)
 
 

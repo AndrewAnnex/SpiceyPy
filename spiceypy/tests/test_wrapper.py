@@ -2384,7 +2384,7 @@ def test_ekcii():
     assert attdsc.size == 1
     assert attdsc.strlen == 1
     assert not attdsc.indexd
-    assert not attdsc.nullok
+    assert attdsc.nullok # this used to be false, although clearly it should be true given the call to ekbseg
     if spice.exists(ekpath):
         os.remove(ekpath) # pragma: no cover
     assert not spice.exists(ekpath)
