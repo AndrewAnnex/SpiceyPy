@@ -43,7 +43,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-from ctypes import c_char_p, c_bool, c_int, c_double,\
+from ctypes import c_char_p, c_int, c_double,\
     c_char, c_void_p, sizeof, \
     Array, create_string_buffer, cast, Structure, \
     string_at
@@ -96,10 +96,6 @@ def toIntVector(x):
 
 def toIntMatrix(x):
     return IntMatrix.from_param(param=x)
-
-
-def toBoolVector(x):
-    return BoolArray.from_param(param=x)
 
 
 def toPythonString(inString):
@@ -155,12 +151,6 @@ def emptyIntVector(n):
     return (c_int * n)()
 
 
-def emptyBoolVector(n):
-    if isinstance(n, c_int):
-        n = n.value
-    return (c_bool * n)()
-
-
 def cVectorToPython(x):
     """
     Convert the c vector data into the correct python data type
@@ -177,6 +167,8 @@ def cVectorToPython(x):
     elif isinstance(x[0].value, bytes):
         return [toPythonString(y) for y in x]
 
+def cIntVectorToBoolPython(x):
+    return numpc.as_array(x).astype(bool)
 
 def cMatrixToNumpy(x):
     """
@@ -364,43 +356,12 @@ class IntMatrixType:
     def from_matrix(self, param):
         return numpy.ctypeslib.as_ctypes(param)
 
-class BoolArrayType:
-    # Class type that will handle all int vectors,
-    # inspiration from python cookbook 3rd edition
-    def from_param(self, param):
-        typename = type(param).__name__
-        if hasattr(self, 'from_' + typename):
-            return getattr(self, 'from_' + typename)(param)
-        elif isinstance(param, Array):
-            return param
-        else:
-            raise TypeError("Can't convert %s" % typename)
-
-    # Cast from lists/tuples
-    def from_list(self, param):
-        val = ((c_bool) * len(param))(*param)
-        return val
-
-    # Cast from Tuple
-    def from_tuple(self, param):
-        val = ((c_bool) * len(param))(*param)
-        return val
-
-    # Cast from a numpy array
-    def from_ndarray(self, param):
-        # return param.data_as(POINTER(c_int))
-        # not sure if long is same as int, it should be..
-        # return numpy.ctypeslib.as_ctypes(param)
-        return self.from_param(param.tolist())
-
 
 DoubleArray = DoubleArrayType()
 
 IntArray = IntArrayType()
 
 IntMatrix = IntMatrixType()
-
-BoolArray = BoolArrayType()
 
 DoubleMatrix = DoubleMatrixType()
 
@@ -656,8 +617,8 @@ class SpiceEKAttDsc(Structure):
         ('_dtype', SpiceEKDataType),
         ('_strlen', c_int),
         ('_size', c_int),
-        ('_indexd', c_bool),
-        ('_nullok', c_bool)
+        ('_indexd', c_int),
+        ('_nullok', c_int)
     ]
 
     @property
@@ -678,11 +639,11 @@ class SpiceEKAttDsc(Structure):
 
     @property
     def indexd(self):
-        return self._indexd
+        return bool(self._indexd)
 
     @property
     def nullok(self):
-        return self._nullok
+        return bool(self._nullok)
 
     def __str__(self):
         return '<SpiceEKAttDsc cclass = %s, dtype = %s, strlen = %s, size = %s, indexd = %s, nullok = %s >' % \
