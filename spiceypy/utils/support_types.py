@@ -250,13 +250,13 @@ class DoubleArrayType:
         # return param.data_as(POINTER(c_double))
         # the above older method does not work with
         # functions which take vectors of known size
-        return numpc.as_ctypes(param)
+        return numpc.as_ctypes(param.astype(numpy.float64, casting='same_kind', copy=False))
 
     # Cast from array.array objects
     def from_array(self, param):
         if param.typecode != 'd':
             raise TypeError('must be an array of doubles')
-        return self.from_list(param)
+        return self.from_list(param.astype(numpy.float64, casting='same_kind', copy=False))
 
 
 class DoubleMatrixType:
@@ -283,11 +283,11 @@ class DoubleMatrixType:
 
     # Cast from a numpy array
     def from_ndarray(self, param):
-        return numpc.as_ctypes(param)
+        return numpc.as_ctypes(param.astype(numpy.float64, casting='same_kind', copy=False))
 
     # Cast from a numpy matrix
     def from_matrix(self, param):
-        return numpc.as_ctypes(param)
+        return numpc.as_ctypes(param.astype(numpy.float64, casting='same_kind', copy=False))
 
 
 class IntArrayType:
@@ -315,7 +315,7 @@ class IntArrayType:
     # Cast from a numpy array
     def from_ndarray(self, param):
         # cspice always uses a int size half as big as the float, ie int32 if a float64 system default
-        return numpc.as_ctypes(param.astype(numpy.int32))
+        return numpc.as_ctypes(param.astype(numpy.int32, casting='same_kind', copy=False))
 
     # Cast from array.array objects
     def from_array(self, param):
@@ -349,12 +349,12 @@ class IntMatrixType:
     # Cast from a numpy array
     def from_ndarray(self, param):
         # cspice always uses a int size half as big as the float, ie int32 if a float64 system default
-        return numpc.as_ctypes(param.astype(numpy.int32))
+        return numpc.as_ctypes(param.astype(numpy.int32, casting='same_kind', copy=False))
 
     # Cast from a numpy matrix
     def from_matrix(self, param):
         # cspice always uses a int size half as big as the float, ie int32 if a float64 system default
-        return numpc.as_ctypes(param.astype(numpy.int32))
+        return numpc.as_ctypes(param.astype(numpy.int32, casting='same_kind', copy=False))
 
 
 DoubleArray = DoubleArrayType()
