@@ -159,16 +159,16 @@ def cVectorToPython(x):
     :return:
     """
     if isinstance(x[0], bool):
-        return numpy.fromiter(x, numpy.bool, count=len(x))
+        return numpy.frombuffer(x, dtype=numpy.bool).copy()
     elif isinstance(x[0], int):
-        return numpy.fromiter(x, numpy.int_, count=len(x))
+        return numpy.frombuffer(x, dtype=numpy.int32).copy()
     elif isinstance(x[0], float):
-        return numpy.fromiter(x, numpy.float64, count=len(x))
+        return numpy.frombuffer(x, dtype=numpy.float64).copy()
     elif isinstance(x[0].value, bytes):
         return [toPythonString(y) for y in x]
 
 def cIntVectorToBoolPython(x):
-    return numpc.as_array(x).astype(bool)
+    return numpc.as_array(x).copy().astype(bool)
 
 def cMatrixToNumpy(x):
     """
@@ -176,7 +176,7 @@ def cMatrixToNumpy(x):
     :param x: thing to convert
     :return: numpy.ndarray
     """
-    return numpc.as_array(x)
+    return numpc.as_array(x).copy()
 
 
 def stringToCharP(inobject, inlen=None):
@@ -250,7 +250,7 @@ class DoubleArrayType:
         # return param.data_as(POINTER(c_double))
         # the above older method does not work with
         # functions which take vectors of known size
-        return numpy.ctypeslib.as_ctypes(param)
+        return numpc.as_ctypes(param.astype(numpy.float64, casting='same_kind', copy=False))
 
     # Cast from array.array objects
     def from_array(self, param):
@@ -283,11 +283,11 @@ class DoubleMatrixType:
 
     # Cast from a numpy array
     def from_ndarray(self, param):
-        return numpy.ctypeslib.as_ctypes(param)
+        return numpc.as_ctypes(param.astype(numpy.float64, casting='same_kind', copy=False))
 
     # Cast from a numpy matrix
     def from_matrix(self, param):
-        return numpy.ctypeslib.as_ctypes(param)
+        return numpc.as_ctypes(param.astype(numpy.float64, casting='same_kind', copy=False))
 
 
 class IntArrayType:
@@ -314,10 +314,8 @@ class IntArrayType:
 
     # Cast from a numpy array
     def from_ndarray(self, param):
-        # return param.data_as(POINTER(c_int))
-        # not sure if long is same as int, it should be..
-        # return numpy.ctypeslib.as_ctypes(param)
-        return self.from_param(param.tolist())
+        # cspice always uses a int size half as big as the float, ie int32 if a float64 system default
+        return numpc.as_ctypes(param.astype(numpy.int32, casting='same_kind', copy=False))
 
     # Cast from array.array objects
     def from_array(self, param):
@@ -350,11 +348,13 @@ class IntMatrixType:
 
     # Cast from a numpy array
     def from_ndarray(self, param):
-        return numpy.ctypeslib.as_ctypes(param)
+        # cspice always uses a int size half as big as the float, ie int32 if a float64 system default
+        return numpc.as_ctypes(param.astype(numpy.int32, casting='same_kind', copy=False))
 
     # Cast from a numpy matrix
     def from_matrix(self, param):
-        return numpy.ctypeslib.as_ctypes(param)
+        # cspice always uses a int size half as big as the float, ie int32 if a float64 system default
+        return numpc.as_ctypes(param.astype(numpy.int32, casting='same_kind', copy=False))
 
 
 DoubleArray = DoubleArrayType()
