@@ -8,7 +8,7 @@ environment:
   global:
       WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\windows_sdk.cmd"
   BINSTAR_TOKEN:
-    secure: 4g8YIaW6BcGaDKmgMsOWhySjKp18AHMtCNtzs7i8FN8FRfWswW3XFUVCec33pJwK
+    secure: 1p91Qkglb6onbHoG+cyOCG7pZ3Zq/CNjR/FydK2GOnPrVHiD3TExMmHR8PXk7X6F
   PYPI_PASSWORD:
     secure: ojP0ftEgmrZcijN49vQEPz39rkcPyOxtjwNp5hUYkdKxQq47DwkiaWOnVA11nog637VUmRnHb07uXwvrhK4bbg==
 

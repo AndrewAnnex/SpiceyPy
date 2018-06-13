@@ -4,6 +4,17 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [2.1.2] - UNRELEASED
+### Added
+### Changed
+- numpy to ctypes and back conversions improved
+### Deprecated
+### Removed
+- a few bool related thing:s in support_types
+### Fixed
+- issues relating to c_bool usage. everything is now c_int
+
+
 ## [2.1.1] - 2018-04-24
 ### Added
 - wrapper functions for gffove and gfocce and associated callbacks
