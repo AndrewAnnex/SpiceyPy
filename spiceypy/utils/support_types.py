@@ -256,7 +256,7 @@ class DoubleArrayType:
     def from_array(self, param):
         if param.typecode != 'd':
             raise TypeError('must be an array of doubles')
-        return self.from_list(param.astype(numpy.float64, casting='same_kind', copy=False))
+        return self.from_list(param)
 
 
 class DoubleMatrixType:
