@@ -34,6 +34,15 @@ science field for Solar System Geometry. Please visit the NAIF website for more 
 *IMPORTANT*: I have no current affiliation with NASA, NAIF, or JPL. The
 code is provided "as is", use at your own risk.
 
+Citing SpiceyPy
+---------------
+
+If you are publishing work that uses SpiceyPy, please cite
+SpiceyPy and the SPICE toolkit. The citation information
+for SPICE can be found on the NAIF website. To cite SpiceyPy please
+utilize the zenodo DOI badge at the top of this readme. To cite information 
+about SpiceyPy, usership, and how it works please cite my 2017 abstract, available with citation info at : `<https://ui.adsabs.harvard.edu/#abs/2017LPICo1986.7081A>`__.
+
 Installation
 ------------
 
@@ -63,14 +72,6 @@ How to Help
 Feedback is always welcomed, if you discover that a function is not working as expected,
 submit an issue detailing how to reproduce the problem. If you utilize SpiceyPy frequently 
 please consider contributing to the project by citing me using the zenodo DOI above.
-
-Citing SpiceyPy
----------------
-
-If the use of SpiceyPy is used in a publication, please consider
-citing SpiceyPy and the SPICE toolkit. The citation information
-for SPICE can be found on the NAIF website. To cite SpiceyPy please
-utilize the zenodo DOI badge at the top of this readme.
 
 Known Working Environments:
 ---------------------------
