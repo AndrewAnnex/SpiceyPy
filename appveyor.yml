@@ -7,23 +7,17 @@ build: off
 environment:
   global:
       WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\windows_sdk.cmd"
-  BINSTAR_TOKEN:
-    secure: 1p91Qkglb6onbHoG+cyOCG7pZ3Zq/CNjR/FydK2GOnPrVHiD3TExMmHR8PXk7X6F
   PYPI_PASSWORD:
     secure: ojP0ftEgmrZcijN49vQEPz39rkcPyOxtjwNp5hUYkdKxQq47DwkiaWOnVA11nog637VUmRnHb07uXwvrhK4bbg==
 
   matrix:
       - PYTHON: "C:\\Python27-x64"
-        CONDA: "C:\\Miniconda-x64"
-        CONDA_BUILDS: C:\\Miniconda-x64\conda-bld\win-64
         PYTHON_VERSION: "2.7.x"
         ARCH: "64"
         PLAT_NAME: "win-amd64"
         PY_TAG: "cp27"
 
       - PYTHON: "C:\\Python35-x64"
-        CONDA: "C:\\Miniconda35-x64"
-        CONDA_BUILDS: C:\\Miniconda35-x64\conda-bld\win-64
         PYTHON_VERSION: "3.5.x"
         ARCH: "64"
         WINDOWS_SDK_VERSION: "v7.1"
@@ -31,13 +25,18 @@ environment:
         PY_TAG: "cp35"
 
       - PYTHON: "C:\\Python36-x64"
-        CONDA: "C:\\Miniconda36-x64"
-        CONDA_BUILDS: C:\\Miniconda36-x64\conda-bld\win-64
         PYTHON_VERSION: "3.6.x"
         ARCH: "64"
         WINDOWS_SDK_VERSION: "v7.1"
         PLAT_NAME: "win-amd64"
         PY_TAG: "cp36"
+
+      - PYTHON: "C:\\Python37-x64"
+        PYTHON_VERSION: "3.7.x"
+        ARCH: "64"
+        WINDOWS_SDK_VERSION: "v7.1"
+        PLAT_NAME: "win-amd64"
+        PY_TAG: "cp37"
 
 platform:
   - x64
@@ -54,19 +53,10 @@ install:
 
   # Download things we absolutely need
   - pip install wheel twine six pytest
-  # coveralls and or coverage fail to install for 3.4 64bit python builds so don't bother for now.
-
-  # Check for numpy wheel, compile if absent
-  - "powershell appveyor\\install_numpy.ps1"
-
-  # Now install numpy from pre-built wheel. This may be fragile.
-  - "%WITH_COMPILER% pip install --no-index --find-links=c:\\Users\\appveyor\\Downloads numpy"
+  - pip install numpy
 
   # Download CSPICE so we can build outside of python
   - "%PYTHON%/python getspice.py"
-
-  # Make a backup of the PATH just in case.
-  - set BK_PATH=%PATH%
 
   # Now install spiceypy
   - IF "%ARCH%"=="32" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86) ELSE (ECHO "probably a 64bit build")
@@ -74,8 +64,6 @@ install:
   - "%PYTHON%/python setup.py install"
 
   - ECHO "Installed SpiceyPy!"
-  # restore PATH
-  - set PATH=%BK_PATH%
   - "%PYTHON%/Scripts/py.test --version"
 
 test_script:
@@ -85,42 +73,11 @@ after_test:
   - ECHO "DONE!"
   - ECHO "BUILDING WHEELS..."
   - "%PYTHON%/python setup.py sdist bdist_wheel --plat-name=%PLAT_NAME% --python-tag=%PY_TAG%"
-  - ECHO "BUILDING CONDA PACKAGE..."
-  - set BK_PATH=%PATH%
-
-  # try conda thing
-  - set PATH=%CONDA%;%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
-  # make sure python now maps to miniconda
-  #- cmd: call %CONDA%\Scripts\activate.bat
-  # from conda-forge
-  - cmd: rmdir C:\cygwin /s /q
-  # from conda-forge
-  - "conda config --set show_channel_urls true"
-  # from conda-forge
-  - "appveyor-retry conda install --yes --quiet conda>=4.3.30"
-  - "appveyor-retry conda install --yes --quiet conda-build"
-  - "appveyor-retry conda install --yes --quiet wheel"
-  - "appveyor-retry conda install --yes --quiet six"
-  - "appveyor-retry conda install --yes --quiet pytest"
-  - "appveyor-retry conda install --yes --quiet numpy>=1.12"
-  - "appveyor-retry conda install --yes --quiet anaconda-client"
-  - "conda config --add channels conda-forge"
-  - "conda config --set channel_priority false"
-  - "appveyor-retry conda install -q -y certifi>=2017.1.23"
-  # build spiceypy
-  - "conda build appveyor -q --no-anaconda-upload"
-  - ps: ls $env:CONDA_BUILDS
-  - ps: mv $env:CONDA_BUILDS ./
   - ps: rm dist/*.egg
-  - set PATH=%BK_PATH%
-
 
 artifacts:
   - path: dist\*
     name: pypiartifacts
-
-  - path: 'win-*\*.tar.bz2'
-    name: condaartifacts
 
 deploy_script:
   - echo "Starting Artifact Deployment"
@@ -134,12 +91,7 @@ deploy_script:
   # upload to pypi for windows
   - set PATH=%BK_PATH%
   - set HOME=%USERPROFILE%
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") { Invoke-Expression "twine upload --skip-existing dist/*" 2>$null } Else { write-output "Not on a tag on master, won't deploy to pypi"}
-  # upload conda builds to conda cloud
-  - cmd: set PATH=%CONDA%;%CONDA%/Scripts;%CONDA%/Library/bin;%PATH%
-  # because appveyor prints to stderror, we will run it in command mode by doing a check firs
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") { $env:conda_upload = 'true' } Else { write-output "Not on a tag on master, won't deploy to anaconda" }
-  - cmd: IF "%conda_upload%"=="true" anaconda -t %BINSTAR_TOKEN% upload .\win-*\*.tar.bz2 -u andrewannex --no-progress --force
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") { Invoke-Expression "twine upload --skip-existing dist/*.whl" 2>$null } Else { write-output "Not on a tag on master, won't deploy to pypi"}
   - echo "Finished Artifact Deployment"
 notifications:
   - provider: Webhook

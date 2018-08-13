@@ -4,7 +4,13 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## [2.1.2] - 20128-06-17
+## [???] - UNRELEASED
+### Added
+- python 3.7 builds on travis / appveyor
+### Removed
+- conda builds on appveyor removed in favor of conda-forge distribution of spiceypy
+
+## [2.1.2] - 2018-06-17
 ### Changed
 - numpy to ctypes and back conversions improved
 ### Removed
