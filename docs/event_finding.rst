@@ -27,7 +27,7 @@ often contain comprehensive descriptions of the frames, instrument FOVs,
 etc. Since both FK and IK are text kernels, the information provided in
 them can be viewed using any text editor, while the meta information
 provided in binary kernels – SPKs and CKs – can be viewed using
-``commnt'' or``\ spacit’‘utility programs located in \``cspice/exe’’ of
+"commnt" or" spacit"utility programs located in "cspice/exe" of
 Toolkit installation tree.
 
 The following SPICE tutorials serve as references for the discussions in
@@ -55,7 +55,7 @@ These tutorials are available from the NAIF ftp server at JPL:
 Required Readings
 
 The Required Reading documents are provided with the Toolkit and are
-located under the \``cspice/doc’’ directory in the CSPICE Toolkit
+located under the "cspice/doc" directory in the CSPICE Toolkit
 installation tree.
 
 ::
@@ -75,7 +75,7 @@ installation tree.
 The Permuted Index
 
 Another useful document distributed with the Toolkit is the permuted
-index. This is located under the \``cspice/doc’’ directory in the C
+index. This is located under the "cspice/doc" directory in the C
 installation tree.
 
 This text document provides a simple mechanism by which users can
@@ -84,10 +84,8 @@ as the names of the source files that contain these functions.
 
 SpiceyPy API Documentation
 
-A SpiceyPy function’s parameters specification is available using the
-built-in Python help system. A more detailed specification of the API
-can be found in the CSPICE HTML API documentation page located under
-\``cspice/doc/html/cspice’’.
+A SpiceyPy function's parameters specification is available using the
+built-in Python help system.
 
 For example, the Python help function
 
@@ -96,11 +94,11 @@ For example, the Python help function
       >>> import spiceypy
       >>> help(spiceypy.str2et)
 
-describes of the str2et function’s parameters, while the document
+describes of the str2et function's parameters, while the document
 
 ::
 
-      cspice/doc/html/cspice/str2et_c.html
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/str2et_c.html
 
 describes extensively the str2et functionality.
 
@@ -138,7 +136,7 @@ SpiceyPy Modules Used
 
 This section provides a complete list of the functions and kernels that
 are suggested for usage in each of the exercises in this lesson. (You
-may wish to not look at this list unless/until you \``get stuck’’ while
+may wish to not look at this list unless/until you "get stuck" while
 working on your own.)
 
 ::
@@ -165,7 +163,7 @@ working on your own.)
          (*) Additional APIs and kernels used in Extra Credit tasks.
 
 Use the Python built-in help system on the various functions listed
-above for the API parameters’ description, and refer to the headers of
+above for the API parameters' description, and refer to the headers of
 their corresponding CSPICE versions for detailed interface
 specifications.
 
@@ -184,7 +182,7 @@ range
       2004 MAY 6 TDB
 
 when the Mars Express Orbiter (MEX) is visible from the DSN station
-DSS-14. These time intervals are frequently called \``view periods.’’
+DSS-14. These time intervals are frequently called "view periods."
 
 The spacecraft is considered visible if its apparent position (that is,
 its position corrected for light time and stellar aberration) has
@@ -273,7 +271,7 @@ Solution
 Solution Meta-Kernel
 
 The meta-kernel we created for the solution to this exercise is named
-‘viewpr.tm’. Its contents follow:
+'viewpr.tm'. Its contents follow:
 
 ::
 
@@ -534,7 +532,7 @@ Solution Sample Output
 
 Numerical results shown for this example may differ across platforms
 since the results depend on the SPICE kernels used as input and on the
-host platform’s arithmetic implementation.
+host platform's arithmetic implementation.
 
 Execute the program. The output is:
 
@@ -595,8 +593,8 @@ Compute the final results twice as well, using the results of both
 occultation searches.
 
 For each of the two shape model cases, store the set of time intervals
-when the spacecraft is visible in a SpiceyPy window. We’ll call this the
-\``result window.’’
+when the spacecraft is visible in a SpiceyPy window. We'll call this the
+"result window."
 
 Display each of the intervals in each result window as a pair of start
 and stop times. Express each time as a TDB calendar date using the same
@@ -634,7 +632,7 @@ A possible solution would consist of the following steps:
             results of occultation searches performed using both
             ellipsoidal and DSK shape models. Additional windows will be
             needed to compute the set differences of the elevation search
-            (``view period'') window and each of the occultation search
+            ("view period") window and each of the occultation search
             windows. Further details are provided below.
 
             Create additional output SpiceyPy windows using
@@ -654,7 +652,7 @@ A possible solution would consist of the following steps:
             position is behind the apparent figure of Mars, light time
             correction must be performed for the occultation search. To
             improve accuracy of the occultation state determination, use
-            ``converged Newtonian'' light time correction.
+            "converged Newtonian" light time correction.
 
        6.   Use the SpiceyPy window subtraction routine spiceypy.wndifd to
             subtract the window of times when the spacecraft is occulted
@@ -674,7 +672,7 @@ Solution
 Solution Meta-Kernel
 
 The meta-kernel we created for the solution to this exercise is named
-‘visibl.tm’. Its contents follow:
+'visibl.tm'. Its contents follow:
 
 ::
 
@@ -1007,7 +1005,7 @@ Solution Sample Output
 
 Numerical results shown for this example may differ across platforms
 since the results depend on the SPICE kernels used as input and on the
-host platform’s arithmetic implementation.
+host platform's arithmetic implementation.
 
 Execute the program. The output is:
 
@@ -1073,12 +1071,12 @@ Execute the program. The output is:
 Extra Credit
 ============
 
-In this \``extra credit’’ section you will be presented with more
+In this "extra credit" section you will be presented with more
 complex tasks, aimed at improving your understanding of the geometry
 event finding subsystem and particularly the spiceypy.gfposc and
 spiceypy.gfdist functions.
 
-These \``extra credit’’ tasks are provided as task statements, and
+These "extra credit" tasks are provided as task statements, and
 unlike the regular tasks, no approach or solution source code is
 provided. In the next section, you will find the numeric solutions to
 the questions asked in these tasks.

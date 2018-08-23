@@ -7,7 +7,7 @@ Overview
 --------
 
 In this lesson you will develop two programs that demonstrate geometric
-computations using \``high-accuracy’’ Earth and Moon binary PCKs. The
+computations using "high-accuracy" Earth and Moon binary PCKs. The
 programs also demonstrate use of frame kernels and SPK files normally
 used together with these high-accuracy PCKs.
 
@@ -25,11 +25,11 @@ this lesson:
       ----------------  -----------------------------------------------
       Frames            Moon rotation, Earth rotation
       PCK               Moon rotation, Earth rotation
-      ``High Accuracy
+      "High Accuracy
       Orientation and
       Body-Fixed
       frames for Moon
-      and Earth''
+      and Earth"
       (backup)          Moon rotation, Earth rotation
 
 These tutorials are available from the NAIF ftp server at JPL:
@@ -41,7 +41,7 @@ These tutorials are available from the NAIF ftp server at JPL:
 Required Readings
 
 The Required Reading documents are provided with the Toolkit and are
-located under the \``cspice/doc’’ directory in the CSPICE Toolkit
+located under the "cspice/doc" directory in the CSPICE Toolkit
 installation tree.
 
 ::
@@ -56,7 +56,7 @@ installation tree.
 The Permuted Index
 
 Another useful document distributed with the Toolkit is the permuted
-index. This is located under the \``cspice/doc’’ directory in the C
+index. This is located under the "cspice/doc" directory in the C
 installation tree.
 
 This text document provides a simple mechanism by which users can
@@ -65,10 +65,8 @@ as the names of the source files that contain these functions.
 
 SpiceyPy API Documentation
 
-A SpiceyPy function’s parameters specification is available using the
-built-in Python help system. A more detailed specification of the API
-can be found in the CSPICE HTML API documentation page located under
-\``cspice/doc/html/cspice’’.
+A SpiceyPy function's parameters specification is available using the
+built-in Python help system.
 
 For example, the Python help function
 
@@ -77,11 +75,11 @@ For example, the Python help function
       >>> import spiceypy
       >>> help(spiceypy.str2et)
 
-describes of the str2et function’s parameters, while the document
+describes of the str2et function's parameters, while the document
 
 ::
 
-      cspice/doc/html/cspice/str2et_c.html
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/str2et_c.html
 
 describes extensively the str2et functionality.
 
@@ -115,7 +113,7 @@ SpiceyPy Modules Used
 
 This section provides a complete list of the functions and kernels that
 are suggested for usage in each of the exercises in this lesson. (You
-may wish to not look at this list unless/until you \``get stuck’’ while
+may wish to not look at this list unless/until you "get stuck" while
 working on your own.)
 
 ::
@@ -143,7 +141,7 @@ working on your own.)
                                           spiceypy.vdist
 
 Use the Python built-in help system on the various functions listed
-above for the API parameters’ description, and refer to the headers of
+above for the API parameters' description, and refer to the headers of
 their corresponding CSPICE versions for detailed interface
 specifications.
 
@@ -204,7 +202,7 @@ Understanding the difference between the MOON_ME and MOON_PA frames.
 Approach
 --------
 
-The following \``tips’’ may simplify the solution process.
+The following "tips" may simplify the solution process.
 
 ::
 
@@ -217,15 +215,15 @@ The following \``tips’’ may simplify the solution process.
        --   Decide which SPICE kernels are necessary. Prepare a meta-kernel
             listing the kernels and load it into the program.
 
-       --   Consult the above list titled ``SpiceyPy Modules Used'' to see
+       --   Consult the above list titled "SpiceyPy Modules Used" to see
             which routines are needed.
 
        --   The computational steps listed above should be followed in the
             order shown.
 
 You may find it useful to consult the permuted index, the headers of
-various source modules, and the tutorials titled ``PCK'' and``\ High
-Accuracy Orientation and Body-Fixed frames for Moon and Earth.’’
+various source modules, and the tutorials titled "PCK" and" High
+Accuracy Orientation and Body-Fixed frames for Moon and Earth."
 
 Solution
 --------
@@ -233,13 +231,13 @@ Solution
 Solution Meta-Kernel
 
 The meta-kernel we created for the solution to this exercise is named
-‘mrotat.tm’. Its contents follow:
+'mrotat.tm'. Its contents follow:
 
 ::
 
       KPL/MK
 
-      Meta-kernel for the ``Moon Rotation'' task in the Binary PCK
+      Meta-kernel for the "Moon Rotation" task in the Binary PCK
       Hands On Lesson.
 
       The names and contents of the kernels referenced by this
@@ -489,8 +487,8 @@ Write a program that performs the following computations:
 
 The following computations (steps 5-10) examine the cause of the angular
 offset found above, which is attributable to the rotation between the
-ITRF93 and IAU_EARTH frames. Steps 11 and up don’t rely on the results
-of steps 5-10, so steps 5-10 may be safely skipped if they’re not of
+ITRF93 and IAU_EARTH frames. Steps 11 and up don't rely on the results
+of steps 5-10, so steps 5-10 may be safely skipped if they're not of
 interest to you.
 
 For each of the two epochs ET and ET + 100 days, examine the differences
@@ -500,7 +498,7 @@ method:
 ::
 
        5.   Convert the epoch of interest to a string in the format style
-            ``2007-MAY-16 02:29:00.000 (UTC).'' Display this string.
+            "2007-MAY-16 02:29:00.000 (UTC)." Display this string.
 
        6.   Look up the 3x3 position transformation matrix that converts
             vectors from the IAU_EARTH to the ITRF93 frame at the epoch of
@@ -549,7 +547,7 @@ seen from the DSN station DSS-13 by the following steps:
             0-360 degrees; elevation is equal to the topocentric latitude.
             Display the results in degrees.
 
-The next computations demonstrate \``high-accuracy’’ geometric
+The next computations demonstrate "high-accuracy" geometric
 computations using the Earth as the target body. These computations are
 *not* realistic; they are simply meant to demonstrate SPICE system
 features used for geometry computations involving the Earth as a target
@@ -590,7 +588,7 @@ required to support such computations.
 Approach
 --------
 
-The following \``tips’’ may simplify the solution process.
+The following "tips" may simplify the solution process.
 
 ::
 
@@ -603,10 +601,10 @@ The following \``tips’’ may simplify the solution process.
        --   Decide which SPICE kernels are necessary. Prepare a meta-kernel
             listing the kernels and load it into the program.
 
-       --   Consult the above list titled ``SpiceyPy Modules Used'' to see
+       --   Consult the above list titled "SpiceyPy Modules Used" to see
             which routines are needed. Note the functions used to provide
-            the values ``seconds per day,'' ``degrees per radian,'' and ``2
-            times Pi.''
+            the values "seconds per day," "degrees per radian," and "2
+            times Pi."
 
        --   Examine the header of the function spiceypy.reclat. Note that
             this function may be used for coordinate conversions in
@@ -618,8 +616,8 @@ The following \``tips’’ may simplify the solution process.
             order shown, but steps 5-10 may be omitted.
 
 You may find it useful to consult the permuted index, the headers of
-various source modules, and the tutorials titled ``PCK'' and``\ High
-Accuracy Orientation and Body-Fixed frames for Moon and Earth.’’
+various source modules, and the tutorials titled "PCK" and" High
+Accuracy Orientation and Body-Fixed frames for Moon and Earth."
 
 .. _solution-1:
 
@@ -629,13 +627,13 @@ Solution
 Solution Meta-Kernel
 
 The meta-kernel we created for the solution to this exercise is named
-‘erotat.tm’. Its contents follow:
+'erotat.tm'. Its contents follow:
 
 ::
 
       KPL/MK
 
-      Meta-kernel for the ``Earth Rotation'' task
+      Meta-kernel for the "Earth Rotation" task
       in the Binary PCK Hands On Lesson.
 
       The names and contents of the kernels referenced by this

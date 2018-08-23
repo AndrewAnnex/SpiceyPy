@@ -26,7 +26,7 @@ often contain comprehensive descriptions of the frames, instrument FOVs,
 etc. Since both the FK and IK are text kernels, the information provided
 in them can be viewed using any text editor, while the meta information
 provided in binary kernels—SPKs and CKs—can be viewed using
-``commnt'' or``\ spacit’‘utility programs located in \``cspice/exe’’ of
+"commnt" or" spacit"utility programs located in "cspice/exe" of
 Toolkit installation tree.
 
 Tutorials
@@ -56,7 +56,7 @@ These tutorials are available from the NAIF ftp server at JPL:
 Required Readings
 
 The Required Reading documents are provided with the Toolkit and are
-located under the \``cspice/doc’’ directory in the CSPICE Toolkit
+located under the "cspice/doc" directory in the CSPICE Toolkit
 installation tree.
 
 ::
@@ -75,7 +75,7 @@ installation tree.
 The Permuted Index
 
 Another useful document distributed with the Toolkit is the permuted
-index. This is located under the \``cspice/doc’’ directory in the C
+index. This is located under the "cspice/doc" directory in the C
 installation tree.
 
 This text document provides a simple mechanism by which users can
@@ -84,10 +84,8 @@ as the names of the source files that contain these functions.
 
 SpiceyPy API Documentation
 
-A SpiceyPy function’s parameters specification is available using the
-built-in Python help system. A more detailed specification of the API
-can be found in the CSPICE HTML API documentation page located under
-\``cspice/doc/html/cspice’’.
+A SpiceyPy function's parameters specification is available using the
+built-in Python help system.
 
 For example, the Python help function
 
@@ -96,11 +94,11 @@ For example, the Python help function
       >>> import spiceypy
       >>> help(spiceypy.str2et)
 
-describes of the str2et function’s parameters, while the document
+describes of the str2et function's parameters, while the document
 
 ::
 
-      cspice/doc/html/cspice/str2et_c.html
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/str2et_c.html
 
 describes extensively the str2et functionality.
 
@@ -151,7 +149,7 @@ SpiceyPy Modules Used
 
 This section provides a complete list of the functions and kernels that
 are suggested for usage in each of the exercises in this lesson. (You
-may wish to not look at this list unless/until you \``get stuck’’ while
+may wish to not look at this list unless/until you "get stuck" while
 working on your own.)
 
 ::
@@ -211,7 +209,7 @@ working on your own.)
          (*) Additional APIs and kernels used in Extra Credit tasks.
 
 Use the Python built-in help system on the various functions listed
-above for the API parameters’ description, and refer to the headers of
+above for the API parameters' description, and refer to the headers of
 their corresponding CSPICE versions for detailed interface
 specifications.
 
@@ -266,10 +264,10 @@ steps:
 
 You may find it useful to consult the permuted index, the headers of
 various source modules, and the
-``Time Required Reading'' (time.req) and``\ SCLK Required Reading’’
+"Time Required Reading" (time.req) and" SCLK Required Reading"
 (sclk.req) documents.
 
-When completing the \``calendar format’’ step above, consider using one
+When completing the "calendar format" step above, consider using one
 of two possible methods: spiceypy.etcal or spiceypy.timout.
 
 Solution
@@ -278,14 +276,14 @@ Solution
 Solution Meta-Kernel
 
 The meta-kernel we created for the solution to this exercise is named
-‘convtm.tm’. Its contents follow:
+'convtm.tm'. Its contents follow:
 
 ::
 
       KPL/MK
 
-         This is the meta-kernel used in the solution of the ``Time
-         Conversion'' task in the Remote Sensing Hands On Lesson.
+         This is the meta-kernel used in the solution of the "Time
+         Conversion" task in the Remote Sensing Hands On Lesson.
 
          The names and contents of the kernels referenced by this
          meta-kernel are as follows:
@@ -383,12 +381,12 @@ Execute the program:
 Extra Credit
 ------------
 
-In this \``extra credit’’ section you will be presented with more
+In this "extra credit" section you will be presented with more
 complex tasks, aimed at improving your understanding of time
 conversions, the Toolkit routines that deal with them, and some common
 errors that may happen during the execution of these conversions.
 
-These \``extra credit’’ tasks are provided as task statements, and
+These "extra credit" tasks are provided as task statements, and
 unlike the regular tasks, no approach or solution source code is
 provided. In the next section, you will find the numeric solutions (when
 applicable) and answers to the questions asked in these tasks.
@@ -478,7 +476,7 @@ Solutions and answers
             descriptive message and a expanded form of this short message
             where more details about the error are provided. If this error
             message is not sufficient for you to understand what has
-            happened, you could go to the ``Exceptions'' section in the
+            happened, you could go to the "Exceptions" section in the
             SPICELIB or CSPICE headers of the function that has triggered
             the error and find out more information about the possible
             causes.
@@ -524,8 +522,8 @@ Solutions and answers
 
        4.   The first thing you need to do is to find out what the NAIF ID
             is for the CASSINI ISS NAC camera. In order to do so, examine
-            the ISS instrument kernel listed above and look for the ``NAIF
-            ID Code to Name Mapping'' and there, for the NAIF ID given to
+            the ISS instrument kernel listed above and look for the "NAIF
+            ID Code to Name Mapping" and there, for the NAIF ID given to
             CASSINI_ISS_NAC (which is -82360). Then replace in your code
             the SCLK ID -82 with -82360. After executing the program using
             the original meta-kernel, you will be getting the same error as
@@ -598,7 +596,7 @@ Learning Goals
 
 Understand the anatomy of an spiceypy.spkezr call. Discover the
 difference between spiceypy.spkezr and spiceypy.spkpos. Familiarity with
-the Toolkit utility \``brief’’. Exposure to unit conversion with
+the Toolkit utility "brief". Exposure to unit conversion with
 SpiceyPy.
 
 .. _approach-1:
@@ -639,14 +637,14 @@ steps:
        --   Convert the distance in kilometers into AU.
 
 You may find it useful to consult the permuted index, the headers of
-various source modules, and the \``SPK Required Reading’’ (spk.req)
+various source modules, and the "SPK Required Reading" (spk.req)
 document.
 
-When deciding which SPK files to load, the Toolkit utility \``brief’’
+When deciding which SPK files to load, the Toolkit utility "brief"
 may be of some use.
 
-``brief'' is located in the``\ cspice/exe’‘directory for C toolkits.
-Consult its user’s guide available in \``cspice/doc/brief.ug’’ for
+"brief" is located in the" cspice/exe"directory for C toolkits.
+Consult its user's guide available in "cspice/doc/brief.ug" for
 details.
 
 .. _solution-1:
@@ -657,14 +655,14 @@ Solution
 Solution Meta-Kernel
 
 The meta-kernel we created for the solution to this exercise is named
-‘getsta.tm’. Its contents follow:
+'getsta.tm'. Its contents follow:
 
 ::
 
       KPL/MK
 
          This is the meta-kernel used in the solution of the
-         ``Obtaining Target States and Positions'' task in the
+         "Obtaining Target States and Positions" task in the
          Remote Sensing Hands On Lesson.
 
          The names and contents of the kernels referenced by this
@@ -853,14 +851,14 @@ Execute the program:
 Extra Credit
 ------------
 
-In this \``extra credit’’ section you will be presented with more
+In this "extra credit" section you will be presented with more
 complex tasks, aimed at improving your understanding of state
 computations, particularly the application of the different light time
 and stellar aberration corrections available in the spiceypy.spkezr
 function, and some common errors that may happen when computing these
 states.
 
-These \``extra credit’’ tasks are provided as task statements, and
+These "extra credit" tasks are provided as task statements, and
 unlike the regular tasks, no approach or solution source code is
 provided. In the next section, you will find the numeric solutions (when
 applicable) and answers to the questions asked in these tasks.
@@ -932,11 +930,11 @@ Solutions and answers
             the state of the spacecraft relative to the Solar System
             Barycenter because the SPK data needed to compute geometric
             states of Saturn Barycenter relative to the Solar System
-            barycenter are no longer loaded. Run ``brief'' on the SPKs used
+            barycenter are no longer loaded. Run "brief" on the SPKs used
             in the original task to find out which ephemeris objects are
             available from those kernels. If you want to find out what is
             the 'center of motion' for the ephemeris object(s) included in
-            an SPK, use the -c option when running ``brief'':
+            an SPK, use the -c option when running "brief":
 
 
       BRIEF -- Version 4.0.0, September 8, 2010 -- Toolkit Version N0066
@@ -1077,7 +1075,7 @@ and displays the following at the epoch of interest:
 
             The HGA boresight direction is provided by the kernel variable
             TKFRAME_-82101_BORESIGHT, which is defined in the Cassini frame
-            kernel cited above in the section ``Kernels Used.'' In this
+            kernel cited above in the section "Kernels Used." In this
             kernel, the HGA boresight vector is expressed relative to the
             CASSINI_HGA reference frame.
 
@@ -1141,7 +1139,7 @@ steps:
 
 HINT: Several of the steps above may be compressed into a single step
 using SpiceyPy functions with which you are already familiar. The
-\``long way’’ presented above is intended to facilitate the introduction
+"long way" presented above is intended to facilitate the introduction
 of the functions spiceypy.pxform and spiceypy.sxform.
 
 You may find it useful to consult the permuted index, the headers of
@@ -1169,14 +1167,14 @@ Solution
 Solution Meta-Kernel
 
 The meta-kernel we created for the solution to this exercise is named
-‘xform.tm’. Its contents follow:
+'xform.tm'. Its contents follow:
 
 ::
 
       KPL/MK
 
-         This is the meta-kernel used in the solution of the ``Spacecraft
-         Orientation and Reference Frames'' task in the Remote Sensing
+         This is the meta-kernel used in the solution of the "Spacecraft
+         Orientation and Reference Frames" task in the Remote Sensing
          Hands On Lesson.
 
          The names and contents of the kernels referenced by this
@@ -1429,12 +1427,12 @@ Execute the program:
 Extra Credit
 ------------
 
-In this \``extra credit’’ section you will be presented with more
+In this "extra credit" section you will be presented with more
 complex tasks, aimed at improving your understanding of frame
 transformations, and some common errors that may happen when computing
 them.
 
-These \``extra credit’’ tasks are provided as task statements, and
+These "extra credit" tasks are provided as task statements, and
 unlike the regular tasks, no approach or solution source code is
 provided. In the next section, you will find the numeric solutions (when
 applicable) and answers to the questions asked in these tasks.
@@ -1443,8 +1441,8 @@ Task statements and questions
 
 ::
 
-       1.   Run the original program using the input UTC time ``2004 jun 11
-            18:25:00''. Explain what happens.
+       1.   Run the original program using the input UTC time "2004 jun 11
+            18:25:00". Explain what happens.
 
        2.   Compute the angular separation between the apparent position of
             the Sun as seen from CASSINI and the nominal boresight of the
@@ -1491,7 +1489,7 @@ Solutions and answers
             indicates that there are not sufficient data to perform the
             transformation from the CASSINI_HGA frame to J2000 at the
             requested epoch. If you summarize the CASSINI spacecraft CK
-            using the ``ckbrief'' utility program with the -dump option
+            using the "ckbrief" utility program with the -dump option
             (display interpolation intervals boundaries) you will find that
             the CK contains gaps within its segment:
 
@@ -1626,14 +1624,14 @@ Solution
 Solution Meta-Kernel
 
 The meta-kernel we created for the solution to this exercise is named
-‘subpts.tm’. Its contents follow:
+'subpts.tm'. Its contents follow:
 
 ::
 
       KPL/MK
 
          This is the meta-kernel used in the solution of the
-         ``Computing Sub-spacecraft and Sub-solar Points'' task
+         "Computing Sub-spacecraft and Sub-solar Points" task
          in the Remote Sensing Hands On Lesson.
 
          The names and contents of the kernels referenced by this
@@ -1760,7 +1758,7 @@ A sample solution to the problem follows:
           #
           # End of computation block for "method"
           #
-          print( '' )
+          print( " )
 
           spiceypy.unload( METAKR )
 
@@ -1810,11 +1808,11 @@ Execute the program:
 Extra Credit
 ------------
 
-In this \``extra credit’’ section you will be presented with more
+In this "extra credit" section you will be presented with more
 complex tasks, aimed at improving your understanding of spiceypy.subpnt
 and spiceypy.subslr functions.
 
-These \``extra credit’’ tasks are provided as task statements, and
+These "extra credit" tasks are provided as task statements, and
 unlike the regular tasks, no approach or solution source code is
 provided. In the next section, you will find the numeric solutions (when
 applicable) and answers to the questions asked in these tasks.
@@ -1825,12 +1823,12 @@ Task statements and questions
 
        1.   Recompute the apparent sub-solar point on Phoebe as seen from
             CASSINI in the body fixed frame IAU_PHOEBE in kilometers using
-            the 'Intercept/ellipsoid' method at ``2004 jun 11 19:32:00''.
+            the 'Intercept/ellipsoid' method at "2004 jun 11 19:32:00".
             Explain the differences.
 
        2.   Compute the geometric sub-spacecraft point of CASSINI on Phoebe
             in the body fixed frame IAU_PHOEBE in kilometers using the
-            'Near point/ellipsoid' method at ``2004 jun 11 19:32:00''.
+            'Near point/ellipsoid' method at "2004 jun 11 19:32:00".
 
        3.   Transform the sub-spacecraft Cartesian coordinates obtained in
             the previous task to planetocentric and planetographic
@@ -1847,9 +1845,9 @@ Solutions and answers
 ::
 
        1.   The differences observed are due to the computation method. The
-            ``Intercept/ellipsoid'' method defines the sub-solar point as
+            "Intercept/ellipsoid" method defines the sub-solar point as
             the target surface intercept of the line containing the Sun and
-            the target's center, while the ``Near point/ellipsoid'' method
+            the target's center, while the "Near point/ellipsoid" method
             defines the sub-solar point as the the nearest point on the
             target relative to the Sun. Since Phoebe is not spherical,
             these two points are not the same:
@@ -1869,8 +1867,8 @@ Solutions and answers
             Z =          -24.871
 
        2.   The geometric sub-spacecraft point of CASSINI on Phoebe in the
-            body fixed frame IAU_PHOEBE in kilometers at ``2004 jun 11
-            19:32:00'' UTC epoch is:
+            body fixed frame IAU_PHOEBE in kilometers at "2004 jun 11
+            19:32:00" UTC epoch is:
 
          Geometric sub-spacecraft point of CASSINI on Phoebe in
          the IAU_PHOEBE frame using the 'Near Point: ellipsoid' method
@@ -1880,7 +1878,7 @@ Solutions and answers
             Z =            7.384
 
        3.   The sub-spacecraft point of CASSINI on Phoebe in planetocentric
-            and planetographic coordinates at ``2004 jun 11 19:32:00'' UTC
+            and planetographic coordinates at "2004 jun 11 19:32:00" UTC
             epoch is:
 
          Planetocentric coordinates of the CASSINI
@@ -1896,7 +1894,7 @@ Solutions and answers
          ALT =           -0.831
 
             The planetocentric and planetographic longitudes are different
-            (``graphic'' = 360 - ``centric'') because planetographic
+            ("graphic" = 360 - "centric") because planetographic
             longitudes on Phoebe are measured positive west as defined by
             Phoebe's rotation direction.
 
@@ -1928,8 +1926,8 @@ Task Statement
 Write a program that prompts the user for an input UTC time string and,
 for that time, computes the intersection of the CASSINI ISS NAC camera
 boresight and field of view (FOV) boundary vectors with the surface of
-Phoebe. Compute each intercept twice: once with Phoebe’s shape modeled
-as an ellipsoid, and once with Phoebe’s shape modeled by DSK data. The
+Phoebe. Compute each intercept twice: once with Phoebe's shape modeled
+as an ellipsoid, and once with Phoebe's shape modeled by DSK data. The
 program presents each point of intersection as
 
 ::
@@ -2030,7 +2028,7 @@ Finally
 It may be useful to consult the CASSINI ISS instrument kernel to
 determine the name of the NAC camera as well as its configuration. This
 exercise may make use of some of the concepts and (loosely) code from
-the \``Spacecraft Orientation and Reference Frames’’ task.
+the "Spacecraft Orientation and Reference Frames" task.
 
 .. _solution-4:
 
@@ -2040,14 +2038,14 @@ Solution
 Solution Meta-Kernel
 
 The meta-kernel we created for the solution to this exercise is named
-‘fovint.tm’. Its contents follow:
+'fovint.tm'. Its contents follow:
 
 ::
 
       KPL/MK
 
          This is the meta-kernel used in the solution of the
-         ``Intersecting Vectors with a Triaxial Ellipsoid'' task
+         "Intersecting Vectors with a Triaxial Ellipsoid" task
          in the Remote Sensing Hands On Lesson.
 
          The names and contents of the kernels referenced by this
@@ -2303,7 +2301,7 @@ A sample solution to the problem follows:
                   #
                   # End of SpiceyError try-catch block.
                   #
-                  print( '' )
+                  print( " )
               #
               # End of target shape model loop.
               #
@@ -2497,4 +2495,4 @@ Execute the program:
 Extra Credit
 ------------
 
-There are no \``extra credit’’ tasks for this step of the lesson.
+There are no "extra credit" tasks for this step of the lesson.

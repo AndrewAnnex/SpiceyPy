@@ -3,7 +3,7 @@ Other Stuff (Python)
 
 November 20, 2017
 
-The extensive scope of the SpiceyPy system’s functionality includes
+The extensive scope of the SpiceyPy system's functionality includes
 features the average user may not expect or appreciate, features NAIF
 refers to as “Other Stuff.” This workbook includes a set of lessons to
 introduce the beginning to moderate user to such features.
@@ -64,7 +64,7 @@ These tutorials are available from the NAIF ftp server at JPL:
 Required Readings
 
 The Required Reading documents are provided with the Toolkit and are
-located under the \``cspice/doc’’ directory in the CSPICE Toolkit
+located under the "cspice/doc" directory in the CSPICE Toolkit
 installation tree.
 
 ::
@@ -80,7 +80,7 @@ installation tree.
 The Permuted Index
 
 Another useful document distributed with the Toolkit is the permuted
-index. This is located under the \``cspice/doc’’ directory in the C
+index. This is located under the "cspice/doc" directory in the C
 installation tree.
 
 This text document provides a simple mechanism by which users can
@@ -89,10 +89,8 @@ as the names of the source files that contain these functions.
 
 SpiceyPy API Documentation
 
-A SpiceyPy function’s parameters specification is available using the
-built-in Python help system. A more detailed specification of the API
-can be found in the CSPICE HTML API documentation page located under
-\``cspice/doc/html/cspice’’.
+A SpiceyPy function's parameters specification is available using the
+built-in Python help system.
 
 For example, the Python help function
 
@@ -101,11 +99,11 @@ For example, the Python help function
       >>> import spiceypy
       >>> help(spiceypy.str2et)
 
-describes of the str2et function’s parameters, while the document
+describes of the str2et function's parameters, while the document
 
 ::
 
-      cspice/doc/html/cspice/str2et_c.html
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/str2et_c.html
 
 describes extensively the str2et functionality.
 
@@ -134,7 +132,7 @@ SpiceyPy Modules Used
 
 This section provides a complete list of the functions and kernels that
 are suggested for usage in each of the exercises in this lesson. (You
-may wish to not look at this list unless/until you \``get stuck’’ while
+may wish to not look at this list unless/until you "get stuck" while
 working on your own.)
 
 ::
@@ -188,7 +186,7 @@ working on your own.)
                                           spiceypy.halfpi
 
 Use the Python built-in help system on the various functions listed
-above for the API parameters’ description, and refer to the headers of
+above for the API parameters' description, and refer to the headers of
 their corresponding CSPICE versions for detailed interface
 specifications.
 
@@ -213,7 +211,7 @@ needing information concerning SPICE are:
 
 Required Reading and Users Guides
 
-NAIF Required Reading (*.req) documents introduce the functionality of
+NAIF Required Reading (\*.req) documents introduce the functionality of
 particular SpiceyPy subsystems:
 
 ::
@@ -245,7 +243,7 @@ particular SpiceyPy subsystems:
       time.req
       windows.req
 
-NAIF Users Guides (*.ug) describe the proper use of particular SpiceyPy
+NAIF Users Guides (\*.ug) describe the proper use of particular SpiceyPy
 tools:
 
 ::
@@ -273,7 +271,7 @@ tools:
       toxfr.ug
       version.ug
 
-These text documents exist in the ‘doc’ directory of the main CSPICE
+These text documents exist in the 'doc' directory of the main CSPICE
 Toolkit directory:
 
 ::
@@ -346,19 +344,19 @@ A header consists of several marked sections:
        --   Version: A list of edits and the authors of those edits made to
             the routine since initial delivery to the SpiceyPy system.
 
-The source code for SpiceyPy products is stored in ‘src’ sub-directory
+The source code for SpiceyPy products is stored in 'src' sub-directory
 of the main SpiceyPy directory:
 
 API Documentation
 
-The SpiceyPy package is documented in \``readthedocs’’ website:
+The SpiceyPy package is documented in "readthedocs" website:
 
 ::
 
       https://spiceypy.readthedocs.io/en/master/index.html
 
 Each API documentation page is in large part copied from the
-``Abstract'' and``\ Brief_I/O’’ sections of the corresponding CSPICE
+"Abstract" and" Brief_I/O" sections of the corresponding CSPICE
 function documentation. Each API page includes a link to the API
 documentation for the CSPICE routine called by the SpiceyPy interface.
 
@@ -491,13 +489,13 @@ Time assignments.
          TIME_VAL = @31-JAN-2003-12:34:56.798
          TIME_VEC = ( @01-DEC-2004, @15-MAR-2004 )
 
-The at-sign character ‘@’ indicates a time string. The pool subsystem
+The at-sign character '@' indicates a time string. The pool subsystem
 converts the strings to double precision TDB (a numeric value). Please
 note, the time strings must not contain embedded blanks. WARNING - a TDB
 string is not the same as a UTC string.
 
-The above examples depict direct assignments via the ‘=’ operator. The
-kernel pool also permits incremental assignments via the ‘+=’ operator.
+The above examples depict direct assignments via the '=' operator. The
+kernel pool also permits incremental assignments via the '+=' operator.
 
 Please refer to the kernels required reading, kernel.req, for additional
 information.
@@ -703,7 +701,7 @@ assigned variable names.
 Learning Goals
 --------------
 
-The lesson demonstrates the SpiceyPy system’s facility to retrieve
+The lesson demonstrates the SpiceyPy system's facility to retrieve
 different types of data (string, numeric, scalar, array) from the kernel
 pool.
 
@@ -1175,7 +1173,7 @@ Code Solution
 
 Run the code example
 
-Input “Feb 3 2002 TDB” to calculate the Moon’s position. (the ‘TDB’ tag
+Input “Feb 3 2002 TDB” to calculate the Moon's position. (the 'TDB' tag
 indicates a Barycentric Dynamical Time value).
 
 ::
@@ -1451,7 +1449,7 @@ Lesson 5: Error Handling
 Task Statement
 --------------
 
-Write an interactive program to return a state vector based on a user’s
+Write an interactive program to return a state vector based on a user's
 input. Code the program with the capability to recover from user input
 mistakes, inform the user of the mistake, then continue to run.
 
@@ -1573,9 +1571,9 @@ Run the code example
 Now run the code with various inputs to observe behavior. Begin the run
 using known astronomical bodies, e.g. “Moon”, “Mars”, “Pluto barycenter”
 and “Puck”. Recall the SpiceyPy default units are kilometers, kilometers
-per second, kilograms, and seconds. The ‘R’ marker identifies the
-(X,Y,Z) position of the body in kilometers, the ‘V’ marker identifies
-the velocity of the body in kilometers per second, and the ‘LT’ marker
+per second, kilograms, and seconds. The 'R' marker identifies the
+(X,Y,Z) position of the body in kilometers, the 'V' marker identifies
+the velocity of the body in kilometers per second, and the 'LT' marker
 identifies the one-way light time between the bodies at the requested
 evaluation time.
 
@@ -1620,7 +1618,7 @@ evaluation time.
 Perplexing. What happened?
 
 The kernel files named in meta.tm did not include ephemeris data for
-Puck. When the SPK subsystem tried to evaluate Puck’s position, the
+Puck. When the SPK subsystem tried to evaluate Puck's position, the
 evaluation failed due to lack of data, so an error signaled.
 
 The above error signifies an absence of state information at ephemeris
@@ -1652,7 +1650,7 @@ Try another look-up, this time for “Casper”
       Target:
 
 An easy to understand error. The SPICE system does not contain
-information on a body named ‘Casper.’
+information on a body named 'Casper.'
 
 Another look-up, this time, “Venus”.
 
@@ -1690,10 +1688,10 @@ an interface to the underlying CSPICE cell structure.
 A user should create cells by use of the appropriate SpiceyPy calls.
 NAIF recommends against manual creation of cells.
 
-A ‘window’ is a type of cell containing ordered, double precision values
+A 'window' is a type of cell containing ordered, double precision values
 describing a collection of zero or more intervals.
 
-We define an interval, ‘i’, as all double precision values bounded by
+We define an interval, 'i', as all double precision values bounded by
 and including an ordered pair of numbers,
 
 ::
@@ -1867,9 +1865,9 @@ Code Solution
 
 Run the code example
 
-The output window has the name \`sched’ (schedule).
+The output window has the name \`sched' (schedule).
 
-Output the amount of data held in \`sched’ compared to the maximum
+Output the amount of data held in \`sched' compared to the maximum
 possible amount.
 
 ::
@@ -1886,7 +1884,7 @@ of a proper phase angle.
        1   2003 JAN 05 12:00:00.000   2003 JAN 05 12:45:00.000
        2   2003 JAN 06 00:30:00.000   2003 JAN 06 02:18:01.000
 
-Finally, an analysis of the \`sched’ data. The measure of an interval
+Finally, an analysis of the \`sched' data. The measure of an interval
 [a,b] (a <= b) equals b-a. Real values output in units of seconds.
 
 ::

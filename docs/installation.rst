@@ -42,7 +42,7 @@ verified that SpiceyPy is installed.
 A simple example program
 ------------------------
 
-This script calls the spiceypy function ‘tkvrsn’ and outputs the return
+This script calls the spiceypy function 'tkvrsn' and outputs the return
 value.
 
 ::
@@ -134,7 +134,7 @@ of OpenSSL, the easiest way to do this is to install python using homebrew, once
 can be installed to this new installation of python (IMHO this is the best option).
 
 If your python 3.6 distribution was installed from the packages available at python.org an included command
-``Install Certificates.command`` should be run before attempting to install SpiceyPy again.
+"Install Certificates.command" should be run before attempting to install SpiceyPy again.
 That command installs the certifi package that can also be install using pip. 
 
 Alternatively, installing an anaconda or miniconda
