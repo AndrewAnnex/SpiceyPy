@@ -14,7 +14,7 @@ Contents:
 
    basics
    remote_sensing
-   event_finging
+   event_finding
    insitu_sensing
    binary_pck
    other_stuff
