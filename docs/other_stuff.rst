@@ -191,7 +191,7 @@ their corresponding CSPICE versions for detailed interface
 specifications.
 
 NAIF Documentation
-==================
+------------------------------
 
 The technical complexity of the various SPICE subsystems mandates an
 extensive, user-friendly documentation set. The set differs somewhat
@@ -501,7 +501,7 @@ Please refer to the kernels required reading, kernel.req, for additional
 information.
 
 Lesson 1: Kernel Management with the Kernel Subsystem
-=====================================================
+------------------------------
 
 Task Statement
 --------------
@@ -685,7 +685,7 @@ direct load of the kernel with a spiceypy.furnsh call.
       Kernel count after meta unload: 0
 
 Lesson 2: The Kernel Pool
-=========================
+------------------------------
 
 .. _task-statement-1:
 
@@ -995,7 +995,7 @@ Related Routines
             subsystem.
 
 Lesson 3: Coordinate Conversions
-================================
+------------------------------
 
 .. _task-statement-2:
 
@@ -1287,7 +1287,7 @@ Related Routines
        --   spiceypy.georec, geodetic to rectangular
 
 Lesson 4: Advanced Time Manipulation Routines
-=============================================
+------------------------------
 
 .. _task-statement-3:
 
@@ -1442,7 +1442,7 @@ Run the code example
       Years between evaluations:           100.000000
 
 Lesson 5: Error Handling
-========================
+------------------------------
 
 .. _task-statement-4:
 
@@ -1668,7 +1668,7 @@ can respond to error conditions (not system errors) in much the same
 fashion as languages with catch/throw instructions.
 
 Lesson 6: Windows, and Cells
-============================
+------------------------------
 
 Programming task
 ----------------
@@ -1936,7 +1936,7 @@ Related Routines
        --   spiceypy.wnunid calculates the union of two windows.
 
 Lesson 7: Utility and Constants Routines
-========================================
+------------------------------
 
 .. _task-statement-5:
 

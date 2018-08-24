@@ -146,7 +146,7 @@ their corresponding CSPICE versions for detailed interface
 specifications.
 
 Moon rotation (mrotat)
-======================
+------------------------------
 
 Task Statement
 --------------
@@ -456,7 +456,7 @@ Execute the program:
       Distance between sub-Earth points (km):        0.856182
 
 Earth rotation (erotat)
-=======================
+------------------------------
 
 .. _task-statement-1:
 

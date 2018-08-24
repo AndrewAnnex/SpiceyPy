@@ -168,7 +168,7 @@ their corresponding CSPICE versions for detailed interface
 specifications.
 
 Find View Periods
-=================
+------------------------------
 
 Task Statement
 --------------
@@ -567,7 +567,7 @@ Execute the program. The output is:
       Visibility or window stop time:   2004 MAY 06 00:00:00.000 (TDB)
 
 Find Times when Target is Visible
-=================================
+------------------------------
 
 .. _task-statement-1:
 
@@ -1069,7 +1069,7 @@ Execute the program. The output is:
        DSK: 2004 MAY 05 17:17:32.375 TDB : 2004 MAY 05 23:54:06.221 TDB
 
 Extra Credit
-============
+------------------------------
 
 In this "extra credit" section you will be presented with more
 complex tasks, aimed at improving your understanding of the geometry

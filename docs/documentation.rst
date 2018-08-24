@@ -1,10 +1,10 @@
 SpiceyPy package
 ================
 
-spiceypy.spiceypy module
+spiceypy module
 ------------------------
 
-.. automodule:: spiceypy.spiceypy
+.. automodule:: spiceypy
     :members:
     :undoc-members:
     :show-inheritance:

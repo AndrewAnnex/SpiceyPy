@@ -173,7 +173,7 @@ their corresponding CSPICE versions for detailed interface
 specifications.
 
 Step-1: "UTC to ET"
-======================
+------------------------------
 
 "UTC to ET" Task Statement
 -----------------------------
@@ -250,7 +250,7 @@ or it can be listed in a meta-kernel:
       \begintext
 
 the name of which, let's call it "convrt.tm", can be then provided as
-a sole argument of the spiceypy.furnsh routine:
+a sole argument of the :py:meth:`spiceypy.furnsh` routine:
 
 ::
 
@@ -264,7 +264,7 @@ simply adding more kernels to the list in KERNEL_TO_LOAD without
 changing the program code will accomplish that.
 
 The highest level SpiceyPy time routine converting UTC to ET is
-spiceypy.str2et :py:meth:`spiceypy.spiceypy.str2et` .
+spiceypy.str2et :py:meth:`spiceypy.str2et` .
 
 It has two arguments – input time string representing UTC in a variety
 of formats (see spiceypy.str2et header's section "Particulars" for
@@ -342,7 +342,7 @@ Meta-kernel file "convrt.tm":
       \begintext
 
 Step-2: "SCLK to ET"
-=======================
+------------------------------
 
 "SCLK to ET" Task Statement
 ------------------------------
@@ -409,7 +409,7 @@ variable:
       \begintext
 
 The highest level SpiceyPy routine converting SCLK to ET is
-spiceypy.scs2e :py:meth:`spiceypy.spiceypy.scs2e` .
+spiceypy.scs2e :py:meth:`spiceypy.scs2e` .
 
 It has three arguments – NAIF ID for CASSINI s/c (-82 as described by
 "naif_ids.req" document), input time string representing CASSINI
@@ -494,7 +494,7 @@ Meta-kernel file "sclket.tm":
       \begintext
 
 Step-3: "Spacecraft State"
-=============================
+------------------------------
 
 "Spacecraft State" Task Statement
 ------------------------------------
@@ -569,7 +569,7 @@ the program:
       \begintext
 
 The highest level SpiceyPy routine computing states is spiceypy.spkezr
-:py:meth:`spiceypy.spiceypy.spkezr` .
+:py:meth:`spiceypy.spkezr` .
 
 We are interested in computing CASSINI position and velocity with
 respect to the Sun, therefore the target and observer names should be
@@ -582,7 +582,7 @@ in which the state should be computed is 'ECLIPJ2000' (see
 
 Since we need only the geometric position, the \`abcorr' argument of the
 routine should be set to 'NONE' (see aberration correction discussion in
-the :py:meth:`spiceypy.spiceypy.spkezr` .
+the :py:meth:`spiceypy.spkezr` .
 
 Putting it all together, we get:
 
@@ -693,7 +693,7 @@ Meta-kernel file "getsta.tm":
       \begintext
 
 Step-4: "Sun Direction"
-==========================
+------------------------------
 
 "Sun Direction" Task Statement
 ---------------------------------
@@ -782,7 +782,7 @@ Since the apparent, or
 If desired, the position can then be turned into a unit vector using
 spiceypy.vhat function
 (https://spiceypy.readthedocs.io/en/master/documentation.html#
-spiceypy.spiceypy.vhat) Putting it all together, we get:
+spiceypy.vhat) Putting it all together, we get:
 
 ::
 
@@ -913,7 +913,7 @@ Meta-kernel file "soldir.tm":
       \begintext
 
 Step-5: "Sub-Spacecraft Point"
-=================================
+------------------------------
 
 "Sub-Spacecraft Point" Task Statement
 ----------------------------------------
@@ -1009,27 +1009,27 @@ file name added to it, the updated meta-kernel will look like this:
 
 The sub-spacecraft point Cartesian vector can be converted to
 planetocentric radius, longitude and latitude using the spiceypy.reclat
-routine :py:meth:`spiceypy.spiceypy.reclat` .
+routine :py:meth:`spiceypy.reclat` .
 
 The vector from the spacecraft to the sub-spacecraft point returned by
 spiceypy.subpnt has to be rotated from the body-fixed frame to the
 instrument frame. The name of the routine that computes 3x3 matrices
 rotating vectors from one frame to another is spiceypy.pxform
-:py:meth:`spiceypy.spiceypy.pxform` .
+:py:meth:`spiceypy.pxform` .
 
 In our case the
 "from' argument should be set to 'IAU_PHOEBE' and the" to' argument
 should be set to 'CASSINI_INMS'
 
 The vector should be then multiplied by this matrix to rotate it to the
-instrument frame. The spiceypy.mxv routine performs that function :py:meth:`spiceypy.spiceypy.mxv` .
+instrument frame. The spiceypy.mxv routine performs that function :py:meth:`spiceypy.mxv` .
 
 After applying the rotation, normalize the resultant vector using the
 spiceypy.vhat function.
 
 For output the longitude and latitude angles returned by spiceypy.reclat
 in radians can be converted to degrees by multiplying by spiceypy.dpr
-function :py:meth:`spiceypy.spiceypy.dpr` .
+function :py:meth:`spiceypy.dpr` .
 
 Putting it all together, we get:
 
@@ -1207,7 +1207,7 @@ Meta-kernel file "sscpnt.tm":
       \begintext
 
 Step-6: "Spacecraft Velocity"
-================================
+------------------------------
 
 "Spacecraft Velocity" Task Statement
 ---------------------------------------

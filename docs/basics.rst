@@ -37,7 +37,7 @@ explanitory error message.
 A simple example program
 ------------------------
 
-The following calls the SPICE function :py:meth:`spiceypy.spiceypy.tkvrsn` which outputs the version
+The following calls the SPICE function :py:meth:`spiceypy.tkvrsn` which outputs the version
 of cspice that SpiceyPy is wrapping.
 
 .. code:: python
@@ -64,7 +64,7 @@ and traceback (of spice calls). `Read the NAIF tutorial on exceptions here. <htt
 
 Also, by default SpiceyPy captures the 'found' flags some functions return as it is not
 idiomatic to python and instead through a SpiceyError exception. This can be temporarily disabled using
-the :py:meth:`spiceypy.spiceypy.no_found_check` context manager that allows the found
+the :py:meth:`spiceypy.no_found_check` context manager that allows the found
 flag to be returned to the user for action. Outside the context SpiceyPy functions will revert to default behavior.
 
 .. code:: python
@@ -91,6 +91,6 @@ There is also an accompanying context manager for enabling the default spiceypy 
         name = spice.bodc2n(-9991) # will also raise an exception
 
 
-In addition, for advanced users there are two function :py:meth:`spiceypy.spiceypy.found_check_off` and :py:meth:`spiceypy.spiceypy.found_check_on`
-which will disable and enable the behavior without use of the context manager. Additionally, a method :py:meth:`spiceypy.spiceypy.get_found_catch_state` allows users
+In addition, for advanced users there are two function :py:meth:`spiceypy.found_check_off` and :py:meth:`spiceypy.found_check_on`
+which will disable and enable the behavior without use of the context manager. Additionally, a method :py:meth:`spiceypy.get_found_catch_state` allows users
 to query the current state of found flag catching setting.
