@@ -10,7 +10,7 @@ files needed to complete the exercises and to obtain the full content naiflesson
 Contents:
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 0
 
    basics
    remote_sensing
