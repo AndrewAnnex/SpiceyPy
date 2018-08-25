@@ -4,7 +4,7 @@ SpiceyPy package
 spiceypy module
 ------------------------
 
-.. automodule:: spiceypy
+.. automodule:: spiceypy.spiceypy
     :members:
     :undoc-members:
     :show-inheritance:
