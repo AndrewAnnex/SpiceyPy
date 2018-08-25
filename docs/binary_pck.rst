@@ -19,7 +19,7 @@ This section lists SPICE documents referred to in this lesson.
 The following SPICE tutorials serve as references for the discussions in
 this lesson:
 
-::
+.. code-block:: text
 
       Name              Lesson steps/functions it describes
       ----------------  -----------------------------------------------
@@ -44,7 +44,7 @@ The Required Reading documents are provided with the Toolkit and are
 located under the "cspice/doc" directory in the CSPICE Toolkit
 installation tree.
 
-::
+.. code-block:: text
 
       Name             Lesson steps/functions that it describes
       ---------------  -----------------------------------------
@@ -88,7 +88,7 @@ Kernels Used
 
 The following kernels are used in examples provided in this lesson:
 
-::
+.. code-block:: text
 
       #  FILE NAME                      TYPE DESCRIPTION
       -- ------------------------------ ---- ------------------------------
@@ -116,7 +116,7 @@ are suggested for usage in each of the exercises in this lesson. (You
 may wish to not look at this list unless/until you "get stuck" while
 working on your own.)
 
-::
+.. code-block:: text
 
       CHAPTER EXERCISE   FUNCTIONS        NON-VOID         KERNELS
       ------- ---------  ---------------  ---------------  ----------
@@ -153,7 +153,7 @@ Task Statement
 
 Write a program that performs the following computations:
 
-::
+.. code-block:: text
 
        1.   Convert the time string 2007 JAN 1 00:00:00 UTC to a double
             precision number representing seconds past J2000 TDB.
@@ -204,7 +204,7 @@ Approach
 
 The following "tips" may simplify the solution process.
 
-::
+.. code-block:: text
 
        --   Examine the SPICE kernels provided with this lesson. Use BRIEF
             to find coverage periods of SPK kernels and binary PCKs. Use
@@ -233,7 +233,7 @@ Solution Meta-Kernel
 The meta-kernel we created for the solution to this exercise is named
 'mrotat.tm'. Its contents follow:
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -264,7 +264,7 @@ Solution Source Code
 
 A sample solution to the problem follows:
 
-::
+.. code-block:: python
 
       #
       # Solution mrotat
@@ -420,7 +420,7 @@ Solution Sample Output
 
 Execute the program:
 
-::
+.. code-block:: text
 
       Moon-Earth direction using low accuracy
       PCK and IAU_MOON frame:
@@ -465,7 +465,7 @@ Task Statement
 
 Write a program that performs the following computations:
 
-::
+.. code-block:: text
 
        1.   Convert the time string 2007 JAN 1 00:00:00 UTC to a double
             precision number representing seconds past J2000 TDB.
@@ -495,7 +495,7 @@ For each of the two epochs ET and ET + 100 days, examine the differences
 between the axes of the ITRF93 and IAU_EARTH frames using the following
 method:
 
-::
+.. code-block:: text
 
        5.   Convert the epoch of interest to a string in the format style
             "2007-MAY-16 02:29:00.000 (UTC)." Display this string.
@@ -526,7 +526,7 @@ and ET + 100 days. The following steps are part of a new computation.
 Find the azimuth and elevation of the apparent position of the Moon as
 seen from the DSN station DSS-13 by the following steps:
 
-::
+.. code-block:: text
 
       11.   Find the apparent position vector of the Moon relative to the
             DSN station DSS-13 in the topocentric reference frame
@@ -554,7 +554,7 @@ features used for geometry computations involving the Earth as a target
 body. For example, the same basic techniques would be used to find the
 sub-solar point on the Earth as seen from an Earth-orbiting spacecraft.
 
-::
+.. code-block:: text
 
       14.   Compute the apparent sub-solar point on the Earth at ET,
             expressed relative to the IAU_EARTH reference frame, using
@@ -590,7 +590,7 @@ Approach
 
 The following "tips" may simplify the solution process.
 
-::
+.. code-block:: text
 
        --   Examine the SPICE kernels provided with this lesson. Use BRIEF
             to find coverage periods of SPK kernels and binary PCKs. Use
@@ -629,7 +629,7 @@ Solution Meta-Kernel
 The meta-kernel we created for the solution to this exercise is named
 'erotat.tm'. Its contents follow:
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -664,7 +664,7 @@ Solution Source Code
 
 A sample solution to the problem follows:
 
-::
+.. code-block:: python
 
       #
       # Solution mrotat
@@ -879,7 +879,7 @@ Solution Sample Output
 
 Execute the program:
 
-::
+.. code-block:: text
 
       Earth-Moon direction using low accuracy
       PCK and IAU_EARTH frame:

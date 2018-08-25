@@ -29,7 +29,7 @@ Toolkit installation tree.
 The following SPICE tutorials serve as references for the discussions in
 this lesson:
 
-::
+.. code-block:: text
 
       Name              Lesson steps/functions it describes
       ----------------  -----------------------------------------------
@@ -51,7 +51,7 @@ The Required Reading documents are provided with the Toolkit and are
 located under the "cspice/doc" directory in the CSPICE Toolkit
 installation tree.
 
-::
+.. code-block:: text
 
       Name             Lesson steps/functions that it describes
       ---------------  -----------------------------------------
@@ -96,7 +96,7 @@ Kernels Used
 
 The following kernels are used in examples provided in this lesson:
 
-::
+.. code-block:: text
 
       #  FILE NAME                 TYPE DESCRIPTION
       -- ------------------------- ---- -----------------------------------
@@ -125,7 +125,7 @@ are suggested for usage in each of the exercises in this lesson. (You
 may wish to not look at this list unless/until you "get stuck" while
 working on your own.)
 
-::
+.. code-block:: text
 
       CHAPTER EXERCISE   FUNCTIONS        NON-VOID         KERNELS
       ------- ---------  ---------------  ---------------  ----------
@@ -222,7 +222,7 @@ As any other SPICE kernel this file can be loaded by the spiceypy.furnsh
 function. For that, the name of the file can be provided as a sole
 argument of this routine:
 
-::
+.. code-block:: python
 
       ...
       lskfile = 'naif0008.tls'
@@ -231,7 +231,7 @@ argument of this routine:
 
 or it can be listed in a meta-kernel:
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -250,9 +250,9 @@ or it can be listed in a meta-kernel:
       \begintext
 
 the name of which, let's call it "convrt.tm", can be then provided as
-a sole argument of the :py:meth:`spiceypy.furnsh` routine:
+a sole argument of the :py:meth:`spiceypy.spiceypy.furnsh` routine:
 
-::
+.. code-block:: python
 
           mkfile = 'convrt.tm'
           spiceypy.furnsh(mkfile)
@@ -264,7 +264,7 @@ simply adding more kernels to the list in KERNEL_TO_LOAD without
 changing the program code will accomplish that.
 
 The highest level SpiceyPy time routine converting UTC to ET is
-spiceypy.str2et :py:meth:`spiceypy.str2et` .
+spiceypy.str2et :py:meth:`spiceypy.spiceypy.str2et` .
 
 It has two arguments – input time string representing UTC in a variety
 of formats (see spiceypy.str2et header's section "Particulars" for
@@ -272,7 +272,7 @@ the complete description of input time formats) and output DP number of
 ET seconds past J2000. A call to spiceypy.str2et converting a given UTC
 to ET could look like this:
 
-::
+.. code-block:: python
 
           utc =  '2004-06-11T19:32:00'
           et = spiceypy.str2et(utc)
@@ -288,7 +288,7 @@ and imported within the script.
 When you execute the script, "convrt", it produces the following
 output:
 
-::
+.. code-block:: bash
 
       > python convrt.py
       UTC       = 2004-06-11T19:32:00
@@ -299,7 +299,7 @@ output:
 
 Program "convrt.py":
 
-::
+.. code-block:: python
 
       from __future__ import print_function
       import spiceypy
@@ -323,7 +323,7 @@ Program "convrt.py":
 
 Meta-kernel file "convrt.tm":
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -388,7 +388,7 @@ meta-kernel approach was used in the Step-1. The program will load the
 file if it will be added to the list of kernels in the KERNELS_TO_LOAD
 variable:
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -409,14 +409,14 @@ variable:
       \begintext
 
 The highest level SpiceyPy routine converting SCLK to ET is
-spiceypy.scs2e :py:meth:`spiceypy.scs2e` .
+spiceypy.scs2e :py:meth:`spiceypy.spiceypy.scs2e` .
 
 It has three arguments – NAIF ID for CASSINI s/c (-82 as described by
 "naif_ids.req" document), input time string representing CASSINI
 SCLK, and output DP number of ET seconds past J2000. A call to
 spiceypy.str2et converting given SCLK to ET could look like this:
 
-::
+.. code-block:: python
 
           scid = -82
           sclk = '1465674964.105'
@@ -442,7 +442,7 @@ output:
 
 Program "sclket.py":
 
-::
+.. code-block:: python
 
       from __future__ import print_function
       import spiceypy
@@ -473,7 +473,7 @@ Program "sclket.py":
 
 Meta-kernel file "sclket.tm":
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -540,7 +540,7 @@ files are needed to support computation of the state of interest.
 The file names can be added to the meta-kernel to get them loaded into
 the program:
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -569,7 +569,7 @@ the program:
       \begintext
 
 The highest level SpiceyPy routine computing states is spiceypy.spkezr
-:py:meth:`spiceypy.spkezr` .
+:py:meth:`spiceypy.spiceypy.spkezr` .
 
 We are interested in computing CASSINI position and velocity with
 respect to the Sun, therefore the target and observer names should be
@@ -582,11 +582,11 @@ in which the state should be computed is 'ECLIPJ2000' (see
 
 Since we need only the geometric position, the \`abcorr' argument of the
 routine should be set to 'NONE' (see aberration correction discussion in
-the :py:meth:`spiceypy.spkezr` .
+the :py:meth:`spiceypy.spiceypy.spkezr` .
 
 Putting it all together, we get:
 
-::
+.. code-block:: python
 
           target = 'CASSINI'
           frame  = 'ECLIPJ2000'
@@ -618,7 +618,7 @@ output:
 
 Program "getsta.py":
 
-::
+.. code-block:: python
 
       from __future__ import print_function
       import spiceypy
@@ -664,7 +664,7 @@ Program "getsta.py":
 
 Meta-kernel file "getsta.tm":
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -734,7 +734,7 @@ to already loaded kernels to support computation of this direction.
 The file names can be added to the meta-kernel to get them loaded into
 the program:
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -784,7 +784,7 @@ spiceypy.vhat function
 (https://spiceypy.readthedocs.io/en/master/documentation.html#
 spiceypy.vhat) Putting it all together, we get:
 
-::
+.. code-block:: python
 
           target = 'SUN'
           frame  = 'CASSINI_INMS'
@@ -820,7 +820,7 @@ output:
 
 Program "soldir.py":
 
-::
+.. code-block:: python
 
       from __future__ import print_function
       import spiceypy
@@ -879,7 +879,7 @@ Program "soldir.py":
 
 Meta-kernel file "soldir.tm":
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -972,7 +972,7 @@ PCK file containing Phoebe radii has to be loaded into the program (see
 for this computation are already being loaded by the program. With PCK
 file name added to it, the updated meta-kernel will look like this:
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -1009,27 +1009,27 @@ file name added to it, the updated meta-kernel will look like this:
 
 The sub-spacecraft point Cartesian vector can be converted to
 planetocentric radius, longitude and latitude using the spiceypy.reclat
-routine :py:meth:`spiceypy.reclat` .
+routine :py:meth:`spiceypy.spiceypy.reclat` .
 
 The vector from the spacecraft to the sub-spacecraft point returned by
 spiceypy.subpnt has to be rotated from the body-fixed frame to the
 instrument frame. The name of the routine that computes 3x3 matrices
 rotating vectors from one frame to another is spiceypy.pxform
-:py:meth:`spiceypy.pxform` .
+:py:meth:`spiceypy.spiceypy.pxform` .
 
 In our case the
 "from' argument should be set to 'IAU_PHOEBE' and the" to' argument
 should be set to 'CASSINI_INMS'
 
 The vector should be then multiplied by this matrix to rotate it to the
-instrument frame. The spiceypy.mxv routine performs that function :py:meth:`spiceypy.mxv` .
+instrument frame. The spiceypy.mxv routine performs that function :py:meth:`spiceypy.spiceypy.mxv` .
 
 After applying the rotation, normalize the resultant vector using the
 spiceypy.vhat function.
 
 For output the longitude and latitude angles returned by spiceypy.reclat
 in radians can be converted to degrees by multiplying by spiceypy.dpr
-function :py:meth:`spiceypy.dpr` .
+function :py:meth:`spiceypy.spiceypy.dpr` .
 
 Putting it all together, we get:
 

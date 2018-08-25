@@ -45,7 +45,7 @@ A simple example program
 This script calls the spiceypy function 'tkvrsn' and outputs the return
 value.
 
-::
+.. code-block:: python
 
               File tkvrsn.py
 
@@ -95,7 +95,7 @@ parameters, the standard built-in function help() could be used:
 
 which produces
 
-::
+.. code-block:: text
 
       Help on function tkvrsn in module spiceypy.spiceypy:
 
