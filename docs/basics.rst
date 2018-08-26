@@ -37,7 +37,7 @@ explanitory error message.
 A simple example program
 ------------------------
 
-The following calls the SPICE function :py:meth:`spiceypy.spiceypy.spiceypytkvrsn` which outputs the version
+The following calls the SPICE function :py:meth:`spiceypy.spiceypy.tkvrsn` which outputs the version
 of cspice that SpiceyPy is wrapping.
 
 .. code:: python
