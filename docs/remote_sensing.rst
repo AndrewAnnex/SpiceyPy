@@ -557,9 +557,9 @@ Solutions and answers
          UTC time from spacecraft clock: 2004-06-11T19:31:59.999
 
 Obtaining Target States and Positions (getsta)
-------------------------------
+----------------------------------------------
 
-.. _task-statement-1:
+.. _task-statement-rs-1:
 
 Task Statement
 --------------
@@ -1052,9 +1052,9 @@ Solutions and answers
             Z =   -510372252.747
 
 Spacecraft Orientation and Reference Frames (xform)
-------------------------------
+---------------------------------------------------
 
-.. _task-statement-2:
+.. _task-statement-rs-2:
 
 Task Statement
 --------------
@@ -1548,9 +1548,9 @@ Solutions and answers
             since the angular separation is smaller than 90 degrees.
 
 Computing Sub-s/c and Sub-solar Points on an Ellipsoid and a DSK (subpts)
-------------------------------
+-------------------------------------------------------------------------
 
-.. _task-statement-3:
+.. _task-statement-rs-3:
 
 Task Statement
 --------------
@@ -1916,9 +1916,9 @@ Solutions and answers
             for bodies with shapes modeled as triaxial ellipsoids.
 
 Intersecting Vectors with an Ellipsoid and a DSK (fovint)
-------------------------------
+---------------------------------------------------------
 
-.. _task-statement-4:
+.. _task-statement-rs-4:
 
 Task Statement
 --------------

@@ -285,7 +285,7 @@ texinfo_documents = [
 epub_title = 'SpiceyPy'
 epub_author = 'Andrew Annex'
 epub_publisher = 'Andrew Annex'
-epub_copyright = '2014-2017, Andrew Annex'
+epub_copyright = '2014-2018, Andrew Annex'
 
 # The basename for the epub file. It defaults to the project name.
 #epub_basename = 'SpiceyPy'

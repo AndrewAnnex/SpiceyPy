@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) [2015-2017] [Andrew Annex]
+Copyright (c) [2015-2018] [Andrew Annex]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,10 +23,10 @@ SOFTWARE.
 """
 
 import ctypes
-from .utils import support_types as stypes
-from .utils.libspicehelper import libspice
-from . import config
-from .utils.callbacks import SpiceUDFUNS, SpiceUDFUNB
+from spiceypy.utils import support_types as stypes
+from spiceypy.utils.libspicehelper import libspice
+from spiceypy import config
+from spiceypy.utils.callbacks import SpiceUDFUNS, SpiceUDFUNB
 import functools
 import numpy
 from contextlib import contextmanager

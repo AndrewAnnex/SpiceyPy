@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) [2015-2017] [Andrew Annex]
+Copyright (c) [2015-2018] [Andrew Annex]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,8 @@ SOFTWARE.
 from ctypes import CDLL, POINTER, c_int, c_double, c_char, c_char_p, c_void_p
 import os
 import platform
-from . import support_types as stypes
-from . import callbacks
+from spiceypy.utils import support_types as stypes
+from spiceypy.utils import callbacks
 
 host_OS = platform.system()
 sharedLib = "cspice.dll" if host_OS == "Windows" else "spice.so"

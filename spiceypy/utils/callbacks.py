@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) [2015-2017] [Andrew Annex]
+Copyright (c) [2015-2018] [Andrew Annex]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ SOFTWARE.
 
 import functools
 from ctypes import c_int, c_double, c_char_p, POINTER, CFUNCTYPE, byref
-from .support_types import SpiceCell
+from spiceypy.utils.support_types import SpiceCell
 
 UDFUNS = CFUNCTYPE(None, c_double, POINTER(c_double))
 UDFUNB = CFUNCTYPE(None, UDFUNS, c_double, POINTER(c_int))

@@ -413,7 +413,7 @@ and
          \begindata
 
 to mark information blocks within the text kernel. The
-:raw-latex:`\begintext `tag specifies all text following the tag as
+`\\begintext` tag specifies all text following the tag as
 comment information to be ignored by the subsystem.
 
 Things to know:
@@ -501,7 +501,7 @@ Please refer to the kernels required reading, kernel.req, for additional
 information.
 
 Lesson 1: Kernel Management with the Kernel Subsystem
-------------------------------
+-----------------------------------------------------
 
 Task Statement
 --------------
@@ -687,7 +687,7 @@ direct load of the kernel with a spiceypy.furnsh call.
 Lesson 2: The Kernel Pool
 ------------------------------
 
-.. _task-statement-1:
+.. _task-statement-os-1:
 
 Task Statement
 --------------
@@ -696,7 +696,7 @@ Write a program to retrieve particular string and numeric text kernel
 variables, both scalars and arrays. Interrogate the kernel pool for
 assigned variable names.
 
-.. _learning-goals-1:
+.. _learning-goals-os-1:
 
 Learning Goals
 --------------
@@ -995,9 +995,9 @@ Related Routines
             subsystem.
 
 Lesson 3: Coordinate Conversions
-------------------------------
+---------------------------------
 
-.. _task-statement-2:
+.. _task-statement-os-2:
 
 Task Statement
 --------------
@@ -1007,7 +1007,7 @@ location to the other coordinate representations. Use the position of
 the Moon with respect to Earth in an inertial and non-inertial reference
 frame as the example vector.
 
-.. _learning-goals-2:
+.. _learning-goals-os-2:
 
 Learning Goals
 --------------
@@ -1287,9 +1287,9 @@ Related Routines
        --   spiceypy.georec, geodetic to rectangular
 
 Lesson 4: Advanced Time Manipulation Routines
-------------------------------
+----------------------------------------------
 
-.. _task-statement-3:
+.. _task-statement-os-3:
 
 Task Statement
 --------------
@@ -1299,7 +1299,7 @@ formatting of time strings for output. Formatting options include
 altering calendar representations of the time strings. Convert time-date
 strings between different SpiceyPy-supported formats.
 
-.. _learning-goals-3:
+.. _learning-goals-os-3:
 
 Learning Goals
 --------------
@@ -1444,7 +1444,7 @@ Run the code example
 Lesson 5: Error Handling
 ------------------------------
 
-.. _task-statement-4:
+.. _task-statement-os-4:
 
 Task Statement
 --------------
@@ -1453,7 +1453,7 @@ Write an interactive program to return a state vector based on a user's
 input. Code the program with the capability to recover from user input
 mistakes, inform the user of the mistake, then continue to run.
 
-.. _learning-goals-4:
+.. _learning-goals-os-4:
 
 Learning Goals
 --------------
@@ -1677,7 +1677,7 @@ Given the times of line-of-sight for a vehicle from a ground station and
 the times for an acceptable Sun-station-vehicle phase angle, write a
 program to determine the time intervals common to both configurations.
 
-.. _learning-goals-5:
+.. _learning-goals-os-5:
 
 Learning Goals
 --------------
@@ -1936,9 +1936,9 @@ Related Routines
        --   spiceypy.wnunid calculates the union of two windows.
 
 Lesson 7: Utility and Constants Routines
-------------------------------
+----------------------------------------
 
-.. _task-statement-5:
+.. _task-statement-os-5:
 
 Task Statement
 --------------
@@ -1947,7 +1947,7 @@ Write an interactive program to convert values between various units.
 Demonstrate the flexibility of the unit conversion routine, the string
 equality function, and show the version ID function.
 
-.. _learning-goals-6:
+.. _learning-goals-os-6:
 
 Learning Goals
 --------------
@@ -2092,7 +2092,7 @@ in kilometers?
       To Units   : km
           42.16481 km
 
-.. _task-statement-6:
+.. _task-statement-os-6:
 
 Task Statement
 --------------

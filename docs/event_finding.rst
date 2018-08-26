@@ -567,7 +567,7 @@ Execute the program. The output is:
       Visibility or window stop time:   2004 MAY 06 00:00:00.000 (TDB)
 
 Find Times when Target is Visible
-------------------------------
+----------------------------------
 
 .. _task-statement-1:
 
