@@ -24,7 +24,7 @@ SOFTWARE.
 
 import functools
 from ctypes import c_int, c_double, c_char_p, POINTER, CFUNCTYPE, byref
-from spiceypy.utils.support_types import SpiceCell
+from .support_types import SpiceCell
 
 UDFUNS = CFUNCTYPE(None, c_double, POINTER(c_double))
 UDFUNB = CFUNCTYPE(None, UDFUNS, c_double, POINTER(c_int))

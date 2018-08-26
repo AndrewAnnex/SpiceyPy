@@ -23,10 +23,10 @@ SOFTWARE.
 """
 
 import ctypes
-from spiceypy.utils import support_types as stypes
-from spiceypy.utils.libspicehelper import libspice
-from spiceypy import config
-from spiceypy.utils.callbacks import SpiceUDFUNS, SpiceUDFUNB
+from .utils import support_types as stypes
+from .utils.libspicehelper import libspice
+from . import config
+from .utils.callbacks import SpiceUDFUNS, SpiceUDFUNB
 import functools
 import numpy
 from contextlib import contextmanager

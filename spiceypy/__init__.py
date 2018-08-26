@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from spiceypy.spiceypy import *
-from spiceypy.utils import support_types
+from .spiceypy import *
+from .utils import support_types
 
 __author__ = 'AndrewAnnex'
 
