@@ -64,7 +64,7 @@ and traceback (of spice calls). `Read the NAIF tutorial on exceptions here. <htt
 
 Also, by default SpiceyPy captures the 'found' flags some functions return as it is not
 idiomatic to python and instead through a SpiceyError exception. This can be temporarily disabled using
-the :py:meth:`spiceypy.spiceypy.spiceypyno_found_check` context manager that allows the found
+the :py:meth:`spiceypy.spiceypy.no_found_check` context manager that allows the found
 flag to be returned to the user for action. Outside the context SpiceyPy functions will revert to default behavior.
 
 .. code:: python
