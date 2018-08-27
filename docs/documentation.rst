@@ -1,7 +1,7 @@
 SpiceyPy package
 ================
 
-spiceypy.spiceypy module
+spiceypy module
 ------------------------
 
 .. automodule:: spiceypy.spiceypy

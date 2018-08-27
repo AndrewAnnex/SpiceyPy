@@ -46,11 +46,23 @@ about SpiceyPy, usership, and how it works please cite my 2017 abstract, availab
 Installation
 ------------
 
-First install the dependencies (numpy, six, pytest) for the project. Then
-run ``pip install spiceypy`` to install from pypi.
++----------------+-------------------+
+| PyPI           | Conda Forge       |
++================+===================+
+| |PyPI|         | |Conda Version|   |
++----------------+-------------------+
 
-SpiceyPy is also available through conda by either first installing pip via conda or by running
-``conda install -c https://conda.anaconda.org/andrewannex spiceypy``.
+.. |PyPI| image:: https://img.shields.io/pypi/v/spiceypy.svg
+   :target: https://pypi.org/project/spiceypy/
+.. |Conda Version| image:: https://img.shields.io/conda/vn/conda-forge/spiceypy.svg
+   :target: https://anaconda.org/conda-forge/spiceypy
+
+SpiceyPy can be installed using pip by running:
+``pip install spiceypy``
+
+Anaconda users should use the conda-forge distribution of SpiceyPy by running:
+``conda config --add channels conda-forge``
+``conda install spiceypy``
 
 If you wish to install spiceypy from source first download or clone the project. Then run ``python setup.py install``.
 To uninstall run ``pip uninstall spiceypy``.

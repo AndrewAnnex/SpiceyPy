@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) [2015-2017] [Andrew Annex]
+Copyright (c) [2015-2018] [Andrew Annex]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -2274,8 +2274,8 @@ def dasrfr(handle, lenout=_default_len_out):
     :type handle: int
     :param lenout: length of output strs
     :type lenout: str
-    :return: ID word, DAS internal file name, Number of reserved records in file,
-    Number of characters in use in reserved rec. area, Number of comment records in file,
+    :return: ID word, DAS internal file name, Number of reserved records in file, \
+    Number of characters in use in reserved rec. area, Number of comment records in file, \
     Number of characters in use in comment area.
     :rtype: tuple
     """
@@ -6477,9 +6477,9 @@ def gfudb(udfuns, udfunb, step, cnfine, result):
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfudb_c.html
 
-    :param udfuns: Name of the routine that computes a scalar quantity of interest corresponding to an `et'.
+    :param udfuns: Name of the routine that computes a scalar quantity of interest corresponding to an 'et'.
     :type udfuns: ctypes.CFunctionType
-    :param udfunb: Name of the routine returning the boolean value corresponding to an `et'.
+    :param udfunb: Name of the routine returning the boolean value corresponding to an 'et'.
     :type udfunb: ctypes.CFunctionType
     :param step: Step size used for locating extrema and roots.
     :type step: float

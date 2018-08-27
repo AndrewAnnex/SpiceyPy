@@ -2,12 +2,12 @@
 Installation
 ============
 
-SpiceyPy is currently supported on Mac, Linux, and Windows systems.
+SpiceyPy is currently supported on Mac, Linux, FreeBSD, and Windows systems.
 
 .. _installation:
 
 If you are new to python, it is a good idea to read a bit about it first `<docs.python-guide.org>`_.
-For new installations of python, it is encouraged to install and or update: pip, setuptools, wheel, numpy, six, certifi::
+For new installations of python, it is encouraged to install and or update: pip, setuptools, wheel, numpy, six, and certifi first before installing SpiceyPy ::
 
     pip install -U pip setuptools wheel
     pip install -U numpy six certifi
@@ -18,7 +18,8 @@ Then to install SpiceyPy, simply run::
 
 If you use anaconda/miniconda/conda run::
 
-    conda install -c https://conda.anaconda.org/andrewannex spiceypy
+    conda config --add channels conda-forge
+    conda install spiceypy
 
 If no error was returned you have successfully installed SpiceyPy.
 To verify this you can list the installed packages via this pip command::
@@ -38,6 +39,84 @@ Or you can start a python interpreter and try importing SpiceyPy like so:
 This should print out the toolkit version without any errors. You have now
 verified that SpiceyPy is installed.
 
+A simple example program
+------------------------
+
+This script calls the spiceypy function 'tkvrsn' and outputs the return
+value.
+
+.. code-block:: python
+
+              File tkvrsn.py
+
+                 from __future__ import print_function
+                 import spiceypy
+
+                 def print_ver():
+                         """Prints the TOOLKIT version
+                         """
+                         print(spiceypy.tkvrsn('TOOLKIT'))
+
+                 if __name__ == '__main__':
+                         print_ver()
+
+From the command line, execute the function:
+
+::
+
+              $ python tkvrsn.py
+              CSPICE_N0066
+
+From Python, execute the function:
+
+::
+
+              $ python
+              >>> import tkvrsn
+              >>> tkvrsn.print_ver()
+              CSPICE_N0066
+
+SpiceyPy Documentation
+----------------------
+
+The current version of SpiceyPy does not provide extensive
+documentation, but there are several ways to navigate your way through
+the Python version of the toolkit. One simple way is to use the standard
+Python mechanisms. All interfaces implemented in SpiceyPy can be listed
+using the standard built-in function dir(), which returns an
+alphabetized list of names comprising (among) other things, the API
+names. If you need to get additional information about an API
+parameters, the standard built-in function help() could be used:
+
+::
+
+      >>> import spiceypy
+      >>> help(spiceypy.tkvrsn)
+
+which produces
+
+.. code-block:: text
+
+      Help on function tkvrsn in module spiceypy.spiceypy:
+
+      tkvrsn(item)
+          Given an item such as the Toolkit or an entry point name, return
+          the latest version string.
+
+          http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tkvrsn_c.
+      html
+
+          :param item: Item for which a version string is desired.
+          :type item: str
+          :return: the latest version string.
+          :rtype: str
+
+As indicated in the help on the function, the complete documentation is
+available on the CSPICE toolkit version. Therefore it is recommended to
+have the CSPICE toolkit version installed locally in order to access its
+documentation offline.
+
+
 =============
 Common Issues
 =============
@@ -55,7 +134,7 @@ of OpenSSL, the easiest way to do this is to install python using homebrew, once
 can be installed to this new installation of python (IMHO this is the best option).
 
 If your python 3.6 distribution was installed from the packages available at python.org an included command
-``Install Certificates.command`` should be run before attempting to install SpiceyPy again.
+"Install Certificates.command" should be run before attempting to install SpiceyPy again.
 That command installs the certifi package that can also be install using pip. 
 
 Alternatively, installing an anaconda or miniconda
