@@ -96,8 +96,8 @@ Please note that support for Python minor versions are generally phased out
 as newer versions are released. 
 
 - OS: OS X, Linux, Windows
-- CPU: 64bit & 32bit
-- Python 2.7, 3.3, 3.4, 3.5, 3.6
+- CPU: 64bit only!
+- Python 2.7, 3.3, 3.4, 3.5, 3.6, 3.7
 
 Acknowledgements
 ----------------
