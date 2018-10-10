@@ -3172,8 +3172,46 @@ def test_gfdist():
 
 
 def test_gfevnt():
-    with pytest.raises(NotImplementedError):
-        spice.gfevnt()
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    #
+    et_start = spice.str2et("2001 jan 01 00:00:00.000")
+    et_end   = spice.str2et("2001 dec 31 00:00:00.000")
+    cnfine   = spice.stypes.SPICEDOUBLE_CELL(2)
+    spice.wninsd(et_start, et_end, cnfine)
+    result   = spice.stypes.SPICEDOUBLE_CELL(1000)
+    qpnams   = ["TARGET", "OBSERVER", "ABCORR"]
+    qcpars   = ["MOON  ", "EARTH   ", "LT+S  "]
+    # Set the step size to 1/1000 day and convert to seconds
+    spice.gfsstp(0.001 * spice.spd())
+    # setup callbacks
+    udstep = spiceypy.utils.callbacks.SpiceUDSTEP(spice.gfstep)
+    udrefn = spiceypy.utils.callbacks.SpiceUDREFN(spice.gfrefn)
+    udrepi = spiceypy.utils.callbacks.SpiceUDREPI(spice.gfrepi)
+    udrepu = spiceypy.utils.callbacks.SpiceUDREPU(spice.gfrepu)
+    udrepf = spiceypy.utils.callbacks.SpiceUDREPF(spice.gfrepf)
+    udbail = spiceypy.utils.callbacks.SpiceUDBAIL(spice.gfbail)
+    qdpars = np.zeros(10, dtype=np.float)
+    qipars = np.zeros(10, dtype=np.int32)
+    qlpars = np.zeros(10, dtype=np.int32)
+    # call gfevnt
+    spice.gfevnt(udstep, udrefn, 'DISTANCE', 3, 81, qpnams, qcpars,
+                 qdpars, qipars, qlpars, 'LOCMAX', 0, 1.e-6, 0,
+                 True, udrepi, udrepu, udrepf, 10000,
+                 True, udbail, cnfine, result)
+
+    # Verify the expected results
+    assert len(result) == 26
+    sTimout = "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND"
+    assert spice.timout(result[0], sTimout) == '2001-JAN-24 19:22:01.418715 (TDB)'
+    assert spice.timout(result[1], sTimout) == '2001-JAN-24 19:22:01.418715 (TDB)'
+    assert spice.timout(result[2], sTimout) == '2001-FEB-20 21:52:07.900872 (TDB)'
+    assert spice.timout(result[3], sTimout) == '2001-FEB-20 21:52:07.900872 (TDB)'
+    # Cleanup
+    if spice.gfbail():
+        spice.gfclrh()
+    spice.gfsstp(0.5)
+    spice.kclear()
 
 
 def test_gffove():
