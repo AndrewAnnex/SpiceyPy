@@ -334,10 +334,10 @@ libspice.gfbail_c.restype  = c_int
 libspice.gfclrh_c.argtypes = None
 libspice.gfdist_c.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_double, c_double, c_double, c_int,
                               s_cell_p, s_cell_p]
-# libspice.gfevnt_c.argtypes = [callbacks.UDSTEP, callbacks.UDREFN, c_char_p, c_int, c_int,
-#                               c_void_p, c_void_p, c_double_p, c_int_p, POINTER(c_int),
-#                               c_char_p, c_double, c_double, c_double, c_int, callbacks.UDREPI, callbacks.UDREPU,
-#                               callbacks.UDREPF, c_int, c_int, callbacks.UDBAIL, s_cell_p, s_cell_p]
+libspice.gfevnt_c.argtypes = [callbacks.UDSTEP, callbacks.UDREFN, c_char_p, c_int, c_int,
+                              c_void_p, c_void_p, c_double_p, c_int_p, c_int_p, c_char_p,
+                              c_double, c_double, c_double, c_int, callbacks.UDREPI, callbacks.UDREPU,
+                              callbacks.UDREPF, c_int, c_int, callbacks.UDBAIL, s_cell_p, s_cell_p]
 
 libspice.gffove_c.argtypes = [c_char_p, c_char_p, (c_double*3),
                               c_char_p, c_char_p, c_char_p, c_char_p, c_double,

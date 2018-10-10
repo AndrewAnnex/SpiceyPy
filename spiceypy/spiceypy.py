@@ -5638,8 +5638,85 @@ def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls,
                       step, nintvls, ctypes.byref(cnfine), ctypes.byref(result))
 
 
-def gfevnt():
-    raise NotImplementedError
+@spiceErrorCheck
+def gfevnt(udstep, udrefn, gquant, qnpars, lenvals, qpnams,
+           qcpars, qdpars, qipars, qlpars, op, refval,
+           tol, adjust, rpt, udrepi, udrepu, udrepf,
+           nintvls, bail, udbail, cnfine, result):
+    """
+    Determine time intervals when a specified geometric quantity
+    satisfies a specified mathematical condition.
+
+    http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/gfevnt_c.html
+
+    :param udstep: Name of the routine that computes and returns a
+    :type udstep: spiceypy.utils.callbacks.UDSTEP
+    :param udrefn: Name of the routine that computes a refined time
+    :type udrefn: spiceypy.utils.callbacks.UDREFN
+    :param gquant: Type of geometric quantity
+    :type gquant: str
+    :param qnpars: Number of quantity definition parameters
+    :type qnpars: int
+    :param lenvals: Length of strings in qpnams and qcpars
+    :type lenvals: int
+    :param qpnams: Names of quantity definition parameters
+    :type qpnams: List
+    :param qcpars: Array of character quantity definition parameters
+    :type qcpars: List
+    :param qdpars: Array of double precision quantity definition
+    :type qdpars: N-Element Array of floats
+    :param qipars: Array of integer quantity definition parameters
+    :type qipars: N-Element Array of str
+    :param qlpars: Array of logical quantity definition parameters
+    :type qlpars: N-Element Array of int
+    :param op: Operator that either looks for an extreme value
+    :type op: str
+    :param refval: Reference value
+    :type refval: float
+    :param tol: Convergence tolerance in seconds
+    :type tol: float
+    :param adjust: Absolute extremum adjustment value
+    :type adjust: float
+    :param rpt: Progress reporter on TRUE or off FALSE
+    :type rpt: int
+    :param udrepi: Function that initializes progress reporting
+    :type udrepi: spiceypy.utils.callbacks.UDREPI
+    :param udrepu: Function that updates the progress report
+    :type udrepu: spiceypy.utils.callbacks.UDREPU
+    :param udrepf: Function that finalizes progress reporting
+    :type udrepf: spiceypy.utils.callbacks.UDREPF
+    :param nintvls: Workspace window interval count
+    :type nintvls: int
+    :param bail: Logical indicating program interrupt monitoring
+    :type bail: int
+    :param udbail: Name of a routine that signals a program interrupt
+    :type udbail: spiceypy.utils.callbacks.UDBAIL
+    :param cnfine: SPICE window to which the search is restricted
+    :type cnfine: spiceypy.utils.support_types.SpiceCell
+    :param result: SPICE window containing results
+    :type result: spiceypy.utils.support_types.SpiceCell
+    """
+    assert isinstance(cnfine, stypes.SpiceCell)
+    assert isinstance(result, stypes.SpiceCell)
+    gquant = stypes.stringToCharP(gquant)
+    qnpars = ctypes.c_int(qnpars)
+    lenvals = ctypes.c_int(lenvals)
+    qpnams = stypes.listToCharArray(qpnams)
+    qcpars = stypes.listToCharArray(qcpars)
+    qdpars = stypes.toDoubleVector(qdpars)
+    qipars = stypes.toIntVector(qipars)
+    qlpars = stypes.toIntVector(qlpars)
+    op = stypes.stringToCharP(op)
+    refval = ctypes.c_double(refval)
+    tol = ctypes.c_double(tol)
+    adjust = ctypes.c_double(adjust)
+    rpt = ctypes.c_int(rpt)
+    nintvls = ctypes.c_int(nintvls)
+    bail = ctypes.c_int(bail)
+    libspice.gfevnt_c(udstep, udrefn, gquant, qnpars, lenvals, qpnams, qcpars,
+                      qdpars, qipars, qlpars, op, refval, tol,
+                      adjust, rpt, udrepi, udrepu, udrepf, nintvls, bail,
+                      udbail, ctypes.byref(cnfine), ctypes.byref(result))
 
 
 @spiceErrorCheck
