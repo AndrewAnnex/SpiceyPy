@@ -3201,10 +3201,12 @@ def test_gfevnt():
                  True, udbail, cnfine, result)
 
     # Verify the expected results
-    assert len(result) == 12
+    assert len(result) == 26
     sTimout = "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND"
-    assert spice.timout(result[0], sTimout) == '2001-JAN-24 19:22:01.436672 (TDB)'
-    assert spice.timout(result[1], sTimout) == '2001-JAN-24 19:22:01.436672 (TDB)'
+    assert spice.timout(result[0], sTimout) == '2001-JAN-24 19:22:01.418715 (TDB)'
+    assert spice.timout(result[1], sTimout) == '2001-JAN-24 19:22:01.418715 (TDB)'
+    assert spice.timout(result[2], sTimout) == '2001-FEB-20 21:52:07.900872 (TDB)'
+    assert spice.timout(result[3], sTimout) == '2001-FEB-20 21:52:07.900872 (TDB)'
     # Cleanup
     if spice.gfbail():
         spice.gfclrh()
