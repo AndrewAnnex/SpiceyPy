@@ -11555,7 +11555,7 @@ def spkcls(handle):
 
 
 @spiceErrorCheck
-def spkcov(spk, idcode, cover):
+def spkcov(spk, idcode, cover=None):
     """
     Find the coverage window for a specified ephemeris object in a
     specified SPK file.
@@ -11571,9 +11571,12 @@ def spkcov(spk, idcode, cover):
     """
     spk = stypes.stringToCharP(spk)
     idcode = ctypes.c_int(idcode)
+    if cover is None:
+        cover=stypes.SPICEDOUBLE_CELL(2000)
     assert isinstance(cover, stypes.SpiceCell)
     assert cover.dtype == 1
     libspice.spkcov_c(spk, idcode, ctypes.byref(cover))
+    return cover
 
 
 @spiceErrorCheck
