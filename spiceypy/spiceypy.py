@@ -11572,7 +11572,7 @@ def spkcov(spk, idcode, cover=None):
     spk = stypes.stringToCharP(spk)
     idcode = ctypes.c_int(idcode)
     if cover is None:
-        cover=stypes.SPICEDOUBLE_CELL(2)
+        cover=stypes.SPICEDOUBLE_CELL(2000)
     assert isinstance(cover, stypes.SpiceCell)
     assert cover.dtype == 1
     libspice.spkcov_c(spk, idcode, ctypes.byref(cover))
