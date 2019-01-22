@@ -6119,14 +6119,16 @@ def test_spkcov():
     ids = spice.spkobj(CoreKernels.spk)
     tempObj = ids[0]
     
+    #Checks for defaults
     cover=spice.spkcov(CoreKernels.spk, tempObj)
     result = [x for x in cover]
     expected = [-94651137.81606464, 315662463.18395346]
     npt.assert_array_almost_equal(result, expected)
     
+    #Checks for old way, where if cover is pre-set, it should remain set
     cover = spice.stypes.SPICEDOUBLE_CELL(2000)
     spice.scard(0, cover)
-    cover=spice.spkcov(CoreKernels.spk, tempObj, cover)
+    spice.spkcov(CoreKernels.spk, tempObj, cover)
     result = [x for x in cover]
     expected = [-94651137.81606464, 315662463.18395346]
     npt.assert_array_almost_equal(result, expected)
