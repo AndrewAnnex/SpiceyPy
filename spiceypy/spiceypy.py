@@ -11571,7 +11571,7 @@ def spkcov(spk, idcode, cover=None):
     """
     spk = stypes.stringToCharP(spk)
     idcode = ctypes.c_int(idcode)
-    if not cover:
+    if cover is None:
         cover=stypes.SPICEDOUBLE_CELL(2)
     assert isinstance(cover, stypes.SpiceCell)
     assert cover.dtype == 1
