@@ -5619,7 +5619,7 @@ def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls,
     :type nintvls: int
     :param cnfine: SPICE window to which the search is confined.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
@@ -5697,7 +5697,7 @@ def gfevnt(udstep, udrefn, gquant, qnpars, lenvals, qpnams,
     :type udbail: spiceypy.utils.callbacks.UDBAIL
     :param cnfine: SPICE window to which the search is restricted
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results
+    :param result: Optional SPICE window containing results
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
@@ -5774,7 +5774,7 @@ def gffove(inst, tshape, raydir, target, tframe, abcorr, obsrvr,
     :type udbail: spiceypy.utils.callbacks.UDBAIL
     :param cnfine: SPICE window to which the search is restricted
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results
+    :param result: Optional SPICE window containing results
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
@@ -5838,7 +5838,7 @@ def gfilum(method, angtyp, target, illumn,
     :type nintvls: int
     :param cnfine: Window that confines the time period over which the specified search is conducted. This can be updated by gfilum
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: Window of intervals in the confinement window that the illumination angle constraint is satisfied.
+    :param result: Optional SPICE Window of intervals in the confinement window that the illumination angle constraint is satisfied.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
@@ -5937,7 +5937,7 @@ def gfocce(occtyp, front, fshape, fframe, back,
     :type udbail: spiceypy.utils.callbacks.UDBAIL
     :param cnfine: SPICE window to which the search is restricted
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
@@ -5996,7 +5996,7 @@ def gfoclt(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr,
     :type step: float
     :param cnfine: SPICE window to which the search is restricted.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
@@ -6052,7 +6052,7 @@ def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals,
     :type nintvals: int
     :param cnfine: SPICE window to which the search is restricted.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
@@ -6110,7 +6110,7 @@ def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval,
     :type nintvals: int
     :param cnfine: SPICE window to which the search is restricted.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
@@ -6244,7 +6244,7 @@ def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result=None):
     :type step: float
     :param cnfine: SPICE window to which the search is restricted.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
@@ -6292,7 +6292,7 @@ def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine,
     :type nintvals: int
     :param cnfine: SPICE window to which the search is restricted.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
@@ -6354,7 +6354,7 @@ def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr,
     :type nintvals: int
     :param cnfine: SPICE window to which the search is restricted.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
@@ -6423,7 +6423,7 @@ def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord,
     :type nintvals: int
     :param cnfine: SPICE window to which the search is restricted.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
@@ -6539,7 +6539,7 @@ def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate,
     :type nintvals: int
     :param cnfine: SPICE window to which the search is restricted.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
@@ -11631,7 +11631,7 @@ def spkcov(spk, idcode, cover=None):
     :type spk: str
     :param idcode: ID code of ephemeris object.
     :type idcode: int
-    :param cover: Window giving coverage in "spk" for "idcode".
+    :param cover: Optional SPICE Window giving coverage in "spk" for "idcode".
     :type cover: spiceypy.utils.support_types.SpiceCell
     """
     spk = stypes.stringToCharP(spk)
