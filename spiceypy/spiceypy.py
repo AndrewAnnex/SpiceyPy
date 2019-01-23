@@ -192,6 +192,21 @@ def get_found_catch_state():
     """
     return config.catch_false_founds
 
+def cell_double(cell_size):
+    return stypes.SPICEDOUBLE_CELL(cell_size)
+
+def cell_int(cell_size):
+    return stypes.SPICEINT_CELL(cell_size)
+
+def cell_char(cell_size, length):
+    return stypes.SPICECHAR_CELL(cell_size, length)
+
+def cell_bool(cell_size):
+    return stypes.SPICEBOOL_CELL(cell_size)
+
+def cell_time(cell_size):
+    return stypes.SPICETIME_CELL(cell_size)
+
 
 ################################################################################
 # A

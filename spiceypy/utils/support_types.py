@@ -705,10 +705,8 @@ def _int_getter(data_p, index, length):
 def SPICEDOUBLE_CELL(size):
     return SpiceCell.double(size)
 
-
 def SPICEINT_CELL(size):
     return SpiceCell.integer(size)
-
 
 def SPICECHAR_CELL(size, length):
     return SpiceCell.character(size, length)

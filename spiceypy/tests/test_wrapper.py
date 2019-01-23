@@ -44,7 +44,7 @@ def setup_module(module):
 
 
 def test_appndc():
-    testCell = spice.stypes.SPICECHAR_CELL(10, 10)
+    testCell = spice.cell_char(10, 10)
     spice.appndc("one", testCell)
     spice.appndc("two", testCell)
     spice.appndc("three", testCell)
@@ -54,7 +54,7 @@ def test_appndc():
 
 
 def test_appndc_vectorized():
-    testCell = spice.stypes.SPICECHAR_CELL(10, 10)
+    testCell = spice.cell_char(10, 10)
     spice.appndc(["one", "two", "three"], testCell)
     assert testCell[0] == "one"
     assert testCell[1] == "two"
@@ -62,7 +62,7 @@ def test_appndc_vectorized():
 
 
 def test_appndd():
-    testCell = spice.stypes.SPICEDOUBLE_CELL(8)
+    testCell = spice.cell_double(8)
     spice.appndd(1.0, testCell)
     spice.appndd(2.0, testCell)
     spice.appndd(3.0, testCell)
@@ -70,13 +70,13 @@ def test_appndd():
 
 
 def test_appndd_vectorized():
-    testCell = spice.stypes.SPICEDOUBLE_CELL(8)
+    testCell = spice.cell_double(8)
     spice.appndd([1.0, 2.0, 3.0], testCell)
     assert [x for x in testCell] == [1.0, 2.0, 3.0]
 
 
 def test_appndi():
-    testCell = spice.stypes.SPICEINT_CELL(8)
+    testCell = spice.cell_int(8)
     spice.appndi(1, testCell)
     spice.appndi(2, testCell)
     spice.appndi(3, testCell)
@@ -84,7 +84,7 @@ def test_appndi():
 
 
 def test_appndi_vectorized():
-    testCell = spice.stypes.SPICEINT_CELL(8)
+    testCell = spice.cell_int(8)
     spice.appndi([1, 2, 3], testCell)
     assert [x for x in testCell] == [1, 2, 3]
 
@@ -259,7 +259,7 @@ def test_bsrchi():
 
 
 def test_card():
-    testCell = spice.stypes.SPICEDOUBLE_CELL(8)
+    testCell = spice.cell_double(8)
     assert spice.card(testCell) == 0
     spice.appndd(1.0, testCell)
     assert spice.card(testCell) == 1
@@ -718,7 +718,7 @@ def test_copy():
     assert cellCopy is not outCell
     assert cellCopy.dtype is 2
     # SPICECHAR_CELL; dtype=0
-    cellSrc = spice.stypes.SPICECHAR_CELL(10,10)
+    cellSrc = spice.cell_char(10,10)
     tmpRtn = [spice.appndc('{}'.format(i), cellSrc) for i in range(5)]
     cellCopy = spice.copy(cellSrc)
     assert cellCopy.dtype is 0
@@ -727,7 +727,7 @@ def test_copy():
     assert cellCopy[:] == cellSrc[:]
     assert cellCopy.length >= cellSrc.length
     # SPICEDOUBLE_CELL; dtype=1
-    cellSrc = spice.stypes.SPICEDOUBLE_CELL(10)
+    cellSrc = spice.cell_double(10)
     tmpRtn = [spice.appndd(float(i), cellSrc) for i in range(8)]
     cellCopy = spice.copy(cellSrc)
     assert cellCopy.dtype is 1
@@ -735,7 +735,7 @@ def test_copy():
     assert cellCopy.card == cellSrc.card
     assert cellCopy[:] == cellSrc[:]
     # SPICEBOOLEAN_CELL; dtype=4
-    cellSrc = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'], size=9, length=0, card=0, isSet=False)
+    cellSrc = spice.cell_bool(9)
     with pytest.raises(NotImplementedError):
         spice.copy(cellSrc)
 
@@ -1036,7 +1036,7 @@ def test_dafgsr():
     handle = spice.dafopr(CoreKernels.spk)
     # get ND, NI (N.B. for SPKs, ND=2 and NI=6),
     # and first, last and free record numbers
-    nd, ni, ifname, fward, bward, free = rtnDafrfr = spice.dafrfr(handle)
+    nd, ni, ifname, fward, bward, free = spice.dafrfr(handle)
     assert nd == 2 and ni == 6
     # Calculate Single Summary size
     ss = nd + ((ni+1) >> 1) 
@@ -1156,7 +1156,7 @@ def test_dafrda():
     handle = spice.dafopr(CoreKernels.spk)
     # get ND, NI (N.B. for SPKs, ND=2 and NI=6),
     # and first, last and free record numbers
-    nd, ni, ifname, fward, bward, free = rtnDafrfr = spice.dafrfr(handle)
+    nd, ni, ifname, fward, bward, free = spice.dafrfr(handle)
     assert nd == 2 and ni == 6
     # Calculate Single Summary size
     ss = nd + ((ni+1) >> 1) 
@@ -1367,8 +1367,8 @@ def test_diags2():
 
 def test_diff():
     # SPICEINT_CELL
-    testCellOne = spice.stypes.SPICEINT_CELL(8)
-    testCellTwo = spice.stypes.SPICEINT_CELL(8)
+    testCellOne = spice.cell_int(8)
+    testCellTwo = spice.cell_int(8)
     spice.insrti(1, testCellOne)
     spice.insrti(2, testCellOne)
     spice.insrti(3, testCellOne)
@@ -1380,8 +1380,8 @@ def test_diff():
     outCell = spice.diff(testCellTwo, testCellOne)
     assert [x for x in outCell] == [4]
     # SPICECHAR_CELL
-    testCellOne = spice.stypes.SPICECHAR_CELL(8, 8)
-    testCellTwo = spice.stypes.SPICECHAR_CELL(8, 8)
+    testCellOne = spice.cell_char(8, 8)
+    testCellTwo = spice.cell_char(8, 8)
     spice.insrtc('1', testCellOne)
     spice.insrtc('2', testCellOne)
     spice.insrtc('3', testCellOne)
@@ -1393,8 +1393,8 @@ def test_diff():
     outCell = spice.diff(testCellTwo, testCellOne)
     assert [x for x in outCell] == ['4']
     # SPICEDOUBLE_CELL
-    testCellOne = spice.stypes.SPICEDOUBLE_CELL(8)
-    testCellTwo = spice.stypes.SPICEDOUBLE_CELL(8)
+    testCellOne = spice.cell_double(8)
+    testCellTwo = spice.cell_double(8)
     spice.insrtd(1.0, testCellOne)
     spice.insrtd(2.0, testCellOne)
     spice.insrtd(3.0, testCellOne)
@@ -1406,8 +1406,8 @@ def test_diff():
     outCell = spice.diff(testCellTwo, testCellOne)
     assert [x for x in outCell] == [4.0]
     # SPICEBOOLEAN_CELL; dtype=4
-    testCellOne = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'], size=9, length=0, card=0, isSet=False)
-    testCellTwo = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'], size=9, length=0, card=0, isSet=False)
+    testCellOne = spice.cell_bool(9)
+    testCellTwo = spice.cell_bool(9)
     with pytest.raises(NotImplementedError):
         spice.diff(testCellOne, testCellTwo)
 
@@ -2763,7 +2763,7 @@ def test_el2cgv():
 
 
 def test_elemc():
-    testCellOne = spice.stypes.SPICECHAR_CELL(10, 10)
+    testCellOne = spice.cell_char(10, 10)
     spice.insrtc("one", testCellOne)
     spice.insrtc("two", testCellOne)
     spice.insrtc("three", testCellOne)
@@ -2775,7 +2775,7 @@ def test_elemc():
 
 
 def test_elemd():
-    testCellOne = spice.stypes.SPICEDOUBLE_CELL(8)
+    testCellOne = spice.cell_double(8)
     spice.insrtd(1.0, testCellOne)
     spice.insrtd(2.0, testCellOne)
     spice.insrtd(3.0, testCellOne)
@@ -2787,7 +2787,7 @@ def test_elemd():
 
 
 def test_elemi():
-    testCellOne = spice.stypes.SPICEINT_CELL(8)
+    testCellOne = spice.cell_int(8)
     spice.insrti(1, testCellOne)
     spice.insrti(2, testCellOne)
     spice.insrti(3, testCellOne)
@@ -3150,9 +3150,9 @@ def test_gfdist():
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et('2007 JAN 01 00:00:00 TDB')
     et1 = spice.str2et('2007 APR 01 00:00:00 TDB')
-    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    cnfine = spice.cell_double(2)
     spice.wninsd(et0, et1, cnfine)
-    result = spice.stypes.SPICEDOUBLE_CELL(1000)
+    result = spice.cell_double(1000)
     spice.gfdist("moon", "none", "earth", ">", 400000, 0.0, spice.spd(), 1000, cnfine, result)
     count = spice.wncard(result)
     assert count == 4
@@ -3177,9 +3177,9 @@ def test_gfevnt():
     #
     et_start = spice.str2et("2001 jan 01 00:00:00.000")
     et_end   = spice.str2et("2001 dec 31 00:00:00.000")
-    cnfine   = spice.stypes.SPICEDOUBLE_CELL(2)
+    cnfine   = spice.cell_double(2)
     spice.wninsd(et_start, et_end, cnfine)
-    result   = spice.stypes.SPICEDOUBLE_CELL(1000)
+    result   = spice.cell_double(1000)
     qpnams   = ["TARGET", "OBSERVER", "ABCORR"]
     qcpars   = ["MOON  ", "EARTH   ", "LT+S  "]
     # Set the step size to 1/1000 day and convert to seconds
@@ -3228,9 +3228,9 @@ def test_gffove():
     # Split confinement window, from continuous CK coverage, into two pieces
     et_start = spice.str2et("2013-FEB-25 10:00:00.000")
     et_end   = spice.str2et("2013-FEB-25 11:45:00.000")
-    cnfine   = spice.stypes.SPICEDOUBLE_CELL(2)
+    cnfine   = spice.cell_double(2)
     spice.wninsd(et_start, et_end, cnfine)
-    result   = spice.stypes.SPICEDOUBLE_CELL(1000)
+    result   = spice.cell_double(1000)
     # call gffove
     udstep = spiceypy.utils.callbacks.SpiceUDSTEP(spice.gfstep)
     udrefn = spiceypy.utils.callbacks.SpiceUDREFN(spice.gfrefn)
@@ -3267,16 +3267,16 @@ def test_gfilum():
     startET = spice.str2et("1971 OCT 02 00:00:00 UTC")
     endET   = spice.str2et("1971 NOV 30 12:00:00 UTC")
     # Create confining and result windows for incidence angle GF check
-    cnfine  = spice.stypes.SPICEDOUBLE_CELL(2000)
+    cnfine  = spice.cell_double(2000)
     spice.wninsd(startET, endET, cnfine)
-    wnsolr  = spice.stypes.SPICEDOUBLE_CELL(2000)
+    wnsolr  = spice.cell_double(2000)
     # Find windows where solar incidence angle at MER-1 position is < 60deg
     spice.gfilum("Ellipsoid", "INCIDENCE", "Mars", "Sun",
                  "iau_mars", "CN+S", "PHOBOS", pos,
                  "<", 60.0 * spice.rpd(), 0.0, 21600.0,
                  1000, cnfine, wnsolr)
     # Create result window for emission angle GF check
-    result = spice.stypes.SPICEDOUBLE_CELL(2000)
+    result = spice.cell_double(2000)
     # Find windows, within solar incidence angle windows found above (wnsolar),
     # where emission angle from MER-1 position to Phobos is < 20deg
     spice.gfilum("Ellipsoid", "EMISSION", "Mars", "Sun",
@@ -3307,9 +3307,9 @@ def test_gfocce():
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et('2001 DEC 01 00:00:00 TDB')
     et1 = spice.str2et('2002 JAN 01 00:00:00 TDB')
-    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    cnfine = spice.cell_double(2)
     spice.wninsd(et0, et1, cnfine)
-    result = spice.stypes.SPICEDOUBLE_CELL(1000)
+    result = spice.cell_double(1000)
     spice.gfsstp(20.0)
     udstep = spiceypy.utils.callbacks.SpiceUDSTEP(spice.gfstep)
     udrefn = spiceypy.utils.callbacks.SpiceUDREFN(spice.gfrefn)
@@ -3334,9 +3334,9 @@ def test_gfoclt():
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et('2001 DEC 01 00:00:00 TDB')
     et1 = spice.str2et('2002 JAN 01 00:00:00 TDB')
-    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    cnfine = spice.cell_double(2)
     spice.wninsd(et0, et1, cnfine)
-    result = spice.stypes.SPICEDOUBLE_CELL(1000)
+    result = spice.cell_double(1000)
     spice.gfoclt("any", "moon", "ellipsoid", "iau_moon", "sun",
                  "ellipsoid", "iau_sun", "lt", "earth", 180.0, cnfine, result)
     count = spice.wncard(result)
@@ -3366,9 +3366,9 @@ def test_gfpa():
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et('2006 DEC 01')
     et1 = spice.str2et('2007 JAN 31')
-    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    cnfine = spice.cell_double(2)
     spice.wninsd(et0, et1, cnfine)
-    result = spice.stypes.SPICEDOUBLE_CELL(2000)
+    result = spice.cell_double(2000)
     for relation in relate:
         spice.gfpa("Moon", "Sun", "LT+S", "Earth", relation, 0.57598845,
                    0.0, spice.spd(), 5000, cnfine, result)
@@ -3390,9 +3390,9 @@ def test_gfposc():
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et('2007 JAN 01')
     et1 = spice.str2et('2008 JAN 01')
-    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    cnfine = spice.cell_double(2)
     spice.wninsd(et0, et1, cnfine)
-    result = spice.stypes.SPICEDOUBLE_CELL(1000)
+    result = spice.cell_double(1000)
     spice.gfposc("sun", "iau_earth", "none", "earth", "latitudinal", "latitude",
                  "absmax", 0.0, 0.0, 90.0 * spice.spd(), 1000, cnfine, result)
     count = spice.wncard(result)
@@ -3439,7 +3439,7 @@ def test_gfrepf():
 
 
 def test_gfrepi():
-    window = spice.stypes.SPICEDOUBLE_CELL(4)
+    window = spice.cell_double(4)
     spice.wninsd(0., 100., window)
     spice.gfrepi(window, 'x', 'y')
     # BEGMSS or ENDMSS empty, too long, or containing non-printing characters
@@ -3459,7 +3459,7 @@ def test_gfrepi():
 
 
 def test_gfrepu():
-    window = spice.stypes.SPICEDOUBLE_CELL(4)
+    window = spice.cell_double(4)
     spice.wninsd(0., 100., window)
     spice.gfrepi(window, 'x', 'y')
     spice.gfrepu(0., 100., 50.)
@@ -3493,13 +3493,13 @@ def test_gfrfov():
     et_end1   = spice.str2et("2013-FEB-25 11:45:00.000") #\
     et_start2 = spice.str2et("2013-FEB-25 11:55:00.000") #_>synthetic 10min gap
     et_end2   = spice.str2et("2013-FEB-26 14:25:00.000")
-    cnfine    = spice.stypes.SPICEDOUBLE_CELL(4)
+    cnfine    = spice.cell_double(4)
     spice.wninsd(et_start1, et_end1, cnfine)
     spice.wninsd(et_start2, et_end2, cnfine)
     # The ray direction vector is from Cassini toward Enceladus during the gap
     et_nom    = spice.str2et("2013-FEB-25 11:50:00.000") #\
     raydir, lt  = spice.spkpos("Enceladus", et_nom, "J2000", "NONE", "Cassini")
-    result   = spice.stypes.SPICEDOUBLE_CELL(2000)
+    result   = spice.cell_double(2000)
     spice.gfrfov(inst, raydir, "J2000", "NONE", "Cassini", 10.0, cnfine, result)
     # Verify the expected results
     assert len(result) == 4
@@ -3535,10 +3535,10 @@ def test_gfrr():
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et('2007 JAN 01')
     et1 = spice.str2et('2007 APR 01')
-    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    cnfine = spice.cell_double(2)
     spice.wninsd(et0, et1, cnfine)
     for relation in relate:
-        result = spice.stypes.SPICEDOUBLE_CELL(2000)
+        result = spice.cell_double(2000)
         spice.gfrr("moon", "none", "sun", relation, 0.3365, 0.0, spice.spd(), 2000, cnfine, result)
         count = spice.wncard(result)
         if count > 0:
@@ -3565,9 +3565,9 @@ def test_gfsep():
                 '2007-DEC-24 01:40:12.245932 (TDB)']
     et0 = spice.str2et('2007 JAN 01')
     et1 = spice.str2et('2008 JAN 01')
-    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    cnfine = spice.cell_double(2)
     spice.wninsd(et0, et1, cnfine)
-    result = spice.stypes.SPICEDOUBLE_CELL(2000)
+    result = spice.cell_double(2000)
     spice.gfsep("MOON", "SPHERE", "NULL", "SUN", "SPHERE", "NULL", "NONE", "EARTH",
                 "LOCMAX", 0.0, 0.0, 6.0 * spice.spd(), 1000, cnfine, result)
     count = spice.wncard(result)
@@ -3612,9 +3612,9 @@ def test_gfsntc():
     spice.furnsh(kernel)
     et0 = spice.str2et('2007 JAN 01')
     et1 = spice.str2et('2008 JAN 01')
-    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    cnfine = spice.cell_double(2)
     spice.wninsd(et0, et1, cnfine)
-    result = spice.stypes.SPICEDOUBLE_CELL(2000)
+    result = spice.cell_double(2000)
     spice.gfsntc("EARTH", "IAU_EARTH", "Ellipsoid", "NONE", "SUN", "SEM", [1.0, 0.0, 0.0], "LATITUDINAL",
                  "LATITUDE", "=", 0.0, 0.0, 90.0 * spice.spd(), 1000, cnfine, result)
     count = spice.wncard(result)
@@ -3654,9 +3654,9 @@ def test_gfsubc():
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et('2007 JAN 01')
     et1 = spice.str2et('2008 JAN 01')
-    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    cnfine = spice.cell_double(2)
     spice.wninsd(et0, et1, cnfine)
-    result = spice.stypes.SPICEDOUBLE_CELL(2000)
+    result = spice.cell_double(2000)
     spice.gfsubc("earth", "iau_earth", "Near point: ellipsoid", "none", "sun", "geodetic", "latitude", ">",
                  16.0 * spice.rpd(), 0.0, spice.spd() * 90.0, 1000, cnfine, result)
     count = spice.wncard(result)
@@ -3687,7 +3687,7 @@ def test_gftfov():
     et_end1   = spice.str2et("2013-FEB-25 11:45:00.000") #\
     et_start2 = spice.str2et("2013-FEB-25 11:55:00.000") #_>synthetic 10min gap
     et_end2   = spice.str2et("2013-FEB-26 14:25:00.000")
-    cnfine    = spice.stypes.SPICEDOUBLE_CELL(4)
+    cnfine    = spice.cell_double(4)
     spice.wninsd(et_start1, et_end1, cnfine)
     spice.wninsd(et_start2, et_end2, cnfine)
     # Subtract off the position of the spacecraft relative to the solar system barycenter the result is the ray's direction vector.
@@ -3710,8 +3710,8 @@ def test_gfudb():
     # begin test
     et_start = spice.str2et("Jan 1 2001")
     et_end   = spice.str2et("Jan 1 2002")
-    result   = spice.stypes.SPICEDOUBLE_CELL(40000)
-    cnfine   = spice.stypes.SPICEDOUBLE_CELL(2)
+    result   = spice.cell_double(40000)
+    cnfine   = spice.cell_double(2)
     spice.wninsd(et_start, et_end, cnfine)
     step = 5.0 * spice.spd()
 
@@ -3739,8 +3739,8 @@ def test_gfudb2():
     # begin test
     et_start = spice.str2et("Jan 1 2001")
     et_end = spice.str2et("Jan 1 2002")
-    result = spice.stypes.SPICEDOUBLE_CELL(40000)
-    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    result = spice.cell_double(40000)
+    cnfine = spice.cell_double(2)
     spice.wninsd(et_start, et_end, cnfine)
     step = 60.0 * 60.0
 
@@ -3787,8 +3787,8 @@ def test_gfuds():
 
     # loop through to test each relation type
     for i, r in enumerate(relations):
-        result = spice.stypes.SPICEDOUBLE_CELL(40000)
-        cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+        result = spice.cell_double(40000)
+        cnfine = spice.cell_double(2)
         spice.wninsd(et_start, et_end, cnfine)
         # call gfuds
         result = spice.gfuds(gfq, gfdecrx, r, refval, adjust, step, 20000, cnfine, result)
@@ -4011,7 +4011,7 @@ def test_inrypl():
 
 
 def test_insrtc():
-    testCell = spice.stypes.SPICECHAR_CELL(10, 10)
+    testCell = spice.cell_char(10, 10)
     cList = ["aaa", "bbb", "ccc", "bbb"]
     for c in cList:
         spice.insrtc(c, testCell)
@@ -4019,14 +4019,14 @@ def test_insrtc():
 
 
 def test_insrtc_vectorized():
-    testCell = spice.stypes.SPICECHAR_CELL(10, 10)
+    testCell = spice.cell_char(10, 10)
     cList = ["aaa", "bbb", "ccc", "bbb"]
     spice.insrtc(cList, testCell)
     assert [x for x in testCell] == ["aaa", "bbb", "ccc"]
 
 
 def test_insrtd():
-    testCell = spice.stypes.SPICEDOUBLE_CELL(8)
+    testCell = spice.cell_double(8)
     dlist = [0.5, 2.0, 30.0, 0.01, 30.0]
     for d in dlist:
         spice.insrtd(d, testCell)
@@ -4034,14 +4034,14 @@ def test_insrtd():
 
 
 def test_insrtd_vectorized():
-    testCell = spice.stypes.SPICEDOUBLE_CELL(8)
+    testCell = spice.cell_double(8)
     dList = [0.5, 2.0, 30.0, 0.01, 30.0]
     spice.insrtd(dList, testCell)
     assert [x for x in testCell] == [0.01, 0.5, 2.0, 30.0]
 
 
 def test_insrti():
-    testCell = spice.stypes.SPICEINT_CELL(8)
+    testCell = spice.cell_int(8)
     ilist = [1, 2, 30, 1, 30]
     for i in ilist:
         spice.insrti(i, testCell)
@@ -4049,15 +4049,15 @@ def test_insrti():
 
 
 def test_insrti_vectorized():
-    testCell = spice.stypes.SPICEINT_CELL(8)
+    testCell = spice.cell_int(8)
     iList = [1, 2, 30, 1, 30]
     spice.insrti(iList, testCell)
     assert [x for x in testCell] == [1, 2, 30]
 
 
 def test_inter():
-    testCellOne = spice.stypes.SPICEINT_CELL(8)
-    testCellTwo = spice.stypes.SPICEINT_CELL(8)
+    testCellOne = spice.cell_int(8)
+    testCellTwo = spice.cell_int(8)
     spice.insrti(1, testCellOne)
     spice.insrti(2, testCellOne)
     spice.insrti(1, testCellTwo)
@@ -4065,8 +4065,8 @@ def test_inter():
     outCell = spice.inter(testCellOne, testCellTwo)
     assert [x for x in outCell] == [1]
     # SPICECHAR_CELL
-    testCellOne = spice.stypes.SPICECHAR_CELL(8, 8)
-    testCellTwo = spice.stypes.SPICECHAR_CELL(8, 8)
+    testCellOne = spice.cell_char(8, 8)
+    testCellTwo = spice.cell_char(8, 8)
     spice.insrtc('1', testCellOne)
     spice.insrtc('2', testCellOne)
     spice.insrtc('1', testCellTwo)
@@ -4074,8 +4074,8 @@ def test_inter():
     outCell = spice.inter(testCellOne, testCellTwo)
     assert [x for x in outCell] == ['1']
     # SPICEDOUBLE_CELL
-    testCellOne = spice.stypes.SPICEDOUBLE_CELL(8)
-    testCellTwo = spice.stypes.SPICEDOUBLE_CELL(8)
+    testCellOne = spice.cell_double(8)
+    testCellTwo = spice.cell_double(8)
     spice.insrtd(1.0, testCellOne)
     spice.insrtd(2.0, testCellOne)
     spice.insrtd(1.0, testCellTwo)
@@ -4083,8 +4083,8 @@ def test_inter():
     outCell = spice.inter(testCellOne, testCellTwo)
     assert [x for x in outCell] == [1.0]
     # SPICEBOOLEAN_CELL; dtype=4
-    testCellOne = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'], size=9, length=0, card=0, isSet=False)
-    testCellTwo = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'], size=9, length=0, card=0, isSet=False)
+    testCellOne = spice.cell_bool(9)
+    testCellTwo = spice.cell_bool(9)
     with pytest.raises(NotImplementedError):
         spice.inter(testCellOne, testCellTwo)
 
@@ -4814,7 +4814,7 @@ def test_occult():
 
 
 def test_ordc():
-    charset = spice.stypes.SPICECHAR_CELL(10, 10)
+    charset = spice.cell_char(10, 10)
     inputs = ["8", "1", "2", "9", "7", "4", "10"]
     expected = [5, 0, 2, 6, 4, 3, 1]
     for c in inputs:
@@ -4824,7 +4824,7 @@ def test_ordc():
 
 
 def test_ordd():
-    doubleset = spice.stypes.SPICEDOUBLE_CELL(7)
+    doubleset = spice.cell_double(7)
     inputs = [8.0, 1.0, 2.0, 9.0, 7.0, 4.0, 10.0]
     expected = [4, 0, 1, 5, 3, 2, 6]
     for d in inputs:
@@ -4834,7 +4834,7 @@ def test_ordd():
 
 
 def test_ordi():
-    intset = spice.stypes.SPICEINT_CELL(7)
+    intset = spice.cell_int(7)
     inputs = [8, 1, 2, 9, 7, 4, 10]
     expected = [4, 0, 1, 5, 3, 2, 6]
     for i in inputs:
@@ -4925,8 +4925,8 @@ def test_pckopn_pckw02_pckcls():
 
 def test_pckcov():
     spice.kclear()
-    ids = spice.stypes.SPICEINT_CELL(1000)
-    cover = spice.stypes.SPICEDOUBLE_CELL(2000)
+    ids = spice.cell_int(1000)
+    cover = spice.cell_double(2000)
     spice.pckfrm(ExtraKernels.earthHighPerPck, ids)
     spice.scard(0, cover)
     spice.pckcov(ExtraKernels.earthHighPerPck, ids[0], cover)
@@ -4938,7 +4938,7 @@ def test_pckcov():
 
 def test_pckfrm():
     spice.kclear()
-    ids = spice.stypes.SPICEINT_CELL(1000)
+    ids = spice.cell_int(1000)
     spice.pckfrm(ExtraKernels.earthHighPerPck, ids)
     assert ids[0] == 3000
     spice.kclear()
@@ -5007,9 +5007,9 @@ def test_phaseq():
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et('2006 DEC 01')
     et1 = spice.str2et('2007 JAN 31')
-    cnfine = spice.stypes.SPICEDOUBLE_CELL(2)
+    cnfine = spice.cell_double(2)
     spice.wninsd(et0, et1, cnfine)
-    result = spice.stypes.SPICEDOUBLE_CELL(10000)
+    result = spice.cell_double(10000)
     for relation in relate:
         spice.gfpa("Moon", "Sun", "LT+S", "Earth", relation, 0.57598845,
                    0.0, spice.spd(), 5000, cnfine, result)
@@ -5447,7 +5447,7 @@ def test_recsph():
 
 
 def test_removc():
-    cell = spice.stypes.SPICECHAR_CELL(10, 10)
+    cell = spice.cell_char(10, 10)
     items = ["one", "two", "three", "four"]
     for i in items:
         spice.insrtc(i, cell)
@@ -5459,7 +5459,7 @@ def test_removc():
 
 
 def test_removd():
-    cell = spice.stypes.SPICEDOUBLE_CELL(10)
+    cell = spice.cell_double(10)
     items = [0.0, 1.0, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 21.0]
     for i in items:
         spice.insrtd(i, cell)
@@ -5472,7 +5472,7 @@ def test_removd():
 
 
 def test_removi():
-    cell = spice.stypes.SPICEINT_CELL(10)
+    cell = spice.cell_int(10)
     items = [0, 1, 1, 2, 3, 5, 8, 13, 21]
     for i in items:
         spice.insrti(i, cell)
@@ -5616,7 +5616,7 @@ def test_saelgv():
 
 
 def test_scard():
-    cell = spice.stypes.SPICEDOUBLE_CELL(10)
+    cell = spice.cell_double(10)
     darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
     assert spice.card(cell) == 0
     for w in darray:
@@ -5731,8 +5731,8 @@ def test_sctiks():
 
 def test_sdiff():
     # SPICEINT_CELL
-    a = spice.stypes.SPICEINT_CELL(8)
-    b = spice.stypes.SPICEINT_CELL(8)
+    a = spice.cell_int(8)
+    b = spice.cell_int(8)
     spice.insrti(1, a)
     spice.insrti(2, a)
     spice.insrti(5, a)
@@ -5742,8 +5742,8 @@ def test_sdiff():
     c = spice.sdiff(a, b)
     assert [x for x in c] == [1, 2, 3, 4]
     # SPICECHAR_CELL
-    a = spice.stypes.SPICECHAR_CELL(8, 8)
-    b = spice.stypes.SPICECHAR_CELL(8, 8)
+    a = spice.cell_char(8, 8)
+    b = spice.cell_char(8, 8)
     spice.insrtc('1', a)
     spice.insrtc('2', a)
     spice.insrtc('5', a)
@@ -5753,8 +5753,8 @@ def test_sdiff():
     c = spice.sdiff(a, b)
     assert [x for x in c] == ['1', '2', '3', '4']
     # SPICEDOUBLE_CELL
-    a = spice.stypes.SPICEDOUBLE_CELL(8)
-    b = spice.stypes.SPICEDOUBLE_CELL(8)
+    a = spice.cell_double(8)
+    b = spice.cell_double(8)
     spice.insrtd(1., a)
     spice.insrtd(2., a)
     spice.insrtd(5., a)
@@ -5764,16 +5764,16 @@ def test_sdiff():
     c = spice.sdiff(a, b)
     assert [x for x in c] == [1., 2., 3., 4.]
     # SPICEBOOLEAN_CELL
-    testCellOne = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'], size=9, length=0, card=0, isSet=False)
-    testCellTwo = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'], size=9, length=0, card=0, isSet=False)
+    testCellOne = spice.cell_bool(9)
+    testCellTwo = spice.cell_bool(9)
     with pytest.raises(NotImplementedError):
         spice.sdiff(testCellOne, testCellTwo)
 
 
 def test_set_c():
-    a = spice.stypes.SPICEINT_CELL(8)
-    b = spice.stypes.SPICEINT_CELL(8)
-    c = spice.stypes.SPICEINT_CELL(8)
+    a = spice.cell_int(8)
+    b = spice.cell_int(8)
+    c = spice.cell_int(8)
     spice.insrti(1, a)
     spice.insrti(2, a)
     spice.insrti(3, a)
@@ -5854,7 +5854,7 @@ def test_sincpt():
 
 
 def test_size():
-    testCellOne = spice.stypes.SPICEINT_CELL(8)
+    testCellOne = spice.cell_int(8)
     assert spice.size(testCellOne) == 8
 
 
@@ -6126,7 +6126,7 @@ def test_spkcov():
     npt.assert_array_almost_equal(result, expected)
     
     #Checks for old way, where if cover is pre-set, it should remain set
-    cover = spice.stypes.SPICEDOUBLE_CELL(2000)
+    cover = spice.cell_double(2000)
     spice.scard(0, cover)
     spice.spkcov(CoreKernels.spk, tempObj, cover)
     result = [x for x in cover]
@@ -6319,7 +6319,7 @@ def test_spkltc():
 def test_spkobj():
     # Same as test_spkcov
     spice.kclear()
-    cover = spice.stypes.SPICEDOUBLE_CELL(2000)
+    cover = spice.cell_double(2000)
     ids = spice.spkobj(CoreKernels.spk)
     tempObj = ids[0]
     spice.scard(0, cover)
@@ -7083,7 +7083,7 @@ def test_srfxpt():
 
 
 def test_ssize():
-    cell = spice.stypes.SPICEDOUBLE_CELL(10)
+    cell = spice.cell_double(10)
     assert cell.size == 10
     spice.ssize(5, cell)
     assert cell.size == 5
@@ -7595,8 +7595,8 @@ def test_udf():
 
 def test_union():
     # SPICEINT_CELL
-    testCellOne = spice.stypes.SPICEINT_CELL(8)
-    testCellTwo = spice.stypes.SPICEINT_CELL(8)
+    testCellOne = spice.cell_int(8)
+    testCellTwo = spice.cell_int(8)
     spice.insrti(1, testCellOne)
     spice.insrti(2, testCellOne)
     spice.insrti(3, testCellOne)
@@ -7606,8 +7606,8 @@ def test_union():
     outCell = spice.union(testCellOne, testCellTwo)
     assert [x for x in outCell] == [1, 2, 3, 4]
     # SPICECHAR_CELL
-    testCellOne = spice.stypes.SPICECHAR_CELL(8, 8)
-    testCellTwo = spice.stypes.SPICECHAR_CELL(8, 8)
+    testCellOne = spice.cell_char(8, 8)
+    testCellTwo = spice.cell_char(8, 8)
     spice.insrtc('1', testCellOne)
     spice.insrtc('2', testCellOne)
     spice.insrtc('3', testCellOne)
@@ -7617,8 +7617,8 @@ def test_union():
     outCell = spice.union(testCellOne, testCellTwo)
     assert [x for x in outCell] == ['1', '2', '3', '4']
     # SPICEDOUBLE_CELL
-    testCellOne = spice.stypes.SPICEDOUBLE_CELL(8)
-    testCellTwo = spice.stypes.SPICEDOUBLE_CELL(8)
+    testCellOne = spice.cell_double(8)
+    testCellTwo = spice.cell_double(8)
     spice.insrtd(1., testCellOne)
     spice.insrtd(2., testCellOne)
     spice.insrtd(3., testCellOne)
@@ -7628,8 +7628,8 @@ def test_union():
     outCell = spice.union(testCellOne, testCellTwo)
     assert [x for x in outCell] == [1., 2., 3., 4.]
     # SPICEBOOLEAN_CELL
-    testCellOne = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'], size=9, length=0, card=0, isSet=False)
-    testCellTwo = spice.stypes.SpiceCell(dtype=spice.stypes.SpiceCell.DATATYPES_ENUM['bool'], size=9, length=0, card=0, isSet=False)
+    testCellOne = spice.cell_bool(9)
+    testCellTwo = spice.cell_bool(9)
     with pytest.raises(NotImplementedError):
         spice.union(testCellOne, testCellTwo)
 
@@ -7716,7 +7716,7 @@ def test_vaddg():
 
 def test_valid():
     data = np.arange(0, 10)[::-1]
-    a = spice.stypes.SPICEDOUBLE_CELL(20)
+    a = spice.cell_double(20)
     for x in data:
         spice.appndd(x, a)
     assert a.is_set() is False
@@ -7957,7 +7957,7 @@ def test_vzerog():
 
 
 def test_wncard():
-    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    window = spice.cell_double(8)
     darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
     for d in darray:
         spice.wninsd(d[0], d[1], window)
@@ -7965,7 +7965,7 @@ def test_wncard():
 
 
 def test_wncomd():
-    window1 = spice.stypes.SPICEDOUBLE_CELL(8)
+    window1 = spice.cell_double(8)
     darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
     for d in darray:
         spice.wninsd(d[0], d[1], window1)
@@ -7977,7 +7977,7 @@ def test_wncomd():
 
 
 def test_wncond():
-    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    window = spice.cell_double(8)
     darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
     for d in darray:
         spice.wninsd(d[0], d[1], window)
@@ -7989,8 +7989,8 @@ def test_wncond():
 
 
 def test_wndifd():
-    window1 = spice.stypes.SPICEDOUBLE_CELL(8)
-    window2 = spice.stypes.SPICEDOUBLE_CELL(8)
+    window1 = spice.cell_double(8)
+    window2 = spice.cell_double(8)
     darray1 = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
     darray2 = [[2.0, 6.0], [8.0, 10.0], [16.0, 18.0]]
     for d in darray1:
@@ -8008,7 +8008,7 @@ def test_wndifd():
 
 
 def test_wnelmd():
-    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    window = spice.cell_double(8)
     darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
     for d in darray:
         spice.wninsd(d[0], d[1], window)
@@ -8020,7 +8020,7 @@ def test_wnelmd():
 
 
 def test_wnexpd():
-    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    window = spice.cell_double(8)
     darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0], [29.0, 29.0]]
     for d in darray:
         spice.wninsd(d[0], d[1], window)
@@ -8033,7 +8033,7 @@ def test_wnexpd():
 
 
 def test_wnextd():
-    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    window = spice.cell_double(8)
     darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0], [29.0, 29.0]]
     for d in darray:
         spice.wninsd(d[0], d[1], window)
@@ -8047,7 +8047,7 @@ def test_wnextd():
 
 
 def test_wnfetd():
-    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    window = spice.cell_double(8)
     darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
     for d in darray:
         spice.wninsd(d[0], d[1], window)
@@ -8058,7 +8058,7 @@ def test_wnfetd():
 
 
 def test_wnfild():
-    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    window = spice.cell_double(8)
     darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0], [29.0, 29.0]]
     for d in darray:
         spice.wninsd(d[0], d[1], window)
@@ -8071,7 +8071,7 @@ def test_wnfild():
 
 
 def test_wnfltd():
-    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    window = spice.cell_double(8)
     darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0], [29.0, 29.0]]
     for d in darray:
         spice.wninsd(d[0], d[1], window)
@@ -8083,7 +8083,7 @@ def test_wnfltd():
 
 
 def test_wnincd():
-    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    window = spice.cell_double(8)
     darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
     for d in darray:
         spice.wninsd(d[0], d[1], window)
@@ -8095,7 +8095,7 @@ def test_wnincd():
 
 
 def test_wninsd():
-    window = spice.stypes.SPICEDOUBLE_CELL(8)
+    window = spice.cell_double(8)
     darray = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
     for d in darray:
         spice.wninsd(d[0], d[1], window)
@@ -8104,8 +8104,8 @@ def test_wninsd():
 
 
 def test_wnintd():
-    window1 = spice.stypes.SPICEDOUBLE_CELL(8)
-    window2 = spice.stypes.SPICEDOUBLE_CELL(8)
+    window1 = spice.cell_double(8)
+    window2 = spice.cell_double(8)
     darray1 = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
     darray2 = [[2.0, 6.0], [8.0, 10.0], [16.0, 18.0]]
     for d in darray1:
@@ -8121,8 +8121,8 @@ def test_wnintd():
 
 
 def test_wnreld():
-    window1 = spice.stypes.SPICEDOUBLE_CELL(8)
-    window2 = spice.stypes.SPICEDOUBLE_CELL(8)
+    window1 = spice.cell_double(8)
+    window2 = spice.cell_double(8)
     darray1 = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
     darray2 = [[1.0, 2.0], [9.0, 9.0], [24.0, 27.0]]
     for d in darray1:
@@ -8138,7 +8138,7 @@ def test_wnreld():
 
 
 def test_wnsumd():
-    window = spice.stypes.SPICEDOUBLE_CELL(12)
+    window = spice.cell_double(12)
     darray = [[1.0, 3.0], [7.0, 11.0], [18.0, 18.0], [23.0, 27.0], [30.0, 69.0], [72.0, 80.0]]
     for d in darray:
         spice.wninsd(d[0], d[1], window)
@@ -8151,8 +8151,8 @@ def test_wnsumd():
 
 
 def test_wnunid():
-    window1 = spice.stypes.SPICEDOUBLE_CELL(8)
-    window2 = spice.stypes.SPICEDOUBLE_CELL(8)
+    window1 = spice.cell_double(8)
+    window2 = spice.cell_double(8)
     darray1 = [[1.0, 3.0], [7.0, 11.0], [23.0, 27.0]]
     darray2 = [[2.0, 6.0], [8.0, 10.0], [16.0, 18.0]]
     for d in darray1:
@@ -8170,7 +8170,7 @@ def test_wnunid():
 
 
 def test_wnvald():
-    window = spice.stypes.SPICEDOUBLE_CELL(30)
+    window = spice.cell_double(30)
     array = [[0.0, 0.0], [10.0, 12.0], [2.0, 7.0],
              [13.0, 15.0], [1.0, 5.0], [23.0, 29.0],
              [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]
