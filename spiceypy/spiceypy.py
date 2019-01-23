@@ -5594,7 +5594,7 @@ def gfclrh():
 
 @spiceErrorCheck
 def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls,
-           cnfine, result):
+           cnfine, result=None):
     """
     Return the time window over which a specified constraint on
     observer-target distance is met.
@@ -5619,13 +5619,16 @@ def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls,
     :type nintvls: int
     :param cnfine: SPICE window to which the search is confined.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
-    assert isinstance(result, stypes.SpiceCell)
-    assert result.is_double()
+    if result is None:
+        result = stypes.SPICEDOUBLE_CELL(2000)
+    else:
+        assert isinstance(result, stypes.SpiceCell)
+        assert result.is_double()
     target = stypes.stringToCharP(target)
     abcorr = stypes.stringToCharP(abcorr)
     obsrvr = stypes.stringToCharP(obsrvr)
@@ -5636,13 +5639,14 @@ def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls,
     nintvls = ctypes.c_int(nintvls)
     libspice.gfdist_c(target, abcorr, obsrvr, relate, refval, adjust,
                       step, nintvls, ctypes.byref(cnfine), ctypes.byref(result))
+    return result
 
 
 @spiceErrorCheck
 def gfevnt(udstep, udrefn, gquant, qnpars, lenvals, qpnams,
            qcpars, qdpars, qipars, qlpars, op, refval,
            tol, adjust, rpt, udrepi, udrepu, udrepf,
-           nintvls, bail, udbail, cnfine, result):
+           nintvls, bail, udbail, cnfine, result=None):
     """
     Determine time intervals when a specified geometric quantity
     satisfies a specified mathematical condition.
@@ -5693,13 +5697,16 @@ def gfevnt(udstep, udrefn, gquant, qnpars, lenvals, qpnams,
     :type udbail: spiceypy.utils.callbacks.UDBAIL
     :param cnfine: SPICE window to which the search is restricted
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results
+    :param result: Optional SPICE window containing results
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
-    assert isinstance(result, stypes.SpiceCell)
-    assert result.is_double()
+    if result is None:
+        result = stypes.SPICEDOUBLE_CELL(2000)
+    else:
+        assert isinstance(result, stypes.SpiceCell)
+        assert result.is_double()
     gquant  = stypes.stringToCharP(gquant)
     qnpars  = ctypes.c_int(qnpars)
     lenvals = ctypes.c_int(lenvals)
@@ -5719,11 +5726,12 @@ def gfevnt(udstep, udrefn, gquant, qnpars, lenvals, qpnams,
                       qdpars, qipars, qlpars, op, refval, tol,
                       adjust, rpt, udrepi, udrepu, udrepf, nintvls, bail,
                       udbail, ctypes.byref(cnfine), ctypes.byref(result))
+    return result
 
 
 @spiceErrorCheck
 def gffove(inst, tshape, raydir, target, tframe, abcorr, obsrvr,
-           tol, udstep, udrefn, rpt, udrepi, udrepu, udrepf, bail, udbail, cnfine, result):
+           tol, udstep, udrefn, rpt, udrepi, udrepu, udrepf, bail, udbail, cnfine, result=None):
     """
     Determine time intervals when a specified target body or ray
     intersects the space bounded by the field-of-view (FOV) of a
@@ -5766,9 +5774,16 @@ def gffove(inst, tshape, raydir, target, tframe, abcorr, obsrvr,
     :type udbail: spiceypy.utils.callbacks.UDBAIL
     :param cnfine: SPICE window to which the search is restricted
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results
+    :param result: Optional SPICE window containing results
     :type result: spiceypy.utils.support_types.SpiceCell
     """
+    assert isinstance(cnfine, stypes.SpiceCell)
+    assert cnfine.is_double()
+    if result is None:
+        result = stypes.SPICEDOUBLE_CELL(2000)
+    else:
+        assert isinstance(result, stypes.SpiceCell)
+        assert result.is_double()
     inst = stypes.stringToCharP(inst)
     tshape = stypes.stringToCharP(tshape)
     raydir = stypes.toDoubleVector(raydir)
@@ -5783,12 +5798,13 @@ def gffove(inst, tshape, raydir, target, tframe, abcorr, obsrvr,
                       abcorr, obsrvr, tol, udstep, udrefn, rpt,
                       udrepi, udrepu, udrepf, bail, udbail,
                       ctypes.byref(cnfine), ctypes.byref(result))
+    return result
 
 
 @spiceErrorCheck
 def gfilum(method, angtyp, target, illumn,
            fixref, abcorr, obsrvr, spoint,
-           relate, refval, adjust, step, nintvls, cnfine, result):
+           relate, refval, adjust, step, nintvls, cnfine, result=None):
     """
     Return the time window over which a specified constraint on
     the observed phase, solar incidence, or emission angle at
@@ -5822,11 +5838,16 @@ def gfilum(method, angtyp, target, illumn,
     :type nintvls: int
     :param cnfine: Window that confines the time period over which the specified search is conducted. This can be updated by gfilum
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: Window of intervals in the confinement window that the illumination angle constraint is satisfied.
+    :param result: Optional SPICE Window of intervals in the confinement window that the illumination angle constraint is satisfied.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
-    assert isinstance(result, stypes.SpiceCell)
+    assert cnfine.is_double()
+    if result is None:
+        result = stypes.SPICEDOUBLE_CELL(2000)
+    else:
+        assert isinstance(result, stypes.SpiceCell)
+        assert result.is_double()
     method = stypes.stringToCharP(method)
     angtyp = stypes.stringToCharP(angtyp)
     target = stypes.stringToCharP(target)
@@ -5844,6 +5865,7 @@ def gfilum(method, angtyp, target, illumn,
                       fixref, abcorr, obsrvr, spoint,
                       relate, refval, adjust, step,
                       nintvls, ctypes.byref(cnfine), ctypes.byref(result))
+    return result
 
 
 @spiceErrorCheck
@@ -5866,7 +5888,7 @@ def gfinth(sigcode):
 def gfocce(occtyp, front, fshape, fframe, back,
            bshape, bframe, abcorr, obsrvr, tol,
            udstep, udrefn, rpt, udrepi, udrepu,
-           udrepf, bail, udbail, cnfine, result):
+           udrepf, bail, udbail, cnfine, result=None):
     """
     Determine time intervals when an observer sees one target
     occulted by another. Report progress and handle interrupts
@@ -5915,9 +5937,16 @@ def gfocce(occtyp, front, fshape, fframe, back,
     :type udbail: spiceypy.utils.callbacks.UDBAIL
     :param cnfine: SPICE window to which the search is restricted
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
+    assert isinstance(cnfine, stypes.SpiceCell)
+    assert cnfine.is_double()
+    if result is None:
+        result = stypes.SPICEDOUBLE_CELL(2000)
+    else:
+        assert isinstance(result, stypes.SpiceCell)
+        assert result.is_double()
     occtyp = stypes.stringToCharP(occtyp)
     front = stypes.stringToCharP(front)
     fshape = stypes.stringToCharP(fshape)
@@ -5934,10 +5963,11 @@ def gfocce(occtyp, front, fshape, fframe, back,
                       bshape, bframe, abcorr, obsrvr, tol,
                       udstep, udrefn, rpt, udrepi, udrepu, udrepf,
                       bail, udbail, ctypes.byref(cnfine), ctypes.byref(result))
+    return result
 
 @spiceErrorCheck
 def gfoclt(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr,
-           step, cnfine, result):
+           step, cnfine, result=None):
     """
     Determine time intervals when an observer sees one target
     occulted by, or in transit across, another.
@@ -5966,13 +5996,16 @@ def gfoclt(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr,
     :type step: float
     :param cnfine: SPICE window to which the search is restricted.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
-    assert isinstance(result, stypes.SpiceCell)
-    assert result.is_double()
+    if result is None:
+        result = stypes.SPICEDOUBLE_CELL(2000)
+    else:
+        assert isinstance(result, stypes.SpiceCell)
+        assert result.is_double()
     occtyp = stypes.stringToCharP(occtyp)
     front = stypes.stringToCharP(front)
     fshape = stypes.stringToCharP(fshape)
@@ -5986,11 +6019,12 @@ def gfoclt(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr,
     libspice.gfoclt_c(occtyp, front, fshape, fframe, back, bshape, bframe,
                       abcorr, obsrvr, step, ctypes.byref(cnfine),
                       ctypes.byref(result))
+    return result
 
 
 @spiceErrorCheck
 def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals,
-         cnfine, result):
+         cnfine, result=None):
     """
     Determine time intervals for which a specified constraint
     on the phase angle between an illumination source, a target,
@@ -6018,13 +6052,16 @@ def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals,
     :type nintvals: int
     :param cnfine: SPICE window to which the search is restricted.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
-    assert isinstance(result, stypes.SpiceCell)
-    assert result.is_double()
+    if result is None:
+        result = stypes.SPICEDOUBLE_CELL(2000)
+    else:
+        assert isinstance(result, stypes.SpiceCell)
+        assert result.is_double()
     target = stypes.stringToCharP(target)
     illmin = stypes.stringToCharP(illmin)
     abcorr = stypes.stringToCharP(abcorr)
@@ -6037,11 +6074,12 @@ def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals,
     libspice.gfpa_c(target, illmin, abcorr, obsrvr, relate, refval,
                     adjust, step, nintvals, ctypes.byref(cnfine),
                     ctypes.byref(result))
+    return result
 
 
 @spiceErrorCheck
 def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval,
-           adjust, step, nintvals, cnfine, result):
+           adjust, step, nintvals, cnfine, result=None):
     """
     Determine time intervals for which a coordinate of an
     observer-target position vector satisfies a numerical constraint.
@@ -6072,13 +6110,16 @@ def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval,
     :type nintvals: int
     :param cnfine: SPICE window to which the search is restricted.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
-    assert isinstance(result, stypes.SpiceCell)
-    assert result.is_double()
+    if result is None:
+        result = stypes.SPICEDOUBLE_CELL(2000)
+    else:
+        assert isinstance(result, stypes.SpiceCell)
+        assert result.is_double()
     target = stypes.stringToCharP(target)
     inframe = stypes.stringToCharP(inframe)
     abcorr = stypes.stringToCharP(abcorr)
@@ -6093,6 +6134,7 @@ def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval,
     libspice.gfposc_c(target, inframe, abcorr, obsrvr, crdsys, coord,
                       relate, refval, adjust, step, nintvals,
                       ctypes.byref(cnfine), ctypes.byref(result))
+    return result
 
 
 @spiceErrorCheck
@@ -6148,7 +6190,6 @@ def gfrepi(window, begmss, endmss):
     :param endmss: End of the text portion of the output message.
     :type endmss: str
     """
-
     begmss = stypes.stringToCharP(begmss)
     endmss = stypes.stringToCharP(endmss)
     # don't do anything if we were given a pointer to a SpiceCell, like if we were in a callback
@@ -6181,7 +6222,7 @@ def gfrepu(ivbeg, ivend, time):
 
 
 @spiceErrorCheck
-def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result):
+def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result=None):
     """
     Determine time intervals when a specified ray intersects the
     space bounded by the field-of-view (FOV) of a specified
@@ -6203,13 +6244,16 @@ def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result):
     :type step: float
     :param cnfine: SPICE window to which the search is restricted.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
-    assert isinstance(result, stypes.SpiceCell)
-    assert result.is_double()
+    if result is None:
+        result = stypes.SPICEDOUBLE_CELL(2000)
+    else:
+        assert isinstance(result, stypes.SpiceCell)
+        assert result.is_double()
     inst = stypes.stringToCharP(inst)
     raydir = stypes.toDoubleVector(raydir)
     rframe = stypes.stringToCharP(rframe)
@@ -6218,6 +6262,7 @@ def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result):
     step = ctypes.c_double(step)
     libspice.gfrfov_c(inst, raydir, rframe, abcorr, obsrvr, step,
                       ctypes.byref(cnfine), ctypes.byref(result))
+    return result
 
 
 @spiceErrorCheck
@@ -6247,13 +6292,16 @@ def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine,
     :type nintvals: int
     :param cnfine: SPICE window to which the search is restricted.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
-    assert isinstance(result, stypes.SpiceCell)
-    assert result.is_double()
+    if result is None:
+        result = stypes.SPICEDOUBLE_CELL(2000)
+    else:
+        assert isinstance(result, stypes.SpiceCell)
+        assert result.is_double()
     target = stypes.stringToCharP(target)
     abcorr = stypes.stringToCharP(abcorr)
     obsrvr = stypes.stringToCharP(obsrvr)
@@ -6265,11 +6313,12 @@ def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine,
     libspice.gfrr_c(target, abcorr, obsrvr, relate, refval,
                     adjust, step, nintvals, ctypes.byref(cnfine),
                     ctypes.byref(result))
+    return result
 
 
 @spiceErrorCheck
 def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr,
-          relate, refval, adjust, step, nintvals, cnfine, result):
+          relate, refval, adjust, step, nintvals, cnfine, result=None):
     """
     Determine time intervals when the angular separation between
     the position vectors of two target bodies relative to an observer
@@ -6305,13 +6354,16 @@ def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr,
     :type nintvals: int
     :param cnfine: SPICE window to which the search is restricted.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
-    assert isinstance(result, stypes.SpiceCell)
-    assert result.is_double()
+    if result is None:
+        result = stypes.SPICEDOUBLE_CELL(2000)
+    else:
+        assert isinstance(result, stypes.SpiceCell)
+        assert result.is_double()
     targ1 = stypes.stringToCharP(targ1)
     shape1 = stypes.stringToCharP(shape1)
     inframe1 = stypes.stringToCharP(inframe1)
@@ -6328,12 +6380,13 @@ def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr,
     libspice.gfsep_c(targ1, shape1, inframe1, targ2, shape2, inframe2,
                      abcorr, obsrvr, relate, refval, adjust, step, nintvals,
                      ctypes.byref(cnfine), ctypes.byref(result))
+    return result
 
 
 @spiceErrorCheck
 def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord,
            relate, refval, adjust, step, nintvals,
-           cnfine, result):
+           cnfine, result=None):
     """
     Determine time intervals for which a coordinate of an
     surface intercept position vector satisfies a numerical constraint.
@@ -6370,13 +6423,16 @@ def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord,
     :type nintvals: int
     :param cnfine: SPICE window to which the search is restricted.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
-    assert isinstance(result, stypes.SpiceCell)
-    assert result.is_double()
+    if result is None:
+        result = stypes.SPICEDOUBLE_CELL(2000)
+    else:
+        assert isinstance(result, stypes.SpiceCell)
+        assert result.is_double()
     target = stypes.stringToCharP(target)
     fixref = stypes.stringToCharP(fixref)
     method = stypes.stringToCharP(method)
@@ -6395,6 +6451,7 @@ def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord,
                       dref, dvec, crdsys, coord, relate, refval,
                       adjust, step, nintvals, ctypes.byref(cnfine),
                       ctypes.byref(result))
+    return result
 
 
 @spiceErrorCheck
@@ -6482,13 +6539,16 @@ def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate,
     :type nintvals: int
     :param cnfine: SPICE window to which the search is restricted.
     :type cnfine: spiceypy.utils.support_types.SpiceCell
-    :param result: SPICE window containing results.
+    :param result: Optional SPICE window containing results.
     :type result: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
-    assert isinstance(result, stypes.SpiceCell)
-    assert result.is_double()
+    if result is None:
+        result = stypes.SPICEDOUBLE_CELL(2000)
+    else:
+        assert isinstance(result, stypes.SpiceCell)
+        assert result.is_double()
     target = stypes.stringToCharP(target)
     fixref = stypes.stringToCharP(fixref)
     method = stypes.stringToCharP(method)
@@ -6504,10 +6564,11 @@ def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate,
     libspice.gfsubc_c(target, fixref, method, abcorr, obsrvr, crdsys,
                       coord, relate, refval, adjust, step, nintvals,
                       ctypes.byref(cnfine), ctypes.byref(result))
+    return result
 
 
 @spiceErrorCheck
-def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
+def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine, result=None):
     """
     Determine time intervals when a specified ephemeris object
     intersects the space bounded by the field-of-view (FOV) of a
@@ -6536,6 +6597,11 @@ def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
+    if result is None:
+        result = stypes.SPICEDOUBLE_CELL(20000)
+    else:
+        assert isinstance(result, stypes.SpiceCell)
+        assert result.is_double()
     inst   = stypes.stringToCharP(inst)
     target = stypes.stringToCharP(target)
     tshape = stypes.stringToCharP(tshape)
@@ -6543,7 +6609,6 @@ def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine):
     abcorr = stypes.stringToCharP(abcorr)
     obsrvr = stypes.stringToCharP(obsrvr)
     step = ctypes.c_double(step)
-    result = stypes.SPICEDOUBLE_CELL(20000)
     libspice.gftfov_c(inst, target, tshape, tframe, abcorr, obsrvr, step,
                       ctypes.byref(cnfine), ctypes.byref(result))
     return result
@@ -11566,15 +11631,16 @@ def spkcov(spk, idcode, cover=None):
     :type spk: str
     :param idcode: ID code of ephemeris object.
     :type idcode: int
-    :param cover: Window giving coverage in "spk" for "idcode".
+    :param cover: Optional SPICE Window giving coverage in "spk" for "idcode".
     :type cover: spiceypy.utils.support_types.SpiceCell
     """
     spk = stypes.stringToCharP(spk)
     idcode = ctypes.c_int(idcode)
     if cover is None:
-        cover=stypes.SPICEDOUBLE_CELL(2000)
-    assert isinstance(cover, stypes.SpiceCell)
-    assert cover.dtype == 1
+        cover = stypes.SPICEDOUBLE_CELL(2000)
+    else:
+        assert isinstance(cover, stypes.SpiceCell)
+        assert cover.is_double()
     libspice.spkcov_c(spk, idcode, ctypes.byref(cover))
     return cover
 
