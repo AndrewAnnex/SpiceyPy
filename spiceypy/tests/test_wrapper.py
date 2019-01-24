@@ -52,6 +52,14 @@ def test_appndc():
     assert testCell[1] == "two"
     assert testCell[2] == "three"
 
+def test_appndc2():
+    testCell = spice.Cell_Char(10, 10)
+    spice.appndc("one", testCell)
+    spice.appndc("two", testCell)
+    spice.appndc("three", testCell)
+    assert testCell[0] == "one"
+    assert testCell[1] == "two"
+    assert testCell[2] == "three"
 
 def test_appndc_vectorized():
     testCell = spice.cell_char(10, 10)

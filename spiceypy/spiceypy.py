@@ -24,6 +24,7 @@ SOFTWARE.
 
 import ctypes
 from .utils import support_types as stypes
+from .utils.support_types import Cell_Char, Cell_Bool, Cell_Double, Cell_Int, Cell_Time
 from .utils.libspicehelper import libspice
 from . import config
 from .utils.callbacks import SpiceUDFUNS, SpiceUDFUNB
