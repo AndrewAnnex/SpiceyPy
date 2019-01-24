@@ -878,7 +878,6 @@ class SpiceCell(Structure):
         self.card = 0
         self.init = 0
 
-
 # Spice Cell classes
 
 class Cell_Time(SpiceCell):
