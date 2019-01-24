@@ -903,7 +903,6 @@ class Cell_Bool(SpiceCell):
         base = (c_int * (6 + size))()
         data = (c_int * size).from_buffer(base, 6 * BITSIZE['bool'])
         super(Cell_Bool, self).__init__(4, 0, size, 0, 1, cast(base, c_void_p), cast(data, c_void_p))
-        pass
 
 class Cell_Int(SpiceCell):
 
@@ -916,7 +915,6 @@ class Cell_Int(SpiceCell):
         base = (c_int * (6 + size))()
         data = (c_int * size).from_buffer(base, 6 * BITSIZE['int'])
         super(Cell_Int, self).__init__(2, 0, size, 0, 1, cast(base, c_void_p), cast(data, c_void_p))
-        pass
 
 class Cell_Double(SpiceCell):
 
@@ -929,7 +927,6 @@ class Cell_Double(SpiceCell):
         base = (c_double * (6 + size))()
         data = (c_double * size).from_buffer(base, 6 * BITSIZE['double'])
         super(Cell_Double, self).__init__(1, 0, size, 0, 1, cast(base, c_void_p), cast(data, c_void_p))
-        pass
 
 class Cell_Char(SpiceCell):
 
@@ -944,4 +941,3 @@ class Cell_Char(SpiceCell):
         base = (c_char * ((6 + size) * length))()
         data = (c_char * (size * length)).from_buffer(base, 6 * BITSIZE['char'] * length)
         super(Cell_Char, self).__init__(0, length, size, 0, 1, cast(base, c_void_p), cast(data, c_void_p))
-        pass
