@@ -241,3 +241,22 @@ def test_Cell_Char():
     assert testCell[0] == "one"
     assert testCell[1] == "two"
     assert testCell[2] == "three"
+
+def test_cell_equality():
+    cell = stypes.Cell_Int(8)
+    assert cell == []
+    spice.appndi(1, cell)
+    spice.appndi(2, cell)
+    spice.appndi(3, cell)
+    assert not cell == []
+    assert not cell == [1]
+    assert not cell == [1, 2]
+    assert cell == [1, 2, 3]
+    assert not cell == [1, 2, 3, 4]
+    celld = stypes.Cell_Double(8)
+    spice.appndd(1.1, celld)
+    spice.appndd(2.2, celld)
+    spice.appndd(3.3, celld)
+    assert celld == [1.1, 2.2, 3.3]
+    assert not celld == cell
+

@@ -878,6 +878,28 @@ class SpiceCell(Structure):
         self.card = 0
         self.init = 0
 
+    def __eq__(self, other):
+        """
+        element wise equality, other can be a list or cell
+        I think sets should not equal a non set even if
+        elements are equal... might be a bad idea
+        :param other:
+        :return:
+        """
+        if len(self) != len(other):
+            return False
+        if not hasattr(other, '__iter__'):
+            return False
+        if isinstance(other, SpiceCell):
+            if other.dtype != self.dtype:
+                return False
+            if other.isSet != self.isSet:
+                return False
+        for x, y in zip(self, other):
+            if x != y:
+                return False
+        return True
+
 # Spice Cell classes
 
 class Cell_Time(SpiceCell):
