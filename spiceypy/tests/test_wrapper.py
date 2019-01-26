@@ -7147,9 +7147,9 @@ def test_date2et():
     spice.furnsh(CoreKernels.testMetaKernel)
     date = datetime(1997,3,20,12,53,29)
     et = spice.date2et(date)
-    npt.assert_almost_equal(et, -87836728.81438904)
+    npt.assert_almost_equal(et, -87865528.8143913)
     
-    expecteds=[-87836728.81438904,-792086354.8170365,-790847954.8166842]
+    expecteds=[-87865528.8143913,-792086354.8170365,-790847954.8166842]
     dates = [datetime(1997,3,20,12,53,29),
              datetime(1974,11,25,20,0,0),
              datetime(1974,12,10,4,0,0)]
