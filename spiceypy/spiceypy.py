@@ -13310,7 +13310,7 @@ def str2et(time):
     return et.value
 
 @spiceErrorCheck
-def date2et(date):
+def datetime2et(date):
     """
     Converts a standard Python datetime to a double precision value 
     representing the number of TDB seconds past the J2000 epoch 
