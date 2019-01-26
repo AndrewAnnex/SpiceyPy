@@ -7152,7 +7152,7 @@ def test_date2et():
     expecteds=[-87836728.81438904,-792086354.8170365,-790847954.8166842]
     dates = [datetime(1997,3,20,12,53,29),
              datetime(1974,11,25,20,0,0),
-             datetime(1974,12,10,04,0,0)]
+             datetime(1974,12,10,4,0,0)]
              
     results = spice.str2et(dates)
     for expected, result in zip(expecteds, results):
