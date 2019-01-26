@@ -30,6 +30,7 @@ from .utils.callbacks import SpiceUDFUNS, SpiceUDFUNB
 import functools
 import numpy
 from contextlib import contextmanager
+from datetime import datetime
 
 
 __author__ = 'AndrewAnnex'
