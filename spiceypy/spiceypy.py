@@ -13313,7 +13313,7 @@ def str2et(time):
 def date2et(date):
     """
     Converts a standard Python datetime to a double precision value 
-	representing the number of TDB seconds past the J2000 epoch 
+    representing the number of TDB seconds past the J2000 epoch 
 	corresponding to the input epoch.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/req/time.html#The%20J2000%20Epoch
