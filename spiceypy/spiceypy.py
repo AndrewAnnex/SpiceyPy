@@ -13323,7 +13323,7 @@ def date2et(date):
     :return: The equivalent value in seconds past J2000, TDB.
     :rtype: float
     """
-    if isinstance(date, list):
+    if hasattr(date, "__iter__"):
         return numpy.array([utc2et(t.isoformat()) for t in date])
     date = stypes.stringToCharP(date.isoformat())
     et = ctypes.c_double()
