@@ -13242,6 +13242,26 @@ def str2et(time):
     libspice.str2et_c(time, ctypes.byref(et))
     return et.value
 
+@spiceErrorCheck
+def date2et(datetime):
+    """
+    Converts a standard Python datetime to a double precision value 
+	representing the number of TDB seconds past the J2000 epoch 
+	corresponding to the input epoch.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/req/time.html#The%20J2000%20Epoch
+
+    :param date: A standard Python datetime
+    :type time: datetime
+    :return: The equivalent value in seconds past J2000, TDB.
+    :rtype: float
+    """
+    if isinstance(datetime, list):
+        return numpy.array([utc2et(t.isoformat()) for t in datetime])
+    datetime = stypes.stringToCharP(datetime.isoformat())
+    et = ctypes.c_double()
+    libspice.utc2et_c(datetime, ctypes.byref(et))
+    return et.value
 
 @spiceErrorCheck
 def subpnt(method, target, et, fixref, abcorr, obsrvr):
