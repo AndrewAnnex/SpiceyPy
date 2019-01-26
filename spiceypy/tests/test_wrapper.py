@@ -7155,7 +7155,7 @@ def test_date2et():
              datetime(1974,12,10,04,0,0)]
              
     results = spice.str2et(dates)
-    for expected, result in zip(expecteds, results)
+    for expected, result in zip(expecteds, results):
         npt.assert_almost_equal(result, expected)
     spice.kclear()
 
