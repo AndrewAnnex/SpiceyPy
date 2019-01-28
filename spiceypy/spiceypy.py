@@ -30,6 +30,7 @@ from .utils.callbacks import SpiceUDFUNS, SpiceUDFUNB
 import functools
 import numpy
 from contextlib import contextmanager
+from datetime import datetime
 
 
 __author__ = 'AndrewAnnex'
@@ -13308,6 +13309,32 @@ def str2et(time):
     libspice.str2et_c(time, ctypes.byref(et))
     return et.value
 
+@spiceErrorCheck
+def datetime2et(dt):
+    """
+    Converts a standard Python datetime to a double precision value 
+    representing the number of TDB seconds past the J2000 epoch 
+    corresponding to the input epoch.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/req/time.html#The%20J2000%20Epoch
+
+    :param dt: A standard Python datetime
+    :type time: datetime
+    :return: The equivalent value in seconds past J2000, TDB.
+    :rtype: float
+    """
+    lt = ctypes.c_double()
+    if hasattr(dt, "__iter__"):
+        ets    = []
+        for t in dt:
+            libspice.utc2et_c(stypes.stringToCharP(t.isoformat()),ctypes.byref(lt))
+            checkForSpiceError(None)
+            ets.append(lt.value)
+        return ets
+    dt = stypes.stringToCharP(dt.isoformat())
+    et = ctypes.c_double()
+    libspice.utc2et_c(dt, ctypes.byref(et))
+    return et.value
 
 @spiceErrorCheck
 def subpnt(method, target, et, fixref, abcorr, obsrvr):
