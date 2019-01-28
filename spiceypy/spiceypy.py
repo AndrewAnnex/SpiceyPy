@@ -13317,7 +13317,7 @@ def str2et(time):
     return et.value
 
 @spiceErrorCheck
-def datetime2et(date):
+def datetime2et(dt):
     """
     Converts a standard Python datetime to a double precision value 
     representing the number of TDB seconds past the J2000 epoch 
@@ -13325,16 +13325,22 @@ def datetime2et(date):
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/time.html#The%20J2000%20Epoch
 
-    :param date: A standard Python datetime
+    :param dt: A standard Python datetime
     :type time: datetime
     :return: The equivalent value in seconds past J2000, TDB.
     :rtype: float
     """
-    if hasattr(date, "__iter__"):
-        return numpy.array([utc2et(t.isoformat()) for t in date])
-    date = stypes.stringToCharP(date.isoformat())
+    lt = ctypes.c_double()
+    if hasattr(dt, "__iter__"):
+        ets    = []
+        for t in dt:
+            libspice.utc2et_c(stypes.stringToCharP(t.isoformat()),ctypes.byref(lt))
+            checkForSpiceError(None)
+            ets.append(lt.value)
+        return ets
+    dt = stypes.stringToCharP(dt.isoformat())
     et = ctypes.c_double()
-    libspice.utc2et_c(date, ctypes.byref(et))
+    libspice.utc2et_c(dt, ctypes.byref(et))
     return et.value
 
 @spiceErrorCheck
