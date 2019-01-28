@@ -1492,11 +1492,12 @@ def convrt(x, inunit, outunit):
     inunit = stypes.stringToCharP(inunit)
     outunit = stypes.stringToCharP(outunit)
     y = ctypes.c_double()
-	if isinstance(x, list):
-		outArray=[]
-		for n in x:
-			convrt_c(n,inunit,outunit,ctypes.byref(y)
-			outArray.append(y)
+    if isinstance(x, list):
+        outArray=[]
+        for n in x:
+            convrt_c(n,inunit,outunit,ctypes.byref(y))
+            outArray.append(y.value)
+        return outArray
 	
     libspice.convrt_c(x, inunit, outunit, ctypes.byref(y))
     return y.value
