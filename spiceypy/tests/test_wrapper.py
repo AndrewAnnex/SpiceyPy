@@ -709,7 +709,7 @@ def test_convrt():
     assert spice.convrt(300.0, 'statute_miles', 'km') == 482.80320
     npt.assert_almost_equal(spice.convrt(1.0, 'parsecs', 'lightyears'), 3.2615638, decimal=6)
 	
-	npt.assert_almost_equal(spice.convrt([1.0, 2.0], 'AU', 'km'), [ 149598000, 299196000], decimal=7)
+    npt.assert_almost_equal(spice.convrt([1.0, 2.0], 'AU', 'km'), [ 149598000, 299196000], decimal=7)
 
 
 def test_copy():
