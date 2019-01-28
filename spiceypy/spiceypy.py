@@ -1498,7 +1498,7 @@ def convrt(x, inunit, outunit):
             outArray.append(y.value)
         return outArray
 	
-	x = ctypes.c_double(x)
+    x = ctypes.c_double(x)
     libspice.convrt_c(x, inunit, outunit, ctypes.byref(y))
     return y.value
 
