@@ -1487,7 +1487,6 @@ def convrt(x, inunit, outunit):
     :return: The measurment in the desired units.
     :rtype: float
     """
-    x = ctypes.c_double(x)
 	
     inunit = stypes.stringToCharP(inunit)
     outunit = stypes.stringToCharP(outunit)
@@ -1499,6 +1498,7 @@ def convrt(x, inunit, outunit):
             outArray.append(y.value)
         return outArray
 	
+	x = ctypes.c_double(x)
     libspice.convrt_c(x, inunit, outunit, ctypes.byref(y))
     return y.value
 
