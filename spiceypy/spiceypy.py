@@ -13318,15 +13318,16 @@ def datetime2et(dt):
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/req/time.html#The%20J2000%20Epoch
 
-    :param date: A standard Python datetime
+    :param dt: A standard Python datetime
     :type time: datetime
     :return: The equivalent value in seconds past J2000, TDB.
     :rtype: float
     """
+    lt = ctypes.c_double()
     if hasattr(dt, "__iter__"):
         ets    = []
         for t in dt:
-            libspice.utc2et_c(ctypes.byref(t.isoformat()))
+            libspice.utc2et_c(t.isoformat(),ctypes.byref(lt))
             checkForSpiceError(None)
             ets.append(lt.value)
         return ets
