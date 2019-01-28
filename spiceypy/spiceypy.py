@@ -1494,7 +1494,7 @@ def convrt(x, inunit, outunit):
     if isinstance(x, list):
         outArray=[]
         for n in x:
-            convrt_c(n,inunit,outunit,ctypes.byref(y))
+            libspice.convrt_c(n,inunit,outunit,ctypes.byref(y))
             outArray.append(y.value)
         return outArray
 	
