@@ -1488,9 +1488,16 @@ def convrt(x, inunit, outunit):
     :rtype: float
     """
     x = ctypes.c_double(x)
+	
     inunit = stypes.stringToCharP(inunit)
     outunit = stypes.stringToCharP(outunit)
     y = ctypes.c_double()
+	if isinstance(x, list):
+		outArray=[]
+		for n in x:
+			convrt_c(n,inunit,outunit,ctypes.byref(y)
+			outArray.append(y)
+	
     libspice.convrt_c(x, inunit, outunit, ctypes.byref(y))
     return y.value
 
@@ -13316,7 +13323,7 @@ def datetime2et(date):
     representing the number of TDB seconds past the J2000 epoch 
     corresponding to the input epoch.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/req/time.html#The%20J2000%20Epoch
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/time.html#The%20J2000%20Epoch
 
     :param date: A standard Python datetime
     :type time: datetime
