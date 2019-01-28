@@ -13327,7 +13327,7 @@ def datetime2et(dt):
     if hasattr(dt, "__iter__"):
         ets    = []
         for t in dt:
-            libspice.utc2et_c(types.stringToCharP(t.isoformat()),ctypes.byref(lt))
+            libspice.utc2et_c(stypes.stringToCharP(t.isoformat()),ctypes.byref(lt))
             checkForSpiceError(None)
             ets.append(lt.value)
         return ets
