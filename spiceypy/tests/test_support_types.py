@@ -200,4 +200,63 @@ def test_to_improve_coverage():
     assert stsct.is_time()
     stscb = stypes.SPICEBOOL_CELL(10)
     assert stscb.is_bool()
+    stsct2 = stypes.Cell_Time(10)
+    assert stsct2.is_time()
+    stscb2 = stypes.Cell_Bool(10)
+    assert stscb2.is_bool()
     assert stscb.reset() is None
+
+
+def test_Cell_Double_empty():
+    cell = stypes.Cell_Double(1)
+    assert isinstance(cell, stypes.Cell_Double)
+    assert isinstance(cell, stypes.SpiceCell)
+    assert cell[0:1] == []
+
+def test_Cell_Double():
+    cell = stypes.Cell_Double(8)
+    spice.appndd(1.1, cell)
+    spice.appndd(2.2, cell)
+    spice.appndd(3.3, cell)
+    assert [x for x in cell] == [1.1,2.2,3.3]
+
+def test_Cell_Int_empty():
+    cell = stypes.Cell_Int(1)
+    assert isinstance(cell, stypes.Cell_Int)
+    assert isinstance(cell, stypes.SpiceCell)
+    assert cell[0:1] == []
+
+def test_Cell_Int():
+    cell = stypes.Cell_Int(8)
+    spice.appndi(1, cell)
+    spice.appndi(2, cell)
+    spice.appndi(3, cell)
+    assert [x for x in cell] == [1,2,3]
+
+def test_Cell_Char():
+    testCell = stypes.Cell_Char(10,10)
+    spice.appndc("one", testCell)
+    spice.appndc("two", testCell)
+    spice.appndc("three", testCell)
+    assert testCell[0] == "one"
+    assert testCell[1] == "two"
+    assert testCell[2] == "three"
+
+def test_cell_equality():
+    cell = stypes.Cell_Int(8)
+    assert cell == []
+    spice.appndi(1, cell)
+    spice.appndi(2, cell)
+    spice.appndi(3, cell)
+    assert not cell == []
+    assert not cell == [1]
+    assert not cell == [1, 2]
+    assert cell == [1, 2, 3]
+    assert not cell == [1, 2, 3, 4]
+    celld = stypes.Cell_Double(8)
+    spice.appndd(1.1, celld)
+    spice.appndd(2.2, celld)
+    spice.appndd(3.3, celld)
+    assert celld == [1.1, 2.2, 3.3]
+    assert not celld == cell
+

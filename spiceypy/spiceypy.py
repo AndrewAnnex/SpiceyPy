@@ -24,6 +24,7 @@ SOFTWARE.
 
 import ctypes
 from .utils import support_types as stypes
+from .utils.support_types import Cell_Char, Cell_Bool, Cell_Double, Cell_Int, Cell_Time
 from .utils.libspicehelper import libspice
 from . import config
 from .utils.callbacks import SpiceUDFUNS, SpiceUDFUNB
@@ -192,6 +193,21 @@ def get_found_catch_state():
     :return:
     """
     return config.catch_false_founds
+
+def cell_double(cell_size):
+    return stypes.SPICEDOUBLE_CELL(cell_size)
+
+def cell_int(cell_size):
+    return stypes.SPICEINT_CELL(cell_size)
+
+def cell_char(cell_size, length):
+    return stypes.SPICECHAR_CELL(cell_size, length)
+
+def cell_bool(cell_size):
+    return stypes.SPICEBOOL_CELL(cell_size)
+
+def cell_time(cell_size):
+    return stypes.SPICETIME_CELL(cell_size)
 
 
 ################################################################################
