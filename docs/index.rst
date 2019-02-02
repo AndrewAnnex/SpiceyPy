@@ -22,6 +22,7 @@ Contents:
 
    installation
    exampleone
+   cells
    lessonindex
    documentation
 

@@ -703,20 +703,55 @@ def _int_getter(data_p, index, length):
 
 
 def SPICEDOUBLE_CELL(size):
+    """
+    Returns a Double Spice Cell with a given size
+    :param size: number of elements
+    :type size: int
+    :return: empty Spice Cell
+    :rtype: spiceypy.utils.support_types.SpiceCell
+    """
     return SpiceCell.double(size)
 
-
 def SPICEINT_CELL(size):
+    """
+    Returns a Int Spice Cell with a given size
+    :param size: number of elements
+    :type size: int
+    :return: empty Spice Cell
+    :rtype: spiceypy.utils.support_types.SpiceCell
+    """
     return SpiceCell.integer(size)
 
-
 def SPICECHAR_CELL(size, length):
+    """
+    Returns a Char Spice Cell with a given size
+    :param size: number of elements
+    :type size: int
+    :param length: width of elements
+    :type length: int
+    :return: empty Spice Cell
+    :rtype: spiceypy.utils.support_types.SpiceCell
+    """
     return SpiceCell.character(size, length)
 
 def SPICEBOOL_CELL(size):
+    """
+    Returns a Bool Spice Cell with a given size
+    :param size: number of elements
+    :type size: int
+    :return: empty Spice Cell
+    :rtype: spiceypy.utils.support_types.SpiceCell
+    """
     return SpiceCell.bool(size)
 
 def SPICETIME_CELL(size):
+    """
+    Returns a Time Spice Cell with a given size
+    :param size: number of elements
+    :type size: int
+    :return: empty Spice Cell
+    :rtype: spiceypy.utils.support_types.SpiceCell
+    """
     return SpiceCell.time(size)
 
 
@@ -778,51 +813,36 @@ class SpiceCell(Structure):
     @classmethod
     def character(cls, size, length):
         base = (c_char * ((cls.CTRLBLOCK + size) * length))()
-        data = (c_char * (size * length)).from_buffer(
-            base, cls.CTRLBLOCK * BITSIZE['char'] * length)
-        instance = cls(cls.DATATYPES_ENUM['char'], length, size, 0, 1,
-                       cast(base, c_void_p),
-                       cast(data, c_void_p))
+        data = (c_char * (size * length)).from_buffer(base, cls.CTRLBLOCK * BITSIZE['char'] * length)
+        instance = cls(cls.DATATYPES_ENUM['char'], length, size, 0, 1, cast(base, c_void_p), cast(data, c_void_p))
         return instance
 
     @classmethod
     def integer(cls, size):
         base = (c_int * (cls.CTRLBLOCK + size))()
-        data = (c_int * size).from_buffer(
-            base, cls.CTRLBLOCK * BITSIZE['int'])
-        instance = cls(cls.DATATYPES_ENUM['int'], 0, size, 0, 1,
-                       cast(base, c_void_p),
-                       cast(data, c_void_p))
+        data = (c_int * size).from_buffer(base, cls.CTRLBLOCK * BITSIZE['int'])
+        instance = cls(cls.DATATYPES_ENUM['int'], 0, size, 0, 1, cast(base, c_void_p), cast(data, c_void_p))
         return instance
 
     @classmethod
     def double(cls, size):
         base = (c_double * (cls.CTRLBLOCK + size))()
-        data = (c_double * size).from_buffer(
-            base, cls.CTRLBLOCK * BITSIZE['double'])
-        instance = cls(cls.DATATYPES_ENUM['double'], 0, size, 0, 1,
-                       cast(base, c_void_p),
-                       cast(data, c_void_p))
+        data = (c_double * size).from_buffer(base, cls.CTRLBLOCK * BITSIZE['double'])
+        instance = cls(cls.DATATYPES_ENUM['double'], 0, size, 0, 1, cast(base, c_void_p), cast(data, c_void_p))
         return instance
 
     @classmethod
     def bool(cls, size):
         base = (c_int * (cls.CTRLBLOCK + size))()
-        data = (c_int * size).from_buffer(
-            base, cls.CTRLBLOCK * BITSIZE['bool'])
-        instance = cls(cls.DATATYPES_ENUM['bool'], 0, size, 0, 1,
-                       cast(base, c_void_p),
-                       cast(data, c_void_p))
+        data = (c_int * size).from_buffer(base, cls.CTRLBLOCK * BITSIZE['bool'])
+        instance = cls(cls.DATATYPES_ENUM['bool'], 0, size, 0, 1, cast(base, c_void_p), cast(data, c_void_p))
         return instance
 
     @classmethod
     def time(cls, size):
         base = (c_int * (cls.CTRLBLOCK + size))()
-        data = (c_int * size).from_buffer(
-            base, cls.CTRLBLOCK * BITSIZE['time'])
-        instance = cls(cls.DATATYPES_ENUM['time'], 0, size, 0, 1,
-                       cast(base, c_void_p),
-                       cast(data, c_void_p))
+        data = (c_int * size).from_buffer(base, cls.CTRLBLOCK * BITSIZE['time'])
+        instance = cls(cls.DATATYPES_ENUM['time'], 0, size, 0, 1, cast(base, c_void_p), cast(data, c_void_p))
         return instance
 
     def __len__(self):
@@ -857,3 +877,89 @@ class SpiceCell(Structure):
     def reset(self):
         self.card = 0
         self.init = 0
+
+    def __eq__(self, other):
+        """
+        element wise equality, other can be a list or cell
+        I think sets should not equal a non set even if
+        elements are equal... might be a bad idea
+        :param other:
+        :return:
+        """
+        if len(self) != len(other):
+            return False
+        if not hasattr(other, '__iter__'):
+            return False
+        if isinstance(other, SpiceCell):
+            if other.dtype != self.dtype:
+                return False
+            if other.isSet != self.isSet:
+                return False
+        for x, y in zip(self, other):
+            if x != y:
+                return False
+        return True
+
+# Spice Cell classes
+
+class Cell_Time(SpiceCell):
+
+    def __init__(self, size):
+        """
+        Init a Time Spice Cell with a given size and length
+        :param size: number of elements
+        :type size: int
+        """
+        base = (c_int * (6 + size))()
+        data = (c_int * size).from_buffer(base, 6 * BITSIZE['time'])
+        super(Cell_Time, self).__init__(3, 0, size, 0, 1, cast(base, c_void_p), cast(data, c_void_p))
+
+class Cell_Bool(SpiceCell):
+
+    def __init__(self, size):
+        """
+        Init a Bool Spice Cell with a given size and length
+        :param size: number of elements
+        :type size: int
+        """
+        base = (c_int * (6 + size))()
+        data = (c_int * size).from_buffer(base, 6 * BITSIZE['bool'])
+        super(Cell_Bool, self).__init__(4, 0, size, 0, 1, cast(base, c_void_p), cast(data, c_void_p))
+
+class Cell_Int(SpiceCell):
+
+    def __init__(self, size):
+        """
+        Init a Int Spice Cell with a given size and length
+        :param size: number of elements
+        :type size: int
+        """
+        base = (c_int * (6 + size))()
+        data = (c_int * size).from_buffer(base, 6 * BITSIZE['int'])
+        super(Cell_Int, self).__init__(2, 0, size, 0, 1, cast(base, c_void_p), cast(data, c_void_p))
+
+class Cell_Double(SpiceCell):
+
+    def __init__(self, size):
+        """
+        Init a Double Spice Cell with a given size and length
+        :param size: number of elements
+        :type size: int
+        """
+        base = (c_double * (6 + size))()
+        data = (c_double * size).from_buffer(base, 6 * BITSIZE['double'])
+        super(Cell_Double, self).__init__(1, 0, size, 0, 1, cast(base, c_void_p), cast(data, c_void_p))
+
+class Cell_Char(SpiceCell):
+
+    def __init__(self, size, length):
+        """
+        Init a Char Spice Cell with a given size and length
+        :param size: number of elements
+        :type size: int
+        :param length: width of elements
+        :type length: int
+        """
+        base = (c_char * ((6 + size) * length))()
+        data = (c_char * (size * length)).from_buffer(base, 6 * BITSIZE['char'] * length)
+        super(Cell_Char, self).__init__(0, length, size, 0, 1, cast(base, c_void_p), cast(data, c_void_p))
