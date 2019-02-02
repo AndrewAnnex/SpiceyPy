@@ -1491,7 +1491,7 @@ def convrt(x, inunit, outunit):
     inunit = stypes.stringToCharP(inunit)
     outunit = stypes.stringToCharP(outunit)
     y = ctypes.c_double()
-    if isinstance(x, list):
+    if hasattr(x, "__iter__"):
         outArray=[]
         for n in x:
             libspice.convrt_c(n,inunit,outunit,ctypes.byref(y))
