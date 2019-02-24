@@ -4,6 +4,26 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [2.2.0] - 2019-02-24
+### Added
+- gfevnt wrapper
+- easier spice cell inits
+- python datetime to et converter
+- issue template
+- code of conduct
+- NAIF python lessons to docs
+
+### Changed
+- functions that modify a results spicecell now optionally create a return spicecell
+- convrt now "vectorized"
+- prioritized citation info in readme
+
+### Removed
+- removed anaconda build steps from appveyor, conda-fordge replaces it 
+
+### Fixed
+- newlines in changelog
+
 ## [2.1.2] - 2018-08-17
 ### Added
 - python 3.7 builds on travis / appveyor
@@ -18,7 +38,6 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - issues relating to c_bool usage. everything is now c_int
 
-
 ## [2.1.1] - 2018-04-24
 ### Added
 - wrapper functions for gffove and gfocce and associated callbacks
@@ -32,7 +51,6 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 - termpt docstring by Marcel Stefko
 - various things in ci build configs
 - missing dll/so file issue with pip installs
-
 
 ## [2.1.0] - 2017-11-09
 ### Added
@@ -73,7 +91,6 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - toPythonString now strips whitespace
-
 
 ## [1.1.1] - 2017-04-23
 ### Added
@@ -125,7 +142,6 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 - issue #136
 
 ## [0.6.8] - 2016-03-07
-
 Got to a semi complete api here, lots of commits
 before things so this version can be considered a bit of a baseline
 

@@ -294,7 +294,7 @@ readme.close()
 
 setup(
     name='spiceypy',
-    version='2.1.2',
+    version='2.2.0',
     license='MIT',
     author='Andrew Annex',
     author_email='ama6fy@virginia.edu',
