@@ -640,7 +640,7 @@ def test_ckw05():
     # test subtype 2
     spice.ckw05(handle, 2, 15, epochs[0], epochs[-1], inst[2], "J2000", avflag, segid, epochs, type2data, 1000.0, 1, epochs)
     # test subtype 3
-    spice.ckw05(handle, 0, 15, epochs[0], epochs[-1], inst[3], "J2000", avflag, segid, epochs, type3data, 1000.0, 1, epochs)
+    spice.ckw05(handle, 3, 15, epochs[0], epochs[-1], inst[3], "J2000", avflag, segid, epochs, type3data, 1000.0, 1, epochs)
     spice.ckcls(handle)
     # test size
     end_size = os.path.getsize(CK5)
