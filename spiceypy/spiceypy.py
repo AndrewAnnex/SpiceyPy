@@ -14378,9 +14378,9 @@ def unload(filename):
     """
     if isinstance(filename, list):
         for f in filename:
-            libspice.unload_c(stypes.stringToCharP(f))
+            libspice.unload_c(stypes.stringToCharP(strToPath(f,strict=False)))
         return
-    filename = stypes.stringToCharP(strToPath(filename))
+    filename = stypes.stringToCharP(strToPath(filename,strict=False))
     libspice.unload_c(filename)
 
 
