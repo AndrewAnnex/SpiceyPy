@@ -50,6 +50,11 @@ TEST_DEPENDENCIES = ['numpy>=1.12.0', 'six>=1.9.0', 'pytest>=2.9.0']
 DEPENDENCIES = ['numpy>=1.12.0', 'six>=1.9.0', 'certifi>=2017.1.23']
 REQUIRES = ['numpy', 'six']
 
+if sys.version_info[0] < 3:
+    TEST_DEPENDENCIES.append('pathlib2')
+    DEPENDENCIES.append('pathlib2')
+    REQUIRES.append('pathlib2')
+
 # If we have an old version of OpenSSL, CSPICE will be downloaded
 # (if required) using urllib3.  Extend the list of required packages.
 if ssl.OPENSSL_VERSION < 'OpenSSL 1.0.1g':

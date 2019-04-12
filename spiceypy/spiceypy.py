@@ -24,7 +24,7 @@ SOFTWARE.
 
 import ctypes
 from .utils import support_types as stypes
-from .utils.support_types import Cell_Char, Cell_Bool, Cell_Double, Cell_Int, Cell_Time
+from .utils.support_types import Cell_Char, Cell_Bool, Cell_Double, Cell_Int, Cell_Time, strToPath
 from .utils.libspicehelper import libspice
 from . import config
 from .utils.callbacks import SpiceUDFUNS, SpiceUDFUNB
@@ -978,7 +978,7 @@ def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
     :return: coverage window for a specified object in a specified CK file
     :rtype: spiceypy.utils.support_types.SpiceCell
     """
-    ck = stypes.stringToCharP(ck)
+    ck = stypes.stringToCharP(strToPath(ck))
     idcode = ctypes.c_int(idcode)
     needav = ctypes.c_int(needav)
     level = stypes.stringToCharP(level)
@@ -1077,7 +1077,7 @@ def cklpf(filename):
     :return: Loaded file's handle.
     :rtype: int
     """
-    filename = stypes.stringToCharP(filename)
+    filename = stypes.stringToCharP(strToPath(filename))
     handle = ctypes.c_int()
     libspice.cklpf_c(filename, ctypes.byref(handle))
     return handle.value
@@ -1098,7 +1098,7 @@ def ckobj(ck, outCell=None):
     :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(ck, str)
-    ck = stypes.stringToCharP(ck)
+    ck = stypes.stringToCharP(strToPath(ck))
     if not outCell:
         outCell = stypes.SPICEINT_CELL(1000)
     assert isinstance(outCell, stypes.SpiceCell)
@@ -1123,7 +1123,7 @@ def ckopn(filename, ifname, ncomch):
     :return: The handle of the opened CK file.
     :rtype: int
     """
-    filename = stypes.stringToCharP(filename)
+    filename = stypes.stringToCharP(strToPath(filename,strict=False))
     ifname = stypes.stringToCharP(ifname)
     ncomch = ctypes.c_int(ncomch)
     handle = ctypes.c_int()
@@ -1402,7 +1402,7 @@ def cltext(fname):
     :param fname: Text file to be closed.
     :type fname: str
     """
-    fnameP    = stypes.stringToCharP(fname)
+    fnameP    = stypes.stringToCharP(strToPath(fname))
     fname_len = ctypes.c_int(len(fname))
     libspice.cltext_(fnameP, fname_len)
 
@@ -1972,7 +1972,7 @@ def dafopr(fname):
     :return: Handle assigned to DAF.
     :rtype: int
     """
-    fname = stypes.stringToCharP(fname)
+    fname = stypes.stringToCharP(strToPath(fname))
     handle = ctypes.c_int()
     libspice.dafopr_c(fname, ctypes.byref(handle))
     return handle.value
@@ -1990,7 +1990,7 @@ def dafopw(fname):
     :return: Handle assigned to DAF.
     :rtype: int
     """
-    fname = stypes.stringToCharP(fname)
+    fname = stypes.stringToCharP(strToPath(fname))
     handle = ctypes.c_int()
     libspice.dafopw_c(fname, ctypes.byref(handle))
     return handle.value
@@ -2247,7 +2247,7 @@ def dasonw(fname, ftype, ifname, ncomch):
     ifnamelen = ctypes.c_int(len(ifname))
     ncomch  = ctypes.c_int(ncomch)
     handle  = ctypes.c_int()
-    fname   = stypes.stringToCharP(fname)
+    fname   = stypes.stringToCharP(strToPath(fname, strict=False))
     ftype   = stypes.stringToCharP(ftype)
     ifname  = stypes.stringToCharP(ifname)
     libspice.dasonw_(fname, ftype, ifname, ctypes.byref(ncomch), ctypes.byref(handle), fnamelen, ftypelen, ifnamelen)
@@ -2266,7 +2266,7 @@ def dasopr(fname):
     :return: Handle assigned to the opened DAS file.
     :rtype: int
     """
-    fname = stypes.stringToCharP(fname)
+    fname = stypes.stringToCharP(strToPath(fname))
     handle = ctypes.c_int()
     libspice.dasopr_c(fname, ctypes.byref(handle))
     return handle.value
@@ -2282,7 +2282,7 @@ def dasopw(fname):
     :type fname: str
     :return: Handle assigned to the opened DAS file.
     """
-    fname = stypes.stringToCharP(fname)
+    fname = stypes.stringToCharP(strToPath(fname))
     handle = ctypes.c_int(0)
     libspice.dasopw_c(fname, ctypes.byref(handle))
     return handle.value
@@ -3073,7 +3073,7 @@ def dskopn(fname, ifname, ncomch):
     :return: Handle assigned to the opened DSK file.
     :rtype: int
     """
-    fname = stypes.stringToCharP(fname)
+    fname = stypes.stringToCharP(strToPath(fname,strict=False))
     ifname = stypes.stringToCharP(ifname)
     ncomch = ctypes.c_int(ncomch)
     handle = ctypes.c_int()
@@ -4252,7 +4252,7 @@ def eklef(fname):
     :return: File handle of loaded EK file.
     :rtype: int
     """
-    fname = stypes.stringToCharP(fname)
+    fname = stypes.stringToCharP(strToPath(fname))
     handle = ctypes.c_int()
     libspice.eklef_c(fname, ctypes.byref(handle))
     return handle.value
@@ -4325,7 +4325,7 @@ def ekopn(fname, ifname, ncomch):
     :return: Handle attached to new EK file.
     :rtype: int
     """
-    fname = stypes.stringToCharP(fname)
+    fname = stypes.stringToCharP(strToPath(fname,strict=False))
     ifname = stypes.stringToCharP(ifname)
     ncomch = ctypes.c_int(ncomch)
     handle = ctypes.c_int()
@@ -4345,7 +4345,7 @@ def ekopr(fname):
     :return: Handle attached to EK file.
     :rtype: int
     """
-    fname = stypes.stringToCharP(fname)
+    fname = stypes.stringToCharP(strToPath(fname))
     handle = ctypes.c_int()
     libspice.ekopr_c(fname, ctypes.byref(handle))
     return handle.value
@@ -4379,7 +4379,7 @@ def ekopw(fname):
     :return: Handle attached to EK file.
     :rtype: int
     """
-    fname = stypes.stringToCharP(fname)
+    fname = stypes.stringToCharP(strToPath(fname))
     handle = ctypes.c_int()
     libspice.ekopw_c(fname, ctypes.byref(handle))
     return handle.value
@@ -5159,7 +5159,7 @@ def exists(fname):
     :return: True if the file exists, False otherwise.
     :rtype: bool
     """
-    fname = stypes.stringToCharP(fname)
+    fname = stypes.stringToCharP(strToPath(fname, strict=False))
     return bool(libspice.exists_c(fname))
 
 
@@ -5210,7 +5210,7 @@ def fn2lun(fname):
     :return: the FORTRAN (F2C) logical unit associated with the filename.
     :rtype: int
     """
-    fnameP    = stypes.stringToCharP(fname)
+    fnameP    = stypes.stringToCharP(strToPath(fname))
     unit_out  = ctypes.c_int()
     fname_len = ctypes.c_int(len(fname)+1)
     libspice.fn2lun_(fnameP,ctypes.byref(unit_out),fname_len)
@@ -5376,9 +5376,9 @@ def furnsh(path):
     """
     if isinstance(path, list):
         for p in path:
-            libspice.furnsh_c(stypes.stringToCharP(p))
+            libspice.furnsh_c(stypes.stringToCharP(strToPath(p)))
     else:
-        path = stypes.stringToCharP(path)
+        path = stypes.stringToCharP(strToPath(path))
         libspice.furnsh_c(path)
 
 
@@ -5521,7 +5521,7 @@ def getfat(file):
     :return: The architecture of the kernel file, The type of the kernel file.
     :rtype: tuple
     """
-    file = stypes.stringToCharP(file)
+    file = stypes.stringToCharP(strToPath(file))
     arclen = ctypes.c_int(4)
     typlen = ctypes.c_int(4)
     arch = stypes.stringToCharP(arclen)
@@ -7587,7 +7587,7 @@ def kinfo(file, typlen=_default_len_out, srclen=_default_len_out):
     """
     typlen = ctypes.c_int(typlen)
     srclen = ctypes.c_int(srclen)
-    file = stypes.stringToCharP(file)
+    file = stypes.stringToCharP(strToPath(file))
     filtyp = stypes.stringToCharP(" " * typlen.value)
     source = stypes.stringToCharP(" " * srclen.value)
     handle = ctypes.c_int()
@@ -7847,7 +7847,7 @@ def ldpool(filename):
     :param filename: Name of the kernel file.
     :type filename: str
     """
-    filename = stypes.stringToCharP(filename)
+    filename = stypes.stringToCharP(strToPath(filename))
     libspice.ldpool_c(filename)
 
 
@@ -9288,7 +9288,7 @@ def pckcov(pck, idcode, cover):
     :param cover: Window giving coverage in pck for idcode.
     :type cover: SpiceCell
     """
-    pck = stypes.stringToCharP(pck)
+    pck = stypes.stringToCharP(strToPath(pck))
     idcode = ctypes.c_int(idcode)
     assert isinstance(cover, stypes.SpiceCell)
     assert cover.dtype == 1
@@ -9308,7 +9308,7 @@ def pckfrm(pck, ids):
     :param ids: Set of frame class ID codes of frames in PCK file.
     :type ids: SpiceCell
     """
-    pck = stypes.stringToCharP(pck)
+    pck = stypes.stringToCharP(strToPath(pck))
     assert isinstance(ids, stypes.SpiceCell)
     assert ids.dtype == 2
     libspice.pckfrm_c(pck, ctypes.byref(ids))
@@ -9328,7 +9328,7 @@ def pcklof(filename):
     :return: Loaded file's handle.
     :rtype: int
     """
-    filename = stypes.stringToCharP(filename)
+    filename = stypes.stringToCharP(strToPath(filename))
     handle = ctypes.c_int()
     libspice.pcklof_c(filename, ctypes.byref(handle))
     return handle.value
@@ -9350,7 +9350,7 @@ def pckopn(name, ifname, ncomch):
     :return: The handle of the opened PCK file.
     :rtype: int
     """
-    name = stypes.stringToCharP(name)
+    name = stypes.stringToCharP(strToPath(name,strict=False))
     ifname = stypes.stringToCharP(ifname)
     ncomch = ctypes.c_int(ncomch)
     handle = ctypes.c_int()
@@ -10155,7 +10155,7 @@ def rdtext(file, lenout=_default_len_out):  # pragma: no cover
     :return: Next line from the text file, End-of-file indicator
     :rtype: tuple
     """
-    file = stypes.stringToCharP(file)
+    file = stypes.stringToCharP(strToPath(file))
     line = stypes.stringToCharP(lenout)
     lenout = ctypes.c_int(lenout)
     eof = ctypes.c_int()
@@ -12043,7 +12043,7 @@ def spklef(filename):
     :return: Loaded file's handle.
     :rtype: int
     """
-    filename = stypes.stringToCharP(filename)
+    filename = stypes.stringToCharP(strToPath(filename))
     handle = ctypes.c_int()
     libspice.spklef_c(filename, ctypes.byref(handle))
     return handle.value
@@ -12120,7 +12120,7 @@ def spkopa(filename):
     :return: A handle attached to the SPK file opened to append.
     :rtype: int
     """
-    filename = stypes.stringToCharP(filename)
+    filename = stypes.stringToCharP(strToPath(filename))
     handle = ctypes.c_int()
     libspice.spkopa_c(filename, ctypes.byref(handle))
     return handle.value
@@ -12142,7 +12142,7 @@ def spkopn(filename, ifname, ncomch):
     :return: The handle of the opened SPK file.
     :rtype: int
     """
-    filename = stypes.stringToCharP(filename)
+    filename = stypes.stringToCharP(strToPath(filename,strict=False))
     ifname = stypes.stringToCharP(ifname)
     ncomch = ctypes.c_int(ncomch)
     handle = ctypes.c_int()
@@ -14151,7 +14151,7 @@ def txtopn(fname):
     :return: FORTRAN logical unit of opened file
     :rtype: int
     """
-    fnameP    = stypes.stringToCharP(fname)
+    fnameP    = stypes.stringToCharP(strToPath(fname, strict=False))
     unit_out  = ctypes.c_int()
     fname_len = ctypes.c_int(len(fname))
     libspice.txtopn_(fnameP, ctypes.byref(unit_out), fname_len)
@@ -14380,7 +14380,7 @@ def unload(filename):
         for f in filename:
             libspice.unload_c(stypes.stringToCharP(f))
         return
-    filename = stypes.stringToCharP(filename)
+    filename = stypes.stringToCharP(strToPath(filename))
     libspice.unload_c(filename)
 
 

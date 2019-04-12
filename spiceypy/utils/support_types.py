@@ -44,6 +44,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 import six
 
+from pathlib import Path
+
 from ctypes import c_char_p, c_int, c_double,\
     c_char, c_void_p, sizeof, \
     Array, create_string_buffer, cast, Structure, \
@@ -80,6 +82,19 @@ class SpiceyError(Exception):
 
     def __str__(self):
         return self.value
+
+
+def strToPath(path, strict=True):
+    """
+    Convert a path or str into a fully resolved string,
+     if the file does not exist throw an error to the user
+    :param strict: use pathlib's strict resolve test
+    :type strict: bool
+    :param path: file path to be resolved
+    :type path: str or pathlib.Path
+    :return:
+    """
+    return str(Path(path).resolve(strict=strict))
 
 
 def toDoubleVector(x):
