@@ -46,6 +46,8 @@ import six
 
 from pathlib import Path
 
+import sys
+
 from ctypes import c_char_p, c_int, c_double,\
     c_char, c_void_p, sizeof, \
     Array, create_string_buffer, cast, Structure, \
@@ -69,6 +71,8 @@ Toolkit version: {tkvsn}
 
 ================================================================================\
 """
+
+is_py_3_5_or_lower = sys.version_info[0] == 3 and sys.version_info[1] <= 5
 
 
 class SpiceyError(Exception):
@@ -94,7 +98,12 @@ def strToPath(path, strict=True):
     :type path: str or pathlib.Path
     :return:
     """
-    return str(Path(path).resolve(strict=strict))
+    path = Path(path)
+    if is_py_3_5_or_lower:
+        path = path.resolve()
+    else:
+        path = path.resolve(strict=strict)
+    return str(path)
 
 
 def toDoubleVector(x):

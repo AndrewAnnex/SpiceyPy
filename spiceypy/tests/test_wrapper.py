@@ -7697,7 +7697,7 @@ def test_unload():
 
 def test_unload_emptystring():
     spice.kclear()
-    with pytest.raises(spice.stypes.SpiceyError):
+    with pytest.raises(FileNotFoundError):
         spice.unload("")
     spice.kclear()
 
