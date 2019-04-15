@@ -44,7 +44,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 import six
 
-from pathlib import Path
+if six.PY2:
+    from pathlib2 import Path
+else:
+    from pathlib import Path
 
 import sys
 
