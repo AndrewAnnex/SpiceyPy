@@ -14373,6 +14373,9 @@ def unload(filename):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unload_c.html
 
+    note due to pathlib usage the cspice nullpointer and empty string exceptions
+    are no longer thrown by this function
+
     :param filename: The name of a kernel to unload.
     :type filename: str
     """
