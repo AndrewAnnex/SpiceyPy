@@ -38,7 +38,7 @@ def test_geterror():
 
 
 def test_getSpiceyException():
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(OSError):
         spice.furnsh(os.path.join(cwd, "_null_kernel.txt"))
     spice.reset()
 
