@@ -48,7 +48,6 @@ lib_dir = os.path.join(cspice_dir, 'lib')
 
 TEST_DEPENDENCIES = ['numpy>=1.12.0', 'six>=1.9.0', 'pytest>=2.9.0', 'pathlib2>=2.3.3; python_version < "3.6"']
 DEPENDENCIES      = ['numpy>=1.12.0', 'six>=1.9.0', 'certifi>=2017.1.23', 'pathlib2>=2.3.3; python_version < "3.6"']
-REQUIRES          = ['numpy>=1.12.0', 'six>=1.9.0', 'pathlib2>=2.3.3; python_version < "3.6"']
 
 
 # If we have an old version of OpenSSL, CSPICE will be downloaded
@@ -324,7 +323,6 @@ setup(
     package_data={'spiceypy': ['utils/*.so', "utils/*.dll"]},
     setup_requires=DEPENDENCIES,
     install_requires=DEPENDENCIES,
-    requires=REQUIRES,
     tests_require=TEST_DEPENDENCIES,
     cmdclass=cmdclass,
     test_suite='spiceypy.tests.test_wrapper.py',
