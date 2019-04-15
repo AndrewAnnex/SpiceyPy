@@ -43,13 +43,16 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 import six
+import sys
 
-if six.PY2:
+is_py_3_5_or_lower = sys.version_info[0] == 3 and sys.version_info[1] <= 5
+
+if six.PY2 or is_py_3_5_or_lower:
     from pathlib2 import Path
 else:
     from pathlib import Path
 
-import sys
+
 
 from ctypes import c_char_p, c_int, c_double,\
     c_char, c_void_p, sizeof, \
@@ -75,7 +78,7 @@ Toolkit version: {tkvsn}
 ================================================================================\
 """
 
-is_py_3_5_or_lower = sys.version_info[0] == 3 and sys.version_info[1] <= 5
+
 
 
 class SpiceyError(Exception):

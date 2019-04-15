@@ -5155,11 +5155,13 @@ def exists(fname):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/exists_c.html
 
+    note: this routine bypasses pathlib checks as that wouldn't make sense to do
+
     :param fname: Name of the file in question.
     :return: True if the file exists, False otherwise.
     :rtype: bool
     """
-    fname = stypes.stringToCharP(strToPath(fname, strict=False))
+    fname = stypes.stringToCharP(fname)
     return bool(libspice.exists_c(fname))
 
 
