@@ -66,6 +66,7 @@ from ctypes import (
 
 import numpy
 from numpy import ctypeslib as numpc
+import spiceypy.utils.exception_lookups as exception_lookups
 
 # Collection of supporting functions for wrapper functions
 __author__ = "AndrewAnnex"
@@ -91,12 +92,105 @@ class SpiceyError(Exception):
     :type value: str
     """
 
-    def __init__(self, value, found=None):
-        self.value = value
+    def __init__(self, short="", explain="", long="", traceback="", found=""):
+        self.tkvsn = "CSPICE66"
+        self.short = short
+        self.explain = explain
+        self.long = long
+        self.traceback = traceback
         self.found = found
+        self.message = errorformat.format(
+            tkvsn=self.tkvsn,
+            short=short,
+            explain=explain,
+            long=long,
+            traceback=traceback,
+        )
 
     def __str__(self):
-        return self.value
+        return self.message
+
+
+class SpiceyPyError(SpiceyError):
+    pass
+
+
+class NotFoundError(SpiceyPyError):
+    def __init__(self, message=None, found=None):
+        self.found = found
+        self.message = message
+
+
+class SpiceyPyIOError(SpiceyPyError, IOError):
+    pass
+
+
+class SpiceyPyMemoryError(SpiceyPyError, MemoryError):
+    pass
+
+
+class SpiceyPyTypeError(SpiceyPyError, TypeError):
+    pass
+
+
+class SpiceyPyKeyError(SpiceyPyError, KeyError):
+    pass
+
+
+class SpiceyPyIndexError(SpiceyPyError, IndexError):
+    pass
+
+
+class SpiceyPyRuntimeError(SpiceyPyError, RuntimeError):
+    pass
+
+
+class SpiceyPyValueError(SpiceyPyError, ValueError):
+    pass
+
+
+class SpiceyPyZeroDivisionError(SpiceyPyError, ZeroDivisionError):
+    pass
+
+
+def short_to_spiceypy_exception_class(short):
+    # TODO: this could just all be replaced
+    #     with a large dictionary
+    if short in exception_lookups.ioerrors:
+        return SpiceyPyIOError
+    elif short in exception_lookups.memoryerrors:
+        return SpiceyPyMemoryError
+    elif short in exception_lookups.typeerrors:
+        return SpiceyPyTypeError
+    elif short in exception_lookups.keyerrors:
+        return SpiceyPyKeyError
+    elif short in exception_lookups.indexerrors:
+        return SpiceyPyIndexError
+    elif short in exception_lookups.runtimeerrors:
+        return SpiceyPyRuntimeError
+    elif short in exception_lookups.valueerrors:
+        return SpiceyPyValueError
+    elif short in exception_lookups.zerodivisionerrors:
+        return SpiceyPyZeroDivisionError
+    else:
+        return SpiceyPyError
+
+
+def dynamically_instantiate_spiceyerror(
+    short="", explain="", long="", traceback="", found=""
+):
+    """
+    Dynamically creates a SpiceyPyException which is a subclass of SpiceyError and
+    may also be subclassed to other exceptions such as IOError and such depending on the Short description
+    :param short:
+    :param explain:
+    :param long:
+    :param traceback:
+    :param found:
+    :return:
+    """
+    base_exception = short_to_spiceypy_exception_class(short)
+    return base_exception(short=short, explain=explain, long=long, traceback=traceback)
 
 
 def to_double_vector(x):

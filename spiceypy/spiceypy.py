@@ -77,16 +77,14 @@ def check_for_spice_error(f: Optional[Callable]) -> None:
     :raise stypes.SpiceyError:
     """
     if failed():
-        errorparts = {
-            "tkvsn": tkvrsn("TOOLKIT").replace("CSPICE_", ""),
-            "short": getmsg("SHORT", 26),
-            "explain": getmsg("EXPLAIN", 100).strip(),
-            "long": getmsg("LONG", 321).strip(),
-            "traceback": qcktrc(200),
-        }
-        msg = stypes.errorformat.format(**errorparts)
+        short = getmsg("SHORT", 26)
+        explain = getmsg("EXPLAIN", 100).strip()
+        long = getmsg("LONG", 321).strip()
+        traceback = qcktrc(200)
         reset()
-        raise stypes.SpiceyError(msg)
+        raise stypes.dynamically_instantiate_spiceyerror(
+            short=short, explain=explain, long=long, traceback=traceback
+        )
 
 
 def spice_error_check(f):
@@ -125,7 +123,7 @@ def spice_found_exception_thrower(f: Callable) -> Callable:
                     found=found,
                 )
             elif hasattr(found, "__iter__") and not all(found):
-                raise stypes.SpiceyError(
+                raise stypes.NotFoundError(
                     "Spice returns not found in a series of calls for function: {}".format(
                         f.__name__
                     ),
