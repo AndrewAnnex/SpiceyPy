@@ -46,8 +46,8 @@ cspice_dir = os.path.join(root_dir, 'cspice')
 # Make the directory path for cspice/lib
 lib_dir = os.path.join(cspice_dir, 'lib')
 
-TEST_DEPENDENCIES = ['numpy<=1.16.4;python_version<"3.3"', 'numpy>=1.17.0;python_version>="3.3"', 'six>=1.9.0', 'pytest>=2.9.0']
-DEPENDENCIES = ['numpy<=1.16.4;python_version<"3.3"', 'numpy>=1.17.0;python_version>="3.3"', 'six>=1.9.0', 'certifi>=2017.1.23']
+TEST_DEPENDENCIES = ['numpy<=1.16.4;python_version<"3.5"', 'numpy>=1.17.0;python_version>="3.5"', 'six>=1.9.0', 'pytest>=2.9.0']
+DEPENDENCIES = ['numpy<=1.16.4;python_version<"3.5"', 'numpy>=1.17.0;python_version>="3.5"', 'six>=1.9.0', 'certifi>=2017.1.23']
 REQUIRES = ['numpy', 'six']
 
 # If we have an old version of OpenSSL, CSPICE will be downloaded
@@ -300,7 +300,7 @@ setup(
     author_email='ama6fy@virginia.edu',
     description='A Python Wrapper for the NAIF CSPICE Toolkit',
     long_description=readmetext,
-    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, <4',
+    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4',
     keywords=['spiceypy', 'spice', 'naif', 'jpl', 'space', 'geometry'],
     url='https://github.com/AndrewAnnex/SpiceyPy',
     classifiers=[
