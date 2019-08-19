@@ -1,5 +1,7 @@
-numpy>=1.8.0
+numpy>=1.17.0; python_version >= "3.5"
+numpy<=1.16.4; python_version < "3.5"
 six>=1.9.0
 pytest>=2.9.0
 coverage>=4.0
 coveralls>=1.1
+setuptools>=38.0.0

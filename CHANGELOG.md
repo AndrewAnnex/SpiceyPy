@@ -4,6 +4,14 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [2.2.1] - 2019-08-19
+### Changed
+- set numpy version to 1.16.4 for python 2
+- other dependency changes to setup.py and requirements.txt
+
+### Fixed
+- typo in a unit test fixed
+
 ## [2.2.0] - 2019-02-24
 ### Added
 - gfevnt wrapper
