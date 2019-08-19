@@ -46,8 +46,8 @@ cspice_dir = os.path.join(root_dir, 'cspice')
 # Make the directory path for cspice/lib
 lib_dir = os.path.join(cspice_dir, 'lib')
 
-TEST_DEPENDENCIES = ['numpy<=1.16.4;python_version<"3.5"', 'numpy>=1.17.0;python_version>="3.5"', 'six>=1.9.0', 'pytest>=2.9.0']
-DEPENDENCIES = ['numpy<=1.16.4;python_version<"3.5"', 'numpy>=1.17.0;python_version>="3.5"', 'six>=1.9.0', 'certifi>=2017.1.23']
+TEST_DEPENDENCIES = ['setuptools>=38.0.0','numpy<=1.16.4;python_version<"3.5"', 'numpy>=1.17.0;python_version>="3.5"', 'six>=1.9.0', 'pytest>=2.9.0']
+DEPENDENCIES = ['setuptools>=38.0.0','numpy<=1.16.4;python_version<"3.5"', 'numpy>=1.17.0;python_version>="3.5"', 'six>=1.9.0', 'certifi>=2017.1.23']
 REQUIRES = ['numpy', 'six']
 
 # If we have an old version of OpenSSL, CSPICE will be downloaded
@@ -294,7 +294,7 @@ readme.close()
 
 setup(
     name='spiceypy',
-    version='2.2.0',
+    version='2.2.1',
     license='MIT',
     author='Andrew Annex',
     author_email='ama6fy@virginia.edu',
@@ -304,7 +304,7 @@ setup(
     keywords=['spiceypy', 'spice', 'naif', 'jpl', 'space', 'geometry'],
     url='https://github.com/AndrewAnnex/SpiceyPy',
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Natural Language :: English",
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Astronomy",
@@ -312,6 +312,7 @@ setup(
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Operating System :: MacOS :: MacOS X",
         "Operating System :: POSIX :: Linux",
         "Operating System :: POSIX :: BSD :: FreeBSD",
