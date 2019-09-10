@@ -73,12 +73,14 @@ class ExtraKernels(object):
     earthHighPerPck_url = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/earth_031228_231229_predict.bpc"
     phobosDsk_url       = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/phobos_lores.bds"
     marsSpk_url         = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/mar022-1.bsp"
+    mroFk_url           = "https://naif.jpl.nasa.gov/pub/naif/MRO/kernels/fk/mro_v15.tf"
     voyagerSclk         = getPathFromUrl(voyagerSclk_url)
     earthTopoTf         = getPathFromUrl(earthTopoTf_url)
     earthStnSpk         = getPathFromUrl(earthStnSpk_url)
     earthHighPerPck     = getPathFromUrl(earthHighPerPck_url)
     phobosDsk           = getPathFromUrl(phobosDsk_url)
     marsSpk             = getPathFromUrl(marsSpk_url)
+    mroFk               = getPathFromUrl(mroFk_url)
 
 def cleanup_Extra_Kernels():
     cleanupFile(ExtraKernels.voyagerSclk)
@@ -87,6 +89,7 @@ def cleanup_Extra_Kernels():
     cleanupFile(ExtraKernels.earthHighPerPck)
     cleanupFile(ExtraKernels.phobosDsk)
     cleanupFile(ExtraKernels.marsSpk)
+    cleanupFile(ExtraKernels.mroFk)
 
 
 class CoreKernels(object):
@@ -159,6 +162,7 @@ def getExtraTestKernels():
     getKernel(ExtraKernels.earthHighPerPck_url)
     getKernel(ExtraKernels.phobosDsk_url)
     getKernel(ExtraKernels.marsSpk_url)
+    getKernel(ExtraKernels.mroFk_url)
 
 
 def getCassiniTestKernels():

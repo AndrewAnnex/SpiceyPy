@@ -995,6 +995,31 @@ def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
 
 @spiceErrorCheck
 @spiceFoundExceptionThrower
+def ckfrot(inst, et):
+    """
+    Find the rotation from a C-kernel Id to the native
+    frame at the time requested.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/ckfrot.html
+
+    :param inst: NAIF instrument ID
+    :type inst: int
+    :param et: Epoch measured in seconds past J2000
+    :type et: float
+    :return: Rotation matrix from the input frame to the returned reference frame, id for the reference frame
+    :rtype: tuple
+    """
+    inst = ctypes.c_int(inst)
+    et = ctypes.c_double(et)
+    rotate = stypes.emptyDoubleMatrix(x=3, y=3)
+    ref = ctypes.c_int()
+    found = ctypes.c_int()
+    libspice.ckfrot_(ctypes.byref(inst), ctypes.byref(et), rotate, ctypes.byref(ref), ctypes.byref(found))
+    return stypes.cMatrixToNumpy(rotate), ref.value, bool(found)
+
+
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def ckgp(inst, sclkdp, tol, ref):
     """
     Get pointing (attitude) for a specified spacecraft clock time.
@@ -13941,6 +13966,27 @@ def tisbod(ref, body, et):
     libspice.tisbod_c(ref, body, et, retmatrix)
     return stypes.cMatrixToNumpy(retmatrix)
 
+@spiceErrorCheck
+@spiceFoundExceptionThrower
+def tkfram(typid):
+    """
+    This routine returns the rotation from the input frame
+    specified by ID to the associated frame given by FRAME.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/tkfram.html
+
+    :param typid: Class identification code for the instrument
+    :type typid: int
+    :return: Rotation matrix from the input frame to the returned reference frame, id for the reference frame
+    :rtype: tuple
+    """
+    code = ctypes.c_int(typid)
+    matrix = stypes.emptyDoubleMatrix(x=3, y=3)
+    nextFrame = ctypes.c_int()
+    found = ctypes.c_int()
+    libspice.tkfram_(ctypes.byref(code), matrix, ctypes.byref(nextFrame), ctypes.byref(found))
+
+    return stypes.cMatrixToNumpy(matrix), nextFrame.value, bool(found)
 
 # @spiceErrorCheck
 def tkvrsn(item):
@@ -15859,3 +15905,27 @@ def xposeg(matrix, nrow, ncol):
     nrow = ctypes.c_int(nrow)
     libspice.xposeg_c(matrix, nrow, ncol, mout)
     return stypes.cMatrixToNumpy(mout)
+
+
+@spiceErrorCheck
+def zzdynrot(typid, center, et):
+    """
+    Find the rotation from a dynamic frame ID to the associated frame at the time requested
+
+    :param typid: ID code for the dynamic frame
+    :type typid: int
+    :param center: the ID for the center of the frame
+    :type center: int
+    :param et: Epoch measured in seconds past J2000
+    :type et: float
+    :return:  Rotation matrix from the input frame to the returned associated frame, id for the associated frame
+    :rtype: tuple
+    """
+    typid = ctypes.c_int(typid)
+    center = ctypes.c_int(center)
+    et = ctypes.c_double(et)
+    matrix = stypes.emptyDoubleMatrix(x=3, y=3)
+    nextFrame = ctypes.c_int()
+    libspice.zzdynrot_(ctypes.byref(typid), ctypes.byref(center), ctypes.byref(et), matrix, ctypes.byref(nextFrame))
+    return stypes.cMatrixToNumpy(matrix), nextFrame.value
+

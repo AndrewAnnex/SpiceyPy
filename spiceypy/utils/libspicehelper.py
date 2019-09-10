@@ -97,6 +97,7 @@ libspice.cidfrm_c.argtypes = [c_int, c_int, c_int_p, c_char_p, c_int_p]
 libspice.ckcls_c.argtypes = [c_int]
 libspice.ckcov_c.argtypes = [c_char_p, c_int, c_int, c_char_p, c_double, c_char_p, s_cell_p]
 libspice.ckobj_c.argtypes = [c_char_p, s_cell_p]
+libspice.ckfrot_.argtypes = [c_int_p, c_double_p, (c_double * 3) * 3, c_int_p, c_int_p]
 libspice.ckgp_c.argtypes = [c_int, c_double, c_double, c_char_p, ((c_double * 3) * 3), c_double_p,
                             c_int_p]
 libspice.ckgpav_c.argtypes = [c_int, c_double, c_double, c_char_p, ((c_double * 3) * 3), (c_double * 3),
@@ -762,6 +763,7 @@ libspice.timdef_c.argtypes = [c_char_p, c_char_p, c_int, c_char_p]
 libspice.timout_c.argtypes = [c_double, c_char_p, c_int, c_char_p]
 libspice.tipbod_c.argtypes = [c_char_p, c_int, c_double, (c_double * 3) * 3]
 libspice.tisbod_c.argtypes = [c_char_p, c_int, c_double, (c_double * 6) * 6]
+libspice.tkfram_.argtypes = [c_int_p, (c_double * 3) * 3, c_int_p, c_int_p]
 libspice.tkvrsn_c.argtypes = [c_char_p]
 libspice.tkvrsn_c.restype  = c_char_p
 libspice.tparse_c.argtypes = [c_char_p, c_int, c_double_p, c_char_p]
@@ -889,7 +891,8 @@ libspice.xpose6_c.argtypes = [(c_double * 6) * 6, (c_double * 6) * 6]
 libspice.xposeg_c.argtypes = [c_void_p, c_int, c_int, c_void_p]
 ########################################################################################################################
 # Z
-
+libspice.zzdynrot_.argtypes = [c_int_p, c_int_p, c_double_p, (c_double * 3) * 3, c_int_p]
 libspice.zzgetcml_c.argtypes = [c_int, c_char_p, c_int]
 libspice.zzgfsavh_c.argtypes = [c_int]
+
 #libspice.zzsynccl_c.argtypes = [None]
