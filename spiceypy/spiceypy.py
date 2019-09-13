@@ -1015,7 +1015,7 @@ def ckfrot(inst, et):
     ref = ctypes.c_int()
     found = ctypes.c_int()
     libspice.ckfrot_(ctypes.byref(inst), ctypes.byref(et), rotate, ctypes.byref(ref), ctypes.byref(found))
-    return stypes.cMatrixToNumpy(rotate), ref.value, bool(found)
+    return stypes.cMatrixToNumpy(rotate), ref.value, bool(found.value)
 
 
 @spiceErrorCheck
@@ -13986,7 +13986,7 @@ def tkfram(typid):
     found = ctypes.c_int()
     libspice.tkfram_(ctypes.byref(code), matrix, ctypes.byref(nextFrame), ctypes.byref(found))
 
-    return stypes.cMatrixToNumpy(matrix), nextFrame.value, bool(found)
+    return stypes.cMatrixToNumpy(matrix), nextFrame.value, bool(found.value)
 
 # @spiceErrorCheck
 def tkvrsn(item):

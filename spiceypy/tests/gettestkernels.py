@@ -73,7 +73,7 @@ class ExtraKernels(object):
     earthHighPerPck_url = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/earth_031228_231229_predict.bpc"
     phobosDsk_url       = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/phobos_lores.bds"
     marsSpk_url         = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/mar022-1.bsp"
-    mroFk_url           = "https://naif.jpl.nasa.gov/pub/naif/MRO/kernels/fk/mro_v15.tf"
+    mroFk_url           = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/master/mro_v15.tf"
     voyagerSclk         = getPathFromUrl(voyagerSclk_url)
     earthTopoTf         = getPathFromUrl(earthTopoTf_url)
     earthStnSpk         = getPathFromUrl(earthStnSpk_url)
