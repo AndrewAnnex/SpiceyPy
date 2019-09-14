@@ -32,6 +32,7 @@ EXPORTS			appndc_c
 				cidfrm_c
 				ckcls_c
 				ckcov_c
+				ckfrot_
 				ckgp_c
 				ckgpav_c
 				cklpf_c
@@ -503,6 +504,7 @@ EXPORTS			appndc_c
 				timout_c
 				tipbod_c
 				tisbod_c
+				tkfram_
 				tkvrsn_c
 				tparse_c
 				tpictr_c
@@ -590,3 +592,4 @@ EXPORTS			appndc_c
 				xposeg_c
 				zzgetcml_c
 				zzgfsavh_c
+				zzdynrot_

@@ -376,6 +376,24 @@ def test_ckcov():
     assert [[cover[i*2],cover[i*2+1]] for i in range(spice.wncard(cover))] == expected_intervals
     spice.kclear()
 
+def test_ckfrot():
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(CassiniKernels.cassSclk)
+    spice.furnsh(CassiniKernels.cassCk)
+    spice.furnsh(CassiniKernels.cassIk)
+    spice.furnsh(CassiniKernels.cassFk)
+    spice.furnsh(CassiniKernels.cassPck)
+    ckid = spice.ckobj(CassiniKernels.cassCk)[0]
+    # aribtrary time covered by test ck kernel 
+    et = spice.str2et("2013-FEB-26 00:01:08.828")
+    rotation, ref = spice.ckfrot(ckid, et)
+    expected = np.array([[-0.64399206,  0.48057295,  0.5952511 ],
+                         [-0.34110294, -0.87682328,  0.33886533],
+                         [ 0.68477954,  0.01518468,  0.72859208]])
+    npt.assert_array_almost_equal(rotation, expected)
+    assert ref == 1 
+    spice.kclear()
 
 def test_ckgp():
     spice.kclear()
@@ -7447,6 +7465,19 @@ def test_tisbod():
     spice.kclear()
 
 
+def test_tkfram():
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(CassiniKernels.cassFk)
+    rotation, nextFrame = spice.tkfram(-82001)
+    expected = np.array([[6.12323400e-17, 0.00000000e+00, -1.00000000e+00],
+                         [0.00000000e+00, 1.00000000e+00, -0.00000000e+00],
+                         [1.00000000e+00, 0.00000000e+00, 6.12323400e-17]])
+    npt.assert_array_almost_equal(rotation, expected)
+    assert nextFrame == -82000                                               
+    spice.kclear()
+
+
 def test_tkvrsn():
     version = spice.tkvrsn("toolkit")
     assert version == "CSPICE_N0066"
@@ -8274,6 +8305,16 @@ def test_xposeg():
     npt.assert_array_almost_equal(spice.xposeg(m1, 3, 3), [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]])
     npt.assert_array_almost_equal(spice.xposeg(np.array(m1), 3, 3), [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]])
 
+def test_zzdynrot():
+    spice.kclear()
+    spice.furnsh(ExtraKernels.mroFk)
+    rotation, frame = spice.zzdynrot(-74900, 499, 221051477.42023)
+    expected = np.array([[ 0.6733481,   0.73932559,  0.0       ],
+                         [-0.5895359,   0.53692566,  0.60345527],
+                         [ 0.44614992, -0.40633546,  0.79739685]])
+    npt.assert_array_almost_equal(rotation, expected)
+    assert frame == 1                                            
+    spice.kclear()
 
 def teardown_tests():
     # Tests that must be done last are put here and
