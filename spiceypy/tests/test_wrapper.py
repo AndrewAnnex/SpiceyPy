@@ -385,14 +385,14 @@ def test_ckfrot():
     spice.furnsh(CassiniKernels.cassFk)
     spice.furnsh(CassiniKernels.cassPck)
     ckid = spice.ckobj(CassiniKernels.cassCk)[0]
-    # aribtrary time covered by test ck kernel 
+    # aribtrary time covered by test ck kernel
     et = spice.str2et("2013-FEB-26 00:01:08.828")
     rotation, ref = spice.ckfrot(ckid, et)
     expected = np.array([[-0.64399206,  0.48057295,  0.5952511 ],
                          [-0.34110294, -0.87682328,  0.33886533],
                          [ 0.68477954,  0.01518468,  0.72859208]])
     npt.assert_array_almost_equal(rotation, expected)
-    assert ref == 1 
+    assert ref == 1
     spice.kclear()
 
 def test_ckgp():
@@ -734,7 +734,7 @@ def test_conics():
 def test_convrt():
     assert spice.convrt(300.0, 'statute_miles', 'km') == 482.80320
     npt.assert_almost_equal(spice.convrt(1.0, 'parsecs', 'lightyears'), 3.2615638, decimal=6)
-	
+
     npt.assert_almost_equal(spice.convrt([1.0, 2.0], 'AU', 'km'), [ 149597870.7, 299195741.4], decimal=0)
 
 
@@ -870,7 +870,7 @@ def test_dafac():
     # ... to get fewer than the total number of comments
     nOut, cmntsOut, done = spice.dafec(handle, 3, 99)
     assert nOut == 3
-    assert not done 
+    assert not done
     spice.dafcls(handle)
     assert not spice.failed()
     spice.kclear()
@@ -1007,7 +1007,7 @@ def test_dafgda():
     # not a very good test...
     spice.kclear()
     handle = spice.dafopr(CoreKernels.spk)
-    elements = spice.dafgda(handle, 20, 21)
+    elements = spice.dafgda(handle, 20, 20)
     assert elements == [0.0]
     spice.dafcls(handle)
     spice.kclear()
@@ -1068,7 +1068,7 @@ def test_dafgsr():
     nd, ni, ifname, fward, bward, free = spice.dafrfr(handle)
     assert nd == 2 and ni == 6
     # Calculate Single Summary size
-    ss = nd + ((ni+1) >> 1) 
+    ss = nd + ((ni+1) >> 1)
     # Loop over Summary records
     while fward > 0:
         iRecno = fward
@@ -1188,7 +1188,7 @@ def test_dafrda():
     nd, ni, ifname, fward, bward, free = spice.dafrfr(handle)
     assert nd == 2 and ni == 6
     # Calculate Single Summary size
-    ss = nd + ((ni+1) >> 1) 
+    ss = nd + ((ni+1) >> 1)
     iRecno = fward
     # Get first three words at summary record (DAF record iRecno)
     # * drec(1) NEXT forward pointer to next summary record
@@ -3614,7 +3614,7 @@ def test_gfsntc():
     spice.kclear()
     kernel = os.path.join(cwd, 'gfnstc_test.tf')
     if spice.exists(kernel):
-        os.remove(kernel) # pragma: no cover # pragma: no cover 
+        os.remove(kernel) # pragma: no cover # pragma: no cover
     with open(kernel, 'w') as kernelFile:
         kernelFile.write('\\begindata\n')
         kernelFile.write("FRAME_SEM                     =  10100000\n")
@@ -6144,16 +6144,16 @@ def test_spkcls():
 
 def test_spkcov():
     spice.kclear()
-    
+
     ids = spice.spkobj(CoreKernels.spk)
     tempObj = ids[0]
-    
+
     #Checks for defaults
     cover=spice.spkcov(CoreKernels.spk, tempObj)
     result = [x for x in cover]
     expected = [-94651137.81606464, 315662463.18395346]
     npt.assert_array_almost_equal(result, expected)
-    
+
     #Checks for old way, where if cover is pre-set, it should remain set
     cover = spice.cell_double(2000)
     spice.scard(0, cover)
@@ -6161,7 +6161,7 @@ def test_spkcov():
     result = [x for x in cover]
     expected = [-94651137.81606464, 315662463.18395346]
     npt.assert_array_almost_equal(result, expected)
-    
+
     spice.kclear()
 
 
@@ -6756,7 +6756,7 @@ def test_spkw12():
 def test_spkw13():
     SPK13 = os.path.join(cwd, "test13.bsp")
     if spice.exists(SPK13):
-        os.remove(SPK13) # pragma: no cover 
+        os.remove(SPK13) # pragma: no cover
     spice.kclear()
     handle = spice.spkopn(SPK13, 'Type 13 SPK internal file name.', 4)
     init_size = os.path.getsize(SPK13)
@@ -7169,19 +7169,19 @@ def test_str2et():
     et = spice.str2et(date)
     npt.assert_almost_equal(et, -87836728.81438904)
     spice.kclear()
-    
+
 def test_datetime2et():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     date = datetime(1997,3,20,12,53,29)
     et = spice.datetime2et(date)
     npt.assert_almost_equal(et, -87865528.8143913)
-    
+
     expecteds=[-87865528.8143913,-792086354.8170365,-790847954.8166842]
     dates = [datetime(1997,3,20,12,53,29),
              datetime(1974,11,25,20,0,0),
              datetime(1974,12,10,4,0,0)]
-             
+
     results = spice.datetime2et(dates)
     for expected, result in zip(expecteds, results):
         npt.assert_almost_equal(result, expected)
@@ -7474,7 +7474,7 @@ def test_tkfram():
                          [0.00000000e+00, 1.00000000e+00, -0.00000000e+00],
                          [1.00000000e+00, 0.00000000e+00, 6.12323400e-17]])
     npt.assert_array_almost_equal(rotation, expected)
-    assert nextFrame == -82000                                               
+    assert nextFrame == -82000
     spice.kclear()
 
 
@@ -8313,7 +8313,7 @@ def test_zzdynrot():
                          [-0.5895359,   0.53692566,  0.60345527],
                          [ 0.44614992, -0.40633546,  0.79739685]])
     npt.assert_array_almost_equal(rotation, expected)
-    assert frame == 1                                            
+    assert frame == 1
     spice.kclear()
 
 def teardown_tests():
