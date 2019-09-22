@@ -1007,7 +1007,7 @@ def test_dafgda():
     # not a very good test...
     spice.kclear()
     handle = spice.dafopr(CoreKernels.spk)
-    elements = spice.dafgda(handle, 20, 21)
+    elements = spice.dafgda(handle, 20, 20)
     assert elements == [0.0]
     spice.dafcls(handle)
     spice.kclear()

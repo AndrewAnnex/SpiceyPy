@@ -1896,7 +1896,7 @@ def dafgda(handle, begin, end):
     :rtype: Array of floats
     """
     handle = ctypes.c_int(handle)
-    data = stypes.emptyDoubleVector(abs(end - begin))
+    data = stypes.emptyDoubleVector(abs(end - begin) + 1)
     begin = ctypes.c_int(begin)
     end = ctypes.c_int(end)
     libspice.dafgda_c(handle, begin, end, data)
