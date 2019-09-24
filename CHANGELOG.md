@@ -4,6 +4,15 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [2.3.0] - 2019-09-25
+### Added
+- wrapper for tkfram
+- wrapper for ckfrot
+- wrapper for zzdynrot
+
+### Fixed
+- issue with dafgda absolute value problem, see issue #302
+
 ## [2.2.1] - 2019-08-19
 ### Changed
 - set numpy version to 1.16.4 for python 2
