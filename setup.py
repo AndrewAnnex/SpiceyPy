@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from setuptools import setup, Command
+from setuptools import setup, find_packages, Command
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
 from setuptools.command.test import test as TestCommand
@@ -318,7 +318,7 @@ setup(
         "Operating System :: POSIX :: BSD :: FreeBSD",
         "Operating System :: Microsoft :: Windows"
     ],
-    packages=['spiceypy', 'spiceypy.utils'],
+    packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
     distclass=SpiceyPyBinaryDistribution,
