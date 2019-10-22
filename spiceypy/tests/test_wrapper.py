@@ -36,9 +36,7 @@ from spiceypy.tests.gettestkernels import downloadKernels,\
     ExtraKernels, \
     cleanup_Cassini_Kernels,\
     cleanup_Extra_Kernels, \
-    cleanup_Core_Kernels
-
-cwd = os.path.realpath(os.path.dirname(__file__))
+    cleanup_Core_Kernels, cwd
 
 def setup_module(module):
     downloadKernels()
