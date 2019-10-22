@@ -24,9 +24,8 @@ SOFTWARE.
 
 import pytest
 import spiceypy as spice
+from spiceypy.tests.gettestkernels import cwd
 import os
-cwd = os.path.realpath(os.path.dirname(__file__))
-
 
 def test_geterror():
     spice.setmsg("some error occured")

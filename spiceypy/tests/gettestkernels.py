@@ -24,11 +24,13 @@ SOFTWARE.
 
 import os
 import time
+import platform
+import tempfile
 import six.moves.urllib as urllib
 from six import print_ as six_print
 
 
-cwd = os.path.realpath(os.path.dirname(__file__))
+cwd = '/tmp' if platform.system() == 'Darwin' else tempfile.gettempdir()
 
 def getKernelNameFromURL(url):
     return url.split('/')[-1]
