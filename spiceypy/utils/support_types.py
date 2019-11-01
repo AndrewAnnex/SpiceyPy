@@ -194,6 +194,8 @@ def stringToCharP(inobject, inlen=None):
         return stringToCharP(" " * inobject.value)
     if isinstance(inobject, int):
         return stringToCharP(" " * inobject)
+    if isinstance(inobject, numpy.str_):
+        return c_char_p(inobject.encode(encoding='utf-8'))
     return c_char_p(inobject.encode(encoding='UTF-8'))
 
 

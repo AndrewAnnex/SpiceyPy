@@ -78,6 +78,10 @@ def test_EmptySpiceCellSlicing():
     testCell = stypes.SPICEDOUBLE_CELL(1)
     assert testCell[0:1] == []
 
+def test_numpy_and_strings():
+    s = np.array(['3/0597205898.09324'])[0]
+    sc = stypes.stringToCharP(s)
+    assert stypes.toPythonString(sc)
 
 def test_SpiceCellSliceInts():
     testVals = [1, 2, 3]

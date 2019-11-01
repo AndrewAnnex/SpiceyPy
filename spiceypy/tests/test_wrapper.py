@@ -67,6 +67,12 @@ def test_appndc_vectorized():
     assert testCell[1] == "two"
     assert testCell[2] == "three"
 
+def test_appndc_vectorized_numpy():
+    testCell = spice.cell_char(10, 10)
+    spice.appndc(np.array(["one", "two", "three"]), testCell)
+    assert testCell[0] == "one"
+    assert testCell[1] == "two"
+    assert testCell[2] == "three"
 
 def test_appndd():
     testCell = spice.cell_double(8)
