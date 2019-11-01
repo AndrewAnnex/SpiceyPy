@@ -61,7 +61,9 @@ SpiceyPy can be installed using pip by running:
 ``pip install spiceypy``
 
 Anaconda users should use the conda-forge distribution of SpiceyPy by running:
+
 ``conda config --add channels conda-forge``
+
 ``conda install spiceypy``
 
 If you wish to install spiceypy from source first download or clone the project. Then run ``python setup.py install``.
