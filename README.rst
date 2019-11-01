@@ -32,7 +32,7 @@ SPICE is an essential tool for scientists and engineers alike in the planetary
 science field for Solar System Geometry. Please visit the NAIF website for more details about SPICE.
 
 *IMPORTANT*: I have no current affiliation with NASA, NAIF, or JPL. The
-code is provided "as is", use at your own risk.
+code is provided "as is", use at your own risk. However, the NAIF now distributes python "lessons" that use SpiceyPy as the python to spice interface.
 
 Citing SpiceyPy
 ---------------
@@ -79,6 +79,7 @@ NAIF. <http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/index.html>`__
 Please refer to C and IDL documentation available on the NAIF website
 for in-depth explanations. Each function docstring has a link to the
 corresponding C function in the NAIF docs at a minimum.
+SpiceyPy documentation contains the NAIF authored `Lessons <https://spiceypy.readthedocs.io/en/master/lessonindex.html>`__ for step-by-step tutorials with code examples. 
 
 How to Help
 -----------
@@ -99,7 +100,7 @@ as newer versions are released.
 
 - OS: OS X, Linux, Windows
 - CPU: 64bit only!
-- Python 2.7, 3.3, 3.4, 3.5, 3.6, 3.7
+- Python 2.7, 3.5, 3.6, 3.7
 
 Acknowledgements
 ----------------
