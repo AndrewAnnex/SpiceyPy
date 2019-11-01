@@ -1560,11 +1560,11 @@ def copy(cell):
     assert isinstance(cell, stypes.SpiceCell)
     # Next line was redundant with [raise NotImpImplementedError] below
     # assert cell.dtype == 0 or cell.dtype == 1 or cell.dtype == 2
-    if cell.dtype is 0:
+    if cell.dtype == 0:
         newcopy = stypes.SPICECHAR_CELL(cell.size, cell.length)
-    elif cell.dtype is 1:
+    elif cell.dtype == 1:
         newcopy = stypes.SPICEDOUBLE_CELL(cell.size)
-    elif cell.dtype is 2:
+    elif cell.dtype == 2:
         newcopy = stypes.SPICEINT_CELL(cell.size)
     else:
         raise NotImplementedError
@@ -2476,11 +2476,11 @@ def diff(a, b):
     assert a.dtype == b.dtype
     # The next line was redundant with the [raise NotImplementedError] line below
     # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
-    if a.dtype is 0:
+    if a.dtype == 0:
         c = stypes.SPICECHAR_CELL(max(a.size, b.size), max(a.length, b.length))
-    elif a.dtype is 1:
+    elif a.dtype == 1:
         c = stypes.SPICEDOUBLE_CELL(max(a.size, b.size))
-    elif a.dtype is 2:
+    elif a.dtype == 2:
         c = stypes.SPICEINT_CELL(max(a.size, b.size))
     else:
         raise NotImplementedError
@@ -7257,11 +7257,11 @@ def inter(a, b):
     assert a.dtype == b.dtype
     # Next line was redundant with [raise NotImpImplementedError] below
     # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
-    if a.dtype is 0:
+    if a.dtype == 0:
         c = stypes.SPICECHAR_CELL(max(a.size, b.size), max(a.length, b.length))
-    elif a.dtype is 1:
+    elif a.dtype == 1:
         c = stypes.SPICEDOUBLE_CELL(max(a.size, b.size))
-    elif a.dtype is 2:
+    elif a.dtype == 2:
         c = stypes.SPICEINT_CELL(max(a.size, b.size))
     else:
         raise NotImplementedError
@@ -11146,11 +11146,11 @@ def sdiff(a, b):
     assert a.dtype == b.dtype
     # The next line was redundant with the [raise NotImplementedError] line below
     # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
-    if a.dtype is 0:
+    if a.dtype == 0:
         c = stypes.SPICECHAR_CELL(a.size, a.length)
-    elif a.dtype is 1:
+    elif a.dtype == 1:
         c = stypes.SPICEDOUBLE_CELL(a.size)
-    elif a.dtype is 2:
+    elif a.dtype == 2:
         c = stypes.SPICEINT_CELL(a.size)
     else:
         raise NotImplementedError
@@ -14399,11 +14399,11 @@ def union(a, b):
     assert a.dtype == b.dtype
     # Next line was redundant with [raise NotImpImplementedError] below
     # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
-    if a.dtype is 0:
+    if a.dtype == 0:
         c = stypes.SPICECHAR_CELL(max(a.size, b.size), max(a.length, b.length))
-    elif a.dtype is 1:
+    elif a.dtype == 1:
         c = stypes.SPICEDOUBLE_CELL(max(a.size, b.size))
-    elif a.dtype is 2:
+    elif a.dtype == 2:
         c = stypes.SPICEINT_CELL(max(a.size, b.size))
     else:
         raise NotImplementedError
