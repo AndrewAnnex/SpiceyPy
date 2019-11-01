@@ -43,6 +43,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 import six
+import collections
 
 from ctypes import c_char_p, c_int, c_double,\
     c_char, c_void_p, sizeof, \
@@ -96,6 +97,14 @@ def toIntVector(x):
 
 def toIntMatrix(x):
     return IntMatrix.from_param(param=x)
+
+def isiterable(i):
+    """
+    From stackoverflow https://stackoverflow.com/questions/1055360/how-to-tell-a-variable-is-iterable-but-not-a-string/44328500#44328500
+    :param i: input collection
+    :return:
+    """
+    return isinstance(i, collections.Iterable) and not isinstance(i, six.string_types)
 
 
 def toPythonString(inString):
@@ -199,30 +208,21 @@ def stringToCharP(inobject, inlen=None):
     return c_char_p(inobject.encode(encoding='UTF-8'))
 
 
-def listToCharArray(inList, xLen=None, yLen=None):
-    assert (isinstance(inList, list))
+def listToCharArray(arg, xLen=None, yLen=None):
+    assert isiterable(arg)
     if not yLen:
-        yLen = len(inList)
+        yLen = len(arg)
     if not xLen:
-        xLen = max(len(s) for s in inList) + 1
+        xLen = max(len(s) for s in arg) + 1
     if isinstance(xLen, c_int):
         xLen = xLen.value
     if isinstance(yLen, c_int):
         yLen = yLen.value
-    return ((c_char * xLen) * yLen)(*[stringToCharP(l, inlen=xLen) for l in inList])
+    return ((c_char * xLen) * yLen)(*[stringToCharP(l, inlen=xLen) for l in arg])
 
 
-def listToCharArrayPtr(inList, xLen=None, yLen=None):
-    assert (isinstance(inList, list))
-    if not yLen:
-        yLen = len(inList)
-    if not xLen:
-        xLen = max(len(s) for s in inList) + 1
-    if isinstance(xLen, c_int):
-        xLen = xLen.value
-    if isinstance(yLen, c_int):
-        yLen = yLen.value
-    return cast(((c_char * xLen) * yLen)(*[stringToCharP(l, inlen=xLen) for l in inList]), c_char_p)
+def listToCharArrayPtr(input, xLen=None, yLen=None):
+    return cast(listToCharArray(input, xLen=xLen, yLen=yLen), c_char_p)
 
 
 class DoubleArrayType:

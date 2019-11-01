@@ -67,6 +67,11 @@ def test_appndc_vectorized():
     assert testCell[1] == "two"
     assert testCell[2] == "three"
 
+def test_appndc_numpy():
+    testCell = spice.cell_char(10, 10)
+    spice.appndc(np.array(["one", "two"])[0], testCell)
+    assert testCell[0] == "one"
+
 def test_appndc_vectorized_numpy():
     testCell = spice.cell_char(10, 10)
     spice.appndc(np.array(["one", "two", "three"]), testCell)
@@ -235,6 +240,19 @@ def test_bschoc():
     assert spice.bschoc("GALILEO", 5, lenvals, array, order) == 4
     assert spice.bschoc("Galileo", 5, lenvals, array, order) == -1
     assert spice.bschoc("BETHE", 5, lenvals, array, order) == -1
+
+
+def test_bschoc_numpy():
+    array = np.array(["FEYNMAN", "BOHR", "EINSTEIN", "NEWTON", "GALILEO"])
+    order = [1, 2, 0, 4, 3]
+    lenvals = 10
+    assert spice.bschoc("NEWTON", 5, lenvals, array, order) == 3
+    assert spice.bschoc(np.array(["NEWTON","_"])[0], 5, lenvals, array, order) == 3
+    assert spice.bschoc("EINSTEIN", 5, lenvals, array, order) == 2
+    assert spice.bschoc("GALILEO", 5, lenvals, array, order) == 4
+    assert spice.bschoc("Galileo", 5, lenvals, array, order) == -1
+    assert spice.bschoc("BETHE", 5, lenvals, array, order) == -1
+    assert spice.bschoc(np.array(["nan", "_"])[0], 5, lenvals, array, order) == -1
 
 
 def test_bschoi():
