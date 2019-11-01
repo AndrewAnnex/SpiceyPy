@@ -46,7 +46,7 @@ cspice_dir = os.path.join(root_dir, 'cspice')
 # Make the directory path for cspice/lib
 lib_dir = os.path.join(cspice_dir, 'lib')
 
-TEST_DEPENDENCIES = ['setuptools>=38.0.0','numpy<=1.16.4;python_version<"3.5"', 'numpy>=1.17.0;python_version>="3.5"', 'six>=1.9.0', 'pytest>=2.9.0', 'pandas>=0.25.0']
+TEST_DEPENDENCIES = ['setuptools>=38.0.0','numpy<=1.16.4;python_version<"3.5"', 'numpy>=1.17.0;python_version>="3.5"', 'six>=1.9.0', 'pytest>=2.9.0', 'pandas>=0.24.0']
 DEPENDENCIES = ['setuptools>=38.0.0','numpy<=1.16.4;python_version<"3.5"', 'numpy>=1.17.0;python_version>="3.5"', 'six>=1.9.0', 'certifi>=2017.1.23']
 REQUIRES = ['numpy', 'six']
 
