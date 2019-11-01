@@ -108,13 +108,11 @@ def isiterable(i):
 
 
 def toPythonString(inString):
+    if isinstance(inString, c_char_p):
+        return toPythonString(inString.value)
     if six.PY2:
-        if isinstance(inString, c_char_p):
-            return toPythonString(inString.value)
         return string_at(inString).rstrip()
     elif six.PY3:
-        if isinstance(inString, c_char_p):
-            return toPythonString(inString.value)
         return bytes.decode(string_at(inString), errors="ignore").rstrip()
 
 

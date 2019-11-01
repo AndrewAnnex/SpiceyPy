@@ -24,6 +24,7 @@ SOFTWARE.
 
 import pytest
 import spiceypy as spice
+import pandas as pd
 import numpy as np
 import numpy.testing as npt
 import os
@@ -75,6 +76,13 @@ def test_appndc_numpy():
 def test_appndc_vectorized_numpy():
     testCell = spice.cell_char(10, 10)
     spice.appndc(np.array(["one", "two", "three"]), testCell)
+    assert testCell[0] == "one"
+    assert testCell[1] == "two"
+    assert testCell[2] == "three"
+
+def test_appndc_vectorized_pandas():
+    testCell = spice.cell_char(10, 10)
+    spice.appndc(pd.Series(["one", "two", "three"]), testCell)
     assert testCell[0] == "one"
     assert testCell[1] == "two"
     assert testCell[2] == "three"
