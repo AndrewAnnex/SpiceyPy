@@ -1560,11 +1560,11 @@ def copy(cell):
     assert isinstance(cell, stypes.SpiceCell)
     # Next line was redundant with [raise NotImpImplementedError] below
     # assert cell.dtype == 0 or cell.dtype == 1 or cell.dtype == 2
-    if cell.dtype is 0:
+    if cell.dtype == 0:
         newcopy = stypes.SPICECHAR_CELL(cell.size, cell.length)
-    elif cell.dtype is 1:
+    elif cell.dtype == 1:
         newcopy = stypes.SPICEDOUBLE_CELL(cell.size)
-    elif cell.dtype is 2:
+    elif cell.dtype == 2:
         newcopy = stypes.SPICEINT_CELL(cell.size)
     else:
         raise NotImplementedError
