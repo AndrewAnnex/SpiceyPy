@@ -3510,7 +3510,7 @@ def ducrss(s1, s2):
     :return: Unit vector and derivative of the cross product.
     :rtype: 6-Element Array of floats
     """
-    assert len(s1) is 6 and len(s2) is 6
+    assert len(s1) == 6 and len(s2) == 6
     s1 = stypes.toDoubleVector(s1)
     s2 = stypes.toDoubleVector(s2)
     sout = stypes.emptyDoubleVector(6)
@@ -3533,7 +3533,7 @@ def dvcrss(s1, s2):
     :return: State associated with cross product of positions.
     :rtype: 6-Element Array of floats
     """
-    assert len(s1) is 6 and len(s2) is 6
+    assert len(s1) == 6 and len(s2) == 6
     s1 = stypes.toDoubleVector(s1)
     s2 = stypes.toDoubleVector(s2)
     sout = stypes.emptyDoubleVector(6)
@@ -3556,7 +3556,7 @@ def dvdot(s1, s2):
     :return: The derivative of the dot product.
     :rtype: float
     """
-    assert len(s1) is 6 and len(s2) is 6
+    assert len(s1) == 6 and len(s2) == 6
     s1 = stypes.toDoubleVector(s1)
     s2 = stypes.toDoubleVector(s2)
     return libspice.dvdot_c(s1, s2)
@@ -3575,7 +3575,7 @@ def dvhat(s1):
     :return: Unit vector s1 / abs(s1), and its time derivative.
     :rtype: 6-Element Array of floats
     """
-    assert len(s1) is 6
+    assert len(s1) == 6
     s1 = stypes.toDoubleVector(s1)
     sout = stypes.emptyDoubleVector(6)
     libspice.dvhat_c(s1, sout)
@@ -3595,7 +3595,7 @@ def dvnorm(state):
     :return: The derivative of the norm of a 3-vector.
     :rtype: float
     """
-    assert len(state) is 6
+    assert len(state) == 6
     state = stypes.toDoubleVector(state)
     return libspice.dvnorm_c(state)
 
@@ -3629,7 +3629,7 @@ def dvsep(s1, s2):
     :return: The time derivative of the angular separation between S1 and S2.
     :rtype: float
     """
-    assert len(s1) is 6 and len(s2) is 6
+    assert len(s1) == 6 and len(s2) == 6
     s1 = stypes.toDoubleVector(s1)
     s2 = stypes.toDoubleVector(s2)
     return libspice.dvsep_c(s1, s2)
@@ -5163,7 +5163,7 @@ def eul2xf(eulang, axisa, axisb, axisc):
     :return: A state transformation matrix.
     :rtype: 6x6-Element Array of floats
     """
-    assert len(eulang) is 6
+    assert len(eulang) == 6
     eulang = stypes.toDoubleVector(eulang)
     axisa = ctypes.c_int(axisa)
     axisb = ctypes.c_int(axisb)
@@ -12367,7 +12367,7 @@ def spksub(handle, descr, identin, begin, end, newh):
     :param newh: Handle of new segment.
     :type newh: int
     """
-    assert len(descr) is 5
+    assert len(descr) == 5
     handle = ctypes.c_int(handle)
     descr = stypes.toDoubleVector(descr)
     identin = stypes.stringToCharP(identin)
@@ -12397,7 +12397,7 @@ def spkuds(descr):
             Ending DAF address of the segment.
     :rtype: tuple
     """
-    assert len(descr) is 5
+    assert len(descr) == 5
     descr = stypes.toDoubleVector(descr)
     body = ctypes.c_int()
     center = ctypes.c_int()
