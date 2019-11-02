@@ -24,6 +24,7 @@ SOFTWARE.
 
 import pytest
 import spiceypy as spice
+import pandas as pd
 import numpy as np
 import numpy.testing as npt
 import os
@@ -67,6 +68,24 @@ def test_appndc_vectorized():
     assert testCell[1] == "two"
     assert testCell[2] == "three"
 
+def test_appndc_numpy():
+    testCell = spice.cell_char(10, 10)
+    spice.appndc(np.array(["one", "two"])[0], testCell)
+    assert testCell[0] == "one"
+
+def test_appndc_vectorized_numpy():
+    testCell = spice.cell_char(10, 10)
+    spice.appndc(np.array(["one", "two", "three"]), testCell)
+    assert testCell[0] == "one"
+    assert testCell[1] == "two"
+    assert testCell[2] == "three"
+
+def test_appndc_vectorized_pandas():
+    testCell = spice.cell_char(10, 10)
+    spice.appndc(pd.Series(["one", "two", "three"]), testCell)
+    assert testCell[0] == "one"
+    assert testCell[1] == "two"
+    assert testCell[2] == "three"
 
 def test_appndd():
     testCell = spice.cell_double(8)
@@ -229,6 +248,19 @@ def test_bschoc():
     assert spice.bschoc("GALILEO", 5, lenvals, array, order) == 4
     assert spice.bschoc("Galileo", 5, lenvals, array, order) == -1
     assert spice.bschoc("BETHE", 5, lenvals, array, order) == -1
+
+
+def test_bschoc_numpy():
+    array = np.array(["FEYNMAN", "BOHR", "EINSTEIN", "NEWTON", "GALILEO"])
+    order = [1, 2, 0, 4, 3]
+    lenvals = 10
+    assert spice.bschoc("NEWTON", 5, lenvals, array, order) == 3
+    assert spice.bschoc(np.array(["NEWTON","_"])[0], 5, lenvals, array, order) == 3
+    assert spice.bschoc("EINSTEIN", 5, lenvals, array, order) == 2
+    assert spice.bschoc("GALILEO", 5, lenvals, array, order) == 4
+    assert spice.bschoc("Galileo", 5, lenvals, array, order) == -1
+    assert spice.bschoc("BETHE", 5, lenvals, array, order) == -1
+    assert spice.bschoc(np.array(["nan", "_"])[0], 5, lenvals, array, order) == -1
 
 
 def test_bschoi():
@@ -4398,6 +4430,42 @@ def test_lmpool():
                '                     30, @1996-JAN-1',
                '                     31, @1997-JUL-1',
                '                     32, @1999-JAN-1 )']
+    spice.lmpool(textbuf)
+    for var, expectLen in zip(lmpoolNames, lmpoolLens):
+        n, vartype = spice.dtpool(var)
+        assert expectLen == n
+        assert vartype == 'N'
+    spice.kclear()
+
+
+def test_lmpool_numpy():
+    spice.kclear()
+    lmpoolNames = ['DELTET/DELTA_T_A', 'DELTET/K', 'DELTET/EB', 'DELTET/M', 'DELTET/DELTA_AT']
+    lmpoolLens = [1, 1, 1, 2, 46]
+    textbuf = np.array(['DELTET/DELTA_T_A = 32.184', 'DELTET/K = 1.657D-3', 'DELTET/EB  = 1.671D-2',
+               'DELTET/M = ( 6.239996 1.99096871D-7 )', 'DELTET/DELTA_AT = ( 10, @1972-JAN-1',
+               '                     11, @1972-JUL-1',
+               '                     12, @1973-JAN-1',
+               '                     13, @1974-JAN-1',
+               '                     14, @1975-JAN-1',
+               '                     15, @1976-JAN-1',
+               '                     16, @1977-JAN-1',
+               '                     17, @1978-JAN-1',
+               '                     18, @1979-JAN-1',
+               '                     19, @1980-JAN-1',
+               '                     20, @1981-JUL-1',
+               '                     21, @1982-JUL-1',
+               '                     22, @1983-JUL-1',
+               '                     23, @1985-JUL-1',
+               '                     24, @1988-JAN-1',
+               '                     25, @1990-JAN-1',
+               '                     26, @1991-JAN-1',
+               '                     27, @1992-JUL-1',
+               '                     28, @1993-JUL-1',
+               '                     29, @1994-JUL-1',
+               '                     30, @1996-JAN-1',
+               '                     31, @1997-JUL-1',
+               '                     32, @1999-JAN-1 )'])
     spice.lmpool(textbuf)
     for var, expectLen in zip(lmpoolNames, lmpoolLens):
         n, vartype = spice.dtpool(var)
