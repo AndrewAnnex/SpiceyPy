@@ -5060,7 +5060,7 @@ def et2utc(et, formatStr, prec, lenout=_default_len_out):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/et2utc_c.html
 
     :param et: Input epoch, given in ephemeris seconds past J2000.
-    :type et: float
+    :type et: Union[float,Iterable[float]]
     :param formatStr: Format of output epoch.
     :type formatStr: str
     :param prec: Digits of precision in fractional seconds or days.
@@ -5075,8 +5075,16 @@ def et2utc(et, formatStr, prec, lenout=_default_len_out):
     lenout = ctypes.c_int(lenout)
     formatStr = stypes.stringToCharP(formatStr)
     utcstr = stypes.stringToCharP(lenout)
-    libspice.et2utc_c(et, formatStr, prec, lenout, utcstr)
-    return stypes.toPythonString(utcstr)
+    if hasattr(et, "__iter__"):
+        results = []
+        for t in et:
+            libspice.et2utc_c(t, formatStr, prec, lenout, utcstr)
+            checkForSpiceError(None)
+            results.append(stypes.toPythonString(utcstcr))
+        return results
+    else:
+        libspice.et2utc_c(et, formatStr, prec, lenout, utcstr)
+        return stypes.toPythonString(utcstr)
 
 
 @spiceErrorCheck
@@ -10976,7 +10984,7 @@ def scencd(sc, sclkch, MXPART=None):
     :param sc: NAIF spacecraft identification code.
     :type sc: int
     :param sclkch: Character representation of a spacecraft clock.
-    :type sclkch: str
+    :type sclkch: Union[str,Iterable[str]]
     :param MXPART: Maximum number of spacecraft clock partitions.
     :type MXPART: int
     :return: Encoded representation of the clock count.
@@ -10985,8 +10993,16 @@ def scencd(sc, sclkch, MXPART=None):
     sc = ctypes.c_int(sc)
     sclkch = stypes.stringToCharP(sclkch)
     sclkdp = ctypes.c_double()
-    libspice.scencd_c(sc, sclkch, ctypes.byref(sclkdp))
-    return sclkdp.value
+    if hasattr(sclkch, "__iter__"):
+        results = []
+        for chars in sclkch:
+            libspice.scencd_c(sc, chars, ctypes.byref(sclkdp))
+            checkForSpiceError(None)
+            results.append(sclkdp.value)
+        return results
+    else:
+        libspice.scencd_c(sc, sclkch, ctypes.byref(sclkdp))
+        return sclkdp.value
 
 
 @spiceErrorCheck
@@ -11070,15 +11086,23 @@ def sct2e(sc, sclkdp):
     :param sc: NAIF spacecraft ID code.
     :type sc: int
     :param sclkdp: SCLK, encoded as ticks since spacecraft clock start.
-    :type sclkdp: float
+    :type sclkdp: Union[float,Iterable[float]]
     :return: Ephemeris time, seconds past J2000.
     :rtype: float
     """
     sc = ctypes.c_int(sc)
     sclkdp = ctypes.c_double(sclkdp)
     et = ctypes.c_double()
-    libspice.sct2e_c(sc, sclkdp, ctypes.byref(et))
-    return et.value
+    if hasattr(sclkdp, "__iter__"):
+        results = []
+        for sclk in sclkdp:
+            libspice.sct2e_c(sc, sclk, ctypes.byref(et))
+            checkForSpiceError(None)
+            results.append(et.value)
+        return results
+    else:
+        libspice.sct2e_c(sc, sclkdp, ctypes.byref(et))
+        return et.value
 
 
 @spiceErrorCheck
@@ -13361,14 +13385,14 @@ def str2et(time):
 @spiceErrorCheck
 def datetime2et(dt):
     """
-    Converts a standard Python datetime to a double precision value 
-    representing the number of TDB seconds past the J2000 epoch 
+    Converts a standard Python datetime to a double precision value
+    representing the number of TDB seconds past the J2000 epoch
     corresponding to the input epoch.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/time.html#The%20J2000%20Epoch
 
     :param dt: A standard Python datetime
-    :type time: datetime
+    :type time: Union[datetime,Iterable[datetime]]
     :return: The equivalent value in seconds past J2000, TDB.
     :rtype: float
     """
@@ -14480,15 +14504,23 @@ def utc2et(utcstr):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/utc2et_c.html
 
-    :param utcstr: Input time string, UTC. 
-    :type utcstr: str
+    :param utcstr: Input time string, UTC.
+    :type utcstr: Union[str,Iterable[str]]
     :return: Output epoch, ephemeris seconds past J2000.
     :rtype: float
     """
     utcstr = stypes.stringToCharP(utcstr)
     et = ctypes.c_double()
-    libspice.utc2et_c(utcstr, ctypes.byref(et))
-    return et.value
+    if hasattr(utcstr, "__iter__"):
+        results = []
+        for s in utcstr:
+            libspice.utc2et_c(s, ctypes.byref(et))
+            checkForSpiceError(None)
+            results.append(et.value)
+        return results
+    else:
+        libspice.utc2et_c(utcstr, ctypes.byref(et))
+        return et.value
 
 
 ################################################################################
