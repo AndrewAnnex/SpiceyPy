@@ -1535,10 +1535,10 @@ def convrt(x, inunit, outunit):
     if hasattr(x, "__iter__"):
         outArray=[]
         for n in x:
-            libspice.convrt_c(n,inunit,outunit,ctypes.byref(y))
+            libspice.convrt_c(n, inunit, outunit, ctypes.byref(y))
+            checkForSpiceError(None)
             outArray.append(y.value)
         return outArray
-	
     x = ctypes.c_double(x)
     libspice.convrt_c(x, inunit, outunit, ctypes.byref(y))
     return y.value
