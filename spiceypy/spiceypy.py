@@ -226,7 +226,7 @@ def appndc(item, cell):
     :type cell: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cell, stypes.SpiceCell)
-    if isinstance(item, list):
+    if stypes.isiterable(item):
         for c in item:
             libspice.appndc_c(stypes.stringToCharP(c), cell)
     else:
@@ -1535,10 +1535,10 @@ def convrt(x, inunit, outunit):
     if hasattr(x, "__iter__"):
         outArray=[]
         for n in x:
-            libspice.convrt_c(n,inunit,outunit,ctypes.byref(y))
+            libspice.convrt_c(n, inunit, outunit, ctypes.byref(y))
+            checkForSpiceError(None)
             outArray.append(y.value)
         return outArray
-	
     x = ctypes.c_double(x)
     libspice.convrt_c(x, inunit, outunit, ctypes.byref(y))
     return y.value
@@ -5399,7 +5399,7 @@ def furnsh(path):
     :param path: one or more paths to kernels
     :type path: str or list of str
     """
-    if isinstance(path, list):
+    if stypes.isiterable(path):
         for p in path:
             libspice.furnsh_c(stypes.stringToCharP(p))
     else:
@@ -7180,7 +7180,7 @@ def insrtc(item, inset):
     :type inset: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(inset, stypes.SpiceCell)
-    if isinstance(item, list):
+    if stypes.isiterable(item):
         for c in item:
             libspice.insrtc_c(stypes.stringToCharP(c), ctypes.byref(inset))
     else:
@@ -13351,7 +13351,7 @@ def str2et(time):
     :return: The equivalent value in seconds past J2000, TDB.
     :rtype: float
     """
-    if isinstance(time, list):
+    if stypes.isiterable(time):
         return numpy.array([str2et(t) for t in time])
     time = stypes.stringToCharP(time)
     et = ctypes.c_double()
@@ -14422,7 +14422,7 @@ def unload(filename):
     :param filename: The name of a kernel to unload.
     :type filename: str
     """
-    if isinstance(filename, list):
+    if stypes.isiterable(filename):
         for f in filename:
             libspice.unload_c(stypes.stringToCharP(f))
         return
