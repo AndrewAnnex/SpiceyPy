@@ -5190,7 +5190,7 @@ def ev2lin(et, geophs, elems):
     :return: Evaluated state
     :rtype: 6-Element Array of floats
     """
-    et = ctypes.c_float(et)
+    et = ctypes.c_double(et)
     assert len(geophs) == 8
     geophs = stypes.toDoubleVector(geophs)
     assert len(elems) == 10
