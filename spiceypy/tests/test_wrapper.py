@@ -2980,6 +2980,17 @@ def test_eul2xf():
     spice.kclear()
 
 
+def test_ev2lin():
+    spice.kclear()
+    tle = ['1 18123U 87 53  A 87324.61041692 -.00000023  00000-0 -75103-5 0 00675',
+           '2 18123  98.8296 152.0074 0014950 168.7820 191.3688 14.12912554 21686']
+    spice.furnsh(CoreKernels.testMetaKernel)
+    epoch, elems = spice.getelm(1950, 75, tle)
+    # test ev2lin
+    geophs = [1.082616e-3, -2.53881e-6, -1.65597e-6, 7.43669161e-2, 120.0, 78.0, 6378.135, 1.0]
+    state = spice.ev2lin(epoch, geophs, elems)
+    spice.kclear()
+
 def test_exists():
     assert spice.exists(CoreKernels.testMetaKernel)
 
