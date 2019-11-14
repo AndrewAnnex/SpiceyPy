@@ -5196,9 +5196,7 @@ def ev2lin(et, geophs, elems):
     assert len(elems) == 10
     elems = stypes.toDoubleVector(elems)
     state = stypes.emptyDoubleVector(6)
-    chkin('ev2lin')
-    libspice.ev2lin_(et, geophs, elems, state)
-    chkout('ev2lin')
+    libspice.ev2lin_(ctypes.byref(et), geophs, elems, state)
     return stypes.cVectorToPython(state)
 
 @spiceErrorCheck
