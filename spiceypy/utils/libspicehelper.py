@@ -299,6 +299,7 @@ libspice.et2utc_c.argtypes = [c_double, c_char_p, c_int, c_int, c_char_p]
 libspice.etcal_c.argtypes = [c_double, c_int, c_char_p]
 libspice.eul2m_c.argtypes = [c_double, c_double, c_double, c_int, c_int, c_int, (c_double * 3) * 3]
 libspice.eul2xf_c.argtypes = [(c_double * 6), c_int, c_int, c_int, (c_double * 6) * 6]
+libspice.ev2lin_.argtypes = [c_double_p, c_double_p, c_double_p, c_double_p]
 libspice.exists_c.argtypes = [c_char_p]
 libspice.exists_c.restype = c_int
 libspice.expool_c.argtypes = [c_char_p, c_int_p]
