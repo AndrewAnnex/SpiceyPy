@@ -194,6 +194,7 @@ EXPORTS			appndc_c
 				etcal_c
 				eul2m_c
 				eul2xf_c
+				ev2lin_
 				exists_c
 				expool_c
 				failed_c

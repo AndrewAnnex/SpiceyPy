@@ -5180,6 +5180,32 @@ def eul2xf(eulang, axisa, axisb, axisc):
     libspice.eul2xf_c(eulang, axisa, axisb, axisc, xform)
     return stypes.cMatrixToNumpy(xform)
 
+@spiceErrorCheck
+def ev2lin(et, geophs, elems):
+    """
+    This routine evaluates NORAD two-line element data for
+    near-earth orbiting spacecraft (that is spacecraft with
+    orbital periods less than 225 minutes).
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/ev2lin.html
+
+    :param et: Epoch in seconds past ephemeris epoch J2000.
+    :type et: float
+    :param geophs: Geophysical constants
+    :type geophs: 8-Element Array of floats
+    :param elems: Two-line element data
+    :type elems: 10-Element Array of floats
+    :return: Evaluated state
+    :rtype: 6-Element Array of floats
+    """
+    et = ctypes.c_double(et)
+    assert len(geophs) == 8
+    geophs = stypes.toDoubleVector(geophs)
+    assert len(elems) == 10
+    elems = stypes.toDoubleVector(elems)
+    state = stypes.emptyDoubleVector(6)
+    libspice.ev2lin_(ctypes.byref(et), geophs, elems, state)
+    return stypes.cVectorToPython(state)
 
 @spiceErrorCheck
 def exists(fname):

@@ -2982,6 +2982,35 @@ def test_eul2xf():
     spice.kclear()
 
 
+def test_ev2lin():
+    spice.kclear()
+    # lightsail 2
+    tle = ['1 44420U 19036AC  19311.70264562  .00005403  00000-0  12176-2 0  9991',
+           '2 44420  24.0060  72.9267 0016343 241.6999 118.1833 14.53580129 17852']
+    spice.furnsh(CoreKernels.testMetaKernel)
+    epoch, elems = spice.getelm(2019, 75, tle)
+    # adding 3 seconds manually as something is wrong with provided tle epoch or the lsk kernel was not used when generating the expected output
+    expected_elems = np.array([1.63715519939676e-10, 0, 0.0012176, 0.418983740233759, 1.27281102761415, 0.0016343, 4.21845905674104, 2.06268770587221, 0.0634243979815348, 626417577.764171])
+    expected_epoch = 626417577.764171
+    npt.assert_array_almost_equal(expected_elems, elems)
+    npt.assert_almost_equal(epoch, expected_epoch)
+    # test ev2lin
+    geophs = [1.082616e-3, -2.53881e-6, -1.65597e-6, 7.43669161e-2, 120.0, 78.0, 6378.135, 1.0]
+    # test at t0
+    state_0 = spice.ev2lin(epoch, geophs, elems)
+    expected_state_0 = np.array([2083.32107340449, 6782.80001655649, -0.0505350227151017, -6.54335340061531, 2.01771874263164, 3.0515091420169])
+    npt.assert_array_almost_equal(expected_state_0, state_0)
+    # test at t3600
+    state_3600 = spice.ev2lin(epoch+3600, geophs, elems)
+    expected_state_3600 = np.array([2175.83882413485, -6497.55066037852, -1786.06093660828, 6.52417720498168, 2.84696745594303, -2.39736415840424])
+    npt.assert_array_almost_equal(expected_state_3600, state_3600)
+    spice.kclear()
+    # test at t86400
+    state_86400 = spice.ev2lin(epoch+86400, geophs, elems)
+    expected_state_86400 = np.array([-193.463324028138, -6986.20486685614, -1154.18287208625, 6.96216415803069, 0.276466105258879, -2.79931910593688])
+    npt.assert_array_almost_equal(expected_state_86400, state_86400)
+    spice.kclear()
+
 def test_exists():
     assert spice.exists(CoreKernels.testMetaKernel)
 
