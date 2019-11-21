@@ -284,9 +284,9 @@ def axisar(axis, angle):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/axisar_c.html
 
-    :param axis: Rotation axis. 
+    :param axis: Rotation axis.
     :type axis: 3 Element vector (list, tuple, numpy array)
-    :param angle: Rotation angle, in radians. 
+    :param angle: Rotation angle, in radians.
     :type angle: float
     :return: Rotation matrix corresponding to axis and angle.
     :rtype: numpy array ((3, 3))
@@ -858,9 +858,9 @@ def chbder(cp, degp, x2s, x, nderiv):
     Given the coefficients for the Chebyshev expansion of a
     polynomial, this returns the value of the polynomial and its
     first nderiv derivatives evaluated at the input X.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/chbder_c.html
-    
+
     :param cp: degp+1 Chebyshev polynomial coefficients.
     :type cp: Array of floats
     :param degp: Degree of polynomial.
@@ -1528,7 +1528,7 @@ def convrt(x, inunit, outunit):
     :return: The measurment in the desired units.
     :rtype: float
     """
-	
+
     inunit = stypes.stringToCharP(inunit)
     outunit = stypes.stringToCharP(outunit)
     y = ctypes.c_double()
@@ -2188,13 +2188,13 @@ def dascls(handle):
 @spiceErrorCheck
 def dasdc(handle):
     """
-    Delete the entire comment area of a previously opened binary 
+    Delete the entire comment area of a previously opened binary
     DAS file.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasdc_c.html
-    
+
     :param handle: The handle of a binary DAS file opened for writing.
-    :type handle: int 
+    :type handle: int
     """
     handle = ctypes.c_int(handle)
     libspice.dasdc_c(handle)
@@ -2234,7 +2234,7 @@ def dasec(handle, bufsiz=_default_len_out, buflen=_default_len_out):
 def dashfn(handle, lenout=_default_len_out):
     """
     Return the name of the DAS file associated with a handle.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dashfn_c.html
 
     :param handle: Handle of a DAS file.
@@ -2255,7 +2255,7 @@ def dashfn(handle, lenout=_default_len_out):
 def dasonw(fname, ftype, ifname, ncomch):
     """
     Internal undocumented command for creating a new DAS file
-    
+
     :param fname: filename
     :type fname: str
     :param ftype: type
@@ -2301,9 +2301,9 @@ def dasopr(fname):
 def dasopw(fname):
     """
     Open a DAS file for writing.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasopw_c.html
-    :param fname: Name of a DAS file to be opened. 
+    :param fname: Name of a DAS file to be opened.
     :type fname: str
     :return: Handle assigned to the opened DAS file.
     """
@@ -2316,8 +2316,8 @@ def dasopw(fname):
 @spiceErrorCheck
 def dasrfr(handle, lenout=_default_len_out):
     """
-    Return the contents of the file record of a specified DAS file. 
-    
+    Return the contents of the file record of a specified DAS file.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasrfr_c.html
 
     :param handle: DAS file handle.
@@ -2493,9 +2493,9 @@ def diff(a, b):
 def dlabbs(handle):
     """
     Begin a backward segment search in a DLA file.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlabbs_c.html
-    
+
     :param handle: Handle of open DLA file.
     :type handle: int
     :return: Descriptor of last segment in DLA file
@@ -2513,9 +2513,9 @@ def dlabbs(handle):
 def dlabfs(handle):
     """
     Begin a forward segment search in a DLA file.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlabfs_c.html
-    
+
     :param handle: Handle of open DLA file.
     :type handle: int
     :return: Descriptor of next segment in DLA file
@@ -2532,10 +2532,10 @@ def dlabfs(handle):
 @spiceFoundExceptionThrower
 def dlafns(handle, descr):
     """
-    Find the segment following a specified segment in a DLA file. 
-    
+    Find the segment following a specified segment in a DLA file.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlafns_c.html
-    
+
     :param handle: Handle of open DLA file.
     :type handle: c_int
     :param descr: Descriptor of a DLA segment.
@@ -2556,12 +2556,12 @@ def dlafns(handle, descr):
 def dlafps(handle, descr):
     """
     Find the segment preceding a specified segment in a DLA file.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlafps_c.html
-    
+
     :param handle: Handle of open DLA file.
     :type handle: c_int
-    :param descr: Descriptor of a segment in DLA file. 
+    :param descr: Descriptor of a segment in DLA file.
     :type descr: spiceypy.utils.support_types.SpiceDLADescr
     :return: Descriptor of previous segment in DLA file
     :rtype: spiceypy.utils.support_types.SpiceDLADescr
@@ -2875,15 +2875,15 @@ def dskb02(handle, dladsc):
 @spiceErrorCheck
 def dskcls(handle, optmiz=False):
     """
-    Close a DSK file. 
+    Close a DSK file.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskcls_c.html
-    
+
     :param handle: Handle assigned to the opened DSK file.
     :type handle: int
     :param optmiz: Flag indicating whether to segregate the DSK.
     :type optmiz: bool
-    :return: 
+    :return:
     """
     handle = ctypes.c_int(handle)
     optmiz = ctypes.c_int(optmiz)
@@ -2946,10 +2946,10 @@ def dskgd(handle, dladsc):
 def dskgtl(keywrd):
     """
     Retrieve the value of a specified DSK tolerance or margin parameter.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskgtl_c.html
-    
-    :param keywrd: Code specifying parameter to retrieve. 
+
+    :param keywrd: Code specifying parameter to retrieve.
     :type keywrd: int
     :return: Value of parameter.
     :rtype: float
@@ -3066,12 +3066,12 @@ def dskn02(handle, dladsc, plid):
 @spiceErrorCheck
 def dskobj(dsk):
     """
-    Find the set of body ID codes of all objects for which 
-    topographic data are provided in a specified DSK file. 
-    
+    Find the set of body ID codes of all objects for which
+    topographic data are provided in a specified DSK file.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskobj_c.html
-    
-    :param dsk: Name of DSK file. 
+
+    :param dsk: Name of DSK file.
     :type dsk: str
     :return: Set of ID codes of objects in DSK file.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -3085,15 +3085,15 @@ def dskobj(dsk):
 @spiceErrorCheck
 def dskopn(fname, ifname, ncomch):
     """
-    Open a new DSK file for subsequent write operations. 
-    
+    Open a new DSK file for subsequent write operations.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskopn_c.html
-    
-    :param fname: Name of a DSK file to be opened. 
+
+    :param fname: Name of a DSK file to be opened.
     :type fname: str
     :param ifname: Internal file name.
     :type ifname: str
-    :param ncomch: Number of comment characters to allocate. 
+    :param ncomch: Number of comment characters to allocate.
     :type ncomch: int
     :return: Handle assigned to the opened DSK file.
     :rtype: int
@@ -3167,16 +3167,16 @@ def dskrb2(vrtces, plates, corsys, corpar):
 @spiceErrorCheck
 def dsksrf(dsk, bodyid):
     """
-    Find the set of surface ID codes for all surfaces associated with 
-    a given body in a specified DSK file. 
-    
+    Find the set of surface ID codes for all surfaces associated with
+    a given body in a specified DSK file.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dsksrf_c.html
-    
+
     :param dsk: Name of DSK file.
     :type dsk: str
     :param bodyid: Integer body ID code.
     :type bodyid: int
-    :return: Set of ID codes of surfaces in DSK file. 
+    :return: Set of ID codes of surfaces in DSK file.
     """
     dsk    = stypes.stringToCharP(dsk)
     bodyid = ctypes.c_int(bodyid)
@@ -3189,14 +3189,14 @@ def dsksrf(dsk, bodyid):
 def dskstl(keywrd, dpval):
     """
     Set the value of a specified DSK tolerance or margin parameter.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskstl_c.html
-    
+
     :param keywrd: Code specifying parameter to set.
     :type keywrd: int
-    :param dpval: Value of parameter. 
+    :param dpval: Value of parameter.
     :type dpval: float
-    :return: 
+    :return:
     """
     keywrd = ctypes.c_int(keywrd)
     dpval = ctypes.c_double(dpval)
@@ -5068,7 +5068,7 @@ def et2utc(et, formatStr, prec, lenout=_default_len_out):
     :param lenout: The length of the output string plus 1.
     :type lenout: int
     :return: Output time string in UTC
-    :rtype: str
+    :rtype: Union[str,Iterable[str]]
     """
     et = ctypes.c_double(et)
     prec = ctypes.c_int(prec)
@@ -6841,16 +6841,16 @@ def hrmint(xvals, yvals, x):
     """
     Evaluate a Hermite interpolating polynomial at a specified
     abscissa value.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/hrmint_c.html
-    
+
     :param xvals: Abscissa values.
     :type xvals: Array of floats
     :param yvals: Ordinate and derivative values.
     :type yvals: Array of floats
     :param x: Point at which to interpolate the polynomial.
     :type x: int
-    :return: Interpolated function value at x and the Interpolated function's derivative at x  
+    :return: Interpolated function value at x and the Interpolated function's derivative at x
     :rtype: tuple
     """
     work  = stypes.emptyDoubleVector(int(2*len(yvals)+1))
@@ -6964,13 +6964,13 @@ def illumf(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint):
     provided by DSK files, or by a reference ellipsoid.
 
     The illumination source is a specified ephemeris object.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/illumf_c.html
-    
+
     :param method: Computation method.
     :type method: str
     :param target: Name of target body.
-    :type target: str 
+    :type target: str
     :param ilusrc: Name of illumination source.
     :type ilusrc: str
     :param et: Epoch in ephemeris seconds past J2000.
@@ -6984,8 +6984,8 @@ def illumf(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint):
     :param spoint: Body-fixed coordinates of a target surface point.
     :type spoint: 3-Element Array of floats
     :return: Target surface point epoch, Vector from observer to target
-     surface point, Phase angle at the surface point, Source incidence 
-     angle at the surface point, Emission angle at the surface point, 
+     surface point, Phase angle at the surface point, Source incidence
+     angle at the surface point, Emission angle at the surface point,
      Visibility flag, Illumination flag
     :rtype: tuple
     """
@@ -7015,20 +7015,20 @@ def illumf(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint):
 @spiceErrorCheck
 def illumg(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint):
     """
-    Find the illumination angles (phase, incidence, and 
-    emission) at a specified surface point of a target body. 
- 
-    The surface of the target body may be represented by a triaxial 
-    ellipsoid or by topographic data provided by DSK files. 
- 
+    Find the illumination angles (phase, incidence, and
+    emission) at a specified surface point of a target body.
+
+    The surface of the target body may be represented by a triaxial
+    ellipsoid or by topographic data provided by DSK files.
+
     The illumination source is a specified ephemeris object.
     param method: Computation method.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/illumg_c.html
-    
+
     :type method: str
     :param target: Name of target body.
-    :type target: str 
+    :type target: str
     :param ilusrc: Name of illumination source.
     :type ilusrc: str
     :param et: Epoch in ephemeris seconds past J2000.
@@ -7042,8 +7042,8 @@ def illumg(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint):
     :param spoint: Body-fixed coordinates of a target surface point.
     :type spoint: 3-Element Array of floats
     :return: Target surface point epoch, Vector from observer to target
-     surface point, Phase angle at the surface point, Source incidence 
-     angle at the surface point, Emission angle at the surface point, 
+     surface point, Phase angle at the surface point, Source incidence
+     angle at the surface point, Emission angle at the surface point,
     :rtype: tuple
     """
     method = stypes.stringToCharP(method)
@@ -7842,25 +7842,25 @@ def latsph(radius, lon, lat):
 @spiceErrorCheck
 def latsrf(method, target, et, fixref, lonlat):
     """
-    Map array of planetocentric longitude/latitude coordinate pairs 
-    to surface points on a specified target body. 
- 
-    The surface of the target body may be represented by a triaxial 
+    Map array of planetocentric longitude/latitude coordinate pairs
+    to surface points on a specified target body.
+
+    The surface of the target body may be represented by a triaxial
     ellipsoid or by topographic data provided by DSK files.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/latsrf_c.html
-    
+
     :param method: Computation method.
     :type method: str
     :param target: Name of target body.
     :type target: str
-    :param et: Epoch in TDB seconds past J2000 TDB. 
+    :param et: Epoch in TDB seconds past J2000 TDB.
     :type et: float
     :param fixref: Body-fixed, body-centered target body frame.
     :type fixref: str
     :param lonlat: Array of longitude/latitude coordinate pairs.
     :type lonlat: A 2xM-Element Array of floats
-    :return: Array of surface points. 
+    :return: Array of surface points.
     :rtype: A 3xM-Element Array of floats
     """
     method = stypes.stringToCharP(method)
@@ -7913,17 +7913,17 @@ def ldpool(filename):
 @spiceErrorCheck
 def limbpt(method, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp, ncuts, schstp, soltol, maxn):
     """
-    Find limb points on a target body. The limb is the set of points 
-    of tangency on the target of rays emanating from the observer. 
-    The caller specifies half-planes bounded by the observer-target 
-    center vector in which to search for limb points. 
- 
-    The surface of the target body may be represented either by a 
-    triaxial ellipsoid or by topographic data. 
-    
+    Find limb points on a target body. The limb is the set of points
+    of tangency on the target of rays emanating from the observer.
+    The caller specifies half-planes bounded by the observer-target
+    center vector in which to search for limb points.
+
+    The surface of the target body may be represented either by a
+    triaxial ellipsoid or by topographic data.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/limbpt_c.html
-    
-    :param method: Computation method. 
+
+    :param method: Computation method.
     :type method: str
     :param target: Name of target body.
     :type target: str
@@ -7931,7 +7931,7 @@ def limbpt(method, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp, n
     :type et: float
     :param fixref: Body-fixed, body-centered target body frame.
     :type fixref: str
-    :param abcorr: Aberration correction. 
+    :param abcorr: Aberration correction.
     :type abcorr: str
     :param corloc: Aberration correction locus.
     :type corloc: str
@@ -7939,15 +7939,15 @@ def limbpt(method, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp, n
     :type obsrvr: str
     :param refvec: Reference vector for cutting half-planes.
     :type refvec: 3-Element Array of floats
-    :param rolstp: Roll angular step for cutting half-planes. 
+    :param rolstp: Roll angular step for cutting half-planes.
     :type rolstp: float
-    :param ncuts: Number of cutting half-planes. 
+    :param ncuts: Number of cutting half-planes.
     :type ncuts: int
-    :param schstp: Angular step size for searching. 
+    :param schstp: Angular step size for searching.
     :type schstp: float
-    :param soltol: Solution convergence tolerance. 
+    :param soltol: Solution convergence tolerance.
     :type soltol: float
-    :param maxn: Maximum number of entries in output arrays. 
+    :param maxn: Maximum number of entries in output arrays.
     :type maxn: int
     :return: Counts of limb points corresponding to cuts, Limb points, Times associated with limb points, Tangent vectors emanating from the observer
     :rtype: tuple
@@ -7985,7 +7985,7 @@ def lgrind(xvals, yvals, x):
     Evaluate a Lagrange interpolating polynomial for a specified
     set of coordinate pairs, at a specified abscissa value.
     Return the value of both polynomial and derivative.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lgrind_c.html
 
     :param xvals: Abscissa values.
@@ -9293,20 +9293,20 @@ def oscelt(state, et, mu):
 
 def oscltx(state, et, mu):
     """
-    Determine the set of osculating conic orbital elements that 
-    corresponds to the state (position, velocity) of a body at some 
-    epoch. In additional to the classical elements, return the true 
-    anomaly, semi-major axis, and period, if applicable. 
-    
+    Determine the set of osculating conic orbital elements that
+    corresponds to the state (position, velocity) of a body at some
+    epoch. In additional to the classical elements, return the true
+    anomaly, semi-major axis, and period, if applicable.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/oscltx_c.html
-    
-    :param state: State of body at epoch of elements. 
+
+    :param state: State of body at epoch of elements.
     :type state: 6-Element Array of floats
-    :param et: Epoch of elements. 
+    :param et: Epoch of elements.
     :type et: float
-    :param mu: Gravitational parameter (GM) of primary body. 
+    :param mu: Gravitational parameter (GM) of primary body.
     :type mu: float
-    :return: Extended set of classical conic elements. 
+    :return: Extended set of classical conic elements.
     """
     state = stypes.toDoubleVector(state)
     et = ctypes.c_double(et)
@@ -9321,10 +9321,10 @@ def oscltx(state, et, mu):
 @spiceErrorCheck
 def pckcls(handle):
     """
-    Close an open PCK file. 
-    
+    Close an open PCK file.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pckcls_c.html
-    
+
     :param handle: Handle of the PCK file to be closed.
     :type handle: int
     """
@@ -9396,15 +9396,15 @@ def pcklof(filename):
 @spiceErrorCheck
 def pckopn(name, ifname, ncomch):
     """
-    Create a new PCK file, returning the handle of the opened file. 
-    
+    Create a new PCK file, returning the handle of the opened file.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pckopn_c.html
-    
-    :param name: The name of the PCK file to be opened. 
+
+    :param name: The name of the PCK file to be opened.
     :type name: str
     :param ifname: The internal filename for the PCK.
     :type ifname: str
-    :param ncomch: The number of characters to reserve for comments. 
+    :param ncomch: The number of characters to reserve for comments.
     :type ncomch: int
     :return: The handle of the opened PCK file.
     :rtype: int
@@ -9438,16 +9438,16 @@ def pckw02(handle, classid, frname, first, last, segid, intlen, n, polydg, cdata
     Write a type 2 segment to a PCK binary file given the file handle,
     frame class ID, base frame, time range covered by the segment, and
     the Chebyshev polynomial coefficients.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pckw02_c.html
-    
+
     :param handle: Handle of binary PCK file open for writing.
     :type handle: int
     :param classid: Frame class ID of body-fixed frame.
     :type classid: int
     :param frname: Name of base reference frame.
     :type frname: str
-    :param first: Start time of interval covered by segment. 
+    :param first: Start time of interval covered by segment.
     :type first: float
     :param last: End time of interval covered by segment.
     :type last: float
@@ -9457,7 +9457,7 @@ def pckw02(handle, classid, frname, first, last, segid, intlen, n, polydg, cdata
     :type intlen: float
     :param n: Number of logical records in segment.
     :type n: int
-    :param polydg: Chebyshev polynomial degree. 
+    :param polydg: Chebyshev polynomial degree.
     :type polydg: int
     :param cdata: Array of Chebyshev coefficients.
     :type cdata: N-Element Array of floats
@@ -9705,12 +9705,12 @@ def pl2psv(plane):
 def pltar(vrtces, plates):
     """
     Compute the total area of a collection of triangular plates.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltar_c.html
-    
+
     :param vrtces: Array of vertices.
     :type vrtces: Nx3-Element Array of floats
-    :param plates: Array of plates. 
+    :param plates: Array of plates.
     :type plates: Nx3-Element Array of ints
     :return: total area of the set of plates
     :rtype: float
@@ -9725,17 +9725,17 @@ def pltar(vrtces, plates):
 @spiceErrorCheck
 def pltexp(iverts, delta):
     """
-    Expand a triangular plate by a specified amount. The expanded 
-    plate is co-planar with, and has the same orientation as, the 
-    original. The centroids of the two plates coincide. 
-    
+    Expand a triangular plate by a specified amount. The expanded
+    plate is co-planar with, and has the same orientation as, the
+    original. The centroids of the two plates coincide.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltexp_c.html
-    
-    :param iverts: Vertices of the plate to be expanded. 
+
+    :param iverts: Vertices of the plate to be expanded.
     :type iverts: 3x3-Element Array of floats
     :param delta: Fraction by which the plate is to be expanded.
     :type delta: double
-    :return: Vertices of the expanded plate. 
+    :return: Vertices of the expanded plate.
     :rtype: 3x3-Element Array of floats
     """
     iverts = stypes.toDoubleMatrix(iverts)
@@ -9748,17 +9748,17 @@ def pltexp(iverts, delta):
 @spiceErrorCheck
 def pltnp(point, v1, v2, v3):
     """
-    Find the nearest point on a triangular plate to a given point. 
-    
+    Find the nearest point on a triangular plate to a given point.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltnp_c.html
-    
-    :param point: A point in 3-dimensional space. 
+
+    :param point: A point in 3-dimensional space.
     :type point: 3-Element Array of floats
     :param v1: Vertices of a triangular plate.
     :type v1: 3-Element Array of floats
-    :param v2: Vertices of a triangular plate. 
+    :param v2: Vertices of a triangular plate.
     :type v2: 3-Element Array of floats
-    :param v3: Vertices of a triangular plate. 
+    :param v3: Vertices of a triangular plate.
     :type v3: 3-Element Array of floats
     :return: the nearest point on a triangular plate to a given point and distance
     :rtype: tuple
@@ -9776,16 +9776,16 @@ def pltnp(point, v1, v2, v3):
 @spiceErrorCheck
 def pltnrm(v1, v2, v3):
     """
-    Compute an outward normal vector of a triangular plate. 
-    The vector does not necessarily have unit length. 
-    
+    Compute an outward normal vector of a triangular plate.
+    The vector does not necessarily have unit length.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltnrm_c.html
-    
+
     :param v1: Vertices of a plate.
     :type v1: 3-Element Array of floats
-    :param v2: Vertices of a plate. 
+    :param v2: Vertices of a plate.
     :type v2: 3-Element Array of floats
-    :param v3: Vertices of a plate. 
+    :param v3: Vertices of a plate.
     :type v3: 3-Element Array of floats
     :return: Plate's outward normal vector.
     :rtype: 3-Element Array of floats
@@ -9801,16 +9801,16 @@ def pltnrm(v1, v2, v3):
 @spiceErrorCheck
 def pltvol(vrtces, plates):
     """
-    Compute the volume of a three-dimensional region bounded by a 
-    collection of triangular plates. 
-    
+    Compute the volume of a three-dimensional region bounded by a
+    collection of triangular plates.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltvol_c.html
- 
+
     :param vrtces: Array of vertices.
     :type vrtces: Nx3-Element Array of floats
-    :param plates: Array of plates. 
-    :type plates: Nx3-Element Array of ints 
-    :return: the volume of the spatial region bounded by the plates. 
+    :param plates: Array of plates.
+    :type plates: Nx3-Element Array of ints
+    :return: the volume of the spatial region bounded by the plates.
     :rtype: float
     """
     nv = ctypes.c_int(len(vrtces))
@@ -9825,9 +9825,9 @@ def polyds(coeffs, deg, nderiv, t):
     """
     Compute the value of a polynomial and it's first
     n derivatives at the value t.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/polyds_c.html
-    
+
     :param coeffs: Coefficients of the polynomial to be evaluated.
     :type coeffs: N-Element Array of floats
     :param deg: Degree of the polynomial to be evaluated.
@@ -11014,7 +11014,7 @@ def scencd(sc, sclkch, MXPART=None):
     :param MXPART: Maximum number of spacecraft clock partitions.
     :type MXPART: int
     :return: Encoded representation of the clock count.
-    :rtype: float
+    :rtype: Union[float,Iterable[float]]
     """
     sc = ctypes.c_int(sc)
     sclkch = stypes.stringToCharP(sclkch)
@@ -11114,7 +11114,7 @@ def sct2e(sc, sclkdp):
     :param sclkdp: SCLK, encoded as ticks since spacecraft clock start.
     :type sclkdp: Union[float,Iterable[float]]
     :return: Ephemeris time, seconds past J2000.
-    :rtype: float
+    :rtype: Union[float,Iterable[float]]
     """
     sc = ctypes.c_int(sc)
     sclkdp = ctypes.c_double(sclkdp)
@@ -13072,20 +13072,20 @@ def spkw20(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
 @spiceFoundExceptionThrower
 def srfc2s(code, bodyid, srflen=_default_len_out):
     """
-    Translate a surface ID code, together with a body ID code, to the 
-    corresponding surface name. If no such name exists, return a 
-    string representation of the surface ID code. 
-    
+    Translate a surface ID code, together with a body ID code, to the
+    corresponding surface name. If no such name exists, return a
+    string representation of the surface ID code.
+
     note: from NAIF if isname is false, this case is not treated as an error.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfc2s_c.html
-    
-    :param code: Integer surface ID code to translate to a string. 
+
+    :param code: Integer surface ID code to translate to a string.
     :type code: int
-    :param bodyid: ID code of body associated with surface. 
+    :param bodyid: ID code of body associated with surface.
     :type bodyid: int
     :param srflen: Available space in output string.
-    :param srflen: int 
+    :param srflen: int
     :return: String corresponding to surface ID code.
     :rtype: str
     """
@@ -13102,13 +13102,13 @@ def srfc2s(code, bodyid, srflen=_default_len_out):
 @spiceFoundExceptionThrower
 def srfcss(code, bodstr, srflen=_default_len_out):
     """
-    Translate a surface ID code, together with a body string, to the 
-    corresponding surface name. If no such surface name exists, 
-    return a string representation of the surface ID code. 
-    
+    Translate a surface ID code, together with a body string, to the
+    corresponding surface name. If no such surface name exists,
+    return a string representation of the surface ID code.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfcss_c.html
-    
-    :param code: Integer surface ID code to translate to a string. 
+
+    :param code: Integer surface ID code to translate to a string.
     :type code: int
     :param bodstr: Name or ID of body associated with surface.
     :type bodstr: str
@@ -13129,21 +13129,21 @@ def srfcss(code, bodstr, srflen=_default_len_out):
 @spiceErrorCheck
 def srfnrm(method, target, et, fixref, srfpts):
     """
-    Map array of surface points on a specified target body to 
-    the corresponding unit length outward surface normal vectors. 
- 
-    The surface of the target body may be represented by a triaxial 
-    ellipsoid or by topographic data provided by DSK files. 
-    
+    Map array of surface points on a specified target body to
+    the corresponding unit length outward surface normal vectors.
+
+    The surface of the target body may be represented by a triaxial
+    ellipsoid or by topographic data provided by DSK files.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfnrm_c.html
-    
+
     :param method: Computation method.
     :type method: str
-    :param target: Name of target body. 
+    :param target: Name of target body.
     :type target: str
-    :param et: Epoch in TDB seconds past J2000 TDB. 
+    :param et: Epoch in TDB seconds past J2000 TDB.
     :type et: float
-    :param fixref: Body-fixed, body-centered target body frame. 
+    :param fixref: Body-fixed, body-centered target body frame.
     :type fixref: str
     :param srfpts: Array of surface points.
     :type srfpts: 3xM-Element Array of floats
@@ -13190,12 +13190,12 @@ def srfrec(body, longitude, latitude):
 @spiceFoundExceptionThrower
 def srfs2c(srfstr, bodstr):
     """
-    Translate a surface string, together with a body string, to the 
-    corresponding surface ID code. The input strings may contain 
+    Translate a surface string, together with a body string, to the
+    corresponding surface ID code. The input strings may contain
     names or integer ID codes.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfs2c_c.html
-    
+
     :param srfstr: Surface name or ID string.
     :type srfstr: str
     :param bodstr: Body name or ID string.
@@ -13215,16 +13215,16 @@ def srfs2c(srfstr, bodstr):
 @spiceFoundExceptionThrower
 def srfscc(srfstr, bodyid):
     """
-    Translate a surface string, together with a body ID code, to the 
-    corresponding surface ID code. The input surface string may 
-    contain a name or an integer ID code. 
-    
+    Translate a surface string, together with a body ID code, to the
+    corresponding surface ID code. The input surface string may
+    contain a name or an integer ID code.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfscc_c.html
-    
+
     :param srfstr: Surface name or ID string.
     :type srfstr: str
-    :param bodyid: ID code of body associated with surface. 
-    :type bodyid: int 
+    :param bodyid: ID code of body associated with surface.
+    :type bodyid: int
     :return: Integer surface ID code.
     :rtype: int
     """
@@ -13420,7 +13420,7 @@ def datetime2et(dt):
     :param dt: A standard Python datetime
     :type time: Union[datetime,Iterable[datetime]]
     :return: The equivalent value in seconds past J2000, TDB.
-    :rtype: float
+    :rtype: Union[float,Iterable[datetime]]
     """
     lt = ctypes.c_double()
     if hasattr(dt, "__iter__"):
@@ -13830,19 +13830,19 @@ def termpt(method, ilusrc, target, et, fixref, abcorr, corloc, obsrvr, refvec, r
     half-planes, bounded by the illumination source center-target center
     vector, in which to search for terminator points.
 
-    The terminator can be either umbral or penumbral. The umbral 
-    terminator is the boundary of the region on the target surface 
-    where no light from the source is visible. The penumbral 
-    terminator is the boundary of the region on the target surface 
-    where none of the light from the source is blocked by the target 
+    The terminator can be either umbral or penumbral. The umbral
+    terminator is the boundary of the region on the target surface
+    where no light from the source is visible. The penumbral
+    terminator is the boundary of the region on the target surface
+    where none of the light from the source is blocked by the target
     itself.
 
-    The surface of the target body may be represented either by a 
-    triaxial ellipsoid or by topographic data.  
+    The surface of the target body may be represented either by a
+    triaxial ellipsoid or by topographic data.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/termpt_c.html
 
-    :param method: Computation method. 
+    :param method: Computation method.
     :type method: str
     :param ilusrc: Illumination source.
     :type ilusrc: str
@@ -13852,7 +13852,7 @@ def termpt(method, ilusrc, target, et, fixref, abcorr, corloc, obsrvr, refvec, r
     :type et: float
     :param fixref: Body-fixed, body-centered target body frame.
     :type fixref: str
-    :param abcorr: Aberration correction. 
+    :param abcorr: Aberration correction.
     :type abcorr: str
     :param corloc: Aberration correction locus.
     :type corloc: str
@@ -13860,15 +13860,15 @@ def termpt(method, ilusrc, target, et, fixref, abcorr, corloc, obsrvr, refvec, r
     :type obsrvr: str
     :param refvec: Reference vector for cutting half-planes.
     :type refvec: 3-Element Array of floats
-    :param rolstp: Roll angular step for cutting half-planes. 
+    :param rolstp: Roll angular step for cutting half-planes.
     :type rolstp: float
-    :param ncuts: Number of cutting half-planes. 
+    :param ncuts: Number of cutting half-planes.
     :type ncuts: int
-    :param schstp: Angular step size for searching. 
+    :param schstp: Angular step size for searching.
     :type schstp: float
-    :param soltol: Solution convergence tolerance. 
+    :param soltol: Solution convergence tolerance.
     :type soltol: float
-    :param maxn: Maximum number of entries in output arrays. 
+    :param maxn: Maximum number of entries in output arrays.
     :type maxn: int
     :return: Counts of terminator points corresponding to cuts, Terminator points, Times associated with terminator points, Terminator vectors emanating from the observer
     :rtype: tuple
@@ -14487,7 +14487,7 @@ def unorm(v1):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unorm_c.html
 
-    :param v1: Vector to be normalized. 
+    :param v1: Vector to be normalized.
     :type v1: 3-Element Array of floats
     :return: Unit vector of v1, Magnitude of v1.
     :rtype: tuple
@@ -14507,9 +14507,9 @@ def unormg(v1, ndim):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unormg_c.html
 
-    :param v1: Vector to be normalized. 
+    :param v1: Vector to be normalized.
     :type v1: Array of floats
-    :param ndim: This is the dimension of v1 and vout. 
+    :param ndim: This is the dimension of v1 and vout.
     :type ndim: int
     :return: Unit vector of v1, Magnitude of v1.
     :rtype: tuple
@@ -14533,7 +14533,7 @@ def utc2et(utcstr):
     :param utcstr: Input time string, UTC.
     :type utcstr: Union[str,Iterable[str]]
     :return: Output epoch, ephemeris seconds past J2000.
-    :rtype: float
+    :rtype: Union[float,Iterable[float]]
     """
     utcstr = stypes.stringToCharP(utcstr)
     et = ctypes.c_double()
@@ -14558,9 +14558,9 @@ def vadd(v1, v2):
     """ Add two 3 dimensional vectors.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vadd_c.html
 
-    :param v1: First vector to be added. 
+    :param v1: First vector to be added.
     :type v1: 3-Element Array of floats
-    :param v2: Second vector to be added. 
+    :param v2: Second vector to be added.
     :type v2: 3-Element Array of floats
     :return: v1+v2
     :rtype: 3-Element Array of floats
@@ -14577,11 +14577,11 @@ def vaddg(v1, v2, ndim):
     """ Add two n-dimensional vectors
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vaddg_c.html
 
-    :param v1: First vector to be added. 
+    :param v1: First vector to be added.
     :type v1: list[ndim]
-    :param v2: Second vector to be added. 
+    :param v2: Second vector to be added.
     :type v2: list[ndim]
-    :param ndim: Dimension of v1 and v2. 
+    :param ndim: Dimension of v1 and v2.
     :type ndim: int
     :return: v1+v2
     :rtype: list[ndim]
@@ -14601,9 +14601,9 @@ def valid(insize, n, inset):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/valid_c.html
 
-    :param insize: Size (maximum cardinality) of the set. 
+    :param insize: Size (maximum cardinality) of the set.
     :type insize: int
-    :param n: Initial no. of (possibly non-distinct) elements. 
+    :param n: Initial no. of (possibly non-distinct) elements.
     :type n: int
     :param inset: Set to be validated.
     :return: validated set
@@ -14623,9 +14623,9 @@ def vcrss(v1, v2):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vcrss_c.html
 
-    :param v1: Left hand vector for cross product. 
+    :param v1: Left hand vector for cross product.
     :type v1: 3-Element Array of floats
-    :param v2: Right hand vector for cross product. 
+    :param v2: Right hand vector for cross product.
     :type v2: 3-Element Array of floats
     :return: Cross product v1 x v2.
     :rtype: 3-Element Array of floats
@@ -14644,9 +14644,9 @@ def vdist(v1, v2):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdist_c.html
 
-    :param v1: First vector in the dot product. 
+    :param v1: First vector in the dot product.
     :type v1: 3-Element Array of floats
-    :param v2: Second vector in the dot product. 
+    :param v2: Second vector in the dot product.
     :type v2: 3-Element Array of floats
     :return: the distance between v1 and v2
     :rtype: float
@@ -14663,11 +14663,11 @@ def vdistg(v1, v2, ndim):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdistg_c.html
 
-    :param v1: ndim-dimensional double precision vector. 
+    :param v1: ndim-dimensional double precision vector.
     :type v1: list[ndim]
-    :param v2: ndim-dimensional double precision vector. 
+    :param v2: ndim-dimensional double precision vector.
     :type v2: list[ndim]
-    :param ndim: Dimension of v1 and v2. 
+    :param ndim: Dimension of v1 and v2.
     :type ndim: int
     :return: the distance between v1 and v2
     :rtype: float
@@ -14685,9 +14685,9 @@ def vdot(v1, v2):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdot_c.html
 
-    :param v1: First vector in the dot product. 
+    :param v1: First vector in the dot product.
     :type v1: 3-Element Array of floats
-    :param v2: Second vector in the dot product. 
+    :param v2: Second vector in the dot product.
     :type v2: 3-Element Array of floats
     :return: dot product of v1 and v2.
     :rtype: float
@@ -14705,11 +14705,11 @@ def vdotg(v1, v2, ndim):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdotg_c.html
 
-    :param v1: First vector in the dot product. 
+    :param v1: First vector in the dot product.
     :type v1: list[ndim]
-    :param v2: Second vector in the dot product. 
+    :param v2: Second vector in the dot product.
     :type v2: list[ndim]
-    :param ndim: Dimension of v1 and v2. 
+    :param ndim: Dimension of v1 and v2.
     :type ndim: int
     :return: dot product of v1 and v2.
     :rtype: float
@@ -14727,7 +14727,7 @@ def vequ(v1):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vequ_c.html
 
-    :param v1: 3-dimensional double precision vector. 
+    :param v1: 3-dimensional double precision vector.
     :type v1: 3-Element Array of floats
     :return: 3-dimensional double precision vector set equal to vin.
     :rtype: 3-Element Array of floats
@@ -14745,9 +14745,9 @@ def vequg(v1, ndim):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vequg_c.html
 
-    :param v1: ndim-dimensional double precision vector. 
+    :param v1: ndim-dimensional double precision vector.
     :type v1: list[ndim]
-    :param ndim: Dimension of vin (and also vout). 
+    :param ndim: Dimension of vin (and also vout).
     :type ndim: int
     :return: ndim-dimensional double precision vector set equal to vin.
     :rtype: list[ndim]
@@ -14766,7 +14766,7 @@ def vhat(v1):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vhat_c.html
 
-    :param v1: Vector to be unitized. 
+    :param v1: Vector to be unitized.
     :type v1: 3-Element Array of floats
     :return: Unit vector v / abs(v).
     :rtype: 3-Element Array of floats
@@ -14784,9 +14784,9 @@ def vhatg(v1, ndim):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vhatg_c.html
 
-    :param v1: Vector to be normalized. 
+    :param v1: Vector to be normalized.
     :type v1: list[ndim]
-    :param ndim: Dimension of v1 (and also vout). 
+    :param ndim: Dimension of v1 (and also vout).
     :type ndim: int
     :return: Unit vector v / abs(v).
     :rtype: list[ndim]
@@ -14806,13 +14806,13 @@ def vlcom(a, v1, b, v2):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vlcom_c.html
 
-    :param a: Coefficient of v1 
+    :param a: Coefficient of v1
     :type a: float
-    :param v1: Vector in 3-space 
+    :param v1: Vector in 3-space
     :type v1: 3-Element Array of floats
-    :param b: Coefficient of v2 
+    :param b: Coefficient of v2
     :type b: float
-    :param v2: Vector in 3-space 
+    :param v2: Vector in 3-space
     :type v2: 3-Element Array of floats
     :return: Linear Vector Combination a*v1 + b*v2.
     :rtype: 3-Element Array of floats
@@ -14834,17 +14834,17 @@ def vlcom3(a, v1, b, v2, c, v3):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vlcom3_c.html
 
-    :param a: Coefficient of v1 
+    :param a: Coefficient of v1
     :type a: float
-    :param v1: Vector in 3-space 
+    :param v1: Vector in 3-space
     :type v1: 3-Element Array of floats
-    :param b: Coefficient of v2 
+    :param b: Coefficient of v2
     :type b: float
-    :param v2: Vector in 3-space 
+    :param v2: Vector in 3-space
     :type v2: 3-Element Array of floats
-    :param c: Coefficient of v3 
+    :param c: Coefficient of v3
     :type c: float
-    :param v3: Vector in 3-space 
+    :param v3: Vector in 3-space
     :type v3: 3-Element Array of floats
     :return: Linear Vector Combination a*v1 + b*v2 + c*v3
     :rtype: 3-Element Array of floats
@@ -14868,15 +14868,15 @@ def vlcomg(n, a, v1, b, v2):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vlcomg_c.html
 
-    :param n: Dimension of vector space 
+    :param n: Dimension of vector space
     :type n: int
-    :param a: Coefficient of v1 
+    :param a: Coefficient of v1
     :type a: float
-    :param v1: Vector in n-space 
+    :param v1: Vector in n-space
     :type v1: list[n]
-    :param b: Coefficient of v2 
+    :param b: Coefficient of v2
     :type b: float
-    :param v2: Vector in n-space 
+    :param v2: Vector in n-space
     :type v2: list[n]
     :return: Linear Vector Combination a*v1 + b*v2
     :rtype: list[n]
@@ -14898,9 +14898,9 @@ def vminug(vin, ndim):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vminug_c.html
 
-    :param vin: ndim-dimensional double precision vector to be negated. 
+    :param vin: ndim-dimensional double precision vector to be negated.
     :type vin: Array of floats
-    :param ndim: Dimension of vin. 
+    :param ndim: Dimension of vin.
     :type ndim: int
     :return: ndim-dimensional double precision vector equal to -vin.
     :rtype: list[ndim]
@@ -14919,7 +14919,7 @@ def vminus(vin):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vminus_c.html
 
-    :param vin: Vector to be negated. 
+    :param vin: Vector to be negated.
     :type vin: 3-Element Array of floats
     :return: Negated vector -v1.
     :rtype: 3-Element Array of floats
@@ -14937,7 +14937,7 @@ def vnorm(v):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vnorm_c.html
 
-    :param v: Vector whose magnitude is to be found. 
+    :param v: Vector whose magnitude is to be found.
     :type v: 3-Element Array of floats
     :return: magnitude of v calculated in a numerically stable way
     :rtype: float
@@ -14953,9 +14953,9 @@ def vnormg(v, ndim):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vnormg_c.html
 
-    :param v: Vector whose magnitude is to be found. 
+    :param v: Vector whose magnitude is to be found.
     :type v: Array of floats
-    :param ndim: Dimension of v 
+    :param ndim: Dimension of v
     :type ndim: int
     :return: magnitude of v calculated in a numerically stable way
     :rtype: float
@@ -14972,11 +14972,11 @@ def vpack(x, y, z):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vpack_c.html
 
-    :param x: first scalar component 
+    :param x: first scalar component
     :type x: float
-    :param y: second scalar component 
+    :param y: second scalar component
     :type y: float
-    :param z: third scalar component 
+    :param z: third scalar component
     :type z: float
     :return: Equivalent 3-vector.
     :rtype: 3-Element Array of floats
@@ -14997,9 +14997,9 @@ def vperp(a, b):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vperp_c.html
 
-    :param a: The vector whose orthogonal component is sought. 
+    :param a: The vector whose orthogonal component is sought.
     :type a: 3-Element Array of floats
-    :param b: The vector used as the orthogonal reference. 
+    :param b: The vector used as the orthogonal reference.
     :type b: 3-Element Array of floats
     :return: The component of a orthogonal to b.
     :rtype: 3-Element Array of floats
@@ -15018,9 +15018,9 @@ def vprjp(vin, plane):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vprjp_c.html
 
-    :param vin: The projected vector. 
+    :param vin: The projected vector.
     :type vin: 3-Element Array of floats
-    :param plane: Plane containing vin. 
+    :param plane: Plane containing vin.
     :type plane: spiceypy.utils.support_types.Plane
     :return: Vector resulting from projection.
     :rtype: 3-Element Array of floats
@@ -15040,11 +15040,11 @@ def vprjpi(vin, projpl, invpl):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vprjpi_c.html
 
-    :param vin: The projected vector. 
+    :param vin: The projected vector.
     :type vin: 3-Element Array of floats
-    :param projpl: Plane containing vin. 
+    :param projpl: Plane containing vin.
     :type projpl: spiceypy.utils.support_types.Plane
-    :param invpl: Plane containing inverse image of vin. 
+    :param invpl: Plane containing inverse image of vin.
     :type invpl: spiceypy.utils.support_types.Plane
     :return: Inverse projection of vin.
     :rtype: list
@@ -15064,9 +15064,9 @@ def vproj(a, b):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vproj_c.html
 
-    :param a: The vector to be projected. 
+    :param a: The vector to be projected.
     :type a: 3-Element Array of floats
-    :param b: The vector onto which a is to be projected. 
+    :param b: The vector onto which a is to be projected.
     :type b: 3-Element Array of floats
     :return: The projection of a onto b.
     :rtype: 3-Element Array of floats
@@ -15085,9 +15085,9 @@ def vrel(v1, v2):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vrel_c.html
 
-    :param v1: First vector 
+    :param v1: First vector
     :type v1: 3-Element Array of floats
-    :param v2: Second vector 
+    :param v2: Second vector
     :type v2: 3-Element Array of floats
     :return: the relative difference between v1 and v2.
     :rtype: float
@@ -15104,9 +15104,9 @@ def vrelg(v1, v2, ndim):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vrelg_c.html
 
-    :param v1: First vector 
+    :param v1: First vector
     :type v1: Array of floats
-    :param v2: Second vector 
+    :param v2: Second vector
     :type v2: Array of floats
     :param ndim: Dimension of v1 and v2.
     :type ndim: int
@@ -15127,11 +15127,11 @@ def vrotv(v, axis, theta):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vrotv_c.html
 
-    :param v: Vector to be rotated. 
+    :param v: Vector to be rotated.
     :type v: 3-Element Array of floats
-    :param axis: Axis of the rotation. 
+    :param axis: Axis of the rotation.
     :type axis: 3-Element Array of floats
-    :param theta: Angle of rotation (radians). 
+    :param theta: Angle of rotation (radians).
     :type theta: float
     :return: Result of rotating v about axis by theta
     :rtype: 3-Element Array of floats
@@ -15151,9 +15151,9 @@ def vscl(s, v1):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vscl_c.html
 
-    :param s: Scalar to multiply a vector 
+    :param s: Scalar to multiply a vector
     :type s: float
-    :param v1: Vector to be multiplied 
+    :param v1: Vector to be multiplied
     :type v1: 3-Element Array of floats
     :return: Product vector, s*v1.
     :rtype: 3-Element Array of floats
@@ -15172,11 +15172,11 @@ def vsclg(s, v1, ndim):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsclg_c.html
 
-    :param s: Scalar to multiply a vector 
+    :param s: Scalar to multiply a vector
     :type s: float
-    :param v1: Vector to be multiplied 
+    :param v1: Vector to be multiplied
     :type v1: Array of floats
-    :param ndim: Dimension of v1 
+    :param ndim: Dimension of v1
     :type ndim: int
     :return: Product vector, s*v1.
     :rtype: Array of floats
@@ -15198,9 +15198,9 @@ def vsep(v1, v2):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsep_c.html
 
-    :param v1: First vector 
+    :param v1: First vector
     :type v1: 3-Element Array of floats
-    :param v2: Second vector 
+    :param v2: Second vector
     :type v2: 3-Element Array of floats
     :return: separation angle in radians
     :rtype: float
@@ -15219,11 +15219,11 @@ def vsepg(v1, v2, ndim):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsepg_c.html
 
-    :param v1: First vector 
+    :param v1: First vector
     :type v1: Array of floats
-    :param v2: Second vector 
+    :param v2: Second vector
     :type v2: Array of floats
-    :param ndim: The number of elements in v1 and v2. 
+    :param ndim: The number of elements in v1 and v2.
     :type ndim: int
     :return: separation angle in radians
     :rtype: float
@@ -15242,9 +15242,9 @@ def vsub(v1, v2):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsub_c.html
 
-    :param v1: First vector (minuend). 
+    :param v1: First vector (minuend).
     :type v1: 3-Element Array of floats
-    :param v2: Second vector (subtrahend). 
+    :param v2: Second vector (subtrahend).
     :type v2: 3-Element Array of floats
     :return: Difference vector, v1 - v2.
     :rtype: 3-Element Array of floats
@@ -15264,11 +15264,11 @@ def vsubg(v1, v2, ndim):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsubg_c.html
 
-    :param v1: First vector (minuend). 
+    :param v1: First vector (minuend).
     :type v1: Array of floats
-    :param v2: Second vector (subtrahend). 
+    :param v2: Second vector (subtrahend).
     :type v2: Array of floats
-    :param ndim: Dimension of v1, v2, and vout. 
+    :param ndim: Dimension of v1, v2, and vout.
     :type ndim: int
     :return: Difference vector, v1 - v2.
     :rtype: Array of floats
@@ -15289,11 +15289,11 @@ def vtmv(v1, matrix, v2):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vtmv_c.html
 
-    :param v1: 3 dimensional double precision column vector. 
+    :param v1: 3 dimensional double precision column vector.
     :type v1: 3-Element Array of floats
-    :param matrix: 3x3 double precision matrix. 
+    :param matrix: 3x3 double precision matrix.
     :type matrix: 3x3-Element Array of floats
-    :param v2: 3 dimensional double precision column vector. 
+    :param v2: 3 dimensional double precision column vector.
     :type v2: 3-Element Array of floats
     :return: the result of (v1**t * matrix * v2 ).
     :rtype: float
@@ -15313,15 +15313,15 @@ def vtmvg(v1, matrix, v2, nrow, ncol):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vtmvg_c.html
 
-    :param v1: n-dimensional double precision column vector. 
+    :param v1: n-dimensional double precision column vector.
     :type v1: Array of floats
-    :param matrix: nxm double precision matrix. 
+    :param matrix: nxm double precision matrix.
     :type matrix: NxM-Element Array of floats
-    :param v2: m-dimensional double porecision column vector. 
+    :param v2: m-dimensional double porecision column vector.
     :type v2: Array of floats
-    :param nrow: Number of rows in matrix (number of rows in v1.) 
+    :param nrow: Number of rows in matrix (number of rows in v1.)
     :type nrow: int
-    :param ncol: Number of columns in matrix (number of rows in v2.) 
+    :param ncol: Number of columns in matrix (number of rows in v2.)
     :type ncol: int
     :return: the result of (v1**t * matrix * v2 )
     :rtype: float
@@ -15341,7 +15341,7 @@ def vupack(v):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vupack_c.html
 
-    :param v: Vector 
+    :param v: Vector
     :type v: 3-Element Array of floats
     :return: (x, y, z)
     :rtype: tuple
@@ -15361,7 +15361,7 @@ def vzero(v):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vzero_c.html
 
-    :param v: Vector to be tested 
+    :param v: Vector to be tested
     :type v: 3-Element Array of floats
     :return: true if and only if v is the zero vector
     :rtype: bool
@@ -15377,9 +15377,9 @@ def vzerog(v, ndim):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vzerog_c.html
 
-    :param v: Vector to be tested 
+    :param v: Vector to be tested
     :type v: Array of floats
-    :param ndim: Dimension of v 
+    :param ndim: Dimension of v
     :type ndim: int
     :return: true if and only if v is the zero vector
     :rtype: bool
@@ -15401,7 +15401,7 @@ def wncard(window):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wncard_c.html
 
-    :param window: Input window 
+    :param window: Input window
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: the cardinality of the input window.
     :rtype: int
@@ -15418,11 +15418,11 @@ def wncomd(left, right, window):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wncomd_c.html
 
-    :param left: left endpoints of complement interval. 
+    :param left: left endpoints of complement interval.
     :type left: float
-    :param right: right endpoints of complement interval. 
+    :param right: right endpoints of complement interval.
     :type right: float
-    :param window: Input window 
+    :param window: Input window
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: Complement of window with respect to left and right.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -15443,11 +15443,11 @@ def wncond(left, right, window):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wncond_c.html
 
-    :param left: Amount added to each left endpoint. 
+    :param left: Amount added to each left endpoint.
     :type left: float
-    :param right: Amount subtracted from each right endpoint. 
+    :param right: Amount subtracted from each right endpoint.
     :type right: float
-    :param window: Window to be contracted 
+    :param window: Window to be contracted
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: Contracted Window.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -15468,9 +15468,9 @@ def wndifd(a, b):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wndifd_c.html
 
-    :param a: Input window A. 
+    :param a: Input window A.
     :type a: spiceypy.utils.support_types.SpiceCell
-    :param b: Input window B. 
+    :param b: Input window B.
     :type b: spiceypy.utils.support_types.SpiceCell
     :return: Difference of a and b.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -15492,9 +15492,9 @@ def wnelmd(point, window):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnelmd_c.html
 
-    :param point: Input point. 
+    :param point: Input point.
     :type point: float
-    :param window: Input window 
+    :param window: Input window
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: returns True if point is an element of window.
     :rtype: bool
@@ -15512,11 +15512,11 @@ def wnexpd(left, right, window):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnexpd_c.html
 
-    :param left: Amount subtracted from each left endpoint. 
+    :param left: Amount subtracted from each left endpoint.
     :type left: float
-    :param right: Amount added to each right endpoint. 
+    :param right: Amount added to each right endpoint.
     :type right: float
-    :param window: Window to be expanded. 
+    :param window: Window to be expanded.
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: Expanded Window.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -15537,9 +15537,9 @@ def wnextd(side, window):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnextd_c.html
 
-    :param side: Extract left "L" or right "R" endpoints. 
+    :param side: Extract left "L" or right "R" endpoints.
     :type side: str
-    :param window: Window to be extracted. 
+    :param window: Window to be extracted.
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: Extracted Window.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -15559,9 +15559,9 @@ def wnfetd(window, n):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnfetd_c.html
 
-    :param window: Input window 
+    :param window: Input window
     :type window: spiceypy.utils.support_types.SpiceCell
-    :param n: Index of interval to be fetched. 
+    :param n: Index of interval to be fetched.
     :type n: int
     :return: Left, right endpoints of the nth interval.
     :rtype: tuple
@@ -15583,9 +15583,9 @@ def wnfild(small, window):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnfild_c.html
 
-    :param small: Limiting measure of small gaps. 
+    :param small: Limiting measure of small gaps.
     :type small: float
-    :param window: Window to be filled 
+    :param window: Window to be filled
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: Filled Window.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -15604,9 +15604,9 @@ def wnfltd(small, window):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnfltd_c.html
 
-    :param small: Limiting measure of small intervals. 
+    :param small: Limiting measure of small intervals.
     :type small: float
-    :param window: Window to be filtered. 
+    :param window: Window to be filtered.
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: Filtered Window.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -15625,11 +15625,11 @@ def wnincd(left, right, window):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnincd_c.html
 
-    :param left: Left interval 
+    :param left: Left interval
     :type left: float
-    :param right: Right interval 
+    :param right: Right interval
     :type right: float
-    :param window: Input window 
+    :param window: Input window
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: Returns True if the input interval is included in window.
     :rtype: bool
@@ -15648,11 +15648,11 @@ def wninsd(left, right, window):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wninsd_c.html
 
-    :param left: Left endpoints of new interval. 
+    :param left: Left endpoints of new interval.
     :type left: float
-    :param right: Right endpoints of new interval. 
+    :param right: Right endpoints of new interval.
     :type right: float
-    :param window: Input window. 
+    :param window: Input window.
     :type window: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
@@ -15671,9 +15671,9 @@ def wnintd(a, b):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnintd_c.html
 
 
-    :param a: Input window A. 
+    :param a: Input window A.
     :type a: spiceypy.utils.support_types.SpiceCell
-    :param b: Input window B. 
+    :param b: Input window B.
     :type b: spiceypy.utils.support_types.SpiceCell
     :return: Intersection of a and b.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -15694,11 +15694,11 @@ def wnreld(a, op, b):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnreld_c.html
 
-    :param a: First window. 
+    :param a: First window.
     :type a: spiceypy.utils.support_types.SpiceCell
-    :param op: Comparison operator. 
+    :param op: Comparison operator.
     :type op: str
-    :param b: Second window. 
+    :param b: Second window.
     :type b: spiceypy.utils.support_types.SpiceCell
     :return: The result of comparison: a (op) b.
     :rtype: bool
@@ -15719,7 +15719,7 @@ def wnsumd(window):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnsumd_c.html
 
-    :param window: Window to be summarized. 
+    :param window: Window to be summarized.
     :type window: spiceypy.utils.support_types.SpiceCell
     :return:
             Total measure of intervals in window,
@@ -15748,9 +15748,9 @@ def wnunid(a, b):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnunid_c.html
 
-    :param a: Input window A. 
+    :param a: Input window A.
     :type a: spiceypy.utils.support_types.SpiceCell
-    :param b: Input window B. 
+    :param b: Input window B.
     :type b: spiceypy.utils.support_types.SpiceCell
     :return: Union of a and b.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -15772,11 +15772,11 @@ def wnvald(insize, n, window):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnvald_c.html
 
-    :param insize: Size of window. 
+    :param insize: Size of window.
     :type insize: int
-    :param n: Original number of endpoints. 
+    :param n: Original number of endpoints.
     :type n: int
-    :param window: Input window. 
+    :param window: Input window.
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: The union of the intervals in the input cell.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -15832,13 +15832,13 @@ def xf2eul(xform, axisa, axisb, axisc):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xf2eul_c.html
 
-    :param xform: state transformation matrix 
+    :param xform: state transformation matrix
     :type xform: list[6][6]
-    :param axisa: Axis A of the Euler angle factorization. 
+    :param axisa: Axis A of the Euler angle factorization.
     :type axisa: int
-    :param axisb: Axis B of the Euler angle factorization. 
+    :param axisb: Axis B of the Euler angle factorization.
     :type axisb: int
-    :param axisc: Axis C of the Euler angle factorization. 
+    :param axisc: Axis C of the Euler angle factorization.
     :type axisc: int
     :return: (eulang, unique)
     :rtype: tuple
@@ -15860,7 +15860,7 @@ def xf2rav(xform):
     of the rotation from a state transformation matrix.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xf2rav_c.html
 
-    :param xform: state transformation matrix 
+    :param xform: state transformation matrix
     :type xform: list[6][6]
     :return:
             rotation associated with xform,
@@ -15881,11 +15881,11 @@ def xfmsta(input_state, input_coord_sys, output_coord_sys, body):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xfmsta_c.html
 
-    :param input_state: Input state. 
+    :param input_state: Input state.
     :type input_state: 6-Element Array of floats
-    :param input_coord_sys: Current (input) coordinate system. 
+    :param input_coord_sys: Current (input) coordinate system.
     :type input_coord_sys: str
-    :param output_coord_sys: Desired (output) coordinate system. 
+    :param output_coord_sys: Desired (output) coordinate system.
     :type output_coord_sys: str
     :param body:
                 Name or NAIF ID of body with which coordinates
@@ -15911,7 +15911,7 @@ def xpose(m):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xpose_c.html
 
-    :param m: Matrix to be transposed 
+    :param m: Matrix to be transposed
     :type m: 3x3-Element Array of floats
     :return: Transposed matrix
     :rtype: 3x3-Element Array of floats
@@ -15929,7 +15929,7 @@ def xpose6(m):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xpose6_c.html
 
-    :param m: Matrix to be transposed 
+    :param m: Matrix to be transposed
     :type m: list[6][6]
     :return: Transposed matrix
     :rtype: list[6][6]
@@ -15948,7 +15948,7 @@ def xposeg(matrix, nrow, ncol):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xposeg_c.html
 
-    :param matrix: Matrix to be transposed 
+    :param matrix: Matrix to be transposed
     :type matrix: NxM-Element Array of floats
     :param nrow: Number of rows of input matrix.
     :type nrow: int
