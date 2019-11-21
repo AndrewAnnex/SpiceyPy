@@ -2950,6 +2950,13 @@ def test_et2utc():
     et = -527644192.5403653
     output = spice.et2utc(et, "J", 6)
     assert output == "JD 2445438.006415"
+    spice.kclear()
+
+
+def test_et2utc_vectorized():
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = -527644192.5403653
     mylist = 3 * [et]
     assert spice.et2utc(mylist, "J", 6 ) == 3*[output]
     spice.kclear()
@@ -5800,8 +5807,16 @@ def test_scencd():
     sclkdp = spice.scencd(-32, sclkch)
     npt.assert_almost_equal(sclkdp, 985327950.0)
     assert sclkch == "2/20538:39:768"
+    spice.kclear()
+
+
+def test_scencd_vectorized():
+    spice.kclear()
+    spice.furnsh(CoreKernel.testMetaKernel)
+    spice.furnsh(ExtraKernels.voyagerSclk)
+    sclkch = spice.scdecd(-32, 985327950.0, 50)
     mylist = 3 * [sclkch]
-    npt.assert_almost_equal(spice.scencd(-32, mylist), 3*[985327950.0])
+    npt.assert_almost_equal(spice.scencd(-32, mylist), 3 * [985327950.0])
     spice.kclear()
 
 
@@ -5845,7 +5860,15 @@ def test_sct2e():
     et = spice.sct2e(-32, 985327965.0)
     utc = spice.et2utc(et, 'C', 3, 50)
     assert utc == "1979 JUL 05 21:50:22.134"
-    mylist = 3*[985327965.0]
+    spice.kclear()
+
+
+def test_sct2e_vectorized():
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(ExtraKernels.voyagerSclk)
+    et = spice.sct2e(-32, 985327965.0)
+    mylist = 3 * [985327965.0]
     assert spice.sct2e(mylist) == 3*[et]
     spice.kclear()
 
@@ -7859,6 +7882,13 @@ def test_utc2et():
     output = spice.utc2et(utcstr)
     assert output == 155185515.1831043
     # icy utc2et example gives 1.5518552e+08 as output
+    spice.kclear()
+
+
+def test_utc2et_vectorized():
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    utcstr = 'December 1, 2004 15:04:11'
     mylist = 3 * [utcstr]
     assert spice.utc2et(mylist) == 3*[output]
     spice.kclear()

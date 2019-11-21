@@ -1532,7 +1532,7 @@ def convrt(x, inunit, outunit):
     inunit = stypes.stringToCharP(inunit)
     outunit = stypes.stringToCharP(outunit)
     y = ctypes.c_double()
-    if hasattr(x, "__iter__"):
+    if stypes.isiterable(x):
         outArray=[]
         for n in x:
             libspice.convrt_c(n, inunit, outunit, ctypes.byref(y))
@@ -5075,7 +5075,7 @@ def et2utc(et, formatStr, prec, lenout=_default_len_out):
     lenout = ctypes.c_int(lenout)
     formatStr = stypes.stringToCharP(formatStr)
     utcstr = stypes.stringToCharP(lenout)
-    if hasattr(et, "__iter__"):
+    if stypes.isiterable(et):
         results = []
         for t in et:
             libspice.et2utc_c(t, formatStr, prec, lenout, utcstr)
@@ -5105,7 +5105,7 @@ def etcal(et, lenout=_default_len_out):
     """
     lenout = ctypes.c_int(lenout)
     string = stypes.stringToCharP(lenout)
-    if hasattr(et, "__iter__"):
+    if stypes.isiterable(et):
         strings = []
         for t in et:
             libspice.etcal_c(t, lenout, string)
@@ -11019,7 +11019,7 @@ def scencd(sc, sclkch, MXPART=None):
     sc = ctypes.c_int(sc)
     sclkch = stypes.stringToCharP(sclkch)
     sclkdp = ctypes.c_double()
-    if hasattr(sclkch, "__iter__"):
+    if stypes.isiterable(sclkch):
         results = []
         for chars in sclkch:
             libspice.scencd_c(sc, chars, ctypes.byref(sclkdp))
@@ -11119,7 +11119,7 @@ def sct2e(sc, sclkdp):
     sc = ctypes.c_int(sc)
     sclkdp = ctypes.c_double(sclkdp)
     et = ctypes.c_double()
-    if hasattr(sclkdp, "__iter__"):
+    if stypes.isiterable(sclkdp):
         results = []
         for sclk in sclkdp:
             libspice.sct2e_c(sc, sclk, ctypes.byref(et))
@@ -12034,7 +12034,7 @@ def spkezr(targ, et, ref, abcorr, obs):
     obs = stypes.stringToCharP(obs)
     starg = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
-    if hasattr(et, "__iter__"):
+    if stypes.isiterable(et):
         states = []
         times = []
         for t in et:
@@ -12289,7 +12289,7 @@ def spkpos(targ, et, ref, abcorr, obs):
     obs = stypes.stringToCharP(obs)
     ptarg = stypes.emptyDoubleVector(3)
     lt = ctypes.c_double()
-    if hasattr(et, "__iter__"):
+    if stypes.isiterable(et):
         ptargs = []
         lts    = []
         for t in et:
@@ -13282,7 +13282,7 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
     dist = ctypes.c_double()
     obspos = stypes.emptyDoubleVector(3)
     found = ctypes.c_int()
-    if hasattr(et, "__iter__"):
+    if stypes.isiterable(et):
         spoints = []
         dists = []
         trgepcs = []
@@ -13423,8 +13423,8 @@ def datetime2et(dt):
     :rtype: Union[float,Iterable[datetime]]
     """
     lt = ctypes.c_double()
-    if hasattr(dt, "__iter__"):
-        ets    = []
+    if stypes.isiterable(dt):
+        ets = []
         for t in dt:
             libspice.utc2et_c(stypes.stringToCharP(t.isoformat()),ctypes.byref(lt))
             checkForSpiceError(None)
@@ -13516,7 +13516,7 @@ def subpt(method, target, et, abcorr, obsrvr):
     obsrvr = stypes.stringToCharP(obsrvr)
     spoint = stypes.emptyDoubleVector(3)
     alt = ctypes.c_double()
-    if hasattr(et, "__iter__"):
+    if stypes.isiterable(et):
         points = []
         alts = []
         for t in et:
@@ -13785,7 +13785,7 @@ def sxform(instring, tostring, et):
     instring = stypes.stringToCharP(instring)
     tostring = stypes.stringToCharP(tostring)
     xform = stypes.emptyDoubleMatrix(x=6, y=6)
-    if hasattr(et, "__iter__"):
+    if stypes.isiterable(et):
         xforms = []
         for t in et:
             libspice.sxform_c(instring, tostring, ctypes.c_double(t), xform)
@@ -13953,7 +13953,7 @@ def timout(et, pictur, lenout=_default_len_out):
     pictur = stypes.stringToCharP(pictur)
     output = stypes.stringToCharP(lenout)
     lenout = ctypes.c_int(lenout)
-    if hasattr(et, "__iter__"):
+    if stypes.isiterable(et):
         times = []
         for t in et:
             libspice.timout_c(ctypes.c_double(t), pictur, lenout, output)
@@ -14537,7 +14537,7 @@ def utc2et(utcstr):
     """
     utcstr = stypes.stringToCharP(utcstr)
     et = ctypes.c_double()
-    if hasattr(utcstr, "__iter__"):
+    if stypes.isiterable(utcstr):
         results = []
         for s in utcstr:
             libspice.utc2et_c(s, ctypes.byref(et))
