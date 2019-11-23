@@ -2953,6 +2953,15 @@ def test_et2utc():
     spice.kclear()
 
 
+def test_et2utc_vectorized():
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = -527644192.5403653
+    output = spice.et2utc(3 * [et], "J", 6)
+    assert output == 3 * ["JD 2445438.006415"]
+    spice.kclear()
+        
+
 def test_etcal():
     et = np.arange(0, 20)
     cal = spice.etcal(et[0])
@@ -5801,6 +5810,16 @@ def test_scencd():
     spice.kclear()
 
 
+def test_scencd_vectorized():
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(ExtraKernels.voyagerSclk)
+    sclkch = '2/20538:39:768'
+    sclkdp = spice.scencd(-32, 3 * [sclkch])
+    npt.assert_almost_equal(sclkdp, 3*[985327950.0], decimal=6)
+    spice.kclear()
+    
+    
 def test_scfmt():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -5844,6 +5863,18 @@ def test_sct2e():
     spice.kclear()
 
 
+def test_sct2e_vectorized():
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(ExtraKernels.voyagerSclk)
+    inputlist = 3 * [985327965.0]
+    # -32 is the SPICE code for Voyager 2
+    to_test = spice.sct2e(-32, inputlist)
+    expected = -646668527.6822292
+    npt.assert_almost_equal(3 * [expected], to_test, decimal=6)
+    spice.kclear()
+    
+    
 def test_sctiks():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
