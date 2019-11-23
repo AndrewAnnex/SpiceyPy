@@ -51,10 +51,10 @@ def check_for_spice_error(f):
     """
     if failed():
         errorparts = {
-            "tkvsn"    : tkvrsn("TOOLKIT").replace("CSPICE_", ""),
-            "short"    : getmsg("SHORT", 26),
-            "explain"  : getmsg("EXPLAIN", 100).strip(),
-            "long"     : getmsg("LONG", 321).strip(),
+            "tkvsn": tkvrsn("TOOLKIT").replace("CSPICE_", ""),
+            "short": getmsg("SHORT", 26),
+            "explain": getmsg("EXPLAIN", 100).strip(),
+            "long": getmsg("LONG", 321).strip(),
             "traceback": qcktrc(200),
         }
         msg = stypes.errorformat.format(**errorparts)
@@ -1259,7 +1259,7 @@ def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
 
 @spice_error_check
 def ckw02(
-        handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats, avvs, rates
+    handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats, avvs, rates
 ):
     """
     Write a type 2 segment to a C-kernel.
@@ -1310,19 +1310,19 @@ def ckw02(
 
 @spice_error_check
 def ckw03(
-        handle,
-        begtim,
-        endtim,
-        inst,
-        ref,
-        avflag,
-        segid,
-        nrec,
-        sclkdp,
-        quats,
-        avvs,
-        nints,
-        starts,
+    handle,
+    begtim,
+    endtim,
+    inst,
+    ref,
+    avflag,
+    segid,
+    nrec,
+    sclkdp,
+    quats,
+    avvs,
+    nints,
+    starts,
 ):
     """
     Add a type 3 segment to a C-kernel.
@@ -1388,20 +1388,20 @@ def ckw03(
 
 @spice_error_check
 def ckw05(
-        handle,
-        subtype,
-        degree,
-        begtim,
-        endtim,
-        inst,
-        ref,
-        avflag,
-        segid,
-        sclkdp,
-        packts,
-        rate,
-        nints,
-        starts,
+    handle,
+    subtype,
+    degree,
+    begtim,
+    endtim,
+    inst,
+    ref,
+    avflag,
+    segid,
+    sclkdp,
+    packts,
+    rate,
+    nints,
+    starts,
 ):
     """
     Write a type 5 segment to a CK file.
@@ -3435,25 +3435,25 @@ def dskv02(handle, dladsc, start, room):
 
 @spice_error_check
 def dskw02(
-        handle,
-        center,
-        surfid,
-        dclass,
-        fname,
-        corsys,
-        corpar,
-        mncor1,
-        mxcor1,
-        mncor2,
-        mxcor2,
-        mncor3,
-        mxcor3,
-        first,
-        last,
-        vrtces,
-        plates,
-        spaixd,
-        spaixi,
+    handle,
+    center,
+    surfid,
+    dclass,
+    fname,
+    corsys,
+    corpar,
+    mncor1,
+    mxcor1,
+    mncor2,
+    mxcor2,
+    mncor3,
+    mxcor3,
+    first,
+    last,
+    vrtces,
+    plates,
+    spaixd,
+    spaixi,
 ):
     """
     Write a type 2 segment to a DSK file.
@@ -5454,7 +5454,7 @@ def et2utc(et, format_str, prec, lenout=_default_len_out):
             results.append(stypes.to_python_string(utcstr))
         return results
     else:
-        libspice.et2utc_c(ctypes.c_double(et), formatStr, prec, lenout, utcstr)
+        libspice.et2utc_c(ctypes.c_double(et), format_str, prec, lenout, utcstr)
         return stypes.to_python_string(utcstr)
 
 
@@ -5871,7 +5871,7 @@ def gcpool(name, start, room, lenout=_default_len_out):
         ctypes.byref(found),
     )
     return (
-        [stypes.to_python_string(x.value) for x in cvals[0: n.value]],
+        [stypes.to_python_string(x.value) for x in cvals[0 : n.value]],
         bool(found.value),
     )
 
@@ -5907,7 +5907,7 @@ def gdpool(name, start, room):
         ctypes.cast(values, ctypes.POINTER(ctypes.c_double)),
         ctypes.byref(found),
     )
-    return stypes.c_vector_to_python(values)[0: n.value], bool(found.value)
+    return stypes.c_vector_to_python(values)[0 : n.value], bool(found.value)
 
 
 @spice_error_check
@@ -6034,7 +6034,7 @@ def getfov(instid, room, shapelen=_default_len_out, framelen=_default_len_out):
         stypes.to_python_string(framen),
         stypes.c_vector_to_python(bsight),
         n.value,
-        stypes.c_matrix_to_numpy(bounds)[0: n.value],
+        stypes.c_matrix_to_numpy(bounds)[0 : n.value],
     )
 
 
@@ -6087,7 +6087,7 @@ def gfclrh():
 
 @spice_error_check
 def gfdist(
-        target, abcorr, obsrvr, relate, refval, adjust, step, nintvls, cnfine, result=None
+    target, abcorr, obsrvr, relate, refval, adjust, step, nintvls, cnfine, result=None
 ):
     """
     Return the time window over which a specified constraint on
@@ -6148,29 +6148,29 @@ def gfdist(
 
 @spice_error_check
 def gfevnt(
-        udstep,
-        udrefn,
-        gquant,
-        qnpars,
-        lenvals,
-        qpnams,
-        qcpars,
-        qdpars,
-        qipars,
-        qlpars,
-        op,
-        refval,
-        tol,
-        adjust,
-        rpt,
-        udrepi,
-        udrepu,
-        udrepf,
-        nintvls,
-        bail,
-        udbail,
-        cnfine,
-        result=None,
+    udstep,
+    udrefn,
+    gquant,
+    qnpars,
+    lenvals,
+    qpnams,
+    qcpars,
+    qdpars,
+    qipars,
+    qlpars,
+    op,
+    refval,
+    tol,
+    adjust,
+    rpt,
+    udrepi,
+    udrepu,
+    udrepf,
+    nintvls,
+    bail,
+    udbail,
+    cnfine,
+    result=None,
 ):
     """
     Determine time intervals when a specified geometric quantity
@@ -6277,24 +6277,24 @@ def gfevnt(
 
 @spice_error_check
 def gffove(
-        inst,
-        tshape,
-        raydir,
-        target,
-        tframe,
-        abcorr,
-        obsrvr,
-        tol,
-        udstep,
-        udrefn,
-        rpt,
-        udrepi,
-        udrepu,
-        udrepf,
-        bail,
-        udbail,
-        cnfine,
-        result=None,
+    inst,
+    tshape,
+    raydir,
+    target,
+    tframe,
+    abcorr,
+    obsrvr,
+    tol,
+    udstep,
+    udrefn,
+    rpt,
+    udrepi,
+    udrepu,
+    udrepf,
+    bail,
+    udbail,
+    cnfine,
+    result=None,
 ):
     """
     Determine time intervals when a specified target body or ray
@@ -6383,21 +6383,21 @@ def gffove(
 
 @spice_error_check
 def gfilum(
-        method,
-        angtyp,
-        target,
-        illumn,
-        fixref,
-        abcorr,
-        obsrvr,
-        spoint,
-        relate,
-        refval,
-        adjust,
-        step,
-        nintvls,
-        cnfine,
-        result=None,
+    method,
+    angtyp,
+    target,
+    illumn,
+    fixref,
+    abcorr,
+    obsrvr,
+    spoint,
+    relate,
+    refval,
+    adjust,
+    step,
+    nintvls,
+    cnfine,
+    result=None,
 ):
     """
     Return the time window over which a specified constraint on
@@ -6493,26 +6493,26 @@ def gfinth(sigcode):
 
 @spice_error_check
 def gfocce(
-        occtyp,
-        front,
-        fshape,
-        fframe,
-        back,
-        bshape,
-        bframe,
-        abcorr,
-        obsrvr,
-        tol,
-        udstep,
-        udrefn,
-        rpt,
-        udrepi,
-        udrepu,
-        udrepf,
-        bail,
-        udbail,
-        cnfine,
-        result=None,
+    occtyp,
+    front,
+    fshape,
+    fframe,
+    back,
+    bshape,
+    bframe,
+    abcorr,
+    obsrvr,
+    tol,
+    udstep,
+    udrefn,
+    rpt,
+    udrepi,
+    udrepu,
+    udrepf,
+    bail,
+    udbail,
+    cnfine,
+    result=None,
 ):
     """
     Determine time intervals when an observer sees one target
@@ -6611,18 +6611,18 @@ def gfocce(
 
 @spice_error_check
 def gfoclt(
-        occtyp,
-        front,
-        fshape,
-        fframe,
-        back,
-        bshape,
-        bframe,
-        abcorr,
-        obsrvr,
-        step,
-        cnfine,
-        result=None,
+    occtyp,
+    front,
+    fshape,
+    fframe,
+    back,
+    bshape,
+    bframe,
+    abcorr,
+    obsrvr,
+    step,
+    cnfine,
+    result=None,
 ):
     """
     Determine time intervals when an observer sees one target
@@ -6691,17 +6691,17 @@ def gfoclt(
 
 @spice_error_check
 def gfpa(
-        target,
-        illmin,
-        abcorr,
-        obsrvr,
-        relate,
-        refval,
-        adjust,
-        step,
-        nintvals,
-        cnfine,
-        result=None,
+    target,
+    illmin,
+    abcorr,
+    obsrvr,
+    relate,
+    refval,
+    adjust,
+    step,
+    nintvals,
+    cnfine,
+    result=None,
 ):
     """
     Determine time intervals for which a specified constraint
@@ -6767,19 +6767,19 @@ def gfpa(
 
 @spice_error_check
 def gfposc(
-        target,
-        inframe,
-        abcorr,
-        obsrvr,
-        crdsys,
-        coord,
-        relate,
-        refval,
-        adjust,
-        step,
-        nintvals,
-        cnfine,
-        result=None,
+    target,
+    inframe,
+    abcorr,
+    obsrvr,
+    crdsys,
+    coord,
+    relate,
+    refval,
+    adjust,
+    step,
+    nintvals,
+    cnfine,
+    result=None,
 ):
     """
     Determine time intervals for which a coordinate of an
@@ -6988,7 +6988,7 @@ def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result=None):
 
 @spice_error_check
 def gfrr(
-        target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine, result
+    target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine, result
 ):
     """
     Determine time intervals for which a specified constraint
@@ -7049,21 +7049,21 @@ def gfrr(
 
 @spice_error_check
 def gfsep(
-        targ1,
-        shape1,
-        inframe1,
-        targ2,
-        shape2,
-        inframe2,
-        abcorr,
-        obsrvr,
-        relate,
-        refval,
-        adjust,
-        step,
-        nintvals,
-        cnfine,
-        result=None,
+    targ1,
+    shape1,
+    inframe1,
+    targ2,
+    shape2,
+    inframe2,
+    abcorr,
+    obsrvr,
+    relate,
+    refval,
+    adjust,
+    step,
+    nintvals,
+    cnfine,
+    result=None,
 ):
     """
     Determine time intervals when the angular separation between
@@ -7145,22 +7145,22 @@ def gfsep(
 
 @spice_error_check
 def gfsntc(
-        target,
-        fixref,
-        method,
-        abcorr,
-        obsrvr,
-        dref,
-        dvec,
-        crdsys,
-        coord,
-        relate,
-        refval,
-        adjust,
-        step,
-        nintvals,
-        cnfine,
-        result=None,
+    target,
+    fixref,
+    method,
+    abcorr,
+    obsrvr,
+    dref,
+    dvec,
+    crdsys,
+    coord,
+    relate,
+    refval,
+    adjust,
+    step,
+    nintvals,
+    cnfine,
+    result=None,
 ):
     """
     Determine time intervals for which a coordinate of an
@@ -7294,20 +7294,20 @@ def gfstol(value):
 
 @spice_error_check
 def gfsubc(
-        target,
-        fixref,
-        method,
-        abcorr,
-        obsrvr,
-        crdsys,
-        coord,
-        relate,
-        refval,
-        adjust,
-        step,
-        nintvals,
-        cnfine,
-        result,
+    target,
+    fixref,
+    method,
+    abcorr,
+    obsrvr,
+    crdsys,
+    coord,
+    relate,
+    refval,
+    adjust,
+    step,
+    nintvals,
+    cnfine,
+    result,
 ):
     """
     Determine time intervals for which a coordinate of an
@@ -7533,7 +7533,7 @@ def gipool(name, start, room):
     n = ctypes.c_int()
     found = ctypes.c_int()
     libspice.gipool_c(name, start, room, ctypes.byref(n), ivals, ctypes.byref(found))
-    return stypes.c_vector_to_python(ivals)[0: n.value], bool(found.value)
+    return stypes.c_vector_to_python(ivals)[0 : n.value], bool(found.value)
 
 
 @spice_error_check
@@ -7565,7 +7565,7 @@ def gnpool(name, start, room, lenout=_default_len_out):
     libspice.gnpool_c(
         name, start, room, lenout, ctypes.byref(n), kvars, ctypes.byref(found)
     )
-    return stypes.c_vector_to_python(kvars)[0: n.value], bool(found.value)
+    return stypes.c_vector_to_python(kvars)[0 : n.value], bool(found.value)
 
 
 ################################################################################
@@ -8396,11 +8396,11 @@ def kclear():
 @spice_error_check
 @spice_found_exception_thrower
 def kdata(
-        which,
-        kind,
-        fillen=_default_len_out,
-        typlen=_default_len_out,
-        srclen=_default_len_out,
+    which,
+    kind,
+    fillen=_default_len_out,
+    typlen=_default_len_out,
+    srclen=_default_len_out,
 ):
     """
     Return data for the nth kernel that is among a list of specified
@@ -8537,13 +8537,13 @@ def ktotal(kind):
 @spice_error_check
 @spice_found_exception_thrower
 def kxtrct(
-        keywd,
-        terms,
-        nterms,
-        instring,
-        termlen=_default_len_out,
-        stringlen=_default_len_out,
-        substrlen=_default_len_out,
+    keywd,
+    terms,
+    nterms,
+    instring,
+    termlen=_default_len_out,
+    stringlen=_default_len_out,
+    substrlen=_default_len_out,
 ):
     """
     Locate a keyword in a string and extract the substring from
@@ -8771,19 +8771,19 @@ def ldpool(filename):
 
 @spice_error_check
 def limbpt(
-        method,
-        target,
-        et,
-        fixref,
-        abcorr,
-        corloc,
-        obsrvr,
-        refvec,
-        rolstp,
-        ncuts,
-        schstp,
-        soltol,
-        maxn,
+    method,
+    target,
+    et,
+    fixref,
+    abcorr,
+    corloc,
+    obsrvr,
+    refvec,
+    rolstp,
+    ncuts,
+    schstp,
+    soltol,
+    maxn,
 ):
     """
     Find limb points on a target body. The limb is the set of points
@@ -8941,7 +8941,7 @@ def lparse(inlist, delim, nmax):
     items = stypes.empty_char_array(lenout, nmax)
     n = ctypes.c_int()
     libspice.lparse_c(inlist, delim, nmax, lenout, ctypes.byref(n), ctypes.byref(items))
-    return [stypes.to_python_string(x.value) for x in items[0: n.value]]
+    return [stypes.to_python_string(x.value) for x in items[0 : n.value]]
 
 
 @spice_error_check
@@ -8972,7 +8972,7 @@ def lparsm(inlist, delims, nmax, lenout=None):
     nmax = ctypes.c_int(nmax)
     n = ctypes.c_int()
     libspice.lparsm_c(inlist, delims, nmax, lenout, ctypes.byref(n), items)
-    return [stypes.to_python_string(x.value) for x in items][0: n.value]
+    return [stypes.to_python_string(x.value) for x in items][0 : n.value]
 
 
 @spice_error_check
@@ -10343,7 +10343,7 @@ def pckuof(handle):
 
 @spice_error_check
 def pckw02(
-        handle, classid, frname, first, last, segid, intlen, n, polydg, cdata, btime
+    handle, classid, frname, first, last, segid, intlen, n, polydg, cdata, btime
 ):
     """
     Write a type 2 segment to a PCK binary file given the file handle,
@@ -11998,8 +11998,8 @@ def scpart(sc):
     pstop = stypes.empty_double_vector(9999)
     libspice.scpart_c(sc, nparts, pstart, pstop)
     return (
-        stypes.c_vector_to_python(pstart)[0: nparts.value],
-        stypes.c_vector_to_python(pstop)[0: nparts.value],
+        stypes.c_vector_to_python(pstart)[0 : nparts.value],
+        stypes.c_vector_to_python(pstop)[0 : nparts.value],
     )
 
 
@@ -12044,7 +12044,7 @@ def sct2e(sc, sclkdp):
     if stypes.is_iterable(sclkdp):
         results = []
         for sclk in sclkdp:
-            libspice.sct2e_c(sc, ctypes.c_double(sclk), ctypes.byref(et))        
+            libspice.sct2e_c(sc, ctypes.c_double(sclk), ctypes.byref(et))
             check_for_spice_error(None)
             results.append(et.value)
         return results
@@ -13491,7 +13491,7 @@ def spkuef(handle):
 
 @spice_error_check
 def spkw02(
-        handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, btime
+    handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, btime
 ):
     """
     Write a type 2 segment to an SPK file.
@@ -13553,7 +13553,7 @@ def spkw02(
 
 @spice_error_check
 def spkw03(
-        handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, btime
+    handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, btime
 ):
     """
     Write a type 3 segment to an SPK file.
@@ -13664,7 +13664,7 @@ def spkw05(handle, body, center, inframe, first, last, segid, gm, n, states, epo
 
 @spice_error_check
 def spkw08(
-        handle, body, center, inframe, first, last, segid, degree, n, states, epoch1, step
+    handle, body, center, inframe, first, last, segid, degree, n, states, epoch1, step
 ):
     # see libspice args for solution to array[][N] problem
     """
@@ -13727,7 +13727,7 @@ def spkw08(
 
 @spice_error_check
 def spkw09(
-        handle, body, center, inframe, first, last, segid, degree, n, states, epochs
+    handle, body, center, inframe, first, last, segid, degree, n, states, epochs
 ):
     """
     Write a type 9 segment to an SPK file.
@@ -13822,7 +13822,7 @@ def spkw10(handle, body, center, inframe, first, last, segid, consts, n, elems, 
 
 @spice_error_check
 def spkw12(
-        handle, body, center, inframe, first, last, segid, degree, n, states, epoch0, step
+    handle, body, center, inframe, first, last, segid, degree, n, states, epoch0, step
 ):
     """
     Write a type 12 segment to an SPK file.
@@ -13884,7 +13884,7 @@ def spkw12(
 
 @spice_error_check
 def spkw13(
-        handle, body, center, inframe, first, last, segid, degree, n, states, epochs
+    handle, body, center, inframe, first, last, segid, degree, n, states, epochs
 ):
     """
     Write a type 13 segment to an SPK file.
@@ -13932,23 +13932,23 @@ def spkw13(
 
 @spice_error_check
 def spkw15(
-        handle,
-        body,
-        center,
-        inframe,
-        first,
-        last,
-        segid,
-        epoch,
-        tp,
-        pa,
-        p,
-        ecc,
-        j2flg,
-        pv,
-        gm,
-        j2,
-        radius,
+    handle,
+    body,
+    center,
+    inframe,
+    first,
+    last,
+    segid,
+    epoch,
+    tp,
+    pa,
+    p,
+    ecc,
+    j2flg,
+    pv,
+    gm,
+    j2,
+    radius,
 ):
     """
     Write an SPK segment of type 15 given a type 15 data record.
@@ -14030,7 +14030,7 @@ def spkw15(
 
 @spice_error_check
 def spkw17(
-        handle, body, center, inframe, first, last, segid, epoch, eqel, rapol, decpol
+    handle, body, center, inframe, first, last, segid, epoch, eqel, rapol, decpol
 ):
     """
     Write an SPK segment of type 17 given a type 17 data record.
@@ -14078,7 +14078,7 @@ def spkw17(
 
 @spice_error_check
 def spkw18(
-        handle, subtyp, body, center, inframe, first, last, segid, degree, packts, epochs
+    handle, subtyp, body, center, inframe, first, last, segid, degree, packts, epochs
 ):
     """
     Write a type 18 segment to an SPK file.
@@ -14138,21 +14138,21 @@ def spkw18(
 
 @spice_error_check
 def spkw20(
-        handle,
-        body,
-        center,
-        inframe,
-        first,
-        last,
-        segid,
-        intlen,
-        n,
-        polydg,
-        cdata,
-        dscale,
-        tscale,
-        initjd,
-        initfr,
+    handle,
+    body,
+    center,
+    inframe,
+    first,
+    last,
+    segid,
+    intlen,
+    n,
+    polydg,
+    cdata,
+    dscale,
+    tscale,
+    initjd,
+    initfr,
 ):
     """
     Write a type 20 segment to an SPK file.
@@ -15020,20 +15020,20 @@ def szpool(name):
 
 @spice_error_check
 def termpt(
-        method,
-        ilusrc,
-        target,
-        et,
-        fixref,
-        abcorr,
-        corloc,
-        obsrvr,
-        refvec,
-        rolstp,
-        ncuts,
-        schstp,
-        soltol,
-        maxn,
+    method,
+    ilusrc,
+    target,
+    et,
+    fixref,
+    abcorr,
+    corloc,
+    obsrvr,
+    refvec,
+    rolstp,
+    ncuts,
+    schstp,
+    soltol,
+    maxn,
 ):
     """
     Find terminator points on a target body. The caller specifies

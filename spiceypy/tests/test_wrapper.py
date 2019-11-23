@@ -3491,7 +3491,7 @@ def test_et2utc_vectorized():
     output = spice.et2utc(3 * [et], "J", 6)
     assert output == 3 * ["JD 2445438.006415"]
     spice.kclear()
-        
+
 
 def test_etcal():
     et = np.arange(0, 20)
@@ -6965,12 +6965,12 @@ def test_scencd_vectorized():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
-    sclkch = '2/20538:39:768'
+    sclkch = "2/20538:39:768"
     sclkdp = spice.scencd(-32, 3 * [sclkch])
-    npt.assert_almost_equal(sclkdp, 3*[985327950.0], decimal=6)
+    npt.assert_almost_equal(sclkdp, 3 * [985327950.0], decimal=6)
     spice.kclear()
-    
-    
+
+
 def test_scfmt():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -7024,8 +7024,8 @@ def test_sct2e_vectorized():
     expected = -646668527.6822292
     npt.assert_almost_equal(3 * [expected], to_test, decimal=6)
     spice.kclear()
-    
-    
+
+
 def test_sctiks():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -8805,7 +8805,7 @@ def test_spkw18():
     # test spkw18 with S18TP0
     spice.spkw18(
         handle,
-        spice.stypes.Spicespk18Subtype.S18TP0,
+        spice.stypes.SpiceSPK18Subtype.S18TP0,
         body,
         center,
         ref,

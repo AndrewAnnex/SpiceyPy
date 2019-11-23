@@ -825,7 +825,7 @@ class SpiceCell(Structure):
         ("length", c_int),
         ("size", c_int),
         ("card", c_int),
-        ("is_set", c_int),
+        ("isSet", c_int),
         ("adjust", c_int),
         ("init", c_int),
         ("base", c_void_p),
@@ -838,7 +838,7 @@ class SpiceCell(Structure):
         length=None,
         size=None,
         card=None,
-        is_set=None,
+        isSet=None,
         base=None,
         data=None,
     ):
@@ -847,7 +847,7 @@ class SpiceCell(Structure):
         self.length = length
         self.size = size
         self.card = card
-        self.isset = is_set
+        self.isSet = isSet
         self.adjust = 0  # Always False, because not implemented
         self.init = 0  # Always False, because this is the constructor
         self.base = base  # void pointer
@@ -862,7 +862,7 @@ class SpiceCell(Structure):
                 self.length,
                 self.size,
                 self.card,
-                self.isset,
+                self.isSet,
                 self.adjust,
                 self.init,
                 self.base,
@@ -886,7 +886,7 @@ class SpiceCell(Structure):
         return self.dtype == 4
 
     def is_set(self):
-        return self.isset == 1
+        return self.isSet == 1
 
     @classmethod
     def character(cls, size, length):
@@ -1018,7 +1018,7 @@ class SpiceCell(Structure):
         if isinstance(other, SpiceCell):
             if other.dtype != self.dtype:
                 return False
-            if other.isset != self.isset:
+            if other.isSet != self.isSet:
                 return False
         for x, y in zip(self, other):
             if x != y:
