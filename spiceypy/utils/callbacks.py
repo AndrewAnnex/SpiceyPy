@@ -35,6 +35,7 @@ UDREPU = CFUNCTYPE(None, c_double, c_double, c_double)
 UDREPF = CFUNCTYPE(None)
 UDBAIL = CFUNCTYPE(c_int)
 
+
 def SpiceUDFUNS(f):
     """
     Decorator for wrapping python functions in spice udfuns callback type
@@ -51,6 +52,7 @@ def SpiceUDFUNS(f):
 
     return UDFUNS(wrapping_udfuns)
 
+
 def SpiceUDFUNB(f):
     """
     Decorator for wrapping python functions in spice udfunb callback type
@@ -62,10 +64,11 @@ def SpiceUDFUNB(f):
 
     @functools.wraps(f)
     def wrapping_udfunb(udf, et, xbool):
-        result = f(udf, et) # the function takes a udffunc as a argument
+        result = f(udf, et)  # the function takes a udffunc as a argument
         xbool[0] = c_int(result)
 
     return UDFUNB(wrapping_udfunb)
+
 
 def SpiceUDSTEP(f):
     """
@@ -83,6 +86,7 @@ def SpiceUDSTEP(f):
 
     return UDSTEP(wrapping_udstep)
 
+
 def SpiceUDREFN(f):
     """
     Decorator for wrapping python functions in spice udrefn callback type
@@ -91,12 +95,14 @@ def SpiceUDREFN(f):
     :return: wrapped udrefn function
     :rtype: builtins.function
     """
+
     @functools.wraps(f)
     def wrapping_udrefn(t1, t2, s1, s2, t):
         result = f(t1, t2, s1, s2)
         t[0] = c_double(result)
 
     return UDREFN(wrapping_udrefn)
+
 
 def SpiceUDREPI(f):
     """
@@ -106,11 +112,13 @@ def SpiceUDREPI(f):
     :return: wrapped udrepi function
     :rtype: builtins.function
     """
+
     @functools.wraps(f)
     def wrapping_udrepi(cnfine, srcpre, srcsurf):
         f(cnfine, srcpre, srcsurf)
 
     return UDREPI(wrapping_udrepi)
+
 
 def SpiceUDREPU(f):
     """
@@ -120,11 +128,13 @@ def SpiceUDREPU(f):
     :return: wrapped udrepu function
     :rtype: builtins.function
     """
+
     @functools.wraps(f)
     def wrapping_udrepu(beg, end, et):
         f(beg, end, et)
 
     return UDREPU(wrapping_udrepu)
+
 
 def SpiceUDREPF(f):
     """
@@ -134,9 +144,11 @@ def SpiceUDREPF(f):
     :return: wrapped udrepf function
     :rtype: builtins.function
     """
+
     @functools.wraps(f)
     def wrapping_udrepf():
         f()
+
     return UDREPF(wrapping_udrepf)
 
 
@@ -148,10 +160,12 @@ def SpiceUDBAIL(f):
     :return: wrapped udbail function
     :rtype: builtins.function
     """
+
     @functools.wraps(f)
     def wrapping_udbail():
         result = f()
         return int(result)
+
     return UDBAIL(wrapping_udbail)
 
 

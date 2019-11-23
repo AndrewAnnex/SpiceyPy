@@ -102,14 +102,14 @@ class GetCSPICE(object):
     _dists = {
         # system   arch        distribution name           extension
         # -------- ----------  -------------------------   ---------
-        ('Darwin', '32bit'): ('MacIntel_OSX_AppleC_32bit', 'tar.Z'),
-        ('Darwin', '64bit'): ('MacIntel_OSX_AppleC_64bit', 'tar.Z'),
-        ('cygwin', '32bit'): ('PC_Cygwin_GCC_32bit', 'tar.Z'),
-        ('cygwin', '64bit'): ('PC_Cygwin_GCC_64bit', 'tar.Z'),
+        ('Darwin', '32bit') : ('MacIntel_OSX_AppleC_32bit', 'tar.Z'),
+        ('Darwin', '64bit') : ('MacIntel_OSX_AppleC_64bit', 'tar.Z'),
+        ('cygwin', '32bit') : ('PC_Cygwin_GCC_32bit', 'tar.Z'),
+        ('cygwin', '64bit') : ('PC_Cygwin_GCC_64bit', 'tar.Z'),
         ('FreeBSD', '32bit'): ('PC_Linux_GCC_32bit', 'tar.Z'),
         ('FreeBSD', '64bit'): ('PC_Linux_GCC_64bit', 'tar.Z'),
-        ('Linux', '32bit'): ('PC_Linux_GCC_32bit', 'tar.Z'),
-        ('Linux', '64bit'): ('PC_Linux_GCC_64bit', 'tar.Z'),
+        ('Linux', '32bit')  : ('PC_Linux_GCC_32bit', 'tar.Z'),
+        ('Linux', '64bit')  : ('PC_Linux_GCC_64bit', 'tar.Z'),
         ('Windows', '32bit'): ('PC_Windows_VisualC_32bit', 'zip'),
         ('Windows', '64bit'): ('PC_Windows_VisualC_64bit', 'zip')}
 
@@ -134,7 +134,7 @@ class GetCSPICE(object):
 
             # Download the file
             print('Downloading CSPICE for {0}...'.format(distribution))
-            attempts = 10   # Let's try a maximum of attempts for getting SPICE
+            attempts = 10  # Let's try a maximum of attempts for getting SPICE
             while attempts:
                 attempts -= 1
                 try:
@@ -212,17 +212,17 @@ class GetCSPICE(object):
                 proxies = {}
                 for key, value in os.environ.items():
                     if '_proxy' in key.lower():
-                        proxies[key.lower().replace('_proxy','')] = value
+                        proxies[key.lower().replace('_proxy', '')] = value
 
                 # Create a ProolManager
                 if 'https' in proxies:
                     https = urllib3.ProxyManager(proxies['https'],
-                                                cert_reqs='CERT_REQUIRED',
-                                                ca_certs=certifi.where())
+                                                 cert_reqs='CERT_REQUIRED',
+                                                 ca_certs=certifi.where())
                 elif 'http' in proxies:
                     https = urllib3.ProxyManager(proxies['http'],
-                                                cert_reqs='CERT_REQUIRED',
-                                                ca_certs=certifi.where())
+                                                 cert_reqs='CERT_REQUIRED',
+                                                 ca_certs=certifi.where())
                 else:
                     https = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',
                                                 ca_certs=certifi.where())

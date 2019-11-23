@@ -46,8 +46,10 @@ cspice_dir = os.path.join(root_dir, 'cspice')
 # Make the directory path for cspice/lib
 lib_dir = os.path.join(cspice_dir, 'lib')
 
-TEST_DEPENDENCIES = ['setuptools>=38.0.0','numpy<=1.16.4;python_version<"3.5"', 'numpy>=1.17.0;python_version>="3.5"', 'six>=1.9.0', 'pytest>=2.9.0', 'pandas>=0.24.0']
-DEPENDENCIES = ['setuptools>=38.0.0','numpy<=1.16.4;python_version<"3.5"', 'numpy>=1.17.0;python_version>="3.5"', 'six>=1.9.0', 'certifi>=2017.1.23']
+TEST_DEPENDENCIES = ['setuptools>=38.0.0', 'numpy<=1.16.4;python_version<"3.5"', 'numpy>=1.17.0;python_version>="3.5"', 'six>=1.9.0',
+                     'pytest>=2.9.0', 'pandas>=0.24.0']
+DEPENDENCIES = ['setuptools>=38.0.0', 'numpy<=1.16.4;python_version<"3.5"', 'numpy>=1.17.0;python_version>="3.5"', 'six>=1.9.0',
+                'certifi>=2017.1.23']
 REQUIRES = ['numpy', 'six']
 
 # If we have an old version of OpenSSL, CSPICE will be downloaded
@@ -201,6 +203,7 @@ class InstallCSpice(object):
 class SpiceyPyBinaryDistribution(Distribution):
     def is_pure(self):
         return False
+
     def root_is_pure(self):
         return False
 
@@ -232,6 +235,7 @@ class InstallSpiceyPy(install):
         InstallCSpice.get_cspice()
         install.run(self)
 
+
 class GetCSPICECommand(Command):
     """ Custom command to get the correct cspice and build the shared library for spiceypy """
     description = 'downloads cspice and builds the shared library'
@@ -246,6 +250,7 @@ class GetCSPICECommand(Command):
     def run(self):
         InstallCSpice.get_cspice()
 
+
 class BuildPyCommand(build_py):
     """ Custom build command to ensure cspice is built and packaged """
 
@@ -254,17 +259,19 @@ class BuildPyCommand(build_py):
         build_py.run(self)
 
 
-
-cmdclass = { 'install': InstallSpiceyPy,
-             'test': PyTest,
-             'build_py': BuildPyCommand,
-             'get_cspice': GetCSPICECommand }
+cmdclass = {'install'   : InstallSpiceyPy,
+            'test'      : PyTest,
+            'build_py'  : BuildPyCommand,
+            'get_cspice': GetCSPICECommand}
 
 # https://stackoverflow.com/questions/45150304/how-to-force-a-python-wheel-to-be-platform-specific-when-building-it
 # http://lepture.com/en/2014/python-on-a-hard-wheel
 try:
     from wheel.bdist_wheel import bdist_wheel
+
     print("Wheel is Present")
+
+
     class _bdist_wheel(bdist_wheel):
 
         def finalize_options(self):
@@ -276,8 +283,9 @@ try:
             tag = bdist_wheel.get_tag(self)
             repl = 'macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64'
             if 'macosx_10' in tag[2]:
-                tag  = (tag[0], tag[1], repl)
+                tag = (tag[0], tag[1], repl)
             return tag
+
 
     # add our override to the cmdclass dict so we can inject this behavior
     cmdclass['bdist_wheel'] = _bdist_wheel
@@ -286,7 +294,6 @@ except ImportError:
     # we don't have wheel installed so there is nothing to change
     print("Wheel is not installed...")
     pass
-
 
 readme = open('README.rst', 'r')
 readmetext = readme.read()
