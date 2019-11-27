@@ -19,3 +19,9 @@ formats: all
 # use a conda environment
 conda:
   environment: docs/environment.yml
+
+python:
+   version: 3.7
+   install:
+     - method: setuptools
+       path: .
