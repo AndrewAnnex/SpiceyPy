@@ -9,8 +9,6 @@ environment:
       WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\windows_sdk.cmd"
   PYPI_PASSWORD:
     secure: ojP0ftEgmrZcijN49vQEPz39rkcPyOxtjwNp5hUYkdKxQq47DwkiaWOnVA11nog637VUmRnHb07uXwvrhK4bbg==
-  COVERALLS_REPO_TOKEN:
-    secure: b7s0QO7an/Ku5eLB/Hws4UaCYVFZ1RgeXKFvedSsifkV02vrKHDYH+Yedf2B0Jlk
 
   matrix:
       - PYTHON: "C:\\Python27-x64"
@@ -66,7 +64,7 @@ install:
   - "%PYTHON%/Scripts/py.test --version"
 
 test_script:
-  - "%PYTHON%/Scripts/coverage run --source=spiceypy setup.py test"
+  - "%PYTHON%/Scripts/py.test spiceypy/tests"
 
 after_test:
   - ECHO "DONE!"
