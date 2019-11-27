@@ -23,9 +23,6 @@ sys.setrecursionlimit(15000)
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
 
-# EXTRA BITS FOR SPICEYPY
-autodoc_mock_imports = ['numpy']
-
 
 # -- General configuration ------------------------------------------------
 
