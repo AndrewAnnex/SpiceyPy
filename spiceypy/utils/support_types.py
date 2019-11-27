@@ -192,6 +192,10 @@ def stringToCharP(inobject, inlen=None):
     :param inlen: optional parameter, length of a given string can be specified
     :return:
     """
+    print('debug')
+    print(numpy.str_)
+    print(type(numpy.str_))
+    print('end debug')
     if inlen and isinstance(inobject, str):
         return create_string_buffer(inobject.encode(encoding='UTF-8'), inlen)
     if isinstance(inobject, bytes):
