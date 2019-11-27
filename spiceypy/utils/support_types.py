@@ -187,7 +187,6 @@ def cMatrixToNumpy(x):
 
 
 def stringToCharP(inobject, inlen=None):
-
     """
     :param inobject: input string, int for getting null string of length of int
     :param inlen: optional parameter, length of a given string can be specified
