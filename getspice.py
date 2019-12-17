@@ -95,6 +95,7 @@ class GetCSPICE(object):
     :type: str
 
     """
+
     # This class variable will be used to store the CSPICE package in memory.
     _local = None
 
@@ -102,18 +103,19 @@ class GetCSPICE(object):
     _dists = {
         # system   arch        distribution name           extension
         # -------- ----------  -------------------------   ---------
-        ('Darwin', '32bit') : ('MacIntel_OSX_AppleC_32bit', 'tar.Z'),
-        ('Darwin', '64bit') : ('MacIntel_OSX_AppleC_64bit', 'tar.Z'),
-        ('cygwin', '32bit') : ('PC_Cygwin_GCC_32bit', 'tar.Z'),
-        ('cygwin', '64bit') : ('PC_Cygwin_GCC_64bit', 'tar.Z'),
-        ('FreeBSD', '32bit'): ('PC_Linux_GCC_32bit', 'tar.Z'),
-        ('FreeBSD', '64bit'): ('PC_Linux_GCC_64bit', 'tar.Z'),
-        ('Linux', '32bit')  : ('PC_Linux_GCC_32bit', 'tar.Z'),
-        ('Linux', '64bit')  : ('PC_Linux_GCC_64bit', 'tar.Z'),
-        ('Windows', '32bit'): ('PC_Windows_VisualC_32bit', 'zip'),
-        ('Windows', '64bit'): ('PC_Windows_VisualC_64bit', 'zip')}
+        ("Darwin", "32bit"): ("MacIntel_OSX_AppleC_32bit", "tar.Z"),
+        ("Darwin", "64bit"): ("MacIntel_OSX_AppleC_64bit", "tar.Z"),
+        ("cygwin", "32bit"): ("PC_Cygwin_GCC_32bit", "tar.Z"),
+        ("cygwin", "64bit"): ("PC_Cygwin_GCC_64bit", "tar.Z"),
+        ("FreeBSD", "32bit"): ("PC_Linux_GCC_32bit", "tar.Z"),
+        ("FreeBSD", "64bit"): ("PC_Linux_GCC_64bit", "tar.Z"),
+        ("Linux", "32bit"): ("PC_Linux_GCC_32bit", "tar.Z"),
+        ("Linux", "64bit"): ("PC_Linux_GCC_64bit", "tar.Z"),
+        ("Windows", "32bit"): ("PC_Windows_VisualC_32bit", "zip"),
+        ("Windows", "64bit"): ("PC_Windows_VisualC_64bit", "zip"),
+    }
 
-    def __init__(self, version='N0066'):
+    def __init__(self, version="N0066"):
         """Init method that uses either the default N0066 toolkit version token
         or a user provided one.
         """
@@ -122,30 +124,34 @@ class GetCSPICE(object):
             # executes the script.
             distribution, self._ext = self._distribution_info()
         except KeyError:
-            print('SpiceyPy currently does not support your system.')
+            print("SpiceyPy currently does not support your system.")
         else:
-            cspice = 'cspice.{}'.format(self._ext)
-            self._rcspice = ('https://naif.jpl.nasa.gov/pub/naif/misc'
-                             '/toolkit_{0}/C/{1}/packages'
-                             '/{2}').format(version, distribution, cspice)
+            cspice = "cspice.{}".format(self._ext)
+            self._rcspice = (
+                "https://naif.jpl.nasa.gov/pub/naif/misc"
+                "/toolkit_{0}/C/{1}/packages"
+                "/{2}"
+            ).format(version, distribution, cspice)
 
             # Setup the local directory (where the package will be downloaded)
             self._root = os.path.realpath(os.path.dirname(__file__))
 
             # Download the file
-            print('Downloading CSPICE for {0}...'.format(distribution))
+            print("Downloading CSPICE for {0}...".format(distribution))
             attempts = 10  # Let's try a maximum of attempts for getting SPICE
             while attempts:
                 attempts -= 1
                 try:
                     self._download()
                 except RuntimeError as error:
-                    print("Download failed with URLError: {0}, trying again after "
-                          "15 seconds!".format(error))
+                    print(
+                        "Download failed with URLError: {0}, trying again after "
+                        "15 seconds!".format(error)
+                    )
                     time.sleep(15)
                 else:
                     # Unpack the file
-                    print('Unpacking... (this may take some time!)')
+                    print("Unpacking... (this may take some time!)")
                     self._unpack()
                     # We are done.  Let's return to the calling code.
                     break
@@ -164,18 +170,18 @@ class GetCSPICE(object):
                  to any of the supported SpiceyPy environments.
         """
 
-        print('Gathering information...')
+        print("Gathering information...")
         system = platform.system()
 
         # Cygwin system is CYGWIN-NT-xxx.
-        system = 'cygwin' if 'CYGWIN' in system else system
+        system = "cygwin" if "CYGWIN" in system else system
 
         processor = platform.processor()
-        machine = '64bit' if sys.maxsize > 2 ** 32 else '32bit'
+        machine = "64bit" if sys.maxsize > 2 ** 32 else "32bit"
 
-        print('SYSTEM:   ', system)
-        print('PROCESSOR:', processor)
-        print('MACHINE:  ', machine)
+        print("SYSTEM:   ", system)
+        print("PROCESSOR:", processor)
+        print("MACHINE:  ", machine)
 
         return self._dists[(system, machine)]
 
@@ -199,9 +205,10 @@ class GetCSPICE(object):
            distribution package.
         """
         # Use urllib3 (based on PyOpenSSL).
-        if ssl.OPENSSL_VERSION < 'OpenSSL 1.0.1g':
+        if ssl.OPENSSL_VERSION < "OpenSSL 1.0.1g":
             # Force urllib3 to use pyOpenSSL
             import urllib3.contrib.pyopenssl
+
             urllib3.contrib.pyopenssl.inject_into_urllib3()
 
             import certifi
@@ -211,24 +218,30 @@ class GetCSPICE(object):
                 # Search proxy in ENV variables
                 proxies = {}
                 for key, value in os.environ.items():
-                    if '_proxy' in key.lower():
-                        proxies[key.lower().replace('_proxy', '')] = value
+                    if "_proxy" in key.lower():
+                        proxies[key.lower().replace("_proxy", "")] = value
 
                 # Create a ProolManager
-                if 'https' in proxies:
-                    https = urllib3.ProxyManager(proxies['https'],
-                                                 cert_reqs='CERT_REQUIRED',
-                                                 ca_certs=certifi.where())
-                elif 'http' in proxies:
-                    https = urllib3.ProxyManager(proxies['http'],
-                                                 cert_reqs='CERT_REQUIRED',
-                                                 ca_certs=certifi.where())
+                if "https" in proxies:
+                    https = urllib3.ProxyManager(
+                        proxies["https"],
+                        cert_reqs="CERT_REQUIRED",
+                        ca_certs=certifi.where(),
+                    )
+                elif "http" in proxies:
+                    https = urllib3.ProxyManager(
+                        proxies["http"],
+                        cert_reqs="CERT_REQUIRED",
+                        ca_certs=certifi.where(),
+                    )
                 else:
-                    https = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',
-                                                ca_certs=certifi.where())
+                    https = urllib3.PoolManager(
+                        cert_reqs="CERT_REQUIRED", ca_certs=certifi.where()
+                    )
                 # Send the request to get the CSPICE package.
-                response = https.request('GET', self._rcspice,
-                                         timeout=urllib3.Timeout(10))
+                response = https.request(
+                    "GET", self._rcspice, timeout=urllib3.Timeout(10)
+                )
             except urllib3.exceptions.HTTPError as err:
                 raise RuntimeError(err.message)
 
@@ -251,11 +264,11 @@ class GetCSPICE(object):
         Package could either be the zipfile.ZipFile class for Windows platforms
         or tarfile.TarFile for other platforms.
         """
-        if self._ext == 'zip':
-            with ZipFile(self._local, 'r') as archive:
+        if self._ext == "zip":
+            with ZipFile(self._local, "r") as archive:
                 archive.extractall(self._root)
         else:
-            cmd = 'gunzip | tar xC ' + self._root
+            cmd = "gunzip | tar xC " + self._root
             proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE)
             proc.stdin.write(self._local.read())
         self._local.close()

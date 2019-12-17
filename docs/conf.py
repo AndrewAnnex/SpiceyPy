@@ -15,6 +15,7 @@
 
 import sys
 import os
+
 # EXTRA BITS FOR SPICEYPY
 from unittest.mock import MagicMock
 
