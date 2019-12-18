@@ -37,10 +37,12 @@ before_install:
 - pip install -U wheel
 - pip install twine
 - pip install -r requirements.txt
+- pip install black
 install:
 - python setup.py install
 script:
 - coverage run --source=spiceypy setup.py test
+- black . --check
 after_success:
 - coveralls
 deploy:
