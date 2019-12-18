@@ -54,7 +54,6 @@ install:
   # Download things we absolutely need
   - pip install wheel twine coveralls
   - pip install -r requirements.txt
-  - pip install black
 
   # Now install spiceypy
   - IF "%ARCH%"=="32" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86) ELSE (ECHO "probably a 64bit build")
@@ -66,7 +65,6 @@ install:
 
 test_script:
   - "%PYTHON%/Scripts/py.test spiceypy/tests"
-  - "%PYTHON%/Scripts/black . --check"
 
 after_test:
   - ECHO "DONE!"
