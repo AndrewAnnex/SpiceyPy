@@ -103,17 +103,17 @@ class InstallCSpice(object):
     def unpack_cspice():
         if is_unix:
             cspice_lib = os.path.join(
-                lib_dir, ("cspice.lib" if host_OS is "Windows" else "cspice.a")
+                lib_dir, ("cspice.lib" if host_OS == "Windows" else "cspice.a")
             )
             csupport_lib = os.path.join(
-                lib_dir, ("csupport.lib" if host_OS is "Windows" else "csupport.a")
+                lib_dir, ("csupport.lib" if host_OS == "Windows" else "csupport.a")
             )
 
             if os.path.exists(cspice_lib) and os.path.exists(csupport_lib):
                 cwd = os.getcwd()
                 try:
                     os.chdir(lib_dir)
-                    if host_OS is "Windows":
+                    if host_OS == "Windows":
                         raise BaseException(
                             "Windows is not supported in this build method"
                         )

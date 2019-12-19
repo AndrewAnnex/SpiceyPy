@@ -65,7 +65,7 @@ def SpiceUDFUNB(f):
     @functools.wraps(f)
     def wrapping_udfunb(udf, et, xbool):
         result = f(udf, et)  # the function takes a udffunc as a argument
-        xbool[0] = c_int(result)
+        xbool[0] = c_int(result)  # https://github.com/numpy/numpy/issues/14397
 
     return UDFUNB(wrapping_udfunb)
 
