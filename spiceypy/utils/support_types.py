@@ -43,7 +43,12 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 import six
-import collections
+
+try:
+    import collections.abc as collections_abc
+except ImportError:
+    import collections as collections_abc
+
 
 from ctypes import (
     c_char_p,
@@ -116,7 +121,9 @@ def is_iterable(i):
     :param i: input collection
     :return:
     """
-    return isinstance(i, collections.Iterable) and not isinstance(i, six.string_types)
+    return isinstance(i, collections_abc.Iterable) and not isinstance(
+        i, six.string_types
+    )
 
 
 def to_python_string(in_string):
