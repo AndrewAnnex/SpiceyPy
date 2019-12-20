@@ -16,9 +16,6 @@
 import sys
 import os
 
-# EXTRA BITS FOR SPICEYPY
-from unittest.mock import MagicMock
-
 sys.setrecursionlimit(15000)
 
 # If extensions (or modules to document with autodoc) are in another directory,
