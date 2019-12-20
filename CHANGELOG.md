@@ -14,6 +14,20 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 ### Removed
 - python 3.5 builds
 
+## [2.3.2] - 2019-12-19
+### Added
+- wrapper for ev2lin
+- numpy string support
+
+### Fixed
+- some equality checks
+
+### Changed
+- updated MANIFEST.in to include test code
+- vectorization of et2utc 
+- vectorization of scencd
+- vectroization of sc2e
+
 ## [2.3.1] - 2019-10-18
 ### Changed
 - updated MANIFEST.in to include test code 
