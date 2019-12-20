@@ -446,9 +446,9 @@ Solutions and answers
           et = spiceypy.str2et( utctim )
         File "/home/bsemenov/local/lib/python3.5/site-packages/spiceypy/spi
       ceypy.py", line 76, in with_errcheck
-          check_for_spice_error(f)
+          checkForSpiceError(f)
         File "/home/bsemenov/local/lib/python3.5/site-packages/spiceypy/spi
-      ceypy.py", line 59, in check_for_spice_error
+      ceypy.py", line 59, in checkForSpiceError
           raise stypes.SpiceyError(msg)
       spiceypy.utils.support_types.SpiceyError:
       =====================================================================
@@ -491,9 +491,9 @@ Solutions and answers
           sclkst = spiceypy.sce2s( SCLKID, et )
         File "/home/bsemenov/local/lib/python3.5/site-packages/spiceypy/spi
       ceypy.py", line 76, in with_errcheck
-          check_for_spice_error(f)
+          checkForSpiceError(f)
         File "/home/bsemenov/local/lib/python3.5/site-packages/spiceypy/spi
-      ceypy.py", line 59, in check_for_spice_error
+      ceypy.py", line 59, in checkForSpiceError
           raise stypes.SpiceyError(msg)
       spiceypy.utils.support_types.SpiceyError:
       =====================================================================
@@ -897,9 +897,9 @@ Solutions and answers
           'LT+S',   'CASSINI'       )
         File "/home/bsemenov/local/lib/python3.5/site-packages/spiceypy/spi
       ceypy.py", line 76, in with_errcheck
-          check_for_spice_error(f)
+          checkForSpiceError(f)
         File "/home/bsemenov/local/lib/python3.5/site-packages/spiceypy/spi
-      ceypy.py", line 59, in check_for_spice_error
+      ceypy.py", line 59, in checkForSpiceError
           raise stypes.SpiceyError(msg)
       spiceypy.utils.support_types.SpiceyError:
       =====================================================================
@@ -1462,9 +1462,9 @@ Solutions and answers
           pform = spiceypy.pxform( 'CASSINI_HGA', 'J2000', et )
         File "/home/bsemenov/local/lib/python3.5/site-packages/spiceypy/spi
       ceypy.py", line 76, in with_errcheck
-          check_for_spice_error(f)
+          checkForSpiceError(f)
         File "/home/bsemenov/local/lib/python3.5/site-packages/spiceypy/spi
-      ceypy.py", line 59, in check_for_spice_error
+      ceypy.py", line 59, in checkForSpiceError
           raise stypes.SpiceyError(msg)
       spiceypy.utils.support_types.SpiceyError:
       =====================================================================

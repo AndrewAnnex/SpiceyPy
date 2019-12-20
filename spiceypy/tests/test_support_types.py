@@ -36,12 +36,12 @@ def test_SpiceEllipse():
     spice.reset()
     viewpt = [2.0, 0.0, 0.0]
     limb = spice.edlimb(np.sqrt(2), 2.0 * np.sqrt(2), np.sqrt(2), viewpt)
-    expected_s_minor = [0.0, 0.0, -1.0]
-    expected_s_major = [0.0, 2.0, 0.0]
+    expectedSMinor = [0.0, 0.0, -1.0]
+    expectedSMajor = [0.0, 2.0, 0.0]
     expectedCenter = [1.0, 0.0, 0.0]
     npt.assert_array_almost_equal(limb.center, expectedCenter)
-    npt.assert_array_almost_equal(limb.semi_major, expected_s_major)
-    npt.assert_array_almost_equal(limb.semi_minor, expected_s_minor)
+    npt.assert_array_almost_equal(limb.semi_major, expectedSMajor)
+    npt.assert_array_almost_equal(limb.semi_minor, expectedSMinor)
     assert str(limb).startswith("<SpiceEllipse")
     spice.reset()
     spice.kclear()
@@ -57,140 +57,133 @@ def test_SpicePlane():
 
 
 def test_SpiceCell():
-    test_cell = stypes.SPICEINT_CELL(8)
-    spice.appndi(1, test_cell)
-    spice.appndi(2, test_cell)
-    spice.appndi(3, test_cell)
-    assert [x for x in test_cell] == [1, 2, 3]
-    assert len(test_cell) == 3
-    assert 1 in test_cell
-    assert 2 in test_cell
-    assert 3 in test_cell
-    assert 4 not in test_cell
+    testCell = stypes.SPICEINT_CELL(8)
+    spice.appndi(1, testCell)
+    spice.appndi(2, testCell)
+    spice.appndi(3, testCell)
+    assert [x for x in testCell] == [1, 2, 3]
+    assert len(testCell) == 3
+    assert 1 in testCell
+    assert 2 in testCell
+    assert 3 in testCell
+    assert 4 not in testCell
     with pytest.raises(TypeError):
-        test_cell.__getitem__("a")
+        testCell.__getitem__('a')
     with pytest.raises(IndexError):
-        test_cell.__getitem__(3)
-    assert str(test_cell).startswith("<SpiceCell")
+        testCell.__getitem__(3)
+    assert str(testCell).startswith("<SpiceCell")
 
 
-def test_empty_spice_cell_slicing():
-    test_cell = stypes.SPICEDOUBLE_CELL(1)
-    assert test_cell[0:1] == []
-
+def test_EmptySpiceCellSlicing():
+    testCell = stypes.SPICEDOUBLE_CELL(1)
+    assert testCell[0:1] == []
 
 def test_numpy_and_strings():
-    s = np.array(["3/0597205898.09324"])[0]
-    sc = stypes.string_to_char_p(s)
-    assert stypes.to_python_string(sc)
-
+    s = np.array(['3/0597205898.09324'])[0]
+    sc = stypes.stringToCharP(s)
+    assert stypes.toPythonString(sc)
 
 def test_SpiceCellSliceInts():
-    test_vals = [1, 2, 3]
-    test_cell = stypes.SPICEINT_CELL(5)
-    spice.appndi(test_vals, test_cell)
-    assert test_cell[0] == test_vals[0]
-    assert test_cell[1] == test_vals[1]
-    assert test_cell[2] == test_vals[2]
-    assert test_cell[-1] == test_vals[-1]
-    assert test_cell[-2] == test_vals[-2]
-    assert test_cell[-3] == test_vals[-3]
-    assert test_cell[0:1] == test_vals[0:1]
-    assert test_cell[1:2] == test_vals[1:2]
-    assert test_cell[2:3] == test_vals[2:3]
-    assert test_cell[0:2] == test_vals[0:2]
-    assert test_cell[0:3] == test_vals[0:3]
-    assert test_cell[0:5] == test_vals[0:5]
-    assert test_cell[::2] == test_vals[::2]
-    assert test_cell[5:10] == test_vals[5:10]
-    assert test_cell[::-1] == test_vals[::-1]
-    assert test_cell[::-2] == test_vals[::-2]
-    assert test_cell[2:-1] == test_vals[2:-1]
+    testVals = [1, 2, 3]
+    testCell = stypes.SPICEINT_CELL(5)
+    spice.appndi(testVals, testCell)
+    assert testCell[0] == testVals[0]
+    assert testCell[1] == testVals[1]
+    assert testCell[2] == testVals[2]
+    assert testCell[-1] == testVals[-1]
+    assert testCell[-2] == testVals[-2]
+    assert testCell[-3] == testVals[-3]
+    assert testCell[0:1] == testVals[0:1]
+    assert testCell[1:2] == testVals[1:2]
+    assert testCell[2:3] == testVals[2:3]
+    assert testCell[0:2] == testVals[0:2]
+    assert testCell[0:3] == testVals[0:3]
+    assert testCell[0:5] == testVals[0:5]
+    assert testCell[::2] == testVals[::2]
+    assert testCell[5:10] == testVals[5:10]
+    assert testCell[::-1] == testVals[::-1]
+    assert testCell[::-2] == testVals[::-2]
+    assert testCell[2:-1] == testVals[2:-1]
 
 
-def test_to_double_vector():
-    made_from_list = stypes.to_double_vector([1.0, 2.0, 3.0])
-    assert len(made_from_list) == 3
-    made_from_tuple = stypes.to_double_vector((1.0, 2.0, 3.0))
-    assert len(made_from_tuple) == 3
-    made_from_numpy_array = stypes.to_double_vector(np.array([1.0, 2.0, 3.0]))
-    assert len(made_from_numpy_array) == 3
-    made_from_python_array = stypes.to_double_vector(array.array("d", [1.0, 2.0, 3.0]))
-    assert len(made_from_python_array) == 3
-    test_array3 = ctypes.c_double * 3
-    made_from_ctypes_array = stypes.to_double_vector(test_array3(1.0, 2.0, 3.0))
-    assert len(made_from_ctypes_array) == 3
+def test_toDoubleVector():
+    madeFromList = stypes.toDoubleVector([1.0, 2.0, 3.0])
+    assert len(madeFromList) == 3
+    madeFromTuple = stypes.toDoubleVector((1.0, 2.0, 3.0))
+    assert len(madeFromTuple) == 3
+    madeFromNumpyArray = stypes.toDoubleVector(np.array([1.0, 2.0, 3.0]))
+    assert len(madeFromNumpyArray) == 3
+    madeFromPythonArray = stypes.toDoubleVector(array.array('d', [1.0, 2.0, 3.0]))
+    assert len(madeFromPythonArray) == 3
+    TestArray3 = ctypes.c_double * 3
+    madeFromCtypesArray = stypes.toDoubleVector(TestArray3(1.0, 2.0, 3.0))
+    assert len(madeFromCtypesArray) == 3
     with pytest.raises(TypeError):
-        stypes.to_double_vector("ABCD")
+        stypes.toDoubleVector("ABCD")
     with pytest.raises(TypeError):
-        stypes.to_double_vector(array.array("i", [1, 2, 3]))
+        stypes.toDoubleVector(array.array('i', [1, 2, 3]))
 
 
-def test_to_int_vector():
-    made_from_list = stypes.to_int_vector([1, 2, 3])
-    assert len(made_from_list) == 3
-    made_from_tuple = stypes.to_int_vector((1, 2, 3))
-    assert len(made_from_tuple) == 3
-    made_from_numpy_array = stypes.to_int_vector(np.array([1, 2, 3]))
-    assert len(made_from_numpy_array) == 3
-    made_from_python_array = stypes.to_int_vector(array.array("i", [1, 2, 3]))
-    assert len(made_from_python_array) == 3
-    test_array3 = ctypes.c_int * 3
-    made_from_ctypes_array = stypes.to_int_vector(test_array3(1, 2, 3))
-    assert len(made_from_ctypes_array) == 3
+def test_toIntVector():
+    madeFromList = stypes.toIntVector([1, 2, 3])
+    assert len(madeFromList) == 3
+    madeFromTuple = stypes.toIntVector((1, 2, 3))
+    assert len(madeFromTuple) == 3
+    madeFromNumpyArray = stypes.toIntVector(np.array([1, 2, 3]))
+    assert len(madeFromNumpyArray) == 3
+    madeFromPythonArray = stypes.toIntVector(array.array('i', [1, 2, 3]))
+    assert len(madeFromPythonArray) == 3
+    TestArray3 = ctypes.c_int * 3
+    madeFromCtypesArray = stypes.toIntVector(TestArray3(1, 2, 3))
+    assert len(madeFromCtypesArray) == 3
     with pytest.raises(TypeError):
-        stypes.to_int_vector("ABCD")
+        stypes.toIntVector("ABCD")
     with pytest.raises(TypeError):
-        stypes.to_int_vector(array.array("d", [1.0, 2.0, 3.0]))
+        stypes.toIntVector(array.array('d', [1.0, 2.0, 3.0]))
 
 
-def test_to_double_matrix():
-    made_from_list = stypes.to_double_matrix([[1.0, 2.0], [3.0, 4.0]])
-    assert len(made_from_list) == 2
-    made_from_tuple = stypes.to_double_matrix(((1.0, 2.0), (3.0, 4.0)))
-    assert len(made_from_tuple) == 2
-    made_from_numpy_array = stypes.to_double_matrix(np.array([[1.0, 2.0], [3.0, 4.0]]))
-    assert len(made_from_numpy_array) == 2
-    made_from_numpy_matrix = stypes.to_double_matrix(
-        np.matrix([[1.0, 2.0], [3.0, 4.0]])
-    )
-    assert len(made_from_numpy_matrix) == 2
+def test_toDoubleMatrix():
+    madeFromList = stypes.toDoubleMatrix([[1.0, 2.0], [3.0, 4.0]])
+    assert len(madeFromList) == 2
+    madeFromTuple = stypes.toDoubleMatrix(((1.0, 2.0), (3.0, 4.0)))
+    assert len(madeFromTuple) == 2
+    madeFromNumpyArray = stypes.toDoubleMatrix(np.array([[1.0, 2.0], [3.0, 4.0]]))
+    assert len(madeFromNumpyArray) == 2
+    madeFromNumpyMatrix = stypes.toDoubleMatrix(np.matrix([[1.0, 2.0], [3.0, 4.0]]))
+    assert len(madeFromNumpyMatrix) == 2
     with pytest.raises(TypeError):
-        stypes.to_double_matrix("ABCD")
+        stypes.toDoubleMatrix("ABCD")
 
 
-def test_to_int_matrix():
-    made_from_list = stypes.to_int_matrix([[1, 2], [3, 4]])
-    assert len(made_from_list) == 2
-    made_from_tuple = stypes.to_int_matrix(((1, 2), (3, 4)))
-    assert len(made_from_tuple) == 2
-    made_from_numpy_array = stypes.to_int_matrix(np.array([[1, 2], [3, 4]]))
-    assert len(made_from_numpy_array) == 2
-    made_from_numpy_matrix = stypes.to_int_matrix(np.matrix([[1, 2], [3, 4]]))
-    assert len(made_from_numpy_matrix) == 2
+def test_toIntMatrix():
+    madeFromList = stypes.toIntMatrix([[1, 2], [3, 4]])
+    assert len(madeFromList) == 2
+    madeFromTuple = stypes.toIntMatrix(((1, 2), (3, 4)))
+    assert len(madeFromTuple) == 2
+    madeFromNumpyArray = stypes.toIntMatrix(np.array([[1, 2], [3, 4]]))
+    assert len(madeFromNumpyArray) == 2
+    madeFromNumpyMatrix = stypes.toIntMatrix(np.matrix([[1, 2], [3, 4]]))
+    assert len(madeFromNumpyMatrix) == 2
     with pytest.raises(TypeError):
-        stypes.to_int_matrix("ABCD")
+        stypes.toIntMatrix("ABCD")
     with pytest.raises(TypeError):
-        stypes.to_int_matrix([[1.0, 2.0], [3.0, 4.0]])
+        stypes.toIntMatrix([[1.0, 2.0], [3.0, 4.0]])
 
 
 def test_to_improve_coverage():
     # SpiceyError().__str__()
-    xsept = spice.stypes.SpiceyError("abc")
-    assert str(xsept) == "abc"
-    # stypes.empty_char_array when missing keyword arguments
-    eca = stypes.empty_char_array()
-    # stypes.empty_double_matrix and stypes.empty_int_matrix when x is c_int
-    edm = stypes.empty_double_matrix(x=ctypes.c_int(4))
-    eim = stypes.empty_int_matrix(x=ctypes.c_int(4))
+    xsept = spice.stypes.SpiceyError('abc')
+    assert str(xsept) == 'abc'
+    # stypes.emptyCharArray when missing keyword arguments
+    eca = stypes.emptyCharArray()
+    # stypes.emptyDoubleMatrix and stypes.emptyIntMatrix when x is c_int
+    edm = stypes.emptyDoubleMatrix(x=ctypes.c_int(4))
+    eim = stypes.emptyIntMatrix(x=ctypes.c_int(4))
     # stypes.*MatrixType().from_param(param) when isinstance(param,Array)
-    for stmt, typ in zip(
-        (stypes.DoubleMatrixType(), stypes.IntMatrixType(),), (float, int,)
-    ):
-        made_from_list = stmt.from_param(
-            [[typ(1), typ(2), typ(3)], [typ(6), typ(4), typ(0)]]
-        )
-        assert made_from_list is stmt.from_param(made_from_list)
+    for stmt,typ in zip((stypes.DoubleMatrixType(), stypes.IntMatrixType(),),
+                        (float, int,)):
+        madeFromList = stmt.from_param([[typ(1),typ(2),typ(3)],[typ(6),typ(4),typ(0)]])
+        assert madeFromList is stmt.from_param(madeFromList)
     # DataType.__init__()
     assert stypes.DataType()
     # SpiceDLADescr methods
@@ -203,14 +196,8 @@ def test_to_improve_coverage():
     assert isinstance(stsdlad.cbase, int)
     assert isinstance(stsdlad.csize, int)
     # __str__ methods in multiple classes
-    for obj in (
-        stypes.SpiceEKAttDsc(),
-        stypes.SpiceEKSegSum(),
-        stypes.empty_spice_ek_expr_class_vector(1),
-        stypes.empty_spice_ek_data_type_vector(1),
-        stypes.empty_spice_ek_expr_class_vector(ctypes.c_int(1)),
-        stypes.empty_spice_ek_data_type_vector(ctypes.c_int(1)),
-    ):
+    for obj in (stypes.SpiceEKAttDsc(), stypes.SpiceEKSegSum(), stypes.emptySpiceEKExprClassVector(1),
+                stypes.emptySpiceEKDataTypeVector(1), stypes.emptySpiceEKExprClassVector(ctypes.c_int(1)), stypes.emptySpiceEKDataTypeVector(ctypes.c_int(1))):
         assert type(obj.__str__()) is str
     # SpiceCell methods:  .is_time; .is_bool; .reset.
     stsct = stypes.SPICETIME_CELL(10)
@@ -230,14 +217,12 @@ def test_Cell_Double_empty():
     assert isinstance(cell, stypes.SpiceCell)
     assert cell[0:1] == []
 
-
 def test_Cell_Double():
     cell = stypes.Cell_Double(8)
     spice.appndd(1.1, cell)
     spice.appndd(2.2, cell)
     spice.appndd(3.3, cell)
-    assert [x for x in cell] == [1.1, 2.2, 3.3]
-
+    assert [x for x in cell] == [1.1,2.2,3.3]
 
 def test_Cell_Int_empty():
     cell = stypes.Cell_Int(1)
@@ -245,24 +230,21 @@ def test_Cell_Int_empty():
     assert isinstance(cell, stypes.SpiceCell)
     assert cell[0:1] == []
 
-
 def test_Cell_Int():
     cell = stypes.Cell_Int(8)
     spice.appndi(1, cell)
     spice.appndi(2, cell)
     spice.appndi(3, cell)
-    assert [x for x in cell] == [1, 2, 3]
-
+    assert [x for x in cell] == [1,2,3]
 
 def test_Cell_Char():
-    test_cell = stypes.Cell_Char(10, 10)
-    spice.appndc("one", test_cell)
-    spice.appndc("two", test_cell)
-    spice.appndc("three", test_cell)
-    assert test_cell[0] == "one"
-    assert test_cell[1] == "two"
-    assert test_cell[2] == "three"
-
+    testCell = stypes.Cell_Char(10,10)
+    spice.appndc("one", testCell)
+    spice.appndc("two", testCell)
+    spice.appndc("three", testCell)
+    assert testCell[0] == "one"
+    assert testCell[1] == "two"
+    assert testCell[2] == "three"
 
 def test_cell_equality():
     cell = stypes.Cell_Int(8)
@@ -281,3 +263,4 @@ def test_cell_equality():
     spice.appndd(3.3, celld)
     assert celld == [1.1, 2.2, 3.3]
     assert not celld == cell
+

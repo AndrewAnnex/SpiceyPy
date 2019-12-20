@@ -33,17 +33,17 @@ import numpy
 from contextlib import contextmanager
 from datetime import datetime
 
-__author__ = "AndrewAnnex"
+
+__author__ = 'AndrewAnnex'
 
 ################################################################################
 
 _default_len_out = 256
 
-_SPICE_EK_MAXQSEL = 100  # Twice the 50 in gcc-linux-64
-_SPICE_EK_EKRCEX_ROOM_DEFAULT = 100  # Enough?
+_SPICE_EK_MAXQSEL             = 100   # Twice the 50 in gcc-linux-64
+_SPICE_EK_EKRCEX_ROOM_DEFAULT = 100   # Enough?
 
-
-def check_for_spice_error(f):
+def checkForSpiceError(f):
     """
     Internal function to check
     :param f:
@@ -55,14 +55,13 @@ def check_for_spice_error(f):
             "short": getmsg("SHORT", 26),
             "explain": getmsg("EXPLAIN", 100).strip(),
             "long": getmsg("LONG", 321).strip(),
-            "traceback": qcktrc(200),
-        }
+            "traceback": qcktrc(200)}
         msg = stypes.errorformat.format(**errorparts)
         reset()
         raise stypes.SpiceyError(msg)
 
 
-def spice_error_check(f):
+def spiceErrorCheck(f):
     """
     Decorator for spiceypy hooking into spice error system.
     If an error is detected, an output similar to outmsg
@@ -76,36 +75,27 @@ def spice_error_check(f):
     def with_errcheck(*args, **kwargs):
         try:
             res = f(*args, **kwargs)
-            check_for_spice_error(f)
+            checkForSpiceError(f)
             return res
-        except BaseException:
+        except:
             raise
 
     return with_errcheck
 
 
-def spice_found_exception_thrower(f):
+def spiceFoundExceptionThrower(f):
     """
     Decorator for wrapping functions that use status codes
     """
-
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
         res = f(*args, **kwargs)
         if config.catch_false_founds:
             found = res[-1]
             if isinstance(found, bool) and not found:
-                raise stypes.SpiceyError(
-                    "Spice returns not found for function: {}".format(f.__name__),
-                    found=found,
-                )
-            elif hasattr(found, "__iter__") and not all(found):
-                raise stypes.SpiceyError(
-                    "Spice returns not found in a series of calls for function: {}".format(
-                        f.__name__
-                    ),
-                    found=found,
-                )
+                raise stypes.SpiceyError("Spice returns not found for function: {}".format(f.__name__), found=found)
+            elif hasattr(found, '__iter__') and not all(found):
+                raise stypes.SpiceyError("Spice returns not found in a series of calls for function: {}".format(f.__name__), found=found)
             else:
                 actualres = res[0:-1]
                 if len(actualres) == 1:
@@ -204,22 +194,17 @@ def get_found_catch_state():
     """
     return config.catch_false_founds
 
-
 def cell_double(cell_size):
     return stypes.SPICEDOUBLE_CELL(cell_size)
-
 
 def cell_int(cell_size):
     return stypes.SPICEINT_CELL(cell_size)
 
-
 def cell_char(cell_size, length):
     return stypes.SPICECHAR_CELL(cell_size, length)
 
-
 def cell_bool(cell_size):
     return stypes.SPICEBOOL_CELL(cell_size)
-
 
 def cell_time(cell_size):
     return stypes.SPICETIME_CELL(cell_size)
@@ -228,8 +213,7 @@ def cell_time(cell_size):
 ################################################################################
 # A
 
-
-@spice_error_check
+@spiceErrorCheck
 def appndc(item, cell):
     """
     Append an item to a character cell.
@@ -242,15 +226,15 @@ def appndc(item, cell):
     :type cell: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(cell, stypes.SpiceCell)
-    if stypes.is_iterable(item):
+    if stypes.isiterable(item):
         for c in item:
-            libspice.appndc_c(stypes.string_to_char_p(c), cell)
+            libspice.appndc_c(stypes.stringToCharP(c), cell)
     else:
-        item = stypes.string_to_char_p(item)
+        item = stypes.stringToCharP(item)
         libspice.appndc_c(item, cell)
 
 
-@spice_error_check
+@spiceErrorCheck
 def appndd(item, cell):
     """
     Append an item to a double precision cell.
@@ -271,7 +255,7 @@ def appndd(item, cell):
         libspice.appndd_c(item, cell)
 
 
-@spice_error_check
+@spiceErrorCheck
 def appndi(item, cell):
     """
     Append an item to an integer cell.
@@ -292,7 +276,7 @@ def appndi(item, cell):
         libspice.appndi_c(item, cell)
 
 
-@spice_error_check
+@spiceErrorCheck
 def axisar(axis, angle):
     """
     Construct a rotation matrix that rotates vectors by a specified
@@ -300,25 +284,24 @@ def axisar(axis, angle):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/axisar_c.html
 
-    :param axis: Rotation axis.
+    :param axis: Rotation axis. 
     :type axis: 3 Element vector (list, tuple, numpy array)
-    :param angle: Rotation angle, in radians.
+    :param angle: Rotation angle, in radians. 
     :type angle: float
     :return: Rotation matrix corresponding to axis and angle.
     :rtype: numpy array ((3, 3))
     """
-    axis = stypes.to_double_vector(axis)
+    axis = stypes.toDoubleVector(axis)
     angle = ctypes.c_double(angle)
-    r = stypes.empty_double_matrix()
+    r = stypes.emptyDoubleMatrix()
     libspice.axisar_c(axis, angle, r)
-    return stypes.c_matrix_to_numpy(r)
+    return stypes.cMatrixToNumpy(r)
 
 
 ################################################################################
 # B
 
-
-@spice_error_check
+@spiceErrorCheck
 def b1900():
     """
     Return the Julian Date corresponding to Besselian Date 1900.0.
@@ -331,7 +314,7 @@ def b1900():
     return libspice.b1900_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def b1950():
     """
     Return the Julian Date corresponding to Besselian Date 1950.0.
@@ -344,7 +327,7 @@ def b1950():
     return libspice.b1950_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def badkpv(caller, name, comp, insize, divby, intype):
     """
     Determine if a kernel pool variable is present and if so
@@ -367,17 +350,17 @@ def badkpv(caller, name, comp, insize, divby, intype):
     :return: returns false if the kernel pool variable is OK.
     :rtype: bool
     """
-    caller = stypes.string_to_char_p(caller)
-    name = stypes.string_to_char_p(name)
-    comp = stypes.string_to_char_p(comp)
+    caller = stypes.stringToCharP(caller)
+    name = stypes.stringToCharP(name)
+    comp = stypes.stringToCharP(comp)
     insize = ctypes.c_int(insize)
     divby = ctypes.c_int(divby)
-    intype = ctypes.c_char(intype.encode(encoding="UTF-8"))
+    intype = ctypes.c_char(intype.encode(encoding='UTF-8'))
     return bool(libspice.badkpv_c(caller, name, comp, insize, divby, intype))
 
 
-@spice_error_check
-def bltfrm(frmcls, out_cell=None):
+@spiceErrorCheck
+def bltfrm(frmcls, outCell=None):
     """
     Return a SPICE set containing the frame IDs of all built-in frames
     of a specified class.
@@ -386,20 +369,20 @@ def bltfrm(frmcls, out_cell=None):
 
     :param frmcls: Frame class.
     :type frmcls: int
-    :param out_cell: Optional SpiceInt Cell that is returned
-    :type out_cell: spiceypy.utils.support_types.SpiceCell
+    :param outCell: Optional SpiceInt Cell that is returned
+    :type outCell: spiceypy.utils.support_types.SpiceCell
     :return: Set of ID codes of frames of the specified class.
     :rtype: spiceypy.utils.support_types.SpiceCell
     """
     frmcls = ctypes.c_int(frmcls)
-    if not out_cell:
-        out_cell = stypes.SPICEINT_CELL(1000)
-    libspice.bltfrm_c(frmcls, out_cell)
-    return out_cell
+    if not outCell:
+        outCell = stypes.SPICEINT_CELL(1000)
+    libspice.bltfrm_c(frmcls, outCell)
+    return outCell
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def bodc2n(code, lenout=_default_len_out):
     """
     Translate the SPICE integer code of a body into a common name
@@ -415,14 +398,14 @@ def bodc2n(code, lenout=_default_len_out):
     :rtype: str
     """
     code = ctypes.c_int(code)
-    name = stypes.string_to_char_p(" " * lenout)
+    name = stypes.stringToCharP(" " * lenout)
     lenout = ctypes.c_int(lenout)
     found = ctypes.c_int()
     libspice.bodc2n_c(code, lenout, name, ctypes.byref(found))
-    return stypes.to_python_string(name), bool(found.value)
+    return stypes.toPythonString(name), bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def bodc2s(code, lenout=_default_len_out):
     """
     Translate a body ID code to either the corresponding name or if no
@@ -439,13 +422,13 @@ def bodc2s(code, lenout=_default_len_out):
     :rtype: str
     """
     code = ctypes.c_int(code)
-    name = stypes.string_to_char_p(" " * lenout)
+    name = stypes.stringToCharP(" " * lenout)
     lenout = ctypes.c_int(lenout)
     libspice.bodc2s_c(code, lenout, name)
-    return stypes.to_python_string(name)
+    return stypes.toPythonString(name)
 
 
-@spice_error_check
+@spiceErrorCheck
 def boddef(name, code):
     """
     Define a body name/ID code pair for later translation via
@@ -458,12 +441,12 @@ def boddef(name, code):
     :param code: Integer code for that body.
     :type code: int
     """
-    name = stypes.string_to_char_p(name)
+    name = stypes.stringToCharP(name)
     code = ctypes.c_int(code)
     libspice.boddef_c(name, code)
 
 
-@spice_error_check
+@spiceErrorCheck
 def bodfnd(body, item):
     """
     Determine whether values exist for some item for any body
@@ -479,12 +462,12 @@ def bodfnd(body, item):
     :rtype: bool
     """
     body = ctypes.c_int(body)
-    item = stypes.string_to_char_p(item)
+    item = stypes.stringToCharP(item)
     return bool(libspice.bodfnd_c(body, item))
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def bodn2c(name):
     """
     Translate the name of a body or object to the corresponding SPICE
@@ -497,15 +480,15 @@ def bodn2c(name):
     :return: SPICE integer ID code for the named body.
     :rtype: int
     """
-    name = stypes.string_to_char_p(name)
+    name = stypes.stringToCharP(name)
     code = ctypes.c_int(0)
     found = ctypes.c_int(0)
     libspice.bodn2c_c(name, ctypes.byref(code), ctypes.byref(found))
     return code.value, bool(found.value)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def bods2c(name):
     """
     Translate a string containing a body name or ID code to an integer code.
@@ -517,14 +500,14 @@ def bods2c(name):
     :return: Integer ID code corresponding to name.
     :rtype: int
     """
-    name = stypes.string_to_char_p(name)
+    name = stypes.stringToCharP(name)
     code = ctypes.c_int(0)
     found = ctypes.c_int(0)
     libspice.bods2c_c(name, ctypes.byref(code), ctypes.byref(found))
     return code.value, bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def bodvar(body, item, dim):
     """
     Deprecated: This routine has been superseded by :func:`bodvcd` and
@@ -548,13 +531,13 @@ def bodvar(body, item, dim):
     """
     body = ctypes.c_int(body)
     dim = ctypes.c_int(dim)
-    item = stypes.string_to_char_p(item)
-    values = stypes.empty_double_vector(dim.value)
+    item = stypes.stringToCharP(item)
+    values = stypes.emptyDoubleVector(dim.value)
     libspice.bodvar_c(body, item, ctypes.byref(dim), values)
-    return stypes.c_vector_to_python(values)
+    return stypes.cVectorToPython(values)
 
 
-@spice_error_check
+@spiceErrorCheck
 def bodvcd(bodyid, item, maxn):
     """
     Fetch from the kernel pool the double precision values of an item
@@ -575,15 +558,15 @@ def bodvcd(bodyid, item, maxn):
     :rtype: tuple
     """
     bodyid = ctypes.c_int(bodyid)
-    item = stypes.string_to_char_p(item)
+    item = stypes.stringToCharP(item)
     dim = ctypes.c_int()
-    values = stypes.empty_double_vector(maxn)
+    values = stypes.emptyDoubleVector(maxn)
     maxn = ctypes.c_int(maxn)
     libspice.bodvcd_c(bodyid, item, maxn, ctypes.byref(dim), values)
-    return dim.value, stypes.c_vector_to_python(values)
+    return dim.value, stypes.cVectorToPython(values)
 
 
-@spice_error_check
+@spiceErrorCheck
 def bodvrd(bodynm, item, maxn):
     """
     Fetch from the kernel pool the double precision values
@@ -602,16 +585,16 @@ def bodvrd(bodynm, item, maxn):
     :return: tuple of (dim, values)
     :rtype: tuple
     """
-    bodynm = stypes.string_to_char_p(bodynm)
-    item = stypes.string_to_char_p(item)
+    bodynm = stypes.stringToCharP(bodynm)
+    item = stypes.stringToCharP(item)
     dim = ctypes.c_int()
-    values = stypes.empty_double_vector(maxn)
+    values = stypes.emptyDoubleVector(maxn)
     maxn = ctypes.c_int(maxn)
     libspice.bodvrd_c(bodynm, item, maxn, ctypes.byref(dim), values)
-    return dim.value, stypes.c_vector_to_python(values)
+    return dim.value, stypes.cVectorToPython(values)
 
 
-@spice_error_check
+@spiceErrorCheck
 def brcktd(number, end1, end2):
     """
     Bracket a number. That is, given a number and an acceptable
@@ -636,7 +619,7 @@ def brcktd(number, end1, end2):
     return libspice.brcktd_c(number, end1, end2)
 
 
-@spice_error_check
+@spiceErrorCheck
 def brckti(number, end1, end2):
     """
     Bracket a number. That is, given a number and an acceptable
@@ -661,7 +644,7 @@ def brckti(number, end1, end2):
     return libspice.brckti_c(number, end1, end2)
 
 
-@spice_error_check
+@spiceErrorCheck
 def bschoc(value, ndim, lenvals, array, order):
     """
     Do a binary search for a given value within a character string array,
@@ -683,15 +666,15 @@ def bschoc(value, ndim, lenvals, array, order):
     :return: index
     :rtype: int
     """
-    value = stypes.string_to_char_p(value)
+    value = stypes.stringToCharP(value)
     ndim = ctypes.c_int(ndim)
     lenvals = ctypes.c_int(lenvals)
-    array = stypes.list_to_char_array_ptr(array, x_len=lenvals, y_len=ndim)
-    order = stypes.to_int_vector(order)
+    array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=ndim)
+    order = stypes.toIntVector(order)
     return libspice.bschoc_c(value, ndim, lenvals, array, order)
 
 
-@spice_error_check
+@spiceErrorCheck
 def bschoi(value, ndim, array, order):
     """
     Do a binary search for a given value within an integer array,
@@ -713,12 +696,12 @@ def bschoi(value, ndim, array, order):
     """
     value = ctypes.c_int(value)
     ndim = ctypes.c_int(ndim)
-    array = stypes.to_int_vector(array)
-    order = stypes.to_int_vector(order)
+    array = stypes.toIntVector(array)
+    order = stypes.toIntVector(order)
     return libspice.bschoi_c(value, ndim, array, order)
 
 
-@spice_error_check
+@spiceErrorCheck
 def bsrchc(value, ndim, lenvals, array):
     """
     Do a binary earch for a given value within a character string array.
@@ -738,14 +721,14 @@ def bsrchc(value, ndim, lenvals, array):
     :return: index
     :rtype: int
     """
-    value = stypes.string_to_char_p(value)
+    value = stypes.stringToCharP(value)
     ndim = ctypes.c_int(ndim)
     lenvals = ctypes.c_int(lenvals)
-    array = stypes.list_to_char_array_ptr(array, x_len=lenvals, y_len=ndim)
+    array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=ndim)
     return libspice.bsrchc_c(value, ndim, lenvals, array)
 
 
-@spice_error_check
+@spiceErrorCheck
 def bsrchd(value, ndim, array):
     """
     Do a binary search for a key value within a double precision array,
@@ -765,11 +748,11 @@ def bsrchd(value, ndim, array):
     """
     value = ctypes.c_double(value)
     ndim = ctypes.c_int(ndim)
-    array = stypes.to_double_vector(array)
+    array = stypes.toDoubleVector(array)
     return libspice.bsrchd_c(value, ndim, array)
 
 
-@spice_error_check
+@spiceErrorCheck
 def bsrchi(value, ndim, array):
     """
     Do a binary search for a key value within an integer array,
@@ -789,15 +772,14 @@ def bsrchi(value, ndim, array):
     """
     value = ctypes.c_int(value)
     ndim = ctypes.c_int(ndim)
-    array = stypes.to_int_vector(array)
+    array = stypes.toIntVector(array)
     return libspice.bsrchi_c(value, ndim, array)
 
 
 ################################################################################
 # C
 
-
-@spice_error_check
+@spiceErrorCheck
 def card(cell):
     """
     Return the cardinality (current number of elements) in a
@@ -813,8 +795,8 @@ def card(cell):
     return libspice.card_c(ctypes.byref(cell))
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def ccifrm(frclss, clssid, lenout=_default_len_out):
     """
     Return the frame name, frame ID, and center associated with
@@ -838,27 +820,16 @@ def ccifrm(frclss, clssid, lenout=_default_len_out):
     clssid = ctypes.c_int(clssid)
     lenout = ctypes.c_int(lenout)
     frcode = ctypes.c_int()
-    frname = stypes.string_to_char_p(lenout)
+    frname = stypes.stringToCharP(lenout)
     center = ctypes.c_int()
     found = ctypes.c_int()
-    libspice.ccifrm_c(
-        frclss,
-        clssid,
-        lenout,
-        ctypes.byref(frcode),
-        frname,
-        ctypes.byref(center),
-        ctypes.byref(found),
-    )
-    return (
-        frcode.value,
-        stypes.to_python_string(frname),
-        center.value,
-        bool(found.value),
-    )
+    libspice.ccifrm_c(frclss, clssid, lenout, ctypes.byref(frcode), frname,
+                      ctypes.byref(center), ctypes.byref(found))
+    return frcode.value, stypes.toPythonString(
+        frname), center.value, bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def cgv2el(center, vec1, vec2):
     """
     Form a SPICE ellipse from a center vector and two generating vectors.
@@ -874,23 +845,22 @@ def cgv2el(center, vec1, vec2):
     :return: Ellipse
     :rtype: spiceypy.utils.support_types.Ellipse
     """
-    center = stypes.to_double_vector(center)
-    vec1 = stypes.to_double_vector(vec1)
-    vec2 = stypes.to_double_vector(vec2)
+    center = stypes.toDoubleVector(center)
+    vec1 = stypes.toDoubleVector(vec1)
+    vec2 = stypes.toDoubleVector(vec2)
     ellipse = stypes.Ellipse()
     libspice.cgv2el_c(center, vec1, vec2, ctypes.byref(ellipse))
     return ellipse
 
-
-@spice_error_check
+@spiceErrorCheck
 def chbder(cp, degp, x2s, x, nderiv):
     """
     Given the coefficients for the Chebyshev expansion of a
     polynomial, this returns the value of the polynomial and its
     first nderiv derivatives evaluated at the input X.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/chbder_c.html
-
+    
     :param cp: degp+1 Chebyshev polynomial coefficients.
     :type cp: Array of floats
     :param degp: Degree of polynomial.
@@ -904,18 +874,18 @@ def chbder(cp, degp, x2s, x, nderiv):
     :return: Array of the derivatives of the polynomial
     :rtype: Array of floats
     """
-    cp = stypes.to_double_vector(cp)
+    cp = stypes.toDoubleVector(cp)
     degp = ctypes.c_int(degp)
-    x2s = stypes.to_double_vector(x2s)
+    x2s = stypes.toDoubleVector(x2s)
     x = ctypes.c_double(x)
-    partdp = stypes.empty_double_vector(3 * (nderiv + 1))
-    dpdxs = stypes.empty_double_vector(nderiv + 1)
+    partdp = stypes.emptyDoubleVector(3*(nderiv+1))
+    dpdxs = stypes.emptyDoubleVector(nderiv+1)
     nderiv = ctypes.c_int(nderiv)
     libspice.chbder_c(cp, degp, x2s, x, nderiv, partdp, dpdxs)
-    return stypes.c_vector_to_python(dpdxs)
+    return stypes.cVectorToPython(dpdxs)
 
 
-@spice_error_check
+@spiceErrorCheck
 def chkin(module):
     """
     Inform the SPICE error handling mechanism of entry into a routine.
@@ -925,11 +895,11 @@ def chkin(module):
     :param module: The name of the calling routine.
     :type module: str
     """
-    module = stypes.string_to_char_p(module)
+    module = stypes.stringToCharP(module)
     libspice.chkin_c(module)
 
 
-@spice_error_check
+@spiceErrorCheck
 def chkout(module):
     """
     Inform the SPICE error handling mechanism of exit from a routine.
@@ -939,12 +909,12 @@ def chkout(module):
     :param module: The name of the calling routine.
     :type module: str
     """
-    module = stypes.string_to_char_p(module)
+    module = stypes.stringToCharP(module)
     libspice.chkout_c(module)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def cidfrm(cent, lenout=_default_len_out):
     """
     Retrieve frame ID code and name to associate with a frame center.
@@ -963,13 +933,14 @@ def cidfrm(cent, lenout=_default_len_out):
     cent = ctypes.c_int(cent)
     lenout = ctypes.c_int(lenout)
     frcode = ctypes.c_int()
-    frname = stypes.string_to_char_p(lenout)
+    frname = stypes.stringToCharP(lenout)
     found = ctypes.c_int()
-    libspice.cidfrm_c(cent, lenout, ctypes.byref(frcode), frname, ctypes.byref(found))
-    return frcode.value, stypes.to_python_string(frname), bool(found.value)
+    libspice.cidfrm_c(cent, lenout, ctypes.byref(frcode), frname,
+                      ctypes.byref(found))
+    return frcode.value, stypes.toPythonString(frname), bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ckcls(handle):
     """
     Close an open CK file.
@@ -983,7 +954,7 @@ def ckcls(handle):
     libspice.ckcls_c(handle)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
     """
     Find the coverage window for a specified object in a specified CK file.
@@ -1007,22 +978,23 @@ def ckcov(ck, idcode, needav, level, tol, timsys, cover=None):
     :return: coverage window for a specified object in a specified CK file
     :rtype: spiceypy.utils.support_types.SpiceCell
     """
-    ck = stypes.string_to_char_p(ck)
+    ck = stypes.stringToCharP(ck)
     idcode = ctypes.c_int(idcode)
     needav = ctypes.c_int(needav)
-    level = stypes.string_to_char_p(level)
+    level = stypes.stringToCharP(level)
     tol = ctypes.c_double(tol)
-    timsys = stypes.string_to_char_p(timsys)
+    timsys = stypes.stringToCharP(timsys)
     if not cover:
         cover = stypes.SPICEDOUBLE_CELL(20000)
     assert isinstance(cover, stypes.SpiceCell)
     assert cover.dtype == 1
-    libspice.ckcov_c(ck, idcode, needav, level, tol, timsys, ctypes.byref(cover))
+    libspice.ckcov_c(ck, idcode, needav, level, tol, timsys,
+                     ctypes.byref(cover))
     return cover
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def ckfrot(inst, et):
     """
     Find the rotation from a C-kernel Id to the native
@@ -1039,21 +1011,15 @@ def ckfrot(inst, et):
     """
     inst = ctypes.c_int(inst)
     et = ctypes.c_double(et)
-    rotate_m = stypes.empty_double_matrix(x=3, y=3)
+    rotate = stypes.emptyDoubleMatrix(x=3, y=3)
     ref = ctypes.c_int()
     found = ctypes.c_int()
-    libspice.ckfrot_(
-        ctypes.byref(inst),
-        ctypes.byref(et),
-        rotate_m,
-        ctypes.byref(ref),
-        ctypes.byref(found),
-    )
-    return stypes.c_matrix_to_numpy(rotate_m), ref.value, bool(found.value)
+    libspice.ckfrot_(ctypes.byref(inst), ctypes.byref(et), rotate, ctypes.byref(ref), ctypes.byref(found))
+    return stypes.cMatrixToNumpy(rotate), ref.value, bool(found.value)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def ckgp(inst, sclkdp, tol, ref):
     """
     Get pointing (attitude) for a specified spacecraft clock time.
@@ -1076,18 +1042,17 @@ def ckgp(inst, sclkdp, tol, ref):
     inst = ctypes.c_int(inst)
     sclkdp = ctypes.c_double(sclkdp)
     tol = ctypes.c_double(tol)
-    ref = stypes.string_to_char_p(ref)
-    cmat = stypes.empty_double_matrix()
+    ref = stypes.stringToCharP(ref)
+    cmat = stypes.emptyDoubleMatrix()
     clkout = ctypes.c_double()
     found = ctypes.c_int()
-    libspice.ckgp_c(
-        inst, sclkdp, tol, ref, cmat, ctypes.byref(clkout), ctypes.byref(found)
-    )
-    return stypes.c_matrix_to_numpy(cmat), clkout.value, bool(found.value)
+    libspice.ckgp_c(inst, sclkdp, tol, ref, cmat, ctypes.byref(clkout),
+                    ctypes.byref(found))
+    return stypes.cMatrixToNumpy(cmat), clkout.value, bool(found.value)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def ckgpav(inst, sclkdp, tol, ref):
     """
     Get pointing (attitude) and angular velocity
@@ -1112,23 +1077,18 @@ def ckgpav(inst, sclkdp, tol, ref):
     inst = ctypes.c_int(inst)
     sclkdp = ctypes.c_double(sclkdp)
     tol = ctypes.c_double(tol)
-    ref = stypes.string_to_char_p(ref)
-    cmat = stypes.empty_double_matrix()
-    av = stypes.empty_double_vector(3)
+    ref = stypes.stringToCharP(ref)
+    cmat = stypes.emptyDoubleMatrix()
+    av = stypes.emptyDoubleVector(3)
     clkout = ctypes.c_double()
     found = ctypes.c_int()
-    libspice.ckgpav_c(
-        inst, sclkdp, tol, ref, cmat, av, ctypes.byref(clkout), ctypes.byref(found)
-    )
-    return (
-        stypes.c_matrix_to_numpy(cmat),
-        stypes.c_vector_to_python(av),
-        clkout.value,
-        bool(found.value),
-    )
+    libspice.ckgpav_c(inst, sclkdp, tol, ref, cmat, av, ctypes.byref(clkout),
+                      ctypes.byref(found))
+    return stypes.cMatrixToNumpy(cmat), stypes.cVectorToPython(
+            av), clkout.value, bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def cklpf(filename):
     """
     Load a CK pointing file for use by the CK readers.  Return that
@@ -1142,14 +1102,14 @@ def cklpf(filename):
     :return: Loaded file's handle.
     :rtype: int
     """
-    filename = stypes.string_to_char_p(filename)
+    filename = stypes.stringToCharP(filename)
     handle = ctypes.c_int()
     libspice.cklpf_c(filename, ctypes.byref(handle))
     return handle.value
 
 
-@spice_error_check
-def ckobj(ck, out_cell=None):
+@spiceErrorCheck
+def ckobj(ck, outCell=None):
     """
     Find the set of ID codes of all objects in a specified CK file.
 
@@ -1157,22 +1117,22 @@ def ckobj(ck, out_cell=None):
 
     :param ck: Name of CK file.
     :type ck: str
-    :param out_cell: Optional user provided Spice Int cell.
-    :type out_cell: Optional spiceypy.utils.support_types.SpiceCell
+    :param outCell: Optional user provided Spice Int cell.
+    :type outCell: Optional spiceypy.utils.support_types.SpiceCell
     :return: Set of ID codes of objects in CK file.
     :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(ck, str)
-    ck = stypes.string_to_char_p(ck)
-    if not out_cell:
-        out_cell = stypes.SPICEINT_CELL(1000)
-    assert isinstance(out_cell, stypes.SpiceCell)
-    assert out_cell.dtype == 2
-    libspice.ckobj_c(ck, ctypes.byref(out_cell))
-    return out_cell
+    ck = stypes.stringToCharP(ck)
+    if not outCell:
+        outCell = stypes.SPICEINT_CELL(1000)
+    assert isinstance(outCell, stypes.SpiceCell)
+    assert outCell.dtype == 2
+    libspice.ckobj_c(ck, ctypes.byref(outCell))
+    return outCell
 
 
-@spice_error_check
+@spiceErrorCheck
 def ckopn(filename, ifname, ncomch):
     """
     Open a new CK file, returning the handle of the opened file.
@@ -1188,15 +1148,15 @@ def ckopn(filename, ifname, ncomch):
     :return: The handle of the opened CK file.
     :rtype: int
     """
-    filename = stypes.string_to_char_p(filename)
-    ifname = stypes.string_to_char_p(ifname)
+    filename = stypes.stringToCharP(filename)
+    ifname = stypes.stringToCharP(ifname)
     ncomch = ctypes.c_int(ncomch)
     handle = ctypes.c_int()
     libspice.ckopn_c(filename, ifname, ncomch, ctypes.byref(handle))
     return handle.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def ckupf(handle):
     """
     Unload a CK pointing file so that it will no longer be searched
@@ -1211,8 +1171,9 @@ def ckupf(handle):
     libspice.ckupf_c(handle)
 
 
-@spice_error_check
-def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats, avvs):
+@spiceErrorCheck
+def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
+          avvs):
     """
     Add a type 1 segment to a C-kernel.
 
@@ -1245,22 +1206,20 @@ def ckw01(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
     begtim = ctypes.c_double(begtim)
     endtim = ctypes.c_double(endtim)
     inst = ctypes.c_int(inst)
-    ref = stypes.string_to_char_p(ref)
+    ref = stypes.stringToCharP(ref)
     avflag = ctypes.c_int(avflag)
-    segid = stypes.string_to_char_p(segid)
-    sclkdp = stypes.to_double_vector(sclkdp)
-    quats = stypes.to_double_matrix(quats)
-    avvs = stypes.to_double_matrix(avvs)
+    segid = stypes.stringToCharP(segid)
+    sclkdp = stypes.toDoubleVector(sclkdp)
+    quats = stypes.toDoubleMatrix(quats)
+    avvs = stypes.toDoubleMatrix(avvs)
     nrec = ctypes.c_int(nrec)
-    libspice.ckw01_c(
-        handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats, avvs
-    )
+    libspice.ckw01_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec,
+                     sclkdp, quats, avvs)
 
 
-@spice_error_check
-def ckw02(
-    handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats, avvs, rates
-):
+@spiceErrorCheck
+def ckw02(handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats,
+          avvs, rates):
     """
     Write a type 2 segment to a C-kernel.
 
@@ -1295,35 +1254,21 @@ def ckw02(
     begtim = ctypes.c_double(begtim)
     endtim = ctypes.c_double(endtim)
     inst = ctypes.c_int(inst)
-    ref = stypes.string_to_char_p(ref)
-    segid = stypes.string_to_char_p(segid)
-    start = stypes.to_double_vector(start)
-    stop = stypes.to_double_vector(stop)
-    rates = stypes.to_double_vector(rates)
-    quats = stypes.to_double_matrix(quats)
-    avvs = stypes.to_double_matrix(avvs)
+    ref = stypes.stringToCharP(ref)
+    segid = stypes.stringToCharP(segid)
+    start = stypes.toDoubleVector(start)
+    stop = stypes.toDoubleVector(stop)
+    rates = stypes.toDoubleVector(rates)
+    quats = stypes.toDoubleMatrix(quats)
+    avvs = stypes.toDoubleMatrix(avvs)
     nrec = ctypes.c_int(nrec)
-    libspice.ckw02_c(
-        handle, begtim, endtim, inst, ref, segid, nrec, start, stop, quats, avvs, rates
-    )
+    libspice.ckw02_c(handle, begtim, endtim, inst, ref, segid, nrec, start,
+                     stop, quats, avvs, rates)
 
 
-@spice_error_check
-def ckw03(
-    handle,
-    begtim,
-    endtim,
-    inst,
-    ref,
-    avflag,
-    segid,
-    nrec,
-    sclkdp,
-    quats,
-    avvs,
-    nints,
-    starts,
-):
+@spiceErrorCheck
+def ckw03(handle, begtim, endtim, inst, ref, avflag, segid, nrec, sclkdp, quats,
+          avvs, nints, starts):
     """
     Add a type 3 segment to a C-kernel.
 
@@ -1360,49 +1305,22 @@ def ckw03(
     begtim = ctypes.c_double(begtim)
     endtim = ctypes.c_double(endtim)
     inst = ctypes.c_int(inst)
-    ref = stypes.string_to_char_p(ref)
+    ref = stypes.stringToCharP(ref)
     avflag = ctypes.c_int(avflag)
-    segid = stypes.string_to_char_p(segid)
-    sclkdp = stypes.to_double_vector(sclkdp)
-    quats = stypes.to_double_matrix(quats)
-    avvs = stypes.to_double_matrix(avvs)
+    segid = stypes.stringToCharP(segid)
+    sclkdp = stypes.toDoubleVector(sclkdp)
+    quats = stypes.toDoubleMatrix(quats)
+    avvs = stypes.toDoubleMatrix(avvs)
     nrec = ctypes.c_int(nrec)
-    starts = stypes.to_double_vector(starts)
+    starts = stypes.toDoubleVector(starts)
     nints = ctypes.c_int(nints)
-    libspice.ckw03_c(
-        handle,
-        begtim,
-        endtim,
-        inst,
-        ref,
-        avflag,
-        segid,
-        nrec,
-        sclkdp,
-        quats,
-        avvs,
-        nints,
-        starts,
-    )
+    libspice.ckw03_c(handle, begtim, endtim, inst, ref, avflag, segid, nrec,
+                     sclkdp, quats, avvs, nints, starts)
 
 
-@spice_error_check
-def ckw05(
-    handle,
-    subtype,
-    degree,
-    begtim,
-    endtim,
-    inst,
-    ref,
-    avflag,
-    segid,
-    sclkdp,
-    packts,
-    rate,
-    nints,
-    starts,
-):
+@spiceErrorCheck
+def ckw05(handle, subtype, degree, begtim, endtim, inst, ref, avflag, segid,
+          sclkdp, packts, rate, nints, starts):
     """
     Write a type 5 segment to a CK file.
 
@@ -1437,45 +1355,30 @@ def ckw05(
     :param starts: Encoded SCLK interval start times.
     :type starts: Array of floats
     """
-    handle = ctypes.c_int(handle)
+    handle  = ctypes.c_int(handle)
     subtype = ctypes.c_int(subtype)
-    degree = ctypes.c_int(degree)
-    begtim = ctypes.c_double(begtim)
-    endtim = ctypes.c_double(endtim)
-    inst = ctypes.c_int(inst)
-    ref = stypes.string_to_char_p(ref)
-    avflag = ctypes.c_int(avflag)
-    segid = stypes.string_to_char_p(segid)
-    n = ctypes.c_int(len(packts))
-    sclkdp = stypes.to_double_vector(sclkdp)
-    packts = stypes.to_double_matrix(packts)
-    rate = ctypes.c_double(rate)
-    nints = ctypes.c_int(nints)
-    starts = stypes.to_double_vector(starts)
-    libspice.ckw05_c(
-        handle,
-        subtype,
-        degree,
-        begtim,
-        endtim,
-        inst,
-        ref,
-        avflag,
-        segid,
-        n,
-        sclkdp,
-        packts,
-        rate,
-        nints,
-        starts,
-    )
+    degree  = ctypes.c_int(degree)
+    begtim  = ctypes.c_double(begtim)
+    endtim  = ctypes.c_double(endtim)
+    inst    = ctypes.c_int(inst)
+    ref     = stypes.stringToCharP(ref)
+    avflag  = ctypes.c_int(avflag)
+    segid   = stypes.stringToCharP(segid)
+    n       = ctypes.c_int(len(packts))
+    sclkdp  = stypes.toDoubleVector(sclkdp)
+    packts  = stypes.toDoubleMatrix(packts)
+    rate    = ctypes.c_double(rate)
+    nints   = ctypes.c_int(nints)
+    starts  = stypes.toDoubleVector(starts)
+    libspice.ckw05_c(handle, subtype, degree, begtim, endtim, inst, ref, avflag,
+                     segid, n, sclkdp, packts, rate, nints, starts)
 
 
 def cleard():
     raise NotImplementedError
 
 
-@spice_error_check
+@spiceErrorCheck
 def clight():
     """
     Return the speed of light in a vacuum (IAU official value, in km/sec).
@@ -1488,7 +1391,7 @@ def clight():
     return libspice.clight_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def clpool():
     """
     Remove all variables from the kernel pool. Watches
@@ -1499,7 +1402,7 @@ def clpool():
     libspice.clpool_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def cltext(fname):
     """
     Internal undocumented command for closing a text file opened by RDTEXT.
@@ -1524,12 +1427,12 @@ def cltext(fname):
     :param fname: Text file to be closed.
     :type fname: str
     """
-    fname_p = stypes.string_to_char_p(fname)
+    fnameP    = stypes.stringToCharP(fname)
     fname_len = ctypes.c_int(len(fname))
-    libspice.cltext_(fname_p, fname_len)
+    libspice.cltext_(fnameP, fname_len)
 
 
-@spice_error_check
+@spiceErrorCheck
 def cmprss(delim, n, instr, lenout=_default_len_out):
     """
     Compress a character string by removing occurrences of
@@ -1549,16 +1452,16 @@ def cmprss(delim, n, instr, lenout=_default_len_out):
     :return: Compressed string.
     :rtype: str
     """
-    delim = ctypes.c_char(delim.encode(encoding="UTF-8"))
+    delim = ctypes.c_char(delim.encode(encoding='UTF-8'))
     n = ctypes.c_int(n)
-    instr = stypes.string_to_char_p(instr)
-    output = stypes.string_to_char_p(lenout)
+    instr = stypes.stringToCharP(instr)
+    output = stypes.stringToCharP(lenout)
     libspice.cmprss_c(delim, n, instr, lenout, output)
-    return stypes.to_python_string(output)
+    return stypes.toPythonString(output)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def cnmfrm(cname, lenout=_default_len_out):
     """
     Retrieve frame ID code and name to associate with an object.
@@ -1575,15 +1478,16 @@ def cnmfrm(cname, lenout=_default_len_out):
     :rtype: tuple
     """
     lenout = ctypes.c_int(lenout)
-    frname = stypes.string_to_char_p(lenout)
-    cname = stypes.string_to_char_p(cname)
+    frname = stypes.stringToCharP(lenout)
+    cname = stypes.stringToCharP(cname)
     found = ctypes.c_int()
     frcode = ctypes.c_int()
-    libspice.cnmfrm_c(cname, lenout, ctypes.byref(frcode), frname, ctypes.byref(found))
-    return frcode.value, stypes.to_python_string(frname), bool(found.value)
+    libspice.cnmfrm_c(cname, lenout, ctypes.byref(frcode), frname,
+                      ctypes.byref(found))
+    return frcode.value, stypes.toPythonString(frname), bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def conics(elts, et):
     """
     Determine the state (position, velocity) of an orbiting body
@@ -1599,14 +1503,14 @@ def conics(elts, et):
     :return: State of orbiting body at et.
     :rtype: 6-Element Array of floats
     """
-    elts = stypes.to_double_vector(elts)
+    elts = stypes.toDoubleVector(elts)
     et = ctypes.c_double(et)
-    state = stypes.empty_double_vector(6)
+    state = stypes.emptyDoubleVector(6)
     libspice.conics_c(elts, et, state)
-    return stypes.c_vector_to_python(state)
+    return stypes.cVectorToPython(state)
 
 
-@spice_error_check
+@spiceErrorCheck
 def convrt(x, inunit, outunit):
     """
     Take a measurement X, the units associated with
@@ -1624,23 +1528,23 @@ def convrt(x, inunit, outunit):
     :return: The measurment in the desired units.
     :rtype: float
     """
-
-    inunit = stypes.string_to_char_p(inunit)
-    outunit = stypes.string_to_char_p(outunit)
+	
+    inunit = stypes.stringToCharP(inunit)
+    outunit = stypes.stringToCharP(outunit)
     y = ctypes.c_double()
     if hasattr(x, "__iter__"):
-        out_array = []
+        outArray=[]
         for n in x:
             libspice.convrt_c(n, inunit, outunit, ctypes.byref(y))
-            check_for_spice_error(None)
-            out_array.append(y.value)
-        return out_array
+            checkForSpiceError(None)
+            outArray.append(y.value)
+        return outArray
     x = ctypes.c_double(x)
     libspice.convrt_c(x, inunit, outunit, ctypes.byref(y))
     return y.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def copy(cell):
     """
     Copy the contents of a SpiceCell of any data type to another
@@ -1668,7 +1572,7 @@ def copy(cell):
     return newcopy
 
 
-@spice_error_check
+@spiceErrorCheck
 def cpos(string, chars, start):
     """
     Find the first occurrence in a string of a character belonging
@@ -1688,13 +1592,13 @@ def cpos(string, chars, start):
             following index start that is in the collection chars.
     :rtype: int
     """
-    string = stypes.string_to_char_p(string)
-    chars = stypes.string_to_char_p(chars)
+    string = stypes.stringToCharP(string)
+    chars = stypes.stringToCharP(chars)
     start = ctypes.c_int(start)
     return libspice.cpos_c(string, chars, start)
 
 
-@spice_error_check
+@spiceErrorCheck
 def cposr(string, chars, start):
     """
     Find the first occurrence in a string of a character belonging
@@ -1714,13 +1618,13 @@ def cposr(string, chars, start):
             before index start that is in the collection chars.
     :rtype: int
     """
-    string = stypes.string_to_char_p(string)
-    chars = stypes.string_to_char_p(chars)
+    string = stypes.stringToCharP(string)
+    chars = stypes.stringToCharP(chars)
     start = ctypes.c_int(start)
     return libspice.cposr_c(string, chars, start)
 
 
-@spice_error_check
+@spiceErrorCheck
 def cvpool(agent):
     """
     Indicate whether or not any watched kernel variables that have a
@@ -1733,13 +1637,13 @@ def cvpool(agent):
     :return: True if variables for "agent" have been updated.
     :rtype: bool
     """
-    agent = stypes.string_to_char_p(agent)
+    agent = stypes.stringToCharP(agent)
     update = ctypes.c_int()
     libspice.cvpool_c(agent, ctypes.byref(update))
     return bool(update.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def cyllat(r, lonc, z):
     """
     Convert from cylindrical to latitudinal coordinates.
@@ -1761,13 +1665,12 @@ def cyllat(r, lonc, z):
     radius = ctypes.c_double()
     lon = ctypes.c_double()
     lat = ctypes.c_double()
-    libspice.cyllat_c(
-        r, lonc, z, ctypes.byref(radius), ctypes.byref(lon), ctypes.byref(lat)
-    )
+    libspice.cyllat_c(r, lonc, z, ctypes.byref(radius), ctypes.byref(lon),
+                      ctypes.byref(lat))
     return radius.value, lon.value, lat.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def cylrec(r, lon, z):
     """
     Convert from cylindrical to rectangular coordinates.
@@ -1786,12 +1689,12 @@ def cylrec(r, lon, z):
     r = ctypes.c_double(r)
     lon = ctypes.c_double(lon)
     z = ctypes.c_double(z)
-    rectan = stypes.empty_double_vector(3)
+    rectan = stypes.emptyDoubleVector(3)
     libspice.cylrec_c(r, lon, z, rectan)
-    return stypes.c_vector_to_python(rectan)
+    return stypes.cVectorToPython(rectan)
 
 
-@spice_error_check
+@spiceErrorCheck
 def cylsph(r, lonc, z):
     """
     Convert from cylindrical to spherical coordinates.
@@ -1816,17 +1719,15 @@ def cylsph(r, lonc, z):
     radius = ctypes.c_double()
     colat = ctypes.c_double()
     lon = ctypes.c_double()
-    libspice.cyllat_c(
-        r, lonc, z, ctypes.byref(radius), ctypes.byref(colat), ctypes.byref(lon)
-    )
+    libspice.cyllat_c(r, lonc, z, ctypes.byref(radius), ctypes.byref(colat),
+                      ctypes.byref(lon))
     return radius.value, colat.value, lon.value
 
 
 ################################################################################
 # D
 
-
-@spice_error_check
+@spiceErrorCheck
 def dafac(handle, buffer):
     """
     Add comments from a buffer of character strings to the comment
@@ -1840,14 +1741,14 @@ def dafac(handle, buffer):
     :param buffer: Buffer of comments to put into the comment area.
     :type buffer: list[str]
     """
-    handle = ctypes.c_int(handle)
+    handle  = ctypes.c_int(handle)
     lenvals = ctypes.c_int(len(max(buffer, key=len)) + 1)
-    n = ctypes.c_int(len(buffer))
-    buffer = stypes.list_to_char_array_ptr(buffer)
+    n       = ctypes.c_int(len(buffer))
+    buffer  = stypes.listToCharArrayPtr(buffer)
     libspice.dafac_c(handle, n, lenvals, buffer)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dafbbs(handle):
     """
     Begin a backward search for arrays in a DAF.
@@ -1861,7 +1762,7 @@ def dafbbs(handle):
     libspice.dafbbs_c(handle)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dafbfs(handle):
     """
     Begin a forward search for arrays in a DAF.
@@ -1875,7 +1776,7 @@ def dafbfs(handle):
     libspice.dafbfs_c(handle)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dafcls(handle):
     """
     Close the DAF associated with a given handle.
@@ -1889,7 +1790,7 @@ def dafcls(handle):
     libspice.dafcls_c(handle)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dafcs(handle):
     """
     Select a DAF that already has a search in progress as the
@@ -1904,7 +1805,7 @@ def dafcs(handle):
     libspice.dafcs_c(handle)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dafdc(handle):
     """
     Delete the entire comment area of a specified DAF file.
@@ -1918,7 +1819,7 @@ def dafdc(handle):
     libspice.dafdc_c(handle)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dafec(handle, bufsiz, lenout=_default_len_out):
     """
     Extract comments from the comment area of a binary DAF.
@@ -1938,23 +1839,17 @@ def dafec(handle, bufsiz, lenout=_default_len_out):
     :rtype: tuple
     """
     handle = ctypes.c_int(handle)
-    buffer = stypes.empty_char_array(y_len=bufsiz, x_len=lenout)
+    buffer = stypes.emptyCharArray(yLen=bufsiz, xLen=lenout)
     bufsiz = ctypes.c_int(bufsiz)
     lenout = ctypes.c_int(lenout)
     n = ctypes.c_int()
     done = ctypes.c_int()
-    libspice.dafec_c(
-        handle,
-        bufsiz,
-        lenout,
-        ctypes.byref(n),
-        ctypes.byref(buffer),
-        ctypes.byref(done),
-    )
-    return n.value, stypes.c_vector_to_python(buffer), bool(done.value)
+    libspice.dafec_c(handle, bufsiz, lenout, ctypes.byref(n),
+                     ctypes.byref(buffer), ctypes.byref(done))
+    return n.value, stypes.cVectorToPython(buffer), bool(done.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def daffna():
     """
     Find the next (forward) array in the current DAF.
@@ -1969,7 +1864,7 @@ def daffna():
     return bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def daffpa():
     """
     Find the previous (backward) array in the current DAF.
@@ -1984,7 +1879,7 @@ def daffpa():
     return bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dafgda(handle, begin, end):
     """
     Read the double precision data bounded by two addresses within a DAF.
@@ -2001,14 +1896,14 @@ def dafgda(handle, begin, end):
     :rtype: Array of floats
     """
     handle = ctypes.c_int(handle)
-    data = stypes.empty_double_vector(abs(end - begin) + 1)
+    data = stypes.emptyDoubleVector(abs(end - begin) + 1)
     begin = ctypes.c_int(begin)
     end = ctypes.c_int(end)
     libspice.dafgda_c(handle, begin, end, data)
-    return stypes.c_vector_to_python(data)
+    return stypes.cVectorToPython(data)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dafgh():
     """
     Return (get) the handle of the DAF currently being searched.
@@ -2023,7 +1918,7 @@ def dafgh():
     return outvalue.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def dafgn(lenout=_default_len_out):
     """
     Return (get) the name for the current array in the current DAF.
@@ -2036,12 +1931,12 @@ def dafgn(lenout=_default_len_out):
     :rtype: str
     """
     lenout = ctypes.c_int(lenout)
-    name = stypes.string_to_char_p(lenout)
+    name = stypes.stringToCharP(lenout)
     libspice.dafgn_c(lenout, name)
-    return stypes.to_python_string(name)
+    return stypes.toPythonString(name)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dafgs(n=125):
     # The 125 may be a hard set,
     # I got strange errors that occasionally happened without it
@@ -2054,14 +1949,14 @@ def dafgs(n=125):
     :return: Summary for current array.
     :rtype: Array of floats
     """
-    retarray = stypes.empty_double_vector(125)
+    retarray = stypes.emptyDoubleVector(125)
     # libspice.dafgs_c(ctypes.cast(retarray, ctypes.POINTER(ctypes.c_double)))
     libspice.dafgs_c(retarray)
-    return stypes.c_vector_to_python(retarray)[0:n]
+    return stypes.cVectorToPython(retarray)[0:n]
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def dafgsr(handle, recno, begin, end):
     """
     Read a portion of the contents of (words in) a summary record in a DAF file.
@@ -2084,13 +1979,13 @@ def dafgsr(handle, recno, begin, end):
     begin = ctypes.c_int(begin)
     end = ctypes.c_int(end)
     # dafgsr_c will retrieve no more than 128 words
-    data = stypes.empty_double_vector(1 + min([128, end.value]) - max([begin.value, 1]))
+    data = stypes.emptyDoubleVector(1 + min([128,end.value]) - max([begin.value,1]))
     found = ctypes.c_int()
     libspice.dafgsr_c(handle, recno, begin, end, data, ctypes.byref(found))
-    return stypes.c_vector_to_python(data), bool(found.value)
+    return stypes.cVectorToPython(data), bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dafopr(fname):
     """
     Open a DAF for subsequent read requests.
@@ -2102,13 +1997,13 @@ def dafopr(fname):
     :return: Handle assigned to DAF.
     :rtype: int
     """
-    fname = stypes.string_to_char_p(fname)
+    fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
     libspice.dafopr_c(fname, ctypes.byref(handle))
     return handle.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def dafopw(fname):
     """
     Open a DAF for subsequent write requests.
@@ -2120,13 +2015,13 @@ def dafopw(fname):
     :return: Handle assigned to DAF.
     :rtype: int
     """
-    fname = stypes.string_to_char_p(fname)
+    fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
     libspice.dafopw_c(fname, ctypes.byref(handle))
     return handle.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def dafps(nd, ni, dc, ic):
     """
     Pack (assemble) an array summary from its double precision and
@@ -2145,16 +2040,16 @@ def dafps(nd, ni, dc, ic):
     :return: Array summary.
     :rtype: Array of floats
     """
-    dc = stypes.to_double_vector(dc)
-    ic = stypes.to_int_vector(ic)
-    outsum = stypes.empty_double_vector(nd + ni)
+    dc = stypes.toDoubleVector(dc)
+    ic = stypes.toIntVector(ic)
+    outsum = stypes.emptyDoubleVector(nd + ni)
     nd = ctypes.c_int(nd)
     ni = ctypes.c_int(ni)
     libspice.dafps_c(nd, ni, dc, ic, outsum)
-    return stypes.c_vector_to_python(outsum)
+    return stypes.cVectorToPython(outsum)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dafrda(handle, begin, end):
     """
     Read the double precision data bounded by two addresses within a DAF.
@@ -2177,12 +2072,12 @@ def dafrda(handle, begin, end):
     handle = ctypes.c_int(handle)
     begin = ctypes.c_int(begin)
     end = ctypes.c_int(end)
-    data = stypes.empty_double_vector(1 + end.value - begin.value)
+    data = stypes.emptyDoubleVector(1 + end.value - begin.value)
     libspice.dafrda_c(handle, begin, end, data)
-    return stypes.c_vector_to_python(data)
+    return stypes.cVectorToPython(data)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dafrfr(handle, lenout=_default_len_out):
     """
     Read the contents of the file record of a DAF.
@@ -2205,31 +2100,18 @@ def dafrfr(handle, lenout=_default_len_out):
     lenout = ctypes.c_int(lenout)
     nd = ctypes.c_int()
     ni = ctypes.c_int()
-    ifname = stypes.string_to_char_p(lenout)
+    ifname = stypes.stringToCharP(lenout)
     fward = ctypes.c_int()
     bward = ctypes.c_int()
     free = ctypes.c_int()
-    libspice.dafrfr_c(
-        handle,
-        lenout,
-        ctypes.byref(nd),
-        ctypes.byref(ni),
-        ifname,
-        ctypes.byref(fward),
-        ctypes.byref(bward),
-        ctypes.byref(free),
-    )
-    return (
-        nd.value,
-        ni.value,
-        stypes.to_python_string(ifname),
-        fward.value,
-        bward.value,
-        free.value,
-    )
+    libspice.dafrfr_c(handle, lenout, ctypes.byref(nd), ctypes.byref(ni),
+                      ifname, ctypes.byref(fward), ctypes.byref(bward),
+                      ctypes.byref(free))
+    return nd.value, ni.value, stypes.toPythonString(
+            ifname), fward.value, bward.value, free.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def dafrs(insum):
     """
     Change the summary for the current array in the current DAF.
@@ -2239,11 +2121,11 @@ def dafrs(insum):
     :param insum: New summary for current array.
     :type insum: Array of floats
     """
-    insum = stypes.to_double_vector(insum)
+    insum = stypes.toDoubleVector(insum)
     libspice.dafrs_c(ctypes.byref(insum))
 
 
-@spice_error_check
+@spiceErrorCheck
 def dafus(insum, nd, ni):
     """
     Unpack an array summary into its double precision and integer components.
@@ -2259,16 +2141,16 @@ def dafus(insum, nd, ni):
     :return: Double precision components, Integer components.
     :rtype: tuple
     """
-    insum = stypes.to_double_vector(insum)
-    dc = stypes.empty_double_vector(nd)
-    ic = stypes.empty_int_vector(ni)
+    insum = stypes.toDoubleVector(insum)
+    dc = stypes.emptyDoubleVector(nd)
+    ic = stypes.emptyIntVector(ni)
     nd = ctypes.c_int(nd)
     ni = ctypes.c_int(ni)
     libspice.dafus_c(insum, nd, ni, dc, ic)
-    return stypes.c_vector_to_python(dc), stypes.c_vector_to_python(ic)
+    return stypes.cVectorToPython(dc), stypes.cVectorToPython(ic)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dasac(handle, buffer):
     """
     Add comments from a buffer of character strings to the comment
@@ -2285,11 +2167,11 @@ def dasac(handle, buffer):
     handle = ctypes.c_int(handle)
     n = ctypes.c_int(len(buffer))
     buflen = ctypes.c_int(max(len(s) for s in buffer) + 1)
-    buffer = stypes.list_to_char_array_ptr(buffer)
+    buffer = stypes.listToCharArrayPtr(buffer)
     libspice.dasac_c(handle, n, buflen, buffer)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dascls(handle):
     """
     Close a DAS file.
@@ -2303,22 +2185,22 @@ def dascls(handle):
     libspice.dascls_c(handle)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dasdc(handle):
     """
-    Delete the entire comment area of a previously opened binary
+    Delete the entire comment area of a previously opened binary 
     DAS file.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasdc_c.html
-
+    
     :param handle: The handle of a binary DAS file opened for writing.
-    :type handle: int
+    :type handle: int 
     """
     handle = ctypes.c_int(handle)
     libspice.dasdc_c(handle)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dasec(handle, bufsiz=_default_len_out, buflen=_default_len_out):
     """
     Extract comments from the comment area of a binary DAS file.
@@ -2338,27 +2220,21 @@ def dasec(handle, bufsiz=_default_len_out, buflen=_default_len_out):
     :rtype: tuple
     """
     handle = ctypes.c_int(handle)
-    buffer = stypes.empty_char_array(buflen, bufsiz)
+    buffer = stypes.emptyCharArray(buflen, bufsiz)
     bufsiz = ctypes.c_int(bufsiz)
     buflen = ctypes.c_int(buflen)
     n = ctypes.c_int(0)
     done = ctypes.c_int()
-    libspice.dasec_c(
-        handle,
-        bufsiz,
-        buflen,
-        ctypes.byref(n),
-        ctypes.byref(buffer),
-        ctypes.byref(done),
-    )
-    return n.value, stypes.c_vector_to_python(buffer), done.value
+    libspice.dasec_c(handle, bufsiz, buflen, ctypes.byref(n),
+                     ctypes.byref(buffer), ctypes.byref(done))
+    return n.value, stypes.cVectorToPython(buffer), done.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def dashfn(handle, lenout=_default_len_out):
     """
     Return the name of the DAS file associated with a handle.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dashfn_c.html
 
     :param handle: Handle of a DAS file.
@@ -2370,16 +2246,16 @@ def dashfn(handle, lenout=_default_len_out):
     """
     handle = ctypes.c_int(handle)
     namlen = ctypes.c_int(lenout)
-    fname = stypes.string_to_char_p(lenout)
+    fname  = stypes.stringToCharP(lenout)
     libspice.dashfn_c(handle, namlen, fname)
-    return stypes.to_python_string(fname)
+    return stypes.toPythonString(fname)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dasonw(fname, ftype, ifname, ncomch):
     """
     Internal undocumented command for creating a new DAS file
-
+    
     :param fname: filename
     :type fname: str
     :param ftype: type
@@ -2394,25 +2270,16 @@ def dasonw(fname, ftype, ifname, ncomch):
     fnamelen = ctypes.c_int(len(fname))
     ftypelen = ctypes.c_int(len(ftype))
     ifnamelen = ctypes.c_int(len(ifname))
-    ncomch = ctypes.c_int(ncomch)
-    handle = ctypes.c_int()
-    fname = stypes.string_to_char_p(fname)
-    ftype = stypes.string_to_char_p(ftype)
-    ifname = stypes.string_to_char_p(ifname)
-    libspice.dasonw_(
-        fname,
-        ftype,
-        ifname,
-        ctypes.byref(ncomch),
-        ctypes.byref(handle),
-        fnamelen,
-        ftypelen,
-        ifnamelen,
-    )
+    ncomch  = ctypes.c_int(ncomch)
+    handle  = ctypes.c_int()
+    fname   = stypes.stringToCharP(fname)
+    ftype   = stypes.stringToCharP(ftype)
+    ifname  = stypes.stringToCharP(ifname)
+    libspice.dasonw_(fname, ftype, ifname, ctypes.byref(ncomch), ctypes.byref(handle), fnamelen, ftypelen, ifnamelen)
     return handle.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def dasopr(fname):
     """
     Open a DAS file for reading.
@@ -2424,33 +2291,33 @@ def dasopr(fname):
     :return: Handle assigned to the opened DAS file.
     :rtype: int
     """
-    fname = stypes.string_to_char_p(fname)
+    fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
     libspice.dasopr_c(fname, ctypes.byref(handle))
     return handle.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def dasopw(fname):
     """
     Open a DAS file for writing.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasopw_c.html
-    :param fname: Name of a DAS file to be opened.
+    :param fname: Name of a DAS file to be opened. 
     :type fname: str
     :return: Handle assigned to the opened DAS file.
     """
-    fname = stypes.string_to_char_p(fname)
+    fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int(0)
     libspice.dasopw_c(fname, ctypes.byref(handle))
     return handle.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def dasrfr(handle, lenout=_default_len_out):
     """
-    Return the contents of the file record of a specified DAS file.
-
+    Return the contents of the file record of a specified DAS file. 
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasrfr_c.html
 
     :param handle: DAS file handle.
@@ -2463,36 +2330,21 @@ def dasrfr(handle, lenout=_default_len_out):
     :rtype: tuple
     """
     handle = ctypes.c_int(handle)
-    idwlen = ctypes.c_int(lenout)  # intentional
-    ifnlen = ctypes.c_int(lenout)  # intentional
-    idword = stypes.string_to_char_p(lenout)
-    ifname = stypes.string_to_char_p(lenout)
+    idwlen = ctypes.c_int(lenout) # intentional
+    ifnlen = ctypes.c_int(lenout) # intentional
+    idword = stypes.stringToCharP(lenout)
+    ifname = stypes.stringToCharP(lenout)
     nresvr = ctypes.c_int(0)
     nresvc = ctypes.c_int(0)
-    ncomr = ctypes.c_int(0)
-    ncomc = ctypes.c_int(0)
-    libspice.dasrfr_c(
-        handle,
-        idwlen,
-        ifnlen,
-        idword,
-        ifname,
-        ctypes.byref(nresvr),
-        ctypes.byref(nresvc),
-        ctypes.byref(ncomr),
-        ctypes.byref(ncomc),
-    )
-    return (
-        stypes.to_python_string(idword),
-        stypes.to_python_string(ifname),
-        nresvr.value,
-        nresvc.value,
-        ncomr.value,
-        ncomc.value,
-    )
+    ncomr  = ctypes.c_int(0)
+    ncomc  = ctypes.c_int(0)
+    libspice.dasrfr_c(handle, idwlen, ifnlen, idword, ifname,
+                      ctypes.byref(nresvr), ctypes.byref(nresvc),
+                      ctypes.byref(ncomr), ctypes.byref(ncomc))
+    return stypes.toPythonString(idword), stypes.toPythonString(ifname), nresvr.value, nresvc.value, ncomr.value, ncomc.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def dcyldr(x, y, z):
     """
     This routine computes the Jacobian of the transformation from
@@ -2512,12 +2364,12 @@ def dcyldr(x, y, z):
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
     z = ctypes.c_double(z)
-    jacobi = stypes.empty_double_matrix()
+    jacobi = stypes.emptyDoubleMatrix()
     libspice.dcyldr_c(x, y, z, jacobi)
-    return stypes.c_matrix_to_numpy(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
-@spice_error_check
+@spiceErrorCheck
 def deltet(epoch, eptype):
     """
     Return the value of Delta ET (ET-UTC) for an input epoch.
@@ -2532,13 +2384,13 @@ def deltet(epoch, eptype):
     :rtype: float
     """
     epoch = ctypes.c_double(epoch)
-    eptype = stypes.string_to_char_p(eptype)
+    eptype = stypes.stringToCharP(eptype)
     delta = ctypes.c_double()
     libspice.deltet_c(epoch, eptype, ctypes.byref(delta))
     return delta.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def det(m1):
     """
     Compute the determinant of a double precision 3x3 matrix.
@@ -2550,11 +2402,11 @@ def det(m1):
     :return: The determinant of the matrix.
     :rtype: float
     """
-    m1 = stypes.to_double_matrix(m1)
+    m1 = stypes.toDoubleMatrix(m1)
     return libspice.det_c(m1)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dgeodr(x, y, z, re, f):
     """
     This routine computes the Jacobian of the transformation from
@@ -2580,12 +2432,12 @@ def dgeodr(x, y, z, re, f):
     z = ctypes.c_double(z)
     re = ctypes.c_double(re)
     f = ctypes.c_double(f)
-    jacobi = stypes.empty_double_matrix()
+    jacobi = stypes.emptyDoubleMatrix()
     libspice.dgeodr_c(x, y, z, re, f, jacobi)
-    return stypes.c_matrix_to_numpy(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
-@spice_error_check
+@spiceErrorCheck
 def diags2(symmat):
     """
     Diagonalize a symmetric 2x2 matrix.
@@ -2599,14 +2451,14 @@ def diags2(symmat):
             A rotation used as the similarity transformation.
     :rtype: tuple
     """
-    symmat = stypes.to_double_matrix(symmat)
-    diag = stypes.empty_double_matrix(x=2, y=2)
-    rotateout = stypes.empty_double_matrix(x=2, y=2)
+    symmat = stypes.toDoubleMatrix(symmat)
+    diag = stypes.emptyDoubleMatrix(x=2, y=2)
+    rotateout = stypes.emptyDoubleMatrix(x=2, y=2)
     libspice.diags2_c(symmat, diag, rotateout)
-    return stypes.c_matrix_to_numpy(diag), stypes.c_matrix_to_numpy(rotateout)
+    return stypes.cMatrixToNumpy(diag), stypes.cMatrixToNumpy(rotateout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def diff(a, b):
     """
     Take the difference of two sets of any data type to form a third set.
@@ -2636,54 +2488,54 @@ def diff(a, b):
     return c
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def dlabbs(handle):
     """
     Begin a backward segment search in a DLA file.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlabbs_c.html
-
+    
     :param handle: Handle of open DLA file.
     :type handle: int
     :return: Descriptor of last segment in DLA file
     :rtype: spiceypy.utils.support_types.SpiceDLADescr
     """
     handle = ctypes.c_int(handle)
-    descr = stypes.SpiceDLADescr()
-    found = ctypes.c_int()
+    descr  = stypes.SpiceDLADescr()
+    found  = ctypes.c_int()
     libspice.dlabbs_c(handle, ctypes.byref(descr), ctypes.byref(found))
     return descr, bool(found.value)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def dlabfs(handle):
     """
     Begin a forward segment search in a DLA file.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlabfs_c.html
-
+    
     :param handle: Handle of open DLA file.
     :type handle: int
     :return: Descriptor of next segment in DLA file
     :rtype: spiceypy.utils.support_types.SpiceDLADescr
     """
     handle = ctypes.c_int(handle)
-    descr = stypes.SpiceDLADescr()
-    found = ctypes.c_int()
+    descr  = stypes.SpiceDLADescr()
+    found  = ctypes.c_int()
     libspice.dlabfs_c(handle, ctypes.byref(descr), ctypes.byref(found))
     return descr, bool(found.value)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def dlafns(handle, descr):
     """
-    Find the segment following a specified segment in a DLA file.
-
+    Find the segment following a specified segment in a DLA file. 
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlafns_c.html
-
+    
     :param handle: Handle of open DLA file.
     :type handle: c_int
     :param descr: Descriptor of a DLA segment.
@@ -2694,24 +2546,22 @@ def dlafns(handle, descr):
     assert isinstance(descr, stypes.SpiceDLADescr)
     handle = ctypes.c_int(handle)
     nxtdsc = stypes.SpiceDLADescr()
-    found = ctypes.c_int()
-    libspice.dlafns_c(
-        handle, ctypes.byref(descr), ctypes.byref(nxtdsc), ctypes.byref(found)
-    )
+    found  = ctypes.c_int()
+    libspice.dlafns_c(handle, ctypes.byref(descr), ctypes.byref(nxtdsc), ctypes.byref(found))
     return nxtdsc, bool(found.value)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def dlafps(handle, descr):
     """
     Find the segment preceding a specified segment in a DLA file.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlafps_c.html
-
+    
     :param handle: Handle of open DLA file.
     :type handle: c_int
-    :param descr: Descriptor of a segment in DLA file.
+    :param descr: Descriptor of a segment in DLA file. 
     :type descr: spiceypy.utils.support_types.SpiceDLADescr
     :return: Descriptor of previous segment in DLA file
     :rtype: spiceypy.utils.support_types.SpiceDLADescr
@@ -2720,13 +2570,12 @@ def dlafps(handle, descr):
     handle = ctypes.c_int(handle)
     prvdsc = stypes.SpiceDLADescr()
     found = ctypes.c_int()
-    libspice.dlafps_c(
-        handle, ctypes.byref(descr), ctypes.byref(prvdsc), ctypes.byref(found)
-    )
+    libspice.dlafps_c(handle, ctypes.byref(descr), ctypes.byref(prvdsc),
+                      ctypes.byref(found))
     return prvdsc, bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dlatdr(x, y, z):
     """
     This routine computes the Jacobian of the transformation from
@@ -2746,12 +2595,12 @@ def dlatdr(x, y, z):
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
     z = ctypes.c_double(z)
-    jacobi = stypes.empty_double_matrix()
+    jacobi = stypes.emptyDoubleMatrix()
     libspice.dlatdr_c(x, y, z, jacobi)
-    return stypes.c_matrix_to_numpy(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dp2hx(number, lenout=_default_len_out):
     """
     Convert a double precision number to an equivalent character
@@ -2768,13 +2617,13 @@ def dp2hx(number, lenout=_default_len_out):
     """
     number = ctypes.c_double(number)
     lenout = ctypes.c_int(lenout)
-    string = stypes.string_to_char_p(lenout)
+    string = stypes.stringToCharP(lenout)
     length = ctypes.c_int()
     libspice.dp2hx_c(number, lenout, string, ctypes.byref(length))
-    return stypes.to_python_string(string)
+    return stypes.toPythonString(string)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dpgrdr(body, x, y, z, re, f):
     """
     This routine computes the Jacobian matrix of the transformation
@@ -2797,18 +2646,18 @@ def dpgrdr(body, x, y, z, re, f):
     :return: Matrix of partial derivatives.
     :rtype: 3x3-Element Array of floats
     """
-    body = stypes.string_to_char_p(body)
+    body = stypes.stringToCharP(body)
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
     z = ctypes.c_double(z)
     re = ctypes.c_double(re)
     f = ctypes.c_double(f)
-    jacobi = stypes.empty_double_matrix()
+    jacobi = stypes.emptyDoubleMatrix()
     libspice.dpgrdr_c(body, x, y, z, re, f, jacobi)
-    return stypes.c_matrix_to_numpy(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dpmax():
     """
     Return the value of the largest (positive) number representable
@@ -2824,7 +2673,7 @@ def dpmax():
     return libspice.dpmax_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def dpmin():
     """
     Return the value of the smallest (negative) number representable
@@ -2840,7 +2689,7 @@ def dpmin():
     return libspice.dpmin_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def dpr():
     """
     Return the number of degrees per radian.
@@ -2853,7 +2702,7 @@ def dpr():
     return libspice.dpr_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def drdcyl(r, lon, z):
     """
     This routine computes the Jacobian of the transformation from
@@ -2873,12 +2722,12 @@ def drdcyl(r, lon, z):
     r = ctypes.c_double(r)
     lon = ctypes.c_double(lon)
     z = ctypes.c_double(z)
-    jacobi = stypes.empty_double_matrix()
+    jacobi = stypes.emptyDoubleMatrix()
     libspice.drdcyl_c(r, lon, z, jacobi)
-    return stypes.c_matrix_to_numpy(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
-@spice_error_check
+@spiceErrorCheck
 def drdgeo(lon, lat, alt, re, f):
     """
     This routine computes the Jacobian of the transformation from
@@ -2904,12 +2753,12 @@ def drdgeo(lon, lat, alt, re, f):
     alt = ctypes.c_double(alt)
     re = ctypes.c_double(re)
     f = ctypes.c_double(f)
-    jacobi = stypes.empty_double_matrix()
+    jacobi = stypes.emptyDoubleMatrix()
     libspice.drdgeo_c(lon, lat, alt, re, f, jacobi)
-    return stypes.c_matrix_to_numpy(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
-@spice_error_check
+@spiceErrorCheck
 def drdlat(r, lon, lat):
     """
     Compute the Jacobian of the transformation from latitudinal to
@@ -2929,12 +2778,12 @@ def drdlat(r, lon, lat):
     r = ctypes.c_double(r)
     lon = ctypes.c_double(lon)
     lat = ctypes.c_double(lat)
-    jacobi = stypes.empty_double_matrix()
+    jacobi = stypes.emptyDoubleMatrix()
     libspice.drdlat_c(r, lon, lat, jacobi)
-    return stypes.c_matrix_to_numpy(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
-@spice_error_check
+@spiceErrorCheck
 def drdpgr(body, lon, lat, alt, re, f):
     """
     This routine computes the Jacobian matrix of the transformation
@@ -2957,18 +2806,18 @@ def drdpgr(body, lon, lat, alt, re, f):
     :return: Matrix of partial derivatives.
     :rtype: 3x3-Element Array of floats
     """
-    body = stypes.string_to_char_p(body)
+    body = stypes.stringToCharP(body)
     lon = ctypes.c_double(lon)
     lat = ctypes.c_double(lat)
     alt = ctypes.c_double(alt)
     re = ctypes.c_double(re)
     f = ctypes.c_double(f)
-    jacobi = stypes.empty_double_matrix()
+    jacobi = stypes.emptyDoubleMatrix()
     libspice.drdpgr_c(body, lon, lat, alt, re, f, jacobi)
-    return stypes.c_matrix_to_numpy(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
-@spice_error_check
+@spiceErrorCheck
 def drdsph(r, colat, lon):
     """
     This routine computes the Jacobian of the transformation from
@@ -2988,12 +2837,12 @@ def drdsph(r, colat, lon):
     r = ctypes.c_double(r)
     colat = ctypes.c_double(colat)
     lon = ctypes.c_double(lon)
-    jacobi = stypes.empty_double_matrix()
+    jacobi = stypes.emptyDoubleMatrix()
     libspice.drdsph_c(r, colat, lon, jacobi)
-    return stypes.c_matrix_to_numpy(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dskb02(handle, dladsc):
     """
     Return bookkeeping data from a DSK type 2 segment.
@@ -3012,64 +2861,37 @@ def dskb02(handle, dladsc):
     nv = ctypes.c_int(0)
     np = ctypes.c_int(0)
     nvxtot = ctypes.c_int(0)
-    vtxbds = stypes.empty_double_matrix(3, 2)
+    vtxbds = stypes.emptyDoubleMatrix(3, 2)
     voxsiz = ctypes.c_double(0.0)
-    voxori = stypes.empty_double_vector(3)
-    vgrext = stypes.empty_int_vector(3)
+    voxori = stypes.emptyDoubleVector(3)
+    vgrext = stypes.emptyIntVector(3)
     cgscal = ctypes.c_int(0)
     vtxnpl = ctypes.c_int(0)
     voxnpt = ctypes.c_int(0)
     voxnpl = ctypes.c_int(0)
-    libspice.dskb02_c(
-        handle,
-        dladsc,
-        ctypes.byref(nv),
-        ctypes.byref(np),
-        ctypes.byref(nvxtot),
-        vtxbds,
-        ctypes.byref(voxsiz),
-        voxori,
-        vgrext,
-        ctypes.byref(cgscal),
-        ctypes.byref(vtxnpl),
-        ctypes.byref(voxnpt),
-        ctypes.byref(voxnpl),
-    )
-    return (
-        nv.value,
-        np.value,
-        nvxtot.value,
-        stypes.c_matrix_to_numpy(vtxbds),
-        voxsiz.value,
-        stypes.c_vector_to_python(voxori),
-        stypes.c_vector_to_python(vgrext),
-        cgscal.value,
-        vtxnpl.value,
-        voxnpt.value,
-        voxnpl.value,
-    )
+    libspice.dskb02_c(handle, dladsc, ctypes.byref(nv), ctypes.byref(np), ctypes.byref(nvxtot), vtxbds, ctypes.byref(voxsiz), voxori, vgrext, ctypes.byref(cgscal), ctypes.byref(vtxnpl), ctypes.byref(voxnpt), ctypes.byref(voxnpl))
+    return nv.value, np.value, nvxtot.value, stypes.cMatrixToNumpy(vtxbds), voxsiz.value, stypes.cVectorToPython(voxori), stypes.cVectorToPython(vgrext), cgscal.value, vtxnpl.value, voxnpt.value, voxnpl.value
 
-
-@spice_error_check
+@spiceErrorCheck
 def dskcls(handle, optmiz=False):
     """
-    Close a DSK file.
+    Close a DSK file. 
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskcls_c.html
-
+    
     :param handle: Handle assigned to the opened DSK file.
     :type handle: int
     :param optmiz: Flag indicating whether to segregate the DSK.
     :type optmiz: bool
-    :return:
+    :return: 
     """
     handle = ctypes.c_int(handle)
     optmiz = ctypes.c_int(optmiz)
     libspice.dskcls_c(handle, optmiz)
 
 
-@spice_error_check
-def dskd02(handle, dladsc, item, start, room):
+@spiceErrorCheck
+def dskd02(handle,dladsc,item,start,room):
     """
     Fetch double precision data from a type 2 DSK segment.
 
@@ -3090,16 +2912,16 @@ def dskd02(handle, dladsc, item, start, room):
     """
 
     handle = ctypes.c_int(handle)
-    item = ctypes.c_int(item)
-    start = ctypes.c_int(start)
-    room = ctypes.c_int(room)
-    n = ctypes.c_int(0)
-    values = stypes.empty_double_vector(room)
+    item   = ctypes.c_int(item)
+    start  = ctypes.c_int(start)
+    room   = ctypes.c_int(room)
+    n      = ctypes.c_int(0)
+    values = stypes.emptyDoubleVector(room)
     libspice.dskd02_c(handle, dladsc, item, start, room, ctypes.byref(n), values)
-    return stypes.c_vector_to_python(values)
+    return stypes.cVectorToPython(values)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dskgd(handle, dladsc):
     """
     Return the DSK descriptor from a DSK segment identified
@@ -3120,25 +2942,25 @@ def dskgd(handle, dladsc):
     return dskdsc
 
 
-@spice_error_check
+@spiceErrorCheck
 def dskgtl(keywrd):
     """
     Retrieve the value of a specified DSK tolerance or margin parameter.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskgtl_c.html
-
-    :param keywrd: Code specifying parameter to retrieve.
+    
+    :param keywrd: Code specifying parameter to retrieve. 
     :type keywrd: int
     :return: Value of parameter.
     :rtype: float
     """
     keywrd = ctypes.c_int(keywrd)
-    dpval = ctypes.c_double(0)
+    dpval  = ctypes.c_double(0)
     libspice.dskgtl_c(keywrd, ctypes.byref(dpval))
     return dpval.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def dski02(handle, dladsc, item, start, room):
     """
     Fetch integer data from a type 2 DSK segment.
@@ -3163,12 +2985,12 @@ def dski02(handle, dladsc, item, start, room):
     start = ctypes.c_int(start)
     room = ctypes.c_int(room)
     n = ctypes.c_int()
-    values = stypes.empty_int_vector(room)
+    values = stypes.emptyIntVector(room)
     libspice.dski02_c(handle, dladsc, item, start, room, ctypes.byref(n), values)
-    return stypes.c_matrix_to_numpy(values)
+    return stypes.cMatrixToNumpy(values)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dskmi2(vrtces, plates, finscl, corscl, worksz, voxpsz, voxlsz, makvtl, spxisz):
     """
     Make spatial index for a DSK type 2 segment. The index is returned
@@ -3199,10 +3021,10 @@ def dskmi2(vrtces, plates, finscl, corscl, worksz, voxpsz, voxlsz, makvtl, spxis
     :return: double precision and integer components of the spatial index of the segment.
     :rtype: tuple
     """
-    nv = ctypes.c_int(len(vrtces))
-    vrtces = stypes.to_double_matrix(vrtces)
-    np = ctypes.c_int(len(plates))
-    plates = stypes.to_int_matrix(plates)
+    nv     = ctypes.c_int(len(vrtces))
+    vrtces = stypes.toDoubleMatrix(vrtces)
+    np     = ctypes.c_int(len(plates))
+    plates = stypes.toIntMatrix(plates)
     finscl = ctypes.c_double(finscl)
     corscl = ctypes.c_int(corscl)
     worksz = ctypes.c_int(worksz)
@@ -3210,29 +3032,14 @@ def dskmi2(vrtces, plates, finscl, corscl, worksz, voxpsz, voxlsz, makvtl, spxis
     voxlsz = ctypes.c_int(voxlsz)
     makvtl = ctypes.c_int(makvtl)
     spxisz = ctypes.c_int(spxisz)
-    work = stypes.empty_int_matrix(2, worksz)
-    spaixd = stypes.empty_double_vector(10)  # SPICE_DSK02_SPADSZ
-    spaixi = stypes.empty_int_vector(spxisz)
-    libspice.dskmi2_c(
-        nv,
-        vrtces,
-        np,
-        plates,
-        finscl,
-        corscl,
-        worksz,
-        voxpsz,
-        voxlsz,
-        makvtl,
-        spxisz,
-        work,
-        spaixd,
-        spaixi,
-    )
-    return stypes.c_vector_to_python(spaixd), stypes.c_vector_to_python(spaixi)
+    work   = stypes.emptyIntMatrix(2, worksz)
+    spaixd = stypes.emptyDoubleVector(10) # SPICE_DSK02_SPADSZ
+    spaixi = stypes.emptyIntVector(spxisz)
+    libspice.dskmi2_c(nv, vrtces, np, plates, finscl, corscl, worksz, voxpsz, voxlsz, makvtl, spxisz, work, spaixd, spaixi)
+    return stypes.cVectorToPython(spaixd), stypes.cVectorToPython(spaixi)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dskn02(handle, dladsc, plid):
     """
     Compute the unit normal vector for a specified plate from a type
@@ -3250,56 +3057,56 @@ def dskn02(handle, dladsc, plid):
     :rtype: 3-Element Array of floats.
     """
     handle = ctypes.c_int(handle)
-    plid = ctypes.c_int(plid)
-    normal = stypes.empty_double_vector(3)
+    plid   = ctypes.c_int(plid)
+    normal = stypes.emptyDoubleVector(3)
     libspice.dskn02_c(handle, dladsc, plid, normal)
-    return stypes.c_vector_to_python(normal)
+    return stypes.cVectorToPython(normal)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dskobj(dsk):
     """
-    Find the set of body ID codes of all objects for which
-    topographic data are provided in a specified DSK file.
-
+    Find the set of body ID codes of all objects for which 
+    topographic data are provided in a specified DSK file. 
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskobj_c.html
-
-    :param dsk: Name of DSK file.
+    
+    :param dsk: Name of DSK file. 
     :type dsk: str
     :return: Set of ID codes of objects in DSK file.
     :rtype: spiceypy.utils.support_types.SpiceCell
     """
-    dsk = stypes.string_to_char_p(dsk)
+    dsk = stypes.stringToCharP(dsk)
     bodids = stypes.SPICEINT_CELL(10000)
     libspice.dskobj_c(dsk, ctypes.byref(bodids))
     return bodids
 
 
-@spice_error_check
+@spiceErrorCheck
 def dskopn(fname, ifname, ncomch):
     """
-    Open a new DSK file for subsequent write operations.
-
+    Open a new DSK file for subsequent write operations. 
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskopn_c.html
-
-    :param fname: Name of a DSK file to be opened.
+    
+    :param fname: Name of a DSK file to be opened. 
     :type fname: str
     :param ifname: Internal file name.
     :type ifname: str
-    :param ncomch: Number of comment characters to allocate.
+    :param ncomch: Number of comment characters to allocate. 
     :type ncomch: int
     :return: Handle assigned to the opened DSK file.
     :rtype: int
     """
-    fname = stypes.string_to_char_p(fname)
-    ifname = stypes.string_to_char_p(ifname)
+    fname = stypes.stringToCharP(fname)
+    ifname = stypes.stringToCharP(ifname)
     ncomch = ctypes.c_int(ncomch)
     handle = ctypes.c_int()
     libspice.dskopn_c(fname, ifname, ncomch, ctypes.byref(handle))
     return handle.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def dskp02(handle, dladsc, start, room):
     """
     Fetch triangular plates from a type 2 DSK segment.
@@ -3318,15 +3125,15 @@ def dskp02(handle, dladsc, start, room):
 
     """
     handle = ctypes.c_int(handle)
-    start = ctypes.c_int(start)
-    room = ctypes.c_int(room)
-    n = ctypes.c_int(0)
-    plates = stypes.empty_int_matrix(3, room)
+    start  = ctypes.c_int(start)
+    room   = ctypes.c_int(room)
+    n      = ctypes.c_int(0)
+    plates = stypes.emptyIntMatrix(3, room)
     libspice.dskp02_c(handle, dladsc, start, room, ctypes.byref(n), plates)
-    return stypes.c_matrix_to_numpy(plates)
+    return stypes.cMatrixToNumpy(plates)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dskrb2(vrtces, plates, corsys, corpar):
     """
     Determine range bounds for a set of triangular plates to
@@ -3345,68 +3152,58 @@ def dskrb2(vrtces, plates, corsys, corpar):
     :return: Lower and Upper bound on range of third coordinate
     :rtype: tuple
     """
-    nv = ctypes.c_int(len(vrtces))
-    vrtces = stypes.to_double_matrix(vrtces)
-    np = ctypes.c_int(len(plates))
-    plates = stypes.to_int_matrix(plates)
+    nv     = ctypes.c_int(len(vrtces))
+    vrtces = stypes.toDoubleMatrix(vrtces)
+    np     = ctypes.c_int(len(plates))
+    plates = stypes.toIntMatrix(plates)
     corsys = ctypes.c_int(corsys)
-    corpar = stypes.to_double_vector(corpar)
+    corpar = stypes.toDoubleVector(corpar)
     mncor3 = ctypes.c_double(0.0)
     mxcor3 = ctypes.c_double(0.0)
-    libspice.dskrb2_c(
-        nv,
-        vrtces,
-        np,
-        plates,
-        corsys,
-        corpar,
-        ctypes.byref(mncor3),
-        ctypes.byref(mxcor3),
-    )
+    libspice.dskrb2_c(nv, vrtces, np, plates, corsys, corpar, ctypes.byref(mncor3), ctypes.byref(mxcor3))
 
     return mncor3.value, mxcor3.value
 
-
-@spice_error_check
+@spiceErrorCheck
 def dsksrf(dsk, bodyid):
     """
-    Find the set of surface ID codes for all surfaces associated with
-    a given body in a specified DSK file.
-
+    Find the set of surface ID codes for all surfaces associated with 
+    a given body in a specified DSK file. 
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dsksrf_c.html
-
+    
     :param dsk: Name of DSK file.
     :type dsk: str
     :param bodyid: Integer body ID code.
     :type bodyid: int
-    :return: Set of ID codes of surfaces in DSK file.
+    :return: Set of ID codes of surfaces in DSK file. 
     """
-    dsk = stypes.string_to_char_p(dsk)
+    dsk    = stypes.stringToCharP(dsk)
     bodyid = ctypes.c_int(bodyid)
     srfids = stypes.SPICEINT_CELL(10000)
     libspice.dsksrf_c(dsk, bodyid, ctypes.byref(srfids))
     return srfids
 
 
-@spice_error_check
+@spiceErrorCheck
 def dskstl(keywrd, dpval):
     """
     Set the value of a specified DSK tolerance or margin parameter.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dskstl_c.html
-
+    
     :param keywrd: Code specifying parameter to set.
     :type keywrd: int
-    :param dpval: Value of parameter.
+    :param dpval: Value of parameter. 
     :type dpval: float
-    :return:
+    :return: 
     """
     keywrd = ctypes.c_int(keywrd)
     dpval = ctypes.c_double(dpval)
     libspice.dskstl_c(keywrd, dpval)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dskv02(handle, dladsc, start, room):
     """
     Fetch vertices from a type 2 DSK segment.
@@ -3425,36 +3222,18 @@ def dskv02(handle, dladsc, start, room):
     :rtype: Room x 3-Element Array of floats
     """
     handle = ctypes.c_int(handle)
-    start = ctypes.c_int(start)
-    room = ctypes.c_int(room)
-    n = ctypes.c_int()
-    vrtces = stypes.empty_double_matrix(3, room)
+    start  = ctypes.c_int(start)
+    room   = ctypes.c_int(room)
+    n      = ctypes.c_int()
+    vrtces = stypes.emptyDoubleMatrix(3, room)
     libspice.dskv02_c(handle, dladsc, start, room, ctypes.byref(n), vrtces)
-    return stypes.c_matrix_to_numpy(vrtces)
+    return stypes.cMatrixToNumpy(vrtces)
 
 
-@spice_error_check
-def dskw02(
-    handle,
-    center,
-    surfid,
-    dclass,
-    fname,
-    corsys,
-    corpar,
-    mncor1,
-    mxcor1,
-    mncor2,
-    mxcor2,
-    mncor3,
-    mxcor3,
-    first,
-    last,
-    vrtces,
-    plates,
-    spaixd,
-    spaixi,
-):
+@spiceErrorCheck
+def dskw02(handle, center, surfid, dclass, fname, corsys, corpar, mncor1,
+           mxcor1, mncor2, mxcor2, mncor3, mxcor3, first, last, vrtces,
+           plates, spaixd, spaixi):
     """
     Write a type 2 segment to a DSK file.
 
@@ -3503,49 +3282,29 @@ def dskw02(
     center = ctypes.c_int(center)
     surfid = ctypes.c_int(surfid)
     dclass = ctypes.c_int(dclass)
-    fname = stypes.string_to_char_p(fname)
+    fname  = stypes.stringToCharP(fname)
     corsys = ctypes.c_int(corsys)
-    corpar = stypes.to_double_vector(corpar)
+    corpar = stypes.toDoubleVector(corpar)
     mncor1 = ctypes.c_double(mncor1)
     mxcor1 = ctypes.c_double(mxcor1)
     mncor2 = ctypes.c_double(mncor2)
     mxcor2 = ctypes.c_double(mxcor2)
     mncor3 = ctypes.c_double(mncor3)
     mxcor3 = ctypes.c_double(mxcor3)
-    first = ctypes.c_double(first)
-    last = ctypes.c_double(last)
-    nv = ctypes.c_int(len(vrtces))
-    vrtces = stypes.to_double_matrix(vrtces)
-    np = ctypes.c_int(len(plates))
-    plates = stypes.to_int_matrix(plates)
-    spaixd = stypes.to_double_vector(spaixd)
-    spaixi = stypes.to_int_vector(spaixi)
-    libspice.dskw02_c(
-        handle,
-        center,
-        surfid,
-        dclass,
-        fname,
-        corsys,
-        corpar,
-        mncor1,
-        mxcor1,
-        mncor2,
-        mxcor2,
-        mncor3,
-        mxcor3,
-        first,
-        last,
-        nv,
-        vrtces,
-        np,
-        plates,
-        spaixd,
-        spaixi,
-    )
+    first  = ctypes.c_double(first)
+    last   = ctypes.c_double(last)
+    nv     = ctypes.c_int(len(vrtces))
+    vrtces = stypes.toDoubleMatrix(vrtces)
+    np     = ctypes.c_int(len(plates))
+    plates = stypes.toIntMatrix(plates)
+    spaixd = stypes.toDoubleVector(spaixd)
+    spaixi = stypes.toIntVector(spaixi)
+    libspice.dskw02_c(handle, center, surfid, dclass, fname, corsys, corpar,
+                      mncor1, mxcor1, mncor2, mxcor2, mncor3, mxcor3, first,
+                      last, nv, vrtces, np, plates, spaixd, spaixi)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dskx02(handle, dladsc, vertex, raydir):
     """
     Determine the plate ID and body-fixed coordinates of the
@@ -3566,25 +3325,16 @@ def dskx02(handle, dladsc, vertex, raydir):
     :rtype: tuple
     """
     handle = ctypes.c_int(handle)
-    vertex = stypes.to_double_vector(vertex)
-    raydir = stypes.to_double_vector(raydir)
-    plid = ctypes.c_int()
-    xpt = stypes.empty_double_vector(3)
-    found = ctypes.c_int()
-    libspice.dskx02_c(
-        handle,
-        ctypes.byref(dladsc),
-        vertex,
-        raydir,
-        ctypes.byref(plid),
-        xpt,
-        ctypes.byref(found),
-    )
-    return plid.value, stypes.c_vector_to_python(xpt), bool(found.value)
+    vertex = stypes.toDoubleVector(vertex)
+    raydir = stypes.toDoubleVector(raydir)
+    plid   = ctypes.c_int()
+    xpt    = stypes.emptyDoubleVector(3)
+    found  = ctypes.c_int()
+    libspice.dskx02_c(handle, ctypes.byref(dladsc), vertex, raydir, ctypes.byref(plid), xpt, ctypes.byref(found))
+    return plid.value, stypes.cVectorToPython(xpt), bool(found.value)
 
-
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def dskxsi(pri, target, srflst, et, fixref, vertex, raydir):
     """
     Compute a ray-surface intercept using data provided by
@@ -3613,53 +3363,27 @@ def dskxsi(pri, target, srflst, et, fixref, vertex, raydir):
     :rtype: tuple
     """
     pri = ctypes.c_int(pri)
-    target = stypes.string_to_char_p(target)
+    target = stypes.stringToCharP(target)
     nsurf = ctypes.c_int(len(srflst))
-    srflst = stypes.to_int_vector(srflst)
+    srflst = stypes.toIntVector(srflst)
     et = ctypes.c_double(et)
-    fixref = stypes.string_to_char_p(fixref)
-    vertex = stypes.to_double_vector(vertex)
-    raydir = stypes.to_double_vector(raydir)
+    fixref = stypes.stringToCharP(fixref)
+    vertex = stypes.toDoubleVector(vertex)
+    raydir = stypes.toDoubleVector(raydir)
     maxd = ctypes.c_int(1)
     maxi = ctypes.c_int(1)
-    xpt = stypes.empty_double_vector(3)
+    xpt  = stypes.emptyDoubleVector(3)
     handle = ctypes.c_int(0)
     dladsc = stypes.SpiceDLADescr()
     dskdsc = stypes.SpiceDSKDescr()
-    dc = stypes.empty_double_vector(1)
-    ic = stypes.empty_int_vector(1)
-    found = ctypes.c_int()
-    libspice.dskxsi_c(
-        pri,
-        target,
-        nsurf,
-        srflst,
-        et,
-        fixref,
-        vertex,
-        raydir,
-        maxd,
-        maxi,
-        xpt,
-        handle,
-        dladsc,
-        dskdsc,
-        dc,
-        ic,
-        found,
-    )
-    return (
-        stypes.c_vector_to_python(xpt),
-        handle.value,
-        dladsc,
-        dskdsc,
-        stypes.c_vector_to_python(dc),
-        stypes.c_vector_to_python(ic),
-        bool(found.value),
-    )
+    dc     = stypes.emptyDoubleVector(1)
+    ic     = stypes.emptyIntVector(1)
+    found  = ctypes.c_int()
+    libspice.dskxsi_c(pri, target, nsurf, srflst, et, fixref, vertex, raydir, maxd, maxi, xpt, handle, dladsc, dskdsc, dc, ic, found)
+    return stypes.cVectorToPython(xpt), handle.value, dladsc, dskdsc, stypes.cVectorToPython(dc), stypes.cVectorToPython(ic), bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dskxv(pri, target, srflst, et, fixref, vtxarr, dirarr):
     """
     Compute ray-surface intercepts for a set of rays, using data
@@ -3684,24 +3408,22 @@ def dskxv(pri, target, srflst, et, fixref, vtxarr, dirarr):
     :return: Intercept point array and Found flag array.
     :rtype: tuple
     """
-    pri = ctypes.c_int(pri)
-    target = stypes.string_to_char_p(target)
-    nsurf = ctypes.c_int(len(srflst))
-    srflst = stypes.to_int_vector(srflst)
-    et = ctypes.c_double(et)
-    fixref = stypes.string_to_char_p(fixref)
-    nray = ctypes.c_int(len(vtxarr))
-    vtxarr = stypes.to_double_matrix(vtxarr)
-    dirarr = stypes.to_double_matrix(dirarr)
-    xptarr = stypes.empty_double_matrix(y=nray)
-    fndarr = stypes.empty_int_vector(nray)
-    libspice.dskxv_c(
-        pri, target, nsurf, srflst, et, fixref, nray, vtxarr, dirarr, xptarr, fndarr
-    )
-    return stypes.c_matrix_to_numpy(xptarr), stypes.c_vector_to_python(fndarr)
+    pri    = ctypes.c_int(pri)
+    target = stypes.stringToCharP(target)
+    nsurf  = ctypes.c_int(len(srflst))
+    srflst = stypes.toIntVector(srflst)
+    et     = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    nray   = ctypes.c_int(len(vtxarr))
+    vtxarr = stypes.toDoubleMatrix(vtxarr)
+    dirarr = stypes.toDoubleMatrix(dirarr)
+    xptarr = stypes.emptyDoubleMatrix(y=nray)
+    fndarr = stypes.emptyIntVector(nray)
+    libspice.dskxv_c(pri, target, nsurf, srflst, et, fixref, nray, vtxarr, dirarr, xptarr, fndarr)
+    return stypes.cMatrixToNumpy(xptarr), stypes.cVectorToPython(fndarr)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dskz02(handle, dladsc):
     """
     Return plate model size parameters---plate count and
@@ -3723,7 +3445,7 @@ def dskz02(handle, dladsc):
     return nv.value, np.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def dsphdr(x, y, z):
     """
     This routine computes the Jacobian of the transformation from
@@ -3744,13 +3466,13 @@ def dsphdr(x, y, z):
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
     z = ctypes.c_double(z)
-    jacobi = stypes.empty_double_matrix()
+    jacobi = stypes.emptyDoubleMatrix()
     libspice.dsphdr_c(x, y, z, jacobi)
-    return stypes.c_matrix_to_numpy(jacobi)
+    return stypes.cMatrixToNumpy(jacobi)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def dtpool(name):
     """
     Return the data about a kernel pool variable.
@@ -3764,15 +3486,16 @@ def dtpool(name):
             Type of the variable "C", "N", or "X".
     :rtype: tuple
     """
-    name = stypes.string_to_char_p(name)
+    name = stypes.stringToCharP(name)
     found = ctypes.c_int()
     n = ctypes.c_int()
     typeout = ctypes.c_char()
-    libspice.dtpool_c(name, ctypes.byref(found), ctypes.byref(n), ctypes.byref(typeout))
-    return n.value, stypes.to_python_string(typeout.value), bool(found.value)
+    libspice.dtpool_c(name, ctypes.byref(found), ctypes.byref(n),
+                      ctypes.byref(typeout))
+    return n.value, stypes.toPythonString(typeout.value), bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ducrss(s1, s2):
     """
     Compute the unit vector parallel to the cross product of
@@ -3788,14 +3511,14 @@ def ducrss(s1, s2):
     :rtype: 6-Element Array of floats
     """
     assert len(s1) == 6 and len(s2) == 6
-    s1 = stypes.to_double_vector(s1)
-    s2 = stypes.to_double_vector(s2)
-    sout = stypes.empty_double_vector(6)
+    s1 = stypes.toDoubleVector(s1)
+    s2 = stypes.toDoubleVector(s2)
+    sout = stypes.emptyDoubleVector(6)
     libspice.ducrss_c(s1, s2, sout)
-    return stypes.c_vector_to_python(sout)
+    return stypes.cVectorToPython(sout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dvcrss(s1, s2):
     """
     Compute the cross product of two 3-dimensional vectors
@@ -3811,14 +3534,14 @@ def dvcrss(s1, s2):
     :rtype: 6-Element Array of floats
     """
     assert len(s1) == 6 and len(s2) == 6
-    s1 = stypes.to_double_vector(s1)
-    s2 = stypes.to_double_vector(s2)
-    sout = stypes.empty_double_vector(6)
+    s1 = stypes.toDoubleVector(s1)
+    s2 = stypes.toDoubleVector(s2)
+    sout = stypes.emptyDoubleVector(6)
     libspice.dvcrss_c(s1, s2, sout)
-    return stypes.c_vector_to_python(sout)
+    return stypes.cVectorToPython(sout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dvdot(s1, s2):
     """
     Compute the derivative of the dot product of two double
@@ -3834,12 +3557,12 @@ def dvdot(s1, s2):
     :rtype: float
     """
     assert len(s1) == 6 and len(s2) == 6
-    s1 = stypes.to_double_vector(s1)
-    s2 = stypes.to_double_vector(s2)
+    s1 = stypes.toDoubleVector(s1)
+    s2 = stypes.toDoubleVector(s2)
     return libspice.dvdot_c(s1, s2)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dvhat(s1):
     """
     Find the unit vector corresponding to a state vector and the
@@ -3853,13 +3576,13 @@ def dvhat(s1):
     :rtype: 6-Element Array of floats
     """
     assert len(s1) == 6
-    s1 = stypes.to_double_vector(s1)
-    sout = stypes.empty_double_vector(6)
+    s1 = stypes.toDoubleVector(s1)
+    sout = stypes.emptyDoubleVector(6)
     libspice.dvhat_c(s1, sout)
-    return stypes.c_vector_to_python(sout)
+    return stypes.cVectorToPython(sout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dvnorm(state):
     """
     Function to calculate the derivative of the norm of a 3-vector.
@@ -3873,11 +3596,11 @@ def dvnorm(state):
     :rtype: float
     """
     assert len(state) == 6
-    state = stypes.to_double_vector(state)
+    state = stypes.toDoubleVector(state)
     return libspice.dvnorm_c(state)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dvpool(name):
     """
     Delete a variable from the kernel pool.
@@ -3887,11 +3610,11 @@ def dvpool(name):
     :param name: Name of the kernel variable to be deleted.
     :type name: str
     """
-    name = stypes.string_to_char_p(name)
+    name = stypes.stringToCharP(name)
     libspice.dvpool_c(name)
 
 
-@spice_error_check
+@spiceErrorCheck
 def dvsep(s1, s2):
     """
     Calculate the time derivative of the separation angle between
@@ -3907,8 +3630,8 @@ def dvsep(s1, s2):
     :rtype: float
     """
     assert len(s1) == 6 and len(s2) == 6
-    s1 = stypes.to_double_vector(s1)
-    s2 = stypes.to_double_vector(s2)
+    s1 = stypes.toDoubleVector(s1)
+    s2 = stypes.toDoubleVector(s2)
     return libspice.dvsep_c(s1, s2)
 
 
@@ -3916,7 +3639,7 @@ def dvsep(s1, s2):
 # E
 
 
-@spice_error_check
+@spiceErrorCheck
 def edlimb(a, b, c, viewpt):
     """
     Find the limb of a triaxial ellipsoid, viewed from a specified point.
@@ -3938,12 +3661,12 @@ def edlimb(a, b, c, viewpt):
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
     c = ctypes.c_double(c)
-    viewpt = stypes.to_double_vector(viewpt)
+    viewpt = stypes.toDoubleVector(viewpt)
     libspice.edlimb_c(a, b, c, viewpt, ctypes.byref(limb))
     return limb
 
 
-@spice_error_check
+@spiceErrorCheck
 def edterm(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts):
     """
     Compute a set of points on the umbral or penumbral terminator of
@@ -3974,38 +3697,24 @@ def edterm(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts):
             Terminator point set.
     :rtype: tuple
     """
-    trmtyp = stypes.string_to_char_p(trmtyp)
-    source = stypes.string_to_char_p(source)
-    target = stypes.string_to_char_p(target)
+    trmtyp = stypes.stringToCharP(trmtyp)
+    source = stypes.stringToCharP(source)
+    target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
-    fixref = stypes.string_to_char_p(fixref)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
     trgepc = ctypes.c_double()
-    obspos = stypes.empty_double_vector(3)
-    trmpts = stypes.empty_double_matrix(x=3, y=npts)
+    obspos = stypes.emptyDoubleVector(3)
+    trmpts = stypes.emptyDoubleMatrix(x=3, y=npts)
     npts = ctypes.c_int(npts)
-    libspice.edterm_c(
-        trmtyp,
-        source,
-        target,
-        et,
-        fixref,
-        abcorr,
-        obsrvr,
-        npts,
-        ctypes.byref(trgepc),
-        obspos,
-        trmpts,
-    )
-    return (
-        trgepc.value,
-        stypes.c_vector_to_python(obspos),
-        stypes.c_matrix_to_numpy(trmpts),
-    )
+    libspice.edterm_c(trmtyp, source, target, et, fixref, abcorr, obsrvr, npts,
+                      ctypes.byref(trgepc), obspos, trmpts)
+    return trgepc.value, stypes.cVectorToPython(obspos), stypes.cMatrixToNumpy(
+            trmpts)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekacec(handle, segno, recno, column, nvals, cvals, isnull):
     """
     Add data to a character column in a specified EK record.
@@ -4030,15 +3739,15 @@ def ekacec(handle, segno, recno, column, nvals, cvals, isnull):
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
-    column = stypes.string_to_char_p(column)
+    column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
     vallen = ctypes.c_int(len(max(cvals, key=len)) + 1)
-    cvals = stypes.list_to_char_array_ptr(cvals)
+    cvals = stypes.listToCharArrayPtr(cvals)
     isnull = ctypes.c_int(isnull)
     libspice.ekacec_c(handle, segno, recno, column, nvals, vallen, cvals, isnull)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
     """
     Add data to an double precision column in a specified EK record.
@@ -4063,14 +3772,14 @@ def ekaced(handle, segno, recno, column, nvals, dvals, isnull):
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
-    column = stypes.string_to_char_p(column)
+    column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
-    dvals = stypes.to_double_vector(dvals)
+    dvals = stypes.toDoubleVector(dvals)
     isnull = ctypes.c_int(isnull)
     libspice.ekaced_c(handle, segno, recno, column, nvals, dvals, isnull)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
     """
     Add data to an integer column in a specified EK record.
@@ -4095,15 +3804,16 @@ def ekacei(handle, segno, recno, column, nvals, ivals, isnull):
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
-    column = stypes.string_to_char_p(column)
+    column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
-    ivals = stypes.to_int_vector(ivals)
+    ivals = stypes.toIntVector(ivals)
     isnull = ctypes.c_int(isnull)
     libspice.ekacei_c(handle, segno, recno, column, nvals, ivals, isnull)
 
 
-@spice_error_check
-def ekaclc(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs, wkindx):
+@spiceErrorCheck
+def ekaclc(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs,
+           wkindx):
     """
     Add an entire character column to an EK segment.
 
@@ -4132,20 +3842,19 @@ def ekaclc(handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs, wkindx)
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
-    column = stypes.string_to_char_p(column)
+    column = stypes.stringToCharP(column)
     vallen = ctypes.c_int(vallen)
-    cvals = stypes.list_to_char_array_ptr(cvals)
-    entszs = stypes.to_int_vector(entszs)
-    nlflgs = stypes.to_int_vector(nlflgs)
-    rcptrs = stypes.to_int_vector(rcptrs)
-    wkindx = stypes.to_int_vector(wkindx)
-    libspice.ekaclc_c(
-        handle, segno, column, vallen, cvals, entszs, nlflgs, rcptrs, wkindx
-    )
-    return stypes.c_vector_to_python(wkindx)
+    cvals = stypes.listToCharArrayPtr(cvals)
+    entszs = stypes.toIntVector(entszs)
+    nlflgs = stypes.toIntVector(nlflgs)
+    rcptrs = stypes.toIntVector(rcptrs)
+    wkindx = stypes.toIntVector(wkindx)
+    libspice.ekaclc_c(handle, segno, column, vallen, cvals, entszs, nlflgs,
+                      rcptrs, wkindx)
+    return stypes.cVectorToPython(wkindx)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekacld(handle, segno, column, dvals, entszs, nlflgs, rcptrs, wkindx):
     """
     Add an entire double precision column to an EK segment.
@@ -4173,17 +3882,18 @@ def ekacld(handle, segno, column, dvals, entszs, nlflgs, rcptrs, wkindx):
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
-    column = stypes.string_to_char_p(column)
-    dvals = stypes.to_double_vector(dvals)
-    entszs = stypes.to_int_vector(entszs)
-    nlflgs = stypes.to_int_vector(nlflgs)
-    rcptrs = stypes.to_int_vector(rcptrs)
-    wkindx = stypes.to_int_vector(wkindx)
-    libspice.ekacld_c(handle, segno, column, dvals, entszs, nlflgs, rcptrs, wkindx)
-    return stypes.c_vector_to_python(wkindx)
+    column = stypes.stringToCharP(column)
+    dvals = stypes.toDoubleVector(dvals)
+    entszs = stypes.toIntVector(entszs)
+    nlflgs = stypes.toIntVector(nlflgs)
+    rcptrs = stypes.toIntVector(rcptrs)
+    wkindx = stypes.toIntVector(wkindx)
+    libspice.ekacld_c(handle, segno, column, dvals, entszs, nlflgs, rcptrs,
+                      wkindx)
+    return stypes.cVectorToPython(wkindx)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekacli(handle, segno, column, ivals, entszs, nlflgs, rcptrs, wkindx):
     """
     Add an entire integer column to an EK segment.
@@ -4210,17 +3920,18 @@ def ekacli(handle, segno, column, ivals, entszs, nlflgs, rcptrs, wkindx):
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
-    column = stypes.string_to_char_p(column)
-    ivals = stypes.to_int_vector(ivals)
-    entszs = stypes.to_int_vector(entszs)
-    nlflgs = stypes.to_int_vector(nlflgs)
-    rcptrs = stypes.to_int_vector(rcptrs)
-    wkindx = stypes.to_int_vector(wkindx)
-    libspice.ekacli_c(handle, segno, column, ivals, entszs, nlflgs, rcptrs, wkindx)
-    return stypes.c_vector_to_python(wkindx)
+    column = stypes.stringToCharP(column)
+    ivals = stypes.toIntVector(ivals)
+    entszs = stypes.toIntVector(entszs)
+    nlflgs = stypes.toIntVector(nlflgs)
+    rcptrs = stypes.toIntVector(rcptrs)
+    wkindx = stypes.toIntVector(wkindx)
+    libspice.ekacli_c(handle, segno, column, ivals, entszs, nlflgs, rcptrs,
+                      wkindx)
+    return stypes.cVectorToPython(wkindx)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekappr(handle, segno):
     """
     Append a new, empty record at the end of a specified E-kernel segment.
@@ -4241,7 +3952,7 @@ def ekappr(handle, segno):
     return recno.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekbseg(handle, tabnam, cnames, decls):
     """
     Start a new segment in an E-kernel.
@@ -4260,22 +3971,18 @@ def ekbseg(handle, tabnam, cnames, decls):
     :rtype: int
     """
     handle = ctypes.c_int(handle)
-    tabnam = stypes.string_to_char_p(tabnam)
-    ncols = ctypes.c_int(len(cnames))
-    cnmlen = ctypes.c_int(
-        len(max(cnames, key=len)) + 1
-    )  # needs to be len(name)+1 ie 'c1' to 3 for ekbseg do not fail
-    cnames = stypes.list_to_char_array_ptr(cnames)
+    tabnam = stypes.stringToCharP(tabnam)
+    ncols  = ctypes.c_int(len(cnames))
+    cnmlen = ctypes.c_int(len(max(cnames, key=len)) + 1) # needs to be len(name)+1 ie 'c1' to 3 for ekbseg do not fail
+    cnames = stypes.listToCharArrayPtr(cnames)
     declen = ctypes.c_int(len(max(decls, key=len)) + 1)
-    decls = stypes.list_to_char_array_ptr(decls)
+    decls = stypes.listToCharArrayPtr(decls)
     segno = ctypes.c_int()
-    libspice.ekbseg_c(
-        handle, tabnam, ncols, cnmlen, cnames, declen, decls, ctypes.byref(segno)
-    )
+    libspice.ekbseg_c(handle, tabnam, ncols, cnmlen, cnames, declen, decls, ctypes.byref(segno))
     return segno.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekccnt(table):
     """
     Return the number of distinct columns in a specified,
@@ -4288,13 +3995,13 @@ def ekccnt(table):
     :return: Count of distinct, currently loaded columns.
     :rtype: int
     """
-    table = stypes.string_to_char_p(table)
+    table = stypes.stringToCharP(table)
     ccount = ctypes.c_int()
     libspice.ekccnt_c(table, ctypes.byref(ccount))
     return ccount.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekcii(table, cindex, lenout=_default_len_out):
     """
     Return attribute information about a column belonging to a loaded
@@ -4310,16 +4017,16 @@ def ekcii(table, cindex, lenout=_default_len_out):
     :return: Name of column, Column attribute descriptor.
     :rtype: tuple
     """
-    table = stypes.string_to_char_p(table)
+    table = stypes.stringToCharP(table)
     cindex = ctypes.c_int(cindex)
     lenout = ctypes.c_int(lenout)
-    column = stypes.string_to_char_p(lenout)
+    column = stypes.stringToCharP(lenout)
     attdsc = stypes.SpiceEKAttDsc()
     libspice.ekcii_c(table, cindex, lenout, column, ctypes.byref(attdsc))
-    return stypes.to_python_string(column), attdsc
+    return stypes.toPythonString(column), attdsc
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekcls(handle):
     """
     Close an E-kernel.
@@ -4333,7 +4040,7 @@ def ekcls(handle):
     libspice.ekcls_c(handle)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekdelr(handle, segno, recno):
     """
     Delete a specified record from a specified E-kernel segment.
@@ -4353,7 +4060,7 @@ def ekdelr(handle, segno, recno):
     libspice.ekdelr_c(handle, segno, recno)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekffld(handle, segno, rcptrs):
     """
     Complete a fast write operation on a new E-kernel segment.
@@ -4369,11 +4076,12 @@ def ekffld(handle, segno, rcptrs):
     """
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
-    rcptrs = stypes.to_int_vector(rcptrs)
-    libspice.ekffld_c(handle, segno, ctypes.cast(rcptrs, ctypes.POINTER(ctypes.c_int)))
+    rcptrs = stypes.toIntVector(rcptrs)
+    libspice.ekffld_c(handle, segno,
+                      ctypes.cast(rcptrs, ctypes.POINTER(ctypes.c_int)))
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekfind(query, lenout=_default_len_out):
     """
     Find E-kernel data that satisfy a set of constraints.
@@ -4390,17 +4098,18 @@ def ekfind(query, lenout=_default_len_out):
             Parse error description.
     :rtype: tuple
     """
-    query = stypes.string_to_char_p(query)
+    query = stypes.stringToCharP(query)
     lenout = ctypes.c_int(lenout)
     nmrows = ctypes.c_int()
     error = ctypes.c_int()
-    errmsg = stypes.string_to_char_p(lenout)
-    libspice.ekfind_c(query, lenout, ctypes.byref(nmrows), ctypes.byref(error), errmsg)
-    return nmrows.value, error.value, stypes.to_python_string(errmsg)
+    errmsg = stypes.stringToCharP(lenout)
+    libspice.ekfind_c(query, lenout, ctypes.byref(nmrows), ctypes.byref(error),
+                      errmsg)
+    return nmrows.value, error.value, stypes.toPythonString(errmsg)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def ekgc(selidx, row, element, lenout=_default_len_out):
     """
     Return an element of an entry in a column of character type in a specified
@@ -4427,15 +4136,13 @@ def ekgc(selidx, row, element, lenout=_default_len_out):
     lenout = ctypes.c_int(lenout)
     null = ctypes.c_int()
     found = ctypes.c_int()
-    cdata = stypes.string_to_char_p(lenout)
-    libspice.ekgc_c(
-        selidx, row, element, lenout, cdata, ctypes.byref(null), ctypes.byref(found)
-    )
-    return stypes.to_python_string(cdata), null.value, bool(found.value)
+    cdata = stypes.stringToCharP(lenout)
+    libspice.ekgc_c(selidx, row, element, lenout, cdata, ctypes.byref(null), ctypes.byref(found))
+    return stypes.toPythonString(cdata), null.value, bool(found.value)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def ekgd(selidx, row, element):
     """
     Return an element of an entry in a column of double precision type in a
@@ -4460,19 +4167,13 @@ def ekgd(selidx, row, element):
     ddata = ctypes.c_double()
     null = ctypes.c_int()
     found = ctypes.c_int()
-    libspice.ekgd_c(
-        selidx,
-        row,
-        element,
-        ctypes.byref(ddata),
-        ctypes.byref(null),
-        ctypes.byref(found),
-    )
+    libspice.ekgd_c(selidx, row, element, ctypes.byref(ddata),
+                    ctypes.byref(null), ctypes.byref(found))
     return ddata.value, null.value, bool(found.value)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def ekgi(selidx, row, element):
     """
     Return an element of an entry in a column of integer type in a specified
@@ -4497,18 +4198,12 @@ def ekgi(selidx, row, element):
     idata = ctypes.c_int()
     null = ctypes.c_int()
     found = ctypes.c_int()
-    libspice.ekgi_c(
-        selidx,
-        row,
-        element,
-        ctypes.byref(idata),
-        ctypes.byref(null),
-        ctypes.byref(found),
-    )
+    libspice.ekgi_c(selidx, row, element, ctypes.byref(idata),
+                    ctypes.byref(null), ctypes.byref(found))
     return idata.value, null.value, bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekifld(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls):
     """
     Initialize a new E-kernel segment to allow fast writing.
@@ -4535,31 +4230,21 @@ def ekifld(handle, tabnam, ncols, nrows, cnmlen, cnames, declen, decls):
     :rtype: tuple
     """
     handle = ctypes.c_int(handle)
-    tabnam = stypes.string_to_char_p(tabnam)
+    tabnam = stypes.stringToCharP(tabnam)
     ncols = ctypes.c_int(ncols)
     nrows = ctypes.c_int(nrows)
     cnmlen = ctypes.c_int(cnmlen)
-    cnames = stypes.list_to_char_array(cnames)
+    cnames = stypes.listToCharArray(cnames)
     declen = ctypes.c_int(declen)
-    recptrs = stypes.empty_int_vector(nrows)
-    decls = stypes.list_to_char_array(decls)
+    recptrs = stypes.emptyIntVector(nrows)
+    decls = stypes.listToCharArray(decls)
     segno = ctypes.c_int()
-    libspice.ekifld_c(
-        handle,
-        tabnam,
-        ncols,
-        nrows,
-        cnmlen,
-        cnames,
-        declen,
-        decls,
-        ctypes.byref(segno),
-        recptrs,
-    )
-    return segno.value, stypes.c_vector_to_python(recptrs)
+    libspice.ekifld_c(handle, tabnam, ncols, nrows, cnmlen, cnames, declen,
+                      decls, ctypes.byref(segno), recptrs)
+    return segno.value, stypes.cVectorToPython(recptrs)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekinsr(handle, segno, recno):
     """
     Add a new, empty record to a specified E-kernel segment at a specified
@@ -4580,7 +4265,7 @@ def ekinsr(handle, segno, recno):
     libspice.ekinsr_c(handle, segno, recno)
 
 
-@spice_error_check
+@spiceErrorCheck
 def eklef(fname):
     """
     Load an EK file, making it accessible to the EK readers.
@@ -4592,13 +4277,13 @@ def eklef(fname):
     :return: File handle of loaded EK file.
     :rtype: int
     """
-    fname = stypes.string_to_char_p(fname)
+    fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
     libspice.eklef_c(fname, ctypes.byref(handle))
     return handle.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def eknelt(selidx, row):
     """
     Return the number of elements in a specified column entry in
@@ -4618,7 +4303,7 @@ def eknelt(selidx, row):
     return libspice.eknelt_c(selidx, row)
 
 
-@spice_error_check
+@spiceErrorCheck
 def eknseg(handle):
     """
     Return the number of segments in a specified EK.
@@ -4634,7 +4319,7 @@ def eknseg(handle):
     return libspice.eknseg_c(handle)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekntab():
     """
     Return the number of loaded EK tables.
@@ -4649,7 +4334,7 @@ def ekntab():
     return n.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekopn(fname, ifname, ncomch):
     """
     Open a new E-kernel file and prepare the file for writing.
@@ -4665,15 +4350,15 @@ def ekopn(fname, ifname, ncomch):
     :return: Handle attached to new EK file.
     :rtype: int
     """
-    fname = stypes.string_to_char_p(fname)
-    ifname = stypes.string_to_char_p(ifname)
+    fname = stypes.stringToCharP(fname)
+    ifname = stypes.stringToCharP(ifname)
     ncomch = ctypes.c_int(ncomch)
     handle = ctypes.c_int()
     libspice.ekopn_c(fname, ifname, ncomch, ctypes.byref(handle))
     return handle.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekopr(fname):
     """
     Open an existing E-kernel file for reading.
@@ -4685,13 +4370,13 @@ def ekopr(fname):
     :return: Handle attached to EK file.
     :rtype: int
     """
-    fname = stypes.string_to_char_p(fname)
+    fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
     libspice.ekopr_c(fname, ctypes.byref(handle))
     return handle.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekops():
     """
     Open a scratch (temporary) E-kernel file and prepare the file
@@ -4707,7 +4392,7 @@ def ekops():
     return handle.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekopw(fname):
     """
     Open an existing E-kernel file for writing.
@@ -4719,13 +4404,13 @@ def ekopw(fname):
     :return: Handle attached to EK file.
     :rtype: int
     """
-    fname = stypes.string_to_char_p(fname)
+    fname = stypes.stringToCharP(fname)
     handle = ctypes.c_int()
     libspice.ekopw_c(fname, ctypes.byref(handle))
     return handle.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekpsel(query, msglen, tablen, collen):
     """
     Parse the SELECT clause of an EK query, returning full particulars
@@ -4753,48 +4438,34 @@ def ekpsel(query, msglen, tablen, collen):
             Parse error message.
     :rtype: tuple
     """
-    query = stypes.string_to_char_p(query)
+    query = stypes.stringToCharP(query)
     msglen = ctypes.c_int(msglen)
     tablen = ctypes.c_int(tablen)
     collen = ctypes.c_int(collen)
     n = ctypes.c_int()
-    xbegs = stypes.empty_int_vector(_SPICE_EK_MAXQSEL)
-    xends = stypes.empty_int_vector(_SPICE_EK_MAXQSEL)
-    xtypes = stypes.empty_int_vector(_SPICE_EK_MAXQSEL)
-    xclass = stypes.empty_int_vector(_SPICE_EK_MAXQSEL)
-    tabs = stypes.empty_char_array(y_len=_SPICE_EK_MAXQSEL, x_len=tablen)
-    cols = stypes.empty_char_array(y_len=_SPICE_EK_MAXQSEL, x_len=collen)
+    xbegs = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
+    xends = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
+    xtypes = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
+    xclass = stypes.emptyIntVector(_SPICE_EK_MAXQSEL)
+    tabs = stypes.emptyCharArray(yLen=_SPICE_EK_MAXQSEL, xLen=tablen)
+    cols = stypes.emptyCharArray(yLen=_SPICE_EK_MAXQSEL, xLen=collen)
     error = ctypes.c_int()
-    errmsg = stypes.string_to_char_p(msglen)
-    libspice.ekpsel_c(
-        query,
-        msglen,
-        tablen,
-        collen,
-        ctypes.byref(n),
-        xbegs,
-        xends,
-        xtypes,
-        xclass,
-        ctypes.byref(tabs),
-        ctypes.byref(cols),
-        ctypes.byref(error),
-        errmsg,
-    )
-    return (
-        n.value,
-        stypes.c_vector_to_python(xbegs)[: n.value],
-        stypes.c_vector_to_python(xends)[: n.value],
-        stypes.c_vector_to_python(xtypes)[: n.value],
-        stypes.c_vector_to_python(xclass)[: n.value],
-        stypes.c_vector_to_python(tabs)[: n.value],
-        stypes.c_vector_to_python(cols)[: n.value],
-        error.value,
-        stypes.to_python_string(errmsg),
-    )
+    errmsg = stypes.stringToCharP(msglen)
+    libspice.ekpsel_c(query, msglen, tablen, collen, ctypes.byref(n),
+                      xbegs, xends, xtypes, xclass, ctypes.byref(tabs),
+                      ctypes.byref(cols), ctypes.byref(error), errmsg)
+    return (n.value,
+            stypes.cVectorToPython(xbegs)[:n.value],
+            stypes.cVectorToPython(xends)[:n.value],
+            stypes.cVectorToPython(xtypes)[:n.value],
+            stypes.cVectorToPython(xclass)[:n.value],
+            stypes.cVectorToPython(tabs)[:n.value],
+            stypes.cVectorToPython(cols)[:n.value],
+            error.value,
+            stypes.toPythonString(errmsg))
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekrcec(handle, segno, recno, column, lenout, nelts=_SPICE_EK_EKRCEX_ROOM_DEFAULT):
     """
     Read data from a character column in a specified EK record.
@@ -4822,30 +4493,17 @@ def ekrcec(handle, segno, recno, column, lenout, nelts=_SPICE_EK_EKRCEX_ROOM_DEF
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
-    column = stypes.string_to_char_p(column)
+    column = stypes.stringToCharP(column)
     lenout = ctypes.c_int(lenout)
     nvals = ctypes.c_int()
-    cvals = stypes.empty_char_array(y_len=nelts, x_len=lenout)
+    cvals = stypes.emptyCharArray(yLen=nelts, xLen=lenout)
     isnull = ctypes.c_int()
-    libspice.ekrcec_c(
-        handle,
-        segno,
-        recno,
-        column,
-        lenout,
-        ctypes.byref(nvals),
-        ctypes.byref(cvals),
-        ctypes.byref(isnull),
-    )
+    libspice.ekrcec_c(handle, segno, recno, column, lenout, ctypes.byref(nvals), ctypes.byref(cvals), ctypes.byref(isnull))
     assert failed() or (nvals.value <= nelts)
-    return (
-        nvals.value,
-        stypes.c_vector_to_python(cvals)[: nvals.value],
-        bool(isnull.value),
-    )
+    return nvals.value, stypes.cVectorToPython(cvals)[:nvals.value], bool(isnull.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekrced(handle, segno, recno, column, nelts=_SPICE_EK_EKRCEX_ROOM_DEFAULT):
     """
     Read data from a double precision column in a specified EK record.
@@ -4869,22 +4527,17 @@ def ekrced(handle, segno, recno, column, nelts=_SPICE_EK_EKRCEX_ROOM_DEFAULT):
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
-    column = stypes.string_to_char_p(column)
+    column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(0)
-    dvals = stypes.empty_double_vector(nelts)
+    dvals = stypes.emptyDoubleVector(nelts)
     isnull = ctypes.c_int()
-    libspice.ekrced_c(
-        handle, segno, recno, column, ctypes.byref(nvals), dvals, ctypes.byref(isnull)
-    )
+    libspice.ekrced_c(handle, segno, recno, column, ctypes.byref(nvals), dvals,
+                      ctypes.byref(isnull))
     assert failed() or (nvals.value <= nelts)
-    return (
-        nvals.value,
-        stypes.c_vector_to_python(dvals)[: nvals.value],
-        bool(isnull.value),
-    )
+    return nvals.value, stypes.cVectorToPython(dvals)[:nvals.value], bool(isnull.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekrcei(handle, segno, recno, column, nelts=_SPICE_EK_EKRCEX_ROOM_DEFAULT):
     """
     Read data from an integer column in a specified EK record.
@@ -4908,22 +4561,17 @@ def ekrcei(handle, segno, recno, column, nelts=_SPICE_EK_EKRCEX_ROOM_DEFAULT):
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
-    column = stypes.string_to_char_p(column)
+    column = stypes.stringToCharP(column)
     nvals = ctypes.c_int()
-    ivals = stypes.empty_int_vector(nelts)
+    ivals = stypes.emptyIntVector(nelts)
     isnull = ctypes.c_int()
-    libspice.ekrcei_c(
-        handle, segno, recno, column, ctypes.byref(nvals), ivals, ctypes.byref(isnull)
-    )
+    libspice.ekrcei_c(handle, segno, recno, column, ctypes.byref(nvals), ivals,
+                      ctypes.byref(isnull))
     assert failed() or (nvals.value <= nelts)
-    return (
-        nvals.value,
-        stypes.c_vector_to_python(ivals)[: nvals.value],
-        bool(isnull.value),
-    )
+    return nvals.value, stypes.cVectorToPython(ivals)[:nvals.value], bool(isnull.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekssum(handle, segno):
     """
     Return summary information for a specified segment in a specified EK.
@@ -4944,7 +4592,7 @@ def ekssum(handle, segno):
     return segsum
 
 
-@spice_error_check
+@spiceErrorCheck
 def ektnam(n, lenout=_default_len_out):
     """
     Return the name of a specified, loaded table.
@@ -4960,12 +4608,12 @@ def ektnam(n, lenout=_default_len_out):
     """
     n = ctypes.c_int(n)
     lenout = ctypes.c_int(lenout)
-    table = stypes.string_to_char_p(lenout)
+    table = stypes.stringToCharP(lenout)
     libspice.ektnam_c(n, lenout, table)
-    return stypes.to_python_string(table)
+    return stypes.toPythonString(table)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekucec(handle, segno, recno, column, nvals, cvals, isnull):
     """
     Update a character column entry in a specified EK record.
@@ -4990,15 +4638,15 @@ def ekucec(handle, segno, recno, column, nvals, cvals, isnull):
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
-    column = stypes.string_to_char_p(column)
+    column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
     vallen = ctypes.c_int(len(max(cvals, key=len)) + 1)
-    cvals = stypes.list_to_char_array_ptr(cvals, x_len=vallen)
+    cvals = stypes.listToCharArrayPtr(cvals, xLen=vallen)
     isnull = ctypes.c_int(isnull)
     libspice.ekucec_c(handle, segno, recno, column, nvals, vallen, cvals, isnull)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
     """
     Update a double precision column entry in a specified EK record.
@@ -5023,14 +4671,14 @@ def ekuced(handle, segno, recno, column, nvals, dvals, isnull):
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
-    column = stypes.string_to_char_p(column)
+    column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
-    dvals = stypes.to_double_vector(dvals)
+    dvals = stypes.toDoubleVector(dvals)
     isnull = ctypes.c_int(isnull)
     libspice.ekaced_c(handle, segno, recno, column, nvals, dvals, isnull)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
     """
     Update an integer column entry in a specified EK record.
@@ -5055,14 +4703,14 @@ def ekucei(handle, segno, recno, column, nvals, ivals, isnull):
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     recno = ctypes.c_int(recno)
-    column = stypes.string_to_char_p(column)
+    column = stypes.stringToCharP(column)
     nvals = ctypes.c_int(nvals)
-    ivals = stypes.to_int_vector(ivals)
+    ivals = stypes.toIntVector(ivals)
     isnull = ctypes.c_int(isnull)
     libspice.ekucei_c(handle, segno, recno, column, nvals, ivals, isnull)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ekuef(handle):
     """
     Unload an EK file, making its contents inaccessible to the
@@ -5078,7 +4726,7 @@ def ekuef(handle):
     libspice.ekuef_c(handle)
 
 
-@spice_error_check
+@spiceErrorCheck
 def el2cgv(ellipse):
     """
     Convert an ellipse to a center vector and two generating
@@ -5092,19 +4740,16 @@ def el2cgv(ellipse):
     :return: Center and semi-axes of ellipse.
     :rtype: tuple
     """
-    assert isinstance(ellipse, stypes.Ellipse)
-    center = stypes.empty_double_vector(3)
-    smajor = stypes.empty_double_vector(3)
-    sminor = stypes.empty_double_vector(3)
+    assert (isinstance(ellipse, stypes.Ellipse))
+    center = stypes.emptyDoubleVector(3)
+    smajor = stypes.emptyDoubleVector(3)
+    sminor = stypes.emptyDoubleVector(3)
     libspice.el2cgv_c(ctypes.byref(ellipse), center, smajor, sminor)
-    return (
-        stypes.c_vector_to_python(center),
-        stypes.c_vector_to_python(smajor),
-        stypes.c_vector_to_python(sminor),
-    )
+    return stypes.cVectorToPython(center), stypes.cVectorToPython(
+            smajor), stypes.cVectorToPython(sminor)
 
 
-@spice_error_check
+@spiceErrorCheck
 def elemc(item, inset):
     """
     Determine whether an item is an element of a character set.
@@ -5119,11 +4764,11 @@ def elemc(item, inset):
     :rtype: bool
     """
     assert isinstance(inset, stypes.SpiceCell)
-    item = stypes.string_to_char_p(item)
+    item = stypes.stringToCharP(item)
     return bool(libspice.elemc_c(item, ctypes.byref(inset)))
 
 
-@spice_error_check
+@spiceErrorCheck
 def elemd(item, inset):
     """
     Determine whether an item is an element of a double precision set.
@@ -5143,7 +4788,7 @@ def elemd(item, inset):
     return bool(libspice.elemd_c(item, ctypes.byref(inset)))
 
 
-@spice_error_check
+@spiceErrorCheck
 def elemi(item, inset):
     """
     Determine whether an item is an element of an integer set.
@@ -5163,7 +4808,7 @@ def elemi(item, inset):
     return bool(libspice.elemi_c(item, ctypes.byref(inset)))
 
 
-@spice_error_check
+@spiceErrorCheck
 def eqncpv(et, epoch, eqel, rapol, decpol):
     """
     Compute the state (position and velocity of an object whose
@@ -5187,15 +4832,15 @@ def eqncpv(et, epoch, eqel, rapol, decpol):
     """
     et = ctypes.c_double(et)
     epoch = ctypes.c_double(epoch)
-    eqel = stypes.to_double_vector(eqel)
+    eqel = stypes.toDoubleVector(eqel)
     rapol = ctypes.c_double(rapol)
     decpol = ctypes.c_double(decpol)
-    state = stypes.empty_double_vector(6)
+    state = stypes.emptyDoubleVector(6)
     libspice.eqncpv_c(et, epoch, eqel, rapol, decpol, state)
-    return stypes.c_vector_to_python(state)
+    return stypes.cVectorToPython(state)
 
 
-@spice_error_check
+@spiceErrorCheck
 def eqstr(a, b):
     """
     Determine whether two strings are equivalent.
@@ -5209,9 +4854,7 @@ def eqstr(a, b):
     :return: True if A and B are equivalent.
     :rtype: bool
     """
-    return bool(
-        libspice.eqstr_c(stypes.string_to_char_p(a), stypes.string_to_char_p(b))
-    )
+    return bool(libspice.eqstr_c(stypes.stringToCharP(a), stypes.stringToCharP(b)))
 
 
 def erract(op, lenout, action=None):
@@ -5233,11 +4876,11 @@ def erract(op, lenout, action=None):
     if action is None:
         action = ""
     lenout = ctypes.c_int(lenout)
-    op = stypes.string_to_char_p(op)
+    op = stypes.stringToCharP(op)
     action = ctypes.create_string_buffer(str.encode(action), lenout.value)
     actionptr = ctypes.c_char_p(ctypes.addressof(action))
     libspice.erract_c(op, lenout, actionptr)
-    return stypes.to_python_string(actionptr)
+    return stypes.toPythonString(actionptr)
 
 
 def errch(marker, string):
@@ -5252,8 +4895,8 @@ def errch(marker, string):
     :param string: The character string to substitute for marker.
     :type string: str
     """
-    marker = stypes.string_to_char_p(marker)
-    string = stypes.string_to_char_p(string)
+    marker = stypes.stringToCharP(marker)
+    string = stypes.stringToCharP(string)
     libspice.errch_c(marker, string)
 
 
@@ -5273,11 +4916,11 @@ def errdev(op, lenout, device):
     :rtype: str
     """
     lenout = ctypes.c_int(lenout)
-    op = stypes.string_to_char_p(op)
+    op = stypes.stringToCharP(op)
     device = ctypes.create_string_buffer(str.encode(device), lenout.value)
     deviceptr = ctypes.c_char_p(ctypes.addressof(device))
     libspice.errdev_c(op, lenout, deviceptr)
-    return stypes.to_python_string(deviceptr)
+    return stypes.toPythonString(deviceptr)
 
 
 def errdp(marker, number):
@@ -5292,7 +4935,7 @@ def errdp(marker, number):
     :param number: The d.p. number to substitute for marker.
     :type number: float
     """
-    marker = stypes.string_to_char_p(marker)
+    marker = stypes.stringToCharP(marker)
     number = ctypes.c_double(number)
     libspice.errdp_c(marker, number)
 
@@ -5309,7 +4952,7 @@ def errint(marker, number):
     :param number: The integer to substitute for marker.
     :type number: int
     """
-    marker = stypes.string_to_char_p(marker)
+    marker = stypes.stringToCharP(marker)
     number = ctypes.c_int(number)
     libspice.errint_c(marker, number)
 
@@ -5331,11 +4974,11 @@ def errprt(op, lenout, inlist):
     :rtype: list of str.
     """
     lenout = ctypes.c_int(lenout)
-    op = stypes.string_to_char_p(op)
+    op = stypes.stringToCharP(op)
     inlist = ctypes.create_string_buffer(str.encode(inlist), lenout.value)
     inlistptr = ctypes.c_char_p(ctypes.addressof(inlist))
     libspice.errdev_c(op, lenout, inlistptr)
-    return stypes.to_python_string(inlistptr)
+    return stypes.toPythonString(inlistptr)
 
 
 def esrchc(value, array):
@@ -5355,14 +4998,14 @@ def esrchc(value, array):
             or -1 if none is found.
     :rtype: int
     """
-    value = stypes.string_to_char_p(value)
+    value = stypes.stringToCharP(value)
     ndim = ctypes.c_int(len(array))
     lenvals = ctypes.c_int(len(max(array, key=len)) + 1)
-    array = stypes.list_to_char_array(array, x_len=lenvals, y_len=ndim)
+    array = stypes.listToCharArray(array, xLen=lenvals, yLen=ndim)
     return libspice.esrchc_c(value, ndim, lenvals, array)
 
 
-@spice_error_check
+@spiceErrorCheck
 def et2lst(et, body, lon, typein, timlen=_default_len_out, ampmlen=_default_len_out):
     """
     Given an ephemeris epoch, compute the local solar time for
@@ -5393,38 +5036,23 @@ def et2lst(et, body, lon, typein, timlen=_default_len_out, ampmlen=_default_len_
     et = ctypes.c_double(et)
     body = ctypes.c_int(body)
     lon = ctypes.c_double(lon)
-    typein = stypes.string_to_char_p(typein)
+    typein = stypes.stringToCharP(typein)
     timlen = ctypes.c_int(timlen)
     ampmlen = ctypes.c_int(ampmlen)
     hr = ctypes.c_int()
     mn = ctypes.c_int()
     sc = ctypes.c_int()
-    time = stypes.string_to_char_p(timlen)
-    ampm = stypes.string_to_char_p(ampmlen)
-    libspice.et2lst_c(
-        et,
-        body,
-        lon,
-        typein,
-        timlen,
-        ampmlen,
-        ctypes.byref(hr),
-        ctypes.byref(mn),
-        ctypes.byref(sc),
-        time,
-        ampm,
-    )
-    return (
-        hr.value,
-        mn.value,
-        sc.value,
-        stypes.to_python_string(time),
-        stypes.to_python_string(ampm),
-    )
+    time = stypes.stringToCharP(timlen)
+    ampm = stypes.stringToCharP(ampmlen)
+    libspice.et2lst_c(et, body, lon, typein, timlen, ampmlen,
+                      ctypes.byref(hr), ctypes.byref(mn), ctypes.byref(sc),
+                      time, ampm)
+    return hr.value, mn.value, sc.value, stypes.toPythonString(
+            time), stypes.toPythonString(ampm)
 
 
-@spice_error_check
-def et2utc(et, format_str, prec, lenout=_default_len_out):
+@spiceErrorCheck
+def et2utc(et, formatStr, prec, lenout=_default_len_out):
     """
     Convert an input time from ephemeris seconds past J2000
     to Calendar, Day-of-Year, or Julian Date format, UTC.
@@ -5433,8 +5061,8 @@ def et2utc(et, format_str, prec, lenout=_default_len_out):
 
     :param et: Input epoch, given in ephemeris seconds past J2000.
     :type et: Union[float,Iterable[float]]
-    :param format_str: Format of output epoch.
-    :type format_str: str
+    :param formatStr: Format of output epoch.
+    :type formatStr: str
     :param prec: Digits of precision in fractional seconds or days.
     :type prec: int
     :param lenout: The length of the output string plus 1.
@@ -5444,21 +5072,21 @@ def et2utc(et, format_str, prec, lenout=_default_len_out):
     """
     prec = ctypes.c_int(prec)
     lenout = ctypes.c_int(lenout)
-    format_str = stypes.string_to_char_p(format_str)
-    utcstr = stypes.string_to_char_p(lenout)
-    if stypes.is_iterable(et):
+    formatStr = stypes.stringToCharP(formatStr)
+    utcstr = stypes.stringToCharP(lenout)
+    if stypes.isiterable(et):
         results = []
         for t in et:
-            libspice.et2utc_c(ctypes.c_double(t), format_str, prec, lenout, utcstr)
-            check_for_spice_error(None)
-            results.append(stypes.to_python_string(utcstr))
+            libspice.et2utc_c(ctypes.c_double(t), formatStr, prec, lenout, utcstr)
+            checkForSpiceError(None)
+            results.append(stypes.toPythonString(utcstr))
         return results
     else:
-        libspice.et2utc_c(ctypes.c_double(et), format_str, prec, lenout, utcstr)
-        return stypes.to_python_string(utcstr)
+        libspice.et2utc_c(ctypes.c_double(et), formatStr, prec, lenout, utcstr)
+        return stypes.toPythonString(utcstr)
 
 
-@spice_error_check
+@spiceErrorCheck
 def etcal(et, lenout=_default_len_out):
     """
     Convert from an ephemeris epoch measured in seconds past
@@ -5475,21 +5103,21 @@ def etcal(et, lenout=_default_len_out):
     :rtype: str
     """
     lenout = ctypes.c_int(lenout)
-    string = stypes.string_to_char_p(lenout)
+    string = stypes.stringToCharP(lenout)
     if hasattr(et, "__iter__"):
         strings = []
         for t in et:
             libspice.etcal_c(t, lenout, string)
-            check_for_spice_error(None)
-            strings.append(stypes.to_python_string(string))
+            checkForSpiceError(None)
+            strings.append(stypes.toPythonString(string))
         return strings
     else:
         et = ctypes.c_double(et)
         libspice.etcal_c(et, lenout, string)
-        return stypes.to_python_string(string)
+        return stypes.toPythonString(string)
 
 
-@spice_error_check
+@spiceErrorCheck
 def eul2m(angle3, angle2, angle1, axis3, axis2, axis1):
     """
     Construct a rotation matrix from a set of Euler angles.
@@ -5517,12 +5145,12 @@ def eul2m(angle3, angle2, angle1, axis3, axis2, axis1):
     axis3 = ctypes.c_int(axis3)
     axis2 = ctypes.c_int(axis2)
     axis1 = ctypes.c_int(axis1)
-    r = stypes.empty_double_matrix()
+    r = stypes.emptyDoubleMatrix()
     libspice.eul2m_c(angle3, angle2, angle1, axis3, axis2, axis1, r)
-    return stypes.c_matrix_to_numpy(r)
+    return stypes.cMatrixToNumpy(r)
 
 
-@spice_error_check
+@spiceErrorCheck
 def eul2xf(eulang, axisa, axisb, axisc):
     """
     This routine computes a state transformation from an Euler angle
@@ -5543,16 +5171,15 @@ def eul2xf(eulang, axisa, axisb, axisc):
     :rtype: 6x6-Element Array of floats
     """
     assert len(eulang) == 6
-    eulang = stypes.to_double_vector(eulang)
+    eulang = stypes.toDoubleVector(eulang)
     axisa = ctypes.c_int(axisa)
     axisb = ctypes.c_int(axisb)
     axisc = ctypes.c_int(axisc)
-    xform = stypes.empty_double_matrix(x=6, y=6)
+    xform = stypes.emptyDoubleMatrix(x=6, y=6)
     libspice.eul2xf_c(eulang, axisa, axisb, axisc, xform)
-    return stypes.c_matrix_to_numpy(xform)
+    return stypes.cMatrixToNumpy(xform)
 
-
-@spice_error_check
+@spiceErrorCheck
 def ev2lin(et, geophs, elems):
     """
     This routine evaluates NORAD two-line element data for
@@ -5572,15 +5199,14 @@ def ev2lin(et, geophs, elems):
     """
     et = ctypes.c_double(et)
     assert len(geophs) == 8
-    geophs = stypes.to_double_vector(geophs)
+    geophs = stypes.toDoubleVector(geophs)
     assert len(elems) == 10
-    elems = stypes.to_double_vector(elems)
-    state = stypes.empty_double_vector(6)
+    elems = stypes.toDoubleVector(elems)
+    state = stypes.emptyDoubleVector(6)
     libspice.ev2lin_(ctypes.byref(et), geophs, elems, state)
-    return stypes.c_vector_to_python(state)
+    return stypes.cVectorToPython(state)
 
-
-@spice_error_check
+@spiceErrorCheck
 def exists(fname):
     """
     Determine whether a file exists.
@@ -5591,11 +5217,11 @@ def exists(fname):
     :return: True if the file exists, False otherwise.
     :rtype: bool
     """
-    fname = stypes.string_to_char_p(fname)
+    fname = stypes.stringToCharP(fname)
     return bool(libspice.exists_c(fname))
 
 
-@spice_error_check
+@spiceErrorCheck
 def expool(name):
     """
     Confirm the existence of a kernel variable in the kernel pool.
@@ -5607,7 +5233,7 @@ def expool(name):
     :return: True when the variable is in the pool.
     :rtype: bool
     """
-    name = stypes.string_to_char_p(name)
+    name = stypes.stringToCharP(name)
     found = ctypes.c_int()
     libspice.expool_c(name, ctypes.byref(found))
     return bool(found.value)
@@ -5629,7 +5255,7 @@ def failed():
     return bool(libspice.failed_c())
 
 
-@spice_error_check
+@spiceErrorCheck
 def fn2lun(fname):
     """
     Internal undocumented command for mapping name of open file to
@@ -5642,14 +5268,14 @@ def fn2lun(fname):
     :return: the FORTRAN (F2C) logical unit associated with the filename.
     :rtype: int
     """
-    fname_p = stypes.string_to_char_p(fname)
-    unit_out = ctypes.c_int()
-    fname_len = ctypes.c_int(len(fname) + 1)
-    libspice.fn2lun_(fname_p, ctypes.byref(unit_out), fname_len)
+    fnameP    = stypes.stringToCharP(fname)
+    unit_out  = ctypes.c_int()
+    fname_len = ctypes.c_int(len(fname)+1)
+    libspice.fn2lun_(fnameP,ctypes.byref(unit_out),fname_len)
     return unit_out.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def fovray(inst, raydir, rframe, abcorr, observer, et):
     """
     Determine if a specified ray is within the field-of-view (FOV) of a
@@ -5672,20 +5298,19 @@ def fovray(inst, raydir, rframe, abcorr, observer, et):
     :return: Visibility flag
     :rtype: bool
     """
-    inst = stypes.string_to_char_p(inst)
-    raydir = stypes.to_double_vector(raydir)
-    rframe = stypes.string_to_char_p(rframe)
-    abcorr = stypes.string_to_char_p(abcorr)
-    observer = stypes.string_to_char_p(observer)
+    inst = stypes.stringToCharP(inst)
+    raydir = stypes.toDoubleVector(raydir)
+    rframe = stypes.stringToCharP(rframe)
+    abcorr = stypes.stringToCharP(abcorr)
+    observer = stypes.stringToCharP(observer)
     et = ctypes.c_double(et)
     visible = ctypes.c_int()
-    libspice.fovray_c(
-        inst, raydir, rframe, abcorr, observer, ctypes.byref(et), ctypes.byref(visible)
-    )
+    libspice.fovray_c(inst, raydir, rframe, abcorr, observer, ctypes.byref(et),
+                      ctypes.byref(visible))
     return bool(visible.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def fovtrg(inst, target, tshape, tframe, abcorr, observer, et):
     """
     Determine if a specified ephemeris object is within the field-of-view (FOV)
@@ -5710,28 +5335,20 @@ def fovtrg(inst, target, tshape, tframe, abcorr, observer, et):
     :return: Visibility flag
     :rtype: bool
     """
-    inst = stypes.string_to_char_p(inst)
-    target = stypes.string_to_char_p(target)
-    tshape = stypes.string_to_char_p(tshape)
-    tframe = stypes.string_to_char_p(tframe)
-    abcorr = stypes.string_to_char_p(abcorr)
-    observer = stypes.string_to_char_p(observer)
+    inst = stypes.stringToCharP(inst)
+    target = stypes.stringToCharP(target)
+    tshape = stypes.stringToCharP(tshape)
+    tframe = stypes.stringToCharP(tframe)
+    abcorr = stypes.stringToCharP(abcorr)
+    observer = stypes.stringToCharP(observer)
     et = ctypes.c_double(et)
     visible = ctypes.c_int()
-    libspice.fovtrg_c(
-        inst,
-        target,
-        tshape,
-        tframe,
-        abcorr,
-        observer,
-        ctypes.byref(et),
-        ctypes.byref(visible),
-    )
+    libspice.fovtrg_c(inst, target, tshape, tframe, abcorr, observer,
+                      ctypes.byref(et), ctypes.byref(visible))
     return bool(visible.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def frame(x):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/frame_c.html
@@ -5741,19 +5358,16 @@ def frame(x):
     :return: a tuple of 3 list[3]
     :rtype: tuple
     """
-    x = stypes.to_double_vector(x)
-    y = stypes.empty_double_vector(3)
-    z = stypes.empty_double_vector(3)
+    x = stypes.toDoubleVector(x)
+    y = stypes.emptyDoubleVector(3)
+    z = stypes.emptyDoubleVector(3)
     libspice.frame_c(x, y, z)
-    return (
-        stypes.c_vector_to_python(x),
-        stypes.c_vector_to_python(y),
-        stypes.c_vector_to_python(z),
-    )
+    return stypes.cVectorToPython(x), stypes.cVectorToPython(y), stypes.cVectorToPython(
+            z)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def frinfo(frcode):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/frinfo_c.html
@@ -5768,17 +5382,12 @@ def frinfo(frcode):
     frclss = ctypes.c_int()
     clssid = ctypes.c_int()
     found = ctypes.c_int()
-    libspice.frinfo_c(
-        frcode,
-        ctypes.byref(cent),
-        ctypes.byref(frclss),
-        ctypes.byref(clssid),
-        ctypes.byref(found),
-    )
+    libspice.frinfo_c(frcode, ctypes.byref(cent), ctypes.byref(frclss),
+                      ctypes.byref(clssid), ctypes.byref(found))
     return cent.value, frclss.value, clssid.value, bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def frmnam(frcode, lenout=_default_len_out):
     """
     Retrieve the name of a reference frame associated with a SPICE ID code.
@@ -5794,12 +5403,12 @@ def frmnam(frcode, lenout=_default_len_out):
     """
     frcode = ctypes.c_int(frcode)
     lenout = ctypes.c_int(lenout)
-    frname = stypes.string_to_char_p(lenout)
+    frname = stypes.stringToCharP(lenout)
     libspice.frmnam_c(frcode, lenout, frname)
-    return stypes.to_python_string(frname)
+    return stypes.toPythonString(frname)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ftncls(unit):
     """
     Close a file designated by a Fortran-style integer logical unit.
@@ -5813,7 +5422,7 @@ def ftncls(unit):
     libspice.ftncls_c(unit)
 
 
-@spice_error_check
+@spiceErrorCheck
 def furnsh(path):
     """
     Load one or more SPICE kernels into a program.
@@ -5823,11 +5432,11 @@ def furnsh(path):
     :param path: one or more paths to kernels
     :type path: str or list of str
     """
-    if stypes.is_iterable(path):
+    if stypes.isiterable(path):
         for p in path:
-            libspice.furnsh_c(stypes.string_to_char_p(p))
+            libspice.furnsh_c(stypes.stringToCharP(p))
     else:
-        path = stypes.string_to_char_p(path)
+        path = stypes.stringToCharP(path)
         libspice.furnsh_c(path)
 
 
@@ -5835,8 +5444,8 @@ def furnsh(path):
 # G
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def gcpool(name, start, room, lenout=_default_len_out):
     """
     Return the character value of a kernel variable from the kernel pool.
@@ -5854,30 +5463,21 @@ def gcpool(name, start, room, lenout=_default_len_out):
     :return: Values associated with name.
     :rtype: list of str
     """
-    name = stypes.string_to_char_p(name)
+    name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
     room = ctypes.c_int(room)
     lenout = ctypes.c_int(lenout)
     n = ctypes.c_int()
-    cvals = stypes.empty_char_array(lenout, room)
+    cvals = stypes.emptyCharArray(lenout, room)
     found = ctypes.c_int()
-    libspice.gcpool_c(
-        name,
-        start,
-        room,
-        lenout,
-        ctypes.byref(n),
-        ctypes.byref(cvals),
-        ctypes.byref(found),
-    )
-    return (
-        [stypes.to_python_string(x.value) for x in cvals[0 : n.value]],
-        bool(found.value),
-    )
+    libspice.gcpool_c(name, start, room, lenout, ctypes.byref(n),
+                      ctypes.byref(cvals), ctypes.byref(found))
+    return [stypes.toPythonString(x.value) for x in
+            cvals[0:n.value]], bool(found.value)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def gdpool(name, start, room):
     """
     Return the d.p. value of a kernel variable from the kernel pool.
@@ -5893,24 +5493,19 @@ def gdpool(name, start, room):
     :return: Values associated with name.
     :rtype: list of float
     """
-    name = stypes.string_to_char_p(name)
+    name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
-    values = stypes.empty_double_vector(room)
+    values = stypes.emptyDoubleVector(room)
     room = ctypes.c_int(room)
     n = ctypes.c_int()
     found = ctypes.c_int()
-    libspice.gdpool_c(
-        name,
-        start,
-        room,
-        ctypes.byref(n),
-        ctypes.cast(values, ctypes.POINTER(ctypes.c_double)),
-        ctypes.byref(found),
-    )
-    return stypes.c_vector_to_python(values)[0 : n.value], bool(found.value)
+    libspice.gdpool_c(name, start, room, ctypes.byref(n),
+                      ctypes.cast(values, ctypes.POINTER(ctypes.c_double)),
+                      ctypes.byref(found))
+    return stypes.cVectorToPython(values)[0:n.value], bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def georec(lon, lat, alt, re, f):
     """
     Convert geodetic coordinates to rectangular coordinates.
@@ -5935,15 +5530,15 @@ def georec(lon, lat, alt, re, f):
     alt = ctypes.c_double(alt)
     re = ctypes.c_double(re)
     f = ctypes.c_double(f)
-    rectan = stypes.empty_double_vector(3)
+    rectan = stypes.emptyDoubleVector(3)
     libspice.georec_c(lon, lat, alt, re, f, rectan)
-    return stypes.c_vector_to_python(rectan)
+    return stypes.cVectorToPython(rectan)
 
 
 # getcml not really needed
 
 
-@spice_error_check
+@spiceErrorCheck
 def getelm(frstyr, lineln, lines):
     """
     Given a the "lines" of a two-line element set, parse the
@@ -5965,14 +5560,14 @@ def getelm(frstyr, lineln, lines):
     """
     frstyr = ctypes.c_int(frstyr)
     lineln = ctypes.c_int(lineln)
-    lines = stypes.list_to_char_array_ptr(lines, x_len=lineln, y_len=2)
+    lines = stypes.listToCharArrayPtr(lines, xLen=lineln, yLen=2)
     epoch = ctypes.c_double()
-    elems = stypes.empty_double_vector(10)  # guess for length
+    elems = stypes.emptyDoubleVector(10)  # guess for length
     libspice.getelm_c(frstyr, lineln, lines, ctypes.byref(epoch), elems)
-    return epoch.value, stypes.c_vector_to_python(elems)
+    return epoch.value, stypes.cVectorToPython(elems)
 
 
-@spice_error_check
+@spiceErrorCheck
 def getfat(file):
     """
     Determine the file architecture and file type of most SPICE kernel files.
@@ -5984,16 +5579,16 @@ def getfat(file):
     :return: The architecture of the kernel file, The type of the kernel file.
     :rtype: tuple
     """
-    file = stypes.string_to_char_p(file)
+    file = stypes.stringToCharP(file)
     arclen = ctypes.c_int(4)
     typlen = ctypes.c_int(4)
-    arch = stypes.string_to_char_p(arclen)
-    rettype = stypes.string_to_char_p(typlen)
+    arch = stypes.stringToCharP(arclen)
+    rettype = stypes.stringToCharP(typlen)
     libspice.getfat_c(file, arclen, typlen, arch, rettype)
-    return stypes.to_python_string(arch), stypes.to_python_string(rettype)
+    return stypes.toPythonString(arch), stypes.toPythonString(rettype)
 
 
-@spice_error_check
+@spiceErrorCheck
 def getfov(instid, room, shapelen=_default_len_out, framelen=_default_len_out):
     """
     This routine returns the field-of-view (FOV) parameters for a
@@ -6018,24 +5613,19 @@ def getfov(instid, room, shapelen=_default_len_out, framelen=_default_len_out):
     :rtype: tuple
     """
     instid = ctypes.c_int(instid)
-    shape = stypes.string_to_char_p(" " * shapelen)
-    framen = stypes.string_to_char_p(" " * framelen)
+    shape = stypes.stringToCharP(" " * shapelen)
+    framen = stypes.stringToCharP(" " * framelen)
     shapelen = ctypes.c_int(shapelen)
     framelen = ctypes.c_int(framelen)
-    bsight = stypes.empty_double_vector(3)
+    bsight = stypes.emptyDoubleVector(3)
     n = ctypes.c_int()
-    bounds = stypes.empty_double_matrix(x=3, y=room)
+    bounds = stypes.emptyDoubleMatrix(x=3, y=room)
     room = ctypes.c_int(room)
-    libspice.getfov_c(
-        instid, room, shapelen, framelen, shape, framen, bsight, ctypes.byref(n), bounds
-    )
-    return (
-        stypes.to_python_string(shape),
-        stypes.to_python_string(framen),
-        stypes.c_vector_to_python(bsight),
-        n.value,
-        stypes.c_matrix_to_numpy(bounds)[0 : n.value],
-    )
+    libspice.getfov_c(instid, room, shapelen, framelen, shape, framen, bsight,
+                      ctypes.byref(n), bounds)
+    return stypes.toPythonString(shape), stypes.toPythonString(
+            framen), stypes.cVectorToPython(
+            bsight), n.value, stypes.cMatrixToNumpy(bounds)[0:n.value]
 
 
 def getmsg(option, lenout=_default_len_out):
@@ -6053,14 +5643,14 @@ def getmsg(option, lenout=_default_len_out):
     :return: The error message to be retrieved.
     :rtype: str
     """
-    option = stypes.string_to_char_p(option)
+    option = stypes.stringToCharP(option)
     lenout = ctypes.c_int(lenout)
-    msg = stypes.string_to_char_p(lenout)
+    msg = stypes.stringToCharP(lenout)
     libspice.getmsg_c(option, lenout, msg)
-    return stypes.to_python_string(msg)
+    return stypes.toPythonString(msg)
 
 
-@spice_error_check
+@spiceErrorCheck
 def gfbail():
     """
     Indicate whether an interrupt signal (SIGINT) has been received.
@@ -6073,7 +5663,7 @@ def gfbail():
     return bool(libspice.gfbail_c())
 
 
-@spice_error_check
+@spiceErrorCheck
 def gfclrh():
     """
     Clear the interrupt signal handler status, so that future calls
@@ -6085,10 +5675,9 @@ def gfclrh():
     libspice.gfclrh_c()
 
 
-@spice_error_check
-def gfdist(
-    target, abcorr, obsrvr, relate, refval, adjust, step, nintvls, cnfine, result=None
-):
+@spiceErrorCheck
+def gfdist(target, abcorr, obsrvr, relate, refval, adjust, step, nintvls,
+           cnfine, result=None):
     """
     Return the time window over which a specified constraint on
     observer-target distance is met.
@@ -6123,55 +5712,24 @@ def gfdist(
     else:
         assert isinstance(result, stypes.SpiceCell)
         assert result.is_double()
-    target = stypes.string_to_char_p(target)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    relate = stypes.string_to_char_p(relate)
+    target = stypes.stringToCharP(target)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    relate = stypes.stringToCharP(relate)
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
     nintvls = ctypes.c_int(nintvls)
-    libspice.gfdist_c(
-        target,
-        abcorr,
-        obsrvr,
-        relate,
-        refval,
-        adjust,
-        step,
-        nintvls,
-        ctypes.byref(cnfine),
-        ctypes.byref(result),
-    )
+    libspice.gfdist_c(target, abcorr, obsrvr, relate, refval, adjust,
+                      step, nintvls, ctypes.byref(cnfine), ctypes.byref(result))
     return result
 
 
-@spice_error_check
-def gfevnt(
-    udstep,
-    udrefn,
-    gquant,
-    qnpars,
-    lenvals,
-    qpnams,
-    qcpars,
-    qdpars,
-    qipars,
-    qlpars,
-    op,
-    refval,
-    tol,
-    adjust,
-    rpt,
-    udrepi,
-    udrepu,
-    udrepf,
-    nintvls,
-    bail,
-    udbail,
-    cnfine,
-    result=None,
-):
+@spiceErrorCheck
+def gfevnt(udstep, udrefn, gquant, qnpars, lenvals, qpnams,
+           qcpars, qdpars, qipars, qlpars, op, refval,
+           tol, adjust, rpt, udrepi, udrepu, udrepf,
+           nintvls, bail, udbail, cnfine, result=None):
     """
     Determine time intervals when a specified geometric quantity
     satisfies a specified mathematical condition.
@@ -6232,70 +5790,31 @@ def gfevnt(
     else:
         assert isinstance(result, stypes.SpiceCell)
         assert result.is_double()
-    gquant = stypes.string_to_char_p(gquant)
-    qnpars = ctypes.c_int(qnpars)
+    gquant  = stypes.stringToCharP(gquant)
+    qnpars  = ctypes.c_int(qnpars)
     lenvals = ctypes.c_int(lenvals)
-    qpnams = stypes.list_to_char_array_ptr(qpnams, x_len=lenvals, y_len=qnpars)
-    qcpars = stypes.list_to_char_array_ptr(qcpars, x_len=lenvals, y_len=qnpars)
-    qdpars = stypes.to_double_vector(qdpars)
-    qipars = stypes.to_int_vector(qipars)
-    qlpars = stypes.to_int_vector(qlpars)
-    op = stypes.string_to_char_p(op)
-    refval = ctypes.c_double(refval)
-    tol = ctypes.c_double(tol)
-    adjust = ctypes.c_double(adjust)
-    rpt = ctypes.c_int(rpt)
+    qpnams  = stypes.listToCharArrayPtr(qpnams, xLen=lenvals, yLen=qnpars)
+    qcpars  = stypes.listToCharArrayPtr(qcpars, xLen=lenvals, yLen=qnpars)
+    qdpars  = stypes.toDoubleVector(qdpars)
+    qipars  = stypes.toIntVector(qipars)
+    qlpars  = stypes.toIntVector(qlpars)
+    op      = stypes.stringToCharP(op)
+    refval  = ctypes.c_double(refval)
+    tol     = ctypes.c_double(tol)
+    adjust  = ctypes.c_double(adjust)
+    rpt     = ctypes.c_int(rpt)
     nintvls = ctypes.c_int(nintvls)
-    bail = ctypes.c_int(bail)
-    libspice.gfevnt_c(
-        udstep,
-        udrefn,
-        gquant,
-        qnpars,
-        lenvals,
-        qpnams,
-        qcpars,
-        qdpars,
-        qipars,
-        qlpars,
-        op,
-        refval,
-        tol,
-        adjust,
-        rpt,
-        udrepi,
-        udrepu,
-        udrepf,
-        nintvls,
-        bail,
-        udbail,
-        ctypes.byref(cnfine),
-        ctypes.byref(result),
-    )
+    bail    = ctypes.c_int(bail)
+    libspice.gfevnt_c(udstep, udrefn, gquant, qnpars, lenvals, qpnams, qcpars,
+                      qdpars, qipars, qlpars, op, refval, tol,
+                      adjust, rpt, udrepi, udrepu, udrepf, nintvls, bail,
+                      udbail, ctypes.byref(cnfine), ctypes.byref(result))
     return result
 
 
-@spice_error_check
-def gffove(
-    inst,
-    tshape,
-    raydir,
-    target,
-    tframe,
-    abcorr,
-    obsrvr,
-    tol,
-    udstep,
-    udrefn,
-    rpt,
-    udrepi,
-    udrepu,
-    udrepf,
-    bail,
-    udbail,
-    cnfine,
-    result=None,
-):
+@spiceErrorCheck
+def gffove(inst, tshape, raydir, target, tframe, abcorr, obsrvr,
+           tol, udstep, udrefn, rpt, udrepi, udrepu, udrepf, bail, udbail, cnfine, result=None):
     """
     Determine time intervals when a specified target body or ray
     intersects the space bounded by the field-of-view (FOV) of a
@@ -6348,57 +5867,27 @@ def gffove(
     else:
         assert isinstance(result, stypes.SpiceCell)
         assert result.is_double()
-    inst = stypes.string_to_char_p(inst)
-    tshape = stypes.string_to_char_p(tshape)
-    raydir = stypes.to_double_vector(raydir)
-    target = stypes.string_to_char_p(target)
-    tframe = stypes.string_to_char_p(tframe)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
+    inst = stypes.stringToCharP(inst)
+    tshape = stypes.stringToCharP(tshape)
+    raydir = stypes.toDoubleVector(raydir)
+    target = stypes.stringToCharP(target)
+    tframe = stypes.stringToCharP(tframe)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
     tol = ctypes.c_double(tol)
     rpt = ctypes.c_int(rpt)
     bail = ctypes.c_int(bail)
-    libspice.gffove_c(
-        inst,
-        tshape,
-        raydir,
-        target,
-        tframe,
-        abcorr,
-        obsrvr,
-        tol,
-        udstep,
-        udrefn,
-        rpt,
-        udrepi,
-        udrepu,
-        udrepf,
-        bail,
-        udbail,
-        ctypes.byref(cnfine),
-        ctypes.byref(result),
-    )
+    libspice.gffove_c(inst, tshape, raydir, target, tframe,
+                      abcorr, obsrvr, tol, udstep, udrefn, rpt,
+                      udrepi, udrepu, udrepf, bail, udbail,
+                      ctypes.byref(cnfine), ctypes.byref(result))
     return result
 
 
-@spice_error_check
-def gfilum(
-    method,
-    angtyp,
-    target,
-    illumn,
-    fixref,
-    abcorr,
-    obsrvr,
-    spoint,
-    relate,
-    refval,
-    adjust,
-    step,
-    nintvls,
-    cnfine,
-    result=None,
-):
+@spiceErrorCheck
+def gfilum(method, angtyp, target, illumn,
+           fixref, abcorr, obsrvr, spoint,
+           relate, refval, adjust, step, nintvls, cnfine, result=None):
     """
     Return the time window over which a specified constraint on
     the observed phase, solar incidence, or emission angle at
@@ -6442,40 +5931,27 @@ def gfilum(
     else:
         assert isinstance(result, stypes.SpiceCell)
         assert result.is_double()
-    method = stypes.string_to_char_p(method)
-    angtyp = stypes.string_to_char_p(angtyp)
-    target = stypes.string_to_char_p(target)
-    illumn = stypes.string_to_char_p(illumn)
-    fixref = stypes.string_to_char_p(fixref)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    spoint = stypes.to_double_vector(spoint)
-    relate = stypes.string_to_char_p(relate)
+    method = stypes.stringToCharP(method)
+    angtyp = stypes.stringToCharP(angtyp)
+    target = stypes.stringToCharP(target)
+    illumn = stypes.stringToCharP(illumn)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    spoint = stypes.toDoubleVector(spoint)
+    relate = stypes.stringToCharP(relate)
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
-    step = ctypes.c_double(step)
+    step   = ctypes.c_double(step)
     nintvls = ctypes.c_int(nintvls)
-    libspice.gfilum_c(
-        method,
-        angtyp,
-        target,
-        illumn,
-        fixref,
-        abcorr,
-        obsrvr,
-        spoint,
-        relate,
-        refval,
-        adjust,
-        step,
-        nintvls,
-        ctypes.byref(cnfine),
-        ctypes.byref(result),
-    )
+    libspice.gfilum_c(method, angtyp, target, illumn,
+                      fixref, abcorr, obsrvr, spoint,
+                      relate, refval, adjust, step,
+                      nintvls, ctypes.byref(cnfine), ctypes.byref(result))
     return result
 
 
-@spice_error_check
+@spiceErrorCheck
 def gfinth(sigcode):
     """
     Respond to the interrupt signal SIGINT: save an indication
@@ -6491,29 +5967,11 @@ def gfinth(sigcode):
     libspice.gfinth_c(sigcode)
 
 
-@spice_error_check
-def gfocce(
-    occtyp,
-    front,
-    fshape,
-    fframe,
-    back,
-    bshape,
-    bframe,
-    abcorr,
-    obsrvr,
-    tol,
-    udstep,
-    udrefn,
-    rpt,
-    udrepi,
-    udrepu,
-    udrepf,
-    bail,
-    udbail,
-    cnfine,
-    result=None,
-):
+@spiceErrorCheck
+def gfocce(occtyp, front, fshape, fframe, back,
+           bshape, bframe, abcorr, obsrvr, tol,
+           udstep, udrefn, rpt, udrepi, udrepu,
+           udrepf, bail, udbail, cnfine, result=None):
     """
     Determine time intervals when an observer sees one target
     occulted by another. Report progress and handle interrupts
@@ -6572,58 +6030,27 @@ def gfocce(
     else:
         assert isinstance(result, stypes.SpiceCell)
         assert result.is_double()
-    occtyp = stypes.string_to_char_p(occtyp)
-    front = stypes.string_to_char_p(front)
-    fshape = stypes.string_to_char_p(fshape)
-    fframe = stypes.string_to_char_p(fframe)
-    back = stypes.string_to_char_p(back)
-    bshape = stypes.string_to_char_p(bshape)
-    bframe = stypes.string_to_char_p(bframe)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
+    occtyp = stypes.stringToCharP(occtyp)
+    front = stypes.stringToCharP(front)
+    fshape = stypes.stringToCharP(fshape)
+    fframe = stypes.stringToCharP(fframe)
+    back = stypes.stringToCharP(back)
+    bshape = stypes.stringToCharP(bshape)
+    bframe = stypes.stringToCharP(bframe)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
     tol = ctypes.c_double(tol)
     rpt = ctypes.c_int(rpt)
     bail = ctypes.c_int(bail)
-    libspice.gfocce_c(
-        occtyp,
-        front,
-        fshape,
-        fframe,
-        back,
-        bshape,
-        bframe,
-        abcorr,
-        obsrvr,
-        tol,
-        udstep,
-        udrefn,
-        rpt,
-        udrepi,
-        udrepu,
-        udrepf,
-        bail,
-        udbail,
-        ctypes.byref(cnfine),
-        ctypes.byref(result),
-    )
+    libspice.gfocce_c(occtyp, front, fshape, fframe, back,
+                      bshape, bframe, abcorr, obsrvr, tol,
+                      udstep, udrefn, rpt, udrepi, udrepu, udrepf,
+                      bail, udbail, ctypes.byref(cnfine), ctypes.byref(result))
     return result
 
-
-@spice_error_check
-def gfoclt(
-    occtyp,
-    front,
-    fshape,
-    fframe,
-    back,
-    bshape,
-    bframe,
-    abcorr,
-    obsrvr,
-    step,
-    cnfine,
-    result=None,
-):
+@spiceErrorCheck
+def gfoclt(occtyp, front, fshape, fframe, back, bshape, bframe, abcorr, obsrvr,
+           step, cnfine, result=None):
     """
     Determine time intervals when an observer sees one target
     occulted by, or in transit across, another.
@@ -6662,47 +6089,25 @@ def gfoclt(
     else:
         assert isinstance(result, stypes.SpiceCell)
         assert result.is_double()
-    occtyp = stypes.string_to_char_p(occtyp)
-    front = stypes.string_to_char_p(front)
-    fshape = stypes.string_to_char_p(fshape)
-    fframe = stypes.string_to_char_p(fframe)
-    back = stypes.string_to_char_p(back)
-    bshape = stypes.string_to_char_p(bshape)
-    bframe = stypes.string_to_char_p(bframe)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
+    occtyp = stypes.stringToCharP(occtyp)
+    front = stypes.stringToCharP(front)
+    fshape = stypes.stringToCharP(fshape)
+    fframe = stypes.stringToCharP(fframe)
+    back = stypes.stringToCharP(back)
+    bshape = stypes.stringToCharP(bshape)
+    bframe = stypes.stringToCharP(bframe)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
     step = ctypes.c_double(step)
-    libspice.gfoclt_c(
-        occtyp,
-        front,
-        fshape,
-        fframe,
-        back,
-        bshape,
-        bframe,
-        abcorr,
-        obsrvr,
-        step,
-        ctypes.byref(cnfine),
-        ctypes.byref(result),
-    )
+    libspice.gfoclt_c(occtyp, front, fshape, fframe, back, bshape, bframe,
+                      abcorr, obsrvr, step, ctypes.byref(cnfine),
+                      ctypes.byref(result))
     return result
 
 
-@spice_error_check
-def gfpa(
-    target,
-    illmin,
-    abcorr,
-    obsrvr,
-    relate,
-    refval,
-    adjust,
-    step,
-    nintvals,
-    cnfine,
-    result=None,
-):
+@spiceErrorCheck
+def gfpa(target, illmin, abcorr, obsrvr, relate, refval, adjust, step, nintvals,
+         cnfine, result=None):
     """
     Determine time intervals for which a specified constraint
     on the phase angle between an illumination source, a target,
@@ -6740,47 +6145,24 @@ def gfpa(
     else:
         assert isinstance(result, stypes.SpiceCell)
         assert result.is_double()
-    target = stypes.string_to_char_p(target)
-    illmin = stypes.string_to_char_p(illmin)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    relate = stypes.string_to_char_p(relate)
+    target = stypes.stringToCharP(target)
+    illmin = stypes.stringToCharP(illmin)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    relate = stypes.stringToCharP(relate)
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
     nintvals = ctypes.c_int(nintvals)
-    libspice.gfpa_c(
-        target,
-        illmin,
-        abcorr,
-        obsrvr,
-        relate,
-        refval,
-        adjust,
-        step,
-        nintvals,
-        ctypes.byref(cnfine),
-        ctypes.byref(result),
-    )
+    libspice.gfpa_c(target, illmin, abcorr, obsrvr, relate, refval,
+                    adjust, step, nintvals, ctypes.byref(cnfine),
+                    ctypes.byref(result))
     return result
 
 
-@spice_error_check
-def gfposc(
-    target,
-    inframe,
-    abcorr,
-    obsrvr,
-    crdsys,
-    coord,
-    relate,
-    refval,
-    adjust,
-    step,
-    nintvals,
-    cnfine,
-    result=None,
-):
+@spiceErrorCheck
+def gfposc(target, inframe, abcorr, obsrvr, crdsys, coord, relate, refval,
+           adjust, step, nintvals, cnfine, result=None):
     """
     Determine time intervals for which a coordinate of an
     observer-target position vector satisfies a numerical constraint.
@@ -6821,36 +6203,24 @@ def gfposc(
     else:
         assert isinstance(result, stypes.SpiceCell)
         assert result.is_double()
-    target = stypes.string_to_char_p(target)
-    inframe = stypes.string_to_char_p(inframe)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    crdsys = stypes.string_to_char_p(crdsys)
-    coord = stypes.string_to_char_p(coord)
-    relate = stypes.string_to_char_p(relate)
+    target = stypes.stringToCharP(target)
+    inframe = stypes.stringToCharP(inframe)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    crdsys = stypes.stringToCharP(crdsys)
+    coord = stypes.stringToCharP(coord)
+    relate = stypes.stringToCharP(relate)
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
     nintvals = ctypes.c_int(nintvals)
-    libspice.gfposc_c(
-        target,
-        inframe,
-        abcorr,
-        obsrvr,
-        crdsys,
-        coord,
-        relate,
-        refval,
-        adjust,
-        step,
-        nintvals,
-        ctypes.byref(cnfine),
-        ctypes.byref(result),
-    )
+    libspice.gfposc_c(target, inframe, abcorr, obsrvr, crdsys, coord,
+                      relate, refval, adjust, step, nintvals,
+                      ctypes.byref(cnfine), ctypes.byref(result))
     return result
 
 
-@spice_error_check
+@spiceErrorCheck
 def gfrefn(t1, t2, s1, s2):
     """
     For those times when we can't do better, we use a bisection
@@ -6878,7 +6248,7 @@ def gfrefn(t1, t2, s1, s2):
     return t.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def gfrepf():
     """
     Finish a GF progress report.
@@ -6889,7 +6259,7 @@ def gfrepf():
     libspice.gfrepf_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def gfrepi(window, begmss, endmss):
     """
     This entry point initializes a search progress report.
@@ -6903,8 +6273,8 @@ def gfrepi(window, begmss, endmss):
     :param endmss: End of the text portion of the output message.
     :type endmss: str
     """
-    begmss = stypes.string_to_char_p(begmss)
-    endmss = stypes.string_to_char_p(endmss)
+    begmss = stypes.stringToCharP(begmss)
+    endmss = stypes.stringToCharP(endmss)
     # don't do anything if we were given a pointer to a SpiceCell, like if we were in a callback
     if not isinstance(window, ctypes.POINTER(stypes.SpiceCell)):
         assert isinstance(window, stypes.SpiceCell)
@@ -6913,7 +6283,7 @@ def gfrepi(window, begmss, endmss):
     libspice.gfrepi_c(window, begmss, endmss)
 
 
-@spice_error_check
+@spiceErrorCheck
 def gfrepu(ivbeg, ivend, time):
     """
     This function tells the progress reporting system
@@ -6934,7 +6304,7 @@ def gfrepu(ivbeg, ivend, time):
     libspice.gfrepu_c(ivbeg, ivend, time)
 
 
-@spice_error_check
+@spiceErrorCheck
 def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result=None):
     """
     Determine time intervals when a specified ray intersects the
@@ -6967,29 +6337,20 @@ def gfrfov(inst, raydir, rframe, abcorr, obsrvr, step, cnfine, result=None):
     else:
         assert isinstance(result, stypes.SpiceCell)
         assert result.is_double()
-    inst = stypes.string_to_char_p(inst)
-    raydir = stypes.to_double_vector(raydir)
-    rframe = stypes.string_to_char_p(rframe)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
+    inst = stypes.stringToCharP(inst)
+    raydir = stypes.toDoubleVector(raydir)
+    rframe = stypes.stringToCharP(rframe)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
     step = ctypes.c_double(step)
-    libspice.gfrfov_c(
-        inst,
-        raydir,
-        rframe,
-        abcorr,
-        obsrvr,
-        step,
-        ctypes.byref(cnfine),
-        ctypes.byref(result),
-    )
+    libspice.gfrfov_c(inst, raydir, rframe, abcorr, obsrvr, step,
+                      ctypes.byref(cnfine), ctypes.byref(result))
     return result
 
 
-@spice_error_check
-def gfrr(
-    target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine, result
-):
+@spiceErrorCheck
+def gfrr(target, abcorr, obsrvr, relate, refval, adjust, step, nintvals, cnfine,
+         result):
     """
     Determine time intervals for which a specified constraint
     on the observer-target range rate is met.
@@ -7024,47 +6385,23 @@ def gfrr(
     else:
         assert isinstance(result, stypes.SpiceCell)
         assert result.is_double()
-    target = stypes.string_to_char_p(target)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    relate = stypes.string_to_char_p(relate)
+    target = stypes.stringToCharP(target)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    relate = stypes.stringToCharP(relate)
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
     nintvals = ctypes.c_int(nintvals)
-    libspice.gfrr_c(
-        target,
-        abcorr,
-        obsrvr,
-        relate,
-        refval,
-        adjust,
-        step,
-        nintvals,
-        ctypes.byref(cnfine),
-        ctypes.byref(result),
-    )
+    libspice.gfrr_c(target, abcorr, obsrvr, relate, refval,
+                    adjust, step, nintvals, ctypes.byref(cnfine),
+                    ctypes.byref(result))
     return result
 
 
-@spice_error_check
-def gfsep(
-    targ1,
-    shape1,
-    inframe1,
-    targ2,
-    shape2,
-    inframe2,
-    abcorr,
-    obsrvr,
-    relate,
-    refval,
-    adjust,
-    step,
-    nintvals,
-    cnfine,
-    result=None,
-):
+@spiceErrorCheck
+def gfsep(targ1, shape1, inframe1, targ2, shape2, inframe2, abcorr, obsrvr,
+          relate, refval, adjust, step, nintvals, cnfine, result=None):
     """
     Determine time intervals when the angular separation between
     the position vectors of two target bodies relative to an observer
@@ -7110,58 +6447,29 @@ def gfsep(
     else:
         assert isinstance(result, stypes.SpiceCell)
         assert result.is_double()
-    targ1 = stypes.string_to_char_p(targ1)
-    shape1 = stypes.string_to_char_p(shape1)
-    inframe1 = stypes.string_to_char_p(inframe1)
-    targ2 = stypes.string_to_char_p(targ2)
-    shape2 = stypes.string_to_char_p(shape2)
-    inframe2 = stypes.string_to_char_p(inframe2)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    relate = stypes.string_to_char_p(relate)
+    targ1 = stypes.stringToCharP(targ1)
+    shape1 = stypes.stringToCharP(shape1)
+    inframe1 = stypes.stringToCharP(inframe1)
+    targ2 = stypes.stringToCharP(targ2)
+    shape2 = stypes.stringToCharP(shape2)
+    inframe2 = stypes.stringToCharP(inframe2)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    relate = stypes.stringToCharP(relate)
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
     nintvals = ctypes.c_int(nintvals)
-    libspice.gfsep_c(
-        targ1,
-        shape1,
-        inframe1,
-        targ2,
-        shape2,
-        inframe2,
-        abcorr,
-        obsrvr,
-        relate,
-        refval,
-        adjust,
-        step,
-        nintvals,
-        ctypes.byref(cnfine),
-        ctypes.byref(result),
-    )
+    libspice.gfsep_c(targ1, shape1, inframe1, targ2, shape2, inframe2,
+                     abcorr, obsrvr, relate, refval, adjust, step, nintvals,
+                     ctypes.byref(cnfine), ctypes.byref(result))
     return result
 
 
-@spice_error_check
-def gfsntc(
-    target,
-    fixref,
-    method,
-    abcorr,
-    obsrvr,
-    dref,
-    dvec,
-    crdsys,
-    coord,
-    relate,
-    refval,
-    adjust,
-    step,
-    nintvals,
-    cnfine,
-    result=None,
-):
+@spiceErrorCheck
+def gfsntc(target, fixref, method, abcorr, obsrvr, dref, dvec, crdsys, coord,
+           relate, refval, adjust, step, nintvals,
+           cnfine, result=None):
     """
     Determine time intervals for which a coordinate of an
     surface intercept position vector satisfies a numerical constraint.
@@ -7208,42 +6516,28 @@ def gfsntc(
     else:
         assert isinstance(result, stypes.SpiceCell)
         assert result.is_double()
-    target = stypes.string_to_char_p(target)
-    fixref = stypes.string_to_char_p(fixref)
-    method = stypes.string_to_char_p(method)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    dref = stypes.string_to_char_p(dref)
-    dvec = stypes.to_double_vector(dvec)
-    crdsys = stypes.string_to_char_p(crdsys)
-    coord = stypes.string_to_char_p(coord)
-    relate = stypes.string_to_char_p(relate)
+    target = stypes.stringToCharP(target)
+    fixref = stypes.stringToCharP(fixref)
+    method = stypes.stringToCharP(method)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    dref = stypes.stringToCharP(dref)
+    dvec = stypes.toDoubleVector(dvec)
+    crdsys = stypes.stringToCharP(crdsys)
+    coord = stypes.stringToCharP(coord)
+    relate = stypes.stringToCharP(relate)
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
     nintvals = ctypes.c_int(nintvals)
-    libspice.gfsntc_c(
-        target,
-        fixref,
-        method,
-        abcorr,
-        obsrvr,
-        dref,
-        dvec,
-        crdsys,
-        coord,
-        relate,
-        refval,
-        adjust,
-        step,
-        nintvals,
-        ctypes.byref(cnfine),
-        ctypes.byref(result),
-    )
+    libspice.gfsntc_c(target, fixref, method, abcorr, obsrvr,
+                      dref, dvec, crdsys, coord, relate, refval,
+                      adjust, step, nintvals, ctypes.byref(cnfine),
+                      ctypes.byref(result))
     return result
 
 
-@spice_error_check
+@spiceErrorCheck
 def gfsstp(step):
     """
     Set the step size to be returned by :func:`gfstep`.
@@ -7257,7 +6551,7 @@ def gfsstp(step):
     libspice.gfsstp_c(step)
 
 
-@spice_error_check
+@spiceErrorCheck
 def gfstep(time):
     """
     Return the time step set by the most recent call to :func:`gfsstp`.
@@ -7275,7 +6569,7 @@ def gfstep(time):
     return step.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def gfstol(value):
     """
     Override the default GF convergence
@@ -7292,23 +6586,10 @@ def gfstol(value):
     libspice.gfstol_c(value)
 
 
-@spice_error_check
-def gfsubc(
-    target,
-    fixref,
-    method,
-    abcorr,
-    obsrvr,
-    crdsys,
-    coord,
-    relate,
-    refval,
-    adjust,
-    step,
-    nintvals,
-    cnfine,
-    result,
-):
+@spiceErrorCheck
+def gfsubc(target, fixref, method, abcorr, obsrvr, crdsys, coord, relate,
+           refval, adjust, step, nintvals, cnfine,
+           result):
     """
     Determine time intervals for which a coordinate of an
     subpoint position vector satisfies a numerical constraint.
@@ -7351,38 +6632,25 @@ def gfsubc(
     else:
         assert isinstance(result, stypes.SpiceCell)
         assert result.is_double()
-    target = stypes.string_to_char_p(target)
-    fixref = stypes.string_to_char_p(fixref)
-    method = stypes.string_to_char_p(method)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    crdsys = stypes.string_to_char_p(crdsys)
-    coord = stypes.string_to_char_p(coord)
-    relate = stypes.string_to_char_p(relate)
+    target = stypes.stringToCharP(target)
+    fixref = stypes.stringToCharP(fixref)
+    method = stypes.stringToCharP(method)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    crdsys = stypes.stringToCharP(crdsys)
+    coord = stypes.stringToCharP(coord)
+    relate = stypes.stringToCharP(relate)
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
     nintvals = ctypes.c_int(nintvals)
-    libspice.gfsubc_c(
-        target,
-        fixref,
-        method,
-        abcorr,
-        obsrvr,
-        crdsys,
-        coord,
-        relate,
-        refval,
-        adjust,
-        step,
-        nintvals,
-        ctypes.byref(cnfine),
-        ctypes.byref(result),
-    )
+    libspice.gfsubc_c(target, fixref, method, abcorr, obsrvr, crdsys,
+                      coord, relate, refval, adjust, step, nintvals,
+                      ctypes.byref(cnfine), ctypes.byref(result))
     return result
 
 
-@spice_error_check
+@spiceErrorCheck
 def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine, result=None):
     """
     Determine time intervals when a specified ephemeris object
@@ -7417,28 +6685,19 @@ def gftfov(inst, target, tshape, tframe, abcorr, obsrvr, step, cnfine, result=No
     else:
         assert isinstance(result, stypes.SpiceCell)
         assert result.is_double()
-    inst = stypes.string_to_char_p(inst)
-    target = stypes.string_to_char_p(target)
-    tshape = stypes.string_to_char_p(tshape)
-    tframe = stypes.string_to_char_p(tframe)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
+    inst   = stypes.stringToCharP(inst)
+    target = stypes.stringToCharP(target)
+    tshape = stypes.stringToCharP(tshape)
+    tframe = stypes.stringToCharP(tframe)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
     step = ctypes.c_double(step)
-    libspice.gftfov_c(
-        inst,
-        target,
-        tshape,
-        tframe,
-        abcorr,
-        obsrvr,
-        step,
-        ctypes.byref(cnfine),
-        ctypes.byref(result),
-    )
+    libspice.gftfov_c(inst, target, tshape, tframe, abcorr, obsrvr, step,
+                      ctypes.byref(cnfine), ctypes.byref(result))
     return result
 
 
-@spice_error_check
+@spiceErrorCheck
 def gfudb(udfuns, udfunb, step, cnfine, result):
     """
     Perform a GF search on a user defined boolean quantity.
@@ -7462,7 +6721,7 @@ def gfudb(udfuns, udfunb, step, cnfine, result):
     libspice.gfudb_c(udfuns, udfunb, step, ctypes.byref(cnfine), ctypes.byref(result))
 
 
-@spice_error_check
+@spiceErrorCheck
 def gfuds(udfuns, udqdec, relate, refval, adjust, step, nintvls, cnfine, result):
     """
     Perform a GF search on a user defined scalar quantity.
@@ -7490,27 +6749,17 @@ def gfuds(udfuns, udqdec, relate, refval, adjust, step, nintvls, cnfine, result)
     :return: result
     :rtype: spiceypy.utils.support_types.SpiceCell
     """
-    relate = stypes.string_to_char_p(relate)
-    refval = ctypes.c_double(refval)
-    adjust = ctypes.c_double(adjust)
-    step = ctypes.c_double(step)
+    relate  = stypes.stringToCharP(relate)
+    refval  = ctypes.c_double(refval)
+    adjust  = ctypes.c_double(adjust)
+    step    = ctypes.c_double(step)
     nintvls = ctypes.c_int(nintvls)
-    libspice.gfuds_c(
-        udfuns,
-        udqdec,
-        relate,
-        refval,
-        adjust,
-        step,
-        nintvls,
-        ctypes.byref(cnfine),
-        ctypes.byref(result),
-    )
+    libspice.gfuds_c(udfuns, udqdec, relate, refval, adjust, step, nintvls, ctypes.byref(cnfine), ctypes.byref(result))
     return result
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def gipool(name, start, room):
     """
     Return the integer value of a kernel variable from the kernel pool.
@@ -7526,18 +6775,19 @@ def gipool(name, start, room):
     :return: Values associated with name.
     :rtype: list of int
     """
-    name = stypes.string_to_char_p(name)
+    name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
-    ivals = stypes.empty_int_vector(room)
+    ivals = stypes.emptyIntVector(room)
     room = ctypes.c_int(room)
     n = ctypes.c_int()
     found = ctypes.c_int()
-    libspice.gipool_c(name, start, room, ctypes.byref(n), ivals, ctypes.byref(found))
-    return stypes.c_vector_to_python(ivals)[0 : n.value], bool(found.value)
+    libspice.gipool_c(name, start, room, ctypes.byref(n), ivals,
+                      ctypes.byref(found))
+    return stypes.cVectorToPython(ivals)[0:n.value], bool(found.value)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def gnpool(name, start, room, lenout=_default_len_out):
     """
     Return names of kernel variables matching a specified template.
@@ -7555,24 +6805,23 @@ def gnpool(name, start, room, lenout=_default_len_out):
     :return: Kernel pool variables whose names match name.
     :rtype: list of str
     """
-    name = stypes.string_to_char_p(name)
+    name = stypes.stringToCharP(name)
     start = ctypes.c_int(start)
-    kvars = stypes.empty_char_array(y_len=room, x_len=lenout)
+    kvars = stypes.emptyCharArray(yLen=room, xLen=lenout)
     room = ctypes.c_int(room)
     lenout = ctypes.c_int(lenout)
     n = ctypes.c_int()
     found = ctypes.c_int()
-    libspice.gnpool_c(
-        name, start, room, lenout, ctypes.byref(n), kvars, ctypes.byref(found)
-    )
-    return stypes.c_vector_to_python(kvars)[0 : n.value], bool(found.value)
+    libspice.gnpool_c(name, start, room, lenout, ctypes.byref(n), kvars,
+                      ctypes.byref(found))
+    return stypes.cVectorToPython(kvars)[0:n.value], bool(found.value)
 
 
 ################################################################################
 # H
 
 
-@spice_error_check
+@spiceErrorCheck
 def halfpi():
     """
     Return half the value of pi (the ratio of the circumference of
@@ -7586,35 +6835,35 @@ def halfpi():
     return libspice.halfpi_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def hrmint(xvals, yvals, x):
     """
     Evaluate a Hermite interpolating polynomial at a specified
     abscissa value.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/hrmint_c.html
-
+    
     :param xvals: Abscissa values.
     :type xvals: Array of floats
     :param yvals: Ordinate and derivative values.
     :type yvals: Array of floats
     :param x: Point at which to interpolate the polynomial.
     :type x: int
-    :return: Interpolated function value at x and the Interpolated function's derivative at x
+    :return: Interpolated function value at x and the Interpolated function's derivative at x  
     :rtype: tuple
     """
-    work = stypes.empty_double_vector(int(2 * len(yvals) + 1))
-    n = ctypes.c_int(len(xvals))
-    xvals = stypes.to_double_vector(xvals)
-    yvals = stypes.to_double_vector(yvals)
-    x = ctypes.c_double(x)
-    f = ctypes.c_double(0)
-    df = ctypes.c_double(0)
+    work  = stypes.emptyDoubleVector(int(2*len(yvals)+1))
+    n     = ctypes.c_int(len(xvals))
+    xvals = stypes.toDoubleVector(xvals)
+    yvals = stypes.toDoubleVector(yvals)
+    x     = ctypes.c_double(x)
+    f     = ctypes.c_double(0)
+    df    = ctypes.c_double(0)
     libspice.hrmint_c(n, xvals, yvals, x, work, f, df)
     return f.value, df.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def hx2dp(string):
     """
     Convert a string representing a double precision number in a
@@ -7628,23 +6877,24 @@ def hx2dp(string):
     :return: Double precision value to be returned, Or Error Message.
     :rtype: float or str
     """
-    string = stypes.string_to_char_p(string)
+    string = stypes.stringToCharP(string)
     lenout = ctypes.c_int(80)
-    errmsg = stypes.string_to_char_p(lenout)
+    errmsg = stypes.stringToCharP(lenout)
     number = ctypes.c_double()
     error = ctypes.c_int()
-    libspice.hx2dp_c(string, lenout, ctypes.byref(number), ctypes.byref(error), errmsg)
+    libspice.hx2dp_c(string, lenout, ctypes.byref(number), ctypes.byref(error),
+                     errmsg)
     if not error.value:
         return number.value
     else:
-        return stypes.to_python_string(errmsg)
+        return stypes.toPythonString(errmsg)
 
 
 ################################################################################
 # I
 
 
-@spice_error_check
+@spiceErrorCheck
 def ident():
     """
     This routine returns the 3x3 identity matrix.
@@ -7654,12 +6904,12 @@ def ident():
     :return: The 3x3 identity matrix.
     :rtype: 3x3-Element Array of floats
     """
-    matrix = stypes.empty_double_matrix()
+    matrix = stypes.emptyDoubleMatrix()
     libspice.ident_c(matrix)
-    return stypes.c_matrix_to_numpy(matrix)
+    return stypes.cMatrixToNumpy(matrix)
 
 
-@spice_error_check
+@spiceErrorCheck
 def illum(target, et, abcorr, obsrvr, spoint):
     """
     Deprecated: This routine has been superseded by the CSPICE
@@ -7687,28 +6937,20 @@ def illum(target, et, abcorr, obsrvr, spoint):
             and Emission angle at the surface point.
     :rtype: tuple
     """
-    target = stypes.string_to_char_p(target)
+    target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    spoint = stypes.to_double_vector(spoint)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    spoint = stypes.toDoubleVector(spoint)
     phase = ctypes.c_double(0)
     solar = ctypes.c_double(0)
     emissn = ctypes.c_double(0)
-    libspice.illum_c(
-        target,
-        et,
-        abcorr,
-        obsrvr,
-        spoint,
-        ctypes.byref(phase),
-        ctypes.byref(solar),
-        ctypes.byref(emissn),
-    )
+    libspice.illum_c(target, et, abcorr, obsrvr, spoint, ctypes.byref(phase),
+                     ctypes.byref(solar), ctypes.byref(emissn))
     return phase.value, solar.value, emissn.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def illumf(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint):
     """
     Compute the illumination angles---phase, incidence, and
@@ -7721,13 +6963,13 @@ def illumf(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint):
     provided by DSK files, or by a reference ellipsoid.
 
     The illumination source is a specified ephemeris object.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/illumf_c.html
-
+    
     :param method: Computation method.
     :type method: str
     :param target: Name of target body.
-    :type target: str
+    :type target: str 
     :param ilusrc: Name of illumination source.
     :type ilusrc: str
     :param et: Epoch in ephemeris seconds past J2000.
@@ -7741,71 +6983,51 @@ def illumf(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint):
     :param spoint: Body-fixed coordinates of a target surface point.
     :type spoint: 3-Element Array of floats
     :return: Target surface point epoch, Vector from observer to target
-     surface point, Phase angle at the surface point, Source incidence
-     angle at the surface point, Emission angle at the surface point,
+     surface point, Phase angle at the surface point, Source incidence 
+     angle at the surface point, Emission angle at the surface point, 
      Visibility flag, Illumination flag
     :rtype: tuple
     """
-    method = stypes.string_to_char_p(method)
-    target = stypes.string_to_char_p(target)
-    ilusrc = stypes.string_to_char_p(ilusrc)
-    et = ctypes.c_double(et)
-    fixref = stypes.string_to_char_p(fixref)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    spoint = stypes.to_double_vector(spoint)
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
+    ilusrc = stypes.stringToCharP(ilusrc)
+    et     = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    spoint = stypes.toDoubleVector(spoint)
     trgepc = ctypes.c_double(0)
-    srfvec = stypes.empty_double_vector(3)
-    phase = ctypes.c_double(0)
+    srfvec = stypes.emptyDoubleVector(3)
+    phase  = ctypes.c_double(0)
     incdnc = ctypes.c_double(0)
     emissn = ctypes.c_double(0)
     visibl = ctypes.c_int()
-    lit = ctypes.c_int()
-    libspice.illumf_c(
-        method,
-        target,
-        ilusrc,
-        et,
-        fixref,
-        abcorr,
-        obsrvr,
-        spoint,
-        ctypes.byref(trgepc),
-        srfvec,
-        ctypes.byref(phase),
-        ctypes.byref(incdnc),
-        ctypes.byref(emissn),
-        ctypes.byref(visibl),
-        ctypes.byref(lit),
-    )
-    return (
-        trgepc.value,
-        stypes.c_vector_to_python(srfvec),
-        phase.value,
-        incdnc.value,
-        emissn.value,
-        bool(visibl.value),
-        bool(lit.value),
-    )
+    lit    = ctypes.c_int()
+    libspice.illumf_c(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint,
+                      ctypes.byref(trgepc), srfvec, ctypes.byref(phase),
+                      ctypes.byref(incdnc), ctypes.byref(emissn),
+                      ctypes.byref(visibl), ctypes.byref(lit))
+    return trgepc.value, stypes.cVectorToPython(srfvec), \
+           phase.value, incdnc.value, emissn.value, bool(visibl.value), bool(lit.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def illumg(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint):
     """
-    Find the illumination angles (phase, incidence, and
-    emission) at a specified surface point of a target body.
-
-    The surface of the target body may be represented by a triaxial
-    ellipsoid or by topographic data provided by DSK files.
-
+    Find the illumination angles (phase, incidence, and 
+    emission) at a specified surface point of a target body. 
+ 
+    The surface of the target body may be represented by a triaxial 
+    ellipsoid or by topographic data provided by DSK files. 
+ 
     The illumination source is a specified ephemeris object.
     param method: Computation method.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/illumg_c.html
-
+    
     :type method: str
     :param target: Name of target body.
-    :type target: str
+    :type target: str 
     :param ilusrc: Name of illumination source.
     :type ilusrc: str
     :param et: Epoch in ephemeris seconds past J2000.
@@ -7819,48 +7041,31 @@ def illumg(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint):
     :param spoint: Body-fixed coordinates of a target surface point.
     :type spoint: 3-Element Array of floats
     :return: Target surface point epoch, Vector from observer to target
-     surface point, Phase angle at the surface point, Source incidence
-     angle at the surface point, Emission angle at the surface point,
+     surface point, Phase angle at the surface point, Source incidence 
+     angle at the surface point, Emission angle at the surface point, 
     :rtype: tuple
     """
-    method = stypes.string_to_char_p(method)
-    target = stypes.string_to_char_p(target)
-    ilusrc = stypes.string_to_char_p(ilusrc)
-    et = ctypes.c_double(et)
-    fixref = stypes.string_to_char_p(fixref)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    spoint = stypes.to_double_vector(spoint)
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
+    ilusrc = stypes.stringToCharP(ilusrc)
+    et     = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    spoint = stypes.toDoubleVector(spoint)
     trgepc = ctypes.c_double(0)
-    srfvec = stypes.empty_double_vector(3)
-    phase = ctypes.c_double(0)
+    srfvec = stypes.emptyDoubleVector(3)
+    phase  = ctypes.c_double(0)
     incdnc = ctypes.c_double(0)
     emissn = ctypes.c_double(0)
-    libspice.illumg_c(
-        method,
-        target,
-        ilusrc,
-        et,
-        fixref,
-        abcorr,
-        obsrvr,
-        spoint,
-        ctypes.byref(trgepc),
-        srfvec,
-        ctypes.byref(phase),
-        ctypes.byref(incdnc),
-        ctypes.byref(emissn),
-    )
-    return (
-        trgepc.value,
-        stypes.c_vector_to_python(srfvec),
-        phase.value,
-        incdnc.value,
-        emissn.value,
-    )
+    libspice.illumg_c(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint,
+                      ctypes.byref(trgepc), srfvec, ctypes.byref(phase),
+                      ctypes.byref(incdnc), ctypes.byref(emissn))
+    return trgepc.value, stypes.cVectorToPython(srfvec), \
+           phase.value, incdnc.value, emissn.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
     """
     Find the illumination angles (phase, solar incidence, and
@@ -7889,43 +7094,28 @@ def ilumin(method, target, et, fixref, abcorr, obsrvr, spoint):
      angle at the surface point.
     :rtype: tuple
     """
-    method = stypes.string_to_char_p(method)
-    target = stypes.string_to_char_p(target)
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
-    fixref = stypes.string_to_char_p(fixref)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    spoint = stypes.to_double_vector(spoint)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    spoint = stypes.toDoubleVector(spoint)
     trgepc = ctypes.c_double(0)
-    srfvec = stypes.empty_double_vector(3)
+    srfvec = stypes.emptyDoubleVector(3)
     phase = ctypes.c_double(0)
     solar = ctypes.c_double(0)
     emissn = ctypes.c_double(0)
-    libspice.ilumin_c(
-        method,
-        target,
-        et,
-        fixref,
-        abcorr,
-        obsrvr,
-        spoint,
-        ctypes.byref(trgepc),
-        srfvec,
-        ctypes.byref(phase),
-        ctypes.byref(solar),
-        ctypes.byref(emissn),
-    )
-    return (
-        trgepc.value,
-        stypes.c_vector_to_python(srfvec),
-        phase.value,
-        solar.value,
-        emissn.value,
-    )
+    libspice.ilumin_c(method, target, et, fixref, abcorr, obsrvr, spoint,
+                      ctypes.byref(trgepc),
+                      srfvec, ctypes.byref(phase), ctypes.byref(solar),
+                      ctypes.byref(emissn))
+    return trgepc.value, stypes.cVectorToPython(
+            srfvec), phase.value, solar.value, emissn.value
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def inedpl(a, b, c, plane):
     """
     Find the intersection of a triaxial ellipsoid and a plane.
@@ -7943,19 +7133,18 @@ def inedpl(a, b, c, plane):
     :return: Intersection ellipse.
     :rtype: spiceypy.utils.support_types.Ellipse
     """
-    assert isinstance(plane, stypes.Plane)
+    assert (isinstance(plane, stypes.Plane))
     ellipse = stypes.Ellipse()
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
     c = ctypes.c_double(c)
     found = ctypes.c_int()
-    libspice.inedpl_c(
-        a, b, c, ctypes.byref(plane), ctypes.byref(ellipse), ctypes.byref(found)
-    )
+    libspice.inedpl_c(a, b, c, ctypes.byref(plane), ctypes.byref(ellipse),
+                      ctypes.byref(found))
     return ellipse, bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def inelpl(ellips, plane):
     """
     Find the intersection of an ellipse and a plane.
@@ -7972,18 +7161,17 @@ def inelpl(ellips, plane):
             Point 2.
     :rtype: tuple
     """
-    assert isinstance(plane, stypes.Plane)
-    assert isinstance(ellips, stypes.Ellipse)
+    assert (isinstance(plane, stypes.Plane))
+    assert (isinstance(ellips, stypes.Ellipse))
     nxpts = ctypes.c_int()
-    xpt1 = stypes.empty_double_vector(3)
-    xpt2 = stypes.empty_double_vector(3)
-    libspice.inelpl_c(
-        ctypes.byref(ellips), ctypes.byref(plane), ctypes.byref(nxpts), xpt1, xpt2
-    )
-    return nxpts.value, stypes.c_vector_to_python(xpt1), stypes.c_vector_to_python(xpt2)
+    xpt1 = stypes.emptyDoubleVector(3)
+    xpt2 = stypes.emptyDoubleVector(3)
+    libspice.inelpl_c(ctypes.byref(ellips), ctypes.byref(plane),
+                      ctypes.byref(nxpts), xpt1, xpt2)
+    return nxpts.value, stypes.cVectorToPython(xpt1), stypes.cVectorToPython(xpt2)
 
 
-@spice_error_check
+@spiceErrorCheck
 def inrypl(vertex, direct, plane):
     """
     Find the intersection of a ray and a plane.
@@ -8002,16 +7190,17 @@ def inrypl(vertex, direct, plane):
             if nxpts == 1.
     :rtype: tuple
     """
-    assert isinstance(plane, stypes.Plane)
-    vertex = stypes.to_double_vector(vertex)
-    direct = stypes.to_double_vector(direct)
+    assert (isinstance(plane, stypes.Plane))
+    vertex = stypes.toDoubleVector(vertex)
+    direct = stypes.toDoubleVector(direct)
     nxpts = ctypes.c_int()
-    xpt = stypes.empty_double_vector(3)
-    libspice.inrypl_c(vertex, direct, ctypes.byref(plane), ctypes.byref(nxpts), xpt)
-    return nxpts.value, stypes.c_vector_to_python(xpt)
+    xpt = stypes.emptyDoubleVector(3)
+    libspice.inrypl_c(vertex, direct, ctypes.byref(plane), ctypes.byref(nxpts),
+                      xpt)
+    return nxpts.value, stypes.cVectorToPython(xpt)
 
 
-@spice_error_check
+@spiceErrorCheck
 def insrtc(item, inset):
     """
     Insert an item into a character set.
@@ -8024,15 +7213,15 @@ def insrtc(item, inset):
     :type inset: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(inset, stypes.SpiceCell)
-    if stypes.is_iterable(item):
+    if stypes.isiterable(item):
         for c in item:
-            libspice.insrtc_c(stypes.string_to_char_p(c), ctypes.byref(inset))
+            libspice.insrtc_c(stypes.stringToCharP(c), ctypes.byref(inset))
     else:
-        item = stypes.string_to_char_p(item)
+        item = stypes.stringToCharP(item)
         libspice.insrtc_c(item, ctypes.byref(inset))
 
 
-@spice_error_check
+@spiceErrorCheck
 def insrtd(item, inset):
     """
     Insert an item into a double precision set.
@@ -8053,7 +7242,7 @@ def insrtd(item, inset):
         libspice.insrtd_c(item, ctypes.byref(inset))
 
 
-@spice_error_check
+@spiceErrorCheck
 def insrti(item, inset):
     """
     Insert an item into an integer set.
@@ -8074,7 +7263,7 @@ def insrti(item, inset):
         libspice.insrti_c(item, ctypes.byref(inset))
 
 
-@spice_error_check
+@spiceErrorCheck
 def inter(a, b):
     """
     Intersect two sets of any data type to form a third set.
@@ -8105,7 +7294,7 @@ def inter(a, b):
     return c
 
 
-@spice_error_check
+@spiceErrorCheck
 def intmax():
     """
     Return the value of the largest (positive) number representable
@@ -8119,7 +7308,7 @@ def intmax():
     return libspice.intmax_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def intmin():
     """
     Return the value of the smallest (negative) number representable
@@ -8133,7 +7322,7 @@ def intmin():
     return libspice.intmin_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def invert(m):
     """
     Generate the inverse of a 3x3 matrix.
@@ -8145,13 +7334,13 @@ def invert(m):
     :return: Inverted matrix (m1)^-1
     :rtype: 3x3-Element Array of floats
     """
-    m = stypes.to_double_matrix(m)
-    mout = stypes.empty_double_matrix()
+    m = stypes.toDoubleMatrix(m)
+    mout = stypes.emptyDoubleMatrix()
     libspice.invert_c(m, mout)
-    return stypes.c_matrix_to_numpy(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def invort(m):
     """
     Given a matrix, construct the matrix whose rows are the
@@ -8165,13 +7354,13 @@ def invort(m):
     :return: m after transposition and scaling of rows.
     :rtype: 3x3-Element Array of floats
     """
-    m = stypes.to_double_matrix(m)
-    mout = stypes.empty_double_matrix()
+    m = stypes.toDoubleMatrix(m)
+    mout = stypes.emptyDoubleMatrix()
     libspice.invort_c(m, mout)
-    return stypes.c_matrix_to_numpy(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def isordv(array, n):
     """
     Determine whether an array of n items contains the integers
@@ -8188,12 +7377,12 @@ def isordv(array, n):
             integers 0 through n-1, otherwise it returns False.
     :rtype: bool
     """
-    array = stypes.to_int_vector(array)
+    array = stypes.toIntVector(array)
     n = ctypes.c_int(n)
     return bool(libspice.isordv_c(array, n))
 
 
-@spice_error_check
+@spiceErrorCheck
 def isrchc(value, ndim, lenvals, array):
     """
     Search for a given value within a character string array. Return
@@ -8215,14 +7404,14 @@ def isrchc(value, ndim, lenvals, array):
             if the value is not found.
     :rtype: int
     """
-    value = stypes.string_to_char_p(value)
-    array = stypes.list_to_char_array_ptr(array, x_len=lenvals, y_len=ndim)
+    value = stypes.stringToCharP(value)
+    array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=ndim)
     ndim = ctypes.c_int(ndim)
     lenvals = ctypes.c_int(lenvals)
     return libspice.isrchc_c(value, ndim, lenvals, array)
 
 
-@spice_error_check
+@spiceErrorCheck
 def isrchd(value, ndim, array):
     """
     Search for a given value within a double precision array. Return
@@ -8244,11 +7433,11 @@ def isrchd(value, ndim, array):
     """
     value = ctypes.c_double(value)
     ndim = ctypes.c_int(ndim)
-    array = stypes.to_double_vector(array)
+    array = stypes.toDoubleVector(array)
     return libspice.isrchd_c(value, ndim, array)
 
 
-@spice_error_check
+@spiceErrorCheck
 def isrchi(value, ndim, array):
     """
     Search for a given value within an integer array. Return
@@ -8270,11 +7459,11 @@ def isrchi(value, ndim, array):
     """
     value = ctypes.c_int(value)
     ndim = ctypes.c_int(ndim)
-    array = stypes.to_int_vector(array)
+    array = stypes.toIntVector(array)
     return libspice.isrchi_c(value, ndim, array)
 
 
-@spice_error_check
+@spiceErrorCheck
 def isrot(m, ntol, dtol):
     """
     Indicate whether a 3x3 matrix is a rotation matrix.
@@ -8292,13 +7481,13 @@ def isrot(m, ntol, dtol):
     :return: True if and only if m is a rotation matrix.
     :rtype: bool
     """
-    m = stypes.to_double_matrix(m)
+    m = stypes.toDoubleMatrix(m)
     ntol = ctypes.c_double(ntol)
     dtol = ctypes.c_double(dtol)
     return bool(libspice.isrot_c(m, ntol, dtol))
 
 
-@spice_error_check
+@spiceErrorCheck
 def iswhsp(string):
     """
     Return a boolean value indicating whether a string contains
@@ -8313,7 +7502,7 @@ def iswhsp(string):
             only white space characters; otherwise it returns the value False.
     :rtype: bool
     """
-    string = stypes.string_to_char_p(string)
+    string = stypes.stringToCharP(string)
     return bool(libspice.iswhsp_c(string))
 
 
@@ -8321,7 +7510,7 @@ def iswhsp(string):
 # J
 
 
-@spice_error_check
+@spiceErrorCheck
 def j1900():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j1900_c.html
@@ -8332,7 +7521,7 @@ def j1900():
     return libspice.j1900_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def j1950():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j1950_c.html
@@ -8343,7 +7532,7 @@ def j1950():
     return libspice.j1950_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def j2000():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j2000_c.html
@@ -8354,7 +7543,7 @@ def j2000():
     return libspice.j2000_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def j2100():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/j2100_c.html
@@ -8365,7 +7554,7 @@ def j2100():
     return libspice.j2100_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def jyear():
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/jyear_c.html
@@ -8380,7 +7569,7 @@ def jyear():
 # K
 
 
-@spice_error_check
+@spiceErrorCheck
 def kclear():
     """
     Clear the KEEPER subsystem: unload all kernels, clear the kernel
@@ -8393,15 +7582,9 @@ def kclear():
     libspice.kclear_c()
 
 
-@spice_error_check
-@spice_found_exception_thrower
-def kdata(
-    which,
-    kind,
-    fillen=_default_len_out,
-    typlen=_default_len_out,
-    srclen=_default_len_out,
-):
+@spiceErrorCheck
+@spiceFoundExceptionThrower
+def kdata(which, kind, fillen=_default_len_out, typlen=_default_len_out, srclen=_default_len_out):
     """
     Return data for the nth kernel that is among a list of specified
     kernel types.
@@ -8425,38 +7608,23 @@ def kdata(
     :rtype: tuple
     """
     which = ctypes.c_int(which)
-    kind = stypes.string_to_char_p(kind)
+    kind = stypes.stringToCharP(kind)
     fillen = ctypes.c_int(fillen)
     typlen = ctypes.c_int(typlen)
     srclen = ctypes.c_int(srclen)
-    file = stypes.string_to_char_p(fillen)
-    filtyp = stypes.string_to_char_p(typlen)
-    source = stypes.string_to_char_p(srclen)
+    file = stypes.stringToCharP(fillen)
+    filtyp = stypes.stringToCharP(typlen)
+    source = stypes.stringToCharP(srclen)
     handle = ctypes.c_int()
     found = ctypes.c_int()
-    libspice.kdata_c(
-        which,
-        kind,
-        fillen,
-        typlen,
-        srclen,
-        file,
-        filtyp,
-        source,
-        ctypes.byref(handle),
-        ctypes.byref(found),
-    )
-    return (
-        stypes.to_python_string(file),
-        stypes.to_python_string(filtyp),
-        stypes.to_python_string(source),
-        handle.value,
-        bool(found.value),
-    )
+    libspice.kdata_c(which, kind, fillen, typlen, srclen, file, filtyp, source,
+                     ctypes.byref(handle), ctypes.byref(found))
+    return stypes.toPythonString(file), stypes.toPythonString(
+            filtyp), stypes.toPythonString(source), handle.value, bool(found.value)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def kinfo(file, typlen=_default_len_out, srclen=_default_len_out):
     """
     Return information about a loaded kernel specified by name.
@@ -8477,24 +7645,19 @@ def kinfo(file, typlen=_default_len_out, srclen=_default_len_out):
     """
     typlen = ctypes.c_int(typlen)
     srclen = ctypes.c_int(srclen)
-    file = stypes.string_to_char_p(file)
-    filtyp = stypes.string_to_char_p(" " * typlen.value)
-    source = stypes.string_to_char_p(" " * srclen.value)
+    file = stypes.stringToCharP(file)
+    filtyp = stypes.stringToCharP(" " * typlen.value)
+    source = stypes.stringToCharP(" " * srclen.value)
     handle = ctypes.c_int()
     found = ctypes.c_int()
-    libspice.kinfo_c(
-        file, typlen, srclen, filtyp, source, ctypes.byref(handle), ctypes.byref(found)
-    )
-    return (
-        stypes.to_python_string(filtyp),
-        stypes.to_python_string(source),
-        handle.value,
-        bool(found.value),
-    )
+    libspice.kinfo_c(file, typlen, srclen, filtyp, source, ctypes.byref(handle),
+                     ctypes.byref(found))
+    return stypes.toPythonString(filtyp), stypes.toPythonString(
+            source), handle.value, bool(found.value)
 
 
-@spice_error_check
-def kplfrm(frmcls, out_cell=None):
+@spiceErrorCheck
+def kplfrm(frmcls, outCell=None):
     """
     Return a SPICE set containing the frame IDs of all reference
     frames of a given class having specifications in the kernel pool.
@@ -8503,19 +7666,19 @@ def kplfrm(frmcls, out_cell=None):
 
     :param frmcls: Frame class.
     :type frmcls: int
-    :param out_cell: Optional output Spice Int Cell
-    :type out_cell: spiceypy.utils.support_types.SpiceCell
+    :param outCell: Optional output Spice Int Cell
+    :type outCell: spiceypy.utils.support_types.SpiceCell
     :return: Set of ID codes of frames of the specified class.
     :rtype: spiceypy.utils.support_types.SpiceCell
     """
-    if not out_cell:
-        out_cell = stypes.SPICEINT_CELL(1000)
+    if not outCell:
+        outCell = stypes.SPICEINT_CELL(1000)
     frmcls = ctypes.c_int(frmcls)
-    libspice.kplfrm_c(frmcls, ctypes.byref(out_cell))
-    return out_cell
+    libspice.kplfrm_c(frmcls, ctypes.byref(outCell))
+    return outCell
 
 
-@spice_error_check
+@spiceErrorCheck
 def ktotal(kind):
     """
     Return the current number of kernels that have been loaded
@@ -8528,23 +7691,15 @@ def ktotal(kind):
     :return: The number of kernels of type kind.
     :rtype: int
     """
-    kind = stypes.string_to_char_p(kind)
+    kind = stypes.stringToCharP(kind)
     count = ctypes.c_int()
     libspice.ktotal_c(kind, ctypes.byref(count))
     return count.value
 
 
-@spice_error_check
-@spice_found_exception_thrower
-def kxtrct(
-    keywd,
-    terms,
-    nterms,
-    instring,
-    termlen=_default_len_out,
-    stringlen=_default_len_out,
-    substrlen=_default_len_out,
-):
+@spiceErrorCheck
+@spiceFoundExceptionThrower
+def kxtrct(keywd, terms, nterms, instring, termlen=_default_len_out, stringlen=_default_len_out, substrlen=_default_len_out):
     """
     Locate a keyword in a string and extract the substring from
     the beginning of the first word following the keyword to the
@@ -8573,41 +7728,28 @@ def kxtrct(
     """
     assert nterms <= len(terms)
     # Python strings and string arrays => to C char pointers
-    keywd = stypes.string_to_char_p(keywd)
-    terms = stypes.list_to_char_array_ptr(
-        [s[: termlen - 1] for s in terms[:nterms]], x_len=termlen, y_len=nterms
-    )
-    instring = stypes.string_to_char_p(instring[: stringlen - 1], inlen=stringlen)
-    substr = stypes.string_to_char_p(substrlen)
+    keywd = stypes.stringToCharP(keywd)
+    terms = stypes.listToCharArrayPtr([s[:termlen-1] for s in terms[:nterms]],xLen=termlen,yLen=nterms)
+    instring = stypes.stringToCharP(instring[:stringlen-1],inlen=stringlen)
+    substr = stypes.stringToCharP(substrlen)
     # Python ints => to C ints
     termlen = ctypes.c_int(termlen)
     nterms = ctypes.c_int(nterms)
     stringlen = ctypes.c_int(stringlen)
     substrlen = ctypes.c_int(substrlen)
     found = ctypes.c_int()
-    libspice.kxtrct_c(
-        keywd,
-        termlen,
-        terms,
-        nterms,
-        stringlen,
-        substrlen,
-        instring,
-        ctypes.byref(found),
-        substr,
-    )
-    return (
-        stypes.to_python_string(instring),
-        stypes.to_python_string(substr),
-        bool(found.value),
-    )
+    libspice.kxtrct_c(keywd, termlen, terms, nterms,
+                      stringlen, substrlen, instring, ctypes.byref(found),
+                      substr)
+    return stypes.toPythonString(instring), stypes.toPythonString(
+            substr), bool(found.value)
 
 
 ################################################################################
 # L
 
 
-@spice_error_check
+@spiceErrorCheck
 def lastnb(string):
     """
     Return the zero based index of the last non-blank character in
@@ -8619,11 +7761,11 @@ def lastnb(string):
     :type string: str
     :return: :rtype:
     """
-    string = stypes.string_to_char_p(string)
+    string = stypes.stringToCharP(string)
     return libspice.lastnb_c(string)
 
 
-@spice_error_check
+@spiceErrorCheck
 def latcyl(radius, lon, lat):
     """
     Convert from latitudinal coordinates to cylindrical coordinates.
@@ -8643,13 +7785,12 @@ def latcyl(radius, lon, lat):
     r = ctypes.c_double()
     lonc = ctypes.c_double()
     z = ctypes.c_double()
-    libspice.latcyl_c(
-        radius, lon, lat, ctypes.byref(r), ctypes.byref(lonc), ctypes.byref(z)
-    )
+    libspice.latcyl_c(radius, lon, lat, ctypes.byref(r), ctypes.byref(lonc),
+                      ctypes.byref(z))
     return r.value, lonc.value, z.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def latrec(radius, longitude, latitude):
     """
     Convert from latitudinal coordinates to rectangular coordinates.
@@ -8668,12 +7809,12 @@ def latrec(radius, longitude, latitude):
     radius = ctypes.c_double(radius)
     longitude = ctypes.c_double(longitude)
     latitude = ctypes.c_double(latitude)
-    rectan = stypes.empty_double_vector(3)
+    rectan = stypes.emptyDoubleVector(3)
     libspice.latrec_c(radius, longitude, latitude, rectan)
-    return stypes.c_vector_to_python(rectan)
+    return stypes.cVectorToPython(rectan)
 
 
-@spice_error_check
+@spiceErrorCheck
 def latsph(radius, lon, lat):
     """
     Convert from latitudinal coordinates to spherical coordinates.
@@ -8692,48 +7833,47 @@ def latsph(radius, lon, lat):
     rho = ctypes.c_double()
     colat = ctypes.c_double()
     lons = ctypes.c_double()
-    libspice.latsph_c(
-        radius, lon, lat, ctypes.byref(rho), ctypes.byref(colat), ctypes.byref(lons)
-    )
+    libspice.latsph_c(radius, lon, lat, ctypes.byref(rho), ctypes.byref(colat),
+                      ctypes.byref(lons))
     return rho.value, colat.value, lons.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def latsrf(method, target, et, fixref, lonlat):
     """
-    Map array of planetocentric longitude/latitude coordinate pairs
-    to surface points on a specified target body.
-
-    The surface of the target body may be represented by a triaxial
+    Map array of planetocentric longitude/latitude coordinate pairs 
+    to surface points on a specified target body. 
+ 
+    The surface of the target body may be represented by a triaxial 
     ellipsoid or by topographic data provided by DSK files.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/latsrf_c.html
-
+    
     :param method: Computation method.
     :type method: str
     :param target: Name of target body.
     :type target: str
-    :param et: Epoch in TDB seconds past J2000 TDB.
+    :param et: Epoch in TDB seconds past J2000 TDB. 
     :type et: float
     :param fixref: Body-fixed, body-centered target body frame.
     :type fixref: str
     :param lonlat: Array of longitude/latitude coordinate pairs.
     :type lonlat: A 2xM-Element Array of floats
-    :return: Array of surface points.
+    :return: Array of surface points. 
     :rtype: A 3xM-Element Array of floats
     """
-    method = stypes.string_to_char_p(method)
-    target = stypes.string_to_char_p(target)
-    et = ctypes.c_double(et)
-    fixref = stypes.string_to_char_p(fixref)
-    npts = ctypes.c_int(len(lonlat))
-    lonlat = stypes.to_double_matrix(lonlat)
-    srfpts = stypes.empty_double_matrix(3, npts.value)
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
+    et     = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    npts   = ctypes.c_int(len(lonlat))
+    lonlat = stypes.toDoubleMatrix(lonlat)
+    srfpts = stypes.emptyDoubleMatrix(3, npts.value)
     libspice.latsrf_c(method, target, et, fixref, npts, lonlat, srfpts)
-    return stypes.c_matrix_to_numpy(srfpts)
+    return stypes.cMatrixToNumpy(srfpts)
 
 
-@spice_error_check
+@spiceErrorCheck
 def lcase(instr, lenout=_default_len_out):
     """
     Convert the characters in a string to lowercase.
@@ -8747,14 +7887,14 @@ def lcase(instr, lenout=_default_len_out):
     :return: Output string, all lowercase.
     :rtype: str
     """
-    instr = stypes.string_to_char_p(instr)
+    instr = stypes.stringToCharP(instr)
     lenout = ctypes.c_int(lenout)
-    outstr = stypes.string_to_char_p(lenout)
+    outstr = stypes.stringToCharP(lenout)
     libspice.lcase_c(instr, lenout, outstr)
-    return stypes.to_python_string(outstr)
+    return stypes.toPythonString(outstr)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ldpool(filename):
     """
     Load the variables contained in a NAIF ASCII kernel file into the
@@ -8765,38 +7905,24 @@ def ldpool(filename):
     :param filename: Name of the kernel file.
     :type filename: str
     """
-    filename = stypes.string_to_char_p(filename)
+    filename = stypes.stringToCharP(filename)
     libspice.ldpool_c(filename)
 
 
-@spice_error_check
-def limbpt(
-    method,
-    target,
-    et,
-    fixref,
-    abcorr,
-    corloc,
-    obsrvr,
-    refvec,
-    rolstp,
-    ncuts,
-    schstp,
-    soltol,
-    maxn,
-):
+@spiceErrorCheck
+def limbpt(method, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp, ncuts, schstp, soltol, maxn):
     """
-    Find limb points on a target body. The limb is the set of points
-    of tangency on the target of rays emanating from the observer.
-    The caller specifies half-planes bounded by the observer-target
-    center vector in which to search for limb points.
-
-    The surface of the target body may be represented either by a
-    triaxial ellipsoid or by topographic data.
-
+    Find limb points on a target body. The limb is the set of points 
+    of tangency on the target of rays emanating from the observer. 
+    The caller specifies half-planes bounded by the observer-target 
+    center vector in which to search for limb points. 
+ 
+    The surface of the target body may be represented either by a 
+    triaxial ellipsoid or by topographic data. 
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/limbpt_c.html
-
-    :param method: Computation method.
+    
+    :param method: Computation method. 
     :type method: str
     :param target: Name of target body.
     :type target: str
@@ -8804,7 +7930,7 @@ def limbpt(
     :type et: float
     :param fixref: Body-fixed, body-centered target body frame.
     :type fixref: str
-    :param abcorr: Aberration correction.
+    :param abcorr: Aberration correction. 
     :type abcorr: str
     :param corloc: Aberration correction locus.
     :type corloc: str
@@ -8812,73 +7938,53 @@ def limbpt(
     :type obsrvr: str
     :param refvec: Reference vector for cutting half-planes.
     :type refvec: 3-Element Array of floats
-    :param rolstp: Roll angular step for cutting half-planes.
+    :param rolstp: Roll angular step for cutting half-planes. 
     :type rolstp: float
-    :param ncuts: Number of cutting half-planes.
+    :param ncuts: Number of cutting half-planes. 
     :type ncuts: int
-    :param schstp: Angular step size for searching.
+    :param schstp: Angular step size for searching. 
     :type schstp: float
-    :param soltol: Solution convergence tolerance.
+    :param soltol: Solution convergence tolerance. 
     :type soltol: float
-    :param maxn: Maximum number of entries in output arrays.
+    :param maxn: Maximum number of entries in output arrays. 
     :type maxn: int
     :return: Counts of limb points corresponding to cuts, Limb points, Times associated with limb points, Tangent vectors emanating from the observer
     :rtype: tuple
     """
-    method = stypes.string_to_char_p(method)
-    target = stypes.string_to_char_p(target)
-    et = ctypes.c_double(et)
-    fixref = stypes.string_to_char_p(fixref)
-    abcorr = stypes.string_to_char_p(abcorr)
-    corloc = stypes.string_to_char_p(corloc)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    refvec = stypes.to_double_vector(refvec)
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
+    et     = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    corloc = stypes.stringToCharP(corloc)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    refvec = stypes.toDoubleVector(refvec)
     rolstp = ctypes.c_double(rolstp)
-    ncuts = ctypes.c_int(ncuts)
+    ncuts  = ctypes.c_int(ncuts)
     schstp = ctypes.c_double(schstp)
     soltol = ctypes.c_double(soltol)
-    maxn = ctypes.c_int(maxn)
-    npts = stypes.empty_int_vector(maxn.value)
-    points = stypes.empty_double_matrix(3, maxn.value)
-    epochs = stypes.empty_double_vector(maxn)
-    tangts = stypes.empty_double_matrix(3, maxn.value)
-    libspice.limbpt_c(
-        method,
-        target,
-        et,
-        fixref,
-        abcorr,
-        corloc,
-        obsrvr,
-        refvec,
-        rolstp,
-        ncuts,
-        schstp,
-        soltol,
-        maxn,
-        npts,
-        points,
-        epochs,
-        tangts,
-    )
+    maxn   = ctypes.c_int(maxn)
+    npts   = stypes.emptyIntVector(maxn.value)
+    points = stypes.emptyDoubleMatrix(3, maxn.value)
+    epochs = stypes.emptyDoubleVector(maxn)
+    tangts = stypes.emptyDoubleMatrix(3, maxn.value)
+    libspice.limbpt_c(method, target, et, fixref,
+                      abcorr, corloc, obsrvr, refvec,
+                      rolstp, ncuts, schstp, soltol,
+                      maxn, npts, points, epochs, tangts)
     # Clip the empty elements out of returned results
-    npts = stypes.c_vector_to_python(npts)
+    npts = stypes.cVectorToPython(npts)
     valid_points = numpy.where(npts >= 1)
-    return (
-        npts[valid_points],
-        stypes.c_matrix_to_numpy(points)[valid_points],
-        stypes.c_vector_to_python(epochs)[valid_points],
-        stypes.c_matrix_to_numpy(tangts)[valid_points],
-    )
+    return npts[valid_points], stypes.cMatrixToNumpy(points)[valid_points], stypes.cVectorToPython(epochs)[valid_points], stypes.cMatrixToNumpy(tangts)[valid_points]
 
 
-@spice_error_check
+@spiceErrorCheck
 def lgrind(xvals, yvals, x):
     """
     Evaluate a Lagrange interpolating polynomial for a specified
     set of coordinate pairs, at a specified abscissa value.
     Return the value of both polynomial and derivative.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lgrind_c.html
 
     :param xvals: Abscissa values.
@@ -8891,17 +7997,17 @@ def lgrind(xvals, yvals, x):
     :rtype: tuple
     """
     n = ctypes.c_int(len(xvals))
-    xvals = stypes.to_double_vector(xvals)
-    yvals = stypes.to_double_vector(yvals)
-    work = stypes.empty_double_vector(n.value * 2)
-    x = ctypes.c_double(x)
-    p = ctypes.c_double(0)
+    xvals = stypes.toDoubleVector(xvals)
+    yvals = stypes.toDoubleVector(yvals)
+    work  = stypes.emptyDoubleVector(n.value*2)
+    x  = ctypes.c_double(x)
+    p  = ctypes.c_double(0)
     dp = ctypes.c_double(0)
     libspice.lgrind_c(n, xvals, yvals, work, x, p, dp)
     return p.value, dp.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def lmpool(cvals):
     """
     Load the variables contained in an internal buffer into the
@@ -8914,11 +8020,11 @@ def lmpool(cvals):
     """
     lenvals = ctypes.c_int(len(max(cvals, key=len)) + 1)
     n = ctypes.c_int(len(cvals))
-    cvals = stypes.list_to_char_array_ptr(cvals, x_len=lenvals, y_len=n)
+    cvals = stypes.listToCharArrayPtr(cvals, xLen=lenvals, yLen=n)
     libspice.lmpool_c(cvals, lenvals, n)
 
 
-@spice_error_check
+@spiceErrorCheck
 def lparse(inlist, delim, nmax):
     """
     Parse a list of items delimited by a single character.
@@ -8934,17 +8040,18 @@ def lparse(inlist, delim, nmax):
     :return: Items in the list, left justified.
     :rtype: list of str
     """
-    delim = stypes.string_to_char_p(delim)
+    delim = stypes.stringToCharP(delim)
     lenout = ctypes.c_int(len(inlist))
-    inlist = stypes.string_to_char_p(inlist)
+    inlist = stypes.stringToCharP(inlist)
     nmax = ctypes.c_int(nmax)
-    items = stypes.empty_char_array(lenout, nmax)
+    items = stypes.emptyCharArray(lenout, nmax)
     n = ctypes.c_int()
-    libspice.lparse_c(inlist, delim, nmax, lenout, ctypes.byref(n), ctypes.byref(items))
-    return [stypes.to_python_string(x.value) for x in items[0 : n.value]]
+    libspice.lparse_c(inlist, delim, nmax, lenout, ctypes.byref(n),
+                      ctypes.byref(items))
+    return [stypes.toPythonString(x.value) for x in items[0:n.value]]
 
 
-@spice_error_check
+@spiceErrorCheck
 def lparsm(inlist, delims, nmax, lenout=None):
     """
     Parse a list of items separated by multiple delimiters.
@@ -8966,17 +8073,17 @@ def lparsm(inlist, delims, nmax, lenout=None):
         lenout = ctypes.c_int(len(inlist) + 1)
     else:
         lenout = ctypes.c_int(lenout)
-    inlist = stypes.string_to_char_p(inlist)
-    delims = stypes.string_to_char_p(delims)
-    items = stypes.empty_char_array(lenout.value, nmax)
+    inlist = stypes.stringToCharP(inlist)
+    delims = stypes.stringToCharP(delims)
+    items = stypes.emptyCharArray(lenout.value, nmax)
     nmax = ctypes.c_int(nmax)
     n = ctypes.c_int()
     libspice.lparsm_c(inlist, delims, nmax, lenout, ctypes.byref(n), items)
-    return [stypes.to_python_string(x.value) for x in items][0 : n.value]
+    return [stypes.toPythonString(x.value) for x in items][0:n.value]
 
 
-@spice_error_check
-def lparss(inlist, delims, nmax=20, length=50):
+@spiceErrorCheck
+def lparss(inlist, delims, NMAX=20, LENGTH=50):
     """
     Parse a list of items separated by multiple delimiters, placing the
     resulting items into a set.
@@ -8987,21 +8094,21 @@ def lparss(inlist, delims, nmax=20, length=50):
     :type inlist:
     :param delims: Single characters which delimit items.
     :type delims: str
-    :param nmax: Optional nmax of spice set.
-    :type nmax: int
-    :param length: Optional length of strings in spice set
-    :type length: int
+    :param NMAX: Optional nmax of spice set.
+    :type NMAX: int
+    :param LENGTH: Optional length of strings in spice set
+    :type LENGTH: int
     :return: Set containing items in the list, left justified.
     :rtype:
     """
-    inlist = stypes.string_to_char_p(inlist)
-    delims = stypes.string_to_char_p(delims)
-    return_set = stypes.SPICECHAR_CELL(nmax, length)
-    libspice.lparss_c(inlist, delims, ctypes.byref(return_set))
-    return return_set
+    inlist = stypes.stringToCharP(inlist)
+    delims = stypes.stringToCharP(delims)
+    returnSet = stypes.SPICECHAR_CELL(NMAX, LENGTH)
+    libspice.lparss_c(inlist, delims, ctypes.byref(returnSet))
+    return returnSet
 
 
-@spice_error_check
+@spiceErrorCheck
 def lspcn(body, et, abcorr):
     """
     Compute L_s, the planetocentric longitude of the sun, as seen
@@ -9018,13 +8125,13 @@ def lspcn(body, et, abcorr):
     :return: planetocentric longitude of the sun
     :rtype: float
     """
-    body = stypes.string_to_char_p(body)
+    body = stypes.stringToCharP(body)
     et = ctypes.c_double(et)
-    abcorr = stypes.string_to_char_p(abcorr)
+    abcorr = stypes.stringToCharP(abcorr)
     return libspice.lspcn_c(body, et, abcorr)
 
 
-@spice_error_check
+@spiceErrorCheck
 def lstlec(string, n, lenvals, array):
     """
     Given a character string and an ordered array of character
@@ -9046,14 +8153,14 @@ def lstlec(string, n, lenvals, array):
             lexically less than or equal to string.
     :rtype: int
     """
-    string = stypes.string_to_char_p(string)
-    array = stypes.list_to_char_array_ptr(array, x_len=lenvals, y_len=n)
+    string = stypes.stringToCharP(string)
+    array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=n)
     n = ctypes.c_int(n)
     lenvals = ctypes.c_int(lenvals)
     return libspice.lstlec_c(string, n, lenvals, array)
 
 
-@spice_error_check
+@spiceErrorCheck
 def lstled(x, n, array):
     """
     Given a number x and an array of non-decreasing floats
@@ -9070,13 +8177,13 @@ def lstled(x, n, array):
     :return: index of the last element of array that is less than or equal to x.
     :rtype: int
     """
-    array = stypes.to_double_vector(array)
+    array = stypes.toDoubleVector(array)
     x = ctypes.c_double(x)
     n = ctypes.c_int(n)
     return libspice.lstled_c(x, n, array)
 
 
-@spice_error_check
+@spiceErrorCheck
 def lstlei(x, n, array):
     """
     Given a number x and an array of non-decreasing ints,
@@ -9093,13 +8200,13 @@ def lstlei(x, n, array):
     :return: index of the last element of array that is less than or equal to x.
     :rtype: int
     """
-    array = stypes.to_int_vector(array)
+    array = stypes.toIntVector(array)
     x = ctypes.c_int(x)
     n = ctypes.c_int(n)
     return libspice.lstlei_c(x, n, array)
 
 
-@spice_error_check
+@spiceErrorCheck
 def lstltc(string, n, lenvals, array):
     """
     Given a character string and an ordered array of character
@@ -9121,14 +8228,14 @@ def lstltc(string, n, lenvals, array):
             is lexically less than string.
     :rtype: int
     """
-    string = stypes.string_to_char_p(string)
-    array = stypes.list_to_char_array_ptr(array, x_len=lenvals, y_len=n)
+    string = stypes.stringToCharP(string)
+    array = stypes.listToCharArrayPtr(array, xLen=lenvals, yLen=n)
     n = ctypes.c_int(n)
     lenvals = ctypes.c_int(lenvals)
     return libspice.lstltc_c(string, n, lenvals, array)
 
 
-@spice_error_check
+@spiceErrorCheck
 def lstltd(x, n, array):
     """
     Given a number x and an array of non-decreasing floats
@@ -9145,13 +8252,13 @@ def lstltd(x, n, array):
     :return: index of the last element of array that is less than x.
     :rtype: int
     """
-    array = stypes.to_double_vector(array)
+    array = stypes.toDoubleVector(array)
     x = ctypes.c_double(x)
     n = ctypes.c_int(n)
     return libspice.lstltd_c(x, n, array)
 
 
-@spice_error_check
+@spiceErrorCheck
 def lstlti(x, n, array):
     """
     Given a number x and an array of non-decreasing int,
@@ -9168,13 +8275,13 @@ def lstlti(x, n, array):
     :return: index of the last element of array that is less than x.
     :rtype: int
     """
-    array = stypes.to_int_vector(array)
+    array = stypes.toIntVector(array)
     x = ctypes.c_int(x)
     n = ctypes.c_int(n)
     return libspice.lstlti_c(x, n, array)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ltime(etobs, obs, direct, targ):
     """
     This routine computes the transmit (or receive) time
@@ -9197,17 +8304,16 @@ def ltime(etobs, obs, direct, targ):
     """
     etobs = ctypes.c_double(etobs)
     obs = ctypes.c_int(obs)
-    direct = stypes.string_to_char_p(direct)
+    direct = stypes.stringToCharP(direct)
     targ = ctypes.c_int(targ)
     ettarg = ctypes.c_double()
     elapsd = ctypes.c_double()
-    libspice.ltime_c(
-        etobs, obs, direct, targ, ctypes.byref(ettarg), ctypes.byref(elapsd)
-    )
+    libspice.ltime_c(etobs, obs, direct, targ, ctypes.byref(ettarg),
+                     ctypes.byref(elapsd))
     return ettarg.value, elapsd.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def lx4dec(string, first):
     """
     Scan a string from a specified starting position for the
@@ -9222,7 +8328,7 @@ def lx4dec(string, first):
     :return: last and nchar
     :rtype: tuple
     """
-    string = stypes.string_to_char_p(string)
+    string = stypes.stringToCharP(string)
     first = ctypes.c_int(first)
     last = ctypes.c_int()
     nchar = ctypes.c_int()
@@ -9230,7 +8336,7 @@ def lx4dec(string, first):
     return last.value, nchar.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def lx4num(string, first):
     """
     Scan a string from a specified starting position for the
@@ -9245,7 +8351,7 @@ def lx4num(string, first):
     :return: last and nchar
     :rtype: tuple
     """
-    string = stypes.string_to_char_p(string)
+    string = stypes.stringToCharP(string)
     first = ctypes.c_int(first)
     last = ctypes.c_int()
     nchar = ctypes.c_int()
@@ -9253,7 +8359,7 @@ def lx4num(string, first):
     return last.value, nchar.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def lx4sgn(string, first):
     """
     Scan a string from a specified starting position for the
@@ -9268,7 +8374,7 @@ def lx4sgn(string, first):
     :return: last and nchar
     :rtype: tuple
     """
-    string = stypes.string_to_char_p(string)
+    string = stypes.stringToCharP(string)
     first = ctypes.c_int(first)
     last = ctypes.c_int()
     nchar = ctypes.c_int()
@@ -9276,7 +8382,7 @@ def lx4sgn(string, first):
     return last.value, nchar.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def lx4uns(string, first):
     """
     Scan a string from a specified starting position for the
@@ -9291,7 +8397,7 @@ def lx4uns(string, first):
     :return: last and nchar
     :rtype: tuple
     """
-    string = stypes.string_to_char_p(string)
+    string = stypes.stringToCharP(string)
     first = ctypes.c_int(first)
     last = ctypes.c_int()
     nchar = ctypes.c_int()
@@ -9299,7 +8405,7 @@ def lx4uns(string, first):
     return last.value, nchar.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def lxqstr(string, qchar, first):
     """
     Lex (scan) a quoted string.
@@ -9315,12 +8421,13 @@ def lxqstr(string, qchar, first):
     :return: last and nchar
     :rtype: tuple
     """
-    string = stypes.string_to_char_p(string)
-    qchar = ctypes.c_char(qchar.encode(encoding="UTF-8"))
+    string = stypes.stringToCharP(string)
+    qchar = ctypes.c_char(qchar.encode(encoding='UTF-8'))
     first = ctypes.c_int(first)
     last = ctypes.c_int()
     nchar = ctypes.c_int()
-    libspice.lxqstr_c(string, qchar, first, ctypes.byref(last), ctypes.byref(nchar))
+    libspice.lxqstr_c(string, qchar, first, ctypes.byref(last),
+                      ctypes.byref(nchar))
     return last.value, nchar.value
 
 
@@ -9328,7 +8435,7 @@ def lxqstr(string, qchar, first):
 # M
 
 
-@spice_error_check
+@spiceErrorCheck
 def m2eul(r, axis3, axis2, axis1):
     """
     Factor a rotation matrix as a product of three rotations
@@ -9347,26 +8454,19 @@ def m2eul(r, axis3, axis2, axis1):
     :return: Third, second, and first Euler angles, in radians.
     :rtype: tuple
     """
-    r = stypes.to_double_matrix(r)
+    r = stypes.toDoubleMatrix(r)
     axis3 = ctypes.c_int(axis3)
     axis2 = ctypes.c_int(axis2)
     axis1 = ctypes.c_int(axis1)
     angle3 = ctypes.c_double()
     angle2 = ctypes.c_double()
     angle1 = ctypes.c_double()
-    libspice.m2eul_c(
-        r,
-        axis3,
-        axis2,
-        axis1,
-        ctypes.byref(angle3),
-        ctypes.byref(angle2),
-        ctypes.byref(angle1),
-    )
+    libspice.m2eul_c(r, axis3, axis2, axis1, ctypes.byref(angle3),
+                     ctypes.byref(angle2), ctypes.byref(angle1))
     return angle3.value, angle2.value, angle1.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def m2q(r):
     """
     Find a unit quaternion corresponding to a specified rotation matrix.
@@ -9378,13 +8478,13 @@ def m2q(r):
     :return: A unit quaternion representing the rotation matrix
     :rtype: 4-Element Array of floats
     """
-    r = stypes.to_double_matrix(r)
-    q = stypes.empty_double_vector(4)
+    r = stypes.toDoubleMatrix(r)
+    q = stypes.emptyDoubleVector(4)
     libspice.m2q_c(r, q)
-    return stypes.c_vector_to_python(q)
+    return stypes.cVectorToPython(q)
 
 
-@spice_error_check
+@spiceErrorCheck
 def matchi(string, templ, wstr, wchr):
     """
     Determine whether a string is matched by a template containing wild cards.
@@ -9403,14 +8503,14 @@ def matchi(string, templ, wstr, wchr):
     :return: The function returns True if string matches templ, else False
     :rtype: bool
     """
-    string = stypes.string_to_char_p(string)
-    templ = stypes.string_to_char_p(templ)
-    wstr = ctypes.c_char(wstr.encode(encoding="UTF-8"))
-    wchr = ctypes.c_char(wchr.encode(encoding="UTF-8"))
+    string = stypes.stringToCharP(string)
+    templ = stypes.stringToCharP(templ)
+    wstr = ctypes.c_char(wstr.encode(encoding='UTF-8'))
+    wchr = ctypes.c_char(wchr.encode(encoding='UTF-8'))
     return bool(libspice.matchi_c(string, templ, wstr, wchr))
 
 
-@spice_error_check
+@spiceErrorCheck
 def matchw(string, templ, wstr, wchr):
     # ctypes.c_char(wstr.encode(encoding='UTF-8')
     """
@@ -9429,10 +8529,10 @@ def matchw(string, templ, wstr, wchr):
     :return: The function returns True if string matches templ, else False
     :rtype: bool
     """
-    string = stypes.string_to_char_p(string)
-    templ = stypes.string_to_char_p(templ)
-    wstr = ctypes.c_char(wstr.encode(encoding="UTF-8"))
-    wchr = ctypes.c_char(wchr.encode(encoding="UTF-8"))
+    string = stypes.stringToCharP(string)
+    templ = stypes.stringToCharP(templ)
+    wstr = ctypes.c_char(wstr.encode(encoding='UTF-8'))
+    wchr = ctypes.c_char(wchr.encode(encoding='UTF-8'))
     return bool(libspice.matchw_c(string, templ, wstr, wchr))
 
 
@@ -9444,7 +8544,7 @@ def matchw(string, templ, wstr, wchr):
 # odd as arguments must be parsed and not really important
 
 
-@spice_error_check
+@spiceErrorCheck
 def mequ(m1):
     """
     Set one double precision 3x3 matrix equal to another.
@@ -9456,13 +8556,13 @@ def mequ(m1):
     :return: Output matrix equal to m1.
     :rtype: 3x3-Element Array of floats
     """
-    m1 = stypes.to_double_matrix(m1)
-    mout = stypes.empty_double_matrix()
+    m1 = stypes.toDoubleMatrix(m1)
+    mout = stypes.emptyDoubleMatrix()
     libspice.mequ_c(m1, mout)
-    return stypes.c_matrix_to_numpy(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def mequg(m1, nr, nc):
     """
     Set one double precision matrix of arbitrary size equal to another.
@@ -9478,12 +8578,12 @@ def mequg(m1, nr, nc):
     :return: Output matrix equal to m1
     :rtype: NxM-Element Array of floats
     """
-    m1 = stypes.to_double_matrix(m1)
-    mout = stypes.empty_double_matrix(x=nc, y=nr)
+    m1 = stypes.toDoubleMatrix(m1)
+    mout = stypes.emptyDoubleMatrix(x=nc, y=nr)
     nc = ctypes.c_int(nc)
     nr = ctypes.c_int(nr)
     libspice.mequg_c(m1, nc, nr, mout)
-    return stypes.c_matrix_to_numpy(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
 # skiping for now mind_c,
@@ -9494,7 +8594,7 @@ def mequg(m1, nr, nc):
 # odd as arguments must be parsed and not really important
 
 
-@spice_error_check
+@spiceErrorCheck
 def mtxm(m1, m2):
     """
     Multiply the transpose of a 3x3 matrix and a 3x3 matrix.
@@ -9508,14 +8608,14 @@ def mtxm(m1, m2):
     :return: The produce m1 transpose times m2.
     :rtype: 3x3-Element Array of floats
     """
-    m1 = stypes.to_double_matrix(m1)
-    m2 = stypes.to_double_matrix(m2)
-    mout = stypes.empty_double_matrix()
+    m1 = stypes.toDoubleMatrix(m1)
+    m2 = stypes.toDoubleMatrix(m2)
+    mout = stypes.emptyDoubleMatrix()
     libspice.mtxm_c(m1, m2, mout)
-    return stypes.c_matrix_to_numpy(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
     """
     Multiply the transpose of a matrix with
@@ -9536,17 +8636,17 @@ def mtxmg(m1, m2, ncol1, nr1r2, ncol2):
     :return: Transpose of m1 times m2.
     :rtype: NxM-Element Array of floats
     """
-    m1 = stypes.to_double_matrix(m1)
-    m2 = stypes.to_double_matrix(m2)
-    mout = stypes.empty_double_matrix(x=ncol2, y=ncol1)
+    m1 = stypes.toDoubleMatrix(m1)
+    m2 = stypes.toDoubleMatrix(m2)
+    mout = stypes.emptyDoubleMatrix(x=ncol2, y=ncol1)
     ncol1 = ctypes.c_int(ncol1)
     nr1r2 = ctypes.c_int(nr1r2)
     ncol2 = ctypes.c_int(ncol2)
     libspice.mtxmg_c(m1, m2, ncol1, nr1r2, ncol2, mout)
-    return stypes.c_matrix_to_numpy(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def mtxv(m1, vin):
     """
     Multiplies the transpose of a 3x3 matrix
@@ -9561,14 +8661,14 @@ def mtxv(m1, vin):
     :return: 3-dimensional double precision vector.
     :rtype: 3-Element Array of floats
     """
-    m1 = stypes.to_double_matrix(m1)
-    vin = stypes.to_double_vector(vin)
-    vout = stypes.empty_double_vector(3)
+    m1 = stypes.toDoubleMatrix(m1)
+    vin = stypes.toDoubleVector(vin)
+    vout = stypes.emptyDoubleVector(3)
     libspice.mtxv_c(m1, vin, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def mtxvg(m1, v2, ncol1, nr1r2):
     """
     Multiply the transpose of a matrix and
@@ -9587,16 +8687,16 @@ def mtxvg(m1, v2, ncol1, nr1r2):
     :return: Product vector m1 transpose * v2.
     :rtype: Array of floats
     """
-    m1 = stypes.to_double_matrix(m1)
-    v2 = stypes.to_double_vector(v2)
+    m1 = stypes.toDoubleMatrix(m1)
+    v2 = stypes.toDoubleVector(v2)
     ncol1 = ctypes.c_int(ncol1)
     nr1r2 = ctypes.c_int(nr1r2)
-    vout = stypes.empty_double_vector(ncol1.value)
+    vout = stypes.emptyDoubleVector(ncol1.value)
     libspice.mtxvg_c(m1, v2, ncol1, nr1r2, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def mxm(m1, m2):
     """
     Multiply two 3x3 matrices.
@@ -9610,14 +8710,14 @@ def mxm(m1, m2):
     :return: 3x3 double precision matrix.
     :rtype: 3x3-Element Array of floats
     """
-    m1 = stypes.to_double_matrix(m1)
-    m2 = stypes.to_double_matrix(m2)
-    mout = stypes.empty_double_matrix()
+    m1 = stypes.toDoubleMatrix(m1)
+    m2 = stypes.toDoubleMatrix(m2)
+    mout = stypes.emptyDoubleMatrix()
     libspice.mxm_c(m1, m2, mout)
-    return stypes.c_matrix_to_numpy(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def mxmg(m1, m2, nrow1, ncol1, ncol2):
     """
     Multiply two double precision matrices of arbitrary size.
@@ -9637,17 +8737,17 @@ def mxmg(m1, m2, nrow1, ncol1, ncol2):
     :return: nrow1 X ncol2 double precision matrix.
     :rtype: NxM-Element Array of floats
     """
-    m1 = stypes.to_double_matrix(m1)
-    m2 = stypes.to_double_matrix(m2)
-    mout = stypes.empty_double_matrix(x=ncol2, y=nrow1)
+    m1 = stypes.toDoubleMatrix(m1)
+    m2 = stypes.toDoubleMatrix(m2)
+    mout = stypes.emptyDoubleMatrix(x=ncol2, y=nrow1)
     nrow1 = ctypes.c_int(nrow1)
     ncol1 = ctypes.c_int(ncol1)
     ncol2 = ctypes.c_int(ncol2)
     libspice.mxmg_c(m1, m2, nrow1, ncol1, ncol2, mout)
-    return stypes.c_matrix_to_numpy(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def mxmt(m1, m2):
     """
     Multiply a 3x3 matrix and the transpose of another 3x3 matrix.
@@ -9661,14 +8761,14 @@ def mxmt(m1, m2):
     :return: The product m1 times m2 transpose.
     :rtype: float
     """
-    m1 = stypes.to_double_matrix(m1)
-    m2 = stypes.to_double_matrix(m2)
-    mout = stypes.empty_double_matrix()
+    m1 = stypes.toDoubleMatrix(m1)
+    m2 = stypes.toDoubleMatrix(m2)
+    mout = stypes.emptyDoubleMatrix()
     libspice.mxmt_c(m1, m2, mout)
-    return stypes.c_matrix_to_numpy(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def mxmtg(m1, m2, nrow1, nc1c2, nrow2):
     """
     Multiply a matrix and the transpose of a matrix, both of arbitrary size.
@@ -9688,17 +8788,17 @@ def mxmtg(m1, m2, nrow1, nc1c2, nrow2):
     :return: Product matrix.
     :rtype: NxM-Element Array of floats
     """
-    m1 = stypes.to_double_matrix(m1)
-    m2 = stypes.to_double_matrix(m2)
-    mout = stypes.empty_double_matrix(x=nrow2, y=nrow1)
+    m1 = stypes.toDoubleMatrix(m1)
+    m2 = stypes.toDoubleMatrix(m2)
+    mout = stypes.emptyDoubleMatrix(x=nrow2, y=nrow1)
     nrow1 = ctypes.c_int(nrow1)
     nc1c2 = ctypes.c_int(nc1c2)
     nrow2 = ctypes.c_int(nrow2)
     libspice.mxmtg_c(m1, m2, nrow1, nc1c2, nrow2, mout)
-    return stypes.c_matrix_to_numpy(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def mxv(m1, vin):
     """
     Multiply a 3x3 double precision matrix with a
@@ -9713,14 +8813,14 @@ def mxv(m1, vin):
     :return: 3-dimensional double precision vector.
     :rtype: 3-Element Array of floats
     """
-    m1 = stypes.to_double_matrix(m1)
-    vin = stypes.to_double_vector(vin)
-    vout = stypes.empty_double_vector(3)
+    m1 = stypes.toDoubleMatrix(m1)
+    vin = stypes.toDoubleVector(vin)
+    vout = stypes.emptyDoubleVector(3)
     libspice.mxv_c(m1, vin, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def mxvg(m1, v2, nrow1, nc1r2):
     """
     Multiply a matrix and a vector of arbitrary size.
@@ -9738,20 +8838,20 @@ def mxvg(m1, v2, nrow1, nc1r2):
     :return: Product vector m1*v2
     :rtype: Array of floats
     """
-    m1 = stypes.to_double_matrix(m1)
-    v2 = stypes.to_double_vector(v2)
+    m1 = stypes.toDoubleMatrix(m1)
+    v2 = stypes.toDoubleVector(v2)
     nrow1 = ctypes.c_int(nrow1)
     nc1r2 = ctypes.c_int(nc1r2)
-    vout = stypes.empty_double_vector(nrow1.value)
+    vout = stypes.emptyDoubleVector(nrow1.value)
     libspice.mxvg_c(m1, v2, nrow1, nc1r2, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
 ################################################################################
 # N
 
 
-@spice_error_check
+@spiceErrorCheck
 def namfrm(frname):
     """
     Look up the frame ID code associated with a string.
@@ -9763,13 +8863,13 @@ def namfrm(frname):
     :return: The SPICE ID code of the frame.
     :rtype: int
     """
-    frname = stypes.string_to_char_p(frname)
+    frname = stypes.stringToCharP(frname)
     frcode = ctypes.c_int()
     libspice.namfrm_c(frname, ctypes.byref(frcode))
     return frcode.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def ncpos(string, chars, start):
     """
     Find the first occurrence in a string of a character NOT belonging
@@ -9787,13 +8887,13 @@ def ncpos(string, chars, start):
     :return: index
     :rtype: int
     """
-    string = stypes.string_to_char_p(string)
-    chars = stypes.string_to_char_p(chars)
+    string = stypes.stringToCharP(string)
+    chars = stypes.stringToCharP(chars)
     start = ctypes.c_int(start)
     return libspice.ncpos_c(string, chars, start)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ncposr(string, chars, start):
     """
     Find the first occurrence in a string of a character NOT belonging to a
@@ -9811,13 +8911,13 @@ def ncposr(string, chars, start):
     :return: index
     :rtype: int
     """
-    string = stypes.string_to_char_p(string)
-    chars = stypes.string_to_char_p(chars)
+    string = stypes.stringToCharP(string)
+    chars = stypes.stringToCharP(chars)
     start = ctypes.c_int(start)
     return libspice.ncposr_c(string, chars, start)
 
 
-@spice_error_check
+@spiceErrorCheck
 def nearpt(positn, a, b, c):
     """
     locates the point on the surface of an ellipsoid that is nearest to a
@@ -9839,17 +8939,17 @@ def nearpt(positn, a, b, c):
             Altitude of positn above the ellipsoid.
     :rtype: tuple
     """
-    positn = stypes.to_double_vector(positn)
+    positn = stypes.toDoubleVector(positn)
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
     c = ctypes.c_double(c)
-    npoint = stypes.empty_double_vector(3)
+    npoint = stypes.emptyDoubleVector(3)
     alt = ctypes.c_double()
     libspice.nearpt_c(positn, a, b, c, npoint, ctypes.byref(alt))
-    return stypes.c_vector_to_python(npoint), alt.value
+    return stypes.cVectorToPython(npoint), alt.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def npedln(a, b, c, linept, linedr):
     """
     Find nearest point on a triaxial ellipsoid to a specified
@@ -9873,15 +8973,15 @@ def npedln(a, b, c, linept, linedr):
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
     c = ctypes.c_double(c)
-    linept = stypes.to_double_vector(linept)
-    linedr = stypes.to_double_vector(linedr)
-    pnear = stypes.empty_double_vector(3)
+    linept = stypes.toDoubleVector(linept)
+    linedr = stypes.toDoubleVector(linedr)
+    pnear = stypes.emptyDoubleVector(3)
     dist = ctypes.c_double()
     libspice.npedln_c(a, b, c, linept, linedr, pnear, ctypes.byref(dist))
-    return stypes.c_vector_to_python(pnear), dist.value
+    return stypes.cVectorToPython(pnear), dist.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def npelpt(point, ellips):
     """
     Find the nearest point on an ellipse to a specified point, both
@@ -9896,15 +8996,15 @@ def npelpt(point, ellips):
     :return: Nearest point on ellipsoid to line, Distance of ellipsoid from line
     :rtype: tuple
     """
-    assert isinstance(ellips, stypes.Ellipse)
-    point = stypes.to_double_vector(point)
-    pnear = stypes.empty_double_vector(3)
+    assert (isinstance(ellips, stypes.Ellipse))
+    point = stypes.toDoubleVector(point)
+    pnear = stypes.emptyDoubleVector(3)
     dist = ctypes.c_double()
     libspice.npelpt_c(point, ctypes.byref(ellips), pnear, ctypes.byref(dist))
-    return stypes.c_vector_to_python(pnear), dist.value
+    return stypes.cVectorToPython(pnear), dist.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def nplnpt(linpt, lindir, point):
     """
     Find the nearest point on a line to a specified point,
@@ -9923,16 +9023,16 @@ def nplnpt(linpt, lindir, point):
             Distance between point and pnear
     :rtype: tuple
     """
-    linpt = stypes.to_double_vector(linpt)
-    lindir = stypes.to_double_vector(lindir)
-    point = stypes.to_double_vector(point)
-    pnear = stypes.empty_double_vector(3)
+    linpt = stypes.toDoubleVector(linpt)
+    lindir = stypes.toDoubleVector(lindir)
+    point = stypes.toDoubleVector(point)
+    pnear = stypes.emptyDoubleVector(3)
     dist = ctypes.c_double()
     libspice.nplnpt_c(linpt, lindir, point, pnear, ctypes.byref(dist))
-    return stypes.c_vector_to_python(pnear), dist.value
+    return stypes.cVectorToPython(pnear), dist.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def nvc2pl(normal, constant):
     """
     Make a plane from a normal vector and a constant.
@@ -9947,13 +9047,13 @@ def nvc2pl(normal, constant):
     :rtype: spiceypy.utils.support_types.Plane
     """
     plane = stypes.Plane()
-    normal = stypes.to_double_vector(normal)
+    normal = stypes.toDoubleVector(normal)
     constant = ctypes.c_double(constant)
     libspice.nvc2pl_c(normal, constant, ctypes.byref(plane))
     return plane
 
 
-@spice_error_check
+@spiceErrorCheck
 def nvp2pl(normal, point):
     """
     Make a plane from a normal vector and a point.
@@ -9967,8 +9067,8 @@ def nvp2pl(normal, point):
     :return: plane
     :rtype: spiceypy.utils.support_types.Plane
     """
-    normal = stypes.to_double_vector(normal)
-    point = stypes.to_double_vector(point)
+    normal = stypes.toDoubleVector(normal)
+    point = stypes.toDoubleVector(point)
     plane = stypes.Plane()
     libspice.nvp2pl_c(normal, point, ctypes.byref(plane))
     return plane
@@ -9977,9 +9077,9 @@ def nvp2pl(normal, point):
 ################################################################################
 # O
 
-
-@spice_error_check
-def occult(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer, et):
+@spiceErrorCheck
+def occult(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer,
+           et):
     """
     Determines the occultation condition (not occulted, partially,
     etc.) of one target relative to another target as seen by
@@ -10008,32 +9108,22 @@ def occult(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer, e
     :return: Occultation identification code.
     :rtype: int
     """
-    target1 = stypes.string_to_char_p(target1)
-    shape1 = stypes.string_to_char_p(shape1)
-    frame1 = stypes.string_to_char_p(frame1)
-    target2 = stypes.string_to_char_p(target2)
-    shape2 = stypes.string_to_char_p(shape2)
-    frame2 = stypes.string_to_char_p(frame2)
-    abcorr = stypes.string_to_char_p(abcorr)
-    observer = stypes.string_to_char_p(observer)
+    target1 = stypes.stringToCharP(target1)
+    shape1 = stypes.stringToCharP(shape1)
+    frame1 = stypes.stringToCharP(frame1)
+    target2 = stypes.stringToCharP(target2)
+    shape2 = stypes.stringToCharP(shape2)
+    frame2 = stypes.stringToCharP(frame2)
+    abcorr = stypes.stringToCharP(abcorr)
+    observer = stypes.stringToCharP(observer)
     et = ctypes.c_double(et)
     occult_code = ctypes.c_int()
-    libspice.occult_c(
-        target1,
-        shape1,
-        frame1,
-        target2,
-        shape2,
-        frame2,
-        abcorr,
-        observer,
-        et,
-        ctypes.byref(occult_code),
-    )
+    libspice.occult_c(target1, shape1, frame1, target2, shape2, frame2, abcorr,
+                      observer, et, ctypes.byref(occult_code))
     return occult_code.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def ordc(item, inset):
     """
     The function returns the ordinal position of any given item in a
@@ -10052,11 +9142,11 @@ def ordc(item, inset):
     assert isinstance(inset, stypes.SpiceCell)
     assert inset.is_char()
     assert isinstance(item, str)
-    item = stypes.string_to_char_p(item)
+    item = stypes.stringToCharP(item)
     return libspice.ordc_c(item, ctypes.byref(inset))
 
 
-@spice_error_check
+@spiceErrorCheck
 def ordd(item, inset):
     """
     The function returns the ordinal position of any given item in a
@@ -10078,7 +9168,7 @@ def ordd(item, inset):
     return libspice.ordd_c(item, ctypes.byref(inset))
 
 
-@spice_error_check
+@spiceErrorCheck
 def ordi(item, inset):
     """
     The function returns the ordinal position of any given item in an
@@ -10101,7 +9191,7 @@ def ordi(item, inset):
     return libspice.ordi_c(item, ctypes.byref(inset))
 
 
-@spice_error_check
+@spiceErrorCheck
 def orderc(array, ndim=None):
     """
     Determine the order of elements in an array of character strings.
@@ -10120,13 +9210,13 @@ def orderc(array, ndim=None):
     else:
         ndim = ctypes.c_int(ndim)
     lenvals = ctypes.c_int(len(max(array, key=len)) + 1)
-    iorder = stypes.empty_int_vector(ndim)
-    array = stypes.list_to_char_array(array, lenvals, ndim)
+    iorder = stypes.emptyIntVector(ndim)
+    array = stypes.listToCharArray(array, lenvals, ndim)
     libspice.orderc_c(lenvals, array, ndim, iorder)
-    return stypes.c_vector_to_python(iorder)
+    return stypes.cVectorToPython(iorder)
 
 
-@spice_error_check
+@spiceErrorCheck
 def orderd(array, ndim=None):
     """
     Determine the order of elements in a double precision array.
@@ -10144,13 +9234,13 @@ def orderd(array, ndim=None):
         ndim = ctypes.c_int(len(array))
     else:
         ndim = ctypes.c_int(ndim)
-    array = stypes.to_double_vector(array)
-    iorder = stypes.empty_int_vector(ndim)
+    array = stypes.toDoubleVector(array)
+    iorder = stypes.emptyIntVector(ndim)
     libspice.orderd_c(array, ndim, iorder)
-    return stypes.c_vector_to_python(iorder)
+    return stypes.cVectorToPython(iorder)
 
 
-@spice_error_check
+@spiceErrorCheck
 def orderi(array, ndim=None):
     """
     Determine the order of elements in an integer array.
@@ -10168,13 +9258,13 @@ def orderi(array, ndim=None):
         ndim = ctypes.c_int(len(array))
     else:
         ndim = ctypes.c_int(ndim)
-    array = stypes.to_int_vector(array)
-    iorder = stypes.empty_int_vector(ndim)
+    array = stypes.toIntVector(array)
+    iorder = stypes.emptyIntVector(ndim)
     libspice.orderi_c(array, ndim, iorder)
-    return stypes.c_vector_to_python(iorder)
+    return stypes.cVectorToPython(iorder)
 
 
-@spice_error_check
+@spiceErrorCheck
 def oscelt(state, et, mu):
     """
     Determine the set of osculating conic orbital elements that
@@ -10192,48 +9282,48 @@ def oscelt(state, et, mu):
     :return: Equivalent conic elements
     :rtype: Float Array of 8 elements.
     """
-    state = stypes.to_double_vector(state)
+    state = stypes.toDoubleVector(state)
     et = ctypes.c_double(et)
     mu = ctypes.c_double(mu)
-    elts = stypes.empty_double_vector(8)
+    elts = stypes.emptyDoubleVector(8)
     libspice.oscelt_c(state, et, mu, elts)
-    return stypes.c_vector_to_python(elts)
+    return stypes.cVectorToPython(elts)
 
 
 def oscltx(state, et, mu):
     """
-    Determine the set of osculating conic orbital elements that
-    corresponds to the state (position, velocity) of a body at some
-    epoch. In additional to the classical elements, return the true
-    anomaly, semi-major axis, and period, if applicable.
-
+    Determine the set of osculating conic orbital elements that 
+    corresponds to the state (position, velocity) of a body at some 
+    epoch. In additional to the classical elements, return the true 
+    anomaly, semi-major axis, and period, if applicable. 
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/oscltx_c.html
-
-    :param state: State of body at epoch of elements.
+    
+    :param state: State of body at epoch of elements. 
     :type state: 6-Element Array of floats
-    :param et: Epoch of elements.
+    :param et: Epoch of elements. 
     :type et: float
-    :param mu: Gravitational parameter (GM) of primary body.
+    :param mu: Gravitational parameter (GM) of primary body. 
     :type mu: float
-    :return: Extended set of classical conic elements.
+    :return: Extended set of classical conic elements. 
     """
-    state = stypes.to_double_vector(state)
+    state = stypes.toDoubleVector(state)
     et = ctypes.c_double(et)
     mu = ctypes.c_double(mu)
-    elts = stypes.empty_double_vector(20)
+    elts = stypes.emptyDoubleVector(20)
     libspice.oscltx_c(state, et, mu, elts)
-    return stypes.c_vector_to_python(elts)[0:11]
+    return stypes.cVectorToPython(elts)[0:11]
 
 
 ################################################################################
 # P
-@spice_error_check
+@spiceErrorCheck
 def pckcls(handle):
     """
-    Close an open PCK file.
-
+    Close an open PCK file. 
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pckcls_c.html
-
+    
     :param handle: Handle of the PCK file to be closed.
     :type handle: int
     """
@@ -10241,7 +9331,7 @@ def pckcls(handle):
     libspice.pckcls_c(handle)
 
 
-@spice_error_check
+@spiceErrorCheck
 def pckcov(pck, idcode, cover):
     """
     Find the coverage window for a specified reference frame in a
@@ -10256,14 +9346,14 @@ def pckcov(pck, idcode, cover):
     :param cover: Window giving coverage in pck for idcode.
     :type cover: SpiceCell
     """
-    pck = stypes.string_to_char_p(pck)
+    pck = stypes.stringToCharP(pck)
     idcode = ctypes.c_int(idcode)
     assert isinstance(cover, stypes.SpiceCell)
     assert cover.dtype == 1
     libspice.pckcov_c(pck, idcode, ctypes.byref(cover))
 
 
-@spice_error_check
+@spiceErrorCheck
 def pckfrm(pck, ids):
     """
     Find the set of reference frame class ID codes of all frames
@@ -10276,13 +9366,13 @@ def pckfrm(pck, ids):
     :param ids: Set of frame class ID codes of frames in PCK file.
     :type ids: SpiceCell
     """
-    pck = stypes.string_to_char_p(pck)
+    pck = stypes.stringToCharP(pck)
     assert isinstance(ids, stypes.SpiceCell)
     assert ids.dtype == 2
     libspice.pckfrm_c(pck, ctypes.byref(ids))
 
 
-@spice_error_check
+@spiceErrorCheck
 def pcklof(filename):
     """
     Load a binary PCK file for use by the readers.  Return the
@@ -10296,37 +9386,37 @@ def pcklof(filename):
     :return: Loaded file's handle.
     :rtype: int
     """
-    filename = stypes.string_to_char_p(filename)
+    filename = stypes.stringToCharP(filename)
     handle = ctypes.c_int()
     libspice.pcklof_c(filename, ctypes.byref(handle))
     return handle.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def pckopn(name, ifname, ncomch):
     """
-    Create a new PCK file, returning the handle of the opened file.
-
+    Create a new PCK file, returning the handle of the opened file. 
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pckopn_c.html
-
-    :param name: The name of the PCK file to be opened.
+    
+    :param name: The name of the PCK file to be opened. 
     :type name: str
     :param ifname: The internal filename for the PCK.
     :type ifname: str
-    :param ncomch: The number of characters to reserve for comments.
+    :param ncomch: The number of characters to reserve for comments. 
     :type ncomch: int
     :return: The handle of the opened PCK file.
     :rtype: int
     """
-    name = stypes.string_to_char_p(name)
-    ifname = stypes.string_to_char_p(ifname)
+    name = stypes.stringToCharP(name)
+    ifname = stypes.stringToCharP(ifname)
     ncomch = ctypes.c_int(ncomch)
     handle = ctypes.c_int()
     libspice.pckopn_c(name, ifname, ncomch, ctypes.byref(handle))
     return handle.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def pckuof(handle):
     """
     Unload a binary PCK file so that it will no longer be searched by
@@ -10341,24 +9431,22 @@ def pckuof(handle):
     libspice.pckuof_c(handle)
 
 
-@spice_error_check
-def pckw02(
-    handle, classid, frname, first, last, segid, intlen, n, polydg, cdata, btime
-):
+@spiceErrorCheck
+def pckw02(handle, classid, frname, first, last, segid, intlen, n, polydg, cdata, btime):
     """
     Write a type 2 segment to a PCK binary file given the file handle,
     frame class ID, base frame, time range covered by the segment, and
     the Chebyshev polynomial coefficients.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pckw02_c.html
-
+    
     :param handle: Handle of binary PCK file open for writing.
     :type handle: int
     :param classid: Frame class ID of body-fixed frame.
     :type classid: int
     :param frname: Name of base reference frame.
     :type frname: str
-    :param first: Start time of interval covered by segment.
+    :param first: Start time of interval covered by segment. 
     :type first: float
     :param last: End time of interval covered by segment.
     :type last: float
@@ -10368,7 +9456,7 @@ def pckw02(
     :type intlen: float
     :param n: Number of logical records in segment.
     :type n: int
-    :param polydg: Chebyshev polynomial degree.
+    :param polydg: Chebyshev polynomial degree. 
     :type polydg: int
     :param cdata: Array of Chebyshev coefficients.
     :type cdata: N-Element Array of floats
@@ -10377,21 +9465,19 @@ def pckw02(
     """
     handle = ctypes.c_int(handle)
     classid = ctypes.c_int(classid)
-    frname = stypes.string_to_char_p(frname)
+    frame = stypes.stringToCharP(frname)
     first = ctypes.c_double(first)
     last = ctypes.c_double(last)
-    segid = stypes.string_to_char_p(segid)
+    segid = stypes.stringToCharP(segid)
     intlen = ctypes.c_double(intlen)
     n = ctypes.c_int(n)
     polydg = ctypes.c_int(polydg)
-    cdata = stypes.to_double_vector(cdata)
+    cdata = stypes.toDoubleVector(cdata)
     btime = ctypes.c_double(btime)
-    libspice.pckw02_c(
-        handle, classid, frname, first, last, segid, intlen, n, polydg, cdata, btime
-    )
+    libspice.pckw02_c(handle, classid, frame, first, last, segid, intlen, n, polydg, cdata, btime)
 
 
-@spice_error_check
+@spiceErrorCheck
 def pcpool(name, cvals):
     """
     This entry point provides toolkit programmers a method for
@@ -10405,14 +9491,14 @@ def pcpool(name, cvals):
     :param cvals: An array of strings to insert into the kernel pool.
     :type cvals: Array of str
     """
-    name = stypes.string_to_char_p(name)
+    name = stypes.stringToCharP(name)
     lenvals = ctypes.c_int(len(max(cvals, key=len)) + 1)
     n = ctypes.c_int(len(cvals))
-    cvals = stypes.list_to_char_array(cvals, lenvals, n)
+    cvals = stypes.listToCharArray(cvals, lenvals, n)
     libspice.pcpool_c(name, n, lenvals, cvals)
 
 
-@spice_error_check
+@spiceErrorCheck
 def pdpool(name, dvals):
     """
     This entry point provides toolkit programmers a method for
@@ -10426,13 +9512,13 @@ def pdpool(name, dvals):
     :param dvals: An array of values to insert into the kernel pool.
     :type dvals: SpiceCell
     """
-    name = stypes.string_to_char_p(name)
+    name = stypes.stringToCharP(name)
     n = ctypes.c_int(len(dvals))
-    dvals = stypes.to_double_vector(dvals)
+    dvals = stypes.toDoubleVector(dvals)
     libspice.pdpool_c(name, n, dvals)
 
 
-@spice_error_check
+@spiceErrorCheck
 def pgrrec(body, lon, lat, alt, re, f):
     """
     Convert planetographic coordinates to rectangular coordinates.
@@ -10454,18 +9540,18 @@ def pgrrec(body, lon, lat, alt, re, f):
     :return: Rectangular coordinates of the point.
     :rtype: 3-Element Array of floats
     """
-    body = stypes.string_to_char_p(body)
+    body = stypes.stringToCharP(body)
     lon = ctypes.c_double(lon)
     lat = ctypes.c_double(lat)
     alt = ctypes.c_double(alt)
     re = ctypes.c_double(re)
     f = ctypes.c_double(f)
-    rectan = stypes.empty_double_vector(3)
+    rectan = stypes.emptyDoubleVector(3)
     libspice.pgrrec_c(body, lon, lat, alt, re, f, rectan)
-    return stypes.c_vector_to_python(rectan)
+    return stypes.cVectorToPython(rectan)
 
 
-@spice_error_check
+@spiceErrorCheck
 def phaseq(et, target, illmn, obsrvr, abcorr):
     """
     Compute the apparent phase angle for a target, observer,
@@ -10487,14 +9573,14 @@ def phaseq(et, target, illmn, obsrvr, abcorr):
     :rtype: float
     """
     et = ctypes.c_double(et)
-    target = stypes.string_to_char_p(target)
-    illmn = stypes.string_to_char_p(illmn)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    abcorr = stypes.string_to_char_p(abcorr)
+    target = stypes.stringToCharP(target)
+    illmn = stypes.stringToCharP(illmn)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    abcorr = stypes.stringToCharP(abcorr)
     return libspice.phaseq_c(et, target, illmn, obsrvr, abcorr)
 
 
-@spice_error_check
+@spiceErrorCheck
 def pi():
     """
     Return the value of pi (the ratio of the circumference of
@@ -10508,7 +9594,7 @@ def pi():
     return libspice.pi_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def pipool(name, ivals):
     """
     This entry point provides toolkit programmers a method for
@@ -10521,13 +9607,13 @@ def pipool(name, ivals):
     :param ivals: An array of integers to insert into the pool.
     :type ivals: Array of ints
     """
-    name = stypes.string_to_char_p(name)
+    name = stypes.stringToCharP(name)
     n = ctypes.c_int(len(ivals))
-    ivals = stypes.to_int_vector(ivals)
+    ivals = stypes.toIntVector(ivals)
     libspice.pipool_c(name, n, ivals)
 
 
-@spice_error_check
+@spiceErrorCheck
 def pjelpl(elin, plane):
     """
     Project an ellipse onto a plane, orthogonally.
@@ -10541,14 +9627,15 @@ def pjelpl(elin, plane):
     :return: A SPICE ellipse resulting from the projection.
     :rtype: spiceypy.utils.support_types.Ellipse
     """
-    assert isinstance(elin, stypes.Ellipse)
-    assert isinstance(plane, stypes.Plane)
+    assert (isinstance(elin, stypes.Ellipse))
+    assert (isinstance(plane, stypes.Plane))
     elout = stypes.Ellipse()
-    libspice.pjelpl_c(ctypes.byref(elin), ctypes.byref(plane), ctypes.byref(elout))
+    libspice.pjelpl_c(ctypes.byref(elin), ctypes.byref(plane),
+                      ctypes.byref(elout))
     return elout
 
 
-@spice_error_check
+@spiceErrorCheck
 def pl2nvc(plane):
     """
     Return a unit normal vector and constant that define a specified plane.
@@ -10562,14 +9649,14 @@ def pl2nvc(plane):
             the geometric plane represented by plane.
     :rtype: tuple
     """
-    assert isinstance(plane, stypes.Plane)
-    normal = stypes.empty_double_vector(3)
+    assert (isinstance(plane, stypes.Plane))
+    normal = stypes.emptyDoubleVector(3)
     constant = ctypes.c_double()
     libspice.pl2nvc_c(ctypes.byref(plane), normal, ctypes.byref(constant))
-    return stypes.c_vector_to_python(normal), constant.value
+    return stypes.cVectorToPython(normal), constant.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def pl2nvp(plane):
     """
     Return a unit normal vector and point that define a specified plane.
@@ -10582,14 +9669,14 @@ def pl2nvp(plane):
     :return: A unit normal vector and point that define plane.
     :rtype: tuple
     """
-    assert isinstance(plane, stypes.Plane)
-    normal = stypes.empty_double_vector(3)
-    point = stypes.empty_double_vector(3)
+    assert (isinstance(plane, stypes.Plane))
+    normal = stypes.emptyDoubleVector(3)
+    point = stypes.emptyDoubleVector(3)
     libspice.pl2nvp_c(ctypes.byref(plane), normal, point)
-    return stypes.c_vector_to_python(normal), stypes.c_vector_to_python(point)
+    return stypes.cVectorToPython(normal), stypes.cVectorToPython(point)
 
 
-@spice_error_check
+@spiceErrorCheck
 def pl2psv(plane):
     """
     Return a point and two orthogonal spanning vectors that generate
@@ -10604,145 +9691,142 @@ def pl2psv(plane):
             spanning the input plane.
     :rtype: tuple
     """
-    assert isinstance(plane, stypes.Plane)
-    point = stypes.empty_double_vector(3)
-    span1 = stypes.empty_double_vector(3)
-    span2 = stypes.empty_double_vector(3)
+    assert (isinstance(plane, stypes.Plane))
+    point = stypes.emptyDoubleVector(3)
+    span1 = stypes.emptyDoubleVector(3)
+    span2 = stypes.emptyDoubleVector(3)
     libspice.pl2psv_c(ctypes.byref(plane), point, span1, span2)
-    return (
-        stypes.c_vector_to_python(point),
-        stypes.c_vector_to_python(span1),
-        stypes.c_vector_to_python(span2),
-    )
+    return stypes.cVectorToPython(point), stypes.cVectorToPython(
+            span1), stypes.cVectorToPython(span2)
 
 
-@spice_error_check
+@spiceErrorCheck
 def pltar(vrtces, plates):
     """
     Compute the total area of a collection of triangular plates.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltar_c.html
-
+    
     :param vrtces: Array of vertices.
     :type vrtces: Nx3-Element Array of floats
-    :param plates: Array of plates.
+    :param plates: Array of plates. 
     :type plates: Nx3-Element Array of ints
     :return: total area of the set of plates
     :rtype: float
     """
     nv = ctypes.c_int(len(vrtces))
-    vrtces = stypes.to_double_matrix(vrtces)
+    vrtces = stypes.toDoubleMatrix(vrtces)
     np = ctypes.c_int(len(plates))
-    plates = stypes.to_int_matrix(plates)
+    plates = stypes.toIntMatrix(plates)
     return libspice.pltar_c(nv, vrtces, np, plates)
 
 
-@spice_error_check
+@spiceErrorCheck
 def pltexp(iverts, delta):
     """
-    Expand a triangular plate by a specified amount. The expanded
-    plate is co-planar with, and has the same orientation as, the
-    original. The centroids of the two plates coincide.
-
+    Expand a triangular plate by a specified amount. The expanded 
+    plate is co-planar with, and has the same orientation as, the 
+    original. The centroids of the two plates coincide. 
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltexp_c.html
-
-    :param iverts: Vertices of the plate to be expanded.
+    
+    :param iverts: Vertices of the plate to be expanded. 
     :type iverts: 3x3-Element Array of floats
     :param delta: Fraction by which the plate is to be expanded.
     :type delta: double
-    :return: Vertices of the expanded plate.
+    :return: Vertices of the expanded plate. 
     :rtype: 3x3-Element Array of floats
     """
-    iverts = stypes.to_double_matrix(iverts)
+    iverts = stypes.toDoubleMatrix(iverts)
     delta = ctypes.c_double(delta)
-    overts = stypes.empty_double_matrix()
+    overts = stypes.emptyDoubleMatrix()
     libspice.pltexp_c(iverts, delta, overts)
-    return stypes.c_matrix_to_numpy(overts)
+    return stypes.cMatrixToNumpy(overts)
 
 
-@spice_error_check
+@spiceErrorCheck
 def pltnp(point, v1, v2, v3):
     """
-    Find the nearest point on a triangular plate to a given point.
-
+    Find the nearest point on a triangular plate to a given point. 
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltnp_c.html
-
-    :param point: A point in 3-dimensional space.
+    
+    :param point: A point in 3-dimensional space. 
     :type point: 3-Element Array of floats
     :param v1: Vertices of a triangular plate.
     :type v1: 3-Element Array of floats
-    :param v2: Vertices of a triangular plate.
+    :param v2: Vertices of a triangular plate. 
     :type v2: 3-Element Array of floats
-    :param v3: Vertices of a triangular plate.
+    :param v3: Vertices of a triangular plate. 
     :type v3: 3-Element Array of floats
     :return: the nearest point on a triangular plate to a given point and distance
     :rtype: tuple
     """
-    point = stypes.to_double_vector(point)
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
-    v3 = stypes.to_double_vector(v3)
-    pnear = stypes.empty_double_vector(3)
+    point = stypes.toDoubleVector(point)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
+    v3 = stypes.toDoubleVector(v3)
+    pnear = stypes.emptyDoubleVector(3)
     dist = ctypes.c_double()
     libspice.pltnp_c(point, v1, v2, v3, pnear, ctypes.byref(dist))
-    return stypes.c_vector_to_python(pnear), dist.value
+    return stypes.cVectorToPython(pnear), dist.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def pltnrm(v1, v2, v3):
     """
-    Compute an outward normal vector of a triangular plate.
-    The vector does not necessarily have unit length.
-
+    Compute an outward normal vector of a triangular plate. 
+    The vector does not necessarily have unit length. 
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltnrm_c.html
-
+    
     :param v1: Vertices of a plate.
     :type v1: 3-Element Array of floats
-    :param v2: Vertices of a plate.
+    :param v2: Vertices of a plate. 
     :type v2: 3-Element Array of floats
-    :param v3: Vertices of a plate.
+    :param v3: Vertices of a plate. 
     :type v3: 3-Element Array of floats
     :return: Plate's outward normal vector.
     :rtype: 3-Element Array of floats
     """
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
-    v3 = stypes.to_double_vector(v3)
-    normal = stypes.empty_double_vector(3)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
+    v3 = stypes.toDoubleVector(v3)
+    normal = stypes.emptyDoubleVector(3)
     libspice.pltnrm_c(v1, v2, v3, normal)
-    return stypes.c_vector_to_python(normal)
+    return stypes.cVectorToPython(normal)
 
 
-@spice_error_check
+@spiceErrorCheck
 def pltvol(vrtces, plates):
     """
-    Compute the volume of a three-dimensional region bounded by a
-    collection of triangular plates.
-
+    Compute the volume of a three-dimensional region bounded by a 
+    collection of triangular plates. 
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pltvol_c.html
-
+ 
     :param vrtces: Array of vertices.
     :type vrtces: Nx3-Element Array of floats
-    :param plates: Array of plates.
-    :type plates: Nx3-Element Array of ints
-    :return: the volume of the spatial region bounded by the plates.
+    :param plates: Array of plates. 
+    :type plates: Nx3-Element Array of ints 
+    :return: the volume of the spatial region bounded by the plates. 
     :rtype: float
     """
     nv = ctypes.c_int(len(vrtces))
-    vrtces = stypes.to_double_matrix(vrtces)
+    vrtces = stypes.toDoubleMatrix(vrtces)
     np = ctypes.c_int(len(plates))
-    plates = stypes.to_int_matrix(plates)
+    plates = stypes.toIntMatrix(plates)
     return libspice.pltvol_c(nv, vrtces, np, plates)
 
 
-@spice_error_check
+@spiceErrorCheck
 def polyds(coeffs, deg, nderiv, t):
     """
     Compute the value of a polynomial and it's first
     n derivatives at the value t.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/polyds_c.html
-
+    
     :param coeffs: Coefficients of the polynomial to be evaluated.
     :type coeffs: N-Element Array of floats
     :param deg: Degree of the polynomial to be evaluated.
@@ -10754,16 +9838,16 @@ def polyds(coeffs, deg, nderiv, t):
     :return: Value of polynomial and derivatives.
     :rtype: nderiv-Element Array of floats
     """
-    coeffs = stypes.to_double_vector(coeffs)
+    coeffs = stypes.toDoubleVector(coeffs)
     deg = ctypes.c_int(deg)
-    p = stypes.empty_double_vector(nderiv + 1)
+    p = stypes.emptyDoubleVector(nderiv + 1)
     nderiv = ctypes.c_int(nderiv)
     t = ctypes.c_double(t)
     libspice.polyds_c(ctypes.byref(coeffs), deg, nderiv, t, p)
-    return stypes.c_vector_to_python(p)
+    return stypes.cVectorToPython(p)
 
 
-@spice_error_check
+@spiceErrorCheck
 def pos(string, substr, start):
     """
     Find the first occurrence in a string of a substring, starting at
@@ -10782,13 +9866,13 @@ def pos(string, substr, start):
             in string at or following index start.
     :rtype: int
     """
-    string = stypes.string_to_char_p(string)
-    substr = stypes.string_to_char_p(substr)
+    string = stypes.stringToCharP(string)
+    substr = stypes.stringToCharP(substr)
     start = ctypes.c_int(start)
     return libspice.pos_c(string, substr, start)
 
 
-@spice_error_check
+@spiceErrorCheck
 def posr(string, substr, start):
     """
     Find the first occurrence in a string of a substring, starting at
@@ -10807,8 +9891,8 @@ def posr(string, substr, start):
             in string at or preceding index start.
     :rtype: int
     """
-    string = stypes.string_to_char_p(string)
-    substr = stypes.string_to_char_p(substr)
+    string = stypes.stringToCharP(string)
+    substr = stypes.stringToCharP(substr)
     start = ctypes.c_int(start)
     return libspice.posr_c(string, substr, start)
 
@@ -10817,7 +9901,7 @@ def posr(string, substr, start):
 # skip for no as this is not really an important function for python users
 
 
-@spice_error_check
+@spiceErrorCheck
 def prop2b(gm, pvinit, dt):
     """
     Given a central mass and the state of massless body at time t_0,
@@ -10836,14 +9920,14 @@ def prop2b(gm, pvinit, dt):
     :rtype: 6-Element Array of floats
     """
     gm = ctypes.c_double(gm)
-    pvinit = stypes.to_double_vector(pvinit)
+    pvinit = stypes.toDoubleVector(pvinit)
     dt = ctypes.c_double(dt)
-    pvprop = stypes.empty_double_vector(6)
+    pvprop = stypes.emptyDoubleVector(6)
     libspice.prop2b_c(gm, pvinit, dt, pvprop)
-    return stypes.c_vector_to_python(pvprop)
+    return stypes.cVectorToPython(pvprop)
 
 
-@spice_error_check
+@spiceErrorCheck
 def prsdp(string):
     """
     Parse a string as a double precision number, encapsulating error handling.
@@ -10855,13 +9939,13 @@ def prsdp(string):
     :return: D.p. value obtained by parsing string.
     :rtype: float
     """
-    string = stypes.string_to_char_p(string)
+    string = stypes.stringToCharP(string)
     dpval = ctypes.c_double()
     libspice.prsdp_c(string, ctypes.byref(dpval))
     return dpval.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def prsint(string):
     """
     Parse a string as an integer, encapsulating error handling.
@@ -10873,13 +9957,13 @@ def prsint(string):
     :return: Integer value obtained by parsing string.
     :rtype: int
     """
-    string = stypes.string_to_char_p(string)
+    string = stypes.stringToCharP(string)
     intval = ctypes.c_int()
     libspice.prsint_c(string, ctypes.byref(intval))
     return intval.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def psv2pl(point, span1, span2):
     """
     Make a CSPICE plane from a point and two spanning vectors.
@@ -10895,9 +9979,9 @@ def psv2pl(point, span1, span2):
     :return: A SPICE plane.
     :rtype: supportypes.Plane
     """
-    point = stypes.to_double_vector(point)
-    span1 = stypes.to_double_vector(span1)
-    span2 = stypes.to_double_vector(span2)
+    point = stypes.toDoubleVector(point)
+    span1 = stypes.toDoubleVector(span1)
+    span2 = stypes.toDoubleVector(span2)
     plane = stypes.Plane()
     libspice.psv2pl_c(point, span1, span2, ctypes.byref(plane))
     return plane
@@ -10906,7 +9990,7 @@ def psv2pl(point, span1, span2):
 # skip putcml, is this really needed for python users?
 
 
-@spice_error_check
+@spiceErrorCheck
 def pxform(fromstr, tostr, et):
     """
     Return the matrix that transforms position vectors from one
@@ -10924,14 +10008,14 @@ def pxform(fromstr, tostr, et):
     :rtype: 3x3 Element Array of floats
     """
     et = ctypes.c_double(et)
-    tostr = stypes.string_to_char_p(tostr)
-    fromstr = stypes.string_to_char_p(fromstr)
-    rotatematrix = stypes.empty_double_matrix()
+    tostr = stypes.stringToCharP(tostr)
+    fromstr = stypes.stringToCharP(fromstr)
+    rotatematrix = stypes.emptyDoubleMatrix()
     libspice.pxform_c(fromstr, tostr, et, rotatematrix)
-    return stypes.c_matrix_to_numpy(rotatematrix)
+    return stypes.cMatrixToNumpy(rotatematrix)
 
 
-@spice_error_check
+@spiceErrorCheck
 def pxfrm2(frame_from, frame_to, etfrom, etto):
     """
     Return the 3x3 matrix that transforms position vectors from one
@@ -10951,20 +10035,20 @@ def pxfrm2(frame_from, frame_to, etfrom, etto):
     :return: A position transformation matrix from frame_from to frame_to
     :rtype: 3x3 Element Array of floats
     """
-    frame_from = stypes.string_to_char_p(frame_from)
-    frame_to = stypes.string_to_char_p(frame_to)
+    frame_from = stypes.stringToCharP(frame_from)
+    frame_to = stypes.stringToCharP(frame_to)
     etfrom = ctypes.c_double(etfrom)
     etto = ctypes.c_double(etto)
-    outmatrix = stypes.empty_double_matrix()
+    outmatrix = stypes.emptyDoubleMatrix()
     libspice.pxfrm2_c(frame_from, frame_to, etfrom, etto, outmatrix)
-    return stypes.c_matrix_to_numpy(outmatrix)
+    return stypes.cMatrixToNumpy(outmatrix)
 
 
 ################################################################################
 # Q
 
 
-@spice_error_check
+@spiceErrorCheck
 def q2m(q):
     """
     Find the rotation matrix corresponding to a specified unit quaternion.
@@ -10976,13 +10060,13 @@ def q2m(q):
     :return: A rotation matrix corresponding to q
     :rtype: 3x3-Element Array of floats
     """
-    q = stypes.to_double_vector(q)
-    mout = stypes.empty_double_matrix()
+    q = stypes.toDoubleVector(q)
+    mout = stypes.emptyDoubleMatrix()
     libspice.q2m_c(q, mout)
-    return stypes.c_matrix_to_numpy(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
-# @spice_error_check
+# @spiceErrorCheck
 def qcktrc(tracelen=_default_len_out):
     """
     Return a string containing a traceback.
@@ -10994,13 +10078,13 @@ def qcktrc(tracelen=_default_len_out):
     :return: A traceback string.
     :rtype: str
     """
-    tracestr = stypes.string_to_char_p(tracelen)
+    tracestr = stypes.stringToCharP(tracelen)
     tracelen = ctypes.c_int(tracelen)
     libspice.qcktrc_c(tracelen, tracestr)
-    return stypes.to_python_string(tracestr)
+    return stypes.toPythonString(tracestr)
 
 
-@spice_error_check
+@spiceErrorCheck
 def qdq2av(q, dq):
     """
     Derive angular velocity from a unit quaternion and its derivative
@@ -11015,14 +10099,14 @@ def qdq2av(q, dq):
     :return: Angular velocity defined by q and dq.
     :rtype: 3-Element Array of floats
     """
-    q = stypes.to_double_vector(q)
-    dq = stypes.to_double_vector(dq)
-    vout = stypes.empty_double_vector(3)
+    q = stypes.toDoubleVector(q)
+    dq = stypes.toDoubleVector(dq)
+    vout = stypes.emptyDoubleVector(3)
     libspice.qdq2av_c(q, dq, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def qxq(q1, q2):
     """
     Multiply two quaternions.
@@ -11036,18 +10120,18 @@ def qxq(q1, q2):
     :return: Product of q1 and q2.
     :rtype: 4-Element Array of floats
     """
-    q1 = stypes.to_double_vector(q1)
-    q2 = stypes.to_double_vector(q2)
-    vout = stypes.empty_double_vector(4)
+    q1 = stypes.toDoubleVector(q1)
+    q2 = stypes.toDoubleVector(q2)
+    vout = stypes.emptyDoubleVector(4)
     libspice.qxq_c(q1, q2, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
 ################################################################################
 # R
 
 
-@spice_error_check
+@spiceErrorCheck
 def radrec(inrange, re, dec):
     """
     Convert from range, right ascension, and declination to rectangular
@@ -11067,12 +10151,12 @@ def radrec(inrange, re, dec):
     inrange = ctypes.c_double(inrange)
     re = ctypes.c_double(re)
     dec = ctypes.c_double(dec)
-    rectan = stypes.empty_double_vector(3)
+    rectan = stypes.emptyDoubleVector(3)
     libspice.radrec_c(inrange, re, dec, rectan)
-    return stypes.c_vector_to_python(rectan)
+    return stypes.cVectorToPython(rectan)
 
 
-@spice_error_check
+@spiceErrorCheck
 def rav2xf(rot, av):
     """
     This routine determines a state transformation matrix
@@ -11088,14 +10172,14 @@ def rav2xf(rot, av):
     :return: State transformation associated with rot and av.
     :rtype: 6x6-Element Array of floats
     """
-    rot = stypes.to_double_matrix(rot)
-    av = stypes.to_double_vector(av)
-    xform = stypes.empty_double_matrix(x=6, y=6)
+    rot = stypes.toDoubleMatrix(rot)
+    av = stypes.toDoubleVector(av)
+    xform = stypes.emptyDoubleMatrix(x=6, y=6)
     libspice.rav2xf_c(rot, av, xform)
-    return stypes.c_matrix_to_numpy(xform)
+    return stypes.cMatrixToNumpy(xform)
 
 
-@spice_error_check
+@spiceErrorCheck
 def raxisa(matrix):
     """
     Compute the axis of the rotation given by an input matrix
@@ -11108,14 +10192,14 @@ def raxisa(matrix):
     :return: Axis of the rotation, Angle through which the rotation is performed
     :rtype: tuple
     """
-    matrix = stypes.to_double_matrix(matrix)
-    axis = stypes.empty_double_vector(3)
+    matrix = stypes.toDoubleMatrix(matrix)
+    axis = stypes.emptyDoubleVector(3)
     angle = ctypes.c_double()
     libspice.raxisa_c(matrix, axis, ctypes.byref(angle))
-    return stypes.c_vector_to_python(axis), angle.value
+    return stypes.cVectorToPython(axis), angle.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def rdtext(file, lenout=_default_len_out):  # pragma: no cover
     """
     Read the next line of text from a text file.
@@ -11129,15 +10213,15 @@ def rdtext(file, lenout=_default_len_out):  # pragma: no cover
     :return: Next line from the text file, End-of-file indicator
     :rtype: tuple
     """
-    file = stypes.string_to_char_p(file)
-    line = stypes.string_to_char_p(lenout)
+    file = stypes.stringToCharP(file)
+    line = stypes.stringToCharP(lenout)
     lenout = ctypes.c_int(lenout)
     eof = ctypes.c_int()
     libspice.rdtext_c(file, lenout, line, ctypes.byref(eof))
-    return stypes.to_python_string(line), bool(eof.value)
+    return stypes.toPythonString(line), bool(eof.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def reccyl(rectan):
     """
     Convert from rectangular to cylindrical coordinates.
@@ -11152,15 +10236,16 @@ def reccyl(rectan):
             Height above xY plane.
     :rtype: tuple
     """
-    rectan = stypes.to_double_vector(rectan)
+    rectan = stypes.toDoubleVector(rectan)
     radius = ctypes.c_double(0)
     lon = ctypes.c_double(0)
     z = ctypes.c_double(0)
-    libspice.reccyl_c(rectan, ctypes.byref(radius), ctypes.byref(lon), ctypes.byref(z))
+    libspice.reccyl_c(rectan, ctypes.byref(radius), ctypes.byref(lon),
+                      ctypes.byref(z))
     return radius.value, lon.value, z.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def recgeo(rectan, re, f):
     """
     Convert from rectangular coordinates to geodetic coordinates.
@@ -11179,24 +10264,18 @@ def recgeo(rectan, re, f):
             Altitude above reference spheroid
     :rtype: tuple
     """
-    rectan = stypes.to_double_vector(rectan)
+    rectan = stypes.toDoubleVector(rectan)
     re = ctypes.c_double(re)
     f = ctypes.c_double(f)
     longitude = ctypes.c_double(0)
     latitude = ctypes.c_double(0)
     alt = ctypes.c_double(0)
-    libspice.recgeo_c(
-        rectan,
-        re,
-        f,
-        ctypes.byref(longitude),
-        ctypes.byref(latitude),
-        ctypes.byref(alt),
-    )
+    libspice.recgeo_c(rectan, re, f, ctypes.byref(longitude),
+                      ctypes.byref(latitude), ctypes.byref(alt))
     return longitude.value, latitude.value, alt.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def reclat(rectan):
     """
     Convert from rectangular coordinates to latitudinal coordinates.
@@ -11208,17 +10287,16 @@ def reclat(rectan):
     :return: Distance from the origin, Longitude in radians, Latitude in radians
     :rtype: tuple
     """
-    rectan = stypes.to_double_vector(rectan)
+    rectan = stypes.toDoubleVector(rectan)
     radius = ctypes.c_double(0)
     longitude = ctypes.c_double(0)
     latitude = ctypes.c_double(0)
-    libspice.reclat_c(
-        rectan, ctypes.byref(radius), ctypes.byref(longitude), ctypes.byref(latitude)
-    )
+    libspice.reclat_c(rectan, ctypes.byref(radius), ctypes.byref(longitude),
+                      ctypes.byref(latitude))
     return radius.value, longitude.value, latitude.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def recpgr(body, rectan, re, f):
     """
     Convert rectangular coordinates to planetographic coordinates.
@@ -11239,20 +10317,19 @@ def recpgr(body, rectan, re, f):
             Altitude above reference spheroid
     :rtype: tuple
     """
-    body = stypes.string_to_char_p(body)
-    rectan = stypes.to_double_vector(rectan)
+    body = stypes.stringToCharP(body)
+    rectan = stypes.toDoubleVector(rectan)
     re = ctypes.c_double(re)
     f = ctypes.c_double(f)
     lon = ctypes.c_double()
     lat = ctypes.c_double()
     alt = ctypes.c_double()
-    libspice.recpgr_c(
-        body, rectan, re, f, ctypes.byref(lon), ctypes.byref(lat), ctypes.byref(alt)
-    )
+    libspice.recpgr_c(body, rectan, re, f, ctypes.byref(lon), ctypes.byref(lat),
+                      ctypes.byref(alt))
     return lon.value, lat.value, alt.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def recrad(rectan):
     """
     Convert rectangular coordinates to range, right ascension, and declination.
@@ -11267,17 +10344,16 @@ def recrad(rectan):
             Declination in radians
     :rtype: tuple
     """
-    rectan = stypes.to_double_vector(rectan)
+    rectan = stypes.toDoubleVector(rectan)
     outrange = ctypes.c_double()
     ra = ctypes.c_double()
     dec = ctypes.c_double()
-    libspice.recrad_c(
-        rectan, ctypes.byref(outrange), ctypes.byref(ra), ctypes.byref(dec)
-    )
+    libspice.recrad_c(rectan, ctypes.byref(outrange), ctypes.byref(ra),
+                      ctypes.byref(dec))
     return outrange.value, ra.value, dec.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def recsph(rectan):
     """
     Convert from rectangular coordinates to spherical coordinates.
@@ -11292,15 +10368,16 @@ def recsph(rectan):
             Longitude in radians.
     :rtype: tuple
     """
-    rectan = stypes.to_double_vector(rectan)
+    rectan = stypes.toDoubleVector(rectan)
     r = ctypes.c_double()
     colat = ctypes.c_double()
     lon = ctypes.c_double()
-    libspice.recsph_c(rectan, ctypes.byref(r), ctypes.byref(colat), ctypes.byref(lon))
+    libspice.recsph_c(rectan, ctypes.byref(r), ctypes.byref(colat),
+                      ctypes.byref(lon))
     return r.value, colat.value, lon.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def removc(item, inset):
     """
     Remove an item from a character set.
@@ -11314,11 +10391,11 @@ def removc(item, inset):
     """
     assert isinstance(inset, stypes.SpiceCell)
     assert inset.dtype == 0
-    item = stypes.string_to_char_p(item)
+    item = stypes.stringToCharP(item)
     libspice.removc_c(item, ctypes.byref(inset))
 
 
-@spice_error_check
+@spiceErrorCheck
 def removd(item, inset):
     """
     Remove an item from a double precision set.
@@ -11336,7 +10413,7 @@ def removd(item, inset):
     libspice.removd_c(item, ctypes.byref(inset))
 
 
-@spice_error_check
+@spiceErrorCheck
 def removi(item, inset):
     """
     Remove an item from an integer set.
@@ -11354,7 +10431,7 @@ def removi(item, inset):
     libspice.removi_c(item, ctypes.byref(inset))
 
 
-@spice_error_check
+@spiceErrorCheck
 def reordc(iorder, ndim, lenvals, array):
     """
     Re-order the elements of an array of character strings
@@ -11373,15 +10450,15 @@ def reordc(iorder, ndim, lenvals, array):
     :return: Re-ordered Array.
     :rtype: Array of strs
     """
-    iorder = stypes.to_int_vector(iorder)
+    iorder = stypes.toIntVector(iorder)
     ndim = ctypes.c_int(ndim)
     lenvals = ctypes.c_int(lenvals + 1)
-    array = stypes.list_to_char_array(array, x_len=lenvals, y_len=ndim)
+    array = stypes.listToCharArray(array, xLen=lenvals, yLen=ndim)
     libspice.reordc_c(iorder, ndim, lenvals, array)
-    return [stypes.to_python_string(x.value) for x in array]
+    return [stypes.toPythonString(x.value) for x in array]
 
 
-@spice_error_check
+@spiceErrorCheck
 def reordd(iorder, ndim, array):
     """
     Re-order the elements of a double precision array according to
@@ -11398,14 +10475,14 @@ def reordd(iorder, ndim, array):
     :return: Re-ordered Array.
     :rtype: Array of floats
     """
-    iorder = stypes.to_int_vector(iorder)
+    iorder = stypes.toIntVector(iorder)
     ndim = ctypes.c_int(ndim)
-    array = stypes.to_double_vector(array)
+    array = stypes.toDoubleVector(array)
     libspice.reordd_c(iorder, ndim, array)
-    return stypes.c_vector_to_python(array)
+    return stypes.cVectorToPython(array)
 
 
-@spice_error_check
+@spiceErrorCheck
 def reordi(iorder, ndim, array):
     """
     Re-order the elements of an integer array according to
@@ -11422,14 +10499,14 @@ def reordi(iorder, ndim, array):
     :return: Re-ordered Array.
     :rtype: Array of ints
     """
-    iorder = stypes.to_int_vector(iorder)
+    iorder = stypes.toIntVector(iorder)
     ndim = ctypes.c_int(ndim)
-    array = stypes.to_int_vector(array)
+    array = stypes.toIntVector(array)
     libspice.reordi_c(iorder, ndim, array)
-    return stypes.c_vector_to_python(array)
+    return stypes.cVectorToPython(array)
 
 
-@spice_error_check
+@spiceErrorCheck
 def reordl(iorder, ndim, array):
     """
     Re-order the elements of a logical (Boolean) array according to
@@ -11446,14 +10523,14 @@ def reordl(iorder, ndim, array):
     :return: Re-ordered Array.
     :rtype: Array of bools
     """
-    iorder = stypes.to_int_vector(iorder)
+    iorder = stypes.toIntVector(iorder)
     ndim = ctypes.c_int(ndim)
-    array = stypes.to_int_vector(array)
+    array = stypes.toIntVector(array)
     libspice.reordl_c(iorder, ndim, array)
-    return stypes.c_int_vector_to_bool_python(array)
+    return stypes.cIntVectorToBoolPython(array)
 
 
-@spice_error_check
+@spiceErrorCheck
 def repmc(instr, marker, value, lenout=None):
     """
     Replace a marker with a character string.
@@ -11473,15 +10550,15 @@ def repmc(instr, marker, value, lenout=None):
     """
     if lenout is None:
         lenout = ctypes.c_int(len(instr) + len(value) + len(marker) + 15)
-    instr = stypes.string_to_char_p(instr)
-    marker = stypes.string_to_char_p(marker)
-    value = stypes.string_to_char_p(value)
-    out = stypes.string_to_char_p(lenout)
+    instr = stypes.stringToCharP(instr)
+    marker = stypes.stringToCharP(marker)
+    value = stypes.stringToCharP(value)
+    out = stypes.stringToCharP(lenout)
     libspice.repmc_c(instr, marker, value, lenout, out)
-    return stypes.to_python_string(out)
+    return stypes.toPythonString(out)
 
 
-@spice_error_check
+@spiceErrorCheck
 def repmct(instr, marker, value, repcase, lenout=None):
     """
     Replace a marker with the text representation of a
@@ -11504,16 +10581,16 @@ def repmct(instr, marker, value, repcase, lenout=None):
     """
     if lenout is None:
         lenout = ctypes.c_int(len(instr) + len(marker) + 15)
-    instr = stypes.string_to_char_p(instr)
-    marker = stypes.string_to_char_p(marker)
+    instr = stypes.stringToCharP(instr)
+    marker = stypes.stringToCharP(marker)
     value = ctypes.c_int(value)
-    repcase = ctypes.c_char(repcase.encode(encoding="UTF-8"))
-    out = stypes.string_to_char_p(lenout)
+    repcase = ctypes.c_char(repcase.encode(encoding='UTF-8'))
+    out = stypes.stringToCharP(lenout)
     libspice.repmct_c(instr, marker, value, repcase, lenout, out)
-    return stypes.to_python_string(out)
+    return stypes.toPythonString(out)
 
 
-@spice_error_check
+@spiceErrorCheck
 def repmd(instr, marker, value, sigdig):
     """
     Replace a marker with a double precision number.
@@ -11532,16 +10609,16 @@ def repmd(instr, marker, value, sigdig):
     :rtype: str
     """
     lenout = ctypes.c_int(len(instr) + len(marker) + 15)
-    instr = stypes.string_to_char_p(instr)
-    marker = stypes.string_to_char_p(marker)
+    instr = stypes.stringToCharP(instr)
+    marker = stypes.stringToCharP(marker)
     value = ctypes.c_double(value)
     sigdig = ctypes.c_int(sigdig)
-    out = stypes.string_to_char_p(lenout)
+    out = stypes.stringToCharP(lenout)
     libspice.repmd_c(instr, marker, value, sigdig, lenout, out)
-    return stypes.to_python_string(out)
+    return stypes.toPythonString(out)
 
 
-@spice_error_check
+@spiceErrorCheck
 def repmf(instr, marker, value, sigdig, informat, lenout=None):
     """
     Replace a marker in a string with a formatted double precision value.
@@ -11565,17 +10642,17 @@ def repmf(instr, marker, value, sigdig, informat, lenout=None):
     """
     if lenout is None:
         lenout = ctypes.c_int(len(instr) + len(marker) + 15)
-    instr = stypes.string_to_char_p(instr)
-    marker = stypes.string_to_char_p(marker)
+    instr = stypes.stringToCharP(instr)
+    marker = stypes.stringToCharP(marker)
     value = ctypes.c_double(value)
     sigdig = ctypes.c_int(sigdig)
-    informat = ctypes.c_char(informat.encode(encoding="UTF-8"))
-    out = stypes.string_to_char_p(lenout)
+    informat = ctypes.c_char(informat.encode(encoding='UTF-8'))
+    out = stypes.stringToCharP(lenout)
     libspice.repmf_c(instr, marker, value, sigdig, informat, lenout, out)
-    return stypes.to_python_string(out)
+    return stypes.toPythonString(out)
 
 
-@spice_error_check
+@spiceErrorCheck
 def repmi(instr, marker, value, lenout=None):
     """
     Replace a marker with an integer.
@@ -11595,15 +10672,15 @@ def repmi(instr, marker, value, lenout=None):
     """
     if lenout is None:
         lenout = ctypes.c_int(len(instr) + len(marker) + 15)
-    instr = stypes.string_to_char_p(instr)
-    marker = stypes.string_to_char_p(marker)
+    instr = stypes.stringToCharP(instr)
+    marker = stypes.stringToCharP(marker)
     value = ctypes.c_int(value)
-    out = stypes.string_to_char_p(lenout)
+    out = stypes.stringToCharP(lenout)
     libspice.repmi_c(instr, marker, value, lenout, out)
-    return stypes.to_python_string(out)
+    return stypes.toPythonString(out)
 
 
-@spice_error_check
+@spiceErrorCheck
 def repmot(instr, marker, value, repcase, lenout=None):
     """
     Replace a marker with the text representation of an ordinal number.
@@ -11625,13 +10702,13 @@ def repmot(instr, marker, value, repcase, lenout=None):
     """
     if lenout is None:
         lenout = ctypes.c_int(len(instr) + len(marker) + 15)
-    instr = stypes.string_to_char_p(instr)
-    marker = stypes.string_to_char_p(marker)
+    instr = stypes.stringToCharP(instr)
+    marker = stypes.stringToCharP(marker)
     value = ctypes.c_int(value)
-    repcase = ctypes.c_char(repcase.encode(encoding="UTF-8"))
-    out = stypes.string_to_char_p(lenout)
+    repcase = ctypes.c_char(repcase.encode(encoding='UTF-8'))
+    out = stypes.stringToCharP(lenout)
     libspice.repmot_c(instr, marker, value, repcase, lenout, out)
-    return stypes.to_python_string(out)
+    return stypes.toPythonString(out)
 
 
 def reset():
@@ -11646,7 +10723,7 @@ def reset():
     libspice.reset_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def return_c():
     """
     True if SPICE routines should return immediately upon entry.
@@ -11659,7 +10736,7 @@ def return_c():
     return bool(libspice.return_c())
 
 
-@spice_error_check
+@spiceErrorCheck
 def rotate(angle, iaxis):
     """
     Calculate the 3x3 rotation matrix generated by a rotation
@@ -11677,12 +10754,12 @@ def rotate(angle, iaxis):
     """
     angle = ctypes.c_double(angle)
     iaxis = ctypes.c_int(iaxis)
-    mout = stypes.empty_double_matrix()
+    mout = stypes.emptyDoubleMatrix()
     libspice.rotate_c(angle, iaxis, mout)
-    return stypes.c_matrix_to_numpy(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def rotmat(m1, angle, iaxis):
     """
     Rotmat applies a rotation of angle radians about axis iaxis to a
@@ -11700,15 +10777,15 @@ def rotmat(m1, angle, iaxis):
     :return: Resulting rotated matrix.
     :rtype: 3x3-Element Array of floats
     """
-    m1 = stypes.to_double_matrix(m1)
+    m1 = stypes.toDoubleMatrix(m1)
     angle = ctypes.c_double(angle)
     iaxis = ctypes.c_int(iaxis)
-    mout = stypes.empty_double_matrix()
+    mout = stypes.emptyDoubleMatrix()
     libspice.rotmat_c(m1, angle, iaxis, mout)
-    return stypes.c_matrix_to_numpy(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def rotvec(v1, angle, iaxis):
     """
     Transform a vector to a new coordinate system rotated by angle
@@ -11726,15 +10803,15 @@ def rotvec(v1, angle, iaxis):
     :return: the vector expressed in the new coordinate system.
     :rtype: 3-Element Array of floats
     """
-    v1 = stypes.to_double_vector(v1)
+    v1 = stypes.toDoubleVector(v1)
     angle = ctypes.c_double(angle)
     iaxis = ctypes.c_int(iaxis)
-    vout = stypes.empty_double_vector(3)
+    vout = stypes.emptyDoubleVector(3)
     libspice.rotvec_c(v1, angle, iaxis, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def rpd():
     """
     Return the number of radians per degree.
@@ -11747,7 +10824,7 @@ def rpd():
     return libspice.rpd_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def rquad(a, b, c):
     """
     Find the roots of a quadratic equation.
@@ -11766,17 +10843,17 @@ def rquad(a, b, c):
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
     c = ctypes.c_double(c)
-    root1 = stypes.empty_double_vector(2)
-    root2 = stypes.empty_double_vector(2)
+    root1 = stypes.emptyDoubleVector(2)
+    root2 = stypes.emptyDoubleVector(2)
     libspice.rquad_c(a, b, c, root1, root2)
-    return stypes.c_vector_to_python(root1), stypes.c_vector_to_python(root2)
+    return stypes.cVectorToPython(root1), stypes.cVectorToPython(root2)
 
 
 ################################################################################
 # S
 
 
-@spice_error_check
+@spiceErrorCheck
 def saelgv(vec1, vec2):
     """
     Find semi-axis vectors of an ellipse generated by two arbitrary
@@ -11791,15 +10868,15 @@ def saelgv(vec1, vec2):
     :return: Semi-major axis of ellipse, Semi-minor axis of ellipse.
     :rtype: tuple
     """
-    vec1 = stypes.to_double_vector(vec1)
-    vec2 = stypes.to_double_vector(vec2)
-    smajor = stypes.empty_double_vector(3)
-    sminor = stypes.empty_double_vector(3)
+    vec1 = stypes.toDoubleVector(vec1)
+    vec2 = stypes.toDoubleVector(vec2)
+    smajor = stypes.emptyDoubleVector(3)
+    sminor = stypes.emptyDoubleVector(3)
     libspice.saelgv_c(vec1, vec2, smajor, sminor)
-    return stypes.c_vector_to_python(smajor), stypes.c_vector_to_python(sminor)
+    return stypes.cVectorToPython(smajor), stypes.cVectorToPython(sminor)
 
 
-@spice_error_check
+@spiceErrorCheck
 def scard(incard, cell):
     """
     Set the cardinality of a SPICE cell of any data type.
@@ -11819,8 +10896,8 @@ def scard(incard, cell):
     return cell
 
 
-@spice_error_check
-def scdecd(sc, sclkdp, lenout=_default_len_out, mxpart=None):
+@spiceErrorCheck
+def scdecd(sc, sclkdp, lenout=_default_len_out, MXPART=None):
     # todo: figure out how to use mxpart
     """
     Convert double precision encoding of spacecraft clock time into
@@ -11834,20 +10911,20 @@ def scdecd(sc, sclkdp, lenout=_default_len_out, mxpart=None):
     :type sclkdp: float
     :param lenout: Maximum allowed length of output SCLK string.
     :type lenout: int
-    :param mxpart: Maximum number of spacecraft clock partitions.
-    :type mxpart: int
+    :param MXPART: Maximum number of spacecraft clock partitions.
+    :type MXPART: int
     :return: Character representation of a clock count.
     :rtype: str
     """
     sc = ctypes.c_int(sc)
     sclkdp = ctypes.c_double(sclkdp)
-    sclkch = stypes.string_to_char_p(" " * lenout)
+    sclkch = stypes.stringToCharP(" " * lenout)
     lenout = ctypes.c_int(lenout)
     libspice.scdecd_c(sc, sclkdp, lenout, sclkch)
-    return stypes.to_python_string(sclkch)
+    return stypes.toPythonString(sclkch)
 
 
-@spice_error_check
+@spiceErrorCheck
 def sce2c(sc, et):
     """
     Convert ephemeris seconds past J2000 (ET) to continuous encoded
@@ -11872,7 +10949,7 @@ def sce2c(sc, et):
     return sclkdp.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def sce2s(sc, et, lenout=_default_len_out):
     """
     Convert an epoch specified as ephemeris seconds past J2000 (ET) to a
@@ -11891,13 +10968,13 @@ def sce2s(sc, et, lenout=_default_len_out):
     """
     sc = ctypes.c_int(sc)
     et = ctypes.c_double(et)
-    sclkch = stypes.string_to_char_p(" " * lenout)
+    sclkch = stypes.stringToCharP(" " * lenout)
     lenout = ctypes.c_int(lenout)
     libspice.sce2s_c(sc, et, lenout, sclkch)
-    return stypes.to_python_string(sclkch)
+    return stypes.toPythonString(sclkch)
 
 
-@spice_error_check
+@spiceErrorCheck
 def sce2t(sc, et):
     """
     Convert ephemeris seconds past J2000 (ET) to integral
@@ -11921,8 +10998,8 @@ def sce2t(sc, et):
     return sclkdp.value
 
 
-@spice_error_check
-def scencd(sc, sclkch, mxpart=None):
+@spiceErrorCheck
+def scencd(sc, sclkch, MXPART=None):
     """
     Encode character representation of spacecraft clock time into a
     double precision number.
@@ -11933,26 +11010,26 @@ def scencd(sc, sclkch, mxpart=None):
     :type sc: int
     :param sclkch: Character representation of a spacecraft clock.
     :type sclkch: Union[str,Iterable[str]]
-    :param mxpart: Maximum number of spacecraft clock partitions.
-    :type mxpart: int
+    :param MXPART: Maximum number of spacecraft clock partitions.
+    :type MXPART: int
     :return: Encoded representation of the clock count.
     :rtype: Union[float,Iterable[float]]
     """
     sc = ctypes.c_int(sc)
     sclkdp = ctypes.c_double()
-    if stypes.is_iterable(sclkch):
+    if stypes.isiterable(sclkch):
         results = []
         for chars in sclkch:
-            libspice.scencd_c(sc, stypes.string_to_char_p(chars), ctypes.byref(sclkdp))
-            check_for_spice_error(None)
+            libspice.scencd_c(sc, stypes.stringToCharP(chars), ctypes.byref(sclkdp))
+            checkForSpiceError(None)
             results.append(sclkdp.value)
         return results
     else:
-        libspice.scencd_c(sc, stypes.string_to_char_p(sclkch), ctypes.byref(sclkdp))
+        libspice.scencd_c(sc, stypes.stringToCharP(sclkch), ctypes.byref(sclkdp))
         return sclkdp.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def scfmt(sc, ticks, lenout=_default_len_out):
     """
     Convert encoded spacecraft clock ticks to character clock format.
@@ -11970,13 +11047,13 @@ def scfmt(sc, ticks, lenout=_default_len_out):
     """
     sc = ctypes.c_int(sc)
     ticks = ctypes.c_double(ticks)
-    clkstr = stypes.string_to_char_p(lenout)
+    clkstr = stypes.stringToCharP(lenout)
     lenout = ctypes.c_int(lenout)
     libspice.scfmt_c(sc, ticks, lenout, clkstr)
-    return stypes.to_python_string(clkstr)
+    return stypes.toPythonString(clkstr)
 
 
-@spice_error_check
+@spiceErrorCheck
 def scpart(sc):
     """
     Get spacecraft clock partition information from a spacecraft
@@ -11994,16 +11071,14 @@ def scpart(sc):
     """
     sc = ctypes.c_int(sc)
     nparts = ctypes.c_int()
-    pstart = stypes.empty_double_vector(9999)
-    pstop = stypes.empty_double_vector(9999)
+    pstart = stypes.emptyDoubleVector(9999)
+    pstop = stypes.emptyDoubleVector(9999)
     libspice.scpart_c(sc, nparts, pstart, pstop)
-    return (
-        stypes.c_vector_to_python(pstart)[0 : nparts.value],
-        stypes.c_vector_to_python(pstop)[0 : nparts.value],
-    )
+    return stypes.cVectorToPython(pstart)[0:nparts.value], stypes.cVectorToPython(
+            pstop)[0:nparts.value]
 
 
-@spice_error_check
+@spiceErrorCheck
 def scs2e(sc, sclkch):
     """
     Convert a spacecraft clock string to ephemeris seconds past J2000 (ET).
@@ -12018,13 +11093,13 @@ def scs2e(sc, sclkch):
     :rtype: float
     """
     sc = ctypes.c_int(sc)
-    sclkch = stypes.string_to_char_p(sclkch)
+    sclkch = stypes.stringToCharP(sclkch)
     et = ctypes.c_double()
     libspice.scs2e_c(sc, sclkch, ctypes.byref(et))
     return et.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def sct2e(sc, sclkdp):
     """
     Convert encoded spacecraft clock ("ticks") to ephemeris
@@ -12041,11 +11116,11 @@ def sct2e(sc, sclkdp):
     """
     sc = ctypes.c_int(sc)
     et = ctypes.c_double()
-    if stypes.is_iterable(sclkdp):
+    if stypes.isiterable(sclkdp):
         results = []
         for sclk in sclkdp:
-            libspice.sct2e_c(sc, ctypes.c_double(sclk), ctypes.byref(et))
-            check_for_spice_error(None)
+            libspice.sct2e_c(sc, ctypes.c_double(sclk), ctypes.byref(et))        
+            checkForSpiceError(None)
             results.append(et.value)
         return results
     else:
@@ -12054,7 +11129,7 @@ def sct2e(sc, sclkdp):
         return et.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def sctiks(sc, clkstr):
     """
     Convert a spacecraft clock format string to number of "ticks".
@@ -12069,13 +11144,13 @@ def sctiks(sc, clkstr):
     :rtype: float
     """
     sc = ctypes.c_int(sc)
-    clkstr = stypes.string_to_char_p(clkstr)
+    clkstr = stypes.stringToCharP(clkstr)
     ticks = ctypes.c_double()
     libspice.sctiks_c(sc, clkstr, ctypes.byref(ticks))
     return ticks.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def sdiff(a, b):
     """
     Take the symmetric difference of two sets of any data type to form a
@@ -12107,7 +11182,7 @@ def sdiff(a, b):
     return c
 
 
-@spice_error_check
+@spiceErrorCheck
 def set_c(a, op, b):
     """
     Given a relational operator, compare two sets of any data type.
@@ -12127,11 +11202,11 @@ def set_c(a, op, b):
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
     assert isinstance(op, str)
-    op = stypes.string_to_char_p(op)
+    op = stypes.stringToCharP(op)
     return bool(libspice.set_c(ctypes.byref(a), op, ctypes.byref(b)))
 
 
-@spice_error_check
+@spiceErrorCheck
 def setmsg(message):
     """
     Set the value of the current long error message.
@@ -12141,11 +11216,11 @@ def setmsg(message):
     :param message: A long error message.
     :type message: str
     """
-    message = stypes.string_to_char_p(message)
+    message = stypes.stringToCharP(message)
     libspice.setmsg_c(message)
 
 
-@spice_error_check
+@spiceErrorCheck
 def shellc(ndim, lenvals, array):
     # This works! looks like this is a mutable 2d char array
     """
@@ -12163,14 +11238,14 @@ def shellc(ndim, lenvals, array):
     :return: The sorted array.
     :rtype: list of str.
     """
-    array = stypes.list_to_char_array(array, x_len=lenvals, y_len=ndim)
+    array = stypes.listToCharArray(array, xLen=lenvals, yLen=ndim)
     ndim = ctypes.c_int(ndim)
     lenvals = ctypes.c_int(lenvals)
     libspice.shellc_c(ndim, lenvals, ctypes.byref(array))
-    return stypes.c_vector_to_python(array)
+    return stypes.cVectorToPython(array)
 
 
-@spice_error_check
+@spiceErrorCheck
 def shelld(ndim, array):
     # Works!, use this as example for "I/O" parameters
     """
@@ -12185,13 +11260,13 @@ def shelld(ndim, array):
     :return: The sorted array.
     :rtype: Array of floats
     """
-    array = stypes.to_double_vector(array)
+    array = stypes.toDoubleVector(array)
     ndim = ctypes.c_int(ndim)
     libspice.shelld_c(ndim, ctypes.cast(array, ctypes.POINTER(ctypes.c_double)))
-    return stypes.c_vector_to_python(array)
+    return stypes.cVectorToPython(array)
 
 
-@spice_error_check
+@spiceErrorCheck
 def shelli(ndim, array):
     # Works!, use this as example for "I/O" parameters
     """
@@ -12206,10 +11281,10 @@ def shelli(ndim, array):
     :return: The sorted array.
     :rtype: Array of ints
     """
-    array = stypes.to_int_vector(array)
+    array = stypes.toIntVector(array)
     ndim = ctypes.c_int(ndim)
     libspice.shelli_c(ndim, ctypes.cast(array, ctypes.POINTER(ctypes.c_int)))
-    return stypes.c_vector_to_python(array)
+    return stypes.cVectorToPython(array)
 
 
 def sigerr(message):
@@ -12222,12 +11297,12 @@ def sigerr(message):
     :param message: A short error message.
     :type message: str
     """
-    message = stypes.string_to_char_p(message)
+    message = stypes.stringToCharP(message)
     libspice.sigerr_c(message)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
     """
     Given an observer and a direction vector defining a ray, compute
@@ -12261,41 +11336,25 @@ def sincpt(method, target, et, fixref, abcorr, obsrvr, dref, dvec):
             Vector from observer to intercept point.
     :rtype: tuple
     """
-    method = stypes.string_to_char_p(method)
-    target = stypes.string_to_char_p(target)
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
-    fixref = stypes.string_to_char_p(fixref)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    dref = stypes.string_to_char_p(dref)
-    dvec = stypes.to_double_vector(dvec)
-    spoint = stypes.empty_double_vector(3)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    dref = stypes.stringToCharP(dref)
+    dvec = stypes.toDoubleVector(dvec)
+    spoint = stypes.emptyDoubleVector(3)
     trgepc = ctypes.c_double(0)
-    srfvec = stypes.empty_double_vector(3)
+    srfvec = stypes.emptyDoubleVector(3)
     found = ctypes.c_int(0)
-    libspice.sincpt_c(
-        method,
-        target,
-        et,
-        fixref,
-        abcorr,
-        obsrvr,
-        dref,
-        dvec,
-        spoint,
-        ctypes.byref(trgepc),
-        srfvec,
-        ctypes.byref(found),
-    )
-    return (
-        stypes.c_vector_to_python(spoint),
-        trgepc.value,
-        stypes.c_vector_to_python(srfvec),
-        bool(found.value),
-    )
+    libspice.sincpt_c(method, target, et, fixref, abcorr, obsrvr, dref, dvec,
+                      spoint, ctypes.byref(trgepc), srfvec, ctypes.byref(found))
+    return stypes.cVectorToPython(spoint), trgepc.value, stypes.cVectorToPython(
+            srfvec), bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def size(cell):
     """
     Return the size (maximum cardinality) of a SPICE cell of any
@@ -12312,7 +11371,7 @@ def size(cell):
     return libspice.size_c(ctypes.byref(cell))
 
 
-@spice_error_check
+@spiceErrorCheck
 def spd():
     """
     Return the number of seconds in a day.
@@ -12325,7 +11384,7 @@ def spd():
     return libspice.spd_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def sphcyl(radius, colat, slon):
     """
     This routine converts from spherical coordinates to cylindrical
@@ -12351,13 +11410,12 @@ def sphcyl(radius, colat, slon):
     r = ctypes.c_double()
     lon = ctypes.c_double()
     z = ctypes.c_double()
-    libspice.sphcyl_c(
-        radius, colat, slon, ctypes.byref(r), ctypes.byref(lon), ctypes.byref(z)
-    )
+    libspice.sphcyl_c(radius, colat, slon, ctypes.byref(r), ctypes.byref(lon),
+                      ctypes.byref(z))
     return r.value, lon.value, z.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def sphlat(r, colat, lons):
     """
     Convert from spherical coordinates to latitudinal coordinates.
@@ -12382,13 +11440,12 @@ def sphlat(r, colat, lons):
     radius = ctypes.c_double()
     lon = ctypes.c_double()
     lat = ctypes.c_double()
-    libspice.sphcyl_c(
-        r, colat, lons, ctypes.byref(radius), ctypes.byref(lon), ctypes.byref(lat)
-    )
+    libspice.sphcyl_c(r, colat, lons, ctypes.byref(radius), ctypes.byref(lon),
+                      ctypes.byref(lat))
     return radius.value, lon.value, lat.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def sphrec(r, colat, lon):
     """
     Convert from spherical coordinates to rectangular coordinates.
@@ -12407,12 +11464,12 @@ def sphrec(r, colat, lon):
     r = ctypes.c_double(r)
     colat = ctypes.c_double(colat)
     lon = ctypes.c_double(lon)
-    rectan = stypes.empty_double_vector(3)
+    rectan = stypes.emptyDoubleVector(3)
     libspice.sphrec_c(r, colat, lon, rectan)
-    return stypes.c_vector_to_python(rectan)
+    return stypes.cVectorToPython(rectan)
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkacs(targ, et, ref, abcorr, obs):
     """
     Return the state (position and velocity) of a target body
@@ -12440,19 +11497,18 @@ def spkacs(targ, et, ref, abcorr, obs):
     """
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
-    ref = stypes.string_to_char_p(ref)
-    abcorr = stypes.string_to_char_p(abcorr)
+    ref = stypes.stringToCharP(ref)
+    abcorr = stypes.stringToCharP(abcorr)
     obs = ctypes.c_int(obs)
-    starg = stypes.empty_double_vector(6)
+    starg = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
     dlt = ctypes.c_double()
-    libspice.spkacs_c(
-        targ, et, ref, abcorr, obs, starg, ctypes.byref(lt), ctypes.byref(dlt)
-    )
-    return stypes.c_vector_to_python(starg), lt.value, dlt.value
+    libspice.spkacs_c(targ, et, ref, abcorr, obs, starg, ctypes.byref(lt),
+                      ctypes.byref(dlt))
+    return stypes.cVectorToPython(starg), lt.value, dlt.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkapo(targ, et, ref, sobs, abcorr):
     """
     Return the position of a target body relative to an observer,
@@ -12477,16 +11533,16 @@ def spkapo(targ, et, ref, sobs, abcorr):
     """
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
-    ref = stypes.string_to_char_p(ref)
-    abcorr = stypes.string_to_char_p(abcorr)
-    sobs = stypes.to_double_vector(sobs)
-    ptarg = stypes.empty_double_vector(3)
+    ref = stypes.stringToCharP(ref)
+    abcorr = stypes.stringToCharP(abcorr)
+    sobs = stypes.toDoubleVector(sobs)
+    ptarg = stypes.emptyDoubleVector(3)
     lt = ctypes.c_double()
     libspice.spkapo_c(targ, et, ref, sobs, abcorr, ptarg, ctypes.byref(lt))
-    return stypes.c_vector_to_python(ptarg), lt.value
+    return stypes.cVectorToPython(ptarg), lt.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkapp(targ, et, ref, sobs, abcorr):
     """
     Deprecated: This routine has been superseded by :func:`spkaps`. This
@@ -12515,16 +11571,16 @@ def spkapp(targ, et, ref, sobs, abcorr):
     """
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
-    ref = stypes.string_to_char_p(ref)
-    abcorr = stypes.string_to_char_p(abcorr)
-    sobs = stypes.to_double_vector(sobs)
-    starg = stypes.empty_double_vector(6)
+    ref = stypes.stringToCharP(ref)
+    abcorr = stypes.stringToCharP(abcorr)
+    sobs = stypes.toDoubleVector(sobs)
+    starg = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
     libspice.spkapp_c(targ, et, ref, sobs, abcorr, starg, ctypes.byref(lt))
-    return stypes.c_vector_to_python(starg), lt.value
+    return stypes.cVectorToPython(starg), lt.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkaps(targ, et, ref, abcorr, stobs, accobs):
     """
     Given the state and acceleration of an observer relative to the
@@ -12559,20 +11615,19 @@ def spkaps(targ, et, ref, abcorr, stobs, accobs):
     """
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
-    ref = stypes.string_to_char_p(ref)
-    abcorr = stypes.string_to_char_p(abcorr)
-    stobs = stypes.to_double_vector(stobs)
-    accobs = stypes.to_double_vector(accobs)
-    starg = stypes.empty_double_vector(6)
+    ref = stypes.stringToCharP(ref)
+    abcorr = stypes.stringToCharP(abcorr)
+    stobs = stypes.toDoubleVector(stobs)
+    accobs = stypes.toDoubleVector(accobs)
+    starg = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
     dlt = ctypes.c_double()
-    libspice.spkaps_c(
-        targ, et, ref, abcorr, stobs, accobs, starg, ctypes.byref(lt), ctypes.byref(dlt)
-    )
-    return stypes.c_vector_to_python(starg), lt.value, dlt.value
+    libspice.spkaps_c(targ, et, ref, abcorr, stobs, accobs, starg,
+                      ctypes.byref(lt), ctypes.byref(dlt))
+    return stypes.cVectorToPython(starg), lt.value, dlt.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def spk14a(handle, ncsets, coeffs, epochs):
     """
     Add data to a type 14 SPK segment associated with handle. See
@@ -12591,12 +11646,12 @@ def spk14a(handle, ncsets, coeffs, epochs):
     """
     handle = ctypes.c_int(handle)
     ncsets = ctypes.c_int(ncsets)
-    coeffs = stypes.to_double_vector(coeffs)
-    epochs = stypes.to_double_vector(epochs)
+    coeffs = stypes.toDoubleVector(coeffs)
+    epochs = stypes.toDoubleVector(epochs)
     libspice.spk14a_c(handle, ncsets, coeffs, epochs)
 
 
-@spice_error_check
+@spiceErrorCheck
 def spk14b(handle, segid, body, center, framename, first, last, chbdeg):
     """
     Begin a type 14 SPK segment in the SPK file associated with
@@ -12622,17 +11677,18 @@ def spk14b(handle, segid, body, center, framename, first, last, chbdeg):
     :type chbdeg: int
     """
     handle = ctypes.c_int(handle)
-    segid = stypes.string_to_char_p(segid)
+    segid = stypes.stringToCharP(segid)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
-    framename = stypes.string_to_char_p(framename)
+    framename = stypes.stringToCharP(framename)
     first = ctypes.c_double(first)
     last = ctypes.c_double(last)
     chbdeg = ctypes.c_int(chbdeg)
-    libspice.spk14b_c(handle, segid, body, center, framename, first, last, chbdeg)
+    libspice.spk14b_c(handle, segid, body, center, framename, first, last,
+                      chbdeg)
 
 
-@spice_error_check
+@spiceErrorCheck
 def spk14e(handle):
     """
     End the type 14 SPK segment currently being written to the SPK
@@ -12647,7 +11703,7 @@ def spk14e(handle):
     libspice.spk14e_c(handle)
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkcls(handle):
     """
     Close an open SPK file.
@@ -12661,7 +11717,7 @@ def spkcls(handle):
     libspice.spkcls_c(handle)
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkcov(spk, idcode, cover=None):
     """
     Find the coverage window for a specified ephemeris object in a
@@ -12676,7 +11732,7 @@ def spkcov(spk, idcode, cover=None):
     :param cover: Optional SPICE Window giving coverage in "spk" for "idcode".
     :type cover: spiceypy.utils.support_types.SpiceCell
     """
-    spk = stypes.string_to_char_p(spk)
+    spk = stypes.stringToCharP(spk)
     idcode = ctypes.c_int(idcode)
     if cover is None:
         cover = stypes.SPICEDOUBLE_CELL(2000)
@@ -12687,7 +11743,7 @@ def spkcov(spk, idcode, cover=None):
     return cover
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkcpo(target, et, outref, refloc, abcorr, obspos, obsctr, obsref):
     """
     Return the state of a specified target relative to an "observer,"
@@ -12718,32 +11774,22 @@ def spkcpo(target, et, outref, refloc, abcorr, obspos, obsctr, obsref):
             One way light time between target and observer.
     :rtype: tuple
     """
-    target = stypes.string_to_char_p(target)
+    target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
-    outref = stypes.string_to_char_p(outref)
-    refloc = stypes.string_to_char_p(refloc)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obspos = stypes.to_double_vector(obspos)
-    obsctr = stypes.string_to_char_p(obsctr)
-    obsref = stypes.string_to_char_p(obsref)
-    state = stypes.empty_double_vector(6)
+    outref = stypes.stringToCharP(outref)
+    refloc = stypes.stringToCharP(refloc)
+    abcorr = stypes.stringToCharP(abcorr)
+    obspos = stypes.toDoubleVector(obspos)
+    obsctr = stypes.stringToCharP(obsctr)
+    obsref = stypes.stringToCharP(obsref)
+    state = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
-    libspice.spkcpo_c(
-        target,
-        et,
-        outref,
-        refloc,
-        abcorr,
-        obspos,
-        obsctr,
-        obsref,
-        state,
-        ctypes.byref(lt),
-    )
-    return stypes.c_vector_to_python(state), lt.value
+    libspice.spkcpo_c(target, et, outref, refloc, abcorr, obspos, obsctr,
+                      obsref, state, ctypes.byref(lt))
+    return stypes.cVectorToPython(state), lt.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkcpt(trgpos, trgctr, trgref, et, outref, refloc, abcorr, obsrvr):
     """
     Return the state, relative to a specified observer, of a target
@@ -12773,32 +11819,22 @@ def spkcpt(trgpos, trgctr, trgref, et, outref, refloc, abcorr, obsrvr):
             One way light time between target and observer.
     :rtype: tuple
     """
-    trgpos = stypes.to_double_vector(trgpos)
-    trgctr = stypes.string_to_char_p(trgctr)
-    trgref = stypes.string_to_char_p(trgref)
+    trgpos = stypes.toDoubleVector(trgpos)
+    trgctr = stypes.stringToCharP(trgctr)
+    trgref = stypes.stringToCharP(trgref)
     et = ctypes.c_double(et)
-    outref = stypes.string_to_char_p(outref)
-    refloc = stypes.string_to_char_p(refloc)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    state = stypes.empty_double_vector(6)
+    outref = stypes.stringToCharP(outref)
+    refloc = stypes.stringToCharP(refloc)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    state = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
-    libspice.spkcpt_c(
-        trgpos,
-        trgctr,
-        trgref,
-        et,
-        outref,
-        refloc,
-        abcorr,
-        obsrvr,
-        state,
-        ctypes.byref(lt),
-    )
-    return stypes.c_vector_to_python(state), lt.value
+    libspice.spkcpt_c(trgpos, trgctr, trgref, et, outref, refloc, abcorr,
+                      obsrvr, state, ctypes.byref(lt))
+    return stypes.cVectorToPython(state), lt.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkcvo(target, et, outref, refloc, abcorr, obssta, obsepc, obsctr, obsref):
     """
     Return the state of a specified target relative to an "observer,"
@@ -12831,34 +11867,23 @@ def spkcvo(target, et, outref, refloc, abcorr, obssta, obsepc, obsctr, obsref):
             One way light time between target and observer.
     :rtype: tuple
     """
-    target = stypes.string_to_char_p(target)
+    target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
-    outref = stypes.string_to_char_p(outref)
-    refloc = stypes.string_to_char_p(refloc)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obssta = stypes.to_double_vector(obssta)
+    outref = stypes.stringToCharP(outref)
+    refloc = stypes.stringToCharP(refloc)
+    abcorr = stypes.stringToCharP(abcorr)
+    obssta = stypes.toDoubleVector(obssta)
     obsepc = ctypes.c_double(obsepc)
-    obsctr = stypes.string_to_char_p(obsctr)
-    obsref = stypes.string_to_char_p(obsref)
-    state = stypes.empty_double_vector(6)
+    obsctr = stypes.stringToCharP(obsctr)
+    obsref = stypes.stringToCharP(obsref)
+    state = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
-    libspice.spkcvo_c(
-        target,
-        et,
-        outref,
-        refloc,
-        abcorr,
-        obssta,
-        obsepc,
-        obsctr,
-        obsref,
-        state,
-        ctypes.byref(lt),
-    )
-    return stypes.c_vector_to_python(state), lt.value
+    libspice.spkcvo_c(target, et, outref, refloc, abcorr, obssta, obsepc,
+                      obsctr, obsref, state, ctypes.byref(lt))
+    return stypes.cVectorToPython(state), lt.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkcvt(trgsta, trgepc, trgctr, trgref, et, outref, refloc, abcorr, obsrvr):
     """
     Return the state, relative to a specified observer, of a target
@@ -12891,34 +11916,23 @@ def spkcvt(trgsta, trgepc, trgctr, trgref, et, outref, refloc, abcorr, obsrvr):
             One way light time between target and observer.
     :rtype: tuple
     """
-    trgpos = stypes.to_double_vector(trgsta)
+    trgpos = stypes.toDoubleVector(trgsta)
     trgepc = ctypes.c_double(trgepc)
-    trgctr = stypes.string_to_char_p(trgctr)
-    trgref = stypes.string_to_char_p(trgref)
+    trgctr = stypes.stringToCharP(trgctr)
+    trgref = stypes.stringToCharP(trgref)
     et = ctypes.c_double(et)
-    outref = stypes.string_to_char_p(outref)
-    refloc = stypes.string_to_char_p(refloc)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    state = stypes.empty_double_vector(6)
+    outref = stypes.stringToCharP(outref)
+    refloc = stypes.stringToCharP(refloc)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    state = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
-    libspice.spkcvt_c(
-        trgpos,
-        trgepc,
-        trgctr,
-        trgref,
-        et,
-        outref,
-        refloc,
-        abcorr,
-        obsrvr,
-        state,
-        ctypes.byref(lt),
-    )
-    return stypes.c_vector_to_python(state), lt.value
+    libspice.spkcvt_c(trgpos, trgepc, trgctr, trgref, et, outref, refloc,
+                      abcorr, obsrvr, state, ctypes.byref(lt))
+    return stypes.cVectorToPython(state), lt.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkez(targ, et, ref, abcorr, obs):
     """
     Return the state (position and velocity) of a target body
@@ -12944,16 +11958,16 @@ def spkez(targ, et, ref, abcorr, obs):
     """
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
-    ref = stypes.string_to_char_p(ref)
-    abcorr = stypes.string_to_char_p(abcorr)
+    ref = stypes.stringToCharP(ref)
+    abcorr = stypes.stringToCharP(abcorr)
     obs = ctypes.c_int(obs)
-    starg = stypes.empty_double_vector(6)
+    starg = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
     libspice.spkez_c(targ, et, ref, abcorr, obs, starg, ctypes.byref(lt))
-    return stypes.c_vector_to_python(starg), lt.value
+    return stypes.cVectorToPython(starg), lt.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkezp(targ, et, ref, abcorr, obs):
     """
     Return the position of a target body relative to an observing
@@ -12979,16 +11993,16 @@ def spkezp(targ, et, ref, abcorr, obs):
     """
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
-    ref = stypes.string_to_char_p(ref)
-    abcorr = stypes.string_to_char_p(abcorr)
+    ref = stypes.stringToCharP(ref)
+    abcorr = stypes.stringToCharP(abcorr)
     obs = ctypes.c_int(obs)
-    ptarg = stypes.empty_double_vector(3)
+    ptarg = stypes.emptyDoubleVector(3)
     lt = ctypes.c_double()
     libspice.spkezp_c(targ, et, ref, abcorr, obs, ptarg, ctypes.byref(lt))
-    return stypes.c_vector_to_python(ptarg), lt.value
+    return stypes.cVectorToPython(ptarg), lt.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkezr(targ, et, ref, abcorr, obs):
     """
     Return the state (position and velocity) of a target body
@@ -13012,31 +12026,26 @@ def spkezr(targ, et, ref, abcorr, obs):
             One way light time between observer and target.
     :rtype: tuple
     """
-    targ = stypes.string_to_char_p(targ)
-    ref = stypes.string_to_char_p(ref)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obs = stypes.string_to_char_p(obs)
-    starg = stypes.empty_double_vector(6)
+    targ = stypes.stringToCharP(targ)
+    ref = stypes.stringToCharP(ref)
+    abcorr = stypes.stringToCharP(abcorr)
+    obs = stypes.stringToCharP(obs)
+    starg = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
     if hasattr(et, "__iter__"):
         states = []
         times = []
         for t in et:
-            libspice.spkezr_c(
-                targ, ctypes.c_double(t), ref, abcorr, obs, starg, ctypes.byref(lt)
-            )
-            check_for_spice_error(None)
-            states.append(stypes.c_vector_to_python(starg))
+            libspice.spkezr_c(targ, ctypes.c_double(t), ref, abcorr, obs, starg, ctypes.byref(lt))
+            checkForSpiceError(None)
+            states.append(stypes.cVectorToPython(starg))
             times.append(lt.value)
         return states, times
     else:
-        libspice.spkezr_c(
-            targ, ctypes.c_double(et), ref, abcorr, obs, starg, ctypes.byref(lt)
-        )
-        return stypes.c_vector_to_python(starg), lt.value
+        libspice.spkezr_c(targ, ctypes.c_double(et), ref, abcorr, obs, starg, ctypes.byref(lt))
+        return stypes.cVectorToPython(starg), lt.value
 
-
-@spice_error_check
+@spiceErrorCheck
 def spkgeo(targ, et, ref, obs):
     """
     Compute the geometric state (position and velocity) of a target
@@ -13057,15 +12066,15 @@ def spkgeo(targ, et, ref, obs):
     """
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
-    ref = stypes.string_to_char_p(ref)
+    ref = stypes.stringToCharP(ref)
     obs = ctypes.c_int(obs)
-    state = stypes.empty_double_vector(6)
+    state = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
     libspice.spkgeo_c(targ, et, ref, obs, state, ctypes.byref(lt))
-    return stypes.c_vector_to_python(state), lt.value
+    return stypes.cVectorToPython(state), lt.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkgps(targ, et, ref, obs):
     """
     Compute the geometric position of a target body relative to an
@@ -13086,15 +12095,15 @@ def spkgps(targ, et, ref, obs):
     """
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
-    ref = stypes.string_to_char_p(ref)
+    ref = stypes.stringToCharP(ref)
     obs = ctypes.c_int(obs)
-    position = stypes.empty_double_vector(3)
+    position = stypes.emptyDoubleVector(3)
     lt = ctypes.c_double()
     libspice.spkgps_c(targ, et, ref, obs, position, ctypes.byref(lt))
-    return stypes.c_vector_to_python(position), lt.value
+    return stypes.cVectorToPython(position), lt.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def spklef(filename):
     """
     Load an ephemeris file for use by the readers.  Return that file's
@@ -13107,13 +12116,13 @@ def spklef(filename):
     :return: Loaded file's handle.
     :rtype: int
     """
-    filename = stypes.string_to_char_p(filename)
+    filename = stypes.stringToCharP(filename)
     handle = ctypes.c_int()
     libspice.spklef_c(filename, ctypes.byref(handle))
     return handle.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkltc(targ, et, ref, abcorr, stobs):
     """
     Return the state (position and velocity) of a target body
@@ -13140,20 +12149,19 @@ def spkltc(targ, et, ref, abcorr, stobs):
     assert len(stobs) == 6
     targ = stypes.c_int(targ)
     et = ctypes.c_double(et)
-    ref = stypes.string_to_char_p(ref)
-    abcorr = stypes.string_to_char_p(abcorr)
-    stobs = stypes.to_double_vector(stobs)
-    starg = stypes.empty_double_vector(6)
+    ref = stypes.stringToCharP(ref)
+    abcorr = stypes.stringToCharP(abcorr)
+    stobs = stypes.toDoubleVector(stobs)
+    starg = stypes.emptyDoubleVector(6)
     lt = ctypes.c_double()
     dlt = ctypes.c_double()
-    libspice.spkltc_c(
-        targ, et, ref, abcorr, stobs, starg, ctypes.byref(lt), ctypes.byref(dlt)
-    )
-    return stypes.c_vector_to_python(starg), lt.value, dlt.value
+    libspice.spkltc_c(targ, et, ref, abcorr, stobs, starg, ctypes.byref(lt),
+                      ctypes.byref(dlt))
+    return stypes.cVectorToPython(starg), lt.value, dlt.value
 
 
-@spice_error_check
-def spkobj(spk, out_cell=None):
+@spiceErrorCheck
+def spkobj(spk, outCell=None):
     """
     Find the set of ID codes of all objects in a specified SPK file.
 
@@ -13161,19 +12169,19 @@ def spkobj(spk, out_cell=None):
 
     :param spk: Name of SPK file.
     :type spk: str
-    :param out_cell: Optional Spice Int Cell.
-    :type out_cell: spiceypy.utils.support_types.SpiceCell
+    :param outCell: Optional Spice Int Cell.
+    :type outCell: spiceypy.utils.support_types.SpiceCell
     """
-    spk = stypes.string_to_char_p(spk)
-    if not out_cell:
-        out_cell = stypes.SPICEINT_CELL(1000)
-    assert isinstance(out_cell, stypes.SpiceCell)
-    assert out_cell.dtype == 2
-    libspice.spkobj_c(spk, ctypes.byref(out_cell))
-    return out_cell
+    spk = stypes.stringToCharP(spk)
+    if not outCell:
+        outCell = stypes.SPICEINT_CELL(1000)
+    assert isinstance(outCell, stypes.SpiceCell)
+    assert outCell.dtype == 2
+    libspice.spkobj_c(spk, ctypes.byref(outCell))
+    return outCell
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkopa(filename):
     """
     Open an existing SPK file for subsequent write.
@@ -13185,13 +12193,13 @@ def spkopa(filename):
     :return: A handle attached to the SPK file opened to append.
     :rtype: int
     """
-    filename = stypes.string_to_char_p(filename)
+    filename = stypes.stringToCharP(filename)
     handle = ctypes.c_int()
     libspice.spkopa_c(filename, ctypes.byref(handle))
     return handle.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkopn(filename, ifname, ncomch):
     """
     Create a new SPK file, returning the handle of the opened file.
@@ -13207,15 +12215,15 @@ def spkopn(filename, ifname, ncomch):
     :return: The handle of the opened SPK file.
     :rtype: int
     """
-    filename = stypes.string_to_char_p(filename)
-    ifname = stypes.string_to_char_p(ifname)
+    filename = stypes.stringToCharP(filename)
+    ifname = stypes.stringToCharP(ifname)
     ncomch = ctypes.c_int(ncomch)
     handle = ctypes.c_int()
     libspice.spkopn_c(filename, ifname, ncomch, ctypes.byref(handle))
     return handle.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkpds(body, center, framestr, typenum, first, last):
     """
     Perform routine error checks and if all check pass, pack the
@@ -13240,16 +12248,16 @@ def spkpds(body, center, framestr, typenum, first, last):
     """
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
-    framestr = stypes.string_to_char_p(framestr)
+    framestr = stypes.stringToCharP(framestr)
     typenum = ctypes.c_int(typenum)
     first = ctypes.c_double(first)
     last = ctypes.c_double(last)
-    descr = stypes.empty_double_vector(5)
+    descr = stypes.emptyDoubleVector(5)
     libspice.spkpds_c(body, center, framestr, typenum, first, last, descr)
-    return stypes.c_vector_to_python(descr)
+    return stypes.cVectorToPython(descr)
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkpos(targ, et, ref, abcorr, obs):
     """
     Return the position of a target body relative to an observing
@@ -13273,27 +12281,27 @@ def spkpos(targ, et, ref, abcorr, obs):
             One way light time between observer and target.
     :rtype: tuple
     """
-    targ = stypes.string_to_char_p(targ)
-    ref = stypes.string_to_char_p(ref)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obs = stypes.string_to_char_p(obs)
-    ptarg = stypes.empty_double_vector(3)
+    targ = stypes.stringToCharP(targ)
+    ref = stypes.stringToCharP(ref)
+    abcorr = stypes.stringToCharP(abcorr)
+    obs = stypes.stringToCharP(obs)
+    ptarg = stypes.emptyDoubleVector(3)
     lt = ctypes.c_double()
     if hasattr(et, "__iter__"):
         ptargs = []
-        lts = []
+        lts    = []
         for t in et:
             libspice.spkpos_c(targ, t, ref, abcorr, obs, ptarg, ctypes.byref(lt))
-            check_for_spice_error(None)
-            ptargs.append(stypes.c_vector_to_python(ptarg))
+            checkForSpiceError(None)
+            ptargs.append(stypes.cVectorToPython(ptarg))
             lts.append(lt.value)
         return ptargs, lts
     else:
         libspice.spkpos_c(targ, et, ref, abcorr, obs, ptarg, ctypes.byref(lt))
-        return stypes.c_vector_to_python(ptarg), lt.value
+        return stypes.cVectorToPython(ptarg), lt.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkpvn(handle, descr, et):
     """
     For a specified SPK segment and time, return the state (position and
@@ -13315,17 +12323,18 @@ def spkpvn(handle, descr, et):
     :rtype: tuple
     """
     handle = ctypes.c_int(handle)
-    descr = stypes.to_double_vector(descr)
+    descr = stypes.toDoubleVector(descr)
     et = ctypes.c_double(et)
     ref = ctypes.c_int()
-    state = stypes.empty_double_vector(6)
+    state = stypes.emptyDoubleVector(6)
     center = ctypes.c_int()
-    libspice.spkpvn_c(handle, descr, et, ctypes.byref(ref), state, ctypes.byref(center))
-    return ref.value, stypes.c_vector_to_python(state), center.value
+    libspice.spkpvn_c(handle, descr, et, ctypes.byref(ref), state,
+                      ctypes.byref(center))
+    return ref.value, stypes.cVectorToPython(state), center.value
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def spksfs(body, et, idlen):
     # spksfs has a Parameter SIDLEN,
     # sounds like an optional but is that possible?
@@ -13351,21 +12360,16 @@ def spksfs(body, et, idlen):
     et = ctypes.c_double(et)
     idlen = ctypes.c_int(idlen)
     handle = ctypes.c_int()
-    descr = stypes.empty_double_vector(5)
-    identstring = stypes.string_to_char_p(idlen)
+    descr = stypes.emptyDoubleVector(5)
+    identstring = stypes.stringToCharP(idlen)
     found = ctypes.c_int()
-    libspice.spksfs_c(
-        body, et, idlen, ctypes.byref(handle), descr, identstring, ctypes.byref(found)
-    )
-    return (
-        handle.value,
-        stypes.c_vector_to_python(descr),
-        stypes.to_python_string(identstring),
-        bool(found.value),
-    )
+    libspice.spksfs_c(body, et, idlen, ctypes.byref(handle), descr, identstring,
+                      ctypes.byref(found))
+    return handle.value, stypes.cVectorToPython(descr), \
+           stypes.toPythonString(identstring), bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkssb(targ, et, ref):
     """
     Return the state (position and velocity) of a target body
@@ -13384,13 +12388,13 @@ def spkssb(targ, et, ref):
     """
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
-    ref = stypes.string_to_char_p(ref)
-    starg = stypes.empty_double_vector(6)
+    ref = stypes.stringToCharP(ref)
+    starg = stypes.emptyDoubleVector(6)
     libspice.spkssb_c(targ, et, ref, starg)
-    return stypes.c_vector_to_python(starg)
+    return stypes.cVectorToPython(starg)
 
 
-@spice_error_check
+@spiceErrorCheck
 def spksub(handle, descr, identin, begin, end, newh):
     """
     Extract a subset of the data in an SPK segment into a
@@ -13413,15 +12417,15 @@ def spksub(handle, descr, identin, begin, end, newh):
     """
     assert len(descr) == 5
     handle = ctypes.c_int(handle)
-    descr = stypes.to_double_vector(descr)
-    identin = stypes.string_to_char_p(identin)
+    descr = stypes.toDoubleVector(descr)
+    identin = stypes.stringToCharP(identin)
     begin = ctypes.c_double(begin)
     end = ctypes.c_double(end)
     newh = ctypes.c_int(newh)
     libspice.spksub_c(handle, descr, identin, begin, end, newh)
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkuds(descr):
     """
     Unpack the contents of an SPK segment descriptor.
@@ -13442,7 +12446,7 @@ def spkuds(descr):
     :rtype: tuple
     """
     assert len(descr) == 5
-    descr = stypes.to_double_vector(descr)
+    descr = stypes.toDoubleVector(descr)
     body = ctypes.c_int()
     center = ctypes.c_int()
     framenum = ctypes.c_int()
@@ -13451,30 +12455,15 @@ def spkuds(descr):
     last = ctypes.c_double()
     begin = ctypes.c_int()
     end = ctypes.c_int()
-    libspice.spkuds_c(
-        descr,
-        ctypes.byref(body),
-        ctypes.byref(center),
-        ctypes.byref(framenum),
-        ctypes.byref(typenum),
-        ctypes.byref(first),
-        ctypes.byref(last),
-        ctypes.byref(begin),
-        ctypes.byref(end),
-    )
-    return (
-        body.value,
-        center.value,
-        framenum.value,
-        typenum.value,
-        first.value,
-        last.value,
-        begin.value,
-        end.value,
-    )
+    libspice.spkuds_c(descr, ctypes.byref(body), ctypes.byref(center),
+                      ctypes.byref(framenum), ctypes.byref(typenum),
+                      ctypes.byref(first), ctypes.byref(last),
+                      ctypes.byref(begin), ctypes.byref(end))
+    return body.value, center.value, framenum.value, typenum.value, \
+           first.value, last.value, begin.value, end.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def spkuef(handle):
     """
     Unload an ephemeris file so that it will no longer be searched by
@@ -13489,10 +12478,9 @@ def spkuef(handle):
     libspice.spkuef_c(handle)
 
 
-@spice_error_check
-def spkw02(
-    handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, btime
-):
+@spiceErrorCheck
+def spkw02(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
+           cdata, btime):
     """
     Write a type 2 segment to an SPK file.
 
@@ -13526,35 +12514,22 @@ def spkw02(
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
-    inframe = stypes.string_to_char_p(inframe)
+    inframe = stypes.stringToCharP(inframe)
     first = ctypes.c_double(first)
     last = ctypes.c_double(last)
-    segid = stypes.string_to_char_p(segid)
+    segid = stypes.stringToCharP(segid)
     intlen = ctypes.c_double(intlen)
     n = ctypes.c_int(n)
     polydg = ctypes.c_int(polydg)
-    cdata = stypes.to_double_vector(cdata)
+    cdata = stypes.toDoubleVector(cdata)
     btime = ctypes.c_double(btime)
-    libspice.spkw02_c(
-        handle,
-        body,
-        center,
-        inframe,
-        first,
-        last,
-        segid,
-        intlen,
-        n,
-        polydg,
-        cdata,
-        btime,
-    )
+    libspice.spkw02_c(handle, body, center, inframe, first, last, segid, intlen,
+                      n, polydg, cdata, btime)
 
 
-@spice_error_check
-def spkw03(
-    handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, btime
-):
+@spiceErrorCheck
+def spkw03(handle, body, center, inframe, first, last, segid, intlen, n, polydg,
+           cdata, btime):
     """
     Write a type 3 segment to an SPK file.
 
@@ -13588,33 +12563,22 @@ def spkw03(
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
-    inframe = stypes.string_to_char_p(inframe)
+    inframe = stypes.stringToCharP(inframe)
     first = ctypes.c_double(first)
     last = ctypes.c_double(last)
-    segid = stypes.string_to_char_p(segid)
+    segid = stypes.stringToCharP(segid)
     intlen = ctypes.c_double(intlen)
     n = ctypes.c_int(n)
     polydg = ctypes.c_int(polydg)
-    cdata = stypes.to_double_vector(cdata)
+    cdata = stypes.toDoubleVector(cdata)
     btime = ctypes.c_double(btime)
-    libspice.spkw03_c(
-        handle,
-        body,
-        center,
-        inframe,
-        first,
-        last,
-        segid,
-        intlen,
-        n,
-        polydg,
-        cdata,
-        btime,
-    )
+    libspice.spkw03_c(handle, body, center, inframe, first, last, segid, intlen,
+                      n, polydg, cdata, btime)
 
 
-@spice_error_check
-def spkw05(handle, body, center, inframe, first, last, segid, gm, n, states, epochs):
+@spiceErrorCheck
+def spkw05(handle, body, center, inframe, first, last, segid, gm, n, states,
+           epochs):
     # see libspice args for solution to array[][N] problem
     """
     Write an SPK segment of type 5 given a time-ordered set of
@@ -13649,23 +12613,21 @@ def spkw05(handle, body, center, inframe, first, last, segid, gm, n, states, epo
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
-    inframe = stypes.string_to_char_p(inframe)
+    inframe = stypes.stringToCharP(inframe)
     first = ctypes.c_double(first)
     last = ctypes.c_double(last)
-    segid = stypes.string_to_char_p(segid)
+    segid = stypes.stringToCharP(segid)
     gm = ctypes.c_double(gm)
     n = ctypes.c_int(n)
-    states = stypes.to_double_matrix(states)
-    epochs = stypes.to_double_vector(epochs)
-    libspice.spkw05_c(
-        handle, body, center, inframe, first, last, segid, gm, n, states, epochs
-    )
+    states = stypes.toDoubleMatrix(states)
+    epochs = stypes.toDoubleVector(epochs)
+    libspice.spkw05_c(handle, body, center, inframe, first, last, segid, gm, n,
+                      states, epochs)
 
 
-@spice_error_check
-def spkw08(
-    handle, body, center, inframe, first, last, segid, degree, n, states, epoch1, step
-):
+@spiceErrorCheck
+def spkw08(handle, body, center, inframe, first, last, segid, degree, n, states,
+           epoch1, step):
     # see libspice args for solution to array[][N] problem
     """
     Write a type 8 segment to an SPK file.
@@ -13700,35 +12662,22 @@ def spkw08(
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
-    inframe = stypes.string_to_char_p(inframe)
+    inframe = stypes.stringToCharP(inframe)
     first = ctypes.c_double(first)
     last = ctypes.c_double(last)
-    segid = stypes.string_to_char_p(segid)
+    segid = stypes.stringToCharP(segid)
     degree = ctypes.c_int(degree)
     n = ctypes.c_int(n)
-    states = stypes.to_double_matrix(states)  # X by 6 array
+    states = stypes.toDoubleMatrix(states)  # X by 6 array
     epoch1 = ctypes.c_double(epoch1)
     step = ctypes.c_double(step)
-    libspice.spkw08_c(
-        handle,
-        body,
-        center,
-        inframe,
-        first,
-        last,
-        segid,
-        degree,
-        n,
-        states,
-        epoch1,
-        step,
-    )
+    libspice.spkw08_c(handle, body, center, inframe, first, last, segid, degree,
+                      n, states, epoch1, step)
 
 
-@spice_error_check
-def spkw09(
-    handle, body, center, inframe, first, last, segid, degree, n, states, epochs
-):
+@spiceErrorCheck
+def spkw09(handle, body, center, inframe, first, last, segid, degree, n, states,
+           epochs):
     """
     Write a type 9 segment to an SPK file.
 
@@ -13760,21 +12709,21 @@ def spkw09(
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
-    inframe = stypes.string_to_char_p(inframe)
+    inframe = stypes.stringToCharP(inframe)
     first = ctypes.c_double(first)
     last = ctypes.c_double(last)
-    segid = stypes.string_to_char_p(segid)
+    segid = stypes.stringToCharP(segid)
     degree = ctypes.c_int(degree)
     n = ctypes.c_int(n)
-    states = stypes.to_double_matrix(states)  # X by 6 array
-    epochs = stypes.to_double_vector(epochs)
-    libspice.spkw09_c(
-        handle, body, center, inframe, first, last, segid, degree, n, states, epochs
-    )
+    states = stypes.toDoubleMatrix(states)  # X by 6 array
+    epochs = stypes.toDoubleVector(epochs)
+    libspice.spkw09_c(handle, body, center, inframe, first, last, segid, degree,
+                      n, states, epochs)
 
 
-@spice_error_check
-def spkw10(handle, body, center, inframe, first, last, segid, consts, n, elems, epochs):
+@spiceErrorCheck
+def spkw10(handle, body, center, inframe, first, last, segid, consts, n, elems,
+           epochs):
     """
     Write an SPK type 10 segment to the DAF open and attached to
     the input handle.
@@ -13807,23 +12756,21 @@ def spkw10(handle, body, center, inframe, first, last, segid, consts, n, elems, 
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
-    inframe = stypes.string_to_char_p(inframe)
+    inframe = stypes.stringToCharP(inframe)
     first = ctypes.c_double(first)
     last = ctypes.c_double(last)
-    segid = stypes.string_to_char_p(segid)
-    consts = stypes.to_double_vector(consts)
+    segid = stypes.stringToCharP(segid)
+    consts = stypes.toDoubleVector(consts)
     n = ctypes.c_int(n)
-    elems = stypes.to_double_vector(elems)
-    epochs = stypes.to_double_vector(epochs)
-    libspice.spkw10_c(
-        handle, body, center, inframe, first, last, segid, consts, n, elems, epochs
-    )
+    elems = stypes.toDoubleVector(elems)
+    epochs = stypes.toDoubleVector(epochs)
+    libspice.spkw10_c(handle, body, center, inframe, first, last, segid, consts,
+                      n, elems, epochs)
 
 
-@spice_error_check
-def spkw12(
-    handle, body, center, inframe, first, last, segid, degree, n, states, epoch0, step
-):
+@spiceErrorCheck
+def spkw12(handle, body, center, inframe, first, last, segid, degree, n, states,
+           epoch0, step):
     """
     Write a type 12 segment to an SPK file.
 
@@ -13857,35 +12804,22 @@ def spkw12(
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
-    inframe = stypes.string_to_char_p(inframe)
+    inframe = stypes.stringToCharP(inframe)
     first = ctypes.c_double(first)
     last = ctypes.c_double(last)
-    segid = stypes.string_to_char_p(segid)
+    segid = stypes.stringToCharP(segid)
     degree = ctypes.c_int(degree)
     n = ctypes.c_int(n)
-    states = stypes.to_double_matrix(states)  # X by 6 array
+    states = stypes.toDoubleMatrix(states)  # X by 6 array
     epoch0 = ctypes.c_double(epoch0)
     step = ctypes.c_double(step)
-    libspice.spkw12_c(
-        handle,
-        body,
-        center,
-        inframe,
-        first,
-        last,
-        segid,
-        degree,
-        n,
-        states,
-        epoch0,
-        step,
-    )
+    libspice.spkw12_c(handle, body, center, inframe, first, last, segid, degree,
+                      n, states, epoch0, step)
 
 
-@spice_error_check
-def spkw13(
-    handle, body, center, inframe, first, last, segid, degree, n, states, epochs
-):
+@spiceErrorCheck
+def spkw13(handle, body, center, inframe, first, last, segid, degree, n, states,
+           epochs):
     """
     Write a type 13 segment to an SPK file.
 
@@ -13917,39 +12851,21 @@ def spkw13(
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
-    inframe = stypes.string_to_char_p(inframe)
+    inframe = stypes.stringToCharP(inframe)
     first = ctypes.c_double(first)
     last = ctypes.c_double(last)
-    segid = stypes.string_to_char_p(segid)
+    segid = stypes.stringToCharP(segid)
     degree = ctypes.c_int(degree)
     n = ctypes.c_int(n)
-    states = stypes.to_double_matrix(states)  # X by 6 array
-    epochs = stypes.to_double_vector(epochs)
-    libspice.spkw13_c(
-        handle, body, center, inframe, first, last, segid, degree, n, states, epochs
-    )
+    states = stypes.toDoubleMatrix(states)  # X by 6 array
+    epochs = stypes.toDoubleVector(epochs)
+    libspice.spkw13_c(handle, body, center, inframe, first, last, segid, degree,
+                      n, states, epochs)
 
 
-@spice_error_check
-def spkw15(
-    handle,
-    body,
-    center,
-    inframe,
-    first,
-    last,
-    segid,
-    epoch,
-    tp,
-    pa,
-    p,
-    ecc,
-    j2flg,
-    pv,
-    gm,
-    j2,
-    radius,
-):
+@spiceErrorCheck
+def spkw15(handle, body, center, inframe, first, last, segid, epoch, tp, pa, p,
+           ecc, j2flg, pv, gm, j2, radius):
     """
     Write an SPK segment of type 15 given a type 15 data record.
 
@@ -13993,45 +12909,27 @@ def spkw15(
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
-    inframe = stypes.string_to_char_p(inframe)
+    inframe = stypes.stringToCharP(inframe)
     first = ctypes.c_double(first)
     last = ctypes.c_double(last)
-    segid = stypes.string_to_char_p(segid)
+    segid = stypes.stringToCharP(segid)
     epoch = ctypes.c_double(epoch)
-    tp = stypes.to_double_vector(tp)
-    pa = stypes.to_double_vector(pa)
+    tp = stypes.toDoubleVector(tp)
+    pa = stypes.toDoubleVector(pa)
     p = ctypes.c_double(p)
     ecc = ctypes.c_double(ecc)
     j2flg = ctypes.c_double(j2flg)
-    pv = stypes.to_double_vector(pv)
+    pv = stypes.toDoubleVector(pv)
     gm = ctypes.c_double(gm)
     j2 = ctypes.c_double(j2)
     radius = ctypes.c_double(radius)
-    libspice.spkw15_c(
-        handle,
-        body,
-        center,
-        inframe,
-        first,
-        last,
-        segid,
-        epoch,
-        tp,
-        pa,
-        p,
-        ecc,
-        j2flg,
-        pv,
-        gm,
-        j2,
-        radius,
-    )
+    libspice.spkw15_c(handle, body, center, inframe, first, last, segid, epoch,
+                      tp, pa, p, ecc, j2flg, pv, gm, j2, radius)
 
 
-@spice_error_check
-def spkw17(
-    handle, body, center, inframe, first, last, segid, epoch, eqel, rapol, decpol
-):
+@spiceErrorCheck
+def spkw17(handle, body, center, inframe, first, last, segid, epoch, eqel,
+           rapol, decpol):
     """
     Write an SPK segment of type 17 given a type 17 data record.
 
@@ -14063,23 +12961,20 @@ def spkw17(
     handle = ctypes.c_int(handle)
     body = ctypes.c_int(body)
     center = ctypes.c_int(center)
-    inframe = stypes.string_to_char_p(inframe)
+    inframe = stypes.stringToCharP(inframe)
     first = ctypes.c_double(first)
     last = ctypes.c_double(last)
-    segid = stypes.string_to_char_p(segid)
+    segid = stypes.stringToCharP(segid)
     epoch = ctypes.c_double(epoch)
-    eqel = stypes.to_double_vector(eqel)
+    eqel = stypes.toDoubleVector(eqel)
     rapol = ctypes.c_double(rapol)
     decpol = ctypes.c_double(decpol)
-    libspice.spkw17_c(
-        handle, body, center, inframe, first, last, segid, epoch, eqel, rapol, decpol
-    )
+    libspice.spkw17_c(handle, body, center, inframe, first, last, segid, epoch,
+                      eqel, rapol, decpol)
 
 
-@spice_error_check
-def spkw18(
-    handle, subtyp, body, center, inframe, first, last, segid, degree, packts, epochs
-):
+@spiceErrorCheck
+def spkw18(handle, subtyp, body, center, inframe, first, last, segid, degree, packts, epochs):
     """
     Write a type 18 segment to an SPK file.
 
@@ -14110,50 +13005,21 @@ def spkw18(
     """
     handle = ctypes.c_int(handle)
     subtyp = ctypes.c_int(subtyp)
-    body = ctypes.c_int(body)
+    body   = ctypes.c_int(body)
     center = ctypes.c_int(center)
-    inframe = stypes.string_to_char_p(inframe)
-    first = ctypes.c_double(first)
-    last = ctypes.c_double(last)
-    segid = stypes.string_to_char_p(segid)
+    inframe = stypes.stringToCharP(inframe)
+    first  = ctypes.c_double(first)
+    last   = ctypes.c_double(last)
+    segid  = stypes.stringToCharP(segid)
     degree = ctypes.c_int(degree)
     n = ctypes.c_int(len(packts))
-    packts = stypes.to_double_matrix(packts)
-    epochs = stypes.to_double_vector(epochs)
-    libspice.spkw18_c(
-        handle,
-        subtyp,
-        body,
-        center,
-        inframe,
-        first,
-        last,
-        segid,
-        degree,
-        n,
-        packts,
-        epochs,
-    )
+    packts = stypes.toDoubleMatrix(packts)
+    epochs = stypes.toDoubleVector(epochs)
+    libspice.spkw18_c(handle, subtyp, body, center, inframe, first, last, segid, degree, n, packts, epochs)
 
 
-@spice_error_check
-def spkw20(
-    handle,
-    body,
-    center,
-    inframe,
-    first,
-    last,
-    segid,
-    intlen,
-    n,
-    polydg,
-    cdata,
-    dscale,
-    tscale,
-    initjd,
-    initfr,
-):
+@spiceErrorCheck
+def spkw20(handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, dscale, tscale, initjd, initfr):
     """
     Write a type 20 segment to an SPK file.
 
@@ -14182,81 +13048,65 @@ def spkw20(
     :param initjd: Integer part of begin time (TDB Julian date) of first record.
     :param initfr: Fractional part of begin time (TDB Julian date) of first record.
     """
-    handle = ctypes.c_int(handle)
-    body = ctypes.c_int(body)
-    center = ctypes.c_int(center)
-    inframe = stypes.string_to_char_p(inframe)
-    first = ctypes.c_double(first)
-    last = ctypes.c_double(last)
-    segid = stypes.string_to_char_p(segid)
-    intlen = ctypes.c_double(intlen)
-    n = ctypes.c_int(n)
-    polydg = ctypes.c_int(polydg)
-    cdata = stypes.to_double_vector(cdata)
-    dscale = ctypes.c_double(dscale)
-    tscale = ctypes.c_double(tscale)
-    initjd = ctypes.c_double(initjd)
-    initfr = ctypes.c_double(initfr)
-    libspice.spkw20_c(
-        handle,
-        body,
-        center,
-        inframe,
-        first,
-        last,
-        segid,
-        intlen,
-        n,
-        polydg,
-        cdata,
-        dscale,
-        tscale,
-        initjd,
-        initfr,
-    )
+    handle  = ctypes.c_int(handle)
+    body    = ctypes.c_int(body)
+    center  = ctypes.c_int(center)
+    inframe = stypes.stringToCharP(inframe)
+    first   = ctypes.c_double(first)
+    last    = ctypes.c_double(last)
+    segid   = stypes.stringToCharP(segid)
+    intlen  = ctypes.c_double(intlen)
+    n       = ctypes.c_int(n)
+    polydg  = ctypes.c_int(polydg)
+    cdata   = stypes.toDoubleVector(cdata)
+    dscale  = ctypes.c_double(dscale)
+    tscale  = ctypes.c_double(tscale)
+    initjd  = ctypes.c_double(initjd)
+    initfr  = ctypes.c_double(initfr)
+    libspice.spkw20_c(handle, body, center, inframe, first, last, segid, intlen, n, polydg, cdata, dscale, tscale, initjd, initfr)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def srfc2s(code, bodyid, srflen=_default_len_out):
     """
-    Translate a surface ID code, together with a body ID code, to the
-    corresponding surface name. If no such name exists, return a
-    string representation of the surface ID code.
-
+    Translate a surface ID code, together with a body ID code, to the 
+    corresponding surface name. If no such name exists, return a 
+    string representation of the surface ID code. 
+    
     note: from NAIF if isname is false, this case is not treated as an error.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfc2s_c.html
-
-    :param code: Integer surface ID code to translate to a string.
+    
+    :param code: Integer surface ID code to translate to a string. 
     :type code: int
-    :param bodyid: ID code of body associated with surface.
+    :param bodyid: ID code of body associated with surface. 
     :type bodyid: int
     :param srflen: Available space in output string.
-    :param srflen: int
+    :param srflen: int 
     :return: String corresponding to surface ID code.
     :rtype: str
     """
-    code = ctypes.c_int(code)
+    code   = ctypes.c_int(code)
     bodyid = ctypes.c_int(bodyid)
-    srfstr = stypes.string_to_char_p(srflen)
+    srfstr = stypes.stringToCharP(srflen)
     srflen = ctypes.c_int(srflen)
     isname = ctypes.c_int()
     libspice.srfc2s_c(code, bodyid, srflen, srfstr, ctypes.byref(isname))
-    return stypes.to_python_string(srfstr), bool(isname.value)
+    return stypes.toPythonString(srfstr), bool(isname.value)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def srfcss(code, bodstr, srflen=_default_len_out):
     """
-    Translate a surface ID code, together with a body string, to the
-    corresponding surface name. If no such surface name exists,
-    return a string representation of the surface ID code.
-
+    Translate a surface ID code, together with a body string, to the 
+    corresponding surface name. If no such surface name exists, 
+    return a string representation of the surface ID code. 
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfcss_c.html
-
-    :param code: Integer surface ID code to translate to a string.
+    
+    :param code: Integer surface ID code to translate to a string. 
     :type code: int
     :param bodstr: Name or ID of body associated with surface.
     :type bodstr: str
@@ -14266,50 +13116,50 @@ def srfcss(code, bodstr, srflen=_default_len_out):
     :rtype: str
     """
     code = ctypes.c_int(code)
-    bodstr = stypes.string_to_char_p(bodstr)
-    srfstr = stypes.string_to_char_p(srflen)
+    bodstr = stypes.stringToCharP(bodstr)
+    srfstr = stypes.stringToCharP(srflen)
     srflen = ctypes.c_int(srflen)
     isname = ctypes.c_int()
     libspice.srfcss_c(code, bodstr, srflen, srfstr, ctypes.byref(isname))
-    return stypes.to_python_string(srfstr), bool(isname.value)
+    return stypes.toPythonString(srfstr), bool(isname.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def srfnrm(method, target, et, fixref, srfpts):
     """
-    Map array of surface points on a specified target body to
-    the corresponding unit length outward surface normal vectors.
-
-    The surface of the target body may be represented by a triaxial
-    ellipsoid or by topographic data provided by DSK files.
-
+    Map array of surface points on a specified target body to 
+    the corresponding unit length outward surface normal vectors. 
+ 
+    The surface of the target body may be represented by a triaxial 
+    ellipsoid or by topographic data provided by DSK files. 
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfnrm_c.html
-
+    
     :param method: Computation method.
     :type method: str
-    :param target: Name of target body.
+    :param target: Name of target body. 
     :type target: str
-    :param et: Epoch in TDB seconds past J2000 TDB.
+    :param et: Epoch in TDB seconds past J2000 TDB. 
     :type et: float
-    :param fixref: Body-fixed, body-centered target body frame.
+    :param fixref: Body-fixed, body-centered target body frame. 
     :type fixref: str
     :param srfpts: Array of surface points.
     :type srfpts: 3xM-Element Array of floats
     :return: Array of outward, unit length normal vectors.
     :rtype: 3xM-Element Array of floats
     """
-    method = stypes.string_to_char_p(method)
-    target = stypes.string_to_char_p(target)
-    et = ctypes.c_double(et)
-    fixref = stypes.string_to_char_p(fixref)
-    npts = ctypes.c_int(len(srfpts))
-    srfpts = stypes.to_double_matrix(srfpts)
-    normls = stypes.empty_double_matrix(3, npts.value)
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
+    et     = ctypes.c_double(et)
+    fixref = stypes.stringToCharP(fixref)
+    npts   = ctypes.c_int(len(srfpts))
+    srfpts = stypes.toDoubleMatrix(srfpts)
+    normls = stypes.emptyDoubleMatrix(3, npts.value)
     libspice.srfnrm_c(method, target, et, fixref, npts, srfpts, normls)
-    return stypes.c_matrix_to_numpy(normls)
+    return stypes.cMatrixToNumpy(normls)
 
 
-@spice_error_check
+@spiceErrorCheck
 def srfrec(body, longitude, latitude):
     """
     Convert planetocentric latitude and longitude of a surface
@@ -14329,21 +13179,21 @@ def srfrec(body, longitude, latitude):
     body = ctypes.c_int(body)
     longitude = ctypes.c_double(longitude)
     latitude = ctypes.c_double(latitude)
-    rectan = stypes.empty_double_vector(3)
+    rectan = stypes.emptyDoubleVector(3)
     libspice.srfrec_c(body, longitude, latitude, rectan)
-    return stypes.c_vector_to_python(rectan)
+    return stypes.cVectorToPython(rectan)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def srfs2c(srfstr, bodstr):
     """
-    Translate a surface string, together with a body string, to the
-    corresponding surface ID code. The input strings may contain
+    Translate a surface string, together with a body string, to the 
+    corresponding surface ID code. The input strings may contain 
     names or integer ID codes.
-
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfs2c_c.html
-
+    
     :param srfstr: Surface name or ID string.
     :type srfstr: str
     :param bodstr: Body name or ID string.
@@ -14351,32 +13201,32 @@ def srfs2c(srfstr, bodstr):
     :return: Integer surface ID code.
     :rtype: int
     """
-    srfstr = stypes.string_to_char_p(srfstr)
-    bodstr = stypes.string_to_char_p(bodstr)
-    code = ctypes.c_int()
+    srfstr = stypes.stringToCharP(srfstr)
+    bodstr = stypes.stringToCharP(bodstr)
+    code   = ctypes.c_int()
     isname = ctypes.c_int()
     libspice.srfs2c_c(srfstr, bodstr, ctypes.byref(code), ctypes.byref(isname))
     return code.value, bool(isname.value)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def srfscc(srfstr, bodyid):
     """
-    Translate a surface string, together with a body ID code, to the
-    corresponding surface ID code. The input surface string may
-    contain a name or an integer ID code.
-
+    Translate a surface string, together with a body ID code, to the 
+    corresponding surface ID code. The input surface string may 
+    contain a name or an integer ID code. 
+    
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/srfscc_c.html
-
+    
     :param srfstr: Surface name or ID string.
     :type srfstr: str
-    :param bodyid: ID code of body associated with surface.
-    :type bodyid: int
+    :param bodyid: ID code of body associated with surface. 
+    :type bodyid: int 
     :return: Integer surface ID code.
     :rtype: int
     """
-    srfstr = stypes.string_to_char_p(srfstr)
+    srfstr = stypes.stringToCharP(srfstr)
     bodyid = ctypes.c_int(bodyid)
     code = ctypes.c_int()
     isname = ctypes.c_int()
@@ -14384,8 +13234,8 @@ def srfscc(srfstr, bodyid):
     return code.value, bool(isname.value)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
     """
     Deprecated: This routine has been superseded by the CSPICE
@@ -14419,16 +13269,16 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
             Observer position relative to target center.
     :rtype: tuple
     """
-    method = stypes.string_to_char_p(method)
-    target = stypes.string_to_char_p(target)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    dref = stypes.string_to_char_p(dref)
-    dvec = stypes.to_double_vector(dvec)
-    spoint = stypes.empty_double_vector(3)
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    dref = stypes.stringToCharP(dref)
+    dvec = stypes.toDoubleVector(dvec)
+    spoint = stypes.emptyDoubleVector(3)
     trgepc = ctypes.c_double()
     dist = ctypes.c_double()
-    obspos = stypes.empty_double_vector(3)
+    obspos = stypes.emptyDoubleVector(3)
     found = ctypes.c_int()
     if hasattr(et, "__iter__"):
         spoints = []
@@ -14437,53 +13287,24 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
         obsposs = []
         founds = []
         for t in et:
-            libspice.srfxpt_c(
-                method,
-                target,
-                t,
-                abcorr,
-                obsrvr,
-                dref,
-                dvec,
-                spoint,
-                ctypes.byref(dist),
-                ctypes.byref(trgepc),
-                obspos,
-                ctypes.byref(found),
-            )
-            check_for_spice_error(None)
-            spoints.append(stypes.c_vector_to_python(spoint))
+            libspice.srfxpt_c(method, target, t, abcorr, obsrvr, dref, dvec,
+                              spoint, ctypes.byref(dist), ctypes.byref(trgepc),
+                              obspos, ctypes.byref(found))
+            checkForSpiceError(None)
+            spoints.append(stypes.cVectorToPython(spoint))
             dists.append(dist.value)
             trgepcs.append(trgepc.value)
-            obsposs.append(stypes.c_vector_to_python(obspos))
+            obsposs.append(stypes.cVectorToPython(obspos))
             founds.append(bool(found.value))
         return spoints, dists, trgepcs, obsposs, founds
     else:
         et = ctypes.c_double(et)
-        libspice.srfxpt_c(
-            method,
-            target,
-            et,
-            abcorr,
-            obsrvr,
-            dref,
-            dvec,
-            spoint,
-            ctypes.byref(dist),
-            ctypes.byref(trgepc),
-            obspos,
-            ctypes.byref(found),
-        )
-        return (
-            stypes.c_vector_to_python(spoint),
-            dist.value,
-            trgepc.value,
-            stypes.c_vector_to_python(obspos),
-            bool(found.value),
-        )
+        libspice.srfxpt_c(method, target, et, abcorr, obsrvr, dref, dvec, spoint,
+                          ctypes.byref(dist), ctypes.byref(trgepc), obspos, ctypes.byref(found))
+        return stypes.cVectorToPython(spoint), dist.value, trgepc.value, stypes.cVectorToPython(obspos), bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ssize(newsize, cell):
     """
     Set the size (maximum cardinality) of a CSPICE cell of any data type.
@@ -14503,7 +13324,7 @@ def ssize(newsize, cell):
     return cell
 
 
-@spice_error_check
+@spiceErrorCheck
 def stelab(pobj, vobs):
     """
     Correct the apparent position of an object for stellar
@@ -14522,15 +13343,15 @@ def stelab(pobj, vobs):
             the observer, corrected for stellar aberration.
     :rtype: 3-Element Array of floats
     """
-    pobj = stypes.to_double_vector(pobj)
-    vobs = stypes.to_double_vector(vobs)
-    appobj = stypes.empty_double_vector(3)
+    pobj = stypes.toDoubleVector(pobj)
+    vobs = stypes.toDoubleVector(vobs)
+    appobj = stypes.emptyDoubleVector(3)
     libspice.stelab_c(pobj, vobs, appobj)
-    return stypes.c_vector_to_python(appobj)
+    return stypes.cVectorToPython(appobj)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def stpool(item, nth, contin, lenout=_default_len_out):
     """
     Retrieve the nth string from the kernel pool variable, where the
@@ -14552,20 +13373,19 @@ def stpool(item, nth, contin, lenout=_default_len_out):
             The number of characters in the full string value.
     :rtype: tuple
     """
-    item = stypes.string_to_char_p(item)
-    contin = stypes.string_to_char_p(contin)
+    item = stypes.stringToCharP(item)
+    contin = stypes.stringToCharP(contin)
     nth = ctypes.c_int(nth)
-    strout = stypes.string_to_char_p(lenout)
+    strout = stypes.stringToCharP(lenout)
     lenout = ctypes.c_int(lenout)
     found = ctypes.c_int()
     sizet = ctypes.c_int()
-    libspice.stpool_c(
-        item, nth, contin, lenout, strout, ctypes.byref(sizet), ctypes.byref(found)
-    )
-    return stypes.to_python_string(strout), sizet.value, bool(found.value)
+    libspice.stpool_c(item, nth, contin, lenout, strout, ctypes.byref(sizet),
+                      ctypes.byref(found))
+    return stypes.toPythonString(strout), sizet.value, bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def str2et(time):
     """
     Convert a string representing an epoch to a double precision
@@ -14579,43 +13399,41 @@ def str2et(time):
     :return: The equivalent value in seconds past J2000, TDB.
     :rtype: float
     """
-    if stypes.is_iterable(time):
+    if stypes.isiterable(time):
         return numpy.array([str2et(t) for t in time])
-    time = stypes.string_to_char_p(time)
+    time = stypes.stringToCharP(time)
     et = ctypes.c_double()
     libspice.str2et_c(time, ctypes.byref(et))
     return et.value
 
-
-@spice_error_check
+@spiceErrorCheck
 def datetime2et(dt):
     """
-    Converts a standard Python datetime to a double precision value
-    representing the number of TDB seconds past the J2000 epoch
+    Converts a standard Python datetime to a double precision value 
+    representing the number of TDB seconds past the J2000 epoch 
     corresponding to the input epoch.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/time.html#The%20J2000%20Epoch
 
     :param dt: A standard Python datetime
-    :type dt: Union[datetime, Iterable[datetime]]
+    :type time: datetime
     :return: The equivalent value in seconds past J2000, TDB.
     :rtype: float
     """
     lt = ctypes.c_double()
     if hasattr(dt, "__iter__"):
-        ets = []
+        ets    = []
         for t in dt:
-            libspice.utc2et_c(stypes.string_to_char_p(t.isoformat()), ctypes.byref(lt))
-            check_for_spice_error(None)
+            libspice.utc2et_c(stypes.stringToCharP(t.isoformat()),ctypes.byref(lt))
+            checkForSpiceError(None)
             ets.append(lt.value)
         return ets
-    dt = stypes.string_to_char_p(dt.isoformat())
+    dt = stypes.stringToCharP(dt.isoformat())
     et = ctypes.c_double()
     libspice.utc2et_c(dt, ctypes.byref(et))
     return et.value
 
-
-@spice_error_check
+@spiceErrorCheck
 def subpnt(method, target, et, fixref, abcorr, obsrvr):
     """
     Compute the rectangular coordinates of the sub-observer point on
@@ -14644,26 +13462,22 @@ def subpnt(method, target, et, fixref, abcorr, obsrvr):
             Vector from observer to sub-observer point.
     :rtype: tuple
     """
-    method = stypes.string_to_char_p(method)
-    target = stypes.string_to_char_p(target)
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
-    fixref = stypes.string_to_char_p(fixref)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    spoint = stypes.empty_double_vector(3)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    spoint = stypes.emptyDoubleVector(3)
     trgepc = ctypes.c_double(0)
-    srfvec = stypes.empty_double_vector(3)
-    libspice.subpnt_c(
-        method, target, et, fixref, abcorr, obsrvr, spoint, ctypes.byref(trgepc), srfvec
-    )
-    return (
-        stypes.c_vector_to_python(spoint),
-        trgepc.value,
-        stypes.c_vector_to_python(srfvec),
-    )
+    srfvec = stypes.emptyDoubleVector(3)
+    libspice.subpnt_c(method, target, et, fixref, abcorr, obsrvr, spoint,
+                      ctypes.byref(trgepc), srfvec)
+    return stypes.cVectorToPython(spoint), trgepc.value, stypes.cVectorToPython(
+            srfvec)
 
 
-@spice_error_check
+@spiceErrorCheck
 def subpt(method, target, et, abcorr, obsrvr):
     """
     Deprecated: This routine has been superseded by the CSPICE
@@ -14694,36 +13508,28 @@ def subpt(method, target, et, abcorr, obsrvr):
             Altitude of the observer above the target body.
     :rtype: tuple
     """
-    method = stypes.string_to_char_p(method)
-    target = stypes.string_to_char_p(target)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    spoint = stypes.empty_double_vector(3)
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    spoint = stypes.emptyDoubleVector(3)
     alt = ctypes.c_double()
     if hasattr(et, "__iter__"):
         points = []
         alts = []
         for t in et:
-            libspice.subpt_c(
-                method,
-                target,
-                ctypes.c_double(t),
-                abcorr,
-                obsrvr,
-                spoint,
-                ctypes.byref(alt),
-            )
-            check_for_spice_error(None)
-            points.append(stypes.c_vector_to_python(spoint))
+            libspice.subpt_c(method, target, ctypes.c_double(t), abcorr, obsrvr, spoint, ctypes.byref(alt))
+            checkForSpiceError(None)
+            points.append(stypes.cVectorToPython(spoint))
             alts.append(alt.value)
         return points, alts
     else:
         et = ctypes.c_double(et)
         libspice.subpt_c(method, target, et, abcorr, obsrvr, spoint, ctypes.byref(alt))
-        return stypes.c_vector_to_python(spoint), alt.value
+        return stypes.cVectorToPython(spoint), alt.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def subslr(method, target, et, fixref, abcorr, obsrvr):
     """
     Compute the rectangular coordinates of the sub-solar point on
@@ -14752,26 +13558,22 @@ def subslr(method, target, et, fixref, abcorr, obsrvr):
             Vector from observer to sub-solar point.
     :rtype: tuple
     """
-    method = stypes.string_to_char_p(method)
-    target = stypes.string_to_char_p(target)
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
-    fixref = stypes.string_to_char_p(fixref)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    spoint = stypes.empty_double_vector(3)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    spoint = stypes.emptyDoubleVector(3)
     trgepc = ctypes.c_double(0)
-    srfvec = stypes.empty_double_vector(3)
-    libspice.subslr_c(
-        method, target, et, fixref, abcorr, obsrvr, spoint, ctypes.byref(trgepc), srfvec
-    )
-    return (
-        stypes.c_vector_to_python(spoint),
-        trgepc.value,
-        stypes.c_vector_to_python(srfvec),
-    )
+    srfvec = stypes.emptyDoubleVector(3)
+    libspice.subslr_c(method, target, et, fixref, abcorr, obsrvr, spoint,
+                      ctypes.byref(trgepc), srfvec)
+    return stypes.cVectorToPython(spoint), trgepc.value, stypes.cVectorToPython(
+            srfvec)
 
 
-@spice_error_check
+@spiceErrorCheck
 def subsol(method, target, et, abcorr, obsrvr):
     """
     Deprecated: This routine has been superseded by the CSPICE
@@ -14798,17 +13600,17 @@ def subsol(method, target, et, abcorr, obsrvr):
     :return: Sub-solar point on the target body.
     :rtype: 3-Element Array of floats
     """
-    method = stypes.string_to_char_p(method)
-    target = stypes.string_to_char_p(target)
+    method = stypes.stringToCharP(method)
+    target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
-    abcorr = stypes.string_to_char_p(abcorr)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    spoint = stypes.empty_double_vector(3)
+    abcorr = stypes.stringToCharP(abcorr)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    spoint = stypes.emptyDoubleVector(3)
     libspice.subsol_c(method, target, et, abcorr, obsrvr, spoint)
-    return stypes.c_vector_to_python(spoint)
+    return stypes.cVectorToPython(spoint)
 
 
-@spice_error_check
+@spiceErrorCheck
 def sumad(array):
     """
     Return the sum of the elements of a double precision array.
@@ -14821,11 +13623,11 @@ def sumad(array):
     :rtype: float
     """
     n = ctypes.c_int(len(array))
-    array = stypes.to_double_vector(array)
+    array = stypes.toDoubleVector(array)
     return libspice.sumad_c(array, n)
 
 
-@spice_error_check
+@spiceErrorCheck
 def sumai(array):
     """
     Return the sum of the elements of an integer array.
@@ -14838,11 +13640,11 @@ def sumai(array):
     :rtype: int
     """
     n = ctypes.c_int(len(array))
-    array = stypes.to_int_vector(array)
+    array = stypes.toIntVector(array)
     return libspice.sumai_c(array, n)
 
 
-@spice_error_check
+@spiceErrorCheck
 def surfnm(a, b, c, point):
     """
     This routine computes the outward-pointing, unit normal vector
@@ -14864,14 +13666,14 @@ def surfnm(a, b, c, point):
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
     c = ctypes.c_double(c)
-    point = stypes.to_double_vector(point)
-    normal = stypes.empty_double_vector(3)
+    point = stypes.toDoubleVector(point)
+    normal = stypes.emptyDoubleVector(3)
     libspice.surfnm_c(a, b, c, point, normal)
-    return stypes.c_vector_to_python(normal)
+    return stypes.cVectorToPython(normal)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def surfpt(positn, u, a, b, c):
     """
     Determine the intersection of a line-of-sight vector with the
@@ -14895,16 +13697,16 @@ def surfpt(positn, u, a, b, c):
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
     c = ctypes.c_double(c)
-    positn = stypes.to_double_vector(positn)
-    u = stypes.to_double_vector(u)
-    point = stypes.empty_double_vector(3)
+    positn = stypes.toDoubleVector(positn)
+    u = stypes.toDoubleVector(u)
+    point = stypes.emptyDoubleVector(3)
     found = ctypes.c_int()
     libspice.surfpt_c(positn, u, a, b, c, point, ctypes.byref(found))
-    return stypes.c_vector_to_python(point), bool(found.value)
+    return stypes.cVectorToPython(point), bool(found.value)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def surfpv(stvrtx, stdir, a, b, c):
     """
     Find the state (position and velocity) of the surface intercept
@@ -14928,15 +13730,15 @@ def surfpv(stvrtx, stdir, a, b, c):
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
     c = ctypes.c_double(c)
-    stvrtx = stypes.to_double_vector(stvrtx)
-    stdir = stypes.to_double_vector(stdir)
-    stx = stypes.empty_double_vector(6)
+    stvrtx = stypes.toDoubleVector(stvrtx)
+    stdir = stypes.toDoubleVector(stdir)
+    stx = stypes.emptyDoubleVector(6)
     found = ctypes.c_int()
     libspice.surfpv_c(stvrtx, stdir, a, b, c, stx, ctypes.byref(found))
-    return stypes.c_vector_to_python(stx), bool(found.value)
+    return stypes.cVectorToPython(stx), bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def swpool(agent, nnames, lenvals, names):
     """
     Add a name to the list of agents to notify whenever a member of
@@ -14953,14 +13755,14 @@ def swpool(agent, nnames, lenvals, names):
     :param names: Variable names whose update causes the notice.
     :type names: list of strs.
     """
-    agent = stypes.string_to_char_p(agent)
+    agent = stypes.stringToCharP(agent)
     nnames = ctypes.c_int(nnames)
     lenvals = ctypes.c_int(lenvals)
-    names = stypes.list_to_char_array(names)
+    names = stypes.listToCharArray(names)
     libspice.swpool_c(agent, nnames, lenvals, names)
 
 
-@spice_error_check
+@spiceErrorCheck
 def sxform(instring, tostring, et):
     """
     Return the state transformation matrix from one frame to
@@ -14978,24 +13780,24 @@ def sxform(instring, tostring, et):
     :return: A state transformation matrix.
     :rtype: 6x6-Element Array of floats
     """
-    instring = stypes.string_to_char_p(instring)
-    tostring = stypes.string_to_char_p(tostring)
-    xform = stypes.empty_double_matrix(x=6, y=6)
+    instring = stypes.stringToCharP(instring)
+    tostring = stypes.stringToCharP(tostring)
+    xform = stypes.emptyDoubleMatrix(x=6, y=6)
     if hasattr(et, "__iter__"):
         xforms = []
         for t in et:
             libspice.sxform_c(instring, tostring, ctypes.c_double(t), xform)
-            check_for_spice_error(None)
-            xforms.append(stypes.c_matrix_to_numpy(xform))
+            checkForSpiceError(None)
+            xforms.append(stypes.cMatrixToNumpy(xform))
         return xforms
     else:
         et = ctypes.c_double(et)
         libspice.sxform_c(instring, tostring, et, xform)
-        return stypes.c_matrix_to_numpy(xform)
+        return stypes.cMatrixToNumpy(xform)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def szpool(name):
     """
     Return the kernel pool size limitations.
@@ -15007,7 +13809,7 @@ def szpool(name):
     :return: Value of parameter specified by name,
     :rtype: int
     """
-    name = stypes.string_to_char_p(name)
+    name = stypes.stringToCharP(name)
     n = ctypes.c_int()
     found = ctypes.c_int(0)
     libspice.szpool_c(name, ctypes.byref(n), ctypes.byref(found))
@@ -15018,41 +13820,27 @@ def szpool(name):
 # T
 
 
-@spice_error_check
-def termpt(
-    method,
-    ilusrc,
-    target,
-    et,
-    fixref,
-    abcorr,
-    corloc,
-    obsrvr,
-    refvec,
-    rolstp,
-    ncuts,
-    schstp,
-    soltol,
-    maxn,
-):
+@spiceErrorCheck
+def termpt(method, ilusrc, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp,
+           ncuts, schstp, soltol, maxn):
     """
     Find terminator points on a target body. The caller specifies
     half-planes, bounded by the illumination source center-target center
     vector, in which to search for terminator points.
 
-    The terminator can be either umbral or penumbral. The umbral
-    terminator is the boundary of the region on the target surface
-    where no light from the source is visible. The penumbral
-    terminator is the boundary of the region on the target surface
-    where none of the light from the source is blocked by the target
+    The terminator can be either umbral or penumbral. The umbral 
+    terminator is the boundary of the region on the target surface 
+    where no light from the source is visible. The penumbral 
+    terminator is the boundary of the region on the target surface 
+    where none of the light from the source is blocked by the target 
     itself.
 
-    The surface of the target body may be represented either by a
-    triaxial ellipsoid or by topographic data.
+    The surface of the target body may be represented either by a 
+    triaxial ellipsoid or by topographic data.  
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/termpt_c.html
 
-    :param method: Computation method.
+    :param method: Computation method. 
     :type method: str
     :param ilusrc: Illumination source.
     :type ilusrc: str
@@ -15062,7 +13850,7 @@ def termpt(
     :type et: float
     :param fixref: Body-fixed, body-centered target body frame.
     :type fixref: str
-    :param abcorr: Aberration correction.
+    :param abcorr: Aberration correction. 
     :type abcorr: str
     :param corloc: Aberration correction locus.
     :type corloc: str
@@ -15070,69 +13858,50 @@ def termpt(
     :type obsrvr: str
     :param refvec: Reference vector for cutting half-planes.
     :type refvec: 3-Element Array of floats
-    :param rolstp: Roll angular step for cutting half-planes.
+    :param rolstp: Roll angular step for cutting half-planes. 
     :type rolstp: float
-    :param ncuts: Number of cutting half-planes.
+    :param ncuts: Number of cutting half-planes. 
     :type ncuts: int
-    :param schstp: Angular step size for searching.
+    :param schstp: Angular step size for searching. 
     :type schstp: float
-    :param soltol: Solution convergence tolerance.
+    :param soltol: Solution convergence tolerance. 
     :type soltol: float
-    :param maxn: Maximum number of entries in output arrays.
+    :param maxn: Maximum number of entries in output arrays. 
     :type maxn: int
     :return: Counts of terminator points corresponding to cuts, Terminator points, Times associated with terminator points, Terminator vectors emanating from the observer
     :rtype: tuple
     """
-    method = stypes.string_to_char_p(method)
-    ilusrc = stypes.string_to_char_p(ilusrc)
-    target = stypes.string_to_char_p(target)
+    method = stypes.stringToCharP(method)
+    ilusrc = stypes.stringToCharP(ilusrc)
+    target = stypes.stringToCharP(target)
     et = ctypes.c_double(et)
-    fixref = stypes.string_to_char_p(fixref)
-    abcorr = stypes.string_to_char_p(abcorr)
-    corloc = stypes.string_to_char_p(corloc)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    refvec = stypes.to_double_vector(refvec)
+    fixref = stypes.stringToCharP(fixref)
+    abcorr = stypes.stringToCharP(abcorr)
+    corloc = stypes.stringToCharP(corloc)
+    obsrvr = stypes.stringToCharP(obsrvr)
+    refvec = stypes.toDoubleVector(refvec)
     rolstp = ctypes.c_double(rolstp)
     ncuts = ctypes.c_int(ncuts)
     schstp = ctypes.c_double(schstp)
     soltol = ctypes.c_double(soltol)
     maxn = ctypes.c_int(maxn)
-    npts = stypes.empty_int_vector(maxn.value)
-    points = stypes.empty_double_matrix(3, maxn.value)
-    epochs = stypes.empty_double_vector(maxn)
-    trmvcs = stypes.empty_double_matrix(3, maxn.value)
-    libspice.termpt_c(
-        method,
-        ilusrc,
-        target,
-        et,
-        fixref,
-        abcorr,
-        corloc,
-        obsrvr,
-        refvec,
-        rolstp,
-        ncuts,
-        schstp,
-        soltol,
-        maxn,
-        npts,
-        points,
-        epochs,
-        trmvcs,
-    )
+    npts = stypes.emptyIntVector(maxn.value)
+    points = stypes.emptyDoubleMatrix(3, maxn.value)
+    epochs = stypes.emptyDoubleVector(maxn)
+    trmvcs = stypes.emptyDoubleMatrix(3, maxn.value)
+    libspice.termpt_c(method, ilusrc, target, et, fixref,
+                      abcorr, corloc, obsrvr, refvec,
+                      rolstp, ncuts, schstp, soltol,
+                      maxn, npts, points, epochs, trmvcs)
     # Clip the empty elements out of returned results
-    npts = stypes.c_vector_to_python(npts)
+    npts = stypes.cVectorToPython(npts)
     valid_points = numpy.where(npts >= 1)
-    return (
-        npts[valid_points],
-        stypes.c_matrix_to_numpy(points)[valid_points],
-        stypes.c_vector_to_python(epochs)[valid_points],
-        stypes.c_matrix_to_numpy(trmvcs)[valid_points],
-    )
+    return npts[valid_points], stypes.cMatrixToNumpy(points)[valid_points], \
+           stypes.cVectorToPython(epochs)[valid_points], \
+           stypes.cMatrixToNumpy(trmvcs)[valid_points]
 
 
-@spice_error_check
+@spiceErrorCheck
 def timdef(action, item, lenout, value=None):
     """
     Set and retrieve the defaults associated with calendar input strings.
@@ -15150,18 +13919,18 @@ def timdef(action, item, lenout, value=None):
     :return: the value associated with the default item.
     :rtype: str
     """
-    action = stypes.string_to_char_p(action)
-    item = stypes.string_to_char_p(item)
+    action = stypes.stringToCharP(action)
+    item = stypes.stringToCharP(item)
     lenout = ctypes.c_int(lenout)
     if value is None:
-        value = stypes.string_to_char_p(lenout)
+        value = stypes.stringToCharP(lenout)
     else:
-        value = stypes.string_to_char_p(value)
+        value = stypes.stringToCharP(value)
     libspice.timdef_c(action, item, lenout, value)
-    return stypes.to_python_string(value)
+    return stypes.toPythonString(value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def timout(et, pictur, lenout=_default_len_out):
     """
     This vectorized routine converts an input epoch represented in TDB seconds
@@ -15179,23 +13948,23 @@ def timout(et, pictur, lenout=_default_len_out):
     :return: A string representation of the input epoch.
     :rtype: str or array of str
     """
-    pictur = stypes.string_to_char_p(pictur)
-    output = stypes.string_to_char_p(lenout)
+    pictur = stypes.stringToCharP(pictur)
+    output = stypes.stringToCharP(lenout)
     lenout = ctypes.c_int(lenout)
     if hasattr(et, "__iter__"):
         times = []
         for t in et:
             libspice.timout_c(ctypes.c_double(t), pictur, lenout, output)
-            check_for_spice_error(None)
-            times.append(stypes.to_python_string(output))
+            checkForSpiceError(None)
+            times.append(stypes.toPythonString(output))
         return times
     else:
         et = ctypes.c_double(et)
         libspice.timout_c(et, pictur, lenout, output)
-        return stypes.to_python_string(output)
+        return stypes.toPythonString(output)
 
 
-@spice_error_check
+@spiceErrorCheck
 def tipbod(ref, body, et):
     """
     Return a 3x3 matrix that transforms positions in inertial
@@ -15213,15 +13982,15 @@ def tipbod(ref, body, et):
     :return: Transformation (position), inertial to prime meridian.
     :rtype: 3x3-Element Array of floats
     """
-    ref = stypes.string_to_char_p(ref)
+    ref = stypes.stringToCharP(ref)
     body = ctypes.c_int(body)
     et = ctypes.c_double(et)
-    retmatrix = stypes.empty_double_matrix()
+    retmatrix = stypes.emptyDoubleMatrix()
     libspice.tipbod_c(ref, body, et, retmatrix)
-    return stypes.c_matrix_to_numpy(retmatrix)
+    return stypes.cMatrixToNumpy(retmatrix)
 
 
-@spice_error_check
+@spiceErrorCheck
 def tisbod(ref, body, et):
     """
     Return a 6x6 matrix that transforms states in inertial coordinates to
@@ -15238,16 +14007,15 @@ def tisbod(ref, body, et):
     :return: Transformation (state), inertial to prime meridian.
     :rtype: 6x6-Element Array of floats
     """
-    ref = stypes.string_to_char_p(ref)
+    ref = stypes.stringToCharP(ref)
     body = ctypes.c_int(body)
     et = ctypes.c_double(et)
-    retmatrix = stypes.empty_double_matrix(x=6, y=6)
+    retmatrix = stypes.emptyDoubleMatrix(x=6, y=6)
     libspice.tisbod_c(ref, body, et, retmatrix)
-    return stypes.c_matrix_to_numpy(retmatrix)
+    return stypes.cMatrixToNumpy(retmatrix)
 
-
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def tkfram(typid):
     """
     This routine returns the rotation from the input frame
@@ -15261,16 +14029,14 @@ def tkfram(typid):
     :rtype: tuple
     """
     code = ctypes.c_int(typid)
-    matrix = stypes.empty_double_matrix(x=3, y=3)
-    next_frame = ctypes.c_int()
+    matrix = stypes.emptyDoubleMatrix(x=3, y=3)
+    nextFrame = ctypes.c_int()
     found = ctypes.c_int()
-    libspice.tkfram_(
-        ctypes.byref(code), matrix, ctypes.byref(next_frame), ctypes.byref(found)
-    )
-    return stypes.c_matrix_to_numpy(matrix), next_frame.value, bool(found.value)
+    libspice.tkfram_(ctypes.byref(code), matrix, ctypes.byref(nextFrame), ctypes.byref(found))
 
+    return stypes.cMatrixToNumpy(matrix), nextFrame.value, bool(found.value)
 
-# @spice_error_check
+# @spiceErrorCheck
 def tkvrsn(item):
     """
     Given an item such as the Toolkit or an entry point name, return
@@ -15283,11 +14049,11 @@ def tkvrsn(item):
     :return: the latest version string.
     :rtype: str
     """
-    item = stypes.string_to_char_p(item)
-    return stypes.to_python_string(libspice.tkvrsn_c(item))
+    item = stypes.stringToCharP(item)
+    return stypes.toPythonString(libspice.tkvrsn_c(item))
 
 
-@spice_error_check
+@spiceErrorCheck
 def tparse(instring, lenout=_default_len_out):
     """
     Parse a time string and return seconds past the J2000
@@ -15302,15 +14068,15 @@ def tparse(instring, lenout=_default_len_out):
     :return: Equivalent UTC seconds past J2000, Descriptive error message.
     :rtype: tuple
     """
-    errmsg = stypes.string_to_char_p(lenout)
+    errmsg = stypes.stringToCharP(lenout)
     lenout = ctypes.c_int(lenout)
-    instring = stypes.string_to_char_p(instring)
+    instring = stypes.stringToCharP(instring)
     sp2000 = ctypes.c_double()
     libspice.tparse_c(instring, lenout, ctypes.byref(sp2000), errmsg)
-    return sp2000.value, stypes.to_python_string(errmsg)
+    return sp2000.value, stypes.toPythonString(errmsg)
 
 
-@spice_error_check
+@spiceErrorCheck
 def tpictr(sample, lenout=_default_len_out, lenerr=_default_len_out):
     """
     Given a sample time string, create a time format picture
@@ -15330,17 +14096,18 @@ def tpictr(sample, lenout=_default_len_out, lenerr=_default_len_out):
             Diagnostic returned if sample cannot be parsed
     :rtype: tuple
     """
-    sample = stypes.string_to_char_p(sample)
-    pictur = stypes.string_to_char_p(lenout)
-    errmsg = stypes.string_to_char_p(lenerr)
+    sample = stypes.stringToCharP(sample)
+    pictur = stypes.stringToCharP(lenout)
+    errmsg = stypes.stringToCharP(lenerr)
     lenout = ctypes.c_int(lenout)
     lenerr = ctypes.c_int(lenerr)
     ok = ctypes.c_int()
     libspice.tpictr_c(sample, lenout, lenerr, pictur, ctypes.byref(ok), errmsg)
-    return stypes.to_python_string(pictur), ok.value, stypes.to_python_string(errmsg)
+    return stypes.toPythonString(pictur), ok.value, stypes.toPythonString(
+            errmsg)
 
 
-@spice_error_check
+@spiceErrorCheck
 def trace(matrix):
     """
     Return the trace of a 3x3 matrix.
@@ -15352,11 +14119,11 @@ def trace(matrix):
     :return: The trace of matrix.
     :rtype: float
     """
-    matrix = stypes.to_double_matrix(matrix)
+    matrix = stypes.toDoubleMatrix(matrix)
     return libspice.trace_c(matrix)
 
 
-@spice_error_check
+@spiceErrorCheck
 def trcdep():
     """
     Return the number of modules in the traceback representation.
@@ -15371,7 +14138,7 @@ def trcdep():
     return depth.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def trcnam(index, namlen=_default_len_out):
     """
     Return the name of the module having the specified position in
@@ -15388,13 +14155,13 @@ def trcnam(index, namlen=_default_len_out):
     :rtype: str
     """
     index = ctypes.c_int(index)
-    name = stypes.string_to_char_p(namlen)
+    name = stypes.stringToCharP(namlen)
     namlen = ctypes.c_int(namlen)
     libspice.trcnam_c(index, namlen, name)
-    return stypes.to_python_string(name)
+    return stypes.toPythonString(name)
 
 
-@spice_error_check
+@spiceErrorCheck
 def trcoff():
     """
     Disable tracing.
@@ -15405,7 +14172,7 @@ def trcoff():
     libspice.trcoff_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def tsetyr(year):
     """
     Set the lower bound on the 100 year range.
@@ -15421,7 +14188,7 @@ def tsetyr(year):
     libspice.tsetyr_c(year)
 
 
-@spice_error_check
+@spiceErrorCheck
 def twopi():
     """
     Return twice the value of pi
@@ -15435,7 +14202,7 @@ def twopi():
     return libspice.twopi_c()
 
 
-@spice_error_check
+@spiceErrorCheck
 def twovec(axdef, indexa, plndef, indexp):
     """
     Find the transformation to the right-handed frame having a
@@ -15455,16 +14222,16 @@ def twovec(axdef, indexa, plndef, indexp):
     :return: Output rotation matrix.
     :rtype: 3x3-Element Array of floats
     """
-    axdef = stypes.to_double_vector(axdef)
+    axdef = stypes.toDoubleVector(axdef)
     indexa = ctypes.c_int(indexa)
-    plndef = stypes.to_double_vector(plndef)
+    plndef = stypes.toDoubleVector(plndef)
     indexp = ctypes.c_int(indexp)
-    mout = stypes.empty_double_matrix()
+    mout = stypes.emptyDoubleMatrix()
     libspice.twovec_c(axdef, indexa, plndef, indexp, mout)
-    return stypes.c_matrix_to_numpy(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def txtopn(fname):
     """
     Internal undocumented command for opening a new text file for
@@ -15478,14 +14245,14 @@ def txtopn(fname):
     :return: FORTRAN logical unit of opened file
     :rtype: int
     """
-    fname_p = stypes.string_to_char_p(fname)
-    unit_out = ctypes.c_int()
+    fnameP    = stypes.stringToCharP(fname)
+    unit_out  = ctypes.c_int()
     fname_len = ctypes.c_int(len(fname))
-    libspice.txtopn_(fname_p, ctypes.byref(unit_out), fname_len)
+    libspice.txtopn_(fnameP, ctypes.byref(unit_out), fname_len)
     return unit_out.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def tyear():
     """
     Return the number of seconds in a tropical year.
@@ -15501,8 +14268,7 @@ def tyear():
 ################################################################################
 # U
 
-
-@spice_error_check
+@spiceErrorCheck
 def ucase(inchar, lenout=None):
     """
     Convert the characters in a string to uppercase.
@@ -15518,14 +14284,14 @@ def ucase(inchar, lenout=None):
     """
     if lenout is None:
         lenout = len(inchar) + 1
-    inchar = stypes.string_to_char_p(inchar)
-    outchar = stypes.string_to_char_p(" " * lenout)
+    inchar = stypes.stringToCharP(inchar)
+    outchar = stypes.stringToCharP(" " * lenout)
     lenout = ctypes.c_int(lenout)
     libspice.ucase_c(inchar, lenout, outchar)
-    return stypes.to_python_string(outchar)
+    return stypes.toPythonString(outchar)
 
 
-@spice_error_check
+@spiceErrorCheck
 def ucrss(v1, v2):
     """
     Compute the normalized cross product of two 3-vectors.
@@ -15539,11 +14305,11 @@ def ucrss(v1, v2):
     :return: Normalized cross product v1xv2 / abs(v1xv2).
     :rtype: Array of floats
     """
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
-    vout = stypes.empty_double_vector(3)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
+    vout = stypes.emptyDoubleVector(3)
     libspice.ucrss_c(v1, v2, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
 def uddc(udfunc, x, dx):
@@ -15585,7 +14351,7 @@ def uddc(udfunc, x, dx):
     return bool(isdescr.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def uddf(udfunc, x, dx):
     """
     Routine to calculate the first derivative of a caller-specified
@@ -15638,7 +14404,7 @@ def udf(x):
     return value.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def union(a, b):
     """
     Compute the union of two sets of any data type to form a third set.
@@ -15669,7 +14435,7 @@ def union(a, b):
     return c
 
 
-@spice_error_check
+@spiceErrorCheck
 def unitim(epoch, insys, outsys):
     """
     Transform time from one uniform scale to another.  The uniform
@@ -15689,12 +14455,12 @@ def unitim(epoch, insys, outsys):
     :rtype: float
     """
     epoch = ctypes.c_double(epoch)
-    insys = stypes.string_to_char_p(insys)
-    outsys = stypes.string_to_char_p(outsys)
+    insys = stypes.stringToCharP(insys)
+    outsys = stypes.stringToCharP(outsys)
     return libspice.unitim_c(epoch, insys, outsys)
 
 
-@spice_error_check
+@spiceErrorCheck
 def unload(filename):
     """
     Unload a SPICE kernel.
@@ -15704,34 +14470,34 @@ def unload(filename):
     :param filename: The name of a kernel to unload.
     :type filename: str
     """
-    if stypes.is_iterable(filename):
+    if stypes.isiterable(filename):
         for f in filename:
-            libspice.unload_c(stypes.string_to_char_p(f))
+            libspice.unload_c(stypes.stringToCharP(f))
         return
-    filename = stypes.string_to_char_p(filename)
+    filename = stypes.stringToCharP(filename)
     libspice.unload_c(filename)
 
 
-@spice_error_check
+@spiceErrorCheck
 def unorm(v1):
     """
     Normalize a double precision 3-vector and return its magnitude.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unorm_c.html
 
-    :param v1: Vector to be normalized.
+    :param v1: Vector to be normalized. 
     :type v1: 3-Element Array of floats
     :return: Unit vector of v1, Magnitude of v1.
     :rtype: tuple
     """
-    v1 = stypes.to_double_vector(v1)
-    vout = stypes.empty_double_vector(3)
+    v1 = stypes.toDoubleVector(v1)
+    vout = stypes.emptyDoubleVector(3)
     vmag = ctypes.c_double()
     libspice.unorm_c(v1, vout, ctypes.byref(vmag))
-    return stypes.c_vector_to_python(vout), vmag.value
+    return stypes.cVectorToPython(vout), vmag.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def unormg(v1, ndim):
     """
     Normalize a double precision vector of arbitrary dimension and
@@ -15739,22 +14505,22 @@ def unormg(v1, ndim):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unormg_c.html
 
-    :param v1: Vector to be normalized.
+    :param v1: Vector to be normalized. 
     :type v1: Array of floats
-    :param ndim: This is the dimension of v1 and vout.
+    :param ndim: This is the dimension of v1 and vout. 
     :type ndim: int
     :return: Unit vector of v1, Magnitude of v1.
     :rtype: tuple
     """
-    v1 = stypes.to_double_vector(v1)
-    vout = stypes.empty_double_vector(ndim)
+    v1 = stypes.toDoubleVector(v1)
+    vout = stypes.emptyDoubleVector(ndim)
     vmag = ctypes.c_double()
     ndim = ctypes.c_int(ndim)
     libspice.unormg_c(v1, ndim, vout, ctypes.byref(vmag))
-    return stypes.c_vector_to_python(vout), vmag.value
+    return stypes.cVectorToPython(vout), vmag.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def utc2et(utcstr):
     """
     Convert an input time from Calendar or Julian Date format, UTC,
@@ -15762,12 +14528,12 @@ def utc2et(utcstr):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/utc2et_c.html
 
-    :param utcstr: Input time string, UTC.
+    :param utcstr: Input time string, UTC. 
     :type utcstr: str
     :return: Output epoch, ephemeris seconds past J2000.
     :rtype: float
     """
-    utcstr = stypes.string_to_char_p(utcstr)
+    utcstr = stypes.stringToCharP(utcstr)
     et = ctypes.c_double()
     libspice.utc2et_c(utcstr, ctypes.byref(et))
     return et.value
@@ -15777,57 +14543,57 @@ def utc2et(utcstr):
 # V
 
 
-@spice_error_check
+@spiceErrorCheck
 def vadd(v1, v2):
     """ Add two 3 dimensional vectors.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vadd_c.html
 
-    :param v1: First vector to be added.
+    :param v1: First vector to be added. 
     :type v1: 3-Element Array of floats
-    :param v2: Second vector to be added.
+    :param v2: Second vector to be added. 
     :type v2: 3-Element Array of floats
     :return: v1+v2
     :rtype: 3-Element Array of floats
     """
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
-    vout = stypes.empty_double_vector(3)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
+    vout = stypes.emptyDoubleVector(3)
     libspice.vadd_c(v1, v2, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vaddg(v1, v2, ndim):
     """ Add two n-dimensional vectors
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vaddg_c.html
 
-    :param v1: First vector to be added.
+    :param v1: First vector to be added. 
     :type v1: list[ndim]
-    :param v2: Second vector to be added.
+    :param v2: Second vector to be added. 
     :type v2: list[ndim]
-    :param ndim: Dimension of v1 and v2.
+    :param ndim: Dimension of v1 and v2. 
     :type ndim: int
     :return: v1+v2
     :rtype: list[ndim]
     """
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
-    vout = stypes.empty_double_vector(ndim)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
+    vout = stypes.emptyDoubleVector(ndim)
     ndim = ctypes.c_int(ndim)
     libspice.vaddg_c(v1, v2, ndim, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def valid(insize, n, inset):
     """
     Create a valid CSPICE set from a CSPICE Cell of any data type.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/valid_c.html
 
-    :param insize: Size (maximum cardinality) of the set.
+    :param insize: Size (maximum cardinality) of the set. 
     :type insize: int
-    :param n: Initial no. of (possibly non-distinct) elements.
+    :param n: Initial no. of (possibly non-distinct) elements. 
     :type n: int
     :param inset: Set to be validated.
     :return: validated set
@@ -15840,88 +14606,88 @@ def valid(insize, n, inset):
     return inset
 
 
-@spice_error_check
+@spiceErrorCheck
 def vcrss(v1, v2):
     """
     Compute the cross product of two 3-dimensional vectors.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vcrss_c.html
 
-    :param v1: Left hand vector for cross product.
+    :param v1: Left hand vector for cross product. 
     :type v1: 3-Element Array of floats
-    :param v2: Right hand vector for cross product.
+    :param v2: Right hand vector for cross product. 
     :type v2: 3-Element Array of floats
     :return: Cross product v1 x v2.
     :rtype: 3-Element Array of floats
     """
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
-    vout = stypes.empty_double_vector(3)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
+    vout = stypes.emptyDoubleVector(3)
     libspice.vcrss_c(v1, v2, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vdist(v1, v2):
     """
     Return the distance between two three-dimensional vectors.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdist_c.html
 
-    :param v1: First vector in the dot product.
+    :param v1: First vector in the dot product. 
     :type v1: 3-Element Array of floats
-    :param v2: Second vector in the dot product.
+    :param v2: Second vector in the dot product. 
     :type v2: 3-Element Array of floats
     :return: the distance between v1 and v2
     :rtype: float
     """
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
     return libspice.vdist_c(v1, v2)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vdistg(v1, v2, ndim):
     """
     Return the distance between two vectors of arbitrary dimension.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdistg_c.html
 
-    :param v1: ndim-dimensional double precision vector.
+    :param v1: ndim-dimensional double precision vector. 
     :type v1: list[ndim]
-    :param v2: ndim-dimensional double precision vector.
+    :param v2: ndim-dimensional double precision vector. 
     :type v2: list[ndim]
-    :param ndim: Dimension of v1 and v2.
+    :param ndim: Dimension of v1 and v2. 
     :type ndim: int
     :return: the distance between v1 and v2
     :rtype: float
     """
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
     ndim = ctypes.c_int(ndim)
     return libspice.vdistg_c(v1, v2, ndim)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vdot(v1, v2):
     """
     Compute the dot product of two double precision, 3-dimensional vectors.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdot_c.html
 
-    :param v1: First vector in the dot product.
+    :param v1: First vector in the dot product. 
     :type v1: 3-Element Array of floats
-    :param v2: Second vector in the dot product.
+    :param v2: Second vector in the dot product. 
     :type v2: 3-Element Array of floats
     :return: dot product of v1 and v2.
     :rtype: float
     """
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
     return libspice.vdot_c(v1, v2)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vdotg(v1, v2, ndim):
     """
     Compute the dot product of two double precision vectors of
@@ -15929,100 +14695,100 @@ def vdotg(v1, v2, ndim):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vdotg_c.html
 
-    :param v1: First vector in the dot product.
+    :param v1: First vector in the dot product. 
     :type v1: list[ndim]
-    :param v2: Second vector in the dot product.
+    :param v2: Second vector in the dot product. 
     :type v2: list[ndim]
-    :param ndim: Dimension of v1 and v2.
+    :param ndim: Dimension of v1 and v2. 
     :type ndim: int
     :return: dot product of v1 and v2.
     :rtype: float
     """
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
     ndim = ctypes.c_int(ndim)
     return libspice.vdotg_c(v1, v2, ndim)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vequ(v1):
     """
     Make one double precision 3-dimensional vector equal to another.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vequ_c.html
 
-    :param v1: 3-dimensional double precision vector.
+    :param v1: 3-dimensional double precision vector. 
     :type v1: 3-Element Array of floats
     :return: 3-dimensional double precision vector set equal to vin.
     :rtype: 3-Element Array of floats
     """
-    v1 = stypes.to_double_vector(v1)
-    vout = stypes.empty_double_vector(3)
+    v1 = stypes.toDoubleVector(v1)
+    vout = stypes.emptyDoubleVector(3)
     libspice.vequ_c(v1, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vequg(v1, ndim):
     """
     Make one double precision vector of arbitrary dimension equal to another.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vequg_c.html
 
-    :param v1: ndim-dimensional double precision vector.
+    :param v1: ndim-dimensional double precision vector. 
     :type v1: list[ndim]
-    :param ndim: Dimension of vin (and also vout).
+    :param ndim: Dimension of vin (and also vout). 
     :type ndim: int
     :return: ndim-dimensional double precision vector set equal to vin.
     :rtype: list[ndim]
     """
-    v1 = stypes.to_double_vector(v1)
-    vout = stypes.empty_double_vector(ndim)
+    v1 = stypes.toDoubleVector(v1)
+    vout = stypes.emptyDoubleVector(ndim)
     ndim = ctypes.c_int(ndim)
     libspice.vequg_c(v1, ndim, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vhat(v1):
     """
     Find the unit vector along a double precision 3-dimensional vector.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vhat_c.html
 
-    :param v1: Vector to be unitized.
+    :param v1: Vector to be unitized. 
     :type v1: 3-Element Array of floats
     :return: Unit vector v / abs(v).
     :rtype: 3-Element Array of floats
     """
-    v1 = stypes.to_double_vector(v1)
-    vout = stypes.empty_double_vector(3)
+    v1 = stypes.toDoubleVector(v1)
+    vout = stypes.emptyDoubleVector(3)
     libspice.vhat_c(v1, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vhatg(v1, ndim):
     """
     Find the unit vector along a double precision vector of arbitrary dimension.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vhatg_c.html
 
-    :param v1: Vector to be normalized.
+    :param v1: Vector to be normalized. 
     :type v1: list[ndim]
-    :param ndim: Dimension of v1 (and also vout).
+    :param ndim: Dimension of v1 (and also vout). 
     :type ndim: int
     :return: Unit vector v / abs(v).
     :rtype: list[ndim]
     """
-    v1 = stypes.to_double_vector(v1)
-    vout = stypes.empty_double_vector(ndim)
+    v1 = stypes.toDoubleVector(v1)
+    vout = stypes.emptyDoubleVector(ndim)
     ndim = ctypes.c_int(ndim)
     libspice.vhatg_c(v1, ndim, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vlcom(a, v1, b, v2):
     """
     Compute a vector linear combination of two double precision,
@@ -16030,27 +14796,27 @@ def vlcom(a, v1, b, v2):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vlcom_c.html
 
-    :param a: Coefficient of v1
+    :param a: Coefficient of v1 
     :type a: float
-    :param v1: Vector in 3-space
+    :param v1: Vector in 3-space 
     :type v1: 3-Element Array of floats
-    :param b: Coefficient of v2
+    :param b: Coefficient of v2 
     :type b: float
-    :param v2: Vector in 3-space
+    :param v2: Vector in 3-space 
     :type v2: 3-Element Array of floats
     :return: Linear Vector Combination a*v1 + b*v2.
     :rtype: 3-Element Array of floats
     """
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
-    sumv = stypes.empty_double_vector(3)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
+    sumv = stypes.emptyDoubleVector(3)
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
     libspice.vlcom_c(a, v1, b, v2, sumv)
-    return stypes.c_vector_to_python(sumv)
+    return stypes.cVectorToPython(sumv)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vlcom3(a, v1, b, v2, c, v3):
     """
     This subroutine computes the vector linear combination
@@ -16058,33 +14824,33 @@ def vlcom3(a, v1, b, v2, c, v3):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vlcom3_c.html
 
-    :param a: Coefficient of v1
+    :param a: Coefficient of v1 
     :type a: float
-    :param v1: Vector in 3-space
+    :param v1: Vector in 3-space 
     :type v1: 3-Element Array of floats
-    :param b: Coefficient of v2
+    :param b: Coefficient of v2 
     :type b: float
-    :param v2: Vector in 3-space
+    :param v2: Vector in 3-space 
     :type v2: 3-Element Array of floats
-    :param c: Coefficient of v3
+    :param c: Coefficient of v3 
     :type c: float
-    :param v3: Vector in 3-space
+    :param v3: Vector in 3-space 
     :type v3: 3-Element Array of floats
     :return: Linear Vector Combination a*v1 + b*v2 + c*v3
     :rtype: 3-Element Array of floats
     """
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
-    v3 = stypes.to_double_vector(v3)
-    sumv = stypes.empty_double_vector(3)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
+    v3 = stypes.toDoubleVector(v3)
+    sumv = stypes.emptyDoubleVector(3)
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
     c = ctypes.c_double(c)
     libspice.vlcom3_c(a, v1, b, v2, c, v3, sumv)
-    return stypes.c_vector_to_python(sumv)
+    return stypes.cVectorToPython(sumv)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vlcomg(n, a, v1, b, v2):
     """
     Compute a vector linear combination of two double precision
@@ -16092,115 +14858,115 @@ def vlcomg(n, a, v1, b, v2):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vlcomg_c.html
 
-    :param n: Dimension of vector space
+    :param n: Dimension of vector space 
     :type n: int
-    :param a: Coefficient of v1
+    :param a: Coefficient of v1 
     :type a: float
-    :param v1: Vector in n-space
+    :param v1: Vector in n-space 
     :type v1: list[n]
-    :param b: Coefficient of v2
+    :param b: Coefficient of v2 
     :type b: float
-    :param v2: Vector in n-space
+    :param v2: Vector in n-space 
     :type v2: list[n]
     :return: Linear Vector Combination a*v1 + b*v2
     :rtype: list[n]
     """
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
-    sumv = stypes.empty_double_vector(n)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
+    sumv = stypes.emptyDoubleVector(n)
     a = ctypes.c_double(a)
     b = ctypes.c_double(b)
     n = ctypes.c_int(n)
     libspice.vlcomg_c(n, a, v1, b, v2, sumv)
-    return stypes.c_vector_to_python(sumv)
+    return stypes.cVectorToPython(sumv)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vminug(vin, ndim):
     """
     Negate a double precision vector of arbitrary dimension.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vminug_c.html
 
-    :param vin: ndim-dimensional double precision vector to be negated.
+    :param vin: ndim-dimensional double precision vector to be negated. 
     :type vin: Array of floats
-    :param ndim: Dimension of vin.
+    :param ndim: Dimension of vin. 
     :type ndim: int
     :return: ndim-dimensional double precision vector equal to -vin.
     :rtype: list[ndim]
     """
-    vin = stypes.to_double_vector(vin)
-    vout = stypes.empty_double_vector(ndim)
+    vin = stypes.toDoubleVector(vin)
+    vout = stypes.emptyDoubleVector(ndim)
     ndim = ctypes.c_int(ndim)
     libspice.vminug_c(vin, ndim, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vminus(vin):
     """
     Negate a double precision 3-dimensional vector.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vminus_c.html
 
-    :param vin: Vector to be negated.
+    :param vin: Vector to be negated. 
     :type vin: 3-Element Array of floats
     :return: Negated vector -v1.
     :rtype: 3-Element Array of floats
     """
-    vin = stypes.to_double_vector(vin)
-    vout = stypes.empty_double_vector(3)
+    vin = stypes.toDoubleVector(vin)
+    vout = stypes.emptyDoubleVector(3)
     libspice.vminus_c(vin, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vnorm(v):
     """
     Compute the magnitude of a double precision, 3-dimensional vector.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vnorm_c.html
 
-    :param v: Vector whose magnitude is to be found.
+    :param v: Vector whose magnitude is to be found. 
     :type v: 3-Element Array of floats
     :return: magnitude of v calculated in a numerically stable way
     :rtype: float
     """
-    v = stypes.to_double_vector(v)
+    v = stypes.toDoubleVector(v)
     return libspice.vnorm_c(v)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vnormg(v, ndim):
     """
     Compute the magnitude of a double precision vector of arbitrary dimension.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vnormg_c.html
 
-    :param v: Vector whose magnitude is to be found.
+    :param v: Vector whose magnitude is to be found. 
     :type v: Array of floats
-    :param ndim: Dimension of v
+    :param ndim: Dimension of v 
     :type ndim: int
     :return: magnitude of v calculated in a numerically stable way
     :rtype: float
     """
-    v = stypes.to_double_vector(v)
+    v = stypes.toDoubleVector(v)
     ndim = ctypes.c_int(ndim)
     return libspice.vnormg_c(v, ndim)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vpack(x, y, z):
     """
     Pack three scalar components into a vector.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vpack_c.html
 
-    :param x: first scalar component
+    :param x: first scalar component 
     :type x: float
-    :param y: second scalar component
+    :param y: second scalar component 
     :type y: float
-    :param z: third scalar component
+    :param z: third scalar component 
     :type z: float
     :return: Equivalent 3-vector.
     :rtype: 3-Element Array of floats
@@ -16208,12 +14974,12 @@ def vpack(x, y, z):
     x = ctypes.c_double(x)
     y = ctypes.c_double(y)
     z = ctypes.c_double(z)
-    vout = stypes.empty_double_vector(3)
+    vout = stypes.emptyDoubleVector(3)
     libspice.vpack_c(x, y, z, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vperp(a, b):
     """
     Find the component of a vector that is perpendicular to a second
@@ -16221,42 +14987,42 @@ def vperp(a, b):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vperp_c.html
 
-    :param a: The vector whose orthogonal component is sought.
+    :param a: The vector whose orthogonal component is sought. 
     :type a: 3-Element Array of floats
-    :param b: The vector used as the orthogonal reference.
+    :param b: The vector used as the orthogonal reference. 
     :type b: 3-Element Array of floats
     :return: The component of a orthogonal to b.
     :rtype: 3-Element Array of floats
     """
-    a = stypes.to_double_vector(a)
-    b = stypes.to_double_vector(b)
-    vout = stypes.empty_double_vector(3)
+    a = stypes.toDoubleVector(a)
+    b = stypes.toDoubleVector(b)
+    vout = stypes.emptyDoubleVector(3)
     libspice.vperp_c(a, b, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vprjp(vin, plane):
     """
     Project a vector onto a specified plane, orthogonally.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vprjp_c.html
 
-    :param vin: The projected vector.
+    :param vin: The projected vector. 
     :type vin: 3-Element Array of floats
-    :param plane: Plane containing vin.
+    :param plane: Plane containing vin. 
     :type plane: spiceypy.utils.support_types.Plane
     :return: Vector resulting from projection.
     :rtype: 3-Element Array of floats
     """
-    vin = stypes.to_double_vector(vin)
-    vout = stypes.empty_double_vector(3)
+    vin = stypes.toDoubleVector(vin)
+    vout = stypes.emptyDoubleVector(3)
     libspice.vprjp_c(vin, ctypes.byref(plane), vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
-@spice_found_exception_thrower
+@spiceErrorCheck
+@spiceFoundExceptionThrower
 def vprjpi(vin, projpl, invpl):
     """
     Find the vector in a specified plane that maps to a specified
@@ -16264,87 +15030,86 @@ def vprjpi(vin, projpl, invpl):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vprjpi_c.html
 
-    :param vin: The projected vector.
+    :param vin: The projected vector. 
     :type vin: 3-Element Array of floats
-    :param projpl: Plane containing vin.
+    :param projpl: Plane containing vin. 
     :type projpl: spiceypy.utils.support_types.Plane
-    :param invpl: Plane containing inverse image of vin.
+    :param invpl: Plane containing inverse image of vin. 
     :type invpl: spiceypy.utils.support_types.Plane
     :return: Inverse projection of vin.
     :rtype: list
     """
-    vin = stypes.to_double_vector(vin)
-    vout = stypes.empty_double_vector(3)
+    vin = stypes.toDoubleVector(vin)
+    vout = stypes.emptyDoubleVector(3)
     found = ctypes.c_int()
-    libspice.vprjpi_c(
-        vin, ctypes.byref(projpl), ctypes.byref(invpl), vout, ctypes.byref(found)
-    )
-    return stypes.c_vector_to_python(vout), bool(found.value)
+    libspice.vprjpi_c(vin, ctypes.byref(projpl), ctypes.byref(invpl), vout,
+                      ctypes.byref(found))
+    return stypes.cVectorToPython(vout), bool(found.value)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vproj(a, b):
     """
     Find the projection of one vector onto another vector.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vproj_c.html
 
-    :param a: The vector to be projected.
+    :param a: The vector to be projected. 
     :type a: 3-Element Array of floats
-    :param b: The vector onto which a is to be projected.
+    :param b: The vector onto which a is to be projected. 
     :type b: 3-Element Array of floats
     :return: The projection of a onto b.
     :rtype: 3-Element Array of floats
     """
-    a = stypes.to_double_vector(a)
-    b = stypes.to_double_vector(b)
-    vout = stypes.empty_double_vector(3)
+    a = stypes.toDoubleVector(a)
+    b = stypes.toDoubleVector(b)
+    vout = stypes.emptyDoubleVector(3)
     libspice.vproj_c(a, b, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vrel(v1, v2):
     """
     Return the relative difference between two 3-dimensional vectors.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vrel_c.html
 
-    :param v1: First vector
+    :param v1: First vector 
     :type v1: 3-Element Array of floats
-    :param v2: Second vector
+    :param v2: Second vector 
     :type v2: 3-Element Array of floats
     :return: the relative difference between v1 and v2.
     :rtype: float
     """
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
     return libspice.vrel_c(v1, v2)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vrelg(v1, v2, ndim):
     """
     Return the relative difference between two vectors of general dimension.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vrelg_c.html
 
-    :param v1: First vector
+    :param v1: First vector 
     :type v1: Array of floats
-    :param v2: Second vector
+    :param v2: Second vector 
     :type v2: Array of floats
     :param ndim: Dimension of v1 and v2.
     :type ndim: int
     :return: the relative difference between v1 and v2.
     :rtype: float
     """
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
     ndim = ctypes.c_int(ndim)
     return libspice.vrelg_c(v1, v2, ndim)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vrotv(v, axis, theta):
     """
     Rotate a vector about a specified axis vector by a
@@ -16352,69 +15117,69 @@ def vrotv(v, axis, theta):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vrotv_c.html
 
-    :param v: Vector to be rotated.
+    :param v: Vector to be rotated. 
     :type v: 3-Element Array of floats
-    :param axis: Axis of the rotation.
+    :param axis: Axis of the rotation. 
     :type axis: 3-Element Array of floats
-    :param theta: Angle of rotation (radians).
+    :param theta: Angle of rotation (radians). 
     :type theta: float
     :return: Result of rotating v about axis by theta
     :rtype: 3-Element Array of floats
     """
-    v = stypes.to_double_vector(v)
-    axis = stypes.to_double_vector(axis)
+    v = stypes.toDoubleVector(v)
+    axis = stypes.toDoubleVector(axis)
     theta = ctypes.c_double(theta)
-    r = stypes.empty_double_vector(3)
+    r = stypes.emptyDoubleVector(3)
     libspice.vrotv_c(v, axis, theta, r)
-    return stypes.c_vector_to_python(r)
+    return stypes.cVectorToPython(r)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vscl(s, v1):
     """
     Multiply a scalar and a 3-dimensional double precision vector.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vscl_c.html
 
-    :param s: Scalar to multiply a vector
+    :param s: Scalar to multiply a vector 
     :type s: float
-    :param v1: Vector to be multiplied
+    :param v1: Vector to be multiplied 
     :type v1: 3-Element Array of floats
     :return: Product vector, s*v1.
     :rtype: 3-Element Array of floats
     """
     s = ctypes.c_double(s)
-    v1 = stypes.to_double_vector(v1)
-    vout = stypes.empty_double_vector(3)
+    v1 = stypes.toDoubleVector(v1)
+    vout = stypes.emptyDoubleVector(3)
     libspice.vscl_c(s, v1, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vsclg(s, v1, ndim):
     """
     Multiply a scalar and a double precision vector of arbitrary dimension.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsclg_c.html
 
-    :param s: Scalar to multiply a vector
+    :param s: Scalar to multiply a vector 
     :type s: float
-    :param v1: Vector to be multiplied
+    :param v1: Vector to be multiplied 
     :type v1: Array of floats
-    :param ndim: Dimension of v1
+    :param ndim: Dimension of v1 
     :type ndim: int
     :return: Product vector, s*v1.
     :rtype: Array of floats
     """
     s = ctypes.c_double(s)
-    v1 = stypes.to_double_vector(v1)
-    vout = stypes.empty_double_vector(ndim)
+    v1 = stypes.toDoubleVector(v1)
+    vout = stypes.emptyDoubleVector(ndim)
     ndim = ctypes.c_int(ndim)
     libspice.vsclg_c(s, v1, ndim, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vsep(v1, v2):
     """
     Find the separation angle in radians between two double
@@ -16423,19 +15188,19 @@ def vsep(v1, v2):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsep_c.html
 
-    :param v1: First vector
+    :param v1: First vector 
     :type v1: 3-Element Array of floats
-    :param v2: Second vector
+    :param v2: Second vector 
     :type v2: 3-Element Array of floats
     :return: separation angle in radians
     :rtype: float
     """
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
     return libspice.vsep_c(v1, v2)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vsepg(v1, v2, ndim):
     """
     Find the separation angle in radians between two double
@@ -16444,22 +15209,22 @@ def vsepg(v1, v2, ndim):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsepg_c.html
 
-    :param v1: First vector
+    :param v1: First vector 
     :type v1: Array of floats
-    :param v2: Second vector
+    :param v2: Second vector 
     :type v2: Array of floats
-    :param ndim: The number of elements in v1 and v2.
+    :param ndim: The number of elements in v1 and v2. 
     :type ndim: int
     :return: separation angle in radians
     :rtype: float
     """
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
     ndim = ctypes.c_int(ndim)
     return libspice.vsepg_c(v1, v2, ndim)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vsub(v1, v2):
     """
     Compute the difference between two 3-dimensional,
@@ -16467,21 +15232,21 @@ def vsub(v1, v2):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsub_c.html
 
-    :param v1: First vector (minuend).
+    :param v1: First vector (minuend). 
     :type v1: 3-Element Array of floats
-    :param v2: Second vector (subtrahend).
+    :param v2: Second vector (subtrahend). 
     :type v2: 3-Element Array of floats
     :return: Difference vector, v1 - v2.
     :rtype: 3-Element Array of floats
     """
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
-    vout = stypes.empty_double_vector(3)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
+    vout = stypes.emptyDoubleVector(3)
     libspice.vsub_c(v1, v2, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vsubg(v1, v2, ndim):
     """
     Compute the difference between two double precision
@@ -16489,24 +15254,24 @@ def vsubg(v1, v2, ndim):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vsubg_c.html
 
-    :param v1: First vector (minuend).
+    :param v1: First vector (minuend). 
     :type v1: Array of floats
-    :param v2: Second vector (subtrahend).
+    :param v2: Second vector (subtrahend). 
     :type v2: Array of floats
-    :param ndim: Dimension of v1, v2, and vout.
+    :param ndim: Dimension of v1, v2, and vout. 
     :type ndim: int
     :return: Difference vector, v1 - v2.
     :rtype: Array of floats
     """
-    v1 = stypes.to_double_vector(v1)
-    v2 = stypes.to_double_vector(v2)
-    vout = stypes.empty_double_vector(ndim)
+    v1 = stypes.toDoubleVector(v1)
+    v2 = stypes.toDoubleVector(v2)
+    vout = stypes.emptyDoubleVector(ndim)
     ndim = ctypes.c_int(ndim)
     libspice.vsubg_c(v1, v2, ndim, vout)
-    return stypes.c_vector_to_python(vout)
+    return stypes.cVectorToPython(vout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vtmv(v1, matrix, v2):
     """
     Multiply the transpose of a 3-dimensional column vector
@@ -16514,22 +15279,22 @@ def vtmv(v1, matrix, v2):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vtmv_c.html
 
-    :param v1: 3 dimensional double precision column vector.
+    :param v1: 3 dimensional double precision column vector. 
     :type v1: 3-Element Array of floats
-    :param matrix: 3x3 double precision matrix.
+    :param matrix: 3x3 double precision matrix. 
     :type matrix: 3x3-Element Array of floats
-    :param v2: 3 dimensional double precision column vector.
+    :param v2: 3 dimensional double precision column vector. 
     :type v2: 3-Element Array of floats
     :return: the result of (v1**t * matrix * v2 ).
     :rtype: float
     """
-    v1 = stypes.to_double_vector(v1)
-    matrix = stypes.to_double_matrix(matrix)
-    v2 = stypes.to_double_vector(v2)
+    v1 = stypes.toDoubleVector(v1)
+    matrix = stypes.toDoubleMatrix(matrix)
+    v2 = stypes.toDoubleVector(v2)
     return libspice.vtmv_c(v1, matrix, v2)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vtmvg(v1, matrix, v2, nrow, ncol):
     """
     Multiply the transpose of a n-dimensional
@@ -16538,40 +15303,40 @@ def vtmvg(v1, matrix, v2, nrow, ncol):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vtmvg_c.html
 
-    :param v1: n-dimensional double precision column vector.
+    :param v1: n-dimensional double precision column vector. 
     :type v1: Array of floats
-    :param matrix: nxm double precision matrix.
+    :param matrix: nxm double precision matrix. 
     :type matrix: NxM-Element Array of floats
-    :param v2: m-dimensional double porecision column vector.
+    :param v2: m-dimensional double porecision column vector. 
     :type v2: Array of floats
-    :param nrow: Number of rows in matrix (number of rows in v1.)
+    :param nrow: Number of rows in matrix (number of rows in v1.) 
     :type nrow: int
-    :param ncol: Number of columns in matrix (number of rows in v2.)
+    :param ncol: Number of columns in matrix (number of rows in v2.) 
     :type ncol: int
     :return: the result of (v1**t * matrix * v2 )
     :rtype: float
     """
-    v1 = stypes.to_double_vector(v1)
-    matrix = stypes.to_double_matrix(matrix)
-    v2 = stypes.to_double_vector(v2)
+    v1 = stypes.toDoubleVector(v1)
+    matrix = stypes.toDoubleMatrix(matrix)
+    v2 = stypes.toDoubleVector(v2)
     nrow = ctypes.c_int(nrow)
     ncol = ctypes.c_int(ncol)
     return libspice.vtmvg_c(v1, matrix, v2, nrow, ncol)
 
 
-@spice_error_check
+@spiceErrorCheck
 def vupack(v):
     """
     Unpack three scalar components from a vector.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vupack_c.html
 
-    :param v: Vector
+    :param v: Vector 
     :type v: 3-Element Array of floats
     :return: (x, y, z)
     :rtype: tuple
     """
-    v1 = stypes.to_double_vector(v)
+    v1 = stypes.toDoubleVector(v)
     x = ctypes.c_double()
     y = ctypes.c_double()
     z = ctypes.c_double()
@@ -16579,37 +15344,37 @@ def vupack(v):
     return x.value, y.value, z.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def vzero(v):
     """
     Indicate whether a 3-vector is the zero vector.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vzero_c.html
 
-    :param v: Vector to be tested
+    :param v: Vector to be tested 
     :type v: 3-Element Array of floats
     :return: true if and only if v is the zero vector
     :rtype: bool
     """
-    v = stypes.to_double_vector(v)
+    v = stypes.toDoubleVector(v)
     return bool(libspice.vzero_c(v))
 
 
-@spice_error_check
+@spiceErrorCheck
 def vzerog(v, ndim):
     """
     Indicate whether a general-dimensional vector is the zero vector.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vzerog_c.html
 
-    :param v: Vector to be tested
+    :param v: Vector to be tested 
     :type v: Array of floats
-    :param ndim: Dimension of v
+    :param ndim: Dimension of v 
     :type ndim: int
     :return: true if and only if v is the zero vector
     :rtype: bool
     """
-    v = stypes.to_double_vector(v)
+    v = stypes.toDoubleVector(v)
     ndim = ctypes.c_int(ndim)
     return bool(libspice.vzerog_c(v, ndim))
 
@@ -16618,7 +15383,7 @@ def vzerog(v, ndim):
 # W
 
 
-@spice_error_check
+@spiceErrorCheck
 def wncard(window):
     """
     Return the cardinality (number of intervals) of a double
@@ -16626,7 +15391,7 @@ def wncard(window):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wncard_c.html
 
-    :param window: Input window
+    :param window: Input window 
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: the cardinality of the input window.
     :rtype: int
@@ -16635,7 +15400,7 @@ def wncard(window):
     return libspice.wncard_c(window)
 
 
-@spice_error_check
+@spiceErrorCheck
 def wncomd(left, right, window):
     """
     Determine the complement of a double precision window with
@@ -16643,11 +15408,11 @@ def wncomd(left, right, window):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wncomd_c.html
 
-    :param left: left endpoints of complement interval.
+    :param left: left endpoints of complement interval. 
     :type left: float
-    :param right: right endpoints of complement interval.
+    :param right: right endpoints of complement interval. 
     :type right: float
-    :param window: Input window
+    :param window: Input window 
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: Complement of window with respect to left and right.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -16661,18 +15426,18 @@ def wncomd(left, right, window):
     return result
 
 
-@spice_error_check
+@spiceErrorCheck
 def wncond(left, right, window):
     """
     Contract each of the intervals of a double precision window.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wncond_c.html
 
-    :param left: Amount added to each left endpoint.
+    :param left: Amount added to each left endpoint. 
     :type left: float
-    :param right: Amount subtracted from each right endpoint.
+    :param right: Amount subtracted from each right endpoint. 
     :type right: float
-    :param window: Window to be contracted
+    :param window: Window to be contracted 
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: Contracted Window.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -16685,7 +15450,7 @@ def wncond(left, right, window):
     return window
 
 
-@spice_error_check
+@spiceErrorCheck
 def wndifd(a, b):
     """
     Place the difference of two double precision windows into
@@ -16693,9 +15458,9 @@ def wndifd(a, b):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wndifd_c.html
 
-    :param a: Input window A.
+    :param a: Input window A. 
     :type a: spiceypy.utils.support_types.SpiceCell
-    :param b: Input window B.
+    :param b: Input window B. 
     :type b: spiceypy.utils.support_types.SpiceCell
     :return: Difference of a and b.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -16709,7 +15474,7 @@ def wndifd(a, b):
     return c
 
 
-@spice_error_check
+@spiceErrorCheck
 def wnelmd(point, window):
     """
     Determine whether a point is an element of a double precision
@@ -16717,9 +15482,9 @@ def wnelmd(point, window):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnelmd_c.html
 
-    :param point: Input point.
+    :param point: Input point. 
     :type point: float
-    :param window: Input window
+    :param window: Input window 
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: returns True if point is an element of window.
     :rtype: bool
@@ -16730,18 +15495,18 @@ def wnelmd(point, window):
     return bool(libspice.wnelmd_c(point, ctypes.byref(window)))
 
 
-@spice_error_check
+@spiceErrorCheck
 def wnexpd(left, right, window):
     """
     Expand each of the intervals of a double precision window.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnexpd_c.html
 
-    :param left: Amount subtracted from each left endpoint.
+    :param left: Amount subtracted from each left endpoint. 
     :type left: float
-    :param right: Amount added to each right endpoint.
+    :param right: Amount added to each right endpoint. 
     :type right: float
-    :param window: Window to be expanded.
+    :param window: Window to be expanded. 
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: Expanded Window.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -16754,7 +15519,7 @@ def wnexpd(left, right, window):
     return window
 
 
-@spice_error_check
+@spiceErrorCheck
 def wnextd(side, window):
     """
     Extract the left or right endpoints from a double precision
@@ -16762,31 +15527,31 @@ def wnextd(side, window):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnextd_c.html
 
-    :param side: Extract left "L" or right "R" endpoints.
+    :param side: Extract left "L" or right "R" endpoints. 
     :type side: str
-    :param window: Window to be extracted.
+    :param window: Window to be extracted. 
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: Extracted Window.
     :rtype: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
-    assert side == "L" or side == "R"
-    side = ctypes.c_char(side.encode(encoding="UTF-8"))
+    assert side == 'L' or side == 'R'
+    side = ctypes.c_char(side.encode(encoding='UTF-8'))
     libspice.wnextd_c(side, ctypes.byref(window))
     return window
 
 
-@spice_error_check
+@spiceErrorCheck
 def wnfetd(window, n):
     """
     Fetch a particular interval from a double precision window.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnfetd_c.html
 
-    :param window: Input window
+    :param window: Input window 
     :type window: spiceypy.utils.support_types.SpiceCell
-    :param n: Index of interval to be fetched.
+    :param n: Index of interval to be fetched. 
     :type n: int
     :return: Left, right endpoints of the nth interval.
     :rtype: tuple
@@ -16796,20 +15561,21 @@ def wnfetd(window, n):
     n = ctypes.c_int(n)
     left = ctypes.c_double()
     right = ctypes.c_double()
-    libspice.wnfetd_c(ctypes.byref(window), n, ctypes.byref(left), ctypes.byref(right))
+    libspice.wnfetd_c(ctypes.byref(window), n, ctypes.byref(left),
+                      ctypes.byref(right))
     return left.value, right.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def wnfild(small, window):
     """
     Fill small gaps between adjacent intervals of a double precision window.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnfild_c.html
 
-    :param small: Limiting measure of small gaps.
+    :param small: Limiting measure of small gaps. 
     :type small: float
-    :param window: Window to be filled
+    :param window: Window to be filled 
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: Filled Window.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -16821,16 +15587,16 @@ def wnfild(small, window):
     return window
 
 
-@spice_error_check
+@spiceErrorCheck
 def wnfltd(small, window):
     """
     Filter (remove) small intervals from a double precision window.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnfltd_c.html
 
-    :param small: Limiting measure of small intervals.
+    :param small: Limiting measure of small intervals. 
     :type small: float
-    :param window: Window to be filtered.
+    :param window: Window to be filtered. 
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: Filtered Window.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -16842,18 +15608,18 @@ def wnfltd(small, window):
     return window
 
 
-@spice_error_check
+@spiceErrorCheck
 def wnincd(left, right, window):
     """
     Determine whether an interval is included in a double precision window.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnincd_c.html
 
-    :param left: Left interval
+    :param left: Left interval 
     :type left: float
-    :param right: Right interval
+    :param right: Right interval 
     :type right: float
-    :param window: Input window
+    :param window: Input window 
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: Returns True if the input interval is included in window.
     :rtype: bool
@@ -16865,18 +15631,18 @@ def wnincd(left, right, window):
     return bool(libspice.wnincd_c(left, right, ctypes.byref(window)))
 
 
-@spice_error_check
+@spiceErrorCheck
 def wninsd(left, right, window):
     """
     Insert an interval into a double precision window.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wninsd_c.html
 
-    :param left: Left endpoints of new interval.
+    :param left: Left endpoints of new interval. 
     :type left: float
-    :param right: Right endpoints of new interval.
+    :param right: Right endpoints of new interval. 
     :type right: float
-    :param window: Input window.
+    :param window: Input window. 
     :type window: spiceypy.utils.support_types.SpiceCell
     """
     assert isinstance(window, stypes.SpiceCell)
@@ -16886,7 +15652,7 @@ def wninsd(left, right, window):
     libspice.wninsd_c(left, right, ctypes.byref(window))
 
 
-@spice_error_check
+@spiceErrorCheck
 def wnintd(a, b):
     """
     Place the intersection of two double precision windows into
@@ -16895,9 +15661,9 @@ def wnintd(a, b):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnintd_c.html
 
 
-    :param a: Input window A.
+    :param a: Input window A. 
     :type a: spiceypy.utils.support_types.SpiceCell
-    :param b: Input window B.
+    :param b: Input window B. 
     :type b: spiceypy.utils.support_types.SpiceCell
     :return: Intersection of a and b.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -16911,18 +15677,18 @@ def wnintd(a, b):
     return c
 
 
-@spice_error_check
+@spiceErrorCheck
 def wnreld(a, op, b):
     """
     Compare two double precision windows.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnreld_c.html
 
-    :param a: First window.
+    :param a: First window. 
     :type a: spiceypy.utils.support_types.SpiceCell
-    :param op: Comparison operator.
+    :param op: Comparison operator. 
     :type op: str
-    :param b: Second window.
+    :param b: Second window. 
     :type b: spiceypy.utils.support_types.SpiceCell
     :return: The result of comparison: a (op) b.
     :rtype: bool
@@ -16932,18 +15698,18 @@ def wnreld(a, op, b):
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == 1
     assert isinstance(op, str)
-    op = stypes.string_to_char_p(op.encode(encoding="UTF-8"))
+    op = stypes.stringToCharP(op.encode(encoding='UTF-8'))
     return bool(libspice.wnreld_c(ctypes.byref(a), op, ctypes.byref(b)))
 
 
-@spice_error_check
+@spiceErrorCheck
 def wnsumd(window):
     """
     Summarize the contents of a double precision window.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnsumd_c.html
 
-    :param window: Window to be summarized.
+    :param window: Window to be summarized. 
     :type window: spiceypy.utils.support_types.SpiceCell
     :return:
             Total measure of intervals in window,
@@ -16959,27 +15725,22 @@ def wnsumd(window):
     stddev = ctypes.c_double()
     shortest = ctypes.c_int()
     longest = ctypes.c_int()
-    libspice.wnsumd_c(
-        ctypes.byref(window),
-        ctypes.byref(meas),
-        ctypes.byref(avg),
-        ctypes.byref(stddev),
-        ctypes.byref(shortest),
-        ctypes.byref(longest),
-    )
+    libspice.wnsumd_c(ctypes.byref(window), ctypes.byref(meas),
+                      ctypes.byref(avg), ctypes.byref(stddev),
+                      ctypes.byref(shortest), ctypes.byref(longest))
     return meas.value, avg.value, stddev.value, shortest.value, longest.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def wnunid(a, b):
     """
     Place the union of two double precision windows into a third window.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnunid_c.html
 
-    :param a: Input window A.
+    :param a: Input window A. 
     :type a: spiceypy.utils.support_types.SpiceCell
-    :param b: Input window B.
+    :param b: Input window B. 
     :type b: spiceypy.utils.support_types.SpiceCell
     :return: Union of a and b.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -16993,7 +15754,7 @@ def wnunid(a, b):
     return c
 
 
-@spice_error_check
+@spiceErrorCheck
 def wnvald(insize, n, window):
     """
     Form a valid double precision window from the contents
@@ -17001,11 +15762,11 @@ def wnvald(insize, n, window):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/wnvald_c.html
 
-    :param insize: Size of window.
+    :param insize: Size of window. 
     :type insize: int
-    :param n: Original number of endpoints.
+    :param n: Original number of endpoints. 
     :type n: int
-    :param window: Input window.
+    :param window: Input window. 
     :type window: spiceypy.utils.support_types.SpiceCell
     :return: The union of the intervals in the input cell.
     :rtype: spiceypy.utils.support_types.SpiceCell
@@ -17018,7 +15779,7 @@ def wnvald(insize, n, window):
     return window
 
 
-@spice_error_check
+@spiceErrorCheck
 def writln(line, unit):
     """
     Internal undocumented command for writing a text line to a logical unit
@@ -17047,75 +15808,74 @@ def writln(line, unit):
     :param unit: The Fortran unit number to use for output.
     :type unit: int
     """
-    line_p = stypes.string_to_char_p(line)
-    unit = ctypes.c_int(unit)
+    lineP    = stypes.stringToCharP(line)
+    unit     = ctypes.c_int(unit)
     line_len = ctypes.c_int(len(line))
-    libspice.writln_(line_p, ctypes.byref(unit), line_len)
+    libspice.writln_(lineP, ctypes.byref(unit), line_len)
 
 
 ################################################################################
 # X
 
-
-@spice_error_check
+@spiceErrorCheck
 def xf2eul(xform, axisa, axisb, axisc):
     """
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xf2eul_c.html
 
-    :param xform: state transformation matrix
+    :param xform: state transformation matrix 
     :type xform: list[6][6]
-    :param axisa: Axis A of the Euler angle factorization.
+    :param axisa: Axis A of the Euler angle factorization. 
     :type axisa: int
-    :param axisb: Axis B of the Euler angle factorization.
+    :param axisb: Axis B of the Euler angle factorization. 
     :type axisb: int
-    :param axisc: Axis C of the Euler angle factorization.
+    :param axisc: Axis C of the Euler angle factorization. 
     :type axisc: int
     :return: (eulang, unique)
     :rtype: tuple
     """
-    xform = stypes.to_double_matrix(xform)
+    xform = stypes.toDoubleMatrix(xform)
     axisa = ctypes.c_int(axisa)
     axisb = ctypes.c_int(axisb)
     axisc = ctypes.c_int(axisc)
-    eulang = stypes.empty_double_vector(6)
+    eulang = stypes.emptyDoubleVector(6)
     unique = ctypes.c_int()
     libspice.xf2eul_c(xform, axisa, axisb, axisc, eulang, unique)
-    return stypes.c_vector_to_python(eulang), unique.value
+    return stypes.cVectorToPython(eulang), unique.value
 
 
-@spice_error_check
+@spiceErrorCheck
 def xf2rav(xform):
     """
     This routine determines the rotation matrix and angular velocity
     of the rotation from a state transformation matrix.
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xf2rav_c.html
 
-    :param xform: state transformation matrix
+    :param xform: state transformation matrix 
     :type xform: list[6][6]
     :return:
             rotation associated with xform,
             angular velocity associated with xform.
     :rtype: tuple
     """
-    xform = stypes.to_double_matrix(xform)
-    rot = stypes.empty_double_matrix()
-    av = stypes.empty_double_vector(3)
+    xform = stypes.toDoubleMatrix(xform)
+    rot = stypes.emptyDoubleMatrix()
+    av = stypes.emptyDoubleVector(3)
     libspice.xf2rav_c(xform, rot, av)
-    return stypes.c_matrix_to_numpy(rot), stypes.c_vector_to_python(av)
+    return stypes.cMatrixToNumpy(rot), stypes.cVectorToPython(av)
 
 
-@spice_error_check
+@spiceErrorCheck
 def xfmsta(input_state, input_coord_sys, output_coord_sys, body):
     """
     Transform a state between coordinate systems.
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xfmsta_c.html
 
-    :param input_state: Input state.
+    :param input_state: Input state. 
     :type input_state: 6-Element Array of floats
-    :param input_coord_sys: Current (input) coordinate system.
+    :param input_coord_sys: Current (input) coordinate system. 
     :type input_coord_sys: str
-    :param output_coord_sys: Desired (output) coordinate system.
+    :param output_coord_sys: Desired (output) coordinate system. 
     :type output_coord_sys: str
     :param body:
                 Name or NAIF ID of body with which coordinates
@@ -17124,54 +15884,53 @@ def xfmsta(input_state, input_coord_sys, output_coord_sys, body):
     :return: Converted output state
     :rtype: 6-Element Array of floats
     """
-    input_state = stypes.to_double_vector(input_state)
-    input_coord_sys = stypes.string_to_char_p(input_coord_sys)
-    output_coord_sys = stypes.string_to_char_p(output_coord_sys)
-    body = stypes.string_to_char_p(body)
-    output_state = stypes.empty_double_vector(6)
-    libspice.xfmsta_c(
-        input_state, input_coord_sys, output_coord_sys, body, output_state
-    )
-    return stypes.c_vector_to_python(output_state)
+    input_state = stypes.toDoubleVector(input_state)
+    input_coord_sys = stypes.stringToCharP(input_coord_sys)
+    output_coord_sys = stypes.stringToCharP(output_coord_sys)
+    body = stypes.stringToCharP(body)
+    output_state = stypes.emptyDoubleVector(6)
+    libspice.xfmsta_c(input_state, input_coord_sys, output_coord_sys, body,
+                      output_state)
+    return stypes.cVectorToPython(output_state)
 
 
-@spice_error_check
+@spiceErrorCheck
 def xpose(m):
     """
     Transpose a 3x3 matrix
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xpose_c.html
 
-    :param m: Matrix to be transposed
+    :param m: Matrix to be transposed 
     :type m: 3x3-Element Array of floats
     :return: Transposed matrix
     :rtype: 3x3-Element Array of floats
     """
-    m = stypes.to_double_matrix(m)
-    mout = stypes.empty_double_matrix(x=3, y=3)
+    m = stypes.toDoubleMatrix(m)
+    mout = stypes.emptyDoubleMatrix(x=3, y=3)
     libspice.xpose_c(m, mout)
-    return stypes.c_matrix_to_numpy(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def xpose6(m):
     """
     Transpose a 6x6 matrix
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xpose6_c.html
 
-    :param m: Matrix to be transposed
+    :param m: Matrix to be transposed 
     :type m: list[6][6]
     :return: Transposed matrix
     :rtype: list[6][6]
     """
-    m = stypes.to_double_matrix(m)
-    mout = stypes.empty_double_matrix(x=6, y=6)
+    m = stypes.toDoubleMatrix(m)
+    mout = stypes.emptyDoubleMatrix(x=6, y=6)
     libspice.xpose6_c(m, mout)
-    return stypes.c_matrix_to_numpy(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def xposeg(matrix, nrow, ncol):
     """
     Transpose a matrix of arbitrary size
@@ -17179,7 +15938,7 @@ def xposeg(matrix, nrow, ncol):
 
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xposeg_c.html
 
-    :param matrix: Matrix to be transposed
+    :param matrix: Matrix to be transposed 
     :type matrix: NxM-Element Array of floats
     :param nrow: Number of rows of input matrix.
     :type nrow: int
@@ -17188,15 +15947,15 @@ def xposeg(matrix, nrow, ncol):
     :return: Transposed matrix
     :rtype: NxM-Element Array of floats
     """
-    matrix = stypes.to_double_matrix(matrix)
-    mout = stypes.empty_double_matrix(x=ncol, y=nrow)
+    matrix = stypes.toDoubleMatrix(matrix)
+    mout = stypes.emptyDoubleMatrix(x=ncol, y=nrow)
     ncol = ctypes.c_int(ncol)
     nrow = ctypes.c_int(nrow)
     libspice.xposeg_c(matrix, nrow, ncol, mout)
-    return stypes.c_matrix_to_numpy(mout)
+    return stypes.cMatrixToNumpy(mout)
 
 
-@spice_error_check
+@spiceErrorCheck
 def zzdynrot(typid, center, et):
     """
     Find the rotation from a dynamic frame ID to the associated frame at the time requested
@@ -17213,13 +15972,8 @@ def zzdynrot(typid, center, et):
     typid = ctypes.c_int(typid)
     center = ctypes.c_int(center)
     et = ctypes.c_double(et)
-    matrix = stypes.empty_double_matrix(x=3, y=3)
-    next_frame = ctypes.c_int()
-    libspice.zzdynrot_(
-        ctypes.byref(typid),
-        ctypes.byref(center),
-        ctypes.byref(et),
-        matrix,
-        ctypes.byref(next_frame),
-    )
-    return stypes.c_matrix_to_numpy(matrix), next_frame.value
+    matrix = stypes.emptyDoubleMatrix(x=3, y=3)
+    nextFrame = ctypes.c_int()
+    libspice.zzdynrot_(ctypes.byref(typid), ctypes.byref(center), ctypes.byref(et), matrix, ctypes.byref(nextFrame))
+    return stypes.cMatrixToNumpy(matrix), nextFrame.value
+

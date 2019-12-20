@@ -1,8 +1,8 @@
 numpy>=1.17.0; python_version >= "3.5"
 numpy<=1.16.4; python_version < "3.5"
-coverage<5.0 # fix for coveralls 1.9.2 and coverage <5 issue https://github.com/coveralls-clients/coveralls-python/issues/203
 six>=1.9.0
 pytest>=2.9.0
+coverage>=4.0
 coveralls>=1.1
 setuptools>=38.0.0
 pandas>=0.24.0
