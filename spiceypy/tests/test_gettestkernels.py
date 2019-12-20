@@ -25,7 +25,7 @@ SOFTWARE.
 import os
 import pytest
 
-from spiceypy.tests.gettestkernels import attemptDownload
+from spiceypy.tests.gettestkernels import attempt_download
 
 
 def test_gettestkernels():
@@ -33,8 +33,14 @@ def test_gettestkernels():
     # To complete code coverage in spiceypy.tests.gettestkernels.py
     with pytest.raises(BaseException):
         # Generate .HTTPError, return BaseException
-        attemptDownload('https://naif.jpl.nasa.gov/404', 'httperror.txt', 'httperror.txt', 1)
+        attempt_download(
+            "https://naif.jpl.nasa.gov/404", "httperror.txt", "httperror.txt", 1
+        )
     with pytest.raises(BaseException):
         # Generate .URLError, return BaseException
-        attemptDownload('https://no_such_host.naif.jpl.nasa.gov/404', 'urlerror.txt', 'urlerror.txt', 1)
-
+        attempt_download(
+            "https://no_such_host.naif.jpl.nasa.gov/404",
+            "urlerror.txt",
+            "urlerror.txt",
+            1,
+        )
