@@ -237,7 +237,7 @@ def appndc(item, cell):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/appndc_c.html
 
     :param item: The item to append.
-    :type item: str or list
+    :type item: Union[str,Iterable[str]]
     :param cell: The cell to append to.
     :type cell: spiceypy.utils.support_types.SpiceCell
     """
@@ -1616,13 +1616,13 @@ def convrt(x, inunit, outunit):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/convrt_c.html
 
     :param x: Number representing a measurement in some units.
-    :type x: float
+    :type x: Union[float,Iterable[float]]
     :param inunit: The units in which x is measured.
     :type inunit: str
     :param outunit: Desired units for the measurement.
     :type outunit: str
     :return: The measurment in the desired units.
-    :rtype: float
+    :rtype: Union[float,Iterable[float]]
     """
 
     inunit = stypes.string_to_char_p(inunit)
@@ -5453,7 +5453,7 @@ def et2utc(et, format_str, prec, lenout=_default_len_out):
             libspice.et2utc_c(ctypes.c_double(t), format_str, prec, lenout, utcstr)
             check_for_spice_error(None)
             results.append(stypes.to_python_string(utcstr))
-        return results
+        return numpy.array(results)
     else:
         libspice.et2utc_c(ctypes.c_double(et), format_str, prec, lenout, utcstr)
         return stypes.to_python_string(utcstr)
@@ -5473,7 +5473,7 @@ def etcal(et, lenout=_default_len_out):
     :param lenout: Length of output string.
     :type lenout: int
     :return: A standard calendar representation of et.
-    :rtype: str
+    :rtype: Union[str,Iterable[str]]
     """
     lenout = ctypes.c_int(lenout)
     string = stypes.string_to_char_p(lenout)
@@ -5822,7 +5822,7 @@ def furnsh(path):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/furnsh_c.html
 
     :param path: one or more paths to kernels
-    :type path: str or list of str
+    :type path: Union[str,Iterable[str]]
     """
     if stypes.is_iterable(path):
         for p in path:
@@ -8020,7 +8020,7 @@ def insrtc(item, inset):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/insrtc_c.html
 
     :param item: Item to be inserted.
-    :type item: str or list of str
+    :type item: Union[str,Iterable[str]]
     :param inset: Insertion set.
     :type inset: spiceypy.utils.support_types.SpiceCell
     """
@@ -13011,7 +13011,7 @@ def spkezr(targ, et, ref, abcorr, obs):
     :return:
             State of target,
             One way light time between observer and target.
-    :rtype: tuple
+    :rtype: Union[Tuple[Iterable[float],float],Tuple[Iterable[Iterable[float]],Iterable[float]]]
     """
     targ = stypes.string_to_char_p(targ)
     ref = stypes.string_to_char_p(ref)
@@ -13272,7 +13272,7 @@ def spkpos(targ, et, ref, abcorr, obs):
     :return:
             Position of target,
             One way light time between observer and target.
-    :rtype: tuple
+    :rtype: Union[Tuple[Iterable[float],float],Tuple[Iterable[Iterable[float]],Iterable[float]]]
     """
     targ = stypes.string_to_char_p(targ)
     ref = stypes.string_to_char_p(ref)
@@ -14582,9 +14582,9 @@ def str2et(time):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/str2et_c.html
 
     :param time: A string representing an epoch.
-    :type time: str
+    :type time: Union[str,Iterable[str]]
     :return: The equivalent value in seconds past J2000, TDB.
-    :rtype: float
+    :rtype: Union[float,Iterable[float]]
     """
     et = ctypes.c_double()
     if stypes.is_iterable(time):
@@ -14706,7 +14706,7 @@ def subpt(method, target, et, abcorr, obsrvr):
     :return:
             Sub-observer point on the target body,
             Altitude of the observer above the target body.
-    :rtype: tuple
+    :rtype: Union[Tuple[Iterable[float],float],Tuple[Iterable[Iterable[float]],Iterable[float]]]
     """
     method = stypes.string_to_char_p(method)
     target = stypes.string_to_char_p(target)
@@ -15716,7 +15716,7 @@ def unload(filename):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unload_c.html
 
     :param filename: The name of a kernel to unload.
-    :type filename: str
+    :type filename: Union[str,Iterable[str]]
     """
     if stypes.is_iterable(filename):
         for f in filename:
