@@ -1634,10 +1634,11 @@ def convrt(x, inunit, outunit):
             libspice.convrt_c(n, inunit, outunit, ctypes.byref(y))
             check_for_spice_error(None)
             out_array.append(y.value)
-        return out_array
-    x = ctypes.c_double(x)
-    libspice.convrt_c(x, inunit, outunit, ctypes.byref(y))
-    return y.value
+        return numpy.array(out_array)
+    else:
+        x = ctypes.c_double(x)
+        libspice.convrt_c(x, inunit, outunit, ctypes.byref(y))
+        return y.value
 
 
 @spice_error_check
@@ -11946,7 +11947,7 @@ def scencd(sc, sclkch, mxpart=None):
             libspice.scencd_c(sc, stypes.string_to_char_p(chars), ctypes.byref(sclkdp))
             check_for_spice_error(None)
             results.append(sclkdp.value)
-        return results
+        return numpy.array(results)
     else:
         libspice.scencd_c(sc, stypes.string_to_char_p(sclkch), ctypes.byref(sclkdp))
         return sclkdp.value
@@ -12047,7 +12048,7 @@ def sct2e(sc, sclkdp):
             libspice.sct2e_c(sc, ctypes.c_double(sclk), ctypes.byref(et))
             check_for_spice_error(None)
             results.append(et.value)
-        return results
+        return numpy.array(results)
     else:
         sclkdp = ctypes.c_double(sclkdp)
         libspice.sct2e_c(sc, sclkdp, ctypes.byref(et))
@@ -13287,7 +13288,7 @@ def spkpos(targ, et, ref, abcorr, obs):
             check_for_spice_error(None)
             ptargs.append(stypes.c_vector_to_python(ptarg))
             lts.append(lt.value)
-        return ptargs, lts
+        return numpy.array(ptargs), numpy.array(lts)
     else:
         libspice.spkpos_c(targ, et, ref, abcorr, obs, ptarg, ctypes.byref(lt))
         return stypes.c_vector_to_python(ptarg), lt.value
@@ -14457,7 +14458,13 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
             trgepcs.append(trgepc.value)
             obsposs.append(stypes.c_vector_to_python(obspos))
             founds.append(bool(found.value))
-        return spoints, dists, trgepcs, obsposs, founds
+        return (
+            numpy.array(spoints),
+            numpy.array(dists),
+            numpy.array(trgepcs),
+            numpy.array(obsposs),
+            numpy.array(founds),
+        )
     else:
         et = ctypes.c_double(et)
         libspice.srfxpt_c(
@@ -14579,12 +14586,18 @@ def str2et(time):
     :return: The equivalent value in seconds past J2000, TDB.
     :rtype: float
     """
-    if stypes.is_iterable(time):
-        return numpy.array([str2et(t) for t in time])
-    time = stypes.string_to_char_p(time)
     et = ctypes.c_double()
-    libspice.str2et_c(time, ctypes.byref(et))
-    return et.value
+    if stypes.is_iterable(time):
+        ets = []
+        for t in time:
+            libspice.str2et_c(stypes.string_to_char_p(t), ctypes.byref(et))
+            check_for_spice_error(None)
+            ets.append(et.value)
+        return numpy.array(ets)
+    else:
+        time = stypes.string_to_char_p(time)
+        libspice.str2et_c(time, ctypes.byref(et))
+        return et.value
 
 
 @spice_error_check
@@ -14599,7 +14612,7 @@ def datetime2et(dt):
     :param dt: A standard Python datetime
     :type dt: Union[datetime, Iterable[datetime]]
     :return: The equivalent value in seconds past J2000, TDB.
-    :rtype: float
+    :rtype: Union[float, Iterable[float]]
     """
     lt = ctypes.c_double()
     if hasattr(dt, "__iter__"):
@@ -14608,11 +14621,12 @@ def datetime2et(dt):
             libspice.utc2et_c(stypes.string_to_char_p(t.isoformat()), ctypes.byref(lt))
             check_for_spice_error(None)
             ets.append(lt.value)
-        return ets
-    dt = stypes.string_to_char_p(dt.isoformat())
-    et = ctypes.c_double()
-    libspice.utc2et_c(dt, ctypes.byref(et))
-    return et.value
+        return numpy.array(ets)
+    else:
+        dt = stypes.string_to_char_p(dt.isoformat())
+        et = ctypes.c_double()
+        libspice.utc2et_c(dt, ctypes.byref(et))
+        return et.value
 
 
 @spice_error_check
@@ -14716,7 +14730,7 @@ def subpt(method, target, et, abcorr, obsrvr):
             check_for_spice_error(None)
             points.append(stypes.c_vector_to_python(spoint))
             alts.append(alt.value)
-        return points, alts
+        return numpy.array(points), numpy.array(alts)
     else:
         et = ctypes.c_double(et)
         libspice.subpt_c(method, target, et, abcorr, obsrvr, spoint, ctypes.byref(alt))
@@ -14987,7 +15001,7 @@ def sxform(instring, tostring, et):
             libspice.sxform_c(instring, tostring, ctypes.c_double(t), xform)
             check_for_spice_error(None)
             xforms.append(stypes.c_matrix_to_numpy(xform))
-        return xforms
+        return numpy.array(xforms)
     else:
         et = ctypes.c_double(et)
         libspice.sxform_c(instring, tostring, et, xform)
@@ -15177,7 +15191,7 @@ def timout(et, pictur, lenout=_default_len_out):
     :param lenout: The length of the output string plus 1.
     :type lenout: int
     :return: A string representation of the input epoch.
-    :rtype: str or array of str
+    :rtype: Union[str,Iterable[str]]
     """
     pictur = stypes.string_to_char_p(pictur)
     output = stypes.string_to_char_p(lenout)
@@ -15188,7 +15202,7 @@ def timout(et, pictur, lenout=_default_len_out):
             libspice.timout_c(ctypes.c_double(t), pictur, lenout, output)
             check_for_spice_error(None)
             times.append(stypes.to_python_string(output))
-        return times
+        return numpy.array(times)
     else:
         et = ctypes.c_double(et)
         libspice.timout_c(et, pictur, lenout, output)
@@ -15707,9 +15721,9 @@ def unload(filename):
     if stypes.is_iterable(filename):
         for f in filename:
             libspice.unload_c(stypes.string_to_char_p(f))
-        return
-    filename = stypes.string_to_char_p(filename)
-    libspice.unload_c(filename)
+    else:
+        filename = stypes.string_to_char_p(filename)
+        libspice.unload_c(filename)
 
 
 @spice_error_check
