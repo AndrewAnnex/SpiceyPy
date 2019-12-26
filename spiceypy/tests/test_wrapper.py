@@ -3489,7 +3489,10 @@ def test_et2utc_vectorized():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = -527644192.5403653
     output = spice.et2utc(3 * [et], "J", 6)
-    assert output == 3 * ["JD 2445438.006415"]
+    assert np.array_equal(
+        output,
+        np.array(("JD 2445438.006415", "JD 2445438.006415", "JD 2445438.006415")),
+    )
     spice.kclear()
 
 
