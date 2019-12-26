@@ -237,7 +237,7 @@ def appndc(item, cell):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/appndc_c.html
 
     :param item: The item to append.
-    :type item: str or list
+    :type item: Union[str,Iterable[str]]
     :param cell: The cell to append to.
     :type cell: spiceypy.utils.support_types.SpiceCell
     """
@@ -1616,13 +1616,13 @@ def convrt(x, inunit, outunit):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/convrt_c.html
 
     :param x: Number representing a measurement in some units.
-    :type x: float
+    :type x: Union[float,Iterable[float]]
     :param inunit: The units in which x is measured.
     :type inunit: str
     :param outunit: Desired units for the measurement.
     :type outunit: str
     :return: The measurment in the desired units.
-    :rtype: float
+    :rtype: Union[float,Iterable[float]]
     """
 
     inunit = stypes.string_to_char_p(inunit)
@@ -1634,10 +1634,11 @@ def convrt(x, inunit, outunit):
             libspice.convrt_c(n, inunit, outunit, ctypes.byref(y))
             check_for_spice_error(None)
             out_array.append(y.value)
-        return out_array
-    x = ctypes.c_double(x)
-    libspice.convrt_c(x, inunit, outunit, ctypes.byref(y))
-    return y.value
+        return numpy.array(out_array)
+    else:
+        x = ctypes.c_double(x)
+        libspice.convrt_c(x, inunit, outunit, ctypes.byref(y))
+        return y.value
 
 
 @spice_error_check
@@ -5452,7 +5453,7 @@ def et2utc(et, format_str, prec, lenout=_default_len_out):
             libspice.et2utc_c(ctypes.c_double(t), format_str, prec, lenout, utcstr)
             check_for_spice_error(None)
             results.append(stypes.to_python_string(utcstr))
-        return results
+        return numpy.array(results)
     else:
         libspice.et2utc_c(ctypes.c_double(et), format_str, prec, lenout, utcstr)
         return stypes.to_python_string(utcstr)
@@ -5472,7 +5473,7 @@ def etcal(et, lenout=_default_len_out):
     :param lenout: Length of output string.
     :type lenout: int
     :return: A standard calendar representation of et.
-    :rtype: str
+    :rtype: Union[str,Iterable[str]]
     """
     lenout = ctypes.c_int(lenout)
     string = stypes.string_to_char_p(lenout)
@@ -5821,7 +5822,7 @@ def furnsh(path):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/furnsh_c.html
 
     :param path: one or more paths to kernels
-    :type path: str or list of str
+    :type path: Union[str,Iterable[str]]
     """
     if stypes.is_iterable(path):
         for p in path:
@@ -8019,7 +8020,7 @@ def insrtc(item, inset):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/insrtc_c.html
 
     :param item: Item to be inserted.
-    :type item: str or list of str
+    :type item: Union[str,Iterable[str]]
     :param inset: Insertion set.
     :type inset: spiceypy.utils.support_types.SpiceCell
     """
@@ -11946,7 +11947,7 @@ def scencd(sc, sclkch, mxpart=None):
             libspice.scencd_c(sc, stypes.string_to_char_p(chars), ctypes.byref(sclkdp))
             check_for_spice_error(None)
             results.append(sclkdp.value)
-        return results
+        return numpy.array(results)
     else:
         libspice.scencd_c(sc, stypes.string_to_char_p(sclkch), ctypes.byref(sclkdp))
         return sclkdp.value
@@ -12047,7 +12048,7 @@ def sct2e(sc, sclkdp):
             libspice.sct2e_c(sc, ctypes.c_double(sclk), ctypes.byref(et))
             check_for_spice_error(None)
             results.append(et.value)
-        return results
+        return numpy.array(results)
     else:
         sclkdp = ctypes.c_double(sclkdp)
         libspice.sct2e_c(sc, sclkdp, ctypes.byref(et))
@@ -13010,7 +13011,7 @@ def spkezr(targ, et, ref, abcorr, obs):
     :return:
             State of target,
             One way light time between observer and target.
-    :rtype: tuple
+    :rtype: Union[Tuple[Iterable[float],float],Tuple[Iterable[Iterable[float]],Iterable[float]]]
     """
     targ = stypes.string_to_char_p(targ)
     ref = stypes.string_to_char_p(ref)
@@ -13271,7 +13272,7 @@ def spkpos(targ, et, ref, abcorr, obs):
     :return:
             Position of target,
             One way light time between observer and target.
-    :rtype: tuple
+    :rtype: Union[Tuple[Iterable[float],float],Tuple[Iterable[Iterable[float]],Iterable[float]]]
     """
     targ = stypes.string_to_char_p(targ)
     ref = stypes.string_to_char_p(ref)
@@ -13287,7 +13288,7 @@ def spkpos(targ, et, ref, abcorr, obs):
             check_for_spice_error(None)
             ptargs.append(stypes.c_vector_to_python(ptarg))
             lts.append(lt.value)
-        return ptargs, lts
+        return numpy.array(ptargs), numpy.array(lts)
     else:
         libspice.spkpos_c(targ, et, ref, abcorr, obs, ptarg, ctypes.byref(lt))
         return stypes.c_vector_to_python(ptarg), lt.value
@@ -14457,7 +14458,13 @@ def srfxpt(method, target, et, abcorr, obsrvr, dref, dvec):
             trgepcs.append(trgepc.value)
             obsposs.append(stypes.c_vector_to_python(obspos))
             founds.append(bool(found.value))
-        return spoints, dists, trgepcs, obsposs, founds
+        return (
+            numpy.array(spoints),
+            numpy.array(dists),
+            numpy.array(trgepcs),
+            numpy.array(obsposs),
+            numpy.array(founds),
+        )
     else:
         et = ctypes.c_double(et)
         libspice.srfxpt_c(
@@ -14575,16 +14582,22 @@ def str2et(time):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/str2et_c.html
 
     :param time: A string representing an epoch.
-    :type time: str
+    :type time: Union[str,Iterable[str]]
     :return: The equivalent value in seconds past J2000, TDB.
-    :rtype: float
+    :rtype: Union[float,Iterable[float]]
     """
-    if stypes.is_iterable(time):
-        return numpy.array([str2et(t) for t in time])
-    time = stypes.string_to_char_p(time)
     et = ctypes.c_double()
-    libspice.str2et_c(time, ctypes.byref(et))
-    return et.value
+    if stypes.is_iterable(time):
+        ets = []
+        for t in time:
+            libspice.str2et_c(stypes.string_to_char_p(t), ctypes.byref(et))
+            check_for_spice_error(None)
+            ets.append(et.value)
+        return numpy.array(ets)
+    else:
+        time = stypes.string_to_char_p(time)
+        libspice.str2et_c(time, ctypes.byref(et))
+        return et.value
 
 
 @spice_error_check
@@ -14599,7 +14612,7 @@ def datetime2et(dt):
     :param dt: A standard Python datetime
     :type dt: Union[datetime, Iterable[datetime]]
     :return: The equivalent value in seconds past J2000, TDB.
-    :rtype: float
+    :rtype: Union[float, Iterable[float]]
     """
     lt = ctypes.c_double()
     if hasattr(dt, "__iter__"):
@@ -14608,11 +14621,12 @@ def datetime2et(dt):
             libspice.utc2et_c(stypes.string_to_char_p(t.isoformat()), ctypes.byref(lt))
             check_for_spice_error(None)
             ets.append(lt.value)
-        return ets
-    dt = stypes.string_to_char_p(dt.isoformat())
-    et = ctypes.c_double()
-    libspice.utc2et_c(dt, ctypes.byref(et))
-    return et.value
+        return numpy.array(ets)
+    else:
+        dt = stypes.string_to_char_p(dt.isoformat())
+        et = ctypes.c_double()
+        libspice.utc2et_c(dt, ctypes.byref(et))
+        return et.value
 
 
 @spice_error_check
@@ -14692,7 +14706,7 @@ def subpt(method, target, et, abcorr, obsrvr):
     :return:
             Sub-observer point on the target body,
             Altitude of the observer above the target body.
-    :rtype: tuple
+    :rtype: Union[Tuple[Iterable[float],float],Tuple[Iterable[Iterable[float]],Iterable[float]]]
     """
     method = stypes.string_to_char_p(method)
     target = stypes.string_to_char_p(target)
@@ -14716,7 +14730,7 @@ def subpt(method, target, et, abcorr, obsrvr):
             check_for_spice_error(None)
             points.append(stypes.c_vector_to_python(spoint))
             alts.append(alt.value)
-        return points, alts
+        return numpy.array(points), numpy.array(alts)
     else:
         et = ctypes.c_double(et)
         libspice.subpt_c(method, target, et, abcorr, obsrvr, spoint, ctypes.byref(alt))
@@ -14987,7 +15001,7 @@ def sxform(instring, tostring, et):
             libspice.sxform_c(instring, tostring, ctypes.c_double(t), xform)
             check_for_spice_error(None)
             xforms.append(stypes.c_matrix_to_numpy(xform))
-        return xforms
+        return numpy.array(xforms)
     else:
         et = ctypes.c_double(et)
         libspice.sxform_c(instring, tostring, et, xform)
@@ -15177,7 +15191,7 @@ def timout(et, pictur, lenout=_default_len_out):
     :param lenout: The length of the output string plus 1.
     :type lenout: int
     :return: A string representation of the input epoch.
-    :rtype: str or array of str
+    :rtype: Union[str,Iterable[str]]
     """
     pictur = stypes.string_to_char_p(pictur)
     output = stypes.string_to_char_p(lenout)
@@ -15188,7 +15202,7 @@ def timout(et, pictur, lenout=_default_len_out):
             libspice.timout_c(ctypes.c_double(t), pictur, lenout, output)
             check_for_spice_error(None)
             times.append(stypes.to_python_string(output))
-        return times
+        return numpy.array(times)
     else:
         et = ctypes.c_double(et)
         libspice.timout_c(et, pictur, lenout, output)
@@ -15702,14 +15716,14 @@ def unload(filename):
     http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unload_c.html
 
     :param filename: The name of a kernel to unload.
-    :type filename: str
+    :type filename: Union[str,Iterable[str]]
     """
     if stypes.is_iterable(filename):
         for f in filename:
             libspice.unload_c(stypes.string_to_char_p(f))
-        return
-    filename = stypes.string_to_char_p(filename)
-    libspice.unload_c(filename)
+    else:
+        filename = stypes.string_to_char_p(filename)
+        libspice.unload_c(filename)
 
 
 @spice_error_check
