@@ -28,7 +28,7 @@ from setuptools.command.build_py import build_py
 from setuptools.command.test import test as TestCommand
 from setuptools.dist import Distribution
 import sys
-from .getspice import InstallCSpice
+from getspice import InstallCSpice
 
 TEST_DEPENDENCIES = [
     "setuptools>=38.0.0",
