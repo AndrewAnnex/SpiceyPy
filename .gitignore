@@ -43,3 +43,4 @@ spiceypy/utils/__pycache__/
 .eggs/
 *.whl
 .pytest_cache/
+*.sqlite3

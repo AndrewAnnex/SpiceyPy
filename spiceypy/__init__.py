@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+__author__ = "AndrewAnnex"
+__version__ = "3.0.0"
 
 from .spiceypy import *
 from .utils import support_types
-
-__author__ = "AndrewAnnex"
 
 # Default setting for error reporting so that programs don't just exit out!
 erract("set", 10, "return")

@@ -33,6 +33,7 @@ sys.setrecursionlimit(15000)
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx_autodoc_typehints",
     "sphinx.ext.viewcode",
 ]
 

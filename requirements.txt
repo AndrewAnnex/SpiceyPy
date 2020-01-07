@@ -1,4 +1,4 @@
-numpy>=1.17.0; python_version >= "3.5"
+numpy>=1.17.0
 coverage<5.0 # fix for coveralls 1.9.2 and coverage <5 issue https://github.com/coveralls-clients/coveralls-python/issues/203
 pytest>=2.9.0
 coveralls>=1.1
