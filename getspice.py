@@ -72,6 +72,7 @@ SOFTWARE.
 import io
 import platform
 import os
+import shutil
 import subprocess
 import ssl
 import sys
@@ -79,6 +80,16 @@ import time
 from zipfile import ZipFile
 
 import six.moves.urllib as urllib
+
+host_OS = platform.system()
+# Get platform is Unix-like OS or not
+is_unix = host_OS in ("Linux", "Darwin", "FreeBSD")
+# Get current working directory
+root_dir = os.path.dirname(os.path.realpath(__file__))
+# Make the directory path for cspice
+cspice_dir = os.path.join(root_dir, "cspice")
+# Make the directory path for cspice/lib
+lib_dir = os.path.join(cspice_dir, "lib")
 
 
 class GetCSPICE(object):
@@ -272,3 +283,164 @@ class GetCSPICE(object):
             proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE)
             proc.stdin.write(self._local.read())
         self._local.close()
+
+
+class InstallCSpice(object):
+    @staticmethod
+    def get_cspice():
+        if InstallCSpice.check_for_spice():
+            print("Host OS: {0}".format(host_OS))
+            if is_unix:
+                InstallCSpice.unix_method()
+            elif host_OS == "Windows":
+                InstallCSpice.windows_method()
+            else:
+                sys.exit("Unsupported OS: {0}".format(host_OS))
+
+    @staticmethod
+    def check_for_spice():
+        print("Checking the path", cspice_dir)
+        if not os.path.exists(cspice_dir):
+
+            message = "Unable to find CSPICE at {0}. Attempting to Download CSPICE For you:".format(
+                cspice_dir
+            )
+            print(message)
+            # Download cspice using getspice.py
+            GetCSPICE(version="N0066")
+            if not os.path.exists(cspice_dir):
+                message = "Unable to find CSPICE at {0}. Exiting".format(cspice_dir)
+                sys.exit(message)
+            return True
+        return False
+
+    @staticmethod
+    def unpack_cspice():
+        if is_unix:
+            cspice_lib = os.path.join(
+                lib_dir, ("cspice.lib" if host_OS == "Windows" else "cspice.a")
+            )
+            csupport_lib = os.path.join(
+                lib_dir, ("csupport.lib" if host_OS == "Windows" else "csupport.a")
+            )
+
+            if os.path.exists(cspice_lib) and os.path.exists(csupport_lib):
+                cwd = os.getcwd()
+                try:
+                    os.chdir(lib_dir)
+                    if host_OS == "Windows":
+                        raise BaseException(
+                            "Windows is not supported in this build method"
+                        )
+                    elif is_unix:
+                        for lib in ["ar -x cspice.a", "ar -x csupport.a"]:
+                            unpack_lib_process = subprocess.Popen(lib, shell=True)
+                            process_status = os.waitpid(unpack_lib_process.pid, 0)[1]
+                            if process_status != 0:
+                                raise BaseException("{0}".format(process_status))
+                    else:
+                        raise BaseException("Unsupported OS: {0}".format(host_OS))
+                except BaseException as error:
+                    status = error.args
+                    sys.exit(
+                        "Error: cspice object file extraction failed with exit status: {0}".format(
+                            status
+                        )
+                    )
+                finally:
+                    os.chdir(cwd)
+            else:
+                error_message = (
+                    "Error, cannot find CSPICE "
+                    "static libraries at {0}".format(lib_dir)
+                )
+                sys.exit(error_message)
+
+    @staticmethod
+    def build_library():
+        # Get the current working directory
+        cwd = os.getcwd()
+
+        if is_unix:
+            try:
+                os.chdir(lib_dir)
+                # find a way to make this work via Extension and setuptools, not using popen.
+                build_lib = subprocess.Popen(
+                    "gcc -shared -fPIC -lm *.o -o spice.so", shell=True
+                )
+                status = os.waitpid(build_lib.pid, 0)[1]
+                if status != 0:
+                    raise BaseException("{0}".format(status))
+                success = os.path.exists(os.path.join(os.getcwd(), "spice.so"))
+                if not success:
+                    raise BaseException("Did not find spice.so, build went badly.")
+            except BaseException as errorInst:
+                status = errorInst.args
+                sys.exit(
+                    "Error: compilation of shared spice.so build exit status: {0}".format(
+                        status
+                    )
+                )
+
+        elif host_OS == "Windows":
+            try:
+                destination = os.path.join(cspice_dir, "src", "cspice")
+                def_file = os.path.join(root_dir, "appveyor", "cspice.def")
+                make_bat = os.path.join(root_dir, "appveyor", "makeDynamicSpice.bat")
+                shutil.copy(def_file, destination)
+                shutil.copy(make_bat, destination)
+                # run the script
+                os.chdir(destination)
+                windows_build = subprocess.Popen("makeDynamicSpice.bat", shell=True)
+                status = windows_build.wait()
+                if status != 0:
+                    raise BaseException("{0}".format(status))
+            except BaseException as error:
+                sys.exit("Build failed with: {0}".format(error.args))
+        # Change back to the stored 'current working directory
+        os.chdir(cwd)
+
+    @staticmethod
+    def move_to_root_directory():
+        sharedlib = "spice.so" if is_unix else "cspice.dll"
+        destination = os.path.join(root_dir, "spiceypy", "utils", sharedlib)
+        if not os.path.isfile(destination):
+            if is_unix:
+                target = os.path.join(cspice_dir, "lib", sharedlib)
+            else:
+                target = os.path.join(cspice_dir, "src", "cspice", sharedlib)
+            print("Attempting to move: {0}   to: {1}".format(target, destination))
+            try:
+                os.rename(target, destination)
+            except BaseException as e:
+                sys.exit("{0} file not found, what happend?: {1}".format(sharedlib, e))
+
+    @staticmethod
+    def cleanup():
+        # Remove CSPICE folder
+        try:
+            shutil.rmtree(os.path.join(os.getcwd(), "cspice"))
+        except OSError as e:
+            print("Error Cleaning up cspice folder")
+            raise e
+
+    @staticmethod
+    def unix_method():
+        # Unpack cspice.a and csupport.a
+        InstallCSpice.unpack_cspice()
+        # Build the shared Library
+        InstallCSpice.build_library()
+        # Move to correct location (root of the distribution)
+        InstallCSpice.move_to_root_directory()
+
+    @staticmethod
+    def windows_method():
+        if os.path.exists(os.path.join(cspice_dir, "lib", "cspice.dll")):
+            print("Found pre-made cspice.dll, not building")
+        elif os.path.exists(os.path.join(root_dir, "spiceypy", "utils", "cspice.dll")):
+            print("Found pre-made cspice.dll in spiceypy, not building")
+        else:
+            # Build the DLL
+            InstallCSpice.build_library()
+            # Move to correct location (root of the distribution)
+            InstallCSpice.move_to_root_directory()

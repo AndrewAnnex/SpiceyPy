@@ -11,11 +11,6 @@ environment:
     secure: ojP0ftEgmrZcijN49vQEPz39rkcPyOxtjwNp5hUYkdKxQq47DwkiaWOnVA11nog637VUmRnHb07uXwvrhK4bbg==
 
   matrix:
-      - PYTHON: "C:\\Python27-x64"
-        PYTHON_VERSION: "2.7.x"
-        ARCH: "64"
-        PLAT_NAME: "win-amd64"
-        PY_TAG: "cp27"
 
       - PYTHON: "C:\\Python36-x64"
         PYTHON_VERSION: "3.6.x"

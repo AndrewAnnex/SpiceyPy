@@ -26,8 +26,7 @@ import os
 import time
 import platform
 import tempfile
-import six.moves.urllib as urllib
-from six import print_ as six_print
+import urllib
 import sys
 
 cwd = "/tmp" if platform.system() == "Darwin" else tempfile.gettempdir()
@@ -139,13 +138,11 @@ def attempt_download(url, kernel_name, target_file_name, num_attempts):
     current_attempt = 0
     while current_attempt < num_attempts:
         try:
-            six_print(
-                "Attempting to Download kernel: {}".format(kernel_name), flush=True
-            )
+            print("Attempting to Download kernel: {}".format(kernel_name), flush=True)
             current_kernel = urllib.request.urlopen(url, timeout=10)
             with open(target_file_name, "wb") as kernel:
                 kernel.write(current_kernel.read())
-            six_print("Downloaded kernel: {}".format(kernel_name), flush=True)
+            print("Downloaded kernel: {}".format(kernel_name), flush=True)
             break
         # N.B. .HTTPError inherits from .URLError, so [except:....HTTPError]
         #      must be listed before [except:....URLError], otherwise the
@@ -159,14 +156,14 @@ def attempt_download(url, kernel_name, target_file_name, num_attempts):
                 ", trying again after a bit.",
             )
         except urllib.error.URLError:
-            six_print(
+            print(
                 "Download of kernel: {} failed with URLError, trying again after a bit.".format(
                     kernel_name
                 ),
                 flush=True,
             )
         current_attempt += 1
-        six_print("\t Attempting to Download kernel again...", flush=True)
+        print("\t Attempting to Download kernel again...", flush=True)
         time.sleep(2 + current_attempt)
     if current_attempt >= num_attempts:
         raise BaseException(
@@ -177,7 +174,7 @@ def attempt_download(url, kernel_name, target_file_name, num_attempts):
 
 
 def get_standard_kernels():
-    six_print("\tChecking for kernels...\n", flush=True)
+    print("\tChecking for kernels...\n", flush=True)
     get_kernel(CoreKernels.pck_url)
     get_kernel(CoreKernels.spk_url)
     get_kernel(CoreKernels.gm_pck_url)
@@ -214,7 +211,7 @@ def write_test_meta_kernel():
             kernelFile.write("'{0}'\n".format(os.path.join(cwd, kernel)))
         kernelFile.write(")\n")
         kernelFile.write("\\begintext")
-    six_print("\nDone writing test meta kernel.", flush=True)
+    print("\nDone writing test meta kernel.", flush=True)
 
 
 def download_kernels():
