@@ -1,8 +1,7 @@
 SpiceyPy
 ========
 
-SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N66),
-compatible with Python 2 and 3, written using ctypes.
+SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N66), written using ctypes.
 
 +------------------------------------------------+---------------------+--------------------------+-------------------+------------+
 | Continuous Integration                         | Code Coverage       | Docs                     | Chat              | Citation   |
@@ -100,7 +99,9 @@ as newer versions are released.
 
 - OS: OS X, Linux, Windows
 - CPU: 64bit only!
-- Python 2.7, 3.5, 3.6, 3.7
+- Python 3.6, 3.7, 3.8
+
+* Support for Python 2.7 ended with version 2.3.2 January 2020 *
 
 Acknowledgements
 ----------------
