@@ -7,4 +7,5 @@ channels:
 dependencies:
   - python=3
   - numpy
-  - sphinx_autodoc_typehints
+  - pip:
+    - sphinx_autodoc_typehints
