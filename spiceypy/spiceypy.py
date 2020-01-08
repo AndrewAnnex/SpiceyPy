@@ -28,6 +28,16 @@ from .utils.support_types import Cell_Char, Cell_Bool, Cell_Double, Cell_Int, Ce
 from .utils.libspicehelper import libspice
 from . import config
 from .utils.callbacks import SpiceUDFUNS, SpiceUDFUNB
+from .utils.callbacks import (
+    UDFUNS,
+    UDFUNB,
+    UDSTEP,
+    UDREFN,
+    UDREPI,
+    UDREPU,
+    UDREPF,
+    UDBAIL,
+)
 import functools
 import numpy
 from contextlib import contextmanager
@@ -378,7 +388,7 @@ def badkpv(
 
 
 @spice_error_check
-def bltfrm(frmcls: int, out_cell: None = None) -> SpiceCell:
+def bltfrm(frmcls: int, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     """
     Return a SPICE set containing the frame IDs of all built-in frames
     of a specified class.
@@ -922,7 +932,7 @@ def ckcov(
     level: str,
     tol: float,
     timsys: str,
-    cover: None = None,
+    cover: Optional[SpiceCell] = None,
 ) -> SpiceCell:
     """
     Find the coverage window for a specified object in a specified CK file.
@@ -1069,7 +1079,7 @@ def cklpf(filename: str) -> int:
 
 
 @spice_error_check
-def ckobj(ck: str, out_cell: None = None) -> SpiceCell:
+def ckobj(ck: str, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     """
     Find the set of ID codes of all objects in a specified CK file.
 
@@ -5637,29 +5647,29 @@ def gfdist(
 
 @spice_error_check
 def gfevnt(
-    udstep,
-    udrefn,
-    gquant,
-    qnpars,
-    lenvals,
-    qpnams,
-    qcpars,
-    qdpars,
-    qipars,
-    qlpars,
-    op,
-    refval,
-    tol,
-    adjust,
-    rpt,
-    udrepi,
-    udrepu,
-    udrepf,
-    nintvls,
-    bail,
-    udbail,
-    cnfine,
-    result=None,
+    udstep: UDSTEP,
+    udrefn: UDREFN,
+    gquant: str,
+    qnpars: int,
+    lenvals: int,
+    qpnams: Iterable[str],
+    qcpars: Iterable[str],
+    qdpars: Iterable[float],
+    qipars: Iterable[int],
+    qlpars: Iterable[int],
+    op: str,
+    refval: float,
+    tol: float,
+    adjust: float,
+    rpt: int,
+    udrepi: UDREPI,
+    udrepu: UDREPU,
+    udrepf: UDREPF,
+    nintvls: int,
+    bail: int,
+    udbail: UDBAIL,
+    cnfine: SpiceCell,
+    result: Optional[SpiceCell] = None,
 ):
     """
     Determine time intervals when a specified geometric quantity
@@ -5743,24 +5753,24 @@ def gfevnt(
 
 @spice_error_check
 def gffove(
-    inst,
-    tshape,
-    raydir,
-    target,
-    tframe,
-    abcorr,
-    obsrvr,
-    tol,
-    udstep,
-    udrefn,
-    rpt,
-    udrepi,
-    udrepu,
-    udrepf,
-    bail,
-    udbail,
-    cnfine,
-    result=None,
+    inst: str,
+    tshape: str,
+    raydir: Iterable[float],
+    target: str,
+    tframe: str,
+    abcorr: str,
+    obsrvr: str,
+    tol: float,
+    udstep: UDSTEP,
+    udrefn: UDREFN,
+    rpt: int,
+    udrepi: UDREPI,
+    udrepu: UDREPU,
+    udrepf: UDREPF,
+    bail: int,
+    udbail: UDBAIL,
+    cnfine: SpiceCell,
+    result: Optional[SpiceCell] = None,
 ):
     """
     Determine time intervals when a specified target body or ray
@@ -5925,26 +5935,26 @@ def gfinth(sigcode: int) -> None:
 
 @spice_error_check
 def gfocce(
-    occtyp,
-    front,
-    fshape,
-    fframe,
-    back,
-    bshape,
-    bframe,
-    abcorr,
-    obsrvr,
-    tol,
-    udstep,
-    udrefn,
-    rpt,
-    udrepi,
-    udrepu,
-    udrepf,
-    bail,
-    udbail,
-    cnfine,
-    result=None,
+    occtyp: str,
+    front: str,
+    fshape: str,
+    fframe: str,
+    back: str,
+    bshape: str,
+    bframe: str,
+    abcorr: str,
+    obsrvr: str,
+    tol: float,
+    udstep: UDSTEP,
+    udrefn: UDREFN,
+    rpt: int,
+    udrepi: UDREP,
+    udrepu: UDREPU,
+    udrepf: UDREPF,
+    bail: int,
+    udbail: UDBAIL,
+    cnfine: SpiceCell,
+    result: Optional[SpiceCell] = None,
 ):
     """
     Determine time intervals when an observer sees one target
@@ -7722,7 +7732,7 @@ def kinfo(
 
 
 @spice_error_check
-def kplfrm(frmcls: int, out_cell: None = None) -> SpiceCell:
+def kplfrm(frmcls: int, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     """
     Return a SPICE set containing the frame IDs of all reference
     frames of a given class having specifications in the kernel pool.
@@ -11868,7 +11878,7 @@ def spkltc(
 
 
 @spice_error_check
-def spkobj(spk: str, out_cell: None = None) -> SpiceCell:
+def spkobj(spk: str, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     """
     Find the set of ID codes of all objects in a specified SPK file.
 
