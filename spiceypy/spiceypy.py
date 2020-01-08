@@ -244,8 +244,7 @@ def cell_time(cell_size):
 
 @spice_error_check
 def appndc(
-    item: Union[str, Iterable[str], ndarray, str_],
-    cell: Union[Cell_Char, SpiceCell],
+    item: Union[str, Iterable[str], ndarray, str_], cell: Union[Cell_Char, SpiceCell],
 ) -> None:
     """
     Append an item to a character cell.
