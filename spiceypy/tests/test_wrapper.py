@@ -3497,7 +3497,7 @@ def test_et2utc_vectorized():
 
 
 def test_etcal():
-    et = np.arange(0, 20)
+    et = np.arange(0.0, 20.0)
     cal = spice.etcal(et[0])
     assert cal == "2000 JAN 01 12:00:00.000"
     calArr = spice.etcal(et)

@@ -42,7 +42,6 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
-import six
 
 try:
     import collections.abc as collections_abc
@@ -117,21 +116,18 @@ def to_int_matrix(x):
 
 def is_iterable(i):
     """
-    From stackoverflow https://stackoverflow.com/questions/1055360/how-to-tell-a-variable-is-iterable-but-not-a-string/44328500#44328500
+    From stackoverflow
+    https://stackoverflow.com/questions/1055360/how-to-tell-a-variable-is-iterable-but-not-a-string/44328500#44328500
     :param i: input collection
     :return:
     """
-    return isinstance(i, collections_abc.Iterable) and not isinstance(
-        i, six.string_types
-    )
+    return isinstance(i, collections_abc.Iterable) and not isinstance(i, str)
 
 
 def to_python_string(in_string):
     if isinstance(in_string, c_char_p):
         return to_python_string(in_string.value)
-    if six.PY2:
-        return string_at(in_string).rstrip()
-    elif six.PY3:
+    else:
         return bytes.decode(string_at(in_string), errors="ignore").rstrip()
 
 
@@ -978,8 +974,8 @@ class SpiceCell(Structure):
     def __iter__(self):
         getter = SpiceCell.DATATYPES_GET[self.dtype]
         length, card, data = self.length, self.card, self.data
-        for i in six.moves.range(card):
-            yield (getter(data, i, length))
+        for i in range(card):
+            yield getter(data, i, length)
 
     def __contains__(self, key):
         return key in self.__iter__()
@@ -993,10 +989,9 @@ class SpiceCell(Structure):
             else:
                 start, stop, step = key.indices(self.card)
                 return [
-                    getter(self.data, i, self.length)
-                    for i in six.moves.range(start, stop, step)
+                    getter(self.data, i, self.length) for i in range(start, stop, step)
                 ]
-        elif key in six.moves.range(-self.card, self.card):
+        elif key in range(-self.card, self.card):
             index = key if key >= 0 else self.card - abs(key)
             return getter(self.data, index, self.length)
         elif not isinstance(key, int):

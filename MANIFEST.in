@@ -6,6 +6,9 @@ include LICENSE
 include requirements.txt
 include README.rst
 
+# cspice files
+include spiceypy/utils/*
+
 # Docs
 include docs/conf.py
 include docs/*.rst

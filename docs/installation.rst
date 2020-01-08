@@ -123,6 +123,16 @@ Common Issues
 
 SSL Alert Handshake Issue
 -------------------------
+
+.. attention::
+
+    As of 2020, users are not likely to experience this issue with python
+    version 3.7 and above, and for newer 3.6.X releases. Users running
+    older operating systems are encouraged to update to newer versions
+    of python if they are attempting to install version 3.0.0 or above.
+    See other sections of this document for more information.
+
+
 In early 2017, JPL updated to a TLS1.2 certificate and enforced https connections causing installation
 issues for users, in particular for macOS users, with OpenSSL versions older
 than 1.0.1g. This is because older versions of OpenSSL still distributed in some

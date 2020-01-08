@@ -118,7 +118,7 @@ meta kernels in spice, please consult the `Kernel Required Reading <https://naif
 
     Help on function spkpos in module spiceypy.spiceypy:
 
-    spkpos(targ, et, ref, abcorr, obs)
+    spkpos(targ: str, et: Union[float, numpy.ndarray], ref: str, abcorr: str, obs: str) -> Union[Tuple[numpy.ndarray, float], Tuple[numpy.ndarray, numpy.ndarray]]
         Return the position of a target body relative to an observing
         body, optionally corrected for light time (planetary aberration)
         and stellar aberration.
@@ -126,19 +126,14 @@ meta kernels in spice, please consult the `Kernel Required Reading <https://naif
         http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpos_c.html
 
         :param targ: Target body name.
-        :type targ: str
         :param et: Observer epoch.
-        :type et: float or List of Floats
         :param ref: Reference frame of output position vector.
-        :type ref: str
         :param abcorr: Aberration correction flag.
-        :type abcorr: str
         :param obs: Observing body name.
-        :type obs: str
         :return:
                 Position of target,
                 One way light time between observer and target.
-        :rtype: tuple
+
 
 
 
@@ -174,7 +169,7 @@ positions list to a 2D numpy array for easier indexing in the plot.
 
 .. code:: python
 
-    positions = np.asarray(positions).T # positions is a list, make it an ndarray for easier indexing
+    positions = positions.T # positions is shaped (4000, 3), let's transpose to (3, 4000) for easier indexing
     fig = plt.figure(figsize=(9, 9))
     ax  = fig.add_subplot(111, projection='3d')
     ax.plot(positions[0], positions[1], positions[2])
