@@ -34,7 +34,6 @@ from contextlib import contextmanager
 from datetime import datetime
 
 from numpy import ndarray, str_
-from pandas.core.series import Series
 from spiceypy.utils.support_types import (
     Cell_Char,
     Cell_Double,
@@ -245,7 +244,7 @@ def cell_time(cell_size):
 
 @spice_error_check
 def appndc(
-    item: Union[str, Iterable[str], Series, ndarray, str_],
+    item: Union[str, Iterable[str], ndarray, str_],
     cell: Union[Cell_Char, SpiceCell],
 ) -> None:
     """
