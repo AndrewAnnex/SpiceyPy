@@ -10334,7 +10334,7 @@ def reordl(iorder: Iterable[int], ndim: int, array: Iterable[bool]) -> ndarray:
 
 
 @spice_error_check
-def repmc(instr: str, marker: str, value: str, lenout: None = None) -> str:
+def repmc(instr: str, marker: str, value: str, lenout: Optional[int] = None) -> str:
     """
     Replace a marker with a character string.
 
@@ -10358,7 +10358,7 @@ def repmc(instr: str, marker: str, value: str, lenout: None = None) -> str:
 
 @spice_error_check
 def repmct(
-    instr: str, marker: str, value: int, repcase: str, lenout: None = None
+    instr: str, marker: str, value: int, repcase: str, lenout: Optional[int] = None
 ) -> str:
     """
     Replace a marker with the text representation of a
@@ -10414,7 +10414,7 @@ def repmf(
     value: float,
     sigdig: int,
     informat: str,
-    lenout: None = None,
+    lenout: Optional[int] = None,
 ) -> str:
     """
     Replace a marker in a string with a formatted double precision value.
@@ -10442,7 +10442,7 @@ def repmf(
 
 
 @spice_error_check
-def repmi(instr: str, marker: str, value: int, lenout: None = None) -> str:
+def repmi(instr: str, marker: str, value: int, lenout: Optional[int] = None) -> str:
     """
     Replace a marker with an integer.
 
@@ -10466,7 +10466,7 @@ def repmi(instr: str, marker: str, value: int, lenout: None = None) -> str:
 
 @spice_error_check
 def repmot(
-    instr: str, marker: str, value: int, repcase: str, lenout: None = None
+    instr: str, marker: str, value: int, repcase: str, lenout: Optional[int] = None
 ) -> str:
     """
     Replace a marker with the text representation of an ordinal number.
@@ -10655,7 +10655,7 @@ def scard(incard: int, cell: SpiceCell) -> SpiceCell:
 
 @spice_error_check
 def scdecd(
-    sc: int, sclkdp: float, lenout: int = _default_len_out, mxpart: None = None
+    sc: int, sclkdp: float, lenout: int = _default_len_out, mxpart: Optional[int] = None
 ) -> str:
     # todo: figure out how to use mxpart
     """
@@ -10744,7 +10744,7 @@ def sce2t(sc: int, et: float) -> float:
 
 @spice_error_check
 def scencd(
-    sc: int, sclkch: Union[str, Iterable[str]], mxpart: None = None
+    sc: int, sclkch: Union[str, Iterable[str]], mxpart: Optional[int] = None
 ) -> Union[float, ndarray]:
     """
     Encode character representation of spacecraft clock time into a
