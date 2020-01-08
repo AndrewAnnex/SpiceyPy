@@ -14,7 +14,9 @@ sphinx:
 #  fail_on_warning: true # < enable later...
 
 # Optionally build your docs in additional formats such as PDF and ePub
-formats: all
+formats:
+  - epub
+  - pdf
 
 # use a conda environment
 conda:

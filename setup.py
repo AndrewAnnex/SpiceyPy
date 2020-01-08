@@ -31,17 +31,14 @@ import sys
 from getspice import InstallCSpice
 
 TEST_DEPENDENCIES = [
-    "setuptools>=38.0.0",
     'numpy>=1.17.0;python_version>="3.5"',
     "pytest>=2.9.0",
     "pandas>=0.24.0",
 ]
 DEPENDENCIES = [
-    "setuptools>=38.0.0",
     'numpy>=1.17.0;python_version>="3.5"',
-    "certifi>=2017.1.23",
 ]
-REQUIRES = ["numpy", "six"]
+REQUIRES = ["numpy"]
 
 
 class SpiceyPyBinaryDistribution(Distribution):
