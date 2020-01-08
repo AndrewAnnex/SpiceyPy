@@ -5948,7 +5948,7 @@ def gfocce(
     udstep: UDSTEP,
     udrefn: UDREFN,
     rpt: int,
-    udrepi: UDREP,
+    udrepi: UDREPI,
     udrepu: UDREPU,
     udrepf: UDREPF,
     bail: int,
