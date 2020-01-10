@@ -74,12 +74,13 @@ import platform
 import os
 import shutil
 import subprocess
-import ssl
 import sys
 import time
+import urllib
+import urllib.request
+import urllib.error
 from zipfile import ZipFile
 
-import six.moves.urllib as urllib
 
 host_OS = platform.system()
 # Get platform is Unix-like OS or not
@@ -214,61 +215,17 @@ class GetCSPICE(object):
            Therefore this method provides two different implementations for the
            HTTPS GET call to the NAIF server to download the required CSPICE
            distribution package.
+
+           * as of 3.0.0, we default back to use built in openssl, as we require python 3.6 or above *
         """
-        # Use urllib3 (based on PyOpenSSL).
-        if ssl.OPENSSL_VERSION < "OpenSSL 1.0.1g":
-            # Force urllib3 to use pyOpenSSL
-            import urllib3.contrib.pyopenssl
+        try:
+            # Send the request to get the CSPICE package (proxy auto detected).
+            response = urllib.request.urlopen(self._rcspice, timeout=10)
+        except urllib.error.URLError as err:
+            raise RuntimeError(err.reason)
 
-            urllib3.contrib.pyopenssl.inject_into_urllib3()
-
-            import certifi
-            import urllib3
-
-            try:
-                # Search proxy in ENV variables
-                proxies = {}
-                for key, value in os.environ.items():
-                    if "_proxy" in key.lower():
-                        proxies[key.lower().replace("_proxy", "")] = value
-
-                # Create a ProolManager
-                if "https" in proxies:
-                    https = urllib3.ProxyManager(
-                        proxies["https"],
-                        cert_reqs="CERT_REQUIRED",
-                        ca_certs=certifi.where(),
-                    )
-                elif "http" in proxies:
-                    https = urllib3.ProxyManager(
-                        proxies["http"],
-                        cert_reqs="CERT_REQUIRED",
-                        ca_certs=certifi.where(),
-                    )
-                else:
-                    https = urllib3.PoolManager(
-                        cert_reqs="CERT_REQUIRED", ca_certs=certifi.where()
-                    )
-                # Send the request to get the CSPICE package.
-                response = https.request(
-                    "GET", self._rcspice, timeout=urllib3.Timeout(10)
-                )
-            except urllib3.exceptions.HTTPError as err:
-                raise RuntimeError(err.message)
-
-            # Convert the response to io.BytesIO and store it in local memory.
-            self._local = io.BytesIO(response.data)
-
-        # Use the standard urllib (using system OpenSSL).
-        else:
-            try:
-                # Send the request to get the CSPICE package (proxy auto detected).
-                response = urllib.request.urlopen(self._rcspice, timeout=10)
-            except urllib.error.URLError as err:
-                raise RuntimeError(err.reason)
-
-            # Convert the response to io.BytesIO and store it in local memory.
-            self._local = io.BytesIO(response.read())
+        # Convert the response to io.BytesIO and store it in local memory.
+        self._local = io.BytesIO(response.read())
 
     def _unpack(self):
         """Unpacks the CSPICE package on the given root directory. Note that
