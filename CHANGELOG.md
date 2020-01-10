@@ -4,15 +4,19 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## [3.0.0] - 20??-??-??
+## [3.0.0] - 2019-01-09
 ### Added
 - Python 3.8 support
 
 ### Changed
 - using black for code linting
+- now using type hints 
+- vectorized functions now return numpy arrays instead of lists of arrays
 
-### Removed
-- python 3.5 builds
+### Deprecated
+- python 3.5 
+- python 2.7
+
 
 ## [2.3.2] - 2019-12-19
 ### Added
