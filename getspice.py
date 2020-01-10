@@ -216,7 +216,7 @@ class GetCSPICE(object):
            HTTPS GET call to the NAIF server to download the required CSPICE
            distribution package.
 
-           * as of 3.0.0, we default back to use built in openssl, as we require python 3.6 or above *
+           * as of 3.0.1, we default back to use built in openssl, as we require python 3.6 or above *
         """
         try:
             # Send the request to get the CSPICE package (proxy auto detected).
