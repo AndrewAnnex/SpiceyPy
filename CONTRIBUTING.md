@@ -47,7 +47,6 @@ decisions have been made elsewhere and try to match that code. Other things incl
 * Do not use a newline between the end of function docstrings and the start of function code.
 * Do not use huge, deeply-nested list comprehensions.
 * Lines may run long, when needed.
-* Use Six for 3/2 functionality.
 
 # Your First Contribution
 

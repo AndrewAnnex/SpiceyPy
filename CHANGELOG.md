@@ -4,6 +4,13 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [3.0.1] - 2019-01-10
+### Changed
+- removed old logic from getspice for old openssl versions
+
+### Removed
+- import of six in getspice
+
 ## [3.0.0] - 2019-01-09
 ### Added
 - Python 3.8 support
@@ -16,7 +23,6 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 ### Deprecated
 - python 3.5 
 - python 2.7
-
 
 ## [2.3.2] - 2019-12-19
 ### Added
