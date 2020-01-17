@@ -51,7 +51,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "SpiceyPy"
-copyright = "2014-2019, Andrew Annex"
+copyright = "2014-2020, Andrew Annex"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -272,7 +272,7 @@ texinfo_documents = [
 epub_title = "SpiceyPy"
 epub_author = "Andrew Annex"
 epub_publisher = "Andrew Annex"
-epub_copyright = "2014-2019, Andrew Annex"
+epub_copyright = "2014-2020, Andrew Annex"
 
 # The basename for the epub file. It defaults to the project name.
 # epub_basename = 'SpiceyPy'
