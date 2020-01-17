@@ -103,7 +103,7 @@ which produces
           Given an item such as the Toolkit or an entry point name, return
           the latest version string.
 
-          http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tkvrsn_c.
+          https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tkvrsn_c.
       html
 
           :param item: Item for which a version string is desired.
@@ -155,7 +155,7 @@ Users continuing to have issues should report an issue to the github repository.
 Supporting links:
 
 `<https://bugs.python.org/issue29065>`_
-`<https://github.com/requests/requests/issues/2022>`_
+`<https://github.com/psf/requests/issues/2022>`_
 `<https://pyfound.blogspot.com/2017/01/time-to-upgrade-your-python-tls-v12.html>`_
 `<https://www.python.org/dev/peps/pep-0518>`_
 `<https://github.com/AndrewAnnex/SpiceyPy/pull/202>`_

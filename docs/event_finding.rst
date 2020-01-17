@@ -50,7 +50,7 @@ These tutorials are available from the NAIF ftp server at JPL:
 
 ::
 
-      http://naif.jpl.nasa.gov/naif/tutorials.html
+      https://naif.jpl.nasa.gov/naif/tutorials.html
 
 Required Readings
 

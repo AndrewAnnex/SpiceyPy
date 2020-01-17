@@ -43,7 +43,7 @@ These tutorials are available from the NAIF ftp server at JPL:
 
 ::
 
-      http://naif.jpl.nasa.gov/naif/tutorials.html
+      https://naif.jpl.nasa.gov/naif/tutorials.html
 
 Required Readings
 
@@ -781,8 +781,8 @@ Since the apparent, or
 
 If desired, the position can then be turned into a unit vector using
 spiceypy.vhat function
-(https://spiceypy.readthedocs.io/en/master/documentation.html#
-spiceypy.vhat) Putting it all together, we get:
+(https://spiceypy.readthedocs.io/en/master/documentation.html#spiceypy.spiceypy.vhat).
+Putting it all together, we get:
 
 .. code-block:: python
 

@@ -123,7 +123,7 @@ meta kernels in spice, please consult the `Kernel Required Reading <https://naif
         body, optionally corrected for light time (planetary aberration)
         and stellar aberration.
 
-        http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpos_c.html
+        https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpos_c.html
 
         :param targ: Target body name.
         :param et: Observer epoch.
