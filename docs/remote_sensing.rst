@@ -26,7 +26,7 @@ often contain comprehensive descriptions of the frames, instrument FOVs,
 etc. Since both the FK and IK are text kernels, the information provided
 in them can be viewed using any text editor, while the meta information
 provided in binary kernels—SPKs and CKs—can be viewed using
-"commnt" or" spacit"utility programs located in "cspice/exe" of
+"commnt" or" spacit" utility programs located in "cspice/exe" of
 Toolkit installation tree.
 
 Tutorials

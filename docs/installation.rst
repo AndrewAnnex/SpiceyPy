@@ -170,7 +170,7 @@ How to install from source (for bleeding edge updates)
     need to do any of the following commands. Installing from source is intended
     for advanced users. Users on machines running Windows should take note
     that attempting to install from source will require software
-    such as visual studio and additonal environment configuration. Given
+    such as visual studio and additional environment configuration. Given
     the complexity of this Windows users are highly encouraged to stick
     with the releases made available through PyPi/Anaconda Cloud.
 

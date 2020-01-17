@@ -1764,7 +1764,7 @@ Code Solution
 
           #
           # SPICE windows consist of double precision values; convert
-          # the string time tags defined in the 'los'and 'phase'
+          # the string time tags defined in the 'los' and 'phase'
           # arrays to double precision ET. Store the double values
           # in the 'loswin' and 'phswin' windows.
           #
