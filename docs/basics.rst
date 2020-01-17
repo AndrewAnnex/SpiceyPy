@@ -31,7 +31,7 @@ verification step is within the python REPL run:
 
 The version of the installed cspice toolkit (note: not SpiceyPy's version)
 should be printed out. Otherwise the Python interpreter should output an
-explanitory error message.
+explanatory error message.
 
 
 A simple example program
