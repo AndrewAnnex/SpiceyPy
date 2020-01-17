@@ -25,27 +25,32 @@ authors:
   - name: Kristin L. Berry
     orcid: 0000-0001-9757-9706
     affilitation: 5
+  - name: K.-Michael Aye
+    orcid: 0000-0002-4088-1928
+    affiliation: 6
   - name: Miguel de Val-Borro
     orcid: 0000-0002-0455-9384
-    affiliation: 6
+    affiliation: 7
   - name: Shankar Kulumani
     orcid: 0000-0002-7822-0471
-    affiliation: 7
+    affiliation: 8
 affiliations:
- - name: Johns Hopkins University, Baltimore, Maryland, USA
+ - name: The Johns Hopkins University, Baltimore, MD 21218, USA.
    index: 1
  - name: General Public.
    index: 2
- - name: Jet Propulsion Laboratory, California Institute of Technology, Pasadena, CA 91109, USA
+ - name: Jet Propulsion Laboratory, California Institute of Technology, Pasadena, CA 91109, USA.
    index: 3
  - name: Latchmoor Services, LLC.
    index: 4
- - name: USGS Astrogeology Science Center.
+ - name: USGS Astrogeology Science Center, Flagstaff, AZ 86001, USA.
    index: 5
- - name: Planetary Science Institute.
+ - name: Laboratory for Atmospheric and Space Physics, University of Colorado, Boulder, CO 80303, USA.
    index: 6
- - name: Collins Aerospace.
+ - name: Planetary Science Institute.
    index: 7
+ - name: Collins Aerospace.
+   index: 8
 
 date: 10 January 2020
 bibliography: paper.bib
