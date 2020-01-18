@@ -717,7 +717,6 @@ def test_ckw03():
     work_quat = spice.m2q(work_mat)
     quats[0] = work_quat
     av[0] = [0.0, 0.0, RATE]
-    rates = [SECPERTICK] * MAXREC
     sclkdp = np.arange(MAXREC) * SPACING_TICKS
     sclkdp += 1000.0
     for i in range(1, MAXREC - 1):
@@ -986,12 +985,12 @@ def test_copy():
     cell_copy = spice.copy(out_cell)
     assert cell_copy.size >= 126
     assert cell_copy is not out_cell
-    assert cell_copy.dtype is 2
+    assert cell_copy.dtype == 2
     # SPICECHAR_CELL; dtype=0
     cell_src = spice.cell_char(10, 10)
     tmpRtn = [spice.appndc("{}".format(i), cell_src) for i in range(5)]
     cell_copy = spice.copy(cell_src)
-    assert cell_copy.dtype is 0
+    assert cell_copy.dtype == 0
     assert cell_copy.size == cell_src.size
     assert cell_copy.card == cell_src.card
     assert cell_copy[:] == cell_src[:]
@@ -1000,7 +999,7 @@ def test_copy():
     cell_src = spice.cell_double(10)
     tmpRtn = [spice.appndd(float(i), cell_src) for i in range(8)]
     cell_copy = spice.copy(cell_src)
-    assert cell_copy.dtype is 1
+    assert cell_copy.dtype == 1
     assert cell_copy.size == cell_src.size
     assert cell_copy.card == cell_src.card
     assert cell_copy[:] == cell_src[:]
@@ -1338,7 +1337,7 @@ def test_dafgsr():
         # * drec(3) NSUM Number of single summaries in this DAF record
         fward, bward, nSS = drec = map(int, spice.dafgsr(handle, iRecno, 1, 3))
         # There is only one summary record in de405s.bsp
-        assert iRecno == 7 and fward is 0 and bward is 0 and nSS == 15
+        assert iRecno == 7 and fward == 0 and bward == 0 and nSS == 15
         # Set index to first word of first summary
         firstWord = 4
         # Set DAF record before daf421.bsp next summary record's first record (641)
@@ -1468,7 +1467,7 @@ def test_dafrda():
     # * drec(3) NSUM Number of single summaries in this DAF record
     fward, bward, nSS = drec = map(int, spice.dafgsr(handle, iRecno, 1, 3))
     # There is only one summary record in de405s.bsp
-    assert iRecno == 7 and fward is 0 and bward is 0 and nSS == 15
+    assert iRecno == 7 and fward == 0 and bward == 0 and nSS == 15
     # Set index to first word of first summary
     firstWord = 4
     # Set DAF word before first segments first word (641 for de405s.bsp)
@@ -2210,9 +2209,6 @@ def test_dskxv_2():
     polmrg = 0.5
     latstp = 1.0
     lonstp = 2.0
-
-    nhits = 0
-    nderr = 0
 
     lon = -180.0
     lat = 90.0
