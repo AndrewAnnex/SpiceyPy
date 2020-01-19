@@ -6,8 +6,10 @@ SpiceyPy is currently supported on Mac, Linux, FreeBSD, and Windows systems.
 
 .. _installation:
 
-If you are new to python, it is a good idea to read a bit about it first `<docs.python-guide.org>`_.
-For new installations of python, it is encouraged to install and or update: pip, setuptools, wheel, numpy, six, and certifi first before installing SpiceyPy ::
+If you are new to python, it is a good idea to read a bit about it first
+`<https://docs.python-guide.org>`_.  For new installations of python, it is
+encouraged to install and or update: pip, setuptools, wheel, numpy, six, and
+certifi first before installing SpiceyPy ::
 
     pip install -U pip setuptools wheel
     pip install -U numpy six certifi
@@ -154,11 +156,11 @@ Users continuing to have issues should report an issue to the github repository.
 
 Supporting links:
 
-`<https://bugs.python.org/issue29065>`_
-`<https://github.com/psf/requests/issues/2022>`_
-`<https://pyfound.blogspot.com/2017/01/time-to-upgrade-your-python-tls-v12.html>`_
-`<https://www.python.org/dev/peps/pep-0518>`_
-`<https://github.com/AndrewAnnex/SpiceyPy/pull/202>`_
+* `<https://bugs.python.org/issue29065>`_
+* `<https://github.com/psf/requests/issues/2022>`_
+* `<https://pyfound.blogspot.com/2017/01/time-to-upgrade-your-python-tls-v12.html>`_
+* `<https://www.python.org/dev/peps/pep-0518>`_
+* `<https://github.com/AndrewAnnex/SpiceyPy/pull/202>`_
 
 ======================================================
 How to install from source (for bleeding edge updates)

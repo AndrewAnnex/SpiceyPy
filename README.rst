@@ -26,7 +26,7 @@ SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N66), written using c
 Introduction
 ------------
 
-SpiceyPy is a python wrapper for the `SPICE Toolkit <http://naif.jpl.nasa.gov/naif/>`__.
+SpiceyPy is a python wrapper for the `SPICE Toolkit <https://naif.jpl.nasa.gov/naif/>`__.
 SPICE is an essential tool for scientists and engineers alike in the planetary
 science field for Solar System Geometry. Please visit the NAIF website for more details about SPICE.
 
@@ -74,7 +74,7 @@ Documentation
 The SpiceyPy docs are available at:
 `spiceypy.readthedocs.org <http://spiceypy.readthedocs.org>`__.
 The documentation for SpiceyPy is intentionally abridged so as to utilize the excellent `documentation provided by the
-NAIF. <http://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/index.html>`__
+NAIF. <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/index.html>`__
 Please refer to C and IDL documentation available on the NAIF website
 for in-depth explanations. Each function docstring has a link to the
 corresponding C function in the NAIF docs at a minimum.

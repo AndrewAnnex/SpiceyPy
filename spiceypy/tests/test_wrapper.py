@@ -1362,7 +1362,7 @@ def test_dafgsr():
             firstWord += ss
             lastIEndWord = iEndWord
         # There is only one summary record in de405s.bsp
-        assert fward is 0
+        assert fward == 0
     # Cleanup
     spice.dafcls(handle)
     spice.reset()
