@@ -42,7 +42,7 @@
       "@type": "Person",
       "email": "",
       "name": "Jorge Diaz del Rio",
-      "affiliation": ""
+      "affiliation": "ODC Space"
     },
     {
       "@id": "https://orcid.org/0000-0001-9757-9706",
@@ -80,11 +80,11 @@
       "affiliation": ""
     },
     {
-      "@id": "",
+      "@id": "https://orcid.org/0000-0003-0303-5199",
       "@type": "Person",
       "email": "",
       "name": "Helge Eichhorn",
-      "affiliation": ""
+      "affiliation": "Planetary Transportation Systems, GmbH"
     },
     {
       "@id": "https://orcid.org/0000-0001-6533-275X",

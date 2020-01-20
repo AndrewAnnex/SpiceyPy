@@ -19,21 +19,26 @@ authors:
   - name: Brain T. Carcich
     orcid: 0000-0001-9211-6526
     affiliation: 4
+  - name: Helge Eichhorn
+    orcid: 0000-0003-0303-5199
+    affiliation: 5
   - name: Jesse A. Mapel
     orcid: 0000-0001-5756-0373
-    affilitation: 5
+    affiliation: 6
+  - name: Jorge Diaz del Rio
+    affiliation: 7
   - name: Kristin L. Berry
     orcid: 0000-0001-9757-9706
-    affilitation: 5
+    affiliation: 6
   - name: K.-Michael Aye
     orcid: 0000-0002-4088-1928
-    affiliation: 6
+    affiliation: 8
   - name: Miguel de Val-Borro
     orcid: 0000-0002-0455-9384
-    affiliation: 7
+    affiliation: 9
   - name: Shankar Kulumani
     orcid: 0000-0002-7822-0471
-    affiliation: 8
+    affiliation: 10
 affiliations:
  - name: The Johns Hopkins University, Baltimore, MD 21218, USA.
    index: 1
@@ -43,14 +48,18 @@ affiliations:
    index: 3
  - name: Latchmoor Services, LLC.
    index: 4
- - name: USGS Astrogeology Science Center, Flagstaff, AZ 86001, USA.
+ - name: Planetary Transportation Systems, GmbH.
    index: 5
- - name: Laboratory for Atmospheric and Space Physics, University of Colorado, Boulder, CO 80303, USA.
+ - name: USGS Astrogeology Science Center, Flagstaff, AZ 86001, USA.
    index: 6
- - name: Planetary Science Institute.
+ - name: ODC Space.
    index: 7
- - name: Collins Aerospace.
+ - name: Laboratory for Atmospheric and Space Physics, University of Colorado, Boulder, CO 80303, USA.
    index: 8
+ - name: Planetary Science Institute.
+   index: 9
+ - name: Collins Aerospace.
+   index: 10
 
 date: 10 January 2020
 bibliography: paper.bib
