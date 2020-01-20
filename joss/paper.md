@@ -33,12 +33,15 @@ authors:
   - name: K.-Michael Aye
     orcid: 0000-0002-4088-1928
     affiliation: 8
+  - name: Marcel Stefko
+    orcid: 0000-0002-7736-2611
+    affiliation: 9
   - name: Miguel de Val-Borro
     orcid: 0000-0002-0455-9384
-    affiliation: 9
+    affiliation: 10
   - name: Shankar Kulumani
     orcid: 0000-0002-7822-0471
-    affiliation: 10
+    affiliation: 11
 affiliations:
  - name: The Johns Hopkins University, Baltimore, MD 21218, USA.
    index: 1
@@ -56,10 +59,12 @@ affiliations:
    index: 7
  - name: Laboratory for Atmospheric and Space Physics, University of Colorado, Boulder, CO 80303, USA.
    index: 8
- - name: Planetary Science Institute.
+ - name: ETH Zurich.
    index: 9
- - name: Collins Aerospace.
+ - name: Planetary Science Institute.
    index: 10
+ - name: Collins Aerospace.
+   index: 11
 
 date: 10 January 2020
 bibliography: paper.bib

@@ -52,11 +52,11 @@
       "affiliation": "USGS Astrogeology Science Center"
     },
     {
-      "@id": "",
+      "@id": "https://orcid.org/0000-0002-7736-2611",
       "@type": "Person",
       "email": "",
       "name": "Marcel Stefko",
-      "affiliation": ""
+      "affiliation": "ETH Zurich."
     },
     {
       "@id": "https://orcid.org/0000-0002-0455-9384",
