@@ -42,6 +42,9 @@ authors:
   - name: Shankar Kulumani
     orcid: 0000-0002-7822-0471
     affiliation: 11
+  - name: Shin-ya Murakami
+    orcid: 0000-0002-7137-4849
+    affiliation: 12
 affiliations:
  - name: The Johns Hopkins University, Baltimore, MD 21218, USA.
    index: 1
@@ -65,6 +68,8 @@ affiliations:
    index: 10
  - name: Collins Aerospace.
    index: 11
+ - name: GFD Dennou Club.
+   index: 12
 
 date: 10 January 2020
 bibliography: paper.bib
