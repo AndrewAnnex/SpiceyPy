@@ -46,7 +46,7 @@ authors:
     orcid: 0000-0002-7137-4849
     affiliation: 12
 affiliations:
- - name: The Johns Hopkins University, Baltimore, MD 21218, USA.
+ - name: Johns Hopkins University, Baltimore, MD 21218, USA.
    index: 1
  - name: General Public.
    index: 2
@@ -77,36 +77,42 @@ bibliography: paper.bib
 ---
 # Statement of Need
 
-Operating in space necessitates quantifying the positions, velocities, and other properties of spacecraft and planetary bodies through time.
-Scientists and engineers working with robotic planetary spacecraft missions use the SPICE Toolkit[@acton:2018] to help plan observations
- and to quantify the positions of planetary bodies and spacecraft through time.
-For example, SPICE can be used to predict future occultations of planets relative to a camera in a rover or spacecraft.
-Scientists also use SPICE to analyze data returned by these missions and to plan hypothetical orbital trajectories for future missions.
-The NAIF develops SPICE in FORTRAN77 (aka SPICELIB) translated to ANSI C (CSPICE), and provide Matlab (Mice) and IDL (Icy) wrappers; however
-, as of 2014, they did not offer a Python interface.
-The growth of Python and movement away from proprietary interpreted languages motivated the development of SpiceyPy so that planetary
- scientists and engineers can use SPICE with the SciPy Stack [@burrell:2018].
+Operating in space necessitates quantifying the positions, velocities, geometries, and other properties of spacecraft and planetary
+ bodies through time. 
+Scientists and engineers working with robotic planetary spacecraft missions use the Spacecraft, Planet, Instrument, Camera-matrix, Events
+ (SPICE) Toolkit[@acton:2018] to help plan observations and to quantify the positions of planetary bodies and spacecraft through time. 
+SPICE is developed at the Jet Propulsion Laboratory by NASA's Navigation and Ancillary Information Facility (NAIF). Scientists also use
+ SPICE to analyze data returned by these missions and to plan hypothetical orbital trajectories for future missions[@acton:2018]. 
+For example, SPICE can calculate future occultations of planets relative to a camera in a rover or spacecraft. 
+The NAIF provides SPICE in Fortran 77, C, and they also provide Matlab and IDL wrappers; however, as of 2014, they did not offer a Python
+ interface. 
+The growth of Python and movement away from proprietary interpreted languages[@burrell:2018] motivated the development of SpiceyPy so
+ that planetary scientists and engineers can use SPICE within Python. 
 
 # Summary
 
-``SpiceyPy`` is an open-source Python package that provides a ``pythonic`` interface to nearly all of the SPICE toolkit API N66 (CSPICE). 
-``SpiceyPy`` was developed in Python using the ``ctypes`` module of the CPython standard library. 
-Developing ``SpiceyPy`` in Python enabled simplified interaction with the underlying C API by utilizing idiomatic Python.
+``SpiceyPy`` is an open-source, MIT licensed Python package that provides a ``pythonic`` interface to nearly all of the C SPICE toolkit N66. 
+``SpiceyPy`` was developed in Python using the ``ctypes`` module of the CPython standard library to wrap the underlying C SPICE shared library. 
+Developing ``SpiceyPy`` in Python enabled the SpiceyPy API to expose simplified and more ``pythonic`` interactions with the underlying C API.
 ``SpiceyPy`` relies on the NumPy library for numeric arrays and tight integration with the SciPy stack.
 
 ``SpiceyPy`` is extensively tested using a combination of unit and integration tests, which run using continuous integration services. 
-The tests also serve as code examples translated from the NAIF documentation.
-Continuous deployment updates documentation and deploys artifacts of releases to PyPI and the conda-forge. Docstrings in SpiceyPy
-contain links to the corresponding CSPICE documentation page hosted by the NAIF for additional details regarding the function.
+The tests also serve as code examples translated from the NAIF documentation. 
+Continuous deployment updates documentation and deploys artifacts of releases to PyPI and the conda-forge. 
+Every SPICE function wrapper in SpiceyPy contains docstrings that provide short descriptions of the function duplicated from the SPICE
+ documentation. 
+Docstrings in SpiceyPy also contain links to the corresponding CSPICE documentation page hosted by the NAIF to provide additional details
+ regarding the function. 
 
-``SpiceyPy`` enables scientists to utilize the full functionality of SPICE within Python and the ecosystem of visualization and data science packages available.
+``SpiceyPy`` enables scientists to utilize the full functionality of SPICE within Python and the ecosystem of visualization and
+ scientific packages available. 
 ``SpiceyPy`` has been utilized in peer-reviewed research [@behar:2016; @behar:2017; @porter:2018; @zangari:2018; @attree:2019;], masters
- and doctoral theses [@hackett2019; @albin:2019], spacecraft mission operations, planetarium shows,
-as a dependency in other python libraries [@heliopy], and for a variety of smaller projects.
+ and doctoral theses [@hackett2019; @albin:2019], spacecraft mission operations, as a dependency in other python libraries [@heliopy
+ ], and for a variety of other projects [@wilson:2016]. 
 
 # Acknowledgements
-The authors would like to acknowledge the NAIF (Charles Acton et al.) for continued support for SpiceyPy on the NAIF websites and for their
-*SpiceyPy translation* of their excelent "Hands-on" lessons. The first author also thanks all contributors and users who have asked for
- support relating to SpiceyPy that motivates further improvements to the package. 
+The authors would like to acknowledge the NAIF (Charles Acton et al.) for continued support for SpiceyPy and their *SpiceyPy translation*
+ of their excellent "Hands-on" lessons. 
+ The first author also thanks all of the contributors and users of SpiceyPy; they motivate further improvements to the project. 
 
 # References
