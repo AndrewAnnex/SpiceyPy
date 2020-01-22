@@ -80,13 +80,13 @@ bibliography: paper.bib
 Operating in space necessitates quantifying the positions, velocities, geometries, and other properties of spacecraft and planetary
  bodies through time. 
 Scientists and engineers working with robotic planetary spacecraft missions use the Spacecraft, Planet, Instrument, Camera-matrix, Events
- (SPICE) Toolkit[@acton:2018] to help plan observations and to quantify the positions of planetary bodies and spacecraft through time. 
+ (SPICE) Toolkit [@acton:2018] to help plan observations and to quantify the positions of planetary bodies and spacecraft through time. 
 SPICE is developed at the Jet Propulsion Laboratory by NASA's Navigation and Ancillary Information Facility (NAIF). Scientists also use
- SPICE to analyze data returned by these missions and to plan hypothetical orbital trajectories for future missions[@acton:2018]. 
+ SPICE to analyze data returned by these missions and to plan hypothetical orbital trajectories for future missions [@acton:2018]. 
 For example, SPICE can calculate future occultations of planets relative to a camera in a rover or spacecraft. 
 The NAIF provides SPICE in Fortran 77, C, and they also provide Matlab and IDL wrappers; however, as of 2014, they did not offer a Python
  interface. 
-The growth of Python and movement away from proprietary interpreted languages[@burrell:2018] motivated the development of SpiceyPy so
+The growth of Python and movement away from proprietary interpreted languages [@burrell:2018] motivated the development of SpiceyPy so
  that planetary scientists and engineers can use SPICE within Python. 
 
 # Summary
@@ -107,12 +107,13 @@ Docstrings in SpiceyPy also contain links to the corresponding CSPICE documentat
 ``SpiceyPy`` enables scientists to utilize the full functionality of SPICE within Python and the ecosystem of visualization and
  scientific packages available. 
 ``SpiceyPy`` has been utilized in peer-reviewed research [@behar:2016; @behar:2017; @porter:2018; @zangari:2018; @attree:2019;], masters
- and doctoral theses [@hackett2019; @albin:2019], spacecraft mission operations, as a dependency in other python libraries [@heliopy
+ and doctoral theses [@hackett:2019; @albin:2019], spacecraft mission operations, as a dependency in other python libraries [@heliopy:2019
  ], and for a variety of other projects [@wilson:2016]. 
 
 # Acknowledgements
 The authors would like to acknowledge the NAIF (Charles Acton et al.) for continued support for SpiceyPy and their *SpiceyPy translation*
  of their excellent "Hands-on" lessons. 
- The first author also thanks all of the contributors and users of SpiceyPy; they motivate further improvements to the project. 
+The first author also thanks all of the contributors and users of SpiceyPy; they motivate further improvements to the project. 
+Co-authors other than the first author are ordered solely alphabetically by their first name. 
 
 # References
