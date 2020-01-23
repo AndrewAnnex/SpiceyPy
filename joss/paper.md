@@ -54,7 +54,7 @@ affiliations:
    index: 3
  - name: Latchmoor Services, LLC.
    index: 4
- - name: Planetary Transportation Systems, GmbH.
+ - name: Planetary Transportation Systems GmbH, Berlin, Germany.
    index: 5
  - name: USGS Astrogeology Science Center, Flagstaff, AZ 86001, USA.
    index: 6
