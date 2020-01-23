@@ -93,7 +93,7 @@ The growth of Python and movement away from proprietary interpreted languages [@
 
 ``SpiceyPy`` is an open-source, MIT licensed Python package that provides a ``pythonic`` interface to nearly all of the C SPICE toolkit N66. 
 ``SpiceyPy`` was developed in Python using the ``ctypes`` module of the CPython standard library to wrap the underlying C SPICE shared library. 
-Developing ``SpiceyPy`` in Python enabled the SpiceyPy API to expose simplified and more ``pythonic`` interactions with the underlying C API.
+Developing ``SpiceyPy`` in Python enabled the SpiceyPy API to expose simplified and more ``pythonic`` interactions with the underlying C API for SPICE.
 ``SpiceyPy`` relies on the NumPy library for numeric arrays and tight integration with the SciPy stack.
 
 ``SpiceyPy`` is extensively tested using a combination of unit and integration tests, which run using continuous integration services. 
