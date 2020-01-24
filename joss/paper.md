@@ -7,6 +7,7 @@ tags:
   - geometry
   - navigation
   - spacecraft
+  - planets
 authors:
   - name: Andrew M. Annex
     orcid: 0000-0002-0253-2313
@@ -71,7 +72,7 @@ affiliations:
  - name: GFD Dennou Club.
    index: 12
 
-date: 10 January 2020
+date: 23 January 2020
 bibliography: paper.bib
 
 ---
