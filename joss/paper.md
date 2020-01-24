@@ -26,26 +26,28 @@ authors:
   - name: Jesse A. Mapel
     orcid: 0000-0001-5756-0373
     affiliation: 6
-  - name: Jorge Diaz del Rio
+  - name: Jonathan McAuliffe
     affiliation: 7
+  - name: Jorge Diaz del Rio
+    affiliation: 8
   - name: Kristin L. Berry
     orcid: 0000-0001-9757-9706
     affiliation: 6
   - name: K.-Michael Aye
     orcid: 0000-0002-4088-1928
-    affiliation: 8
+    affiliation: 9
   - name: Marcel Stefko
     orcid: 0000-0002-7736-2611
-    affiliation: 9
+    affiliation: 10
   - name: Miguel de Val-Borro
     orcid: 0000-0002-0455-9384
-    affiliation: 10
+    affiliation: 11
   - name: Shankar Kulumani
     orcid: 0000-0002-7822-0471
-    affiliation: 11
+    affiliation: 12
   - name: Shin-ya Murakami
     orcid: 0000-0002-7137-4849
-    affiliation: 12
+    affiliation: 13
 affiliations:
  - name: Johns Hopkins University, Baltimore, MD 21218, USA.
    index: 1
@@ -59,18 +61,20 @@ affiliations:
    index: 5
  - name: USGS Astrogeology Science Center, Flagstaff, AZ 86001, USA.
    index: 6
- - name: ODC Space.
+ - name: DLR Gesellschaft für Raumfahrtanwendungen (GfR) mbH.
    index: 7
- - name: Laboratory for Atmospheric and Space Physics, University of Colorado, Boulder, CO 80303, USA.
+ - name: ODC Space.
    index: 8
- - name: ETH Zurich.
+ - name: Laboratory for Atmospheric and Space Physics, University of Colorado, Boulder, CO 80303, USA.
    index: 9
- - name: Planetary Science Institute.
+ - name: ETH Zurich.
    index: 10
- - name: Collins Aerospace.
+ - name: Planetary Science Institute.
    index: 11
- - name: GFD Dennou Club.
+ - name: Collins Aerospace.
    index: 12
+ - name: GFD Dennou Club.
+   index: 13
 
 date: 23 January 2020
 bibliography: paper.bib
