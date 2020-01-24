@@ -112,8 +112,8 @@ Docstrings in SpiceyPy also contain links to the corresponding CSPICE documentat
  ], and for a variety of other projects [@wilson:2016; @wilson_times:2017; @costa:2018]. 
 
 # Acknowledgements
-The authors would like to acknowledge the NAIF (Charles Acton et al.) for continued support for SpiceyPy and their *SpiceyPy translation*
- of their excellent "Hands-on" lessons. 
+The authors would like to acknowledge members of the NAIF (Charles Acton, Ed Wright, Boris Semenov, Nat Bachman) for continued support for
+ SpiceyPy and for providing to users a *SpiceyPy translation* of their excellent "Hands-on" lessons. 
 The first author also thanks all of the contributors and users of SpiceyPy; they motivate further improvements to the project. 
 Co-authors other than the first author are ordered solely alphabetically by their first name. 
 
