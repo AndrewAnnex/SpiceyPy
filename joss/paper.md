@@ -88,7 +88,7 @@ Scientists and engineers working with robotic planetary spacecraft missions use 
  (SPICE) Toolkit [@acton:2018] to help plan observations and to quantify the positions of planetary bodies and spacecraft through time. 
 SPICE is developed at the Jet Propulsion Laboratory by NASA's Navigation and Ancillary Information Facility (NAIF). Scientists also use
  SPICE to analyze data returned by these missions and to plan hypothetical orbital trajectories for future missions [@acton:2018]. 
-For example, SPICE can calculate future occultations of planets relative to a camera in a rover or spacecraft. 
+For example, SPICE can calculate future occultations of planets relative to a camera on a rover or spacecraft. 
 The NAIF provides SPICE in Fortran 77, C, and they also provide Matlab and IDL wrappers; however, as of 2014, they did not offer a Python
  interface. 
 The growth of Python and movement away from proprietary interpreted languages [@burrell:2018] motivated the development of SpiceyPy so
