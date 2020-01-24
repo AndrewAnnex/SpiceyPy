@@ -1,0 +1,114 @@
+{
+  "@context": "https://raw.githubusercontent.com/codemeta/codemeta/master/codemeta.jsonld",
+  "@type": "Code",
+  "author": [
+    {
+      "@id": "https://orcid.org/0000-0002-0253-2313",
+      "@type": "Person",
+      "email": "annex@jhu.edu",
+      "name": "Andrew Annex",
+      "affiliation": "Johns Hopkins University, Baltimore, MD 21218, USA"
+    },
+    {
+      "@id": "https://orcid.org/0000-0001-9211-6526",
+      "@type": "Person",
+      "email": "",
+      "name": "Brian Carcich",
+      "affiliation": "Latchmoor Services, LLC"
+    },
+    {
+      "@id": "",
+      "@type": "Person",
+      "email": "",
+      "name": "Ben Pearson",
+      "affiliation": "General Public"
+    },
+    {
+      "@id": "https://orcid.org/0000-0002-4088-1928",
+      "@type": "Person",
+      "email": "",
+      "name": "K.-Michael Aye",
+      "affiliation": "Laboratory for Atmospheric and Space Physics, University of Colorado, Boulder, CO 80303, USA"
+    },
+    {
+      "@id": "",
+      "@type": "Person",
+      "email": "",
+      "name": "Jonathan McAuliffe",
+      "affiliation": ""
+    },
+    {
+      "@id": "",
+      "@type": "Person",
+      "email": "",
+      "name": "Jorge Diaz del Rio",
+      "affiliation": "ODC Space"
+    },
+    {
+      "@id": "https://orcid.org/0000-0001-9757-9706",
+      "@type": "Person",
+      "email": "",
+      "name": "Kristin L. Berry",
+      "affiliation": "USGS Astrogeology Science Center"
+    },
+    {
+      "@id": "https://orcid.org/0000-0002-7736-2611",
+      "@type": "Person",
+      "email": "",
+      "name": "Marcel Stefko",
+      "affiliation": "ETH Zurich."
+    },
+    {
+      "@id": "https://orcid.org/0000-0002-0455-9384",
+      "@type": "Person",
+      "email": "",
+      "name": "Miguel de Val-Borro",
+      "affiliation": "Planetary Science Institute"
+    },
+    {
+      "@id": "https://orcid.org/0000-0002-7822-0471",
+      "@type": "Person",
+      "email": "",
+      "name": "Shankar Kulumani",
+      "affiliation": "Collins Aerospace"
+    },
+    {
+      "@id": "https://orcid.org/0000-0002-7137-4849",
+      "@type": "Person",
+      "email": "",
+      "name": "Shin-ya Murakami",
+      "affiliation": "GFD Dennou Club"
+    },
+    {
+      "@id": "https://orcid.org/0000-0003-0303-5199",
+      "@type": "Person",
+      "email": "",
+      "name": "Helge Eichhorn",
+      "affiliation": "Planetary Transportation Systems GmbH, Berlin, Germany"
+    },
+    {
+      "@id": "https://orcid.org/0000-0001-6533-275X",
+      "@type": "Person",
+      "email": "",
+      "name": "Benoît Seignovert",
+      "affiliation": "Jet Propulsion Laboratory, California Institute of Technology, Pasadena, CA 91109, USA"
+    },
+    {
+      "@id": "https://orcid.org/0000-0001-5756-0373",
+      "@type": "Person",
+      "email": "",
+      "name": "Jesse Mapel",
+      "affiliation": "USGS Astrogeology Science Center"
+    }
+  ],
+  "identifier": "https://doi.org/10.5281/zenodo.593914",
+  "codeRepository": "https://github.com/AndrewAnnex/SpiceyPy",
+  "datePublished": "2020-01-12",
+  "dateModified": "2020-01-12",
+  "dateCreated": "2020-01-12",
+  "description": "SpiceyPy: the pythonic wrapper for SPICE",
+  "keywords": "SPICE, ephemeris, NASA, NAIF, navigation, planetary science",
+  "license": "MIT",
+  "title": "SpiceyPy",
+  "version": "v3.0.1"
+}
