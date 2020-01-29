@@ -41,7 +41,7 @@ from .utils.callbacks import (
 import functools
 import numpy
 from contextlib import contextmanager
-from datetime import datetime
+from datetime import datetime, timezone
 
 from numpy import ndarray, str_
 from spiceypy.utils.support_types import (
@@ -13237,6 +13237,10 @@ def datetime2et(dt: Union[Iterable[datetime], datetime]) -> Union[ndarray, float
     representing the number of TDB seconds past the J2000 epoch
     corresponding to the input epoch.
 
+    Timezone-naive datetimes will be assumed to be UTC, timezone-aware
+    datetimes will be handled correctly by converting to UTC before
+    passing them to CSPICE.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/time.html#The%20J2000%20Epoch
 
     :param dt: A standard Python datetime
@@ -13246,11 +13250,15 @@ def datetime2et(dt: Union[Iterable[datetime], datetime]) -> Union[ndarray, float
     if hasattr(dt, "__iter__"):
         ets = []
         for t in dt:
+            if t.tzinfo is not None and t.tzinfo.utcoffset(t) is not None:
+                t = t.astimezone(timezone.utc).replace(tzinfo=None)
             libspice.utc2et_c(stypes.string_to_char_p(t.isoformat()), ctypes.byref(lt))
             check_for_spice_error(None)
             ets.append(lt.value)
         return numpy.array(ets)
     else:
+        if dt.tzinfo is not None and dt.tzinfo.utcoffset(dt) is not None:
+            dt = dt.astimezone(timezone.utc).replace(tzinfo=None)
         dt = stypes.string_to_char_p(dt.isoformat())
         et = ctypes.c_double()
         libspice.utc2et_c(dt, ctypes.byref(et))
