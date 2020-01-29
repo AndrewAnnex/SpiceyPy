@@ -9165,6 +9165,27 @@ def test_datetime2et():
     spice.kclear()
 
 
+def test_et2datetime():
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = -87865528.8143913
+    dt = spice.et2datetime(et)
+    assert dt == datetime(1997, 3, 20, 12, 53, 29, tzinfo=timezone.utc)
+
+    expecteds = [
+        datetime(1997, 3, 20, 12, 53, 29, tzinfo=timezone.utc),
+        datetime(1974, 11, 25, 20, 0, 0, tzinfo=timezone.utc),
+        datetime(1974, 12, 10, 4, 0, 0, tzinfo=timezone.utc),
+    ]
+    ets = [-87865528.8143913, -792086354.8170365, -790847954.8166842]
+
+    results = spice.et2datetime(ets)
+    for expected, result in zip(expecteds, results):
+        assert result == expected
+
+    spice.kclear()
+
+
 def test_subpnt():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
