@@ -3,13 +3,13 @@ SpiceyPy
 
 SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N66), written using ctypes.
 
-+------------------------------------------------+---------------------+--------------------------+-------------------+------------+
-| Continuous Integration                         | Code Coverage       | Docs                     | Chat              | Citation   |
-+================================================+=====================+==========================+===================+============+
-| |Travis Build Status| |Windows Build Status|   | |Coverage Status|   | |Documentation Status|   | |Join the chat|   | |Citation| |
-+------------------------------------------------+---------------------+--------------------------+-------------------+------------+
++------------------------------------------------+---------------------+--------------------------+-------------------+------------+--------------+
+| Continuous Integration                         | Code Coverage       | Docs                     | Chat              | Citation   |  Code Style  |
++================================================+=====================+==========================+===================+============+==============+
+| |Travis Build Status| |Windows Build Status|   | |Coverage Status|   | |Documentation Status|   | |Join the chat|   | |Citation| |  |Black|     |
++------------------------------------------------+---------------------+--------------------------+-------------------+------------+--------------+
 
-.. |Travis Build Status| image:: https://travis-ci.org/AndrewAnnex/SpiceyPy.svg?style=flat?branch=master
+.. |Travis Build Status| image:: https://img.shields.io/travis/Originate/tertestrial-server/master.svg?logo=travis
    :target: https://travis-ci.org/AndrewAnnex/SpiceyPy
 .. |Windows Build Status| image:: https://ci.appveyor.com/api/projects/status/wly0q2cwy33ffura/branch/master?svg=true
    :target: https://ci.appveyor.com/project/AndrewAnnex/spiceypy/
@@ -21,6 +21,8 @@ SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N66), written using c
    :target: https://gitter.im/AndrewAnnex/SpiceyPy?utm_source=badge
 .. |Citation| image:: https://zenodo.org/badge/16987/AndrewAnnex/SpiceyPy.svg
    :target: https://zenodo.org/badge/latestdoi/16987/AndrewAnnex/SpiceyPy
+.. |Black| image:: https://img.shields.io/badge/code%20style-black-000000.svg 
+   :target: https://github.com/psf/black
 
 
 Introduction
