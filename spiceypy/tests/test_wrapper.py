@@ -28,7 +28,7 @@ import pandas as pd
 import numpy as np
 import numpy.testing as npt
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 import spiceypy.utils.callbacks
 from spiceypy.tests.gettestkernels import (
@@ -9145,6 +9145,23 @@ def test_datetime2et():
     results = spice.datetime2et(dates)
     for expected, result in zip(expecteds, results):
         npt.assert_almost_equal(result, expected)
+
+    # same test, with timezone-aware datetimes
+    date = datetime(1997, 3, 20, 12, 53, 29, tzinfo=timezone.utc)
+    et = spice.datetime2et(date)
+    npt.assert_almost_equal(et, -87865528.8143913)
+
+    expecteds = [-87865528.8143913, -792086354.8170365, -790847954.8166842]
+    dates = [
+        datetime(1997, 3, 20, 12, 53, 29, tzinfo=timezone.utc),
+        datetime(1974, 11, 25, 20, 0, 0, tzinfo=timezone.utc),
+        datetime(1974, 12, 10, 4, 0, 0, tzinfo=timezone.utc),
+    ]
+
+    results = spice.datetime2et(dates)
+    for expected, result in zip(expecteds, results):
+        npt.assert_almost_equal(result, expected)
+
     spice.kclear()
 
 
