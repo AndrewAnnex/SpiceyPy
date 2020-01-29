@@ -41,7 +41,7 @@ from .utils.callbacks import (
 import functools
 import numpy
 from contextlib import contextmanager
-from datetime import datetime
+from datetime import datetime, timezone
 
 from numpy import ndarray, str_
 from spiceypy.utils.support_types import (
@@ -13255,6 +13255,25 @@ def datetime2et(dt: Union[Iterable[datetime], datetime]) -> Union[ndarray, float
         et = ctypes.c_double()
         libspice.utc2et_c(dt, ctypes.byref(et))
         return et.value
+
+
+@spice_error_check
+def et2datetime(et: Union[Iterable[float], float]) -> Union[ndarray, datetime]:
+    """
+    Convert an input time from ephemeris seconds past J2000 to
+    a standard Python datetime.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/time.html#The%20J2000%20Epoch
+
+    :param et: Input epoch, given in ephemeris seconds past J2000.
+    :return: Output datetime object in UTC
+    """
+    result = et2utc(et, 'ISOC', 6)
+    isoformat = '%Y-%m-%dT%H:%M:%S.%f'
+    if stypes.is_iterable(result):
+        return numpy.array([datetime.strptime(s, isoformat).replace(tzinfo=timezone.utc) for s in result])
+    else:
+        return datetime.strptime(result, isoformat).replace(tzinfo=timezone.utc)
 
 
 @spice_error_check

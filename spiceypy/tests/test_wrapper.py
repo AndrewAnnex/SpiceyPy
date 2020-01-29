@@ -28,7 +28,7 @@ import pandas as pd
 import numpy as np
 import numpy.testing as npt
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 import spiceypy.utils.callbacks
 from spiceypy.tests.gettestkernels import (
@@ -9145,6 +9145,27 @@ def test_datetime2et():
     results = spice.datetime2et(dates)
     for expected, result in zip(expecteds, results):
         npt.assert_almost_equal(result, expected)
+    spice.kclear()
+
+
+def test_et2datetime():
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = -87865528.8143913
+    dt = spice.et2datetime(et)
+    assert dt == datetime(1997, 3, 20, 12, 53, 29, tzinfo=timezone.utc)
+
+    expecteds = [
+        datetime(1997, 3, 20, 12, 53, 29, tzinfo=timezone.utc),
+        datetime(1974, 11, 25, 20, 0, 0, tzinfo=timezone.utc),
+        datetime(1974, 12, 10, 4, 0, 0, tzinfo=timezone.utc),
+    ]
+    ets = [-87865528.8143913, -792086354.8170365, -790847954.8166842]
+
+    results = spice.et2datetime(ets)
+    for expected, result in zip(expecteds, results):
+        assert result == expected
+
     spice.kclear()
 
 
