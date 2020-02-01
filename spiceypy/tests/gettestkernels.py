@@ -27,6 +27,8 @@ import time
 import platform
 import tempfile
 import urllib
+import urllib.error
+import urllib.request
 import sys
 
 cwd = "/tmp" if platform.system() == "Darwin" else tempfile.gettempdir()

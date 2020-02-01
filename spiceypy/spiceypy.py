@@ -13276,10 +13276,15 @@ def et2datetime(et: Union[Iterable[float], float]) -> Union[ndarray, datetime]:
     :param et: Input epoch, given in ephemeris seconds past J2000.
     :return: Output datetime object in UTC
     """
-    result = et2utc(et, 'ISOC', 6)
-    isoformat = '%Y-%m-%dT%H:%M:%S.%f'
+    result = et2utc(et, "ISOC", 6)
+    isoformat = "%Y-%m-%dT%H:%M:%S.%f"
     if stypes.is_iterable(result):
-        return numpy.array([datetime.strptime(s, isoformat).replace(tzinfo=timezone.utc) for s in result])
+        return numpy.array(
+            [
+                datetime.strptime(s, isoformat).replace(tzinfo=timezone.utc)
+                for s in result
+            ]
+        )
     else:
         return datetime.strptime(result, isoformat).replace(tzinfo=timezone.utc)
 
