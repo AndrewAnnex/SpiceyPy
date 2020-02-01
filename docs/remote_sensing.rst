@@ -1,5 +1,5 @@
-Remote Sensing Hands-On Lesson, using CASSINI (Python)
-======================================================
+Remote Sensing Hands-On Lesson, using CASSINI
+==============================================
 
 November 20, 2017
 
@@ -589,7 +589,7 @@ computes the following quantities at that epoch:
 and displays the results. Use the program to compute these quantities at
 “2004 jun 11 19:32:00” UTC.
 
-.. _learning-goals-1:
+.. _learning-goals-rs-1:
 
 Learning Goals
 --------------
@@ -599,7 +599,7 @@ difference between spiceypy.spkezr and spiceypy.spkpos. Familiarity with
 the Toolkit utility "brief". Exposure to unit conversion with
 SpiceyPy.
 
-.. _approach-1:
+.. _approach-rs-1:
 
 Approach
 --------
@@ -647,7 +647,7 @@ may be of some use.
 Consult its user's guide available in "cspice/doc/brief.ug" for
 details.
 
-.. _solution-1:
+.. _solution-rs-1:
 
 Solution
 --------
@@ -846,7 +846,7 @@ Execute the program:
          Actual distance between Sun and Phoebe body centers:
             (AU):            9.012
 
-.. _extra-credit-1:
+.. _extra-credit-rs-1:
 
 Extra Credit
 ------------

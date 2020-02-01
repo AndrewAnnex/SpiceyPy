@@ -1,5 +1,5 @@
-Geometric Event Finding Hands-On Lesson, using MEX (Python)
-===========================================================
+Geometric Event Finding Hands-On Lesson, using MEX
+===================================================
 
 November 20, 2017
 
@@ -569,7 +569,7 @@ Execute the program. The output is:
 Find Times when Target is Visible
 ----------------------------------
 
-.. _task-statement-1:
+.. _task-statement-ef-1:
 
 Task Statement
 --------------
@@ -600,7 +600,7 @@ Display each of the intervals in each result window as a pair of start
 and stop times. Express each time as a TDB calendar date using the same
 format as in the previous program.
 
-.. _learning-goals-1:
+.. _learning-goals-ef-1:
 
 Learning Goals
 --------------
@@ -609,7 +609,7 @@ Familiarity with the GF occultation finding routine spiceypy.gfoclt.
 Experience with Digital Shape Kernel (DSK) shape models. Further
 experience with the SpiceyPy window functions.
 
-.. _approach-1:
+.. _approach-ef-1:
 
 Approach
 --------
@@ -664,7 +664,7 @@ A possible solution would consist of the following steps:
 
 This completes the assignment.
 
-.. _solution-1:
+.. _solution-ef-1:
 
 Solution
 --------

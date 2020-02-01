@@ -1,5 +1,5 @@
-Binary PCK Hands-On Lesson (Python)
-===================================
+Binary PCK Hands-On Lesson
+===========================
 
 November 20, 2017
 

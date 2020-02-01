@@ -1,5 +1,5 @@
-In-situ Sensing Hands-On Lesson, using CASSINI (Python)
-=======================================================
+In-situ Sensing Hands-On Lesson, using CASSINI
+===============================================
 
 November 20, 2017
 
@@ -186,29 +186,29 @@ ephemeris seconds past J2000, .
 --------------------
 
 Find out what SPICE kernel(s) is(are) needed to support this conversion.
-Reference the "time.req" and/or" Time" tutorial.
+Reference the "time.req" and/or "Time" tutorial.
 
 Find necessary kernel(s) on the NAIF's FTP site.
 
 Find out what routine should be called to load necessary kernel(s).
-Reference the "kernel.req" and/or" Loading Kernels" tutorial.
+Reference the "kernel.req" and/or "Loading Kernels" tutorial.
 
 Find the
-"loader" routine calling sequence specification. Look at the" time.req"and
+"loader" routine calling sequence specification. Look at the "time.req"and
 that routine's source code header. This routine may be an entry point,
 in which case there will be no source file with the same name. To find
 out in which source file this entry point is, search for its name in the
 "Permuted Index".
 
 Find the routine(s) used to convert time between UTC and ET. Look at the
-"time.req" and/or" Time" tutorial.
+"time.req" and/or "Time" tutorial.
 
 Find the
-"converter" routine(s) calling sequence specification. Look    in the" time.req"
+"converter" routine(s) calling sequence specification. Look in the "time.req"
 and the routine's source code header.
 
 Put all calls together in a program, add variable declarations (the
-routine header's "Declarations" and" Examples" sections are a good
+routine header's "Declarations" and "Examples" sections are a good
 place to look for declaration specification and examples) and output
 print statements.
 
@@ -250,7 +250,7 @@ or it can be listed in a meta-kernel:
       \begintext
 
 the name of which, let's call it "convrt.tm", can be then provided as
-a sole argument of the :py:meth:`spiceypy.spiceypy.furnsh` routine:
+a sole argument of the :py:func:`spiceypy.spiceypy.furnsh` routine:
 
 .. code-block:: python
 
@@ -264,10 +264,10 @@ simply adding more kernels to the list in KERNEL_TO_LOAD without
 changing the program code will accomplish that.
 
 The highest level SpiceyPy time routine converting UTC to ET is
-spiceypy.str2et :py:meth:`spiceypy.spiceypy.str2et` .
+spiceypy.str2et :py:func:`spiceypy.spiceypy.str2et` .
 
 It has two arguments – input time string representing UTC in a variety
-of formats (see spiceypy.str2et header's section "Particulars" for
+of formats (see :py:func:`spiceypy.spiceypy.str2et` header's section "Particulars" for
 the complete description of input time formats) and output DP number of
 ET seconds past J2000. A call to spiceypy.str2et converting a given UTC
 to ET could look like this:
@@ -277,7 +277,7 @@ to ET could look like this:
           utc =  '2004-06-11T19:32:00'
           et = spiceypy.str2et(utc)
 
-By combining spiceypy.furnsh and spiceypy.str2et calls and required
+By combining :py:func:`spiceypy.spiceypy.furnsh` and :py:func:`spiceypy.spiceypy.str2et` calls and required
 declarations and by adding a simple print statement, one would get a
 complete program that prints ET for the given UTC epoch.
 
@@ -355,17 +355,17 @@ CASSINI on-board clock epoch "1465674964.105".
 
 Find out what additional (to those already loaded in Step-1) SPICE
 kernel(s) is(are) needed to support SCLK to ET conversion. Look at the
-"sclk.req" and/or" SCLK" tutorial.
+"sclk.req" and/or "SCLK" tutorial.
 
 Find necessary kernel(s) on the NAIF's FTP site.
 
-Modify the program or meta-kernel to load this(these) kernels.
+Modify the program or meta-kernel to load this (these) kernels.
 
 Find the routine(s) needed to convert time between SCLK and ET. Look at
-the "sclk.req" and/or" Time"and "SCLK" tutorials.
+the "sclk.req" and/or "Time" and "SCLK" tutorials.
 
 Find the
-"converter" routine's calling sequence specification. Look in    the" sclk.req"
+"converter" routine's calling sequence specification. Look in the "sclk.req"
 and the routine's source code header.
 
 Look at "naif_ids.req" and the comments in the additional kernel(s)
@@ -373,7 +373,7 @@ that you have loaded for information on proper values of input arguments
 of this routine.
 
 Add calls to the
-"converter" routine(s), necessary variable    declarations (the routine header's" Declarations"and
+"converter" routine(s), necessary variable declarations (the routine header's" Declarations"and
 "Examples" sections are a good place to look for declaration
 specification and examples), and output print statements to the program.
 
@@ -409,7 +409,7 @@ variable:
       \begintext
 
 The highest level SpiceyPy routine converting SCLK to ET is
-spiceypy.scs2e :py:meth:`spiceypy.spiceypy.scs2e` .
+spiceypy.scs2e :py:func:`spiceypy.spiceypy.scs2e` .
 
 It has three arguments – NAIF ID for CASSINI s/c (-82 as described by
 "naif_ids.req" document), input time string representing CASSINI
@@ -508,24 +508,24 @@ Ecliptic frame at the epoch specified by SCLK time from Step-2.
 
 Find out what additional (to those already loaded in Steps-1&2) SPICE
 kernel(s) is(are) needed to support state computation. Look at the
-"spk.req" and/or" SPK" tutorial.
+"spk.req" and/or "SPK" tutorial.
 
 Find necessary kernel(s) on the NAIF's FTP site.
 
 Verify that the kernels contain enough data to compute the state of
-interest. Use "brief" utility program located under" toolkit/exe"
+interest. Use "brief" utility program located under "toolkit/exe"
 directory for that.
 
 Modify the meta-kernel to load this(these) kernels.
 
 Determine the routine(s) needed to compute states. Look at the
-"spk.req" and/or" SPK" tutorial presentation.
+"spk.req" and/or "SPK" tutorial presentation.
 
 Find the the routine(s) calling sequence specification. Look in the
 "spk.req" and the routine's source code header.
 
-Reference the "naif_ids.req" and" frames.req"and the routine(s)
-header "Inputs" and" Particulars" sections to determine proper
+Reference the "naif_ids.req" and "frames.req"and the routine(s)
+header "Inputs" and "Particulars" sections to determine proper
 values of the input arguments of this routine.
 
 Add calls to the routine(s), necessary variable declarations and output
@@ -569,7 +569,7 @@ the program:
       \begintext
 
 The highest level SpiceyPy routine computing states is spiceypy.spkezr
-:py:meth:`spiceypy.spiceypy.spkezr` .
+:py:func:`spiceypy.spiceypy.spkezr` .
 
 We are interested in computing CASSINI position and velocity with
 respect to the Sun, therefore the target and observer names should be
@@ -580,9 +580,9 @@ The state should be in ecliptic frame, therefore the name of the frame
 in which the state should be computed is 'ECLIPJ2000' (see
 "frames.req" document.)
 
-Since we need only the geometric position, the \`abcorr' argument of the
+Since we need only the geometric position, the 'abcorr' argument of the
 routine should be set to 'NONE' (see aberration correction discussion in
-the :py:meth:`spiceypy.spiceypy.spkezr` .
+the :py:func:`spiceypy.spiceypy.spkezr` .
 
 Putting it all together, we get:
 
@@ -710,7 +710,7 @@ frame orientation. Retrieve these kernels from the NAIF's FTP site.
 
 Verify that the orientation data in the kernels have adequate coverage
 to support computation of the direction of interest. Use
-"ckbrief"    utility program located under" toolkit/exe" directory
+"ckbrief" utility program located under" toolkit/exe" directory
 for that.
 
 Modify the meta-kernel to load this(these) kernels.
@@ -776,8 +776,8 @@ to 'CASSINI'. The name of the INMS frame is 'CASSINI_INMS', the
 definition and description of this frame are provided in the CASSINI FK
 file, "cassini_v02.tf".
 
-Since the apparent, or
-:literal:`as seen", position is sought for, the `abcorr'    argument of the routine should be set to 'LT+S' (see aberration    correction discussion in the (`\ cspice/src/cspice/spkpos_c.c")
+Since the apparent, or 'as seen', position is sought for, the 'abcorr'
+argument of the routine should be set to 'LT+S' (see aberration correction discussion in the ("\cspice/src/cspice/spkpos_c.c")
 
 If desired, the position can then be turned into a unit vector using
 spiceypy.vhat function
@@ -956,14 +956,15 @@ print statements to the program.
 "Sub-Spacecraft Point" Solution Steps
 ----------------------------------------
 
-The spiceypy.subpnt routine
-("`cspice/src/cspice/subpnt_c.c") can be    used to compute the sub-observer point and the vector from the observer    to that point with a single call. To determine this point as the closest    point on the Phoebe ellipsoid, the" method'
+The :py:func:`spiceypy.spiceypy.subpnt` routine can be
+used to compute the sub-observer point and the vector from the observer
+to that point with a single call. To determine this point as the closest point on the Phoebe ellipsoid, the 'method'
 argument has to be set to 'NEAR POINT: ELLIPSOID'. For our case the
-\`target' is 'PHOEBE', the target body-fixed frame is 'IAU_PHOEBE', and
+'target' is 'PHOEBE', the target body-fixed frame is 'IAU_PHOEBE', and
 the observer is 'CASSINI'.
 
 Since the s/c is close to Phoebe, light time does not need to be taken
-into account and, therefore, the \`abcorr' argument can be set to
+into account and, therefore, the 'abcorr' argument can be set to
 'NONE'.
 
 In order for spiceypy.subpnt to compute the nearest point location, a
@@ -1009,27 +1010,27 @@ file name added to it, the updated meta-kernel will look like this:
 
 The sub-spacecraft point Cartesian vector can be converted to
 planetocentric radius, longitude and latitude using the spiceypy.reclat
-routine :py:meth:`spiceypy.spiceypy.reclat` .
+routine :py:func:`spiceypy.spiceypy.reclat` .
 
 The vector from the spacecraft to the sub-spacecraft point returned by
 spiceypy.subpnt has to be rotated from the body-fixed frame to the
 instrument frame. The name of the routine that computes 3x3 matrices
 rotating vectors from one frame to another is spiceypy.pxform
-:py:meth:`spiceypy.spiceypy.pxform` .
+:py:func:`spiceypy.spiceypy.pxform` .
 
 In our case the
-"from' argument should be set to 'IAU_PHOEBE' and the" to' argument
+"from' argument should be set to 'IAU_PHOEBE' and the 'to' argument
 should be set to 'CASSINI_INMS'
 
 The vector should be then multiplied by this matrix to rotate it to the
-instrument frame. The spiceypy.mxv routine performs that function :py:meth:`spiceypy.spiceypy.mxv` .
+instrument frame. The spiceypy.mxv routine performs that function :py:func:`spiceypy.spiceypy.mxv` .
 
 After applying the rotation, normalize the resultant vector using the
 spiceypy.vhat function.
 
 For output the longitude and latitude angles returned by spiceypy.reclat
 in radians can be converted to degrees by multiplying by spiceypy.dpr
-function :py:meth:`spiceypy.spiceypy.dpr` .
+function :py:func:`spiceypy.spiceypy.dpr` .
 
 Putting it all together, we get:
 
@@ -1303,7 +1304,7 @@ output:
 
 Note that computing the spacecraft velocity in the instrument frame by a
 single call to spiceypy.spkezr by specifying 'CASSINI_INMS' in the
-\`ref' argument returns an incorrect result. Such computation will take
+'ref' argument returns an incorrect result. Such computation will take
 into account the spacecraft angular velocity from the CK files, which
 should not be considered in this case.
 
