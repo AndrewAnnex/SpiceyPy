@@ -4,7 +4,8 @@ Basics of SpiceyPy
 Environment Set-up
 ------------------
 
-Follow the installation instructions provided in :ref:`installation`.
+Follow the installation instructions provided in the :ref:`installation section
+<installation>`.
 
 Confirm SpiceyPy installation
 -----------------------------
