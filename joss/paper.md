@@ -17,7 +17,7 @@ authors:
   - name: Benoît Seignovert
     orcid: 0000-0001-6533-275X
     affiliation: 3
-  - name: Brain T. Carcich
+  - name: Brian T. Carcich
     orcid: 0000-0001-9211-6526
     affiliation: 4
   - name: Helge Eichhorn
