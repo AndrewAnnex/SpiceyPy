@@ -392,7 +392,7 @@ Execute the program:
          Spacecraft Clock Time: 1/1465674964.105
 
 Extra Credit
-------------
+^^^^^^^^^^^^^
 
 In this "extra credit" section you will be presented with more
 complex tasks, aimed at improving your understanding of time
@@ -862,7 +862,7 @@ Execute the program:
 .. _extra-credit-rs-1:
 
 Extra Credit
-------------
+^^^^^^^^^^^^^
 
 In this "extra credit" section you will be presented with more
 complex tasks, aimed at improving your understanding of state
@@ -1438,7 +1438,7 @@ Execute the program:
 .. _extra-credit-2:
 
 Extra Credit
-------------
+^^^^^^^^^^^^
 
 In this "extra credit" section you will be presented with more
 complex tasks, aimed at improving your understanding of frame
@@ -1819,7 +1819,7 @@ Execute the program:
 .. _extra-credit-3:
 
 Extra Credit
-------------
+^^^^^^^^^^^^^
 
 In this "extra credit" section you will be presented with more
 complex tasks, aimed at improving your understanding of spiceypy.subpnt
@@ -2506,6 +2506,6 @@ Execute the program:
 .. _extra-credit-4:
 
 Extra Credit
-------------
+^^^^^^^^^^^^^
 
 There are no "extra credit" tasks for this step of the lesson.

@@ -1690,7 +1690,7 @@ Lesson 6: Windows, and Cells
 ------------------------------
 
 Programming task
-----------------
+^^^^^^^^^^^^^^^^^
 
 Given the times of line-of-sight for a vehicle from a ground station and
 the times for an acceptable Sun-station-vehicle phase angle, write a
