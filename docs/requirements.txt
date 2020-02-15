@@ -1,3 +1,2 @@
 numpy
 sphinx_autodoc_typehints
-autodocsumm
