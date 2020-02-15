@@ -30,6 +30,7 @@ provided in binary kernels—SPKs and CKs—can be viewed using
 Toolkit installation tree.
 
 Tutorials
+^^^^^^^^^^
 
 The following SPICE tutorials serve as references for the discussions in
 this lesson:
@@ -54,6 +55,11 @@ These tutorials are available from the NAIF ftp server at JPL:
       https://naif.jpl.nasa.gov/naif/tutorials.html
 
 Required Readings
+^^^^^^^^^^^^^^^^^^
+
+.. tip::
+   The `Required Readings <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html>`_ are also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html.
 
 The Required Reading documents are provided with the Toolkit and are
 located under the "cspice/doc" directory in the CSPICE Toolkit
@@ -73,6 +79,12 @@ installation tree.
       time.req         Time conversion
 
 The Permuted Index
+^^^^^^^^^^^^^^^^^^^
+
+.. tip::
+   The `Permuted Index <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/info/cspice_idx.html>`_ is also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/info/cspice_idx.html.
+
 
 Another useful document distributed with the Toolkit is the permuted
 index. This is located under the "cspice/doc" directory in the C
@@ -83,6 +95,7 @@ discover which SpiceyPy functions perform functions of interest, as well
 as the names of the source files that contain these functions.
 
 SpiceyPy API Documentation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A SpiceyPy function's parameters specification is available using the
 built-in Python help system.
@@ -217,7 +230,7 @@ Time Conversion (convtm)
 ------------------------------
 
 Task Statement
---------------
+^^^^^^^^^^^^^^
 
 Write a program that prompts the user for an input UTC time string,
 converts it to the following time systems and output formats:
@@ -234,14 +247,14 @@ and displays the results. Use the program to convert “2004 jun 11
 19:32:00” UTC into these alternate systems.
 
 Learning Goals
---------------
+^^^^^^^^^^^^^^
 
 Familiarity with the various time conversion and parsing functions
 available in the Toolkit. Exposure to source code headers and their
 usage in learning to call functions.
 
 Approach
---------
+^^^^^^^^
 
 The solution to the problem can be broken down into a series of simple
 steps:
@@ -271,7 +284,7 @@ When completing the "calendar format" step above, consider using one
 of two possible methods: spiceypy.etcal or spiceypy.timout.
 
 Solution
---------
+^^^^^^^^
 
 Solution Meta-Kernel
 
@@ -562,7 +575,7 @@ Obtaining Target States and Positions (getsta)
 .. _task-statement-rs-1:
 
 Task Statement
---------------
+^^^^^^^^^^^^^^
 
 Write a program that prompts the user for an input UTC time string,
 computes the following quantities at that epoch:
@@ -592,7 +605,7 @@ and displays the results. Use the program to compute these quantities at
 .. _learning-goals-rs-1:
 
 Learning Goals
---------------
+^^^^^^^^^^^^^^
 
 Understand the anatomy of an spiceypy.spkezr call. Discover the
 difference between spiceypy.spkezr and spiceypy.spkpos. Familiarity with
@@ -602,7 +615,7 @@ SpiceyPy.
 .. _approach-rs-1:
 
 Approach
---------
+^^^^^^^^
 
 The solution to the problem can be broken down into a series of simple
 steps:
@@ -650,7 +663,7 @@ details.
 .. _solution-rs-1:
 
 Solution
---------
+^^^^^^^^
 
 Solution Meta-Kernel
 
@@ -1057,7 +1070,7 @@ Spacecraft Orientation and Reference Frames (xform)
 .. _task-statement-rs-2:
 
 Task Statement
---------------
+^^^^^^^^^^^^^^
 
 Write a program that prompts the user for an input time string, computes
 and displays the following at the epoch of interest:
@@ -1085,7 +1098,7 @@ Use the program to compute these quantities at the epoch “2004 jun 11
 .. _learning-goals-2:
 
 Learning Goals
---------------
+^^^^^^^^^^^^^^
 
 Familiarity with the different types of kernels involved in chaining
 reference frames together, both inertial and non-inertial. Discover some
@@ -1095,7 +1108,7 @@ between spiceypy.pxform and spiceypy.sxform.
 .. _approach-2:
 
 Approach
---------
+^^^^^^^^
 
 The solution to the problem can be broken down into a series of simple
 steps:
@@ -1162,7 +1175,7 @@ kernels you will need and what data they provide.
 .. _solution-2:
 
 Solution
---------
+^^^^^^^^
 
 Solution Meta-Kernel
 
@@ -1553,7 +1566,7 @@ Computing Sub-s/c and Sub-solar Points on an Ellipsoid and a DSK (subpts)
 .. _task-statement-rs-3:
 
 Task Statement
---------------
+^^^^^^^^^^^^^^
 
 Write a program that prompts the user for an input UTC time string and
 computes the following quantities at that epoch:
@@ -1587,7 +1600,7 @@ quantities at “2004 jun 11 19:32:00” UTC.
 .. _learning-goals-3:
 
 Learning Goals
---------------
+^^^^^^^^^^^^^^
 
 Discover higher level geometry calculation functions in SpiceyPy and
 their usage as it relates to CASSINI.
@@ -1595,7 +1608,7 @@ their usage as it relates to CASSINI.
 .. _approach-3:
 
 Approach
---------
+^^^^^^^^
 
 This particular problem is more of an exercise in searching the permuted
 index to find the appropriate functions and then reading their headers
@@ -1619,7 +1632,7 @@ definitions? Which definition is appropriate?
 .. _solution-3:
 
 Solution
---------
+^^^^^^^^
 
 Solution Meta-Kernel
 
@@ -1921,7 +1934,7 @@ Intersecting Vectors with an Ellipsoid and a DSK (fovint)
 .. _task-statement-rs-4:
 
 Task Statement
---------------
+^^^^^^^^^^^^^^
 
 Write a program that prompts the user for an input UTC time string and,
 for that time, computes the intersection of the CASSINI ISS NAC camera
@@ -1967,7 +1980,7 @@ Use this program to compute values at the epoch:
 .. _learning-goals-4:
 
 Learning Goals
---------------
+^^^^^^^^^^^^^^
 
 Understand how field of view parameters are retrieved from instrument
 kernels. Learn how various standard planetary constants are retrieved
@@ -1979,7 +1992,7 @@ another time conversion function in SpiceyPy.
 .. _approach-4:
 
 Approach
---------
+^^^^^^^^
 
 This problem can be broken down into several simple, small steps:
 
@@ -2033,7 +2046,7 @@ the "Spacecraft Orientation and Reference Frames" task.
 .. _solution-4:
 
 Solution
---------
+^^^^^^^^
 
 Solution Meta-Kernel
 

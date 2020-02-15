@@ -46,6 +46,11 @@ These tutorials are available from the NAIF ftp server at JPL:
       https://naif.jpl.nasa.gov/naif/tutorials.html
 
 Required Readings
+^^^^^^^^^^^^^^^^^^
+
+.. tip::
+   The `Required Readings <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html>`_ are also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html.
 
 The Required Reading documents are provided with the Toolkit and are
 located under the "cspice/doc" directory in the CSPICE Toolkit
@@ -62,6 +67,11 @@ installation tree.
       time.req         UTC to ET time conversion
 
 The Permuted Index
+^^^^^^^^^^^^^^^^^^^
+
+.. tip::
+   The `Permuted Index <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/info/cspice_idx.html>`_ is also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/info/cspice_idx.html.
 
 Another useful document distributed with the Toolkit is the permuted
 index. This is located under the "cspice/doc" directory in the C
@@ -72,6 +82,7 @@ discover which SpiceyPy functions perform functions of interest, as well
 as the names of the source files that contain these functions.
 
 SpiceyPy API Documentation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A SpiceyPy function's parameters specification is available using the
 built-in Python help system.
@@ -115,7 +126,7 @@ the NAIF server at JPL:
 
 ::
 
-      ftp://naif.jpl.nasa.gov/pub/naif/toolkit_docs/Lessons/
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/Lessons/
 
 SpiceyPy Modules Used
 ---------------------
@@ -176,14 +187,14 @@ Step-1: "UTC to ET"
 ------------------------------
 
 "UTC to ET" Task Statement
------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Write a program that computes and prints the Ephemeris Time (ET)
 corresponding to "2004-06-11T19:32:00" UTC, as the number of
 ephemeris seconds past J2000, .
 
 "UTC to ET" Hints
---------------------
+^^^^^^^^^^^^^^^^^^^^
 
 Find out what SPICE kernel(s) is(are) needed to support this conversion.
 Reference the "time.req" and/or "Time" tutorial.
@@ -213,7 +224,7 @@ place to look for declaration specification and examples) and output
 print statements.
 
 "UTC to ET" Solution Steps
------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Only one kernel file is needed to support this conversion – an LSK file
 "naif0008.tls".
@@ -345,13 +356,13 @@ Step-2: "SCLK to ET"
 ------------------------------
 
 "SCLK to ET" Task Statement
-------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Extend the program from Step-1 to compute and print ET for the following
 CASSINI on-board clock epoch "1465674964.105".
 
 "SCLK to ET" Hints
----------------------
+^^^^^^^^^^^^^^^^^^^^^
 
 Find out what additional (to those already loaded in Step-1) SPICE
 kernel(s) is(are) needed to support SCLK to ET conversion. Look at the
@@ -378,7 +389,7 @@ Add calls to the
 specification and examples), and output print statements to the program.
 
 "SCLK to ET" Solution Steps
-------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A CASSINI SCLK file is needed additionally to the LSK file loaded in the
 Step-1 to support this conversion.
@@ -438,7 +449,7 @@ output:
       ET        =     140254384.183426
 
 "SCLK to ET" Code
---------------------
+^^^^^^^^^^^^^^^^^^^^
 
 Program "sclket.py":
 
@@ -497,14 +508,14 @@ Step-3: "Spacecraft State"
 ------------------------------
 
 "Spacecraft State" Task Statement
-------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Extend the program from Step-2 to compute geometric state – position and
 velocity – of the CASSINI spacecraft with respect to the Sun in the
 Ecliptic frame at the epoch specified by SCLK time from Step-2.
 
 "Spacecraft State" Hints
----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Find out what additional (to those already loaded in Steps-1&2) SPICE
 kernel(s) is(are) needed to support state computation. Look at the
@@ -532,7 +543,7 @@ Add calls to the routine(s), necessary variable declarations and output
 print statements to the program.
 
 "Spacecraft State" Solution Steps
-------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A CASSINI spacecraft trajectory SPK and generic planetary ephemeris SPK
 files are needed to support computation of the state of interest.
@@ -614,7 +625,7 @@ output:
       VZ        =             0.040603
 
 "Spacecraft State" Code
---------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Program "getsta.py":
 
@@ -696,13 +707,13 @@ Step-4: "Sun Direction"
 ------------------------------
 
 "Sun Direction" Task Statement
----------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Extend the program from Step-3 to compute apparent direction of the Sun
 in the INMS frame at the epoch specified by SCLK time from Step-2.
 
 "Sun Direction" Hints
-------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 Determine the additional SPICE kernels needed to support the direction
 computation, knowing that they should provide the s/c and instrument
@@ -724,7 +735,7 @@ Add calls to the routine(s), necessary variable declarations and output
 print statements to the program.
 
 "Sun Direction" Solution Steps
----------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A CASSINI spacecraft orientation CK file, providing s/c orientation with
 respect to an inertial frame, and CASSINI FK file, providing orientation
@@ -816,7 +827,7 @@ output:
       SUNDIR(Z) =             0.372167
 
 "Sun Direction" Code
------------------------
+^^^^^^^^^^^^^^^^^^^^^^
 
 Program "soldir.py":
 
@@ -916,14 +927,14 @@ Step-5: "Sub-Spacecraft Point"
 ------------------------------
 
 "Sub-Spacecraft Point" Task Statement
-----------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Extend the program from Step-4 to compute planetocentric longitude and
 and latitude of the sub-spacecraft point on Phoebe, and the direction
 from the spacecraft to that point in the INMS frame.
 
 "Sub-Spacecraft Point" Hints
--------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Find the SpiceyPy routine that computes sub-observer point coordinates.
 Use "Most Used SpiceyPy APIs" or" subpt" cookbook program for that.
@@ -954,7 +965,7 @@ Add calls to the routine(s), necessary variable declarations and output
 print statements to the program.
 
 "Sub-Spacecraft Point" Solution Steps
-----------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The :py:func:`spiceypy.spiceypy.subpnt` routine can be
 used to compute the sub-observer point and the vector from the observer
@@ -1084,7 +1095,7 @@ output:
       SBPDIR(Z) =            -0.015905
 
 "Sub-Spacecraft Point" Code
-------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Program
 
@@ -1211,13 +1222,13 @@ Step-6: "Spacecraft Velocity"
 ------------------------------
 
 "Spacecraft Velocity" Task Statement
----------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Extend the program from Step-5 to compute the spacecraft velocity with
 respect to Phoebe in the INMS frame.
 
 "Spacecraft Velocity" Hints
-------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Compute velocity of the spacecraft with respect to Phoebe in some
 inertial frame, for example J2000. Recall that velocity is the last
@@ -1231,7 +1242,7 @@ Add calls to the routine(s), necessary variable declarations and output
 print statements to the program.
 
 "Spacecraft Velocity" Solution Steps
----------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 All kernels required for computations in this step are already being
 loaded by the program, therefore, the meta-kernel does not need to be
@@ -1308,8 +1319,8 @@ single call to spiceypy.spkezr by specifying 'CASSINI_INMS' in the
 into account the spacecraft angular velocity from the CK files, which
 should not be considered in this case.
 
-"Spacecraft Velocity" Code Program" scvel.py":
----------------------------------------------------
+"Spacecraft Velocity" Code Program "scvel.py":
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 

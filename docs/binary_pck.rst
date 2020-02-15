@@ -40,6 +40,10 @@ These tutorials are available from the NAIF ftp server at JPL:
 
 Required Readings
 
+.. tip::
+   The `Required Readings <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html>`_ are also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html.
+
 The Required Reading documents are provided with the Toolkit and are
 located under the "cspice/doc" directory in the CSPICE Toolkit
 installation tree.
@@ -54,6 +58,11 @@ installation tree.
       time.req         Time conversion
 
 The Permuted Index
+^^^^^^^^^^^^^^^^^^^
+
+.. tip::
+   The `Permuted Index <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/info/cspice_idx.html>`_ is also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/info/cspice_idx.html.
 
 Another useful document distributed with the Toolkit is the permuted
 index. This is located under the "cspice/doc" directory in the C
@@ -64,6 +73,7 @@ discover which SpiceyPy functions perform functions of interest, as well
 as the names of the source files that contain these functions.
 
 SpiceyPy API Documentation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A SpiceyPy function's parameters specification is available using the
 built-in Python help system.
@@ -149,7 +159,7 @@ Moon rotation (mrotat)
 ------------------------------
 
 Task Statement
---------------
+^^^^^^^^^^^^^^
 
 Write a program that performs the following computations:
 
@@ -192,7 +202,7 @@ Write a program that performs the following computations:
             above in steps 7 and 8. Display the result in kilometers.
 
 Learning Goals
---------------
+^^^^^^^^^^^^^^
 
 Familiarity with SPICE kernels required to obtain high-accuracy
 orientation of the Moon. Understanding the differences between results
@@ -200,7 +210,7 @@ obtained using low and high-accuracy Moon orientation data.
 Understanding the difference between the MOON_ME and MOON_PA frames.
 
 Approach
---------
+^^^^^^^^
 
 The following "tips" may simplify the solution process.
 
@@ -226,7 +236,7 @@ various source modules, and the tutorials titled "PCK" and" High
 Accuracy Orientation and Body-Fixed frames for Moon and Earth."
 
 Solution
---------
+^^^^^^^^
 
 Solution Meta-Kernel
 
@@ -461,7 +471,7 @@ Earth rotation (erotat)
 .. _task-statement-1:
 
 Task Statement
---------------
+^^^^^^^^^^^^^^
 
 Write a program that performs the following computations:
 
@@ -573,7 +583,7 @@ sub-solar point on the Earth as seen from an Earth-orbiting spacecraft.
 .. _learning-goals-1:
 
 Learning Goals
---------------
+^^^^^^^^^^^^^^
 
 Familiarity with SPICE kernels required to obtain high-accuracy
 orientation of the Earth. Understanding the differences between results
@@ -586,7 +596,7 @@ required to support such computations.
 .. _approach-1:
 
 Approach
---------
+^^^^^^^^
 
 The following "tips" may simplify the solution process.
 
@@ -622,7 +632,7 @@ Accuracy Orientation and Body-Fixed frames for Moon and Earth."
 .. _solution-1:
 
 Solution
---------
+^^^^^^^^
 
 Solution Meta-Kernel
 
