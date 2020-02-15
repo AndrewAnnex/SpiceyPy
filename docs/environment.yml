@@ -8,3 +8,4 @@ dependencies:
   - numpy
   - pip:
     - sphinx_autodoc_typehints
+    - autodocsumm
