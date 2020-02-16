@@ -47,12 +47,18 @@ this lesson:
       GF                The SPICE Geometry Finder (GF) subsystem
 
 These tutorials are available from the NAIF ftp server at JPL:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
       https://naif.jpl.nasa.gov/naif/tutorials.html
 
 Required Readings
+^^^^^^^^^^^^^^^^^^
+
+.. tip::
+   The `Required Readings <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html>`_ are also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html.
 
 The Required Reading documents are provided with the Toolkit and are
 located under the "cspice/doc" directory in the CSPICE Toolkit
@@ -73,6 +79,11 @@ installation tree.
       windows.req      The SPICE window data type
 
 The Permuted Index
+^^^^^^^^^^^^^^^^^^^
+
+.. tip::
+   The `Permuted Index <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/info/cspice_idx.html>`_ is also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/info/cspice_idx.html.
 
 Another useful document distributed with the Toolkit is the permuted
 index. This is located under the "cspice/doc" directory in the C
@@ -83,6 +94,7 @@ discover which SpiceyPy functions perform functions of interest, as well
 as the names of the source files that contain these functions.
 
 SpiceyPy API Documentation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A SpiceyPy function's parameters specification is available using the
 built-in Python help system.
@@ -129,7 +141,7 @@ the NAIF server at JPL:
 
 ::
 
-      ftp://naif.jpl.nasa.gov/pub/naif/toolkit_docs/Lessons/
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/Lessons/
 
 SpiceyPy Modules Used
 ---------------------
@@ -171,7 +183,7 @@ Find View Periods
 ------------------------------
 
 Task Statement
---------------
+^^^^^^^^^^^^^^
 
 Write a program that finds the set of time intervals, within the time
 range
@@ -197,14 +209,14 @@ Display the start and stop times of these intervals using TDB calendar
 dates and millisecond precision.
 
 Learning Goals
---------------
+^^^^^^^^^^^^^^
 
 Exposure to SPICE GF event finding routines. Familiarity with SPICE
 windows and routines that manipulate them. Exposure to SPICE time
 parsing and output formatting routines.
 
 Approach
---------
+^^^^^^^^
 
 Solution steps
 
@@ -266,7 +278,7 @@ particular, the header of the SPICE GF function spiceypy.gfposc contains
 pertinent documentation.
 
 Solution
---------
+^^^^^^^^
 
 Solution Meta-Kernel
 
@@ -572,7 +584,7 @@ Find Times when Target is Visible
 .. _task-statement-ef-1:
 
 Task Statement
---------------
+^^^^^^^^^^^^^^
 
 Extend the program of the previous chapter to find times when the MEX
 orbiter is:
@@ -603,7 +615,7 @@ format as in the previous program.
 .. _learning-goals-ef-1:
 
 Learning Goals
---------------
+^^^^^^^^^^^^^^
 
 Familiarity with the GF occultation finding routine spiceypy.gfoclt.
 Experience with Digital Shape Kernel (DSK) shape models. Further
@@ -612,7 +624,7 @@ experience with the SpiceyPy window functions.
 .. _approach-ef-1:
 
 Approach
---------
+^^^^^^^^
 
 Solution steps
 
@@ -667,7 +679,7 @@ This completes the assignment.
 .. _solution-ef-1:
 
 Solution
---------
+^^^^^^^^
 
 Solution Meta-Kernel
 
@@ -1082,7 +1094,7 @@ provided. In the next section, you will find the numeric solutions to
 the questions asked in these tasks.
 
 Task statements
----------------
+^^^^^^^^^^^^^^^
 
 ::
 
@@ -1111,7 +1123,7 @@ Task statements
             using TDB calendar dates and millisecond precision.
 
 Solutions
----------
+^^^^^^^^^
 
 ::
 

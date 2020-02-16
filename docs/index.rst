@@ -18,7 +18,7 @@ function, more detailed explanations are deferred to the NAIF via those links.
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    installation
    exampleone

@@ -62,6 +62,11 @@ These tutorials are available from the NAIF ftp server at JPL:
       https://naif.jpl.nasa.gov/naif/tutorials.html
 
 Required Readings
+^^^^^^^^^^^^^^^^^^
+
+.. tip::
+   The `Required Readings <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html>`_ are also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html.
 
 The Required Reading documents are provided with the Toolkit and are
 located under the "cspice/doc" directory in the CSPICE Toolkit
@@ -78,6 +83,11 @@ installation tree.
       windows.req      The SPICE window data type
 
 The Permuted Index
+^^^^^^^^^^^^^^^^^^^
+
+.. tip::
+   The `Permuted Index <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/info/cspice_idx.html>`_ is also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/info/cspice_idx.html.
 
 Another useful document distributed with the Toolkit is the permuted
 index. This is located under the "cspice/doc" directory in the C
@@ -88,6 +98,7 @@ discover which SpiceyPy functions perform functions of interest, as well
 as the names of the source files that contain these functions.
 
 SpiceyPy API Documentation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A SpiceyPy function's parameters specification is available using the
 built-in Python help system.
@@ -125,7 +136,7 @@ the NAIF server at JPL:
 
 ::
 
-      ftp://naif.jpl.nasa.gov/pub/naif/toolkit_docs/Lessons/
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/Lessons/
 
 SpiceyPy Modules Used
 ---------------------
@@ -210,9 +221,15 @@ needing information concerning SPICE are:
        --   Tutorials
 
 Required Reading and Users Guides
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. tip::
+   The `Required Readings <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html>`_ are also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html.
+   The `User Guides <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/ug/index.html>`_ are also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/ug/index.html
 
 NAIF Required Reading (\*.req) documents introduce the functionality of
-particular SpiceyPy subsystems:
+particular Spice subsystems:
 
 ::
 
@@ -288,6 +305,7 @@ and Users Guides, accessible from the HTML documentation directory:
          ../cspice/doc/html/index.html
 
 Library Source Code Documentation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 All SPICELIB and CSPICE source files include usage and design
 information incorporated in a comment block known as the “header.”
@@ -348,6 +366,7 @@ The source code for SpiceyPy products is stored in 'src' sub-directory
 of the main SpiceyPy directory:
 
 API Documentation
+^^^^^^^^^^^^^^^^^^^
 
 The SpiceyPy package is documented in "readthedocs" website:
 
@@ -504,14 +523,14 @@ Lesson 1: Kernel Management with the Kernel Subsystem
 -----------------------------------------------------
 
 Task Statement
---------------
+^^^^^^^^^^^^^^
 
 Write a program to load a meta kernel, interrogate the SpiceyPy system
 for the names and types of all loaded kernels, then demonstrate the
 unload functionality and the resulting effects.
 
 Learning Goals
---------------
+^^^^^^^^^^^^^^
 
 This lesson demonstrates use of the kernel subsystem to load, unload,
 and list loaded kernels.
@@ -519,7 +538,7 @@ and list loaded kernels.
 This lesson requires creation of a SPICE meta kernel.
 
 Code Solution
--------------
+^^^^^^^^^^^^^
 
 First, create a meta text kernel:
 
@@ -690,7 +709,7 @@ Lesson 2: The Kernel Pool
 .. _task-statement-os-1:
 
 Task Statement
---------------
+^^^^^^^^^^^^^^
 
 Write a program to retrieve particular string and numeric text kernel
 variables, both scalars and arrays. Interrogate the kernel pool for
@@ -699,7 +718,7 @@ assigned variable names.
 .. _learning-goals-os-1:
 
 Learning Goals
---------------
+^^^^^^^^^^^^^^
 
 The lesson demonstrates the SpiceyPy system's facility to retrieve
 different types of data (string, numeric, scalar, array) from the kernel
@@ -780,7 +799,7 @@ routines.
 .. _code-solution-1:
 
 Code Solution
--------------
+^^^^^^^^^^^^^
 
 ::
 
@@ -987,7 +1006,7 @@ decimal Julian day representation to the seconds past J2000 ET
 representation.
 
 Related Routines
-----------------
+^^^^^^^^^^^^^^^^^
 
 ::
 
@@ -1000,7 +1019,7 @@ Lesson 3: Coordinate Conversions
 .. _task-statement-os-2:
 
 Task Statement
---------------
+^^^^^^^^^^^^^^
 
 Write a program to convert a Cartesian 3-vector representing some
 location to the other coordinate representations. Use the position of
@@ -1010,7 +1029,7 @@ frame as the example vector.
 .. _learning-goals-os-2:
 
 Learning Goals
---------------
+^^^^^^^^^^^^^^
 
 The SpiceyPy system provides functions to convert coordinate tuples
 between Cartesian and various non Cartesian coordinate systems including
@@ -1022,7 +1041,7 @@ rectangular, cylindrical, and spherical systems.
 .. _code-solution-2:
 
 Code Solution
--------------
+^^^^^^^^^^^^^
 
 ::
 
@@ -1260,7 +1279,7 @@ Geodetic. The cartographic lat/lon.
 .. _related-routines-1:
 
 Related Routines
-----------------
+^^^^^^^^^^^^^^^^^
 
 ::
 
@@ -1292,7 +1311,7 @@ Lesson 4: Advanced Time Manipulation Routines
 .. _task-statement-os-3:
 
 Task Statement
---------------
+^^^^^^^^^^^^^^
 
 Demonstrate the advanced functions of the time utilities with regard to
 formatting of time strings for output. Formatting options include
@@ -1302,7 +1321,7 @@ strings between different SpiceyPy-supported formats.
 .. _learning-goals-os-3:
 
 Learning Goals
---------------
+^^^^^^^^^^^^^^
 
 Introduce the routines used for advanced manipulation of time strings.
 Understand the concept of ephemeris time (ET) as used in SpiceyPy.
@@ -1310,7 +1329,7 @@ Understand the concept of ephemeris time (ET) as used in SpiceyPy.
 .. _code-solution-3:
 
 Code Solution
--------------
+^^^^^^^^^^^^^
 
 Caution: Be sure to assign sufficient string lengths for time
 formats/pictures.
@@ -1447,7 +1466,7 @@ Lesson 5: Error Handling
 .. _task-statement-os-4:
 
 Task Statement
---------------
+^^^^^^^^^^^^^^
 
 Write an interactive program to return a state vector based on a user's
 input. Code the program with the capability to recover from user input
@@ -1456,7 +1475,7 @@ mistakes, inform the user of the mistake, then continue to run.
 .. _learning-goals-os-4:
 
 Learning Goals
---------------
+^^^^^^^^^^^^^^
 
 Learn how to write a program that has the capability to recover from
 expected SPICE errors.
@@ -1471,7 +1490,7 @@ respond in an appropriate manner.
 .. _code-solution-4:
 
 Code Solution
--------------
+^^^^^^^^^^^^^
 
 ::
 
@@ -1671,7 +1690,7 @@ Lesson 6: Windows, and Cells
 ------------------------------
 
 Programming task
-----------------
+^^^^^^^^^^^^^^^^^
 
 Given the times of line-of-sight for a vehicle from a ground station and
 the times for an acceptable Sun-station-vehicle phase angle, write a
@@ -1680,7 +1699,7 @@ program to determine the time intervals common to both configurations.
 .. _learning-goals-os-5:
 
 Learning Goals
---------------
+^^^^^^^^^^^^^^
 
 SpiceyPy implementation of SPICE cells consists of a class that provides
 an interface to the underlying CSPICE cell structure.
@@ -1721,7 +1740,7 @@ set of a number of time intervals.
 .. _code-solution-5:
 
 Code Solution
--------------
+^^^^^^^^^^^^^
 
 ::
 
@@ -1901,7 +1920,7 @@ Finally, an analysis of the \`sched' data. The measure of an interval
 .. _related-routines-2:
 
 Related Routines
-----------------
+^^^^^^^^^^^^^^^^^^
 
 ::
 
@@ -1941,7 +1960,7 @@ Lesson 7: Utility and Constants Routines
 .. _task-statement-os-5:
 
 Task Statement
---------------
+^^^^^^^^^^^^^^
 
 Write an interactive program to convert values between various units.
 Demonstrate the flexibility of the unit conversion routine, the string
@@ -1950,7 +1969,7 @@ equality function, and show the version ID function.
 .. _learning-goals-os-6:
 
 Learning Goals
---------------
+^^^^^^^^^^^^^^
 
 SpiceyPy provides several routines to perform commonly needed tasks.
 Among these:
@@ -1961,7 +1980,7 @@ often used in astrodynamics, time calculations, and geometry.
 .. _code-solution-6:
 
 Code Solution
--------------
+^^^^^^^^^^^^^
 
 ::
 
@@ -2095,7 +2114,7 @@ in kilometers?
 .. _task-statement-os-6:
 
 Task Statement
---------------
+^^^^^^^^^^^^^^
 
 Write a program to output SpiceyPy constants and use those constants to
 calculate some rudimentary values.
@@ -2103,7 +2122,7 @@ calculate some rudimentary values.
 .. _code-solution-7:
 
 Code Solution
--------------
+^^^^^^^^^^^^^
 
 ::
 
@@ -2214,7 +2233,7 @@ Run the code example
 .. _related-routines-3:
 
 Related Routines
-----------------
+^^^^^^^^^^^^^^^^^^
 
 ::
 
