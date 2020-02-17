@@ -8,8 +8,8 @@ SpiceyPy is currently supported on Mac, Linux, FreeBSD, and Windows systems.
 
 If you are new to python, it is a good idea to read a bit about it first
 `<https://docs.python-guide.org>`_.  For new installations of python, it is
-encouraged to install and or update: pip, setuptools, wheel, numpy, six, and
-certifi first before installing SpiceyPy ::
+encouraged to install and or update: pip, setuptools, wheel, and numpy first
+before installing SpiceyPy ::
 
     pip install -U pip setuptools wheel
     pip install -U numpy
