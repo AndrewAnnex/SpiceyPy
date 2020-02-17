@@ -12,13 +12,14 @@ encouraged to install and or update: pip, setuptools, wheel, numpy, six, and
 certifi first before installing SpiceyPy ::
 
     pip install -U pip setuptools wheel
-    pip install -U numpy six certifi
+    pip install -U numpy
 
 Then to install SpiceyPy, simply run::
 
     pip install spiceypy
 
 If you use anaconda/miniconda/conda run::
+-----------------------------------------
 
     conda config --add channels conda-forge
     conda install spiceypy
@@ -174,13 +175,13 @@ How to install from source (for bleeding edge updates)
     that attempting to install from source will require software
     such as visual studio and additional environment configuration. Given
     the complexity of this Windows users are highly encouraged to stick
-    with the releases made available through PyPi/Anaconda Cloud.
+    with the releases made available through PyPi/Conda-Forge.
 
 
 If you wish to install from source, first simply clone the repository by
 running the following in your favorite shell::
 
-    git clone git@github.com:AndrewAnnex/SpiceyPy.git
+    git clone https://github.com/AndrewAnnex/SpiceyPy.git
 
 If you do not have git, you can also directly download
 the source code from the GitHub repo for SpiceyPy at
