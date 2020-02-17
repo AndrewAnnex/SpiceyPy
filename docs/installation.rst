@@ -18,8 +18,9 @@ Then to install SpiceyPy, simply run::
 
     pip install spiceypy
 
-If you use anaconda/miniconda/conda run::
------------------------------------------
+If you use anaconda/miniconda/conda run: 
+----------------------------------------
+::
 
     conda config --add channels conda-forge
     conda install spiceypy
