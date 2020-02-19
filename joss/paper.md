@@ -28,7 +28,7 @@ authors:
     affiliation: 6
   - name: Johan L. Freiherr von Forstner
     orcid: 0000-0002-1390-4776
-    affiliation: 77
+    affiliation: 7
   - name: Jonathan McAuliffe
     affiliation: 8
   - name: Jorge Diaz del Rio
