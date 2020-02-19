@@ -3,24 +3,27 @@ SpiceyPy
 
 SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N66), written using ctypes.
 
-+------------------------------------------------+---------------------+--------------------------+-------------------+------------+--------------+
-| Continuous Integration                         | Code Coverage       | Docs                     | Chat              | Citation   |  Code Style  |
-+================================================+=====================+==========================+===================+============+==============+
-| |Travis Build Status| |Windows Build Status|   | |Coverage Status|   | |Documentation Status|   | |Join the chat|   | |Citation| |  |Black|     |
-+------------------------------------------------+---------------------+--------------------------+-------------------+------------+--------------+
++------------------------+-------------------+--------+-----------------+------------+--------------+
+| Continuous Integration | Code Coverage     | Docs   | Chat            |  Citation  |  Code Style  |
++========================+===================+========+=================+============+==============+
+| |Travis Build Status|  | |Coverage Status| | |Docs| | |Join the chat| | |Citation| |  |Black|     |
+| |Windows Build Status| |                   |        |                 | |JOSS|     |              |
++------------------------+-------------------+--------+-----------------+------------+--------------+
 
-.. |Travis Build Status| image:: https://img.shields.io/travis/Originate/tertestrial-server/master.svg?logo=travis
+.. |Travis Build Status| image:: https://img.shields.io/travis/AndrewAnnex/SpiceyPy/master?logo=travis
    :target: https://travis-ci.org/AndrewAnnex/SpiceyPy
-.. |Windows Build Status| image:: https://ci.appveyor.com/api/projects/status/wly0q2cwy33ffura/branch/master?svg=true
-   :target: https://ci.appveyor.com/project/AndrewAnnex/spiceypy/
-.. |Coverage Status| image:: https://coveralls.io/repos/github/AndrewAnnex/SpiceyPy/badge.svg?branch=master
+.. |Windows Build Status| image:: https://img.shields.io/appveyor/build/AndrewAnnex/SpiceyPy/master?logo=appveyor
+   :target: https://ci.appveyor.com/project/AndrewAnnex/spiceypy
+.. |Coverage Status| image:: https://img.shields.io/coveralls/github/AndrewAnnex/SpiceyPy/master?logo=coveralls
    :target: https://coveralls.io/github/AndrewAnnex/SpiceyPy?branch=master
-.. |Documentation Status| image:: https://readthedocs.org/projects/spiceypy/badge/?version=master
+.. |Docs| image:: https://img.shields.io/readthedocs/spiceypy/master
    :target: http://spiceypy.readthedocs.org/en/master/
-.. |Join the chat| image:: https://badges.gitter.im/Join%20Chat.svg
-   :target: https://gitter.im/AndrewAnnex/SpiceyPy?utm_source=badge
-.. |Citation| image:: https://zenodo.org/badge/16987/AndrewAnnex/SpiceyPy.svg
-   :target: https://zenodo.org/badge/latestdoi/16987/AndrewAnnex/SpiceyPy
+.. |Join the chat| image:: https://img.shields.io/gitter/room/andrewannex/spiceypy
+   :target: https://gitter.im/AndrewAnnex/SpiceyPy
+.. |Citation| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.593914.svg
+   :target: https://doi.org/10.5281/zenodo.593914
+.. |JOSS| image:: https://joss.theoj.org/papers/98136d30bea9982ad160d251e2039fee/status.svg
+   :target: https://joss.theoj.org/papers/98136d30bea9982ad160d251e2039fee
 .. |Black| image:: https://img.shields.io/badge/code%20style-black-000000.svg 
    :target: https://github.com/psf/black
 
