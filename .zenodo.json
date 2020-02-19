@@ -1,0 +1,83 @@
+{
+  "license": "MIT",
+  "title": "SpiceyPy: a Pythonic Wrapper for the SPICE Toolkit",
+  "upload_type": "SoftwareSourceCode",
+  "creator": [
+    {
+      "orcid": "0000-0002-0253-2313",
+      "name": "Andrew Annex",
+      "affiliation": "Johns Hopkins University"
+    },
+    {
+      "orcid": "0000-0001-9211-6526",
+      "name": "Brian Carcich",
+      "affiliation": "Latchmoor Services, LLC"
+    },
+    {
+      "name": "Ben Pearson",
+      "affiliation": "General Public"
+    },
+    {
+      "orcid": "0000-0002-4088-1928",
+      "name": "K.-Michael Aye",
+      "affiliation": "Laboratory for Atmospheric and Space Physics, University of Colorado"
+    },
+    {
+      "name": "Jonathan McAuliffe",
+      "affiliation": "DLR Gesellschaft für Raumfahrtanwendungen (GfR) mbH"
+    },
+    {
+      "name": "Jorge Diaz del Rio",
+      "affiliation": "ODC Space"
+    },
+    {
+      "orcid": "0000-0001-9757-9706",
+      "name": "Kristin L. Berry",
+      "affiliation": "USGS Astrogeology Science Center"
+    },
+    {
+      "orcid": "0000-0002-7736-2611",
+      "name": "Marcel Stefko",
+      "affiliation": "ETH Zurich."
+    },
+    {
+      "orcid": "0000-0002-0455-9384",
+      "name": "Miguel de Val-Borro",
+      "affiliation": "Planetary Science Institute"
+    },
+    {
+      "orcid": "0000-0002-7822-0471",
+      "name": "Shankar Kulumani",
+      "affiliation": "Collins Aerospace"
+    },
+    {
+      "orcid": "0000-0002-7137-4849",
+      "name": "Shin-ya Murakami",
+      "affiliation": "GFD Dennou Club"
+    },
+    {
+      "orcid": "0000-0003-0303-5199",
+      "name": "Helge Eichhorn",
+      "affiliation": "Planetary Transportation Systems GmbH"
+    },
+    {
+      "orcid": "0000-0001-6533-275X",
+      "name": "Benoît Seignovert",
+      "affiliation": "Jet Propulsion Laboratory, California Institute of Technology"
+    },
+    {
+      "orcid": "0000-0001-5756-0373",
+      "name": "Jesse Mapel",
+      "affiliation": "USGS Astrogeology Science Center"
+    }
+  ],
+  "keywords": [
+    "Python",
+    "SPICE",
+    "ephemeris",
+    "geometry",
+    "navigation",
+    "spacecraft",
+    "planets"
+  ]
+}
