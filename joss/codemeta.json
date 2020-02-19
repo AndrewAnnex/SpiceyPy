@@ -7,7 +7,7 @@
       "@type": "Person",
       "email": "annex@jhu.edu",
       "name": "Andrew Annex",
-      "affiliation": "Johns Hopkins University, Baltimore, MD 21218, USA"
+      "affiliation": "Johns Hopkins University"
     },
     {
       "@id": "https://orcid.org/0000-0001-9211-6526",
@@ -28,7 +28,7 @@
       "@type": "Person",
       "email": "",
       "name": "K.-Michael Aye",
-      "affiliation": "Laboratory for Atmospheric and Space Physics, University of Colorado, Boulder, CO 80303, USA"
+      "affiliation": "Laboratory for Atmospheric and Space Physics, University of Colorado"
     },
     {
       "@id": "",
@@ -84,14 +84,14 @@
       "@type": "Person",
       "email": "",
       "name": "Helge Eichhorn",
-      "affiliation": "Planetary Transportation Systems GmbH, Berlin, Germany"
+      "affiliation": "Planetary Transportation Systems GmbH"
     },
     {
       "@id": "https://orcid.org/0000-0001-6533-275X",
       "@type": "Person",
       "email": "",
       "name": "Benoît Seignovert",
-      "affiliation": "Jet Propulsion Laboratory, California Institute of Technology, Pasadena, CA 91109, USA"
+      "affiliation": "Jet Propulsion Laboratory, California Institute of Technology"
     },
     {
       "@id": "https://orcid.org/0000-0001-5756-0373",
