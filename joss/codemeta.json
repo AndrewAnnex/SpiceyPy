@@ -21,7 +21,7 @@
       "@type": "Person",
       "email": "",
       "name": "Ben Pearson",
-      "affiliation": "General Public"
+      "affiliation": "None"
     },
     {
       "@id": "https://orcid.org/0000-0002-4088-1928",
@@ -114,8 +114,8 @@
   "dateModified": "2020-01-12",
   "dateCreated": "2020-01-12",
   "description": "SpiceyPy: a Pythonic Wrapper for the SPICE Toolkit",
-  "keywords": "SPICE, ephemeris, NASA, NAIF, navigation, planetary science",
+  "keywords": "Python, SPICE, ephemeris, geometry, navigation, spacecraft, planets",
   "license": "MIT",
   "title": "SpiceyPy",
-  "version": "v3.0.1"
+  "version": "v3.0.2"
 }
