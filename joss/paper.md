@@ -49,23 +49,23 @@ authors:
     orcid: 0000-0002-7137-4849
     affiliation: 13
 affiliations:
- - name: Johns Hopkins University, Baltimore, MD 21218, USA.
+ - name: Johns Hopkins University.
    index: 1
  - name: General Public.
    index: 2
- - name: Jet Propulsion Laboratory, California Institute of Technology, Pasadena, CA 91109, USA.
+ - name: Jet Propulsion Laboratory, California Institute of Technology.
    index: 3
  - name: Latchmoor Services, LLC.
    index: 4
- - name: Planetary Transportation Systems GmbH, Berlin, Germany.
+ - name: Planetary Transportation Systems GmbH.
    index: 5
- - name: USGS Astrogeology Science Center, Flagstaff, AZ 86001, USA.
+ - name: USGS Astrogeology Science Center.
    index: 6
  - name: DLR Gesellschaft für Raumfahrtanwendungen (GfR) mbH.
    index: 7
  - name: ODC Space.
    index: 8
- - name: Laboratory for Atmospheric and Space Physics, University of Colorado, Boulder, CO 80303, USA.
+ - name: Laboratory for Atmospheric and Space Physics, University of Colorado.
    index: 9
  - name: ETH Zurich.
    index: 10
