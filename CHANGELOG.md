@@ -4,6 +4,21 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [3.0.2] - 2019-02-19
+### Added
+- et2datetime function
+- funding.yml
+
+### Changed
+- changed http to https in docs/docstrings
+
+### Fixed
+- many small issues with the docs
+- author name in joss paper
+- fixing SyntaxWarning in python 3.8
+- year in docs
+- issue with urllib usage in gettestkernels
+
 ## [3.0.1] - 2019-01-10
 ### Changed
 - removed old logic from getspice for old openssl versions

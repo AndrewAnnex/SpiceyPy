@@ -31,6 +31,13 @@
       "affiliation": "Laboratory for Atmospheric and Space Physics, University of Colorado"
     },
     {
+      "@id": "https://orcid.org/0000-0002-1390-4776",
+      "@type": "Person",
+      "email": "",
+      "name": "Johan L. Freiherr von Forstner",
+      "affiliation": "Institute of Experimental and Applied Physics, University of Kiel"
+    },
+    {
       "@id": "",
       "@type": "Person",
       "email": "",
@@ -106,7 +113,7 @@
   "datePublished": "2020-01-12",
   "dateModified": "2020-01-12",
   "dateCreated": "2020-01-12",
-  "description": "SpiceyPy: the pythonic wrapper for SPICE",
+  "description": "SpiceyPy: a Pythonic Wrapper for the SPICE Toolkit",
   "keywords": "SPICE, ephemeris, NASA, NAIF, navigation, planetary science",
   "license": "MIT",
   "title": "SpiceyPy",

@@ -26,28 +26,31 @@ authors:
   - name: Jesse A. Mapel
     orcid: 0000-0001-5756-0373
     affiliation: 6
-  - name: Jonathan McAuliffe
+  - name: Johan L. Freiherr von Forstner
+    orcid: 0000-0002-1390-4776
     affiliation: 7
-  - name: Jorge Diaz del Rio
+  - name: Jonathan McAuliffe
     affiliation: 8
+  - name: Jorge Diaz del Rio
+    affiliation: 9
   - name: Kristin L. Berry
     orcid: 0000-0001-9757-9706
     affiliation: 6
   - name: K.-Michael Aye
     orcid: 0000-0002-4088-1928
-    affiliation: 9
+    affiliation: 10
   - name: Marcel Stefko
     orcid: 0000-0002-7736-2611
-    affiliation: 10
+    affiliation: 11
   - name: Miguel de Val-Borro
     orcid: 0000-0002-0455-9384
-    affiliation: 11
+    affiliation: 12
   - name: Shankar Kulumani
     orcid: 0000-0002-7822-0471
-    affiliation: 12
+    affiliation: 13
   - name: Shin-ya Murakami
     orcid: 0000-0002-7137-4849
-    affiliation: 13
+    affiliation: 14
 affiliations:
  - name: Johns Hopkins University.
    index: 1
@@ -61,20 +64,22 @@ affiliations:
    index: 5
  - name: USGS Astrogeology Science Center.
    index: 6
- - name: DLR Gesellschaft für Raumfahrtanwendungen (GfR) mbH.
+ - name: Institute of Experimental and Applied Physics, University of Kiel.
    index: 7
- - name: ODC Space.
+ - name: DLR Gesellschaft für Raumfahrtanwendungen (GfR) mbH.
    index: 8
- - name: Laboratory for Atmospheric and Space Physics, University of Colorado.
+ - name: ODC Space.
    index: 9
- - name: ETH Zurich.
+ - name: Laboratory for Atmospheric and Space Physics, University of Colorado.
    index: 10
- - name: Planetary Science Institute.
+ - name: ETH Zurich.
    index: 11
- - name: Collins Aerospace.
+ - name: Planetary Science Institute.
    index: 12
- - name: GFD Dennou Club.
+ - name: Collins Aerospace.
    index: 13
+ - name: GFD Dennou Club.
+   index: 14
 
 date: 23 January 2020
 bibliography: paper.bib
