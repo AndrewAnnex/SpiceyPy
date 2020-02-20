@@ -54,7 +54,7 @@ authors:
 affiliations:
  - name: Johns Hopkins University
    index: 1
- - name: None.
+ - name: None
    index: 2
  - name: Jet Propulsion Laboratory, California Institute of Technology
    index: 3
