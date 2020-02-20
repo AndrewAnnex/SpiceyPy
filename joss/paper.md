@@ -52,33 +52,33 @@ authors:
     orcid: 0000-0002-7137-4849
     affiliation: 14
 affiliations:
- - name: Johns Hopkins University.
+ - name: Johns Hopkins University
    index: 1
  - name: None.
    index: 2
- - name: Jet Propulsion Laboratory, California Institute of Technology.
+ - name: Jet Propulsion Laboratory, California Institute of Technology
    index: 3
- - name: Latchmoor Services, LLC.
+ - name: Latchmoor Services, LLC
    index: 4
- - name: Planetary Transportation Systems GmbH.
+ - name: Planetary Transportation Systems GmbH
    index: 5
- - name: USGS Astrogeology Science Center.
+ - name: USGS Astrogeology Science Center
    index: 6
- - name: Institute of Experimental and Applied Physics, University of Kiel.
+ - name: Institute of Experimental and Applied Physics, University of Kiel
    index: 7
- - name: DLR Gesellschaft für Raumfahrtanwendungen (GfR) mbH.
+ - name: DLR Gesellschaft für Raumfahrtanwendungen (GfR) mbH
    index: 8
- - name: ODC Space.
+ - name: ODC Space
    index: 9
- - name: Laboratory for Atmospheric and Space Physics, University of Colorado.
+ - name: Laboratory for Atmospheric and Space Physics, University of Colorado
    index: 10
- - name: ETH Zurich.
+ - name: ETH Zurich
    index: 11
- - name: Planetary Science Institute.
+ - name: Planetary Science Institute
    index: 12
- - name: Collins Aerospace.
+ - name: Collins Aerospace
    index: 13
- - name: GFD Dennou Club.
+ - name: GFD Dennou Club
    index: 14
 
 date: 23 January 2020
