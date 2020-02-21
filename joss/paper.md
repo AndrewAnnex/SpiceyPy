@@ -116,8 +116,8 @@ Docstrings in SpiceyPy also contain links to the corresponding CSPICE documentat
 
 ``SpiceyPy`` enables scientists to utilize the full functionality of SPICE within Python and the ecosystem of visualization and
  scientific packages available. 
-``SpiceyPy`` has been utilized in peer-reviewed research [@behar:2016; @behar:2017; @porter:2018; @zangari:2018; @attree:2019;], masters
- and doctoral theses [@hackett:2019; @albin:2019], spacecraft mission operations, as a dependency in other python libraries [@heliopy:2019
+``SpiceyPy`` has been utilized in peer-reviewed research [@behar:2016; @behar:2017; @porter:2018; @zangari:2018; @attree:2019], masters
+ and doctoral theses [@hackett:2019; @albin:2019], spacecraft mission operations, as a dependency in other Python libraries [@heliopy:2019
  ], and for a variety of other projects [@wilson:2016; @wilson_times:2017; @costa:2018]. 
 
 # Acknowledgements
