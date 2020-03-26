@@ -7696,6 +7696,25 @@ def kdata(
 
 
 @spice_error_check
+def kepleq(ml: float, h: float, k: float) -> float:
+    """
+    This function solves the equinoctial version of Kepler's equation.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/kepleq.html
+
+    :param ml: Mean longitude
+    :param h: h component of equinoctial elements
+    :param k: k component of equinoctial elements
+    :return: the value of F such that ML = F + h*COS(F) - k*SIN(F)
+    """
+    ml = ctypes.c_double(ml)
+    h = ctypes.c_double(h)
+    k = ctypes.c_double(k)
+    f = libspice.kepleq_(ctypes.byref(ml), ctypes.byref(h), ctypes.byref(k))
+    return f
+
+
+@spice_error_check
 @spice_found_exception_thrower
 def kinfo(
     file: str, typlen: int = _default_len_out, srclen: int = _default_len_out
@@ -7748,6 +7767,23 @@ def kplfrm(frmcls: int, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     frmcls = ctypes.c_int(frmcls)
     libspice.kplfrm_c(frmcls, ctypes.byref(out_cell))
     return out_cell
+
+
+@spice_error_check
+def kpsolv(evec: Tuple[float, float]) -> float:
+    """
+    This routine solves the equation X = < EVEC, U(X) > where
+    U(X) is the unit vector [ Cos(X), SIN(X) ] and  < , > denotes
+    the two-dimensional dot product.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/kpsolv.html
+
+    :param evec: A 2-vector whose magnitude is less than 1.
+    :return: the value of X such that X = EVEC(1)COS(X) + EVEC(2)SIN(X).
+    """
+    evec = stypes.to_double_vector(evec)
+    x = libspice.kpsolv_(evec)
+    return x
 
 
 @spice_error_check

@@ -5214,6 +5214,31 @@ def test_kdata():
     spice.kclear()
 
 
+def test_kepleq():
+    p = 10000.0
+    gm = 398600.436
+    ecc = 0.1
+    a = p / (1.0 - ecc)
+    n = np.sqrt(gm / a) / a
+    argp = 30.0 * spice.rpd()
+    node = 15.0 * spice.rpd()
+    m0 = 45.0 * spice.rpd()
+    epoch = -100000000.0
+    et = epoch - 9750.0
+    eqel_1 = ecc * np.sin(argp + node)
+    eqel_2 = ecc * np.cos(argp + node)
+    eqel_3 = m0 + argp + node
+    dt = et - epoch
+    dlp = 0.0
+    can = np.cos(dlp)
+    san = np.sin(dlp)
+    h = eqel_1 * can + eqel_2 * san
+    k = eqel_2 * can - eqel_1 * san
+    ml = eqel_3 + ((n * dt) % spice.twopi())
+    eecan = spice.kepleq(ml, h, k)
+    assert pytest.approx(2.692595464274983, eecan)
+
+
 def test_kinfo():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -5227,6 +5252,23 @@ def test_kplfrm():
     spice.furnsh(CoreKernels.testMetaKernel)
     cell = spice.kplfrm(-1)
     assert cell.size > 100
+    spice.kclear()
+
+
+def test_kpsolv():
+    spice.kclear()
+    r = 0.0
+    for i in range(1, 20):
+        theta = 0.0
+        for j in range(1, 63):
+            h = r * np.cos(theta)
+            k = r * np.sin(theta)
+            x = spice.kpsolv((h, k))
+            fx = h * np.cos(x) + k * np.sin(x)
+            assert pytest.approx(fx, x, 1.0e-15)
+            theta = theta + 0.1
+        r = r + 0.05
+        pass
     spice.kclear()
 
 

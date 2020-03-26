@@ -1140,6 +1140,8 @@ libspice.kdata_c.argtypes = [
     c_int_p,
     c_int_p,
 ]
+libspice.kepleq_.argtypes = [c_double_p, c_double_p, c_double_p]
+libspice.kepleq_.restype = c_double
 libspice.kinfo_c.argtypes = [
     c_char_p,
     c_int,
@@ -1151,6 +1153,8 @@ libspice.kinfo_c.argtypes = [
 ]
 libspice.ktotal_c.argtypes = [c_char_p, c_int_p]
 libspice.kplfrm_c.argtypes = [c_int, s_cell_p]
+libspice.kpsolv_.argtypes = [c_double_p]
+libspice.kpsolv_.restype = c_double
 libspice.kxtrct_c.argtypes = [
     c_char_p,
     c_int,
