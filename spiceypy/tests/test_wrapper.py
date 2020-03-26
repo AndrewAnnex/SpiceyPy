@@ -5144,6 +5144,26 @@ def test_invort():
     npt.assert_array_almost_equal(m, mit)
 
 
+def test_irfdef():
+    assert spice.irfnum("DEFAULT") == 0
+    spice.irfdef(13)
+    assert spice.irfnum("DEFAULT") == 13
+    spice.irfdef(1)
+    assert spice.irfnum("DEFAULT") == 1
+
+
+def test_irfnam():
+    assert spice.irfnam(1) == "J2000"
+    assert spice.irfnam(13) == "GALACTIC"
+    assert spice.irfnam(21) == "DE-143"
+
+
+def test_irfnum():
+    assert spice.irfnum("J2000") == 1
+    assert spice.irfnum("GALACTIC") == 13
+    assert spice.irfnum("DE-143") == 21
+
+
 def test_isordv():
     assert spice.isordv([0, 1], 2)
     assert spice.isordv([0, 1, 2], 3)

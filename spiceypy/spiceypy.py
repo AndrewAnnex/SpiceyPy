@@ -7444,6 +7444,92 @@ def invort(m: ndarray) -> ndarray:
     return stypes.c_matrix_to_numpy(mout)
 
 
+def irfdef(index: int) -> None:
+    """
+    Specify a standard inertial reference frame as the default frame for a program.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/irfdef.html
+
+    :param index: Index of a standard inertial reference frame.
+    """
+    index = ctypes.c_int(index)
+    libspice.irfdef_(index)
+
+
+@spice_error_check
+def irfnam(index: int) -> str:
+    """
+    Return the name of one of the standard inertial reference
+    frames supported by :func:`irfrot`
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/irfnam.html
+
+    :param index: Index of a standard inertial reference frame.
+    :return: is the name of the frame.
+    """
+    index = ctypes.c_int(index)
+    name = stypes.string_to_char_p(16)  # just give enough space
+    name_len = ctypes.c_int(16)
+    libspice.irfnam_(ctypes.byref(index), name, name_len)
+    return stypes.to_python_string(name)
+
+
+@spice_error_check
+def irfnum(name: str) -> int:
+    """
+    Return the index of one of the standard inertial reference
+    frames supported by :func:`irfrot`
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/irfnum.html
+    
+    :param name: Name of standard inertial reference frame.
+    :return: is the index of the frame.
+    """
+    index = ctypes.c_int()
+    name_len = ctypes.c_int(len(name))
+    name = stypes.string_to_char_p(name)
+    libspice.irfnum_(name, ctypes.byref(index), name_len)
+    return index.value
+
+
+@spice_error_check
+def irfrot(refa: int, refb: int) -> ndarray:
+    """
+    Compute the matrix needed to rotate vectors between two
+    standard inertial reference frames.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/irfrot.html
+
+    :param refa: index of first reference frame.
+    :param refb: index of second reference frame.
+    :return: rotation from frame A to frame B.
+    """
+    refa = ctypes.c_int(refa)
+    refb = ctypes.c_int(refb)
+    rotab = stypes.empty_double_matrix()
+    libspice.irfrot_(ctypes.byref(refa), ctypes.byref(refb), ctypes.byref(rotab))
+    return stypes.c_matrix_to_numpy(rotab)
+
+
+@spice_error_check
+def irftrn(refa: str, refb: str) -> ndarray:
+    """
+    Return the matrix that transforms vectors from one specified
+    inertial reference frame to another.
+    
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/irftrn.html
+
+    :param refa: Name of reference frame to transform vectors FROM.
+    :param refb: Name of reference frame to transform vectors TO.
+    :return: REFA-to-REFB transformation matrix.
+    """
+    refa = stypes.string_to_char_p(refa)
+    refb = stypes.string_to_char_p(refb)
+    rotab = stypes.empty_double_matrix()
+    libspice.irftrn_(refa, refb, ctypes.byref(rotab))
+    return stypes.c_matrix_to_numpy(rotab)
+
+
 @spice_error_check
 def isordv(array: Iterable[int], n: int) -> bool:
     """

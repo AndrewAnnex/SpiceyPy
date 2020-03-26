@@ -261,6 +261,11 @@ EXPORTS			appndc_c
 				intmin_c
 				invert_c
 				invort_c
+				irfdef_
+				irfnam_
+				irfnum_
+				irfrot_
+				irftrn_
 				isordv_c
 				isrchc_c
 				isrchd_c
