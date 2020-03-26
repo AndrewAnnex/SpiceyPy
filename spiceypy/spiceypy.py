@@ -7467,9 +7467,9 @@ def irfnum(name: str) -> int:
     """
     Return the index of one of the standard inertial reference
     frames supported by :func:`irfrot`
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/irfnum.html
-    
+
     :param name: Name of standard inertial reference frame.
     :return: is the index of the frame.
     """
@@ -7505,7 +7505,7 @@ def irftrn(refa: str, refb: str) -> ndarray:
     """
     Return the matrix that transforms vectors from one specified
     inertial reference frame to another.
-    
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/irftrn.html
 
     :param refa: Name of reference frame to transform vectors FROM.
