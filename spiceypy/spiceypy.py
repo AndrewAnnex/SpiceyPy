@@ -7444,18 +7444,6 @@ def invort(m: ndarray) -> ndarray:
     return stypes.c_matrix_to_numpy(mout)
 
 
-def irfdef(index: int) -> None:
-    """
-    Specify a standard inertial reference frame as the default frame for a program.
-
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/irfdef.html
-
-    :param index: Index of a standard inertial reference frame.
-    """
-    index = ctypes.c_int(index)
-    libspice.irfdef_(index)
-
-
 @spice_error_check
 def irfnam(index: int) -> str:
     """
@@ -7507,8 +7495,9 @@ def irfrot(refa: int, refb: int) -> ndarray:
     refa = ctypes.c_int(refa)
     refb = ctypes.c_int(refb)
     rotab = stypes.empty_double_matrix()
-    libspice.irfrot_(ctypes.byref(refa), ctypes.byref(refb), ctypes.byref(rotab))
-    return stypes.c_matrix_to_numpy(rotab)
+    libspice.irfrot_(ctypes.byref(refa), ctypes.byref(refb), rotab)
+    # make sure to transpose to get back into c order from fortran ordering
+    return stypes.c_matrix_to_numpy(rotab).T
 
 
 @spice_error_check
@@ -7523,11 +7512,14 @@ def irftrn(refa: str, refb: str) -> ndarray:
     :param refb: Name of reference frame to transform vectors TO.
     :return: REFA-to-REFB transformation matrix.
     """
+    len_a = ctypes.c_int(len(refa))
+    len_b = ctypes.c_int(len(refb))
     refa = stypes.string_to_char_p(refa)
     refb = stypes.string_to_char_p(refb)
     rotab = stypes.empty_double_matrix()
-    libspice.irftrn_(refa, refb, ctypes.byref(rotab))
-    return stypes.c_matrix_to_numpy(rotab)
+    libspice.irftrn_(refa, refb, rotab, len_a, len_b)
+    # make sure to transpose to get back into c order from fortran ordering
+    return stypes.c_matrix_to_numpy(rotab).T
 
 
 @spice_error_check

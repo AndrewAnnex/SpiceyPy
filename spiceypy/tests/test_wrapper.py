@@ -5144,14 +5144,6 @@ def test_invort():
     npt.assert_array_almost_equal(m, mit)
 
 
-def test_irfdef():
-    assert spice.irfnum("DEFAULT") == 0
-    spice.irfdef(13)
-    assert spice.irfnum("DEFAULT") == 13
-    spice.irfdef(1)
-    assert spice.irfnum("DEFAULT") == 1
-
-
 def test_irfnam():
     assert spice.irfnam(1) == "J2000"
     assert spice.irfnam(13) == "GALACTIC"
@@ -5162,6 +5154,24 @@ def test_irfnum():
     assert spice.irfnum("J2000") == 1
     assert spice.irfnum("GALACTIC") == 13
     assert spice.irfnum("DE-143") == 21
+
+
+def test_irfrot():
+    # get the rotation matrix from pxform
+    expected_rotate = spice.pxform("B1950", "J2000", 0.0)
+    # get hopefully the same rotation matrix from irfrot
+    fromfrm = spice.irfnum("B1950")
+    tofrm = spice.irfnum("J2000")
+    actual_rotate = spice.irfrot(fromfrm, tofrm)
+    npt.assert_array_almost_equal(actual_rotate, expected_rotate, decimal=4)
+
+
+def test_irftrn():
+    # get the rotation matrix from pxform
+    expected_rotate = spice.pxform("B1950", "J2000", 0.0)
+    # get hopefully the same rotation matrix from irfrot
+    actual_rotate = spice.irftrn("B1950", "J2000")
+    npt.assert_array_almost_equal(actual_rotate, expected_rotate, decimal=4)
 
 
 def test_isordv():
