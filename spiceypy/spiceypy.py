@@ -29,6 +29,7 @@ from .utils.libspicehelper import libspice
 from . import config
 from .utils.callbacks import SpiceUDFUNS, SpiceUDFUNB
 from .utils.callbacks import (
+    UDFUNC,
     UDFUNS,
     UDFUNB,
     UDSTEP,
@@ -244,7 +245,7 @@ def cell_bool(cell_size: int) -> SpiceCell:
     return stypes.SPICEBOOL_CELL(cell_size)
 
 
-def cell_time(cell_size):
+def cell_time(cell_size) -> SpiceCell:
     return stypes.SPICETIME_CELL(cell_size)
 
 
@@ -1366,7 +1367,7 @@ def ckw05(
     )
 
 
-def cleard():
+def cleard() -> NotImplementedError:
     raise NotImplementedError
 
 
@@ -6767,7 +6768,9 @@ def gftfov(
 
 
 @spice_error_check
-def gfudb(udfuns, udfunb, step, cnfine, result):
+def gfudb(
+    udfuns: UDFUNS, udfunb: UDFUNB, step: float, cnfine: SpiceCell, result: SpiceCell
+):
     """
     Perform a GF search on a user defined boolean quantity.
 
@@ -6785,7 +6788,17 @@ def gfudb(udfuns, udfunb, step, cnfine, result):
 
 
 @spice_error_check
-def gfuds(udfuns, udqdec, relate, refval, adjust, step, nintvls, cnfine, result):
+def gfuds(
+    udfuns: UDFUNS,
+    udqdec: UDFUNB,
+    relate: str,
+    refval: float,
+    adjust: float,
+    step: float,
+    nintvls: int,
+    cnfine: SpiceCell,
+    result: SpiceCell,
+) -> SpiceCell:
     """
     Perform a GF search on a user defined scalar quantity.
 
@@ -14099,7 +14112,7 @@ def trcnam(index: int, namlen: int = _default_len_out) -> str:
 
 
 @spice_error_check
-def trcoff():
+def trcoff() -> None:
     """
     Disable tracing.
 
@@ -14236,7 +14249,7 @@ def ucrss(v1: ndarray, v2: ndarray) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
-def uddc(udfunc, x, dx):
+def uddc(udfunc: UDFUNC, x: float, dx: float) -> bool:
     """
     SPICE private routine intended solely for the support of SPICE
     routines. Users should not call this routine directly due to the
@@ -14255,7 +14268,7 @@ def uddc(udfunc, x, dx):
             pos, new_et = spice.spkpos("MERCURY", et_in, "J2000", "LT+S", "MOON")
             return new_et
 
-        deriv = spice.uddf(udfunc, et, 1.0)
+        is_negative = spice.uddc(udfunc, et, 1.0)
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/uddc_c.html
 
@@ -14272,7 +14285,7 @@ def uddc(udfunc, x, dx):
 
 
 @spice_error_check
-def uddf(udfunc, x, dx):
+def uddf(udfunc: UDFUNC, x: float, dx: float) -> float:
     """
     Routine to calculate the first derivative of a caller-specified
     function using a three-point estimation.

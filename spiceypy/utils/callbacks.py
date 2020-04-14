@@ -25,7 +25,9 @@ SOFTWARE.
 import functools
 from ctypes import c_int, c_double, c_char_p, POINTER, CFUNCTYPE, byref
 from .support_types import SpiceCell
+from typing import Callable
 
+UDFUNC = CFUNCTYPE(None, c_double, POINTER(c_double))
 UDFUNS = CFUNCTYPE(None, c_double, POINTER(c_double))
 UDFUNB = CFUNCTYPE(None, UDFUNS, c_double, POINTER(c_int))
 UDSTEP = CFUNCTYPE(None, c_double, POINTER(c_double))
@@ -36,7 +38,24 @@ UDREPF = CFUNCTYPE(None)
 UDBAIL = CFUNCTYPE(c_int)
 
 
-def SpiceUDFUNS(f):
+def SpiceUDFUNC(f: Callable[[float], float]) -> UDFUNC:
+    """
+    Decorator for wrapping python functions in spice udfunc callback type
+    :param f: function that has one argument of type float, and returns a float
+    :type f: builtins.function
+    :return: wrapped udfunc function
+    :rtype: builtins.function
+    """
+
+    @functools.wraps(f)
+    def wrapping_udfunc(x: float, value: POINTER(c_double)) -> None:
+        result = f(x)
+        value[0] = c_double(result)
+
+    return UDFUNC(wrapping_udfunc)
+
+
+def SpiceUDFUNS(f) -> UDFUNS:
     """
     Decorator for wrapping python functions in spice udfuns callback type
     :param f: function that has one argument of type float, and returns a float
