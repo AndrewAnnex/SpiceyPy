@@ -42,9 +42,7 @@ def SpiceUDFUNC(f: Callable[[float], float]) -> UDFUNC:
     """
     Decorator for wrapping python functions in spice udfunc callback type
     :param f: function that has one argument of type float, and returns a float
-    :type f: builtins.function
     :return: wrapped udfunc function
-    :rtype: builtins.function
     """
 
     @functools.wraps(f)
@@ -55,30 +53,27 @@ def SpiceUDFUNC(f: Callable[[float], float]) -> UDFUNC:
     return UDFUNC(wrapping_udfunc)
 
 
-def SpiceUDFUNS(f) -> UDFUNS:
+def SpiceUDFUNS(f: Callable[[float], float]) -> UDFUNS:
     """
     Decorator for wrapping python functions in spice udfuns callback type
     :param f: function that has one argument of type float, and returns a float
-    :type f: builtins.function
     :return: wrapped udfunc function
-    :rtype: builtins.function
     """
 
     @functools.wraps(f)
-    def wrapping_udfuns(x, value):
+    def wrapping_udfuns(x: float, value: POINTER(c_double)):
         result = f(x)
         value[0] = c_double(result)
 
     return UDFUNS(wrapping_udfuns)
 
 
-def SpiceUDFUNB(f):
+def SpiceUDFUNB(f) -> UDFUNB:
     """
     Decorator for wrapping python functions in spice udfunb callback type
     :param f: function to be wrapped
     :type f: builtins.function
     :return: wrapped udfunb function
-    :rtype: builtins.function
     """
 
     @functools.wraps(f)
@@ -89,13 +84,12 @@ def SpiceUDFUNB(f):
     return UDFUNB(wrapping_udfunb)
 
 
-def SpiceUDSTEP(f):
+def SpiceUDSTEP(f) -> UDSTEP:
     """
     Decorator for wrapping python functions in spice udstep callback type
     :param f: function to be wrapped
     :type f: builtins.function
     :return: wrapped udstep function
-    :rtype: builtins.function
     """
 
     @functools.wraps(f)
@@ -106,13 +100,12 @@ def SpiceUDSTEP(f):
     return UDSTEP(wrapping_udstep)
 
 
-def SpiceUDREFN(f):
+def SpiceUDREFN(f) -> UDREFN:
     """
     Decorator for wrapping python functions in spice udrefn callback type
     :param f: function to be wrapped
     :type f: builtins.function
     :return: wrapped udrefn function
-    :rtype: builtins.function
     """
 
     @functools.wraps(f)
@@ -123,13 +116,12 @@ def SpiceUDREFN(f):
     return UDREFN(wrapping_udrefn)
 
 
-def SpiceUDREPI(f):
+def SpiceUDREPI(f) -> UDREPI:
     """
     Decorator for wrapping python functions in spice udfrepi callback type
     :param f: function to be wrapped
     :type f: builtins.function
     :return: wrapped udrepi function
-    :rtype: builtins.function
     """
 
     @functools.wraps(f)
@@ -139,13 +131,12 @@ def SpiceUDREPI(f):
     return UDREPI(wrapping_udrepi)
 
 
-def SpiceUDREPU(f):
+def SpiceUDREPU(f) -> UDREPU:
     """
     Decorator for wrapping python functions in spice udrepu callback type
     :param f: function to be wrapped
     :type f: builtins.function
     :return: wrapped udrepu function
-    :rtype: builtins.function
     """
 
     @functools.wraps(f)
@@ -155,13 +146,12 @@ def SpiceUDREPU(f):
     return UDREPU(wrapping_udrepu)
 
 
-def SpiceUDREPF(f):
+def SpiceUDREPF(f) -> UDREPF:
     """
     Decorator for wrapping python functions in spice udrepf callback type
     :param f: function to be wrapped
     :type f: builtins.function
     :return: wrapped udrepf function
-    :rtype: builtins.function
     """
 
     @functools.wraps(f)
@@ -171,13 +161,12 @@ def SpiceUDREPF(f):
     return UDREPF(wrapping_udrepf)
 
 
-def SpiceUDBAIL(f):
+def SpiceUDBAIL(f: Callable[[], bool]) -> UDBAIL:
     """
     Decorator for wrapping python functions in spice udbail callback type
     :param f: function to be wrapped
     :type f: builtins.function
     :return: wrapped udbail function
-    :rtype: builtins.function
     """
 
     @functools.wraps(f)
@@ -188,16 +177,13 @@ def SpiceUDBAIL(f):
     return UDBAIL(wrapping_udbail)
 
 
-def CallUDFUNS(f, x):
+def CallUDFUNS(f: UDFUNS, x: float) -> float:
     """
     We are given a UDF CFUNCTYPE and want to call it in python
 
     :param f: SpiceUDFUNS
-    :type f: CFUNCTYPE
     :param x: some scalar
-    :type x: float
     :return: value
-    :rtype: float
     """
     value = c_double()
     f(x, byref(value))
