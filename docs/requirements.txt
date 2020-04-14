@@ -1,2 +1,3 @@
 numpy
 sphinx_autodoc_typehints
+sphinx==2.3.1
