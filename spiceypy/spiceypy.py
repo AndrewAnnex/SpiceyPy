@@ -52,6 +52,7 @@ from spiceypy.utils.support_types import (
     Ellipse,
     Plane,
     SpiceCell,
+    SpiceCellPointer,
     SpiceDLADescr,
     SpiceDSKDescr,
     SpiceEKAttDsc,
@@ -6272,7 +6273,9 @@ def gfrepf() -> None:
 
 
 @spice_error_check
-def gfrepi(window: SpiceCell, begmss: str, endmss: str) -> None:
+def gfrepi(
+    window: Union[SpiceCell, SpiceCellPointer], begmss: str, endmss: str
+) -> None:
     """
     This entry point initializes a search progress report.
 
@@ -6285,7 +6288,7 @@ def gfrepi(window: SpiceCell, begmss: str, endmss: str) -> None:
     begmss = stypes.string_to_char_p(begmss)
     endmss = stypes.string_to_char_p(endmss)
     # don't do anything if we were given a pointer to a SpiceCell, like if we were in a callback
-    if not isinstance(window, ctypes.POINTER(stypes.SpiceCell)):
+    if not isinstance(window, SpiceCellPointer):
         assert isinstance(window, stypes.SpiceCell)
         assert window.is_double()
         window = ctypes.byref(window)

@@ -61,6 +61,7 @@ from ctypes import (
     cast,
     Structure,
     string_at,
+    POINTER,
 )
 
 import numpy
@@ -1027,6 +1028,8 @@ class SpiceCell(Structure):
                 return False
         return True
 
+
+SpiceCellPointer = POINTER(SpiceCell)
 
 # Spice Cell classes
 

@@ -24,8 +24,8 @@ SOFTWARE.
 
 import functools
 from ctypes import c_int, c_double, c_char_p, POINTER, CFUNCTYPE, byref
-from .support_types import SpiceCell
-from typing import Callable
+from .support_types import SpiceCell, to_python_string
+from typing import Callable, Union
 
 UDFUNC = CFUNCTYPE(None, c_double, POINTER(c_double))
 UDFUNS = CFUNCTYPE(None, c_double, POINTER(c_double))
@@ -61,116 +61,119 @@ def SpiceUDFUNS(f: Callable[[float], float]) -> UDFUNS:
     """
 
     @functools.wraps(f)
-    def wrapping_udfuns(x: float, value: POINTER(c_double)):
+    def wrapping_udfuns(x: float, value: POINTER(c_double)) -> None:
         result = f(x)
         value[0] = c_double(result)
 
     return UDFUNS(wrapping_udfuns)
 
 
-def SpiceUDFUNB(f) -> UDFUNB:
+def SpiceUDFUNB(f: Callable[[UDFUNS, float], int]) -> UDFUNB:
     """
     Decorator for wrapping python functions in spice udfunb callback type
     :param f: function to be wrapped
-    :type f: builtins.function
     :return: wrapped udfunb function
     """
 
     @functools.wraps(f)
-    def wrapping_udfunb(udf, et, xbool):
-        result = f(udf, et)  # the function takes a udffunc as a argument
+    def wrapping_udfunb(udf: UDFUNS, et: float, xbool: POINTER(c_int)) -> None:
+        result = f(udf, et)
         xbool[0] = c_int(result)  # https://github.com/numpy/numpy/issues/14397
 
     return UDFUNB(wrapping_udfunb)
 
 
-def SpiceUDSTEP(f) -> UDSTEP:
+def SpiceUDSTEP(f: Callable[[float], float]) -> UDSTEP:
     """
     Decorator for wrapping python functions in spice udstep callback type
     :param f: function to be wrapped
-    :type f: builtins.function
     :return: wrapped udstep function
     """
 
     @functools.wraps(f)
-    def wrapping_udstep(x, value):
+    def wrapping_udstep(x: float, value: POINTER(c_double)) -> None:
         result = f(x)
         value[0] = c_double(result)
 
     return UDSTEP(wrapping_udstep)
 
 
-def SpiceUDREFN(f) -> UDREFN:
+def SpiceUDREFN(
+    f: Callable[[float, float, Union[bool, int], Union[bool, int]], float]
+) -> UDREFN:
     """
     Decorator for wrapping python functions in spice udrefn callback type
     :param f: function to be wrapped
-    :type f: builtins.function
     :return: wrapped udrefn function
     """
 
     @functools.wraps(f)
-    def wrapping_udrefn(t1, t2, s1, s2, t):
+    def wrapping_udrefn(
+        t1: float,
+        t2: float,
+        s1: Union[bool, int],
+        s2: Union[bool, int],
+        t: POINTER(c_double),
+    ) -> None:
         result = f(t1, t2, s1, s2)
         t[0] = c_double(result)
 
     return UDREFN(wrapping_udrefn)
 
 
-def SpiceUDREPI(f) -> UDREPI:
+def SpiceUDREPI(f: Callable[[SpiceCell, str, str], None]) -> UDREPI:
     """
     Decorator for wrapping python functions in spice udfrepi callback type
     :param f: function to be wrapped
-    :type f: builtins.function
     :return: wrapped udrepi function
     """
 
     @functools.wraps(f)
-    def wrapping_udrepi(cnfine, srcpre, srcsurf):
-        f(cnfine, srcpre, srcsurf)
+    def wrapping_udrepi(
+        cnfine: POINTER(SpiceCell), srcpre: bytes, srcsurf: bytes
+    ) -> None:
+        f(cnfine, to_python_string(srcpre), to_python_string(srcsurf))
 
     return UDREPI(wrapping_udrepi)
 
 
-def SpiceUDREPU(f) -> UDREPU:
+def SpiceUDREPU(f: Callable[[float, float, float], None]) -> UDREPU:
     """
     Decorator for wrapping python functions in spice udrepu callback type
     :param f: function to be wrapped
-    :type f: builtins.function
     :return: wrapped udrepu function
     """
 
     @functools.wraps(f)
-    def wrapping_udrepu(beg, end, et):
+    def wrapping_udrepu(beg: float, end: float, et: float) -> None:
         f(beg, end, et)
 
     return UDREPU(wrapping_udrepu)
 
 
-def SpiceUDREPF(f) -> UDREPF:
+def SpiceUDREPF(f: Callable) -> UDREPF:
     """
     Decorator for wrapping python functions in spice udrepf callback type
     :param f: function to be wrapped
-    :type f: builtins.function
     :return: wrapped udrepf function
     """
 
     @functools.wraps(f)
-    def wrapping_udrepf():
+    def wrapping_udrepf() -> None:
         f()
 
     return UDREPF(wrapping_udrepf)
 
 
-def SpiceUDBAIL(f: Callable[[], bool]) -> UDBAIL:
+def SpiceUDBAIL(f: Callable[[], Union[bool, int]]) -> UDBAIL:
     """
     Decorator for wrapping python functions in spice udbail callback type
     :param f: function to be wrapped
-    :type f: builtins.function
     :return: wrapped udbail function
     """
 
     @functools.wraps(f)
-    def wrapping_udbail():
+    def wrapping_udbail() -> int:
         result = f()
         return int(result)
 
