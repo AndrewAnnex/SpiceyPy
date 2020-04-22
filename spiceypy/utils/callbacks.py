@@ -24,7 +24,7 @@ SOFTWARE.
 
 import functools
 from ctypes import c_int, c_double, c_char_p, POINTER, CFUNCTYPE, byref
-from .support_types import SpiceCell, to_python_string
+from .support_types import SpiceCell, SpiceCellPointer, to_python_string
 from typing import Callable, Union
 
 UDFUNC = CFUNCTYPE(None, c_double, POINTER(c_double))
@@ -126,7 +126,9 @@ def SpiceUDREFN(
     return UDREFN(wrapping_udrefn)
 
 
-def SpiceUDREPI(f: Callable[[SpiceCell, str, str], None]) -> UDREPI:
+def SpiceUDREPI(
+    f: Callable[[Union[SpiceCell, SpiceCellPointer], str, str], None]
+) -> UDREPI:
     """
     Decorator for wrapping python functions in spice udfrepi callback type
 
@@ -136,7 +138,7 @@ def SpiceUDREPI(f: Callable[[SpiceCell, str, str], None]) -> UDREPI:
 
     @functools.wraps(f)
     def wrapping_udrepi(
-        cnfine: POINTER(SpiceCell), srcpre: bytes, srcsurf: bytes
+        cnfine: Union[SpiceCell, SpiceCellPointer], srcpre: bytes, srcsurf: bytes
     ) -> None:
         f(cnfine, to_python_string(srcpre), to_python_string(srcsurf))
 
