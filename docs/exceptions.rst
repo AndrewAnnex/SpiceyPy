@@ -1,4 +1,4 @@
-Exceptions in SpiceyPY
+Exceptions in SpiceyPy
 ======================
 
 SpiceyPy by default checks the spice error system for errors after all function
@@ -7,20 +7,20 @@ calls and will raise an exception containing the error information when the spic
 Exception Hierarchy Basics
 --------------------------
 
-SpiceyPy exceptions are all based on the :py:exception::`spiceypy.utils.exceptions.SpiceyError` exception.
-SpiceyError is subclassed by :py:exception::`spiceypy.utils.exceptions.SpiceyPyError` to present a more consistent exception class for the user.
+SpiceyPy exceptions are all based on the :py:exception:`spiceypy.utils.exceptions.SpiceyError` exception.
+SpiceyError is subclassed by :py:exception:`spiceypy.utils.exceptions.SpiceyPyError` to present a more consistent exception class for the user.
 SpiceyPyError is subclassed by a number of exceptions that also inherit from some of the common builtin Python exceptions:
 
 .. inheritance-diagram:: spiceypy.utils.exceptions.NotFoundError spiceypy.utils.exceptions.SpiceyPyIOError spiceypy.utils.exceptions.SpiceyPyMemoryError spiceypy.utils.exceptions.SpiceyPyTypeError spiceypy.utils.exceptions.SpiceyPyKeyError spiceypy.utils.exceptions.SpiceyPyIndexError spiceypy.utils.exceptions.SpiceyPyRuntimeError spiceypy.utils.exceptions.SpiceyPyValueError spiceypy.utils.exceptions.SpiceyPyZeroDivisionError
    :top-classes: spiceypy.utils.exceptions.SpiceyError spiceypy.utils.exceptions.SpiceyPyError
 
 Spice defines hundreds of errors in the format "SPICE(ERROR_NAME)" which are also included in SpiceyPy by a slightly different naming convention,
-where a Spice error "SPICE(QUERYFAILURE)" will correspond to the spiceypy exception :py:exception::`spiceypy.utils.exceptions.SpiceQUERYFAILURE`.
+where a Spice error "SPICE(QUERYFAILURE)" will correspond to the spiceypy exception :py:exception:`spiceypy.utils.exceptions.SpiceQUERYFAILURE`.
 
 These errors will inherit the appropriet parent SpiceyPyError with bultin exception mix in if the correct corresponding exception type is known.
-For example, :py:exception::`spiceypy.utils.exceptions.SpiceDIVIDEBYZERO` is a subclass of the :py:exception::`spiceypy.utils.exceptions.SpiceyPyZeroDivisionError`.
+For example, :py:exception:`spiceypy.utils.exceptions.SpiceDIVIDEBYZERO` is a subclass of the :py:exception:`spiceypy.utils.exceptions.SpiceyPyZeroDivisionError`.
 
-:py:exception::`spiceypy.utils.exceptions.SpiceyPyZeroDivisionError` in turn, is a subclass of :py:exception::`spiceypy.utils.exceptions.SpiceyPyError` and the built in :py:exception::`ZeroDivisionError`.
+:py:exception:`spiceypy.utils.exceptions.SpiceyPyZeroDivisionError` in turn, is a subclass of :py:exception:`spiceypy.utils.exceptions.SpiceyPyError` and the built in :py:exception:`ZeroDivisionError`.
 
 Exception Contents
 ------------------
@@ -30,9 +30,10 @@ includes the toolkit version, the short description, explanation, long format de
 and traceback (of spice calls). `Read the NAIF tutorial on exceptions here. <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/Tutorials/pdf/individual_docs/32_exceptions.pdf>`_
 
 Also, by default SpiceyPy captures the 'found' flags some functions return as it is not
-idiomatic to python and instead through a SpiceyError exception. This can be temporarily disabled using
+idiomatic to python as a :py:exception:`spiceypy.utils.exceptions.NotFoundError`. This can be temporarily disabled using
 the :py:meth:`spiceypy.spiceypy.no_found_check` context manager that allows the found
-flag to be returned to the user for action. Outside the context SpiceyPy functions will revert to default behavior.
+flag to be returned to the user for action. Outside the context SpiceyPy functions will revert to default behavior. For vectorized
+functions, the found parameter of the exception will contain an iterable of the found flags to help track down failed calls.
 
 .. code:: python
 
