@@ -28,6 +28,7 @@ Exception Contents
 The exception message is a string that follows the format used elsewhere in spice and
 includes the toolkit version, the short description, explanation, long format description,
 and traceback (of spice calls). `Read the NAIF tutorial on exceptions here. <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/Tutorials/pdf/individual_docs/32_exceptions.pdf>`_
+These values are stored in parameters of the exception object.
 
 Here is an example of the exception message text:
 
@@ -35,7 +36,9 @@ Here is an example of the exception message text:
 
     spice.furnsh("/tmp/_null_kernel.txt")
 
-will result in a exception message::
+will result in the following exception message
+
+.. code-block:: text
 
     ================================================================================
 
