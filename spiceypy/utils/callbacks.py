@@ -41,6 +41,7 @@ UDBAIL = CFUNCTYPE(c_int)
 def SpiceUDFUNC(f: Callable[[float], float]) -> UDFUNC:
     """
     Decorator for wrapping python functions in spice udfunc callback type
+
     :param f: function that has one argument of type float, and returns a float
     :return: wrapped udfunc function
     """
@@ -56,6 +57,7 @@ def SpiceUDFUNC(f: Callable[[float], float]) -> UDFUNC:
 def SpiceUDFUNS(f: Callable[[float], float]) -> UDFUNS:
     """
     Decorator for wrapping python functions in spice udfuns callback type
+
     :param f: function that has one argument of type float, and returns a float
     :return: wrapped udfunc function
     """
@@ -71,6 +73,7 @@ def SpiceUDFUNS(f: Callable[[float], float]) -> UDFUNS:
 def SpiceUDFUNB(f: Callable[[UDFUNS, float], int]) -> UDFUNB:
     """
     Decorator for wrapping python functions in spice udfunb callback type
+
     :param f: function to be wrapped
     :return: wrapped udfunb function
     """
@@ -86,6 +89,7 @@ def SpiceUDFUNB(f: Callable[[UDFUNS, float], int]) -> UDFUNB:
 def SpiceUDSTEP(f: Callable[[float], float]) -> UDSTEP:
     """
     Decorator for wrapping python functions in spice udstep callback type
+
     :param f: function to be wrapped
     :return: wrapped udstep function
     """
@@ -103,6 +107,7 @@ def SpiceUDREFN(
 ) -> UDREFN:
     """
     Decorator for wrapping python functions in spice udrefn callback type
+
     :param f: function to be wrapped
     :return: wrapped udrefn function
     """
@@ -124,6 +129,7 @@ def SpiceUDREFN(
 def SpiceUDREPI(f: Callable[[SpiceCell, str, str], None]) -> UDREPI:
     """
     Decorator for wrapping python functions in spice udfrepi callback type
+
     :param f: function to be wrapped
     :return: wrapped udrepi function
     """
@@ -140,6 +146,7 @@ def SpiceUDREPI(f: Callable[[SpiceCell, str, str], None]) -> UDREPI:
 def SpiceUDREPU(f: Callable[[float, float, float], None]) -> UDREPU:
     """
     Decorator for wrapping python functions in spice udrepu callback type
+
     :param f: function to be wrapped
     :return: wrapped udrepu function
     """
@@ -154,6 +161,7 @@ def SpiceUDREPU(f: Callable[[float, float, float], None]) -> UDREPU:
 def SpiceUDREPF(f: Callable) -> UDREPF:
     """
     Decorator for wrapping python functions in spice udrepf callback type
+
     :param f: function to be wrapped
     :return: wrapped udrepf function
     """
@@ -168,6 +176,7 @@ def SpiceUDREPF(f: Callable) -> UDREPF:
 def SpiceUDBAIL(f: Callable[[], Union[bool, int]]) -> UDBAIL:
     """
     Decorator for wrapping python functions in spice udbail callback type
+
     :param f: function to be wrapped
     :return: wrapped udbail function
     """
