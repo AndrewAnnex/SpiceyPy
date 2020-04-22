@@ -37,30 +37,14 @@ def test_geterror():
     spice.reset()
 
 
-def test_get_spicey_exception():
-    with pytest.raises(spice.stypes.SpiceyError):
-        spice.furnsh(os.path.join(cwd, "_null_kernel.txt"))
-    spice.reset()
-
-
-def test_getSpiceyPyError():
-    with pytest.raises(spice.stypes.SpiceyPyError):
-        spice.furnsh(os.path.join(cwd, "_null_kernel.txt"))
-    spice.reset()
-
-
-def test_getSpiceyPyIOError():
-    with pytest.raises(spice.support_types.SpiceyPyIOError):
-        spice.furnsh(os.path.join(cwd, "_null_kernel.txt"))
-    spice.reset()
-
-
-def test_getIOError():
-    with pytest.raises(IOError,):
-        spice.furnsh(os.path.join(cwd, "_null_kernel.txt"))
-    with pytest.raises(spice.exceptions.SpiceyPyIOError):
-        spice.furnsh(os.path.join(cwd, "_null_kernel.txt"))
-    with pytest.raises(spice.exceptions.SpiceNOSUCHFILE):
+def test_get_spiceypy_exceptions():
+    with pytest.raises(
+        (
+            spice.exceptions.SpiceyError,
+            spice.exceptions.SpiceyPyError,
+            spice.exceptions.SpiceyPyIOError,
+        )
+    ):
         spice.furnsh(os.path.join(cwd, "_null_kernel.txt"))
     spice.reset()
 
@@ -82,13 +66,13 @@ def test_no_loaded_files_exception():
 
 
 def test_found_error_checker():
-    with pytest.raises(spice.stypes.SpiceyError):
-        spice.bodc2n(-9991)
-    spice.reset()
-
-
-def test_foundErrorChecker_notfound():
-    with pytest.raises(spice.stypes.NotFoundError):
+    with pytest.raises(
+        (
+            spice.exceptions.SpiceyError,
+            spice.exceptions.SpiceyPyError,
+            spice.exceptions.NotFoundError,
+        )
+    ):
         spice.bodc2n(-9991)
     spice.reset()
 
