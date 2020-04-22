@@ -118,11 +118,11 @@ def spice_found_exception_thrower(f: Callable) -> Callable:
         if config.catch_false_founds:
             found = res[-1]
             if isinstance(found, bool) and not found:
-                raise stypes.SpiceyError(
+                raise stypes.NotFoundError(
                     "Spice returns not found for function: {}".format(f.__name__),
                     found=found,
                 )
-            elif hasattr(found, "__iter__") and not all(found):
+            elif stypes.is_iterable(found) and not all(found):
                 raise stypes.NotFoundError(
                     "Spice returns not found in a series of calls for function: {}".format(
                         f.__name__

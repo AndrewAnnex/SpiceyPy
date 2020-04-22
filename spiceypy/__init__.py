@@ -26,6 +26,7 @@ __version__ = "3.0.2"
 
 from .spiceypy import *
 from .utils import support_types
+from .utils import exceptions
 
 # Default setting for error reporting so that programs don't just exit out!
 erract("set", 10, "return")

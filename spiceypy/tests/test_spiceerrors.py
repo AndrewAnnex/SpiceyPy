@@ -56,15 +56,29 @@ def test_getSpiceyPyIOError():
 
 
 def test_getIOError():
-    with pytest.raises(IOError):
+    with pytest.raises(IOError,):
+        spice.furnsh(os.path.join(cwd, "_null_kernel.txt"))
+    with pytest.raises(spice.exceptions.SpiceyPyIOError):
+        spice.furnsh(os.path.join(cwd, "_null_kernel.txt"))
+    with pytest.raises(spice.exceptions.SpiceNOSUCHFILE):
         spice.furnsh(os.path.join(cwd, "_null_kernel.txt"))
     spice.reset()
 
 
-def test_emptyKernelPoolException():
+def test_no_loaded_files_exception():
     with pytest.raises(spice.stypes.SpiceyError):
         spice.ckgp(0, 0, 0, "blah")
     spice.reset()
+    with pytest.raises(spice.stypes.NotFoundError):
+        spice.ckgp(0, 0, 0, "blah")
+    spice.reset()
+    with spice.no_found_check():
+        with pytest.raises(spice.stypes.SpiceyPyIOError):
+            spice.ckgp(0, 0, 0, "blah")
+        spice.reset()
+        with pytest.raises(spice.exceptions.SpiceNOLOADEDFILES):
+            spice.ckgp(0, 0, 0, "blah")
+        spice.reset()
 
 
 def test_found_error_checker():

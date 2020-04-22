@@ -48,7 +48,7 @@ try:
 except ImportError:
     import collections as collections_abc
 
-
+from typing import Type
 from ctypes import (
     c_char_p,
     c_int,
@@ -66,122 +66,48 @@ from ctypes import (
 
 import numpy
 from numpy import ctypeslib as numpc
-import spiceypy.utils.exception_lookups as exception_lookups
+
+from .exceptions import (
+    SpiceyError,
+    SpiceyPyError,
+    NotFoundError,
+    SpiceyPyIOError,
+    SpiceyPyMemoryError,
+    SpiceyPyTypeError,
+    SpiceyPyKeyError,
+    SpiceyPyIndexError,
+    SpiceyPyRuntimeError,
+    SpiceyPyZeroDivisionError,
+    SpiceyPyValueError,
+    exceptions,
+)
+
 
 # Collection of supporting functions for wrapper functions
 __author__ = "AndrewAnnex"
 
-errorformat = """
-================================================================================
 
-Toolkit version: {tkvsn}
-
-{short} --
-{explain}
-{long}
-
-{traceback}
-
-================================================================================\
-"""
-
-
-class SpiceyError(Exception):
+def short_to_spiceypy_exception_class(short: str) -> Type[SpiceyError]:
     """
-    SpiceyError wraps CSPICE errors.
-    :type value: str
+    Lookup the correct Spice Exception class
+
+    :param short: Spice error system short description key
+    :return: SpiceyError
     """
-
-    def __init__(self, short="", explain="", long="", traceback="", found=""):
-        self.tkvsn = "CSPICE66"
-        self.short = short
-        self.explain = explain
-        self.long = long
-        self.traceback = traceback
-        self.found = found
-        self.message = errorformat.format(
-            tkvsn=self.tkvsn,
-            short=short,
-            explain=explain,
-            long=long,
-            traceback=traceback,
-        )
-
-    def __str__(self):
-        return self.message
-
-
-class SpiceyPyError(SpiceyError):
-    pass
-
-
-class NotFoundError(SpiceyPyError):
-    def __init__(self, message=None, found=None):
-        self.found = found
-        self.message = message
-
-
-class SpiceyPyIOError(SpiceyPyError, IOError):
-    pass
-
-
-class SpiceyPyMemoryError(SpiceyPyError, MemoryError):
-    pass
-
-
-class SpiceyPyTypeError(SpiceyPyError, TypeError):
-    pass
-
-
-class SpiceyPyKeyError(SpiceyPyError, KeyError):
-    pass
-
-
-class SpiceyPyIndexError(SpiceyPyError, IndexError):
-    pass
-
-
-class SpiceyPyRuntimeError(SpiceyPyError, RuntimeError):
-    pass
-
-
-class SpiceyPyValueError(SpiceyPyError, ValueError):
-    pass
-
-
-class SpiceyPyZeroDivisionError(SpiceyPyError, ZeroDivisionError):
-    pass
-
-
-def short_to_spiceypy_exception_class(short):
-    # TODO: this could just all be replaced
-    #     with a large dictionary
-    if short in exception_lookups.ioerrors:
-        return SpiceyPyIOError
-    elif short in exception_lookups.memoryerrors:
-        return SpiceyPyMemoryError
-    elif short in exception_lookups.typeerrors:
-        return SpiceyPyTypeError
-    elif short in exception_lookups.keyerrors:
-        return SpiceyPyKeyError
-    elif short in exception_lookups.indexerrors:
-        return SpiceyPyIndexError
-    elif short in exception_lookups.runtimeerrors:
-        return SpiceyPyRuntimeError
-    elif short in exception_lookups.valueerrors:
-        return SpiceyPyValueError
-    elif short in exception_lookups.zerodivisionerrors:
-        return SpiceyPyZeroDivisionError
-    else:
-        return SpiceyPyError
+    return exceptions.get(short, SpiceyError)
 
 
 def dynamically_instantiate_spiceyerror(
-    short="", explain="", long="", traceback="", found=""
+    short: str = "",
+    explain: str = "",
+    long: str = "",
+    traceback: str = "",
+    found: str = "",
 ):
     """
     Dynamically creates a SpiceyPyException which is a subclass of SpiceyError and
     may also be subclassed to other exceptions such as IOError and such depending on the Short description
+
     :param short:
     :param explain:
     :param long:
@@ -190,7 +116,9 @@ def dynamically_instantiate_spiceyerror(
     :return:
     """
     base_exception = short_to_spiceypy_exception_class(short)
-    return base_exception(short=short, explain=explain, long=long, traceback=traceback)
+    return base_exception(
+        short=short, explain=explain, long=long, traceback=traceback, found=found
+    )
 
 
 def to_double_vector(x):
@@ -272,8 +200,9 @@ def c_vector_to_python(x):
     """
     Convert the c vector data into the correct python data type
     (numpy arrays or strings)
-    :param x:
-    :return:
+
+    :param x: ctypes array
+    :return: Iterable
     """
     if isinstance(x[0], bool):
         return numpy.frombuffer(x, dtype=numpy.bool).copy()
@@ -292,6 +221,7 @@ def c_int_vector_to_bool_python(x):
 def c_matrix_to_numpy(x):
     """
     Convert a ctypes 2d array (or matrix) into a numpy array for python use
+
     :param x: thing to convert
     :return: numpy.ndarray
     """
@@ -300,6 +230,8 @@ def c_matrix_to_numpy(x):
 
 def string_to_char_p(inobject, inlen=None):
     """
+    convert a python string to a char_p
+
     :param inobject: input string, int for getting null string of length of int
     :param inlen: optional parameter, length of a given string can be specified
     :return:
