@@ -29,10 +29,30 @@ The exception message is a string that follows the format used elsewhere in spic
 includes the toolkit version, the short description, explanation, long format description,
 and traceback (of spice calls). `Read the NAIF tutorial on exceptions here. <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/Tutorials/pdf/individual_docs/32_exceptions.pdf>`_
 
+Here is an example of the exception message text:
+
+.. code:: python
+
+    spice.furnsh("/tmp/_null_kernel.txt")
+
+will result in a exception message::
+
+    ================================================================================
+
+    Toolkit version: CSPICE66
+
+    SPICE(NOSUCHFILE) --
+
+    The attempt to load "/tmp/_null_kernel.txt" by the routine FURNSH failed. It could not be located.
+
+    furnsh_c --> FURNSH --> ZZLDKER
+
+    ================================================================================
+
 Also, by default SpiceyPy captures the 'found' flags some functions return as it is not
-idiomatic to python as a :py:exc:`spiceypy.exceptions.NotFoundError` . This can be temporarily disabled using
+idiomatic to python as a :py:exc:`spiceypy.utils.exceptions.NotFoundError` . This can be temporarily disabled using
 the :py:meth:`spiceypy.spiceypy.no_found_check` context manager that allows the found
-flag to be returned to the user for action. Outside the context SpiceyPy functions will revert to default behavior. For vectorized
+flag to be returned to the user for action. Outside of that context SpiceyPy functions will revert to default behavior. For vectorized
 functions, the found parameter of the exception will contain an iterable of the found flags to help track down failed calls.
 
 .. code:: python
