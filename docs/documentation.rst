@@ -25,6 +25,14 @@ spiceypy.utils.callbacks module
     :undoc-members:
     :show-inheritance:
 
+spiceypy.utils.exceptions module
+-----------------------------------
+
+.. automodule:: spiceypy.utils.exceptions
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 spiceypy.utils.libspice module
 ------------------------------
 
