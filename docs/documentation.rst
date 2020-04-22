@@ -17,6 +17,14 @@ spiceypy.utils.support_types module
     :undoc-members:
     :show-inheritance:
 
+spiceypy.utils.callbacks module
+-----------------------------------
+
+.. automodule:: spiceypy.utils.callbacks
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 spiceypy.utils.libspice module
 ------------------------------
 

@@ -9774,7 +9774,7 @@ def test_uddc():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("JAN 1 2009")
 
-    @spiceypy.utils.callbacks.SpiceUDFUNS
+    @spiceypy.utils.callbacks.SpiceUDFUNC
     def udfunc(et_in):
         pos, new_et = spice.spkpos("MERCURY", et_in, "J2000", "LT+S", "MOON")
         return new_et
