@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+from typing import Union, Iterable
+
 errorformat = """
 ================================================================================
 
@@ -39,7 +41,7 @@ Toolkit version: {tkvsn}
 
 class SpiceyError(Exception):
     """
-    SpiceyError wraps CSPICE errors.
+    SpiceyError wraps CSPICE errors for use in Python.
     """
 
     def __init__(
@@ -48,8 +50,21 @@ class SpiceyError(Exception):
         explain: str = "",
         long: str = "",
         traceback: str = "",
-        found: str = "",
-    ):
+        found: Union[bool, Iterable[bool], Iterable[int]] = False,
+    ) -> None:
+        """
+        Base python exception type for SpiceyPy, maintained for backwards compatibilty.
+
+        More information regarding the error system internal to spice can be found at the naif website.
+
+        https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/error.html
+
+        :param short: A short, descriptive message.
+        :param explain: An expanded form of the short message if present.
+        :param long: Optionally, a long message, possibly containing data.
+        :param traceback: the internal spice sequence of calls leading to the routine that detected the error.
+        :param found: if present
+        """
         self.tkvsn = "CSPICE66"
         self.short = short
         self.explain = explain
@@ -70,10 +85,10 @@ class SpiceyError(Exception):
 
 class SpiceyPyError(SpiceyError):
     """
-    Thin exception for backwards compatibility with future exception types
+    Thin wrapping exception for SpiceyError.
 
     In SpiceyPy versions 3.0.2 and prior, the base exception was a SpiceyError
-    SpiceyPyError is a slightly more verbose error name.
+    SpiceyPyError is a slightly more verbose and correct error name.
     """
 
     pass
@@ -81,10 +96,12 @@ class SpiceyPyError(SpiceyError):
 
 class NotFoundError(SpiceyPyError):
     """
-    A NotFound Error for Spice
+    A NotFound Error from Spice
     """
 
-    def __init__(self, message=None, found: bool = False):
+    def __init__(
+        self, message=None, found: Union[bool, Iterable[bool], Iterable[int]] = False
+    ):
         self.found = found
         self.message = message
 

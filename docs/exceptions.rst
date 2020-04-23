@@ -2,7 +2,7 @@ Exceptions in SpiceyPy
 ======================
 
 SpiceyPy by default checks the spice error system for errors after all function
-calls and will raise an exception containing the error information when the spice indicates an error has occured.
+calls and will raise an exception containing the error information when the spice indicates an error has occurred.
 
 Exception Hierarchy Basics
 --------------------------
@@ -15,12 +15,15 @@ SpiceyPyError is subclassed by a number of exceptions that also inherit from som
    :top-classes: spiceypy.utils.exceptions.SpiceyError spiceypy.utils.exceptions.SpiceyPyError
 
 Spice defines hundreds of errors in the format "SPICE(ERROR_NAME)" which are also included in SpiceyPy by a slightly different naming convention,
-where a Spice error "SPICE(QUERYFAILURE)" will correspond to the spiceypy exception :py:exc:`spiceypy.utils.exceptions.SpiceQUERYFAILURE`.
+where a Spice error "SPICE(QUERYFAILURE)" will correspond to the SpiceyPy exception :py:exc:`spiceypy.utils.exceptions.SpiceQUERYFAILURE`.
 
-These errors will inherit the appropriet parent SpiceyPyError with bultin exception mix in if the correct corresponding exception type is known.
+These errors will inherit the appropriate parent SpiceyPyError with builtin exception mix-in if the correct corresponding exception type is known.
 For example, :py:exc:`spiceypy.utils.exceptions.SpiceDIVIDEBYZERO` is a subclass of the :py:exc:`spiceypy.utils.exceptions.SpiceyPyZeroDivisionError`.
 
 :py:exc:`spiceypy.utils.exceptions.SpiceyPyZeroDivisionError` in turn, is a subclass of :py:exc:`spiceypy.utils.exceptions.SpiceyPyError` and the built in :py:exc:`ZeroDivisionError`.
+
+By subclassing the errors in this way, users can tune how granular their exception handling code will respond.
+For most users the top level SpiceyError and SpiceyPyError will be sufficient for their needs.
 
 Exception Contents
 ------------------
@@ -36,7 +39,7 @@ Here is an example of the exception message text:
 
     spice.furnsh("/tmp/_null_kernel.txt")
 
-will result in the following exception message
+will result in the following exception message which is also a parameter of the exception object.
 
 .. code-block:: text
 
@@ -51,6 +54,24 @@ will result in the following exception message
     furnsh_c --> FURNSH --> ZZLDKER
 
     ================================================================================
+
+SpiceyErrors, SpiceyPyErrors, and all subclasses of SpiceyPyErrors contain the following parameters that the user can access:
+
+1. tkvsn, the toolkit version of cspice used for example: "CSPICE66".
+
+2. short, the short error description which is the same as the granular exception object type when possible, for example: "SPICE(NOSUCHFILE)".
+
+3. explain, if present is the explanation from spice for the error.
+
+4. long, the long error message description from spice, for example: "The attempt to load "/tmp/_null_kernel.txt" by the routine FURNSH failed. It could not be located."
+
+5. traceback, sequence of calls within spice leading to the error, for example: "furnsh_c --> FURNSH --> ZZLDKER".
+
+6. message, the full exception message following the spice template from the example above.
+
+
+Not Found Errors
+----------------
 
 Also, by default SpiceyPy captures the 'found' flags some functions return as it is not
 idiomatic to python as a :py:exc:`spiceypy.utils.exceptions.NotFoundError` . This can be temporarily disabled using
@@ -70,7 +91,7 @@ functions, the found parameter of the exception will contain an iterable of the 
 
     spice.bodc2n(-9991) # will raise an exception again
 
-There is also an accompanying context manager for enabling the default spiceypy behavior within a code block like so:
+There is also an accompanying context manager for enabling the default SpiceyPy behavior within a code block like so:
 
 .. code:: python
 
