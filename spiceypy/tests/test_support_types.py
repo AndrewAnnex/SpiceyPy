@@ -177,7 +177,7 @@ def test_to_int_matrix():
 def test_to_improve_coverage():
     # SpiceyError().__str__()
     xsept = spice.stypes.SpiceyError("abc")
-    assert str(xsept) == "abc"
+    assert xsept.short == "abc"
     # stypes.empty_char_array when missing keyword arguments
     eca = stypes.empty_char_array()
     # stypes.empty_double_matrix and stypes.empty_int_matrix when x is c_int

@@ -21,13 +21,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-
+from contextlib import contextmanager
+from datetime import datetime, timezone
+import functools
 import ctypes
+from typing import Callable, Iterator, Iterable, Optional, Tuple, Union, Sequence
+
+import numpy
+from numpy import ndarray, str_
+
 from .utils import support_types as stypes
-from .utils.support_types import Cell_Char, Cell_Bool, Cell_Double, Cell_Int, Cell_Time
 from .utils.libspicehelper import libspice
 from . import config
-from .utils.callbacks import SpiceUDFUNS, SpiceUDFUNB
+
 from .utils.callbacks import (
     UDFUNC,
     UDFUNS,
@@ -38,15 +44,14 @@ from .utils.callbacks import (
     UDREPU,
     UDREPF,
     UDBAIL,
+    SpiceUDFUNS,
+    SpiceUDFUNB,
 )
-import functools
-import numpy
-from contextlib import contextmanager
-from datetime import datetime, timezone
 
-from numpy import ndarray, str_
-from spiceypy.utils.support_types import (
+from .utils.support_types import (
     Cell_Char,
+    Cell_Bool,
+    Cell_Time,
     Cell_Double,
     Cell_Int,
     Ellipse,
@@ -58,7 +63,7 @@ from spiceypy.utils.support_types import (
     SpiceEKAttDsc,
     SpiceEKSegSum,
 )
-from typing import Callable, Iterator, Iterable, Optional, Tuple, Union, Sequence
+
 
 __author__ = "AndrewAnnex"
 
@@ -72,21 +77,20 @@ _SPICE_EK_EKRCEX_ROOM_DEFAULT = 100  # Enough?
 
 def check_for_spice_error(f: Optional[Callable]) -> None:
     """
-    Internal function to check
-    :param f:
+    Internal decorator function to check spice error system for failed calls
+
+    :param f: function
     :raise stypes.SpiceyError:
     """
     if failed():
-        errorparts = {
-            "tkvsn": tkvrsn("TOOLKIT").replace("CSPICE_", ""),
-            "short": getmsg("SHORT", 26),
-            "explain": getmsg("EXPLAIN", 100).strip(),
-            "long": getmsg("LONG", 321).strip(),
-            "traceback": qcktrc(200),
-        }
-        msg = stypes.errorformat.format(**errorparts)
+        short = getmsg("SHORT", 26)
+        explain = getmsg("EXPLAIN", 100).strip()
+        long = getmsg("LONG", 1841).strip()
+        traceback = qcktrc(200)
         reset()
-        raise stypes.SpiceyError(msg)
+        raise stypes.dynamically_instantiate_spiceyerror(
+            short=short, explain=explain, long=long, traceback=traceback
+        )
 
 
 def spice_error_check(f):
@@ -120,12 +124,12 @@ def spice_found_exception_thrower(f: Callable) -> Callable:
         if config.catch_false_founds:
             found = res[-1]
             if isinstance(found, bool) and not found:
-                raise stypes.SpiceyError(
+                raise stypes.NotFoundError(
                     "Spice returns not found for function: {}".format(f.__name__),
                     found=found,
                 )
-            elif hasattr(found, "__iter__") and not all(found):
-                raise stypes.SpiceyError(
+            elif stypes.is_iterable(found) and not all(found):
+                raise stypes.NotFoundError(
                     "Spice returns not found in a series of calls for function: {}".format(
                         f.__name__
                     ),

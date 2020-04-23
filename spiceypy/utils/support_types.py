@@ -48,7 +48,7 @@ try:
 except ImportError:
     import collections as collections_abc
 
-
+from typing import Type
 from ctypes import (
     c_char_p,
     c_int,
@@ -67,36 +67,58 @@ from ctypes import (
 import numpy
 from numpy import ctypeslib as numpc
 
+from .exceptions import (
+    SpiceyError,
+    SpiceyPyError,
+    NotFoundError,
+    SpiceyPyIOError,
+    SpiceyPyMemoryError,
+    SpiceyPyTypeError,
+    SpiceyPyKeyError,
+    SpiceyPyIndexError,
+    SpiceyPyRuntimeError,
+    SpiceyPyZeroDivisionError,
+    SpiceyPyValueError,
+    exceptions,
+)
+
+
 # Collection of supporting functions for wrapper functions
 __author__ = "AndrewAnnex"
 
-errorformat = """
-================================================================================
 
-Toolkit version: {tkvsn}
-
-{short} --
-{explain}
-{long}
-
-{traceback}
-
-================================================================================\
-"""
-
-
-class SpiceyError(Exception):
+def short_to_spiceypy_exception_class(short: str) -> Type[SpiceyError]:
     """
-    SpiceyError wraps CSPICE errors.
-    :type value: str
+    Lookup the correct Spice Exception class
+
+    :param short: Spice error system short description key
+    :return: SpiceyError
     """
+    return exceptions.get(short, SpiceyError)
 
-    def __init__(self, value, found=None):
-        self.value = value
-        self.found = found
 
-    def __str__(self):
-        return self.value
+def dynamically_instantiate_spiceyerror(
+    short: str = "",
+    explain: str = "",
+    long: str = "",
+    traceback: str = "",
+    found: str = "",
+):
+    """
+    Dynamically creates a SpiceyPyException which is a subclass of SpiceyError and
+    may also be subclassed to other exceptions such as IOError and such depending on the Short description
+
+    :param short:
+    :param explain:
+    :param long:
+    :param traceback:
+    :param found:
+    :return:
+    """
+    base_exception = short_to_spiceypy_exception_class(short)
+    return base_exception(
+        short=short, explain=explain, long=long, traceback=traceback, found=found
+    )
 
 
 def to_double_vector(x):
@@ -178,8 +200,9 @@ def c_vector_to_python(x):
     """
     Convert the c vector data into the correct python data type
     (numpy arrays or strings)
-    :param x:
-    :return:
+
+    :param x: ctypes array
+    :return: Iterable
     """
     if isinstance(x[0], bool):
         return numpy.frombuffer(x, dtype=numpy.bool).copy()
@@ -198,6 +221,7 @@ def c_int_vector_to_bool_python(x):
 def c_matrix_to_numpy(x):
     """
     Convert a ctypes 2d array (or matrix) into a numpy array for python use
+
     :param x: thing to convert
     :return: numpy.ndarray
     """
@@ -206,6 +230,8 @@ def c_matrix_to_numpy(x):
 
 def string_to_char_p(inobject, inlen=None):
     """
+    convert a python string to a char_p
+
     :param inobject: input string, int for getting null string of length of int
     :param inlen: optional parameter, length of a given string can be specified
     :return:

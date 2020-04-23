@@ -37,20 +37,42 @@ def test_geterror():
     spice.reset()
 
 
-def test_get_spicey_exception():
-    with pytest.raises(spice.stypes.SpiceyError):
+def test_get_spiceypy_exceptions():
+    with pytest.raises(
+        (
+            spice.exceptions.SpiceyError,
+            spice.exceptions.SpiceyPyError,
+            spice.exceptions.SpiceyPyIOError,
+        )
+    ):
         spice.furnsh(os.path.join(cwd, "_null_kernel.txt"))
     spice.reset()
 
 
-def test_empty_kernel_pool_exception():
+def test_no_loaded_files_exception():
     with pytest.raises(spice.stypes.SpiceyError):
         spice.ckgp(0, 0, 0, "blah")
     spice.reset()
+    with pytest.raises(spice.stypes.NotFoundError):
+        spice.ckgp(0, 0, 0, "blah")
+    spice.reset()
+    with spice.no_found_check():
+        with pytest.raises(spice.stypes.SpiceyPyIOError):
+            spice.ckgp(0, 0, 0, "blah")
+        spice.reset()
+        with pytest.raises(spice.exceptions.SpiceNOLOADEDFILES):
+            spice.ckgp(0, 0, 0, "blah")
+        spice.reset()
 
 
 def test_found_error_checker():
-    with pytest.raises(spice.stypes.SpiceyError):
+    with pytest.raises(
+        (
+            spice.exceptions.SpiceyError,
+            spice.exceptions.SpiceyPyError,
+            spice.exceptions.NotFoundError,
+        )
+    ):
         spice.bodc2n(-9991)
     spice.reset()
 
@@ -110,9 +132,9 @@ def test_found_check():
 
 
 def test_multiple_founds():
-    success = spice.stypes.SpiceyError(value="test", found=(True, True))
+    success = spice.stypes.NotFoundError(message="test", found=(True, True))
     assert all(success.found)
-    failed = spice.stypes.SpiceyError(value="test", found=(True, False))
+    failed = spice.stypes.NotFoundError(message="test", found=(True, False))
     assert not all(failed.found)
     # def test_fun
     @spice.spice_found_exception_thrower
@@ -121,4 +143,8 @@ def test_multiple_founds():
 
     # test it
     with pytest.raises(spice.stypes.SpiceyError):
-        a = test_fun()
+        test_fun()
+
+    # test it
+    with pytest.raises(spice.stypes.NotFoundError):
+        test_fun()
