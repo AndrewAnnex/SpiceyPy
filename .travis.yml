@@ -33,7 +33,7 @@ before_install:
 install:
 - python setup.py install
 script:
-- coverage run -m pytest --pyargs spiceypy
+- coverage run -m pytest --pyargs spiceypy --cov=spiceypy/
 after_success:
 - coveralls
 deploy:
