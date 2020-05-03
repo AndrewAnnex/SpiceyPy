@@ -49,25 +49,23 @@ install:
   - set PATH=%PYTHON%\\scripts;%PATH%
 
   # Download things we absolutely need
-  - pip install wheel twine coveralls coverage
+  - pip install wheel twine
   - pip install -r requirements.txt
 
   # Now install spiceypy
-  - IF "%ARCH%"=="32" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86) ELSE (ECHO "probably a 64bit build")
-  - IF "%ARCH%"=="64" (call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64) ELSE (ECHO "probably a 32bit build")
+  - call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64
   - "%PYTHON%/python setup.py install"
 
   - ECHO "Installed SpiceyPy!"
   - "%PYTHON%/Scripts/py.test --version"
-  - "%PYTHON%/Scripts/coverage --version"
 
 test_script:
-  - "%PYTHON%/Scripts/coverage run --source spiceypy -m pytest --pyargs spiceypy"
+  - "%PYTHON%/Scripts/py.test --pyargs spiceypy --cov=spiceypy --cov-report=xml"
 
 after_test:
   - ECHO "DONE!"
   - ECHO "Reporting Coverage..."
-  - "%PYTHON%/Scripts/coveralls"
+  - "%PYTHON%/Scripts/codecov"
   - ECHO "BUILDING WHEELS..."
   - "%PYTHON%/python setup.py sdist bdist_wheel --plat-name=%PLAT_NAME% --python-tag=%PY_TAG%"
   - ps: rm dist/*.egg

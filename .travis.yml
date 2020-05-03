@@ -33,9 +33,9 @@ before_install:
 install:
 - python setup.py install
 script:
-- coverage run --source spiceypy -m pytest --pyargs spiceypy
+- py.test --pyargs spiceypy --cov=spiceypy --cov-report=xml
 after_success:
-- coveralls
+- codecov
 deploy:
   provider: pypi
   user: andrewannex
