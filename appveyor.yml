@@ -59,7 +59,7 @@ install:
   - "%PYTHON%/Scripts/py.test --version"
 
 test_script:
-  - "%PYTHON%/Scripts/py.test spiceypy/tests"
+  - "%PYTHON%/Scripts/py.test --pyargs spiceypy"
 
 after_test:
   - ECHO "DONE!"
