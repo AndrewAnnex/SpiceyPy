@@ -47,7 +47,7 @@ install:
   - set PATH=%PYTHON%\\scripts;%PATH%
 
   # Download things we absolutely need
-  - pip install wheel twine coveralls
+  - pip install wheel twine coveralls coverage
   - pip install -r requirements.txt
 
   # Now install spiceypy
@@ -57,9 +57,10 @@ install:
 
   - ECHO "Installed SpiceyPy!"
   - "%PYTHON%/Scripts/py.test --version"
+  - "%PYTHON%/Scripts/coverage --version"
 
 test_script:
-  - "%PYTHON%/Scripts/py.test --pyargs spiceypy"
+  - "%PYTHON%/Scripts/coverage run --source spiceypy -m pytest --pyargs spiceypy"
 
 after_test:
   - ECHO "DONE!"
