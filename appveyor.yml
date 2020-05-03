@@ -9,6 +9,8 @@ environment:
       WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\windows_sdk.cmd"
   PYPI_PASSWORD:
     secure: ojP0ftEgmrZcijN49vQEPz39rkcPyOxtjwNp5hUYkdKxQq47DwkiaWOnVA11nog637VUmRnHb07uXwvrhK4bbg==
+  COVERALLS_REPO_TOKEN:
+    secure: b7s0QO7an/Ku5eLB/Hws4UaCYVFZ1RgeXKFvedSsifkV02vrKHDYH+Yedf2B0Jlk
 
   matrix:
 
@@ -64,6 +66,8 @@ test_script:
 
 after_test:
   - ECHO "DONE!"
+  - ECHO "Reporting Coverage..."
+  - "%PYTHON%/Scripts/coveralls"
   - ECHO "BUILDING WHEELS..."
   - "%PYTHON%/python setup.py sdist bdist_wheel --plat-name=%PLAT_NAME% --python-tag=%PY_TAG%"
   - ps: rm dist/*.egg
