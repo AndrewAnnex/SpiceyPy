@@ -10,7 +10,7 @@ matrix:
           python: 3.8
         - os: osx
           language: generic
-          env: PYVERSION='3.6.0'
+          env: PYVERSION='3.6.2'
         - os: osx
           language: generic
           env: PYVERSION='3.7.0'
