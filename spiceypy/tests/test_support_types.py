@@ -81,11 +81,15 @@ def test_spicecell_equality():
     spice.appndi([1, 2, 3], c2)
     c3 = stypes.Cell_Int(8)
     spice.appndi([1, 2, 4], c3)
+    c4 = stypes.Cell_Int(8)
+    spice.appndi([1, 2, 3, 3], c4)
     assert c1 != 1
     assert c1 == c2
     assert c1 != c3
     c3 = spice.valid(3, 3, c3)
-    assert c1 != c3
+    assert c3.isSet
+    assert not c4.isSet
+    assert c1 != c4
 
 
 def test_empty_spice_cell_slicing():
