@@ -1040,9 +1040,9 @@ class SpiceCell(Structure):
         :param other:
         :return:
         """
-        if len(self) != len(other):
-            return False
         if not hasattr(other, "__iter__"):
+            return False
+        if len(self) != len(other):
             return False
         if isinstance(other, SpiceCell):
             if other.dtype != self.dtype:

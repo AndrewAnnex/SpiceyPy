@@ -77,6 +77,13 @@ def test_found_error_checker():
     spice.reset()
 
 
+def test_error_to_str():
+    try:
+        spice.bodc2n(-9991)
+    except spice.exceptions.SpiceyError as sp:
+        assert str(sp) != ""
+
+
 def test_disable_found_catch():
     spice.kclear()
     with spice.no_found_check():

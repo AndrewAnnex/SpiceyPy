@@ -74,6 +74,20 @@ def test_SpiceCell():
     assert str(test_cell).startswith("<SpiceCell")
 
 
+def test_spicecell_equality():
+    c1 = stypes.Cell_Int(8)
+    spice.appndi([1, 2, 3], c1)
+    c2 = stypes.Cell_Int(8)
+    spice.appndi([1, 2, 3], c2)
+    c3 = stypes.Cell_Int(8)
+    spice.appndi([1, 2, 4], c3)
+    assert c1 != 1
+    assert c1 == c2
+    assert c1 != c3
+    c3 = spice.valid(3, 3, c3)
+    assert c1 != c3
+
+
 def test_empty_spice_cell_slicing():
     test_cell = stypes.SPICEDOUBLE_CELL(1)
     assert test_cell[0:1] == []
