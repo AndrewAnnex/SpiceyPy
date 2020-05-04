@@ -11,20 +11,28 @@ SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N66), written using c
 +------------------------+-------------------+--------+-----------------+------------+--------------+
 
 .. |Travis Build Status| image:: https://img.shields.io/travis/AndrewAnnex/SpiceyPy/master?logo=travis
+   :alt: Travis - Build Status
    :target: https://travis-ci.org/AndrewAnnex/SpiceyPy
 .. |Windows Build Status| image:: https://img.shields.io/appveyor/build/AndrewAnnex/SpiceyPy/master?logo=appveyor
+   :alt: Appveyor - Build Status
    :target: https://ci.appveyor.com/project/AndrewAnnex/spiceypy
-.. |Coverage Status| image:: https://img.shields.io/coveralls/github/AndrewAnnex/SpiceyPy/master?logo=coveralls
-   :target: https://coveralls.io/github/AndrewAnnex/SpiceyPy?branch=master
+.. |Coverage Status| image:: https://img.shields.io/codecov/c/github/AndrewAnnex/SpiceyPy/master?logo=codecov
+   :alt: Codecov - Test Coverage
+   :target: https://codecov.io/gh/AndrewAnnex/SpiceyPy
 .. |Docs| image:: https://img.shields.io/readthedocs/spiceypy/master
+   :alt: Readthedocs - Documentation
    :target: http://spiceypy.readthedocs.org/en/master/
 .. |Join the chat| image:: https://img.shields.io/gitter/room/andrewannex/spiceypy
+   :alt: Gitter - Chat room
    :target: https://gitter.im/AndrewAnnex/SpiceyPy
 .. |Citation| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.593914.svg
+   :alt: Citation Information: Zenodo
    :target: https://doi.org/10.5281/zenodo.593914
 .. |JOSS| image:: https://joss.theoj.org/papers/98136d30bea9982ad160d251e2039fee/status.svg
+   :alt: Citation Information: Journal of Open Source Software
    :target: https://joss.theoj.org/papers/98136d30bea9982ad160d251e2039fee
 .. |Black| image:: https://img.shields.io/badge/code%20style-black-000000.svg 
+   :alt: Code Style - Black
    :target: https://github.com/psf/black
 
 
@@ -63,8 +71,10 @@ Installation
 +----------------+-------------------+
 
 .. |PyPI| image:: https://img.shields.io/pypi/v/spiceypy.svg
+   :alt: PyPI - python package index
    :target: https://pypi.org/project/spiceypy/
 .. |Conda Version| image:: https://img.shields.io/conda/vn/conda-forge/spiceypy.svg
+   :alt: Conda - conda-forge feedstock for SpiceyPy
    :target: https://anaconda.org/conda-forge/spiceypy
 
 SpiceyPy can be installed using pip by running:

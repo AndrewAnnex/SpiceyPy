@@ -10,7 +10,7 @@ matrix:
           python: 3.8
         - os: osx
           language: generic
-          env: PYVERSION='3.6.0'
+          env: PYVERSION='3.6.2'
         - os: osx
           language: generic
           env: PYVERSION='3.7.0'
@@ -33,9 +33,9 @@ before_install:
 install:
 - python setup.py install
 script:
-- coverage run --source=spiceypy setup.py test
+- coverage run --source spiceypy -m pytest --pyargs spiceypy
 after_success:
-- coveralls
+- codecov
 deploy:
   provider: pypi
   user: andrewannex
