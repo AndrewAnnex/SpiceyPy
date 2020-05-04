@@ -33,7 +33,7 @@ before_install:
 install:
 - python setup.py install
 script:
-- py.test --pyargs spiceypy --cov=spiceypy --cov-report=xml
+- coverage run --source spiceypy -m pytest --pyargs spiceypy
 after_success:
 - codecov
 deploy:

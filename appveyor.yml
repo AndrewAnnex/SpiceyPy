@@ -60,7 +60,7 @@ install:
   - "%PYTHON%/Scripts/py.test --version"
 
 test_script:
-  - "%PYTHON%/Scripts/py.test --pyargs spiceypy --cov=spiceypy --cov-report=xml"
+  - "%PYTHON%/Scripts/coverage run --source spiceypy -m pytest --pyargs spiceypy"
 
 after_test:
   - ECHO "DONE!"
