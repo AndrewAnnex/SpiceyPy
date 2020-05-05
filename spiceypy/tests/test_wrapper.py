@@ -2217,8 +2217,8 @@ def test_dskxv_2():
     verticies = []
     raydirs = []
 
-    while lon < 180.0:
-        while nlstep <= 180:
+    while lon <= 180.0:
+        while nlstep <= 180.0:
             if lon == 180.0:
                 lat = 90.0 - nlstep * latstp
             else:
@@ -2228,12 +2228,12 @@ def test_dskxv_2():
                     lat = -90.0 + polmrg
                 else:
                     lat = 90.0 - nlstep * latstp
-                vertex = spice.latrec(r, np.radians(lon), np.radians(lat))
-                raydir = spice.vminus(vertex)
-                verticies.append(vertex)
-                raydirs.append(raydir)
-                nrays += 1
-                nlstep += 1
+            vertex = spice.latrec(r, np.radians(lon), np.radians(lat))
+            raydir = spice.vminus(vertex)
+            verticies.append(vertex)
+            raydirs.append(raydir)
+            nrays += 1
+            nlstep += 1
         lon += lonstp
         lat = 90.0
         nlstep = 0
@@ -2244,8 +2244,8 @@ def test_dskxv_2():
         False, target, srflst, 0.0, fixref, verticies, raydirs
     )
     # check output
-    assert len(xpt) == 32580
-    assert len(foundarray) == 32580
+    assert len(xpt) == 32761
+    assert len(foundarray) == 32761
     assert foundarray.all()
     spice.kclear()
 
@@ -3950,7 +3950,7 @@ def test_gfevnt():
     assert spice.timout(result[3], sTimout) == "2001-FEB-20 21:52:07.900872 (TDB)"
     # Cleanup
     if spice.gfbail():
-        spice.gfclrh()
+        spice.gfclrh()  # pragma: no cover
     spice.gfsstp(0.5)
     spice.kclear()
 
@@ -4007,7 +4007,7 @@ def test_gffove():
     assert spice.timout(result[1], sTimout) == "2013-FEB-25 11:45:00 UTC"
     # Cleanup
     if spice.gfbail():
-        spice.gfclrh()
+        spice.gfclrh()  # pragma: no cover
     spice.gfsstp(0.5)
     spice.kclear()
 
@@ -4090,7 +4090,7 @@ def test_gfinth():
 def test_gfocce():
     spice.kclear()
     if spice.gfbail():
-        spice.gfclrh()
+        spice.gfclrh()  # pragma: no cover
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et("2001 DEC 01 00:00:00 TDB")
     et1 = spice.str2et("2002 JAN 01 00:00:00 TDB")
@@ -4128,7 +4128,7 @@ def test_gfocce():
         result,
     )
     if spice.gfbail():
-        spice.gfclrh()
+        spice.gfclrh()  # pragma: no cover
     count = spice.wncard(result)
     assert count == 1
     spice.kclear()

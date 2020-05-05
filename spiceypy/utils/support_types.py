@@ -43,10 +43,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-try:
-    import collections.abc as collections_abc
-except ImportError:
-    import collections as collections_abc
+import collections.abc as collections_abc
 
 from typing import Type
 from ctypes import (
@@ -1040,9 +1037,9 @@ class SpiceCell(Structure):
         :param other:
         :return:
         """
-        if len(self) != len(other):
-            return False
         if not hasattr(other, "__iter__"):
+            return False
+        if len(self) != len(other):
             return False
         if isinstance(other, SpiceCell):
             if other.dtype != self.dtype:
