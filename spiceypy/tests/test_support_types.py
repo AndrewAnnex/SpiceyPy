@@ -169,10 +169,6 @@ def test_to_double_matrix():
     assert len(made_from_tuple) == 2
     made_from_numpy_array = stypes.to_double_matrix(np.array([[1.0, 2.0], [3.0, 4.0]]))
     assert len(made_from_numpy_array) == 2
-    made_from_numpy_matrix = stypes.to_double_matrix(
-        np.matrix([[1.0, 2.0], [3.0, 4.0]])
-    )
-    assert len(made_from_numpy_matrix) == 2
     with pytest.raises(TypeError):
         stypes.to_double_matrix("ABCD")
 
@@ -184,8 +180,6 @@ def test_to_int_matrix():
     assert len(made_from_tuple) == 2
     made_from_numpy_array = stypes.to_int_matrix(np.array([[1, 2], [3, 4]]))
     assert len(made_from_numpy_array) == 2
-    made_from_numpy_matrix = stypes.to_int_matrix(np.matrix([[1, 2], [3, 4]]))
-    assert len(made_from_numpy_matrix) == 2
     with pytest.raises(TypeError):
         stypes.to_int_matrix("ABCD")
     with pytest.raises(TypeError):
@@ -208,7 +202,7 @@ def test_to_improve_coverage():
         made_from_list = stmt.from_param(
             [[typ(1), typ(2), typ(3)], [typ(6), typ(4), typ(0)]]
         )
-        assert made_from_list is stmt.from_param(made_from_list)
+        assert made_from_list == stmt.from_param(made_from_list)
     # DataType.__init__()
     assert stypes.DataType()
     # SpiceDLADescr methods
