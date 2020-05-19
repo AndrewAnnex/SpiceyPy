@@ -37,7 +37,7 @@ before_install:
 - pip install twine
 - pip install -r requirements.txt
 - if ! [ -z "$CSPICE_SRC_DIR" ]; then wget -O - https://naif.jpl.nasa.gov/pub/naif/toolkit/C/PC_Linux_GCC_64bit/packages/cspice.tar.Z | gunzip -c | tar xC /tmp/ ; fi
-- if ! [ -z "$CSPICE_SHARED_LIB"]; then mkdir -p /tmp/cspice/ && wget -O - https://anaconda.org/conda-forge/cspice/66/download/linux-64/cspice-66-h516909a_1009.tar.bz2 | tar xC /tmp/cspice/ ; fi
+- if ! [ -z "$CSPICE_SHARED_LIB"]; then mkdir -p /tmp/cspice/ && wget -O - https://anaconda.org/conda-forge/cspice/66/download/linux-64/cspice-66-h516909a_1009.tar.bz2 | tar xjC /tmp/cspice/ ; fi
 install:
 - python setup.py install
 script:
