@@ -8,6 +8,9 @@ matrix:
           python: 3.7
         - os: linux
           python: 3.8
+        - os: linux
+          python: 3.8
+          env: CSPICE_SRC_DIR=/tmp/cspice
         - os: osx
           language: generic
           env: PYVERSION='3.6.2'
@@ -30,6 +33,7 @@ before_install:
 - pip install -U wheel
 - pip install twine
 - pip install -r requirements.txt
+- if [ -z "$CSPICE_SRC_DIR" ]; then  wget -O -  https://naif.jpl.nasa.gov/pub/naif/toolkit//C/PC_Linux_GCC_64bit/packages/cspice.tar.Z | gunzip -c | tar xC /tmp/
 install:
 - python setup.py install
 script:
