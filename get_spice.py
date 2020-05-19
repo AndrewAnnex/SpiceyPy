@@ -427,3 +427,7 @@ class InstallCSpice(object):
                 InstallCSpice.build_library()
         # Move to correct location (root of the distribution), always run
         InstallCSpice.move_to_root_directory(shared_lib_path=cspice_shared_lib)
+
+
+if __name__ == "__main__":
+    InstallCSpice.get_cspice()
