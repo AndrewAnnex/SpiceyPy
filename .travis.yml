@@ -10,7 +10,7 @@ matrix:
           python: 3.8
         - os: linux
           python: 3.8
-          env: CSPICE_SRC_DIR=/tmp/cspice
+          env: CSPICE_SRC_DIR="/tmp/cspice"
         - os: osx
           language: generic
           env: PYVERSION='3.6.2'

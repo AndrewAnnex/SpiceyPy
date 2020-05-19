@@ -262,7 +262,7 @@ class InstallCSpice(object):
         if os.path.exists(cspice_dir):
             print(f"Found CSPICE source at {cspice_dir}")
             return True
-        elif os.environ[CSPICE_SRC_DIR] is not None:
+        elif os.environ.get(CSPICE_SRC_DIR) is not None:
             message = f"Unable to find user provided CSPICE_SRC_DIR at {cspice_dir}"
             sys.exit(message)
         else:
