@@ -262,6 +262,9 @@ class InstallCSpice(object):
         if os.path.exists(cspice_dir):
             print(f"Found CSPICE source at {cspice_dir}")
             return True
+        elif os.environ.get(CSPICE_SHARED_LIB) is not None:
+            print(f"User has provided a shared library...")
+            return True
         elif os.environ.get(CSPICE_SRC_DIR) is not None:
             message = f"Unable to find user provided CSPICE_SRC_DIR at {cspice_dir}"
             sys.exit(message)
@@ -375,7 +378,7 @@ class InstallCSpice(object):
                 "Attempting to move: {0}   to: {1}".format(shared_lib_path, destination)
             )
             try:
-                os.rename(shared_lib_path, destination)
+                shutil.copyfile(shared_lib_path, destination)
             except BaseException as e:
                 sys.exit(
                     "{0} file not found, what happend?: {1}".format(shared_lib_path, e)
