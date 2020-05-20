@@ -37,8 +37,11 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
+    "sphinx_copybutton",
 ]
 
+# conf for copybutton
+copybutton_prompt_text = ">>> "
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
