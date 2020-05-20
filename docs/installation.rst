@@ -43,6 +43,28 @@ Or you can start a python interpreter and try importing SpiceyPy like so:
 This should print out the toolkit version without any errors. You have now
 verified that SpiceyPy is installed.
 
+Offline installation
+--------------------
+
+If you need to install SpiceyPy without a network or if you have a prebuilt shared library at hand,
+you can override the default behaviour of SpiceyPy by using the CSPICE_SRC_DIR and CSPICE_SHARED_LIB environment variables respectively.
+
+For example, if you have downloaded SpiceyPy and the CSPICE toolkit, and extracted CSPICE to /tmp/cspice you can run:
+
+.. code-block:: bash
+
+            export CSPICE_SRC_DIR="/tmp/cspice"
+            python setup.py install
+
+Or if you have a shared library of CSPICE located at /tmp/cspice.so, you can run:
+
+.. code-block:: bash
+
+            export CSPICE_SHARED_LIB="/tmp/cspice.so"
+            python setup.py install
+
+Both examples above assume you have cloned the SpiceyPy repository and are running those commands within the project directory.
+
 A simple example program
 ------------------------
 

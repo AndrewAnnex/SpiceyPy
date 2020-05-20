@@ -81,14 +81,18 @@ import urllib.request
 import urllib.error
 from zipfile import ZipFile
 
+CSPICE_SRC_DIR = "CSPICE_SRC_DIR"
+CSPICE_SHARED_LIB = "CSPICE_SHARED_LIB"
 
 host_OS = platform.system()
+# Check if platform is supported
+os_supported = host_OS in ("Linux", "Darwin", "FreeBSD", "Windows")
 # Get platform is Unix-like OS or not
 is_unix = host_OS in ("Linux", "Darwin", "FreeBSD")
 # Get current working directory
 root_dir = os.path.dirname(os.path.realpath(__file__))
 # Make the directory path for cspice
-cspice_dir = os.path.join(root_dir, "cspice")
+cspice_dir = os.environ.get(CSPICE_SRC_DIR, os.path.join(root_dir, "cspice"))
 # Make the directory path for cspice/lib
 lib_dir = os.path.join(cspice_dir, "lib")
 
@@ -247,10 +251,8 @@ class InstallCSpice(object):
     def get_cspice():
         if InstallCSpice.check_for_spice():
             print("Host OS: {0}".format(host_OS))
-            if is_unix:
-                InstallCSpice.unix_method()
-            elif host_OS == "Windows":
-                InstallCSpice.windows_method()
+            if os_supported:
+                InstallCSpice.unified_method()
             else:
                 sys.exit("Unsupported OS: {0}".format(host_OS))
 
@@ -258,30 +260,21 @@ class InstallCSpice(object):
     def check_for_spice():
         print("Checking the path", cspice_dir)
         if os.path.exists(cspice_dir):
-            return False
-
-        try:
-            spiceypy_cspice_path = os.path.expanduser(os.environ['SPICEYPY_CSPICE_PATH'])
-            if not os.path.isabs(spiceypy_cspice_path):
-                raise EnvironmentError("spiceypy_cspice_path must be an absolute path. Got {0}".format(
-                    spiceypy_cspice_path))
-            print("Environment variable spiceypy_cspice_path is set. Installing CSPICE from {0}.".format(
-                spiceypy_cspice_path))
-            print("Unpacking cspice.")
-            untar_cmd = "tar xzf {0} -C {1}".format(spiceypy_cspice_path, root_dir)
-            proc = subprocess.Popen(untar_cmd, shell=True)
-            proc.wait()
-            print(f"Successfully unpacked CSPICE archive with return code {proc.returncode}")
+            print(f"Found CSPICE source at {cspice_dir}")
             return True
-        except KeyError as err:  # If environment variable is not set
-            pass
-
-        message = "Unable to find CSPICE at {0}. Attempting to Download CSPICE For you:".format(
-            cspice_dir
-        )
-        print(message)
-        # Download cspice using getspice.py
-        GetCSPICE(version="N0066")
+        elif os.environ.get(CSPICE_SHARED_LIB) is not None:
+            print(f"User has provided a shared library...")
+            return True
+        elif os.environ.get(CSPICE_SRC_DIR) is not None:
+            message = f"Unable to find user provided CSPICE_SRC_DIR at {cspice_dir}"
+            sys.exit(message)
+        else:
+            message = "Unable to find CSPICE at {0}. Attempting to Download CSPICE For you:".format(
+                cspice_dir
+            )
+            print(message)
+            # Download cspice using getspice.py
+            GetCSPICE(version="N0066")
         if not os.path.exists(cspice_dir):
             message = "Unable to find CSPICE at {0}. Exiting".format(cspice_dir)
             sys.exit(message)
@@ -333,7 +326,6 @@ class InstallCSpice(object):
     def build_library():
         # Get the current working directory
         cwd = os.getcwd()
-
         if is_unix:
             try:
                 os.chdir(lib_dir)
@@ -374,19 +366,30 @@ class InstallCSpice(object):
         os.chdir(cwd)
 
     @staticmethod
-    def move_to_root_directory():
+    def move_to_root_directory(shared_lib_path=None):
         sharedlib = "spice.so" if is_unix else "cspice.dll"
         destination = os.path.join(root_dir, "spiceypy", "utils", sharedlib)
-        if not os.path.isfile(destination):
-            if is_unix:
-                target = os.path.join(cspice_dir, "lib", sharedlib)
-            else:
-                target = os.path.join(cspice_dir, "src", "cspice", sharedlib)
-            print("Attempting to move: {0}   to: {1}".format(target, destination))
+        if os.path.isfile(destination):
+            print("Shared Library is already present in destination folder")
+            return  # break out of function
+        if shared_lib_path:
+            # we have the path to the shared library, just move it
+            print(
+                "Attempting to move: {0}   to: {1}".format(shared_lib_path, destination)
+            )
             try:
-                os.rename(target, destination)
+                shutil.copyfile(shared_lib_path, destination)
             except BaseException as e:
-                sys.exit("{0} file not found, what happend?: {1}".format(sharedlib, e))
+                sys.exit(
+                    "{0} file not found, what happend?: {1}".format(shared_lib_path, e)
+                )
+        else:
+            if is_unix:
+                shared_lib_path = os.path.join(cspice_dir, "lib", sharedlib)
+            else:
+                shared_lib_path = os.path.join(cspice_dir, "src", "cspice", sharedlib)
+            # finally call this function with the new path
+            InstallCSpice.move_to_root_directory(shared_lib_path=shared_lib_path)
 
     @staticmethod
     def cleanup():
@@ -398,22 +401,36 @@ class InstallCSpice(object):
             raise e
 
     @staticmethod
-    def unix_method():
-        # Unpack cspice.a and csupport.a
-        InstallCSpice.unpack_cspice()
-        # Build the shared Library
-        InstallCSpice.build_library()
-        # Move to correct location (root of the distribution)
-        InstallCSpice.move_to_root_directory()
-
-    @staticmethod
-    def windows_method():
-        if os.path.exists(os.path.join(cspice_dir, "lib", "cspice.dll")):
-            print("Found pre-made cspice.dll, not building")
-        elif os.path.exists(os.path.join(root_dir, "spiceypy", "utils", "cspice.dll")):
-            print("Found pre-made cspice.dll in spiceypy, not building")
+    def unified_method():
+        shared_lib_name = "spice.so" if is_unix else "cspice.dll"
+        cspice_shared_lib = os.environ.get(
+            CSPICE_SHARED_LIB
+        )  # will be none if not defined
+        if cspice_shared_lib:
+            # user has provideded a shared library to be used
+            print(f"User defined CSPICE shared library defined at: {cspice_shared_lib}")
+            if not os.path.exists(cspice_shared_lib):
+                raise RuntimeError(
+                    f"Error: could not find CSPICE shared library user defined at: {cspice_shared_lib}"
+                )
+            else:
+                print(f"Found user provided shared library, not building")
+        elif os.path.exists(os.path.join(cspice_dir, "lib", shared_lib_name)):
+            print(f"Found pre-made {shared_lib_name}, not building")
+        elif os.path.exists(
+            os.path.join(root_dir, "spiceypy", "utils", shared_lib_name)
+        ):
+            print(f"Found pre-made {shared_lib_name} in spiceypy, not building")
         else:
+            # we did not find a user provided shared library
+            if is_unix:
+                InstallCSpice.unpack_cspice()
             # Build the DLL
-            InstallCSpice.build_library()
-            # Move to correct location (root of the distribution)
-            InstallCSpice.move_to_root_directory()
+            if not cspice_shared_lib:
+                InstallCSpice.build_library()
+        # Move to correct location (root of the distribution), always run
+        InstallCSpice.move_to_root_directory(shared_lib_path=cspice_shared_lib)
+
+
+if __name__ == "__main__":
+    InstallCSpice.get_cspice()
