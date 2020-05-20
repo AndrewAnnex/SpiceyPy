@@ -9,3 +9,4 @@ dependencies:
   - sphinx==2.3.1
   - pip:
     - sphinx_autodoc_typehints
+    - sphinx-copybutton
