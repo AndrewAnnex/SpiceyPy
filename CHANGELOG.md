@@ -4,7 +4,7 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## [3.1.0] - 2020-05-27
+## [3.1.0] - 2020-05-25
 ### Added
 - added irfnam, irfnum, irfrot, irftrn
 - added kpsolv, kepleq
