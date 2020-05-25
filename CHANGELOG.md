@@ -4,6 +4,22 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [3.0.3] - 2019-02-19
+### Added
+- added irftrn and related
+- added kpsolve, kepleq and related
+- better exceptions
+- copy button to docs codeblocks
+- added install time overrides for cspice src and shared lib
+
+### Changed
+- switch to codecov for code coverage
+- various support type changes
+
+### Fixed
+- fixed missing doc strings for callbacks
+
+
 ## [3.0.2] - 2019-02-19
 ### Added
 - et2datetime function
