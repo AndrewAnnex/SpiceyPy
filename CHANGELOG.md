@@ -4,21 +4,27 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## [3.0.3] - 2020-05-27
+## [3.1.0] - 2020-05-27
 ### Added
-- added irftrn and related
-- added kpsolve, kepleq and related
-- better exceptions
+- added irfnam, irfnum, irfrot, irftrn
+- added kpsolv, kepleq
+- better exceptions, many hundred spice toolkit defined exceptions
 - copy button to docs codeblocks
-- added install time overrides for cspice src and shared lib
+- added CSPICE_SRC_DRI envvar override to specify cspice src directory during install
+- added CSPICE_SHARED_LIB envvar override to specify cspice.so/.dll/.dylib during install
 
 ### Changed
 - switch to codecov for code coverage
 - various support type changes
+- renamed getspice.py to get_spice.py
 
 ### Fixed
 - fixed missing doc strings for callbacks
 
+### Removed
+- coveralls
+- test cmd class in setup.py
+- direct references to deprecated numpy matrix class
 
 ## [3.0.2] - 2020-02-19
 ### Added
