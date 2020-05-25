@@ -4,7 +4,7 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## [3.0.3] - 2019-02-19
+## [3.0.3] - 2020-05-27
 ### Added
 - added irftrn and related
 - added kpsolve, kepleq and related
@@ -20,7 +20,7 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 - fixed missing doc strings for callbacks
 
 
-## [3.0.2] - 2019-02-19
+## [3.0.2] - 2020-02-19
 ### Added
 - et2datetime function
 - funding.yml
@@ -35,14 +35,14 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 - year in docs
 - issue with urllib usage in gettestkernels
 
-## [3.0.1] - 2019-01-10
+## [3.0.1] - 2020-01-10
 ### Changed
 - removed old logic from getspice for old openssl versions
 
 ### Removed
 - import of six in getspice
 
-## [3.0.0] - 2019-01-09
+## [3.0.0] - 2020-01-09
 ### Added
 - Python 3.8 support
 
