@@ -379,6 +379,11 @@ class InstallCSpice(object):
             )
             try:
                 shutil.copyfile(shared_lib_path, destination)
+                if not is_unix:
+                    sharedlib_lib = 'cspice.lib'
+                    destination_lib = os.path.join(root_dir, "spiceypy", "utils",sharedlib_lib)
+                    shared_lib_lib_path = os.path.join(cspice_dir, "src", "cspice", sharedlib_lib)
+                    shutil.copyfile(shared_lib_lib_path, destination_lib)
             except BaseException as e:
                 sys.exit(
                     "{0} file not found, what happend?: {1}".format(shared_lib_path, e)
