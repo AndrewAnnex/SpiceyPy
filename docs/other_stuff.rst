@@ -372,7 +372,7 @@ The SpiceyPy package is documented in "readthedocs" website:
 
 ::
 
-      https://spiceypy.readthedocs.io/en/master/index.html
+      https://spiceypy.readthedocs.io/en/main/index.html
 
 Each API documentation page is in large part copied from the
 "Abstract" and" Brief_I/O" sections of the corresponding CSPICE

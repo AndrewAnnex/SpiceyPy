@@ -72,7 +72,7 @@ Here is the general process for making a code contribution to SpiceyPy. SpiceyPy
 
 1. Create your own fork of the project
 2. Make the changes in your fork on a new branch
-3. Make a pull request that should be a single commit onto the master branch with a detailed commit message.
+3. Make a pull request that should be a single commit onto the main branch with a detailed commit message.
 
 Commit messages should start with a title line followed by a newline followed by a markdown-formatted list of changes.
 

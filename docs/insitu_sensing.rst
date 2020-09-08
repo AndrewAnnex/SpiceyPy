@@ -792,7 +792,7 @@ argument of the routine should be set to 'LT+S' (see aberration correction discu
 
 If desired, the position can then be turned into a unit vector using
 spiceypy.vhat function
-(https://spiceypy.readthedocs.io/en/master/documentation.html#spiceypy.spiceypy.vhat).
+(https://spiceypy.readthedocs.io/en/main/documentation.html#spiceypy.spiceypy.vhat).
 Putting it all together, we get:
 
 .. code-block:: python

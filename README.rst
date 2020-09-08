@@ -10,18 +10,18 @@ SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N66), written using c
 | |Windows Build Status| |                   |        |                 | |JOSS|     |              |
 +------------------------+-------------------+--------+-----------------+------------+--------------+
 
-.. |Travis Build Status| image:: https://img.shields.io/travis/AndrewAnnex/SpiceyPy/master?logo=travis
+.. |Travis Build Status| image:: https://img.shields.io/travis/AndrewAnnex/SpiceyPy/main?logo=travis
    :alt: Travis - Build Status
    :target: https://travis-ci.org/AndrewAnnex/SpiceyPy
-.. |Windows Build Status| image:: https://img.shields.io/appveyor/build/AndrewAnnex/SpiceyPy/master?logo=appveyor
+.. |Windows Build Status| image:: https://img.shields.io/appveyor/build/AndrewAnnex/SpiceyPy/main?logo=appveyor
    :alt: Appveyor - Build Status
    :target: https://ci.appveyor.com/project/AndrewAnnex/spiceypy
-.. |Coverage Status| image:: https://img.shields.io/codecov/c/github/AndrewAnnex/SpiceyPy/master?logo=codecov
+.. |Coverage Status| image:: https://img.shields.io/codecov/c/github/AndrewAnnex/SpiceyPy/main?logo=codecov
    :alt: Codecov - Test Coverage
    :target: https://codecov.io/gh/AndrewAnnex/SpiceyPy
-.. |Docs| image:: https://img.shields.io/readthedocs/spiceypy/master
+.. |Docs| image:: https://img.shields.io/readthedocs/spiceypy/main
    :alt: Readthedocs - Documentation
-   :target: http://spiceypy.readthedocs.org/en/master/
+   :target: http://spiceypy.readthedocs.org/en/main/
 .. |Join the chat| image:: https://img.shields.io/gitter/room/andrewannex/spiceypy
    :alt: Gitter - Chat room
    :target: https://gitter.im/AndrewAnnex/SpiceyPy
@@ -99,7 +99,7 @@ NAIF. <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/index.html>`__
 Please refer to C and IDL documentation available on the NAIF website
 for in-depth explanations. Each function docstring has a link to the
 corresponding C function in the NAIF docs at a minimum.
-SpiceyPy documentation contains the NAIF authored `Lessons <https://spiceypy.readthedocs.io/en/master/lessonindex.html>`__ for step-by-step tutorials with code examples. 
+SpiceyPy documentation contains the NAIF authored `Lessons <https://spiceypy.readthedocs.io/en/main/lessonindex.html>`__ for step-by-step tutorials with code examples. 
 
 How to Help
 -----------
