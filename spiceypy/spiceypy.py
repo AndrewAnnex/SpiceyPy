@@ -13400,9 +13400,11 @@ def datetime2et(dt: Union[Iterable[datetime], datetime]) -> Union[ndarray, float
 
 
 if hasattr(datetime, 'fromisoformat'):
-    fromisoformat = lambda s: datetime.fromisoformat(s + '+00:00')
+    def fromisoformat(s):
+        return datetime.fromisoformat(s + '+00:00')
 else:
-    fromisoformat = lambda s: datetime.strptime(s, "%Y-%m-%dT%H:%M:%S.%f").replace(tzinfo=timezone.utc)
+    def fromisoformat(s):
+        return datetime.strptime(s, "%Y-%m-%dT%H:%M:%S.%f").replace(tzinfo=timezone.utc)
 
 
 @spice_error_check
@@ -13418,12 +13420,7 @@ def et2datetime(et: Union[Iterable[float], float]) -> Union[ndarray, datetime]:
     """
     result = et2utc(et, "ISOC", 6)
     if stypes.is_iterable(result):
-        return numpy.array(
-            [
-                fromisoformat(s)
-                for s in result
-            ]
-        )
+        return numpy.array([fromisoformat(s) for s in result])
     else:
         return fromisoformat(result)
 
