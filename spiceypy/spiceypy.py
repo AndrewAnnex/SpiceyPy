@@ -260,7 +260,8 @@ def cell_time(cell_size) -> SpiceCell:
 
 @spice_error_check
 def appndc(
-    item: Union[str, Iterable[str], ndarray, str_], cell: Union[Cell_Char, SpiceCell],
+    item: Union[str, Iterable[str], ndarray, str_],
+    cell: Union[Cell_Char, SpiceCell],
 ) -> None:
     """
     Append an item to a character cell.
@@ -6115,7 +6116,7 @@ def gfpa(
     refval: float,
     adjust: float,
     step: float,
-    nintvals: int,
+    nintvls: int,
     cnfine: SpiceCell,
     result: Optional[SpiceCell] = None,
 ) -> SpiceCell:
@@ -6134,7 +6135,7 @@ def gfpa(
     :param refval: Reference value.
     :param adjust: Adjustment value for absolute extrema searches.
     :param step: Step size used for locating extrema and roots.
-    :param nintvals: Workspace window interval count.
+    :param nintvls: Workspace window interval count.
     :param cnfine: SPICE window to which the search is restricted.
     :param result: Optional SPICE window containing results.
     """
@@ -6153,7 +6154,7 @@ def gfpa(
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
-    nintvals = ctypes.c_int(nintvals)
+    nintvls = ctypes.c_int(nintvls)
     libspice.gfpa_c(
         target,
         illmin,
@@ -6163,7 +6164,7 @@ def gfpa(
         refval,
         adjust,
         step,
-        nintvals,
+        nintvls,
         ctypes.byref(cnfine),
         ctypes.byref(result),
     )
@@ -6182,7 +6183,7 @@ def gfposc(
     refval: float,
     adjust: float,
     step: float,
-    nintvals: int,
+    nintvls: int,
     cnfine: SpiceCell,
     result: Optional[SpiceCell] = None,
 ) -> SpiceCell:
@@ -6202,7 +6203,7 @@ def gfposc(
     :param refval: Reference value.
     :param adjust: Adjustment value for absolute extrema searches.
     :param step: Step size used for locating extrema and roots.
-    :param nintvals: Workspace window interval count.
+    :param nintvls: Workspace window interval count.
     :param cnfine: SPICE window to which the search is restricted.
     :param result: Optional SPICE window containing results.
     """
@@ -6223,7 +6224,7 @@ def gfposc(
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
-    nintvals = ctypes.c_int(nintvals)
+    nintvls = ctypes.c_int(nintvls)
     libspice.gfposc_c(
         target,
         inframe,
@@ -6235,7 +6236,7 @@ def gfposc(
         refval,
         adjust,
         step,
-        nintvals,
+        nintvls,
         ctypes.byref(cnfine),
         ctypes.byref(result),
     )
@@ -6379,7 +6380,7 @@ def gfrr(
     refval: float,
     adjust: float,
     step: float,
-    nintvals: int,
+    nintvls: int,
     cnfine: SpiceCell,
     result: SpiceCell,
 ) -> SpiceCell:
@@ -6396,7 +6397,7 @@ def gfrr(
     :param refval: Reference value.
     :param adjust: Adjustment value for absolute extrema searches.
     :param step: Step size used for locating extrema and roots.
-    :param nintvals: Workspace window interval count.
+    :param nintvls: Workspace window interval count.
     :param cnfine: SPICE window to which the search is restricted.
     :param result: Optional SPICE window containing results.
     """
@@ -6414,7 +6415,7 @@ def gfrr(
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
-    nintvals = ctypes.c_int(nintvals)
+    nintvls = ctypes.c_int(nintvls)
     libspice.gfrr_c(
         target,
         abcorr,
@@ -6423,7 +6424,7 @@ def gfrr(
         refval,
         adjust,
         step,
-        nintvals,
+        nintvls,
         ctypes.byref(cnfine),
         ctypes.byref(result),
     )
@@ -6444,7 +6445,7 @@ def gfsep(
     refval: float,
     adjust: float,
     step: float,
-    nintvals: int,
+    nintvls: int,
     cnfine: SpiceCell,
     result: Optional[SpiceCell] = None,
 ) -> SpiceCell:
@@ -6467,7 +6468,7 @@ def gfsep(
     :param refval: Reference value.
     :param adjust: Absolute extremum adjustment value.
     :param step: Step size in seconds for finding angular separation events.
-    :param nintvals: Workspace window interval count.
+    :param nintvls: Workspace window interval count.
     :param cnfine: SPICE window to which the search is restricted.
     :param result: Optional SPICE window containing results.
     """
@@ -6490,7 +6491,7 @@ def gfsep(
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
-    nintvals = ctypes.c_int(nintvals)
+    nintvls = ctypes.c_int(nintvls)
     libspice.gfsep_c(
         targ1,
         shape1,
@@ -6504,7 +6505,7 @@ def gfsep(
         refval,
         adjust,
         step,
-        nintvals,
+        nintvls,
         ctypes.byref(cnfine),
         ctypes.byref(result),
     )
@@ -6526,7 +6527,7 @@ def gfsntc(
     refval: float,
     adjust: float,
     step: float,
-    nintvals: int,
+    nintvls: int,
     cnfine: SpiceCell,
     result: Optional[SpiceCell] = None,
 ) -> SpiceCell:
@@ -6549,7 +6550,7 @@ def gfsntc(
     :param refval: Reference value.
     :param adjust: Absolute extremum adjustment value.
     :param step: Step size in seconds for finding angular separation events.
-    :param nintvals: Workspace window interval count.
+    :param nintvls: Workspace window interval count.
     :param cnfine: SPICE window to which the search is restricted.
     :param result: Optional SPICE window containing results.
     """
@@ -6573,7 +6574,7 @@ def gfsntc(
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
-    nintvals = ctypes.c_int(nintvals)
+    nintvls = ctypes.c_int(nintvls)
     libspice.gfsntc_c(
         target,
         fixref,
@@ -6588,7 +6589,7 @@ def gfsntc(
         refval,
         adjust,
         step,
-        nintvals,
+        nintvls,
         ctypes.byref(cnfine),
         ctypes.byref(result),
     )
@@ -6653,7 +6654,7 @@ def gfsubc(
     refval: float,
     adjust: float,
     step: float,
-    nintvals: int,
+    nintvls: int,
     cnfine: SpiceCell,
     result: SpiceCell,
 ) -> SpiceCell:
@@ -6674,7 +6675,7 @@ def gfsubc(
     :param refval: Reference value.
     :param adjust: Adjustment value for absolute extrema searches.
     :param step: Step size used for locating extrema and roots.
-    :param nintvals: Workspace window interval count.
+    :param nintvls: Workspace window interval count.
     :param cnfine: SPICE window to which the search is restricted.
     :param result: Optional SPICE window containing results.
     """
@@ -6696,7 +6697,7 @@ def gfsubc(
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
-    nintvals = ctypes.c_int(nintvals)
+    nintvls = ctypes.c_int(nintvls)
     libspice.gfsubc_c(
         target,
         fixref,
@@ -6709,7 +6710,7 @@ def gfsubc(
         refval,
         adjust,
         step,
-        nintvals,
+        nintvls,
         ctypes.byref(cnfine),
         ctypes.byref(result),
     )
@@ -7975,7 +7976,8 @@ def lastnb(string: str) -> int:
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lastnb_c.html
 
     :param string: Input character string.
-    :return: """
+    :return:
+    """
     string = stypes.string_to_char_p(string)
     return libspice.lastnb_c(string)
 
@@ -13399,10 +13401,14 @@ def datetime2et(dt: Union[Iterable[datetime], datetime]) -> Union[ndarray, float
         return et.value
 
 
-if hasattr(datetime, 'fromisoformat'):
+if hasattr(datetime, "fromisoformat"):
+
     def fromisoformat(s):
-        return datetime.fromisoformat(s + '+00:00')
+        return datetime.fromisoformat(s + "+00:00")
+
+
 else:
+
     def fromisoformat(s):
         return datetime.strptime(s, "%Y-%m-%dT%H:%M:%S.%f").replace(tzinfo=timezone.utc)
 
@@ -14466,7 +14472,7 @@ def utc2et(utcstr: str) -> float:
 
 @spice_error_check
 def vadd(v1: Iterable[float], v2: Iterable[float]) -> ndarray:
-    """ Add two 3 dimensional vectors.
+    """Add two 3 dimensional vectors.
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vadd_c.html
 
     :param v1: First vector to be added.
@@ -14482,7 +14488,8 @@ def vadd(v1: Iterable[float], v2: Iterable[float]) -> ndarray:
 
 @spice_error_check
 def vaddg(v1: Iterable[float], v2: Iterable[float], ndim: int) -> ndarray:
-    """ Add two n-dimensional vectors
+    """
+    Add two n-dimensional vectors
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vaddg_c.html
 
     :param v1: First vector to be added.
