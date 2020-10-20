@@ -417,7 +417,7 @@ def bltfrm(frmcls: int, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
 def bodeul(body: int, et: float) -> Tuple[float, float, float, float]:
     """
     Return the Euler angles needed to compute the transformation from
-    inertial to body-fixed coordinates for any body in the kernel 
+    inertial to body-fixed coordinates for any body in the kernel
     pool.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/bodeul.html
@@ -435,12 +435,12 @@ def bodeul(body: int, et: float) -> Tuple[float, float, float, float]:
     ra = ctypes.c_double()
     dec = ctypes.c_double()
     w = ctypes.c_double()
-    l = ctypes.c_double()
+    lam = ctypes.c_double()
     libspice.bodeul_(
         ctypes.byref(body), ctypes.byref(et),
-        ctypes.byref(ra), ctypes.byref(dec), ctypes.byref(w), ctypes.byref(l)
+        ctypes.byref(ra), ctypes.byref(dec), ctypes.byref(w), ctypes.byref(lam)
     )
-    return ra.value, dec.value, w.value, l.value
+    return ra.value, dec.value, w.value, lam.value
 
 
 @spice_error_check

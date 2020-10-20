@@ -198,13 +198,13 @@ def test_bodeul():
     xproj = spice.vdot(node, xin)
     yproj = spice.vdot(node, yin)
     ref_w = -np.arctan2(yproj, xproj)
-    ref_l = 0
+    ref_lam = 0
     # hopefully obtain the same angles with call to bodeul at et=0.0
-    ra, dec, w, l = spice.bodeul(299, 0.0)
+    ra, dec, w, lam = spice.bodeul(299, 0.0)
     npt.assert_almost_equal(ra, ref_ra, decimal=4)
     npt.assert_almost_equal(dec, ref_dec, decimal=4)
     npt.assert_almost_equal(w, ref_w, decimal=4)
-    npt.assert_almost_equal(l, 0, decimal=4)
+    npt.assert_almost_equal(lam, 0, decimal=4)
     spice.kclear()
 
 
