@@ -204,7 +204,7 @@ def test_bodeul():
     npt.assert_almost_equal(ra, ref_ra, decimal=4)
     npt.assert_almost_equal(dec, ref_dec, decimal=4)
     npt.assert_almost_equal(w, ref_w, decimal=4)
-    npt.assert_almost_equal(lam, 0, decimal=4)
+    npt.assert_almost_equal(lam, ref_lam, decimal=4)
     spice.kclear()
 
 
