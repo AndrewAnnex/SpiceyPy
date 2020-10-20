@@ -10,6 +10,7 @@ EXPORTS			appndc_c
 				bodc2n_c
 				bodc2s_c
 				boddef_c
+				bodeul_
 				bodfnd_c
 				bodn2c_c
 				bods2c_c

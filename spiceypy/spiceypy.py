@@ -414,6 +414,36 @@ def bltfrm(frmcls: int, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
 
 
 @spice_error_check
+def bodeul(body: int, et: float) -> Tuple[float, float, float, float]:
+    """
+    Return the Euler angles needed to compute the transformation from
+    inertial to body-fixed coordinates for any body in the kernel 
+    pool.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/bodeul.html
+
+    :param body: NAIF ID code of body.
+    :param et: Epoch of transformation in seconds past J2000 TDB.
+    :return:
+            Right ascension of the (IAU) north pole in radians.
+            Declination of the (IAU) north pole of the body in radians.
+            Prime meridian rotation angle in radians.
+            Angle between the prime meridian and longitude of longest axis in radians.
+    """
+    body = ctypes.c_int(body)
+    et = ctypes.c_double(et)
+    ra = ctypes.c_double()
+    dec = ctypes.c_double()
+    w = ctypes.c_double()
+    l = ctypes.c_double()
+    libspice.bodeul_(
+        ctypes.byref(body), ctypes.byref(et),
+        ctypes.byref(ra), ctypes.byref(dec), ctypes.byref(w), ctypes.byref(l)
+    )
+    return ra.value, dec.value, w.value, l.value
+
+
+@spice_error_check
 @spice_found_exception_thrower
 def bodc2n(code: int, lenout: int = _default_len_out) -> Tuple[str, bool]:
     """
