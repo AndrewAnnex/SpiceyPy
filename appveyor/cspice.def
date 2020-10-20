@@ -261,6 +261,10 @@ EXPORTS			appndc_c
 				intmin_c
 				invert_c
 				invort_c
+				irfnam_
+				irfnum_
+				irfrot_
+				irftrn_
 				isordv_c
 				isrchc_c
 				isrchd_c
@@ -274,8 +278,10 @@ EXPORTS			appndc_c
 				jyear_c
 				kclear_c
 				kdata_c
+				kepleq_
 				kinfo_c
 				kplfrm_c
+				kpsolv_
 				ktotal_c
 				kxtrct_c
 				lastnb_c

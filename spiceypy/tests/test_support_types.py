@@ -74,6 +74,24 @@ def test_SpiceCell():
     assert str(test_cell).startswith("<SpiceCell")
 
 
+def test_spicecell_equality():
+    c1 = stypes.Cell_Int(8)
+    spice.appndi([1, 2, 3], c1)
+    c2 = stypes.Cell_Int(8)
+    spice.appndi([1, 2, 3], c2)
+    c3 = stypes.Cell_Int(8)
+    spice.appndi([1, 2, 4], c3)
+    c4 = stypes.Cell_Int(8)
+    spice.appndi([1, 2, 3, 3], c4)
+    assert c1 != 1
+    assert c1 == c2
+    assert c1 != c3
+    c3 = spice.valid(3, 3, c3)
+    assert c3.isSet
+    assert not c4.isSet
+    assert c1 != c4
+
+
 def test_empty_spice_cell_slicing():
     test_cell = stypes.SPICEDOUBLE_CELL(1)
     assert test_cell[0:1] == []
@@ -151,10 +169,6 @@ def test_to_double_matrix():
     assert len(made_from_tuple) == 2
     made_from_numpy_array = stypes.to_double_matrix(np.array([[1.0, 2.0], [3.0, 4.0]]))
     assert len(made_from_numpy_array) == 2
-    made_from_numpy_matrix = stypes.to_double_matrix(
-        np.matrix([[1.0, 2.0], [3.0, 4.0]])
-    )
-    assert len(made_from_numpy_matrix) == 2
     with pytest.raises(TypeError):
         stypes.to_double_matrix("ABCD")
 
@@ -166,8 +180,6 @@ def test_to_int_matrix():
     assert len(made_from_tuple) == 2
     made_from_numpy_array = stypes.to_int_matrix(np.array([[1, 2], [3, 4]]))
     assert len(made_from_numpy_array) == 2
-    made_from_numpy_matrix = stypes.to_int_matrix(np.matrix([[1, 2], [3, 4]]))
-    assert len(made_from_numpy_matrix) == 2
     with pytest.raises(TypeError):
         stypes.to_int_matrix("ABCD")
     with pytest.raises(TypeError):
@@ -177,7 +189,7 @@ def test_to_int_matrix():
 def test_to_improve_coverage():
     # SpiceyError().__str__()
     xsept = spice.stypes.SpiceyError("abc")
-    assert str(xsept) == "abc"
+    assert xsept.short == "abc"
     # stypes.empty_char_array when missing keyword arguments
     eca = stypes.empty_char_array()
     # stypes.empty_double_matrix and stypes.empty_int_matrix when x is c_int
@@ -190,7 +202,7 @@ def test_to_improve_coverage():
         made_from_list = stmt.from_param(
             [[typ(1), typ(2), typ(3)], [typ(6), typ(4), typ(0)]]
         )
-        assert made_from_list is stmt.from_param(made_from_list)
+        assert made_from_list == stmt.from_param(made_from_list)
     # DataType.__init__()
     assert stypes.DataType()
     # SpiceDLADescr methods

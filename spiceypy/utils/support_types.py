@@ -43,12 +43,10 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-try:
-    import collections.abc as collections_abc
-except ImportError:
-    import collections as collections_abc
+import collections.abc as collections_abc
 
-
+from array import array
+from typing import Type
 from ctypes import (
     c_char_p,
     c_int,
@@ -61,41 +59,64 @@ from ctypes import (
     cast,
     Structure,
     string_at,
+    POINTER,
 )
 
 import numpy
 from numpy import ctypeslib as numpc
 
+from .exceptions import (
+    SpiceyError,
+    SpiceyPyError,
+    NotFoundError,
+    SpiceyPyIOError,
+    SpiceyPyMemoryError,
+    SpiceyPyTypeError,
+    SpiceyPyKeyError,
+    SpiceyPyIndexError,
+    SpiceyPyRuntimeError,
+    SpiceyPyZeroDivisionError,
+    SpiceyPyValueError,
+    exceptions,
+)
+
+
 # Collection of supporting functions for wrapper functions
 __author__ = "AndrewAnnex"
 
-errorformat = """
-================================================================================
 
-Toolkit version: {tkvsn}
-
-{short} --
-{explain}
-{long}
-
-{traceback}
-
-================================================================================\
-"""
-
-
-class SpiceyError(Exception):
+def short_to_spiceypy_exception_class(short: str) -> Type[SpiceyError]:
     """
-    SpiceyError wraps CSPICE errors.
-    :type value: str
+    Lookup the correct Spice Exception class
+
+    :param short: Spice error system short description key
+    :return: SpiceyError
     """
+    return exceptions.get(short, SpiceyError)
 
-    def __init__(self, value, found=None):
-        self.value = value
-        self.found = found
 
-    def __str__(self):
-        return self.value
+def dynamically_instantiate_spiceyerror(
+    short: str = "",
+    explain: str = "",
+    long: str = "",
+    traceback: str = "",
+    found: str = "",
+):
+    """
+    Dynamically creates a SpiceyPyException which is a subclass of SpiceyError and
+    may also be subclassed to other exceptions such as IOError and such depending on the Short description
+
+    :param short:
+    :param explain:
+    :param long:
+    :param traceback:
+    :param found:
+    :return:
+    """
+    base_exception = short_to_spiceypy_exception_class(short)
+    return base_exception(
+        short=short, explain=explain, long=long, traceback=traceback, found=found
+    )
 
 
 def to_double_vector(x):
@@ -114,12 +135,12 @@ def to_int_matrix(x):
     return IntMatrix.from_param(param=x)
 
 
-def is_iterable(i):
+def is_iterable(i) -> bool:
     """
     From stackoverflow
     https://stackoverflow.com/questions/1055360/how-to-tell-a-variable-is-iterable-but-not-a-string/44328500#44328500
     :param i: input collection
-    :return:
+    :return: if the input is iterable but not a string
     """
     return isinstance(i, collections_abc.Iterable) and not isinstance(i, str)
 
@@ -177,8 +198,9 @@ def c_vector_to_python(x):
     """
     Convert the c vector data into the correct python data type
     (numpy arrays or strings)
-    :param x:
-    :return:
+
+    :param x: ctypes array
+    :return: Iterable
     """
     if isinstance(x[0], bool):
         return numpy.frombuffer(x, dtype=numpy.bool).copy()
@@ -197,6 +219,7 @@ def c_int_vector_to_bool_python(x):
 def c_matrix_to_numpy(x):
     """
     Convert a ctypes 2d array (or matrix) into a numpy array for python use
+
     :param x: thing to convert
     :return: numpy.ndarray
     """
@@ -205,6 +228,8 @@ def c_matrix_to_numpy(x):
 
 def string_to_char_p(inobject, inlen=None):
     """
+    convert a python string to a char_p
+
     :param inobject: input string, int for getting null string of length of int
     :param inlen: optional parameter, length of a given string can be specified
     :return:
@@ -240,24 +265,27 @@ def list_to_char_array_ptr(input, x_len=None, y_len=None):
 
 
 class DoubleArrayType:
-    # Class type that will handle all double vectors,
-    # inspiration from python cookbook 3rd edition
+    """
+    Class type that will handle all double vectors,
+    inspiration from python cookbook 3rd edition
+    """
+
     def from_param(self, param):
-        typename = type(param).__name__
-        if hasattr(self, "from_" + typename):
-            return getattr(self, "from_" + typename)(param)
+        if hasattr(param, "__array_interface__"):
+            return self.from_ndarray(param)
         elif isinstance(param, Array):
             return param
+        elif isinstance(param, (list, tuple)):
+            return self.from_list(param)
+        elif isinstance(param, array):
+            if param.typecode != "d":
+                raise TypeError("must be an array of doubles")
+            return self.from_list(param)
         else:
-            raise TypeError("Can't convert %s" % typename)
+            raise TypeError(f"Can't convert {type(param)}")
 
     # Cast from lists/tuples
     def from_list(self, param):
-        val = ((c_double) * len(param))(*param)
-        return val
-
-    # Cast from Tuple
-    def from_tuple(self, param):
         val = ((c_double) * len(param))(*param)
         return val
 
@@ -270,24 +298,22 @@ class DoubleArrayType:
             param.astype(numpy.float64, casting="same_kind", copy=False)
         )
 
-    # Cast from array.array objects
-    def from_array(self, param):
-        if param.typecode != "d":
-            raise TypeError("must be an array of doubles")
-        return self.from_list(param)
-
 
 class DoubleMatrixType:
-    # Class type that will handle all double matricies,
-    # inspiration from python cookbook 3rd edition
+    """
+    Class type that will handle all 2d double arrays,
+    inspiration from python cookbook 3rd edition
+    """
+
     def from_param(self, param):
-        typename = type(param).__name__
-        if hasattr(self, "from_" + typename):
-            return getattr(self, "from_" + typename)(param)
+        if hasattr(param, "__array_interface__"):
+            return self.from_ndarray(param)
         elif isinstance(param, Array):
             return param
+        elif isinstance(param, (list, tuple)):
+            return self.from_list(param)
         else:
-            raise TypeError("Can't convert %s" % typename)
+            raise TypeError(f"Can't convert {type(param)}")
 
     # Cast from lists/tuples
     def from_list(self, param):
@@ -296,45 +322,35 @@ class DoubleMatrixType:
         )
         return val
 
-    # Cast from Tuple
-    def from_tuple(self, param):
-        val = ((c_double * len(param[0])) * len(param))(
-            *[DoubleArray.from_param(x) for x in param]
-        )
-        return val
-
     # Cast from a numpy array
     def from_ndarray(self, param):
-        return numpc.as_ctypes(
-            param.astype(numpy.float64, casting="same_kind", copy=False)
-        )
-
-    # Cast from a numpy matrix
-    def from_matrix(self, param):
         return numpc.as_ctypes(
             param.astype(numpy.float64, casting="same_kind", copy=False)
         )
 
 
 class IntArrayType:
-    # Class type that will handle all int vectors,
-    # inspiration from python cookbook 3rd edition
+    """
+    Class type that will handle all int vectors,
+    inspiration from python cookbook 3rd edition
+    """
+
     def from_param(self, param):
-        typename = type(param).__name__
-        if hasattr(self, "from_" + typename):
-            return getattr(self, "from_" + typename)(param)
+        if hasattr(param, "__array_interface__"):
+            return self.from_ndarray(param)
         elif isinstance(param, Array):
             return param
+        elif isinstance(param, (list, tuple)):
+            return self.from_list(param)
+        elif isinstance(param, array):
+            if param.typecode != "i":
+                raise TypeError("must be an array of ints")
+            return self.from_list(param)
         else:
-            raise TypeError("Can't convert %s" % typename)
+            raise TypeError(f"Can't convert {type(param)}")
 
     # Cast from lists/tuples
     def from_list(self, param):
-        val = ((c_int) * len(param))(*param)
-        return val
-
-    # Cast from Tuple
-    def from_tuple(self, param):
         val = ((c_int) * len(param))(*param)
         return val
 
@@ -344,25 +360,23 @@ class IntArrayType:
         return numpc.as_ctypes(
             param.astype(numpy.int32, casting="same_kind", copy=False)
         )
-
-    # Cast from array.array objects
-    def from_array(self, param):
-        if param.typecode != "i":
-            raise TypeError("must be an array of ints")
-        return self.from_list(param)
 
 
 class IntMatrixType:
-    # Class type that will handle all int matricies,
-    # inspiration from python cookbook 3rd edition
+    """
+    Class type that will handle all 2d int arrays,
+    inspiration from python cookbook 3rd edition
+    """
+
     def from_param(self, param):
-        typename = type(param).__name__
-        if hasattr(self, "from_" + typename):
-            return getattr(self, "from_" + typename)(param)
+        if hasattr(param, "__array_interface__"):
+            return self.from_ndarray(param)
         elif isinstance(param, Array):
             return param
+        elif isinstance(param, (list, tuple)):
+            return self.from_list(param)
         else:
-            raise TypeError("Can't convert %s" % typename)
+            raise TypeError(f"Can't convert {type(param)}")
 
     # Cast from lists/tuples
     def from_list(self, param):
@@ -371,22 +385,8 @@ class IntMatrixType:
         )
         return val
 
-    # Cast from Tuple
-    def from_tuple(self, param):
-        val = ((c_int * len(param[0])) * len(param))(
-            *[IntArray.from_param(x) for x in param]
-        )
-        return val
-
     # Cast from a numpy array
     def from_ndarray(self, param):
-        # cspice always uses a int size half as big as the float, ie int32 if a float64 system default
-        return numpc.as_ctypes(
-            param.astype(numpy.int32, casting="same_kind", copy=False)
-        )
-
-    # Cast from a numpy matrix
-    def from_matrix(self, param):
         # cspice always uses a int size half as big as the float, ie int32 if a float64 system default
         return numpc.as_ctypes(
             param.astype(numpy.int32, casting="same_kind", copy=False)
@@ -395,11 +395,11 @@ class IntMatrixType:
 
 DoubleArray = DoubleArrayType()
 
+DoubleMatrix = DoubleMatrixType()
+
 IntArray = IntArrayType()
 
 IntMatrix = IntMatrixType()
-
-DoubleMatrix = DoubleMatrixType()
 
 
 class Plane(Structure):
@@ -413,11 +413,8 @@ class Plane(Structure):
     def constant(self):
         return self._constant
 
-    def __str__(self):
-        return "<SpicePlane: normal=%s; constant=%s>" % (
-            ", ".join([str(x) for x in self._normal]),
-            self._constant,
-        )
+    def __str__(self) -> str:
+        return f"<SpicePlane: normal={', '.join([str(x) for x in self._normal])}; constant={self._constant}>"
 
 
 class Ellipse(Structure):
@@ -439,12 +436,8 @@ class Ellipse(Structure):
     def semi_minor(self):
         return c_vector_to_python(self._semi_minor)
 
-    def __str__(self):
-        return "<SpiceEllipse: center = %s, semi_major = %s, semi_minor = %s>" % (
-            self.center,
-            self.semi_major,
-            self.semi_minor,
-        )
+    def __str__(self) -> str:
+        return f"<SpiceEllipse: center = {self.center} semi_major = {self.semi_major}, semi_minor = {self.semi_minor}>"
 
 
 class DataType(object):
@@ -459,7 +452,7 @@ class DataType(object):
     TIME = 3
     BOOL = 4
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
 
@@ -682,17 +675,10 @@ class SpiceEKAttDsc(Structure):
     def nullok(self):
         return bool(self._nullok)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
-            "<SpiceEKAttDsc cclass = %s, dtype = %s, strlen = %s, size = %s, indexd = %s, nullok = %s >"
-            % (
-                self.cclass,
-                self.dtype,
-                self.strlen,
-                self.size,
-                self.indexd,
-                self.nullok,
-            )
+            f"<SpiceEKAttDsc cclass = {self.cclass}, dtype = {self.dtype}, strlen = {self.strlen}, "
+            f"size = {self.size}, indexd = {self.indexd}, nullok = {self.nullok} >"
         )
 
 
@@ -725,10 +711,10 @@ class SpiceEKSegSum(Structure):
     def cdescrs(self):
         return self._cdescrs[0 : self.ncols]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
-            "<SpiceEKSegSum tabnam = %s, nrows = %s, ncols = %s, cnames = %s, cdescrs = %s >"
-            % (self.tabnam, self.nrows, self.ncols, self.cnames, self.cdescrs)
+            f"<SpiceEKSegSum tabnam = {self.tabnam}, nrows = {self.nrows}, ncols = {self.ncols},"
+            f" cnames = {self.cnames}, cdescrs = {self.cdescrs} >"
         )
 
 
@@ -757,63 +743,6 @@ def _double_getter(data_p, index, length):
 
 def _int_getter(data_p, index, length):
     return c_int.from_address(data_p + index * BITSIZE["int"]).value
-
-
-def SPICEDOUBLE_CELL(size):
-    """
-    Returns a Double Spice Cell with a given size
-    :param size: number of elements
-    :type size: int
-    :return: empty Spice Cell
-    :rtype: spiceypy.utils.support_types.SpiceCell
-    """
-    return SpiceCell.double(size)
-
-
-def SPICEINT_CELL(size):
-    """
-    Returns a Int Spice Cell with a given size
-    :param size: number of elements
-    :type size: int
-    :return: empty Spice Cell
-    :rtype: spiceypy.utils.support_types.SpiceCell
-    """
-    return SpiceCell.integer(size)
-
-
-def SPICECHAR_CELL(size, length):
-    """
-    Returns a Char Spice Cell with a given size
-    :param size: number of elements
-    :type size: int
-    :param length: width of elements
-    :type length: int
-    :return: empty Spice Cell
-    :rtype: spiceypy.utils.support_types.SpiceCell
-    """
-    return SpiceCell.character(size, length)
-
-
-def SPICEBOOL_CELL(size):
-    """
-    Returns a Bool Spice Cell with a given size
-    :param size: number of elements
-    :type size: int
-    :return: empty Spice Cell
-    :rtype: spiceypy.utils.support_types.SpiceCell
-    """
-    return SpiceCell.bool(size)
-
-
-def SPICETIME_CELL(size):
-    """
-    Returns a Time Spice Cell with a given size
-    :param size: number of elements
-    :type size: int
-    :return: empty Spice Cell
-    :rtype: spiceypy.utils.support_types.SpiceCell
-    """
-    return SpiceCell.time(size)
 
 
 class SpiceCell(Structure):
@@ -856,21 +785,10 @@ class SpiceCell(Structure):
         self.base = base  # void pointer
         self.data = data
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
-            "<SpiceCell dtype = %s, length = %s, size = %s, card = %s,"
-            " is_set = %s, adjust = %s, init = %s, base = %s, data = %s>"
-            % (
-                self.dtype,
-                self.length,
-                self.size,
-                self.card,
-                self.isSet,
-                self.adjust,
-                self.init,
-                self.base,
-                self.data,
-            )
+            f"<SpiceCell dtype = {self.dtype}, length = {self.length}, size = {self.size}, card = {self.card},"
+            f" is_set = {self.isSet}, adjust = {self.adjust}, init = {self.init}, base = {self.base}, data = {self.data}>"
         )
 
     def is_int(self):
@@ -1013,9 +931,9 @@ class SpiceCell(Structure):
         :param other:
         :return:
         """
-        if len(self) != len(other):
-            return False
         if not hasattr(other, "__iter__"):
+            return False
+        if len(self) != len(other):
             return False
         if isinstance(other, SpiceCell):
             if other.dtype != self.dtype:
@@ -1028,15 +946,63 @@ class SpiceCell(Structure):
         return True
 
 
+SpiceCellPointer = POINTER(SpiceCell)
+
+
+def SPICEDOUBLE_CELL(size: int) -> SpiceCell:
+    """
+    Returns a Double Spice Cell with a given size
+    :param size: number of elements
+    :return: empty Spice Cell
+    """
+    return SpiceCell.double(size)
+
+
+def SPICEINT_CELL(size: int) -> SpiceCell:
+    """
+    Returns a Int Spice Cell with a given size
+    :param size: number of elements
+    :return: empty Spice Cell
+    """
+    return SpiceCell.integer(size)
+
+
+def SPICECHAR_CELL(size: int, length: int) -> SpiceCell:
+    """
+    Returns a Char Spice Cell with a given size
+    :param size: number of elements
+    :param length: width of elements
+    :return: empty Spice Cell
+    """
+    return SpiceCell.character(size, length)
+
+
+def SPICEBOOL_CELL(size: int) -> SpiceCell:
+    """
+    Returns a Bool Spice Cell with a given size
+    :param size: number of elements
+    :return: empty Spice Cell
+    """
+    return SpiceCell.bool(size)
+
+
+def SPICETIME_CELL(size: int):
+    """
+    Returns a Time Spice Cell with a given size
+    :param size: number of elements
+    :return: empty Spice Cell
+    """
+    return SpiceCell.time(size)
+
+
 # Spice Cell classes
 
 
 class Cell_Time(SpiceCell):
-    def __init__(self, size):
+    def __init__(self, size: int) -> None:
         """
         Init a Time Spice Cell with a given size and length
         :param size: number of elements
-        :type size: int
         """
         base = (c_int * (6 + size))()
         data = (c_int * size).from_buffer(base, 6 * BITSIZE["time"])
@@ -1046,11 +1012,10 @@ class Cell_Time(SpiceCell):
 
 
 class Cell_Bool(SpiceCell):
-    def __init__(self, size):
+    def __init__(self, size: int) -> None:
         """
         Init a Bool Spice Cell with a given size and length
         :param size: number of elements
-        :type size: int
         """
         base = (c_int * (6 + size))()
         data = (c_int * size).from_buffer(base, 6 * BITSIZE["bool"])
@@ -1060,11 +1025,10 @@ class Cell_Bool(SpiceCell):
 
 
 class Cell_Int(SpiceCell):
-    def __init__(self, size):
+    def __init__(self, size: int) -> None:
         """
         Init a Int Spice Cell with a given size and length
         :param size: number of elements
-        :type size: int
         """
         base = (c_int * (6 + size))()
         data = (c_int * size).from_buffer(base, 6 * BITSIZE["int"])
@@ -1074,11 +1038,10 @@ class Cell_Int(SpiceCell):
 
 
 class Cell_Double(SpiceCell):
-    def __init__(self, size):
+    def __init__(self, size: int) -> None:
         """
         Init a Double Spice Cell with a given size and length
         :param size: number of elements
-        :type size: int
         """
         base = (c_double * (6 + size))()
         data = (c_double * size).from_buffer(base, 6 * BITSIZE["double"])
@@ -1088,13 +1051,11 @@ class Cell_Double(SpiceCell):
 
 
 class Cell_Char(SpiceCell):
-    def __init__(self, size, length):
+    def __init__(self, size: int, length: int) -> None:
         """
         Init a Char Spice Cell with a given size and length
         :param size: number of elements
-        :type size: int
         :param length: width of elements
-        :type length: int
         """
         base = (c_char * ((6 + size) * length))()
         data = (c_char * (size * length)).from_buffer(

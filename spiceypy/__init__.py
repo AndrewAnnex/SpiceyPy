@@ -22,10 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 __author__ = "AndrewAnnex"
-__version__ = "3.0.2"
+__version__ = "3.1.1"
 
 from .spiceypy import *
 from .utils import support_types
+from .utils import exceptions
 
 # Default setting for error reporting so that programs don't just exit out!
 erract("set", 10, "return")

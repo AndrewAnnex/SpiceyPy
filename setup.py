@@ -22,13 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 __author__ = "AndrewAnnex"
+
 from setuptools import setup, Command
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
-from setuptools.command.test import test as TestCommand
 from setuptools.dist import Distribution
-import sys
-from getspice import InstallCSpice
+
+from get_spice import InstallCSpice
 
 TEST_DEPENDENCIES = [
     'numpy>=1.17.0;python_version>="3.5"',
@@ -47,20 +47,6 @@ class SpiceyPyBinaryDistribution(Distribution):
 
     def root_is_pure(self):
         return False
-
-
-class PyTest(TestCommand):
-    # py.test integration from pytest.org
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
-
-    def run_tests(self):
-        import pytest
-
-        errcode = pytest.main(self.test_args)
-        sys.exit(errcode)
 
 
 class InstallSpiceyPy(install):
@@ -104,7 +90,6 @@ class BuildPyCommand(build_py):
 
 cmdclass = {
     "install": InstallSpiceyPy,
-    "test": PyTest,
     "build_py": BuildPyCommand,
     "get_cspice": GetCSPICECommand,
 }
@@ -115,7 +100,7 @@ readme.close()
 
 setup(
     name="spiceypy",
-    version="3.0.2",
+    version="3.1.1",
     license="MIT",
     author="Andrew Annex",
     author_email="ama6fy@virginia.edu",
@@ -138,7 +123,7 @@ setup(
         "Operating System :: POSIX :: BSD :: FreeBSD",
         "Operating System :: Microsoft :: Windows",
     ],
-    packages=["spiceypy", "spiceypy.utils"],
+    packages=["spiceypy", "spiceypy.tests", "spiceypy.utils"],
     include_package_data=True,
     zip_safe=False,
     distclass=SpiceyPyBinaryDistribution,

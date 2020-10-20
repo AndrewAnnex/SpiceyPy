@@ -21,14 +21,21 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-
+from contextlib import contextmanager
+from datetime import datetime, timezone
+import functools
 import ctypes
+from typing import Callable, Iterator, Iterable, Optional, Tuple, Union, Sequence
+
+import numpy
+from numpy import ndarray, str_
+
 from .utils import support_types as stypes
-from .utils.support_types import Cell_Char, Cell_Bool, Cell_Double, Cell_Int, Cell_Time
 from .utils.libspicehelper import libspice
 from . import config
-from .utils.callbacks import SpiceUDFUNS, SpiceUDFUNB
+
 from .utils.callbacks import (
+    UDFUNC,
     UDFUNS,
     UDFUNB,
     UDSTEP,
@@ -37,26 +44,26 @@ from .utils.callbacks import (
     UDREPU,
     UDREPF,
     UDBAIL,
+    SpiceUDFUNS,
+    SpiceUDFUNB,
 )
-import functools
-import numpy
-from contextlib import contextmanager
-from datetime import datetime, timezone
 
-from numpy import ndarray, str_
-from spiceypy.utils.support_types import (
+from .utils.support_types import (
     Cell_Char,
+    Cell_Bool,
+    Cell_Time,
     Cell_Double,
     Cell_Int,
     Ellipse,
     Plane,
     SpiceCell,
+    SpiceCellPointer,
     SpiceDLADescr,
     SpiceDSKDescr,
     SpiceEKAttDsc,
     SpiceEKSegSum,
 )
-from typing import Callable, Iterator, Iterable, Optional, Tuple, Union, Sequence
+
 
 __author__ = "AndrewAnnex"
 
@@ -70,21 +77,20 @@ _SPICE_EK_EKRCEX_ROOM_DEFAULT = 100  # Enough?
 
 def check_for_spice_error(f: Optional[Callable]) -> None:
     """
-    Internal function to check
-    :param f:
+    Internal decorator function to check spice error system for failed calls
+
+    :param f: function
     :raise stypes.SpiceyError:
     """
     if failed():
-        errorparts = {
-            "tkvsn": tkvrsn("TOOLKIT").replace("CSPICE_", ""),
-            "short": getmsg("SHORT", 26),
-            "explain": getmsg("EXPLAIN", 100).strip(),
-            "long": getmsg("LONG", 321).strip(),
-            "traceback": qcktrc(200),
-        }
-        msg = stypes.errorformat.format(**errorparts)
+        short = getmsg("SHORT", 26)
+        explain = getmsg("EXPLAIN", 100).strip()
+        long = getmsg("LONG", 1841).strip()
+        traceback = qcktrc(200)
         reset()
-        raise stypes.SpiceyError(msg)
+        raise stypes.dynamically_instantiate_spiceyerror(
+            short=short, explain=explain, long=long, traceback=traceback
+        )
 
 
 def spice_error_check(f):
@@ -118,12 +124,12 @@ def spice_found_exception_thrower(f: Callable) -> Callable:
         if config.catch_false_founds:
             found = res[-1]
             if isinstance(found, bool) and not found:
-                raise stypes.SpiceyError(
+                raise stypes.NotFoundError(
                     "Spice returns not found for function: {}".format(f.__name__),
                     found=found,
                 )
-            elif hasattr(found, "__iter__") and not all(found):
-                raise stypes.SpiceyError(
+            elif stypes.is_iterable(found) and not all(found):
+                raise stypes.NotFoundError(
                     "Spice returns not found in a series of calls for function: {}".format(
                         f.__name__
                     ),
@@ -244,7 +250,7 @@ def cell_bool(cell_size: int) -> SpiceCell:
     return stypes.SPICEBOOL_CELL(cell_size)
 
 
-def cell_time(cell_size):
+def cell_time(cell_size) -> SpiceCell:
     return stypes.SPICETIME_CELL(cell_size)
 
 
@@ -254,7 +260,8 @@ def cell_time(cell_size):
 
 @spice_error_check
 def appndc(
-    item: Union[str, Iterable[str], ndarray, str_], cell: Union[Cell_Char, SpiceCell],
+    item: Union[str, Iterable[str], ndarray, str_],
+    cell: Union[Cell_Char, SpiceCell],
 ) -> None:
     """
     Append an item to a character cell.
@@ -1366,7 +1373,7 @@ def ckw05(
     )
 
 
-def cleard():
+def cleard() -> NotImplementedError:
     raise NotImplementedError
 
 
@@ -6109,7 +6116,7 @@ def gfpa(
     refval: float,
     adjust: float,
     step: float,
-    nintvals: int,
+    nintvls: int,
     cnfine: SpiceCell,
     result: Optional[SpiceCell] = None,
 ) -> SpiceCell:
@@ -6128,7 +6135,7 @@ def gfpa(
     :param refval: Reference value.
     :param adjust: Adjustment value for absolute extrema searches.
     :param step: Step size used for locating extrema and roots.
-    :param nintvals: Workspace window interval count.
+    :param nintvls: Workspace window interval count.
     :param cnfine: SPICE window to which the search is restricted.
     :param result: Optional SPICE window containing results.
     """
@@ -6147,7 +6154,7 @@ def gfpa(
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
-    nintvals = ctypes.c_int(nintvals)
+    nintvls = ctypes.c_int(nintvls)
     libspice.gfpa_c(
         target,
         illmin,
@@ -6157,7 +6164,7 @@ def gfpa(
         refval,
         adjust,
         step,
-        nintvals,
+        nintvls,
         ctypes.byref(cnfine),
         ctypes.byref(result),
     )
@@ -6176,7 +6183,7 @@ def gfposc(
     refval: float,
     adjust: float,
     step: float,
-    nintvals: int,
+    nintvls: int,
     cnfine: SpiceCell,
     result: Optional[SpiceCell] = None,
 ) -> SpiceCell:
@@ -6196,7 +6203,7 @@ def gfposc(
     :param refval: Reference value.
     :param adjust: Adjustment value for absolute extrema searches.
     :param step: Step size used for locating extrema and roots.
-    :param nintvals: Workspace window interval count.
+    :param nintvls: Workspace window interval count.
     :param cnfine: SPICE window to which the search is restricted.
     :param result: Optional SPICE window containing results.
     """
@@ -6217,7 +6224,7 @@ def gfposc(
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
-    nintvals = ctypes.c_int(nintvals)
+    nintvls = ctypes.c_int(nintvls)
     libspice.gfposc_c(
         target,
         inframe,
@@ -6229,7 +6236,7 @@ def gfposc(
         refval,
         adjust,
         step,
-        nintvals,
+        nintvls,
         ctypes.byref(cnfine),
         ctypes.byref(result),
     )
@@ -6271,7 +6278,9 @@ def gfrepf() -> None:
 
 
 @spice_error_check
-def gfrepi(window: SpiceCell, begmss: str, endmss: str) -> None:
+def gfrepi(
+    window: Union[SpiceCell, SpiceCellPointer], begmss: str, endmss: str
+) -> None:
     """
     This entry point initializes a search progress report.
 
@@ -6284,7 +6293,7 @@ def gfrepi(window: SpiceCell, begmss: str, endmss: str) -> None:
     begmss = stypes.string_to_char_p(begmss)
     endmss = stypes.string_to_char_p(endmss)
     # don't do anything if we were given a pointer to a SpiceCell, like if we were in a callback
-    if not isinstance(window, ctypes.POINTER(stypes.SpiceCell)):
+    if not isinstance(window, SpiceCellPointer):
         assert isinstance(window, stypes.SpiceCell)
         assert window.is_double()
         window = ctypes.byref(window)
@@ -6371,7 +6380,7 @@ def gfrr(
     refval: float,
     adjust: float,
     step: float,
-    nintvals: int,
+    nintvls: int,
     cnfine: SpiceCell,
     result: SpiceCell,
 ) -> SpiceCell:
@@ -6388,7 +6397,7 @@ def gfrr(
     :param refval: Reference value.
     :param adjust: Adjustment value for absolute extrema searches.
     :param step: Step size used for locating extrema and roots.
-    :param nintvals: Workspace window interval count.
+    :param nintvls: Workspace window interval count.
     :param cnfine: SPICE window to which the search is restricted.
     :param result: Optional SPICE window containing results.
     """
@@ -6406,7 +6415,7 @@ def gfrr(
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
-    nintvals = ctypes.c_int(nintvals)
+    nintvls = ctypes.c_int(nintvls)
     libspice.gfrr_c(
         target,
         abcorr,
@@ -6415,7 +6424,7 @@ def gfrr(
         refval,
         adjust,
         step,
-        nintvals,
+        nintvls,
         ctypes.byref(cnfine),
         ctypes.byref(result),
     )
@@ -6436,7 +6445,7 @@ def gfsep(
     refval: float,
     adjust: float,
     step: float,
-    nintvals: int,
+    nintvls: int,
     cnfine: SpiceCell,
     result: Optional[SpiceCell] = None,
 ) -> SpiceCell:
@@ -6459,7 +6468,7 @@ def gfsep(
     :param refval: Reference value.
     :param adjust: Absolute extremum adjustment value.
     :param step: Step size in seconds for finding angular separation events.
-    :param nintvals: Workspace window interval count.
+    :param nintvls: Workspace window interval count.
     :param cnfine: SPICE window to which the search is restricted.
     :param result: Optional SPICE window containing results.
     """
@@ -6482,7 +6491,7 @@ def gfsep(
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
-    nintvals = ctypes.c_int(nintvals)
+    nintvls = ctypes.c_int(nintvls)
     libspice.gfsep_c(
         targ1,
         shape1,
@@ -6496,7 +6505,7 @@ def gfsep(
         refval,
         adjust,
         step,
-        nintvals,
+        nintvls,
         ctypes.byref(cnfine),
         ctypes.byref(result),
     )
@@ -6518,7 +6527,7 @@ def gfsntc(
     refval: float,
     adjust: float,
     step: float,
-    nintvals: int,
+    nintvls: int,
     cnfine: SpiceCell,
     result: Optional[SpiceCell] = None,
 ) -> SpiceCell:
@@ -6541,7 +6550,7 @@ def gfsntc(
     :param refval: Reference value.
     :param adjust: Absolute extremum adjustment value.
     :param step: Step size in seconds for finding angular separation events.
-    :param nintvals: Workspace window interval count.
+    :param nintvls: Workspace window interval count.
     :param cnfine: SPICE window to which the search is restricted.
     :param result: Optional SPICE window containing results.
     """
@@ -6565,7 +6574,7 @@ def gfsntc(
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
-    nintvals = ctypes.c_int(nintvals)
+    nintvls = ctypes.c_int(nintvls)
     libspice.gfsntc_c(
         target,
         fixref,
@@ -6580,7 +6589,7 @@ def gfsntc(
         refval,
         adjust,
         step,
-        nintvals,
+        nintvls,
         ctypes.byref(cnfine),
         ctypes.byref(result),
     )
@@ -6645,7 +6654,7 @@ def gfsubc(
     refval: float,
     adjust: float,
     step: float,
-    nintvals: int,
+    nintvls: int,
     cnfine: SpiceCell,
     result: SpiceCell,
 ) -> SpiceCell:
@@ -6666,7 +6675,7 @@ def gfsubc(
     :param refval: Reference value.
     :param adjust: Adjustment value for absolute extrema searches.
     :param step: Step size used for locating extrema and roots.
-    :param nintvals: Workspace window interval count.
+    :param nintvls: Workspace window interval count.
     :param cnfine: SPICE window to which the search is restricted.
     :param result: Optional SPICE window containing results.
     """
@@ -6688,7 +6697,7 @@ def gfsubc(
     refval = ctypes.c_double(refval)
     adjust = ctypes.c_double(adjust)
     step = ctypes.c_double(step)
-    nintvals = ctypes.c_int(nintvals)
+    nintvls = ctypes.c_int(nintvls)
     libspice.gfsubc_c(
         target,
         fixref,
@@ -6701,7 +6710,7 @@ def gfsubc(
         refval,
         adjust,
         step,
-        nintvals,
+        nintvls,
         ctypes.byref(cnfine),
         ctypes.byref(result),
     )
@@ -6767,7 +6776,9 @@ def gftfov(
 
 
 @spice_error_check
-def gfudb(udfuns, udfunb, step, cnfine, result):
+def gfudb(
+    udfuns: UDFUNS, udfunb: UDFUNB, step: float, cnfine: SpiceCell, result: SpiceCell
+):
     """
     Perform a GF search on a user defined boolean quantity.
 
@@ -6785,7 +6796,17 @@ def gfudb(udfuns, udfunb, step, cnfine, result):
 
 
 @spice_error_check
-def gfuds(udfuns, udqdec, relate, refval, adjust, step, nintvls, cnfine, result):
+def gfuds(
+    udfuns: UDFUNS,
+    udqdec: UDFUNB,
+    relate: str,
+    refval: float,
+    adjust: float,
+    step: float,
+    nintvls: int,
+    cnfine: SpiceCell,
+    result: SpiceCell,
+) -> SpiceCell:
     """
     Perform a GF search on a user defined scalar quantity.
 
@@ -7445,6 +7466,84 @@ def invort(m: ndarray) -> ndarray:
 
 
 @spice_error_check
+def irfnam(index: int) -> str:
+    """
+    Return the name of one of the standard inertial reference
+    frames supported by :func:`irfrot`
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/irfnam.html
+
+    :param index: Index of a standard inertial reference frame.
+    :return: is the name of the frame.
+    """
+    index = ctypes.c_int(index)
+    name = stypes.string_to_char_p(16)  # just give enough space
+    name_len = ctypes.c_int(16)
+    libspice.irfnam_(ctypes.byref(index), name, name_len)
+    return stypes.to_python_string(name)
+
+
+@spice_error_check
+def irfnum(name: str) -> int:
+    """
+    Return the index of one of the standard inertial reference
+    frames supported by :func:`irfrot`
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/irfnum.html
+
+    :param name: Name of standard inertial reference frame.
+    :return: is the index of the frame.
+    """
+    index = ctypes.c_int()
+    name_len = ctypes.c_int(len(name))
+    name = stypes.string_to_char_p(name)
+    libspice.irfnum_(name, ctypes.byref(index), name_len)
+    return index.value
+
+
+@spice_error_check
+def irfrot(refa: int, refb: int) -> ndarray:
+    """
+    Compute the matrix needed to rotate vectors between two
+    standard inertial reference frames.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/irfrot.html
+
+    :param refa: index of first reference frame.
+    :param refb: index of second reference frame.
+    :return: rotation from frame A to frame B.
+    """
+    refa = ctypes.c_int(refa)
+    refb = ctypes.c_int(refb)
+    rotab = stypes.empty_double_matrix()
+    libspice.irfrot_(ctypes.byref(refa), ctypes.byref(refb), rotab)
+    # make sure to transpose to get back into c order from fortran ordering
+    return stypes.c_matrix_to_numpy(rotab).T
+
+
+@spice_error_check
+def irftrn(refa: str, refb: str) -> ndarray:
+    """
+    Return the matrix that transforms vectors from one specified
+    inertial reference frame to another.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/irftrn.html
+
+    :param refa: Name of reference frame to transform vectors FROM.
+    :param refb: Name of reference frame to transform vectors TO.
+    :return: REFA-to-REFB transformation matrix.
+    """
+    len_a = ctypes.c_int(len(refa))
+    len_b = ctypes.c_int(len(refb))
+    refa = stypes.string_to_char_p(refa)
+    refb = stypes.string_to_char_p(refb)
+    rotab = stypes.empty_double_matrix()
+    libspice.irftrn_(refa, refb, rotab, len_a, len_b)
+    # make sure to transpose to get back into c order from fortran ordering
+    return stypes.c_matrix_to_numpy(rotab).T
+
+
+@spice_error_check
 def isordv(array: Iterable[int], n: int) -> bool:
     """
     Determine whether an array of n items contains the integers
@@ -7696,6 +7795,25 @@ def kdata(
 
 
 @spice_error_check
+def kepleq(ml: float, h: float, k: float) -> float:
+    """
+    This function solves the equinoctial version of Kepler's equation.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/kepleq.html
+
+    :param ml: Mean longitude
+    :param h: h component of equinoctial elements
+    :param k: k component of equinoctial elements
+    :return: the value of F such that ML = F + h*COS(F) - k*SIN(F)
+    """
+    ml = ctypes.c_double(ml)
+    h = ctypes.c_double(h)
+    k = ctypes.c_double(k)
+    f = libspice.kepleq_(ctypes.byref(ml), ctypes.byref(h), ctypes.byref(k))
+    return f
+
+
+@spice_error_check
 @spice_found_exception_thrower
 def kinfo(
     file: str, typlen: int = _default_len_out, srclen: int = _default_len_out
@@ -7748,6 +7866,23 @@ def kplfrm(frmcls: int, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     frmcls = ctypes.c_int(frmcls)
     libspice.kplfrm_c(frmcls, ctypes.byref(out_cell))
     return out_cell
+
+
+@spice_error_check
+def kpsolv(evec: Tuple[float, float]) -> float:
+    """
+    This routine solves the equation X = < EVEC, U(X) > where
+    U(X) is the unit vector [ Cos(X), SIN(X) ] and  < , > denotes
+    the two-dimensional dot product.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/kpsolv.html
+
+    :param evec: A 2-vector whose magnitude is less than 1.
+    :return: the value of X such that X = EVEC(1)COS(X) + EVEC(2)SIN(X).
+    """
+    evec = stypes.to_double_vector(evec)
+    x = libspice.kpsolv_(evec)
+    return x
 
 
 @spice_error_check
@@ -7841,7 +7976,8 @@ def lastnb(string: str) -> int:
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lastnb_c.html
 
     :param string: Input character string.
-    :return: """
+    :return:
+    """
     string = stypes.string_to_char_p(string)
     return libspice.lastnb_c(string)
 
@@ -13265,6 +13401,18 @@ def datetime2et(dt: Union[Iterable[datetime], datetime]) -> Union[ndarray, float
         return et.value
 
 
+if hasattr(datetime, "fromisoformat"):
+
+    def fromisoformat(s):
+        return datetime.fromisoformat(s + "+00:00")
+
+
+else:
+
+    def fromisoformat(s):
+        return datetime.strptime(s, "%Y-%m-%dT%H:%M:%S.%f").replace(tzinfo=timezone.utc)
+
+
 @spice_error_check
 def et2datetime(et: Union[Iterable[float], float]) -> Union[ndarray, datetime]:
     """
@@ -13277,16 +13425,10 @@ def et2datetime(et: Union[Iterable[float], float]) -> Union[ndarray, datetime]:
     :return: Output datetime object in UTC
     """
     result = et2utc(et, "ISOC", 6)
-    isoformat = "%Y-%m-%dT%H:%M:%S.%f"
     if stypes.is_iterable(result):
-        return numpy.array(
-            [
-                datetime.strptime(s, isoformat).replace(tzinfo=timezone.utc)
-                for s in result
-            ]
-        )
+        return numpy.array([fromisoformat(s) for s in result])
     else:
-        return datetime.strptime(result, isoformat).replace(tzinfo=timezone.utc)
+        return fromisoformat(result)
 
 
 @spice_error_check
@@ -13985,7 +14127,7 @@ def trcnam(index: int, namlen: int = _default_len_out) -> str:
 
 
 @spice_error_check
-def trcoff():
+def trcoff() -> None:
     """
     Disable tracing.
 
@@ -14122,7 +14264,7 @@ def ucrss(v1: ndarray, v2: ndarray) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
-def uddc(udfunc, x, dx):
+def uddc(udfunc: UDFUNC, x: float, dx: float) -> bool:
     """
     SPICE private routine intended solely for the support of SPICE
     routines. Users should not call this routine directly due to the
@@ -14141,7 +14283,7 @@ def uddc(udfunc, x, dx):
             pos, new_et = spice.spkpos("MERCURY", et_in, "J2000", "LT+S", "MOON")
             return new_et
 
-        deriv = spice.uddf(udfunc, et, 1.0)
+        is_negative = spice.uddc(udfunc, et, 1.0)
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/uddc_c.html
 
@@ -14158,7 +14300,7 @@ def uddc(udfunc, x, dx):
 
 
 @spice_error_check
-def uddf(udfunc, x, dx):
+def uddf(udfunc: UDFUNC, x: float, dx: float) -> float:
     """
     Routine to calculate the first derivative of a caller-specified
     function using a three-point estimation.
@@ -14330,7 +14472,7 @@ def utc2et(utcstr: str) -> float:
 
 @spice_error_check
 def vadd(v1: Iterable[float], v2: Iterable[float]) -> ndarray:
-    """ Add two 3 dimensional vectors.
+    """Add two 3 dimensional vectors.
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vadd_c.html
 
     :param v1: First vector to be added.
@@ -14346,7 +14488,8 @@ def vadd(v1: Iterable[float], v2: Iterable[float]) -> ndarray:
 
 @spice_error_check
 def vaddg(v1: Iterable[float], v2: Iterable[float], ndim: int) -> ndarray:
-    """ Add two n-dimensional vectors
+    """
+    Add two n-dimensional vectors
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vaddg_c.html
 
     :param v1: First vector to be added.

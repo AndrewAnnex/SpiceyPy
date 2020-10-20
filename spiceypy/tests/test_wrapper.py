@@ -2217,8 +2217,8 @@ def test_dskxv_2():
     verticies = []
     raydirs = []
 
-    while lon < 180.0:
-        while nlstep <= 180:
+    while lon <= 180.0:
+        while nlstep <= 180.0:
             if lon == 180.0:
                 lat = 90.0 - nlstep * latstp
             else:
@@ -2228,12 +2228,12 @@ def test_dskxv_2():
                     lat = -90.0 + polmrg
                 else:
                     lat = 90.0 - nlstep * latstp
-                vertex = spice.latrec(r, np.radians(lon), np.radians(lat))
-                raydir = spice.vminus(vertex)
-                verticies.append(vertex)
-                raydirs.append(raydir)
-                nrays += 1
-                nlstep += 1
+            vertex = spice.latrec(r, np.radians(lon), np.radians(lat))
+            raydir = spice.vminus(vertex)
+            verticies.append(vertex)
+            raydirs.append(raydir)
+            nrays += 1
+            nlstep += 1
         lon += lonstp
         lat = 90.0
         nlstep = 0
@@ -2244,8 +2244,8 @@ def test_dskxv_2():
         False, target, srflst, 0.0, fixref, verticies, raydirs
     )
     # check output
-    assert len(xpt) == 32580
-    assert len(foundarray) == 32580
+    assert len(xpt) == 32761
+    assert len(foundarray) == 32761
     assert foundarray.all()
     spice.kclear()
 
@@ -3950,7 +3950,7 @@ def test_gfevnt():
     assert spice.timout(result[3], sTimout) == "2001-FEB-20 21:52:07.900872 (TDB)"
     # Cleanup
     if spice.gfbail():
-        spice.gfclrh()
+        spice.gfclrh()  # pragma: no cover
     spice.gfsstp(0.5)
     spice.kclear()
 
@@ -4007,7 +4007,7 @@ def test_gffove():
     assert spice.timout(result[1], sTimout) == "2013-FEB-25 11:45:00 UTC"
     # Cleanup
     if spice.gfbail():
-        spice.gfclrh()
+        spice.gfclrh()  # pragma: no cover
     spice.gfsstp(0.5)
     spice.kclear()
 
@@ -4090,7 +4090,7 @@ def test_gfinth():
 def test_gfocce():
     spice.kclear()
     if spice.gfbail():
-        spice.gfclrh()
+        spice.gfclrh()  # pragma: no cover
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et("2001 DEC 01 00:00:00 TDB")
     et1 = spice.str2et("2002 JAN 01 00:00:00 TDB")
@@ -4128,7 +4128,7 @@ def test_gfocce():
         result,
     )
     if spice.gfbail():
-        spice.gfclrh()
+        spice.gfclrh()  # pragma: no cover
     count = spice.wncard(result)
     assert count == 1
     spice.kclear()
@@ -5144,6 +5144,36 @@ def test_invort():
     npt.assert_array_almost_equal(m, mit)
 
 
+def test_irfnam():
+    assert spice.irfnam(1) == "J2000"
+    assert spice.irfnam(13) == "GALACTIC"
+    assert spice.irfnam(21) == "DE-143"
+
+
+def test_irfnum():
+    assert spice.irfnum("J2000") == 1
+    assert spice.irfnum("GALACTIC") == 13
+    assert spice.irfnum("DE-143") == 21
+
+
+def test_irfrot():
+    # get the rotation matrix from pxform
+    expected_rotate = spice.pxform("B1950", "J2000", 0.0)
+    # get hopefully the same rotation matrix from irfrot
+    fromfrm = spice.irfnum("B1950")
+    tofrm = spice.irfnum("J2000")
+    actual_rotate = spice.irfrot(fromfrm, tofrm)
+    npt.assert_array_almost_equal(actual_rotate, expected_rotate, decimal=4)
+
+
+def test_irftrn():
+    # get the rotation matrix from pxform
+    expected_rotate = spice.pxform("B1950", "J2000", 0.0)
+    # get hopefully the same rotation matrix from irfrot
+    actual_rotate = spice.irftrn("B1950", "J2000")
+    npt.assert_array_almost_equal(actual_rotate, expected_rotate, decimal=4)
+
+
 def test_isordv():
     assert spice.isordv([0, 1], 2)
     assert spice.isordv([0, 1, 2], 3)
@@ -5214,6 +5244,31 @@ def test_kdata():
     spice.kclear()
 
 
+def test_kepleq():
+    p = 10000.0
+    gm = 398600.436
+    ecc = 0.1
+    a = p / (1.0 - ecc)
+    n = np.sqrt(gm / a) / a
+    argp = 30.0 * spice.rpd()
+    node = 15.0 * spice.rpd()
+    m0 = 45.0 * spice.rpd()
+    epoch = -100000000.0
+    et = epoch - 9750.0
+    eqel_1 = ecc * np.sin(argp + node)
+    eqel_2 = ecc * np.cos(argp + node)
+    eqel_3 = m0 + argp + node
+    dt = et - epoch
+    dlp = 0.0
+    can = np.cos(dlp)
+    san = np.sin(dlp)
+    h = eqel_1 * can + eqel_2 * san
+    k = eqel_2 * can - eqel_1 * san
+    ml = eqel_3 + ((n * dt) % spice.twopi())
+    eecan = spice.kepleq(ml, h, k)
+    assert pytest.approx(2.692595464274983, eecan)
+
+
 def test_kinfo():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -5227,6 +5282,23 @@ def test_kplfrm():
     spice.furnsh(CoreKernels.testMetaKernel)
     cell = spice.kplfrm(-1)
     assert cell.size > 100
+    spice.kclear()
+
+
+def test_kpsolv():
+    spice.kclear()
+    r = 0.0
+    for i in range(1, 20):
+        theta = 0.0
+        for j in range(1, 63):
+            h = r * np.cos(theta)
+            k = r * np.sin(theta)
+            x = spice.kpsolv((h, k))
+            fx = h * np.cos(x) + k * np.sin(x)
+            assert pytest.approx(fx, x, 1.0e-15)
+            theta = theta + 0.1
+        r = r + 0.05
+        pass
     spice.kclear()
 
 
@@ -9702,7 +9774,7 @@ def test_uddc():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("JAN 1 2009")
 
-    @spiceypy.utils.callbacks.SpiceUDFUNS
+    @spiceypy.utils.callbacks.SpiceUDFUNC
     def udfunc(et_in):
         pos, new_et = spice.spkpos("MERCURY", et_in, "J2000", "LT+S", "MOON")
         return new_et

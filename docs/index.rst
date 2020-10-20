@@ -23,6 +23,7 @@ Contents:
    installation
    exampleone
    cells
+   exceptions
    lessonindex
    documentation
 

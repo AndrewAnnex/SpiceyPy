@@ -1,5 +1,5 @@
 # get spice script
-include getspice.py
+include get_spice.py
 
 # Misc
 include LICENSE
