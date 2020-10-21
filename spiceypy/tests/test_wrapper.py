@@ -177,6 +177,37 @@ def test_boddef():
     spice.kclear()
 
 
+def test_bodeul():
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    # define body-fixed unit vectors
+    xbf = [1.0, 0.0, 0.0]
+    ybf = [0.0, 1.0, 0.0]
+    zbf = [0.0, 0.0, 1.0]
+    # get the reference rotation matrix from pxform at et=0.0
+    ref_rotate = spice.pxform("IAU_VENUS", "J2000", 0.0)
+    # transform bf vectors to inertial coordinates
+    xin = spice.mxv(ref_rotate, xbf)
+    yin = spice.mxv(ref_rotate, ybf)
+    zin = spice.mxv(ref_rotate, zbf)
+    # obtain reference RA and DEC of north pole
+    ref_range, ref_ra, ref_dec = spice.recrad(zin)
+    # compute location of node
+    node = spice.ucrss(zbf, zin)
+    # obtain reference angle of prime meridian
+    xproj = spice.vdot(node, xin)
+    yproj = spice.vdot(node, yin)
+    ref_w = -np.arctan2(yproj, xproj)
+    ref_lam = 0
+    # hopefully obtain the same angles with call to bodeul at et=0.0
+    ra, dec, w, lam = spice.bodeul(299, 0.0)
+    npt.assert_almost_equal(ra, ref_ra, decimal=4)
+    npt.assert_almost_equal(dec, ref_dec, decimal=4)
+    npt.assert_almost_equal(w, ref_w, decimal=4)
+    npt.assert_almost_equal(lam, ref_lam, decimal=4)
+    spice.kclear()
+
+
 def test_bodfnd():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
