@@ -52,27 +52,28 @@ install:
 
   # update path to use installed pip
   - set PATH=%PYTHON%\\scripts;%PATH%
+  - ECHO "%PATH%"
 
   # Download things we absolutely need
-  - pip install wheel twine
-  - pip install -r requirements.txt
+  - "%PYTHON%\\python.exe -m pip install wheel twine"
+  - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
 
   # Now install spiceypy
-  - call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64
-  - "%PYTHON%/python setup.py install"
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\VC\Auxiliary\Build\vcvarsall.bat" amd64
+  - "%PYTHON%\\python.exe setup.py install"
 
   - ECHO "Installed SpiceyPy!"
-  - "%PYTHON%/Scripts/py.test --version"
+  - "%PYTHON%\\Scripts\py.test --version"
 
 test_script:
-  - "%PYTHON%/Scripts/coverage run --source spiceypy -m pytest --pyargs spiceypy"
+  - "%PYTHON%\\Scripts\coverage run --source spiceypy -m pytest --pyargs spiceypy"
 
 after_test:
   - ECHO "DONE!"
   - ECHO "Reporting Coverage..."
-  - "%PYTHON%/Scripts/codecov"
+  - "%PYTHON%\\Scripts\codecov"
   - ECHO "BUILDING WHEELS..."
-  - "%PYTHON%/python setup.py sdist bdist_wheel --plat-name=%PLAT_NAME% --python-tag=%PY_TAG%"
+  - "%PYTHON%\\python.exe setup.py sdist bdist_wheel --plat-name=%PLAT_NAME% --python-tag=%PY_TAG%"
   - ps: rm dist/*.egg
 
 artifacts:
