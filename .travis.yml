@@ -34,6 +34,7 @@ matrix:
 
 before_install:
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then eval "$(pyenv init -)"; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; cd $(pyenv root) && git pull && cd -; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then pyenv install $PYVERSION; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then pyenv global $PYVERSION; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then pyenv versions; fi
