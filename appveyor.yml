@@ -4,6 +4,9 @@
 # This is not a .NET project, so we build SpiceyPy in the install step.
 build: off
 
+# todo may specifiy different images for older python versions
+image: Visual Studio 2019
+
 environment:
   global:
       WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\windows_sdk.cmd"
