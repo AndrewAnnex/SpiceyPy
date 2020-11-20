@@ -60,7 +60,7 @@ install:
   - "%PYTHON%/python.exe -m pip install -r requirements.txt"
 
   # Now install spiceypy
-  - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\VC\Auxiliary\Build\vcvarsall.bat" amd64
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
   - "%PYTHON%/python.exe setup.py install"
 
   - ECHO "Installed SpiceyPy!"
