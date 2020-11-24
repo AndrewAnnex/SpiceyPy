@@ -18,25 +18,25 @@ matrix:
         - os: osx
           osx_image: xcode12
           language: generic
-          env: PYVERSION='3.6.2'
+          env: PYVERSION='3.6.10'
         - os: osx
           osx_image: xcode12
           language: generic
-          env: PYVERSION='3.7.0'
+          env: PYVERSION='3.7.9'
         - os: osx
           osx_image: xcode12
           language: generic
-          env: PYVERSION='3.8.0'
+          env: PYVERSION='3.8.6'
         - os: osx
           osx_image: xcode12
           language: generic
           env: PYVERSION='3.9.0'
 
 before_install:
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then unset PYENV_ROOT && curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash && export PATH="$HOME/.pyenv/bin:$PATH"; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then eval "$(pyenv init -)"; fi
-- if [ "$TRAVIS_OS_NAME" == "osx" ]; then cd $(pyenv root) && git pull && cd -; fi
-- if [ "$TRAVIS_OS_NAME" == "osx" ]; then pyenv install $PYVERSION; fi
-- if [ "$TRAVIS_OS_NAME" == "osx" ]; then pyenv global $PYVERSION; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then pyenv install --skip-existing $PYVERSION; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then pyenv global system $PYVERSION; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then pyenv versions; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then python --version; fi
 - pip install -U pip
