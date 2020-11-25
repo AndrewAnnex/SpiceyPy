@@ -4,6 +4,9 @@
 # This is not a .NET project, so we build SpiceyPy in the install step.
 build: off
 
+# todo may specifiy different images for older python versions
+image: Visual Studio 2019
+
 environment:
   global:
       WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\windows_sdk.cmd"
@@ -32,6 +35,13 @@ environment:
         WINDOWS_SDK_VERSION: "v7.1"
         PLAT_NAME: "win-amd64"
         PY_TAG: "cp38"
+        
+      - PYTHON: "C:\\Python39-x64"
+        PYTHON_VERSION: "3.9.x"
+        ARCH: "64"
+        WINDOWS_SDK_VERSION: "v7.1"
+        PLAT_NAME: "win-amd64"
+        PY_TAG: "cp39"
 
 platform:
   - x64
@@ -44,18 +54,20 @@ install:
   - ECHO "%PYTHON_VERSION%"
 
   # update path to use installed pip
-  - set PATH=%PYTHON%\\scripts;%PATH%
+  - set PATH=%PYTHON%/scripts;%PATH%
+  - set PATH=%PYTHON%/Scripts;%PATH%
+  - ECHO "%PATH%"
 
   # Download things we absolutely need
-  - pip install wheel twine
-  - pip install -r requirements.txt
+  - "%PYTHON%/python.exe -m pip install wheel twine"
+  - "%PYTHON%/python.exe -m pip install -r requirements.txt"
 
   # Now install spiceypy
-  - call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64
-  - "%PYTHON%/python setup.py install"
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
+  - "%PYTHON%/python.exe setup.py install"
 
   - ECHO "Installed SpiceyPy!"
-  - "%PYTHON%/Scripts/py.test --version"
+  - "%PYTHON%/Scripts/pytest --version"
 
 test_script:
   - "%PYTHON%/Scripts/coverage run --source spiceypy -m pytest --pyargs spiceypy"
@@ -65,7 +77,7 @@ after_test:
   - ECHO "Reporting Coverage..."
   - "%PYTHON%/Scripts/codecov"
   - ECHO "BUILDING WHEELS..."
-  - "%PYTHON%/python setup.py sdist bdist_wheel --plat-name=%PLAT_NAME% --python-tag=%PY_TAG%"
+  - "%PYTHON%/python.exe setup.py sdist bdist_wheel --plat-name=%PLAT_NAME% --python-tag=%PY_TAG%"
   - ps: rm dist/*.egg
 
 artifacts:
