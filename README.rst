@@ -6,13 +6,13 @@ SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N66), written using c
 +------------------------+-------------------+--------+-----------------+------------+--------------+
 | Continuous Integration | Code Coverage     | Docs   | Chat            |  Citation  |  Code Style  |
 +========================+===================+========+=================+============+==============+
-| |Travis Build Status|  | |Coverage Status| | |Docs| | |Join the chat| | |Citation| |  |Black|     |
+| |Github Build Status|  | |Coverage Status| | |Docs| | |Join the chat| | |Citation| |  |Black|     |
 | |Windows Build Status| |                   |        |                 | |JOSS|     |              |
 +------------------------+-------------------+--------+-----------------+------------+--------------+
 
-.. |Travis Build Status| image:: https://img.shields.io/travis/AndrewAnnex/SpiceyPy/main?logo=travis
-   :alt: Travis - Build Status
-   :target: https://travis-ci.org/AndrewAnnex/SpiceyPy
+.. |Github Build Status| image:: https://img.shields.io/github/workflow/status/AndrewAnnex/SpiceyPy/ci-build?event=push
+   :alt: Github - Build Status
+   :target: https://github.com/AndrewAnnex/SpiceyPy/actions
 .. |Windows Build Status| image:: https://img.shields.io/appveyor/build/AndrewAnnex/SpiceyPy/main?logo=appveyor
    :alt: Appveyor - Build Status
    :target: https://ci.appveyor.com/project/AndrewAnnex/spiceypy

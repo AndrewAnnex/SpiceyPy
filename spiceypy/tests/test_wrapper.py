@@ -6724,7 +6724,9 @@ def test_rdtext():
     xwritln_lines = ["x{}".format(writln_line) for writln_line in writln_lines]
     # Write lines to the files using FORTRAN SPICE WRITLN
     for writln_line in writln_lines:
-        xwritln_line = "x{}".format(writln_line,)
+        xwritln_line = "x{}".format(
+            writln_line,
+        )
         spice.writln(writln_line, unit)
         spice.writln(xwritln_line, xunit)
     # Close the FORTRAN logical units using ftncls

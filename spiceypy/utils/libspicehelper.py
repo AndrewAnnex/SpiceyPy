@@ -60,7 +60,14 @@ libspice.b1950_c.restype = c_double
 libspice.bodc2n_c.argtypes = [c_int, c_int, c_char_p, c_int_p]
 libspice.bodc2s_c.argtypes = [c_int, c_int, c_char_p]
 libspice.boddef_c.argtypes = [c_char_p, c_int]
-libspice.bodeul_.argtypes = [c_int_p, c_double_p, c_double_p, c_double_p, c_double_p, c_double_p]
+libspice.bodeul_.argtypes = [
+    c_int_p,
+    c_double_p,
+    c_double_p,
+    c_double_p,
+    c_double_p,
+    c_double_p,
+]
 libspice.badkpv_c.argtypes = [c_char_p, c_char_p, c_char_p, c_int, c_int, c_char]
 libspice.badkpv_c.restype = c_int
 libspice.bltfrm_c.argtypes = [c_int, s_cell_p]
