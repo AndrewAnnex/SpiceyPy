@@ -7,7 +7,7 @@ include requirements.txt
 include README.rst
 
 # cspice files
-include spiceypy/utils/*
+include spiceypy/utils/*.py
 
 # Docs
 include docs/conf.py
