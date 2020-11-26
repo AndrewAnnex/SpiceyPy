@@ -1,0 +1,51 @@
+name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  release:
+    types: [ published ]
+
+jobs:
+  build-n-publish:
+    name: Build and publish SpiceyPy 🌶️ 🥧 Python 🐍 distributions 📦 to PyPI and TestPyPI
+    runs-on: ubuntu-latest
+  steps:
+    - name: Checkout 🌶️ 🥧
+      uses: actions/checkout@v2
+    - name: Set up Python 🐍 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Display Python 🐍 version
+      run: python -c "import sys; print(sys.version)"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -U pytest wheel twine black
+        pip install -r requirements.txt
+    - name: Install SpiceyPy 🌶️ 🥧
+      run: |
+        python setup.py install
+    - name: Test 🧪 with coverage 📈
+      run: |
+        coverage run --source spiceypy -m pytest --pyargs spiceypy
+    - name: Upload coverage report to codecov
+      run: |
+        codecov
+    - name: Build 🛠️ sdist source and upload 🌐
+      run: |
+        python setup.py sdist
+    - name: Publish distribution 📦 to Test PyPI
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        user: __token__
+        password: ${{ secrets.TEST_PYPI_PASSWORD }}
+        repository_url: https://test.pypi.org/legacy/
+        skip_existing: true
+    - name: Publish distribution 📦 to PyPI
+      if: startsWith(github.ref, 'refs/tags') && (github.event_name == 'push' || github.event_name == 'release')
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.PYPI_PASSWORD }}
