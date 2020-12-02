@@ -8,7 +8,7 @@ on:
     types: [ published ]
 
 jobs:
-  - build-n-publish-linux:
+  build-n-publish-linux:
     name: Build and publish SpiceyPy 🌶️ 🥧 Python 🐍 distributions 📦 to PyPI and TestPyPI
     runs-on: ubuntu-latest
     steps:
@@ -49,7 +49,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@master
         with:
           password: ${{ secrets.PYPI_PASSWORD }}
-  - build-n-publish-windows:
+  build-n-publish-windows:
     name: Build and publish SpiceyPy 🌶️ 🥧 Python 🐍 distributions 📦 to PyPI and TestPyPI on Windows
     strategy:
       matrix:
