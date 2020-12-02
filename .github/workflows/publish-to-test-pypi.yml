@@ -8,7 +8,7 @@ on:
     types: [ published ]
 
 jobs:
-  build-n-publish:
+  - build-n-publish-linux:
     name: Build and publish SpiceyPy 🌶️ 🥧 Python 🐍 distributions 📦 to PyPI and TestPyPI
     runs-on: ubuntu-latest
     steps:
@@ -34,9 +34,61 @@ jobs:
       - name: Upload coverage report to codecov
         run: |
           codecov
-      - name: Build 🛠️ sdist source and upload 🌐
+      - name: Build 🛠️ sdist source
         run: |
           python setup.py sdist
+      - name: Publish distribution 📦 to Test PyPI
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.TEST_PYPI_PASSWORD }}
+          repository_url: https://test.pypi.org/legacy/
+          skip_existing: true
+      - name: Publish distribution 📦 to PyPI
+        if: startsWith(github.ref, 'refs/tags') && (github.event_name == 'push' || github.event_name == 'release')
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          password: ${{ secrets.PYPI_PASSWORD }}
+  - build-n-publish-windows:
+    name: Build and publish SpiceyPy 🌶️ 🥧 Python 🐍 distributions 📦 to PyPI and TestPyPI on Windows
+    strategy:
+      matrix:
+        python-version: [ 3.6, 3.7, 3.8, 3.9 ]
+    runs-on: windows-latest
+    steps:
+      - name: Setup 🔬🍦🏗️
+        uses: ilammy/msvc-dev-cmd@v1.4.1
+      - name: Checkout 🌶️ 🥧
+        uses: actions/checkout@v2
+      - name: Set up Python 🐍 ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Display Python 🐍 
+        run: python -c "import sys; print(sys.version)"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -U pytest wheel twine black
+          pip install -r requirements.txt
+      - name: Install SpiceyPy 🌶️ 🥧
+        run: |
+          python setup.py install
+      - name: Test 🧪 with coverage 📈
+        run: |
+          coverage run --source spiceypy -m pytest --pyargs spiceypy
+      - name: Upload coverage report to codecov
+        run: |
+          codecov
+      - name: Build 🛠️ sdist source
+        run: |
+          python setup.py sdist
+      - name: Build 🛠️ bdist_wheel
+        env:
+          PLAT_TAG =  ${{ format('cp{0}{1}', matrix.python-version[0],  matrix.python-version[2]) }}
+        run: |
+          echo PLAT_TAG
+          python setup.py bdist_wheel --python-tag="win-amd64" --plat-name="$PLAT_TAG"
       - name: Publish distribution 📦 to Test PyPI
         uses: pypa/gh-action-pypi-publish@master
         with:
