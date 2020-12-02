@@ -37,19 +37,23 @@ jobs:
       - name: Build 🛠️ sdist source
         run: |
           python setup.py sdist
+      - uses: actions/upload-artifact@v2
+        with:
+          name: spiceypy_linux_dist
+          path: dist/
       - name: Publish distribution 📦 to Test PyPI
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}
         run: |
-          twine upload --non-interactive --repository testpypi dist/*
+          twine upload --non-interactive --skip-existing --repository testpypi dist/*
       - name: Publish distribution 📦 to PyPI
         if: startsWith(github.ref, 'refs/tags') && (github.event_name == 'push' || github.event_name == 'release')
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
-          twine upload --non-interactive --skip-existing dist/* 
+          twine upload --non-interactive --skip-existing dist/*
   build-n-publish-windows:
     name: Build and publish SpiceyPy 🌶️ 🥧 Python 🐍 distributions 📦 to PyPI and TestPyPI on Windows
     strategy:
@@ -95,16 +99,20 @@ jobs:
       - name: Build 🛠️ bdist_wheel
         run: |
           python setup.py bdist_wheel --plat-name="win-amd64" --python-tag=${{ matrix.python-tag }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: spiceypy_windows_dist
+          path: dist/
       - name: Publish distribution 📦 to Test PyPI
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}
         run: |
-          twine upload --non-interactive --repository testpypi dist/*
+          twine upload --non-interactive --skip-existing --repository testpypi dist/*
       - name: Publish distribution 📦 to PyPI
         if: startsWith(github.ref, 'refs/tags') && (github.event_name == 'push' || github.event_name == 'release')
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
-          twine upload --non-interactive --skip-existing dist/* 
+          twine upload --non-interactive --skip-existing dist/*
