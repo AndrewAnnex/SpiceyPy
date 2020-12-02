@@ -16,8 +16,8 @@ include docs/make.bat
 include docs/Makefile
 
 # Windows Support
-include appveyor/cspice.def
-include appveyor/makeDynamicSpice.bat
+include cspice.def
+include makeDynamicSpice.bat
 
 # Tests
 include spiceypy/tests/__init__.py
