@@ -350,8 +350,8 @@ class InstallCSpice(object):
         elif host_OS == "Windows":
             try:
                 destination = os.path.join(cspice_dir, "src", "cspice")
-                def_file = os.path.join(root_dir, "appveyor", "cspice.def")
-                make_bat = os.path.join(root_dir, "appveyor", "makeDynamicSpice.bat")
+                def_file = os.path.join(root_dir, "cspice.def")
+                make_bat = os.path.join(root_dir, "makeDynamicSpice.bat")
                 shutil.copy(def_file, destination)
                 shutil.copy(make_bat, destination)
                 # run the script
