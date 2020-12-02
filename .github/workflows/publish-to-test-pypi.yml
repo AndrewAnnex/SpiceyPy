@@ -38,17 +38,18 @@ jobs:
         run: |
           python setup.py sdist
       - name: Publish distribution 📦 to Test PyPI
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          user: __token__
-          password: ${{ secrets.TEST_PYPI_PASSWORD }}
-          repository_url: https://test.pypi.org/legacy/
-          skip_existing: true
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}
+        run: |
+          twine upload --non-interactive --repository testpypi dist/*
       - name: Publish distribution 📦 to PyPI
         if: startsWith(github.ref, 'refs/tags') && (github.event_name == 'push' || github.event_name == 'release')
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          password: ${{ secrets.PYPI_PASSWORD }}
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          twine upload --non-interactive --skip-existing dist/* 
   build-n-publish-windows:
     name: Build and publish SpiceyPy 🌶️ 🥧 Python 🐍 distributions 📦 to PyPI and TestPyPI on Windows
     strategy:
@@ -95,14 +96,15 @@ jobs:
         run: |
           python setup.py bdist_wheel --plat-name="win-amd64" --python-tag=${{ matrix.python-tag }}
       - name: Publish distribution 📦 to Test PyPI
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          user: __token__
-          password: ${{ secrets.TEST_PYPI_PASSWORD }}
-          repository_url: https://test.pypi.org/legacy/
-          skip_existing: true
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}
+        run: |
+          twine upload --non-interactive --repository testpypi dist/*
       - name: Publish distribution 📦 to PyPI
         if: startsWith(github.ref, 'refs/tags') && (github.event_name == 'push' || github.event_name == 'release')
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          password: ${{ secrets.PYPI_PASSWORD }}
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          twine upload --non-interactive --skip-existing dist/* 
