@@ -14,11 +14,6 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: [ 3.6, 3.7, 3.8, 3.9 ]
     steps:
-      - name: Setup 🔬🍦🏗️
-        if: ${{ matrix.os == 'windows-latest' }}
-        shell: cmd
-        run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v2
         with:
@@ -34,7 +29,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -U pytest wheel twine black
           pip install -r requirements.txt
-      - name: Install SpiceyPy 🌶️ 🥧
+      - name: Install SpiceyPy 🌶️ 🥧 for 🔬🍦🏗️
+        uses: ilammy/msvc-dev-cmd@v1.4.1
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          python setup.py install
+      - name: Install SpiceyPy 🌶️ 🥧 for mac/linux
+        if: ${{ matrix.os != 'windows-latest' }}
         run: |
           python setup.py install
       - name: Test 🧪 with coverage 📈
