@@ -6,8 +6,7 @@ SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N66), written using c
 +------------------------+-------------------+--------+-----------------+------------+--------------+
 | Continuous Integration | Code Coverage     | Docs   | Chat            |  Citation  |  Code Style  |
 +========================+===================+========+=================+============+==============+
-| |Github Build Status|  | |Coverage Status| | |Docs| | |Join the chat| | |Citation| |  |Black|     |
-|                        |                   |        |                 | |JOSS|     |              |
+| |Github Build Status|  | |Coverage Status| | |Docs| | |Join the chat| | |JOSS|     |  |Black|     |
 +------------------------+-------------------+--------+-----------------+------------+--------------+
 
 .. |Github Build Status| image:: https://img.shields.io/github/workflow/status/AndrewAnnex/SpiceyPy/Publish%20Python%20%F0%9F%90%8D%20distributions%20%F0%9F%93%A6%20to%20PyPI%20and%20TestPyPI
@@ -22,9 +21,6 @@ SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N66), written using c
 .. |Join the chat| image:: https://img.shields.io/gitter/room/andrewannex/spiceypy
    :alt: Gitter - Chat room
    :target: https://gitter.im/AndrewAnnex/SpiceyPy
-.. |Citation| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.593914.svg
-   :alt: Citation Information: Zenodo
-   :target: https://doi.org/10.5281/zenodo.593914
 .. |JOSS| image:: https://joss.theoj.org/papers/98136d30bea9982ad160d251e2039fee/status.svg
    :alt: Citation Information: Journal of Open Source Software
    :target: https://joss.theoj.org/papers/98136d30bea9982ad160d251e2039fee
