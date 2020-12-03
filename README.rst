@@ -9,7 +9,7 @@ SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N66), written using c
 | |Github Build Status|  | |Coverage Status| | |Docs| | |Join the chat| | |JOSS|     |  |Black|     |
 +------------------------+-------------------+--------+-----------------+------------+--------------+
 
-.. |Github Build Status| image:: https://img.shields.io/github/workflow/status/AndrewAnnex/SpiceyPy/Publish%20Python%20%F0%9F%90%8D%20distributions%20%F0%9F%93%A6%20to%20PyPI%20and%20TestPyPI
+.. |Github Build Status| image:: https://img.shields.io/github/workflow/status/AndrewAnnex/SpiceyPy/PR%20and%20Merge%20builds%20(on%20master%20branch)
    :alt: Github - Build Status
    :target: https://github.com/AndrewAnnex/SpiceyPy/actions
 .. |Coverage Status| image:: https://img.shields.io/codecov/c/github/AndrewAnnex/SpiceyPy/main?logo=codecov
