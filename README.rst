@@ -7,15 +7,12 @@ SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N66), written using c
 | Continuous Integration | Code Coverage     | Docs   | Chat            |  Citation  |  Code Style  |
 +========================+===================+========+=================+============+==============+
 | |Github Build Status|  | |Coverage Status| | |Docs| | |Join the chat| | |Citation| |  |Black|     |
-| |Windows Build Status| |                   |        |                 | |JOSS|     |              |
+|                        |                   |        |                 | |JOSS|     |              |
 +------------------------+-------------------+--------+-----------------+------------+--------------+
 
-.. |Github Build Status| image:: https://img.shields.io/github/workflow/status/AndrewAnnex/SpiceyPy/ci-build?event=push
+.. |Github Build Status| image:: https://img.shields.io/github/workflow/status/AndrewAnnex/SpiceyPy/Publish%20Python%20%F0%9F%90%8D%20distributions%20%F0%9F%93%A6%20to%20PyPI%20and%20TestPyPI
    :alt: Github - Build Status
    :target: https://github.com/AndrewAnnex/SpiceyPy/actions
-.. |Windows Build Status| image:: https://img.shields.io/appveyor/build/AndrewAnnex/SpiceyPy/main?logo=appveyor
-   :alt: Appveyor - Build Status
-   :target: https://ci.appveyor.com/project/AndrewAnnex/spiceypy
 .. |Coverage Status| image:: https://img.shields.io/codecov/c/github/AndrewAnnex/SpiceyPy/main?logo=codecov
    :alt: Codecov - Test Coverage
    :target: https://codecov.io/gh/AndrewAnnex/SpiceyPy
