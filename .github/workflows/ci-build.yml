@@ -5,6 +5,8 @@ on:
     branches: [ main ]
   push:
     branches: [ main ]
+  schedule:
+    - cron: "0 4 * * 0"
 
 jobs:
   build:
