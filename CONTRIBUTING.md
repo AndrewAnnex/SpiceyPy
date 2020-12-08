@@ -71,7 +71,7 @@ be stopped by setting the environment variable `spiceypy_do_not_remove_kernels` 
 Here is the general process for making a code contribution to SpiceyPy. SpiceyPy is MIT-licensed; as such all contributions must be made with the same license.
 
 1. Create your own fork of the project
-2. Make the changes in your fork on a new branch
+2. Make the changes in your fork on a new branch (make sure you add yourself as an author to the .zenodo.json file!)
 3. Make a pull request that should be a single commit onto the main branch with a detailed commit message.
 
 Commit messages should start with a title line followed by a newline followed by a markdown-formatted list of changes.
