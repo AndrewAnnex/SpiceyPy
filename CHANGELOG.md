@@ -4,9 +4,14 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## [3.1.2] - 2020-09-??
+## [4.0.0] - 2020-12-07
+### Added
+- bodeul
 ### Changed
 - main branch is now the default branch
+- switched to use 'fromisoformat' in datetime2et
+### Fixed
+- fixed nintvls spelling inconsistency 
 
 ## [3.1.1] - 2020-05-25
 ### Fixed

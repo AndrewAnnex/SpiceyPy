@@ -100,7 +100,7 @@ readme.close()
 
 setup(
     name="spiceypy",
-    version="3.1.1",
+    version="4.0.0",
     license="MIT",
     author="Andrew Annex",
     author_email="ama6fy@virginia.edu",
