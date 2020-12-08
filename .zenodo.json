@@ -1,0 +1,92 @@
+{
+    "license": "MIT",
+    "upload_type": "software",
+    "creators": [
+        {
+            "orcid": "0000-0002-0253-2313", 
+            "affiliation": "Johns Hopkins University", 
+            "name": "Andrew Annex"
+        }, 
+        {
+            "name": "Ben Pearson"
+        }, 
+        {
+            "orcid": "0000-0001-6533-275X", 
+            "affiliation": "Jet Propulsion Laboratory, California Institute of Technology", 
+            "name": "Beno\u00eet Seignovert"
+        }, 
+        {
+            "orcid": "0000-0001-9211-6526", 
+            "affiliation": "Latchmoor Services, LLC", 
+            "name": "Brian T. Carcich"
+        }, 
+        {
+            "orcid": "0000-0003-0303-5199", 
+            "affiliation": "Planetary Transportation Systems GmbH", 
+            "name": "Helge Eichhorn"
+        }, 
+        {
+            "orcid": "0000-0001-5756-0373", 
+            "affiliation": "USGS Astrogeology Science Centerlogy", 
+            "name": "Jesse A. Mapel"
+        }, 
+        {
+            "orcid": "0000-0002-1390-4776", 
+            "affiliation": "Institute of Experimental and Applied Physics, University of Kiel", 
+            "name": "Johan L. Freiherr von Forstner"
+        }, 
+        {
+            "affiliation": "DLR Gesellschaft f\u00fcr Raumfahrtanwendungen (GfR) mbH", 
+            "name": "Jonathan McAuliffe"
+        }, 
+        {
+            "affiliation": "ODC Space", 
+            "name": "Jorge Diaz del Rio"
+        }, 
+        {
+            "orcid": "0000-0001-9757-9706", 
+            "affiliation": "USGS Astrogeology Science Centerlogy", 
+            "name": "Kristin L. Berry"
+        }, 
+        {
+            "orcid": "0000-0002-4088-1928", 
+            "affiliation": "Laboratory for Atmospheric and Space Physics, University of Colorado", 
+            "name": "K.-Michael Aye"
+        }, 
+        {
+            "orcid": "0000-0002-7736-2611", 
+            "affiliation": "ETH Zurich", 
+            "name": "Marcel Stefko"
+        }, 
+        {
+            "orcid": "0000-0002-0455-9384", 
+            "affiliation": "Planetary Science Institute", 
+            "name": "Miguel de Val-Borro"
+        }, 
+        {
+            "orcid": "0000-0002-7822-0471", 
+            "affiliation": "Collins Aerospace", 
+            "name": "Shankar Kulumani"
+        }, 
+        {
+            "orcid": "0000-0002-7137-4849", 
+            "affiliation": "GFD Dennou Club", 
+            "name": "Shin-ya Murakami"
+        }, 
+        {
+            "orcid": "0000-0003-4425-7097",
+            "affiliation": "Oregon State University", 
+            "name": "Kyle Niemeyer"
+        }, 
+        {
+            "affiliation": "Laboratory for Atmospheric and Space Physics, University of Colorado",
+            "name": "Gavin Medley"
+        },
+        {
+            "orcid": "0000-0001-9798-1797",
+            "affiliation": "University of California, Los Angeles",
+            "name": "Jean-Luc Margot"
+        }
+    ], 
+    "access_right": "open"
+}
