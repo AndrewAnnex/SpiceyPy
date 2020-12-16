@@ -43,3 +43,68 @@ jobs:
       - name: Upload 🆙 coverage 📈 report to codecov 
         run: |
           codecov
+  test_offline_shared:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🌶️ 🥧
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Set up Python 🐍 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Display Python 🐍 version
+        run: python -c "import sys; print(sys.version)"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -U pytest wheel twine black
+          pip install -r requirements.txt
+      - name: Download and extract the shared library for CSPICE 🌶️ 
+        run: |
+          mkdir -p /tmp/cspice/ 
+          wget -O - https://anaconda.org/conda-forge/cspice/66/download/linux-64/cspice-66-h516909a_1009.tar.bz2 | tar xjC /tmp/cspice/
+      - name: Install SpiceyPy 🌶️ 🥧
+        env:
+          CSPICE_SHARED_LIB: "/tmp/cspice/lib/libcspice.so"
+        run: |
+          python setup.py install
+      - name: Test 🧪 with coverage 📈
+        run: |
+          coverage run --source spiceypy -m pytest --pyargs spiceypy
+      - name: Upload 🆙 coverage 📈 report to codecov 
+        run: |
+          codecov
+  test_offline_cspice_install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🌶️ 🥧
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Set up Python 🐍 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Display Python 🐍 version
+        run: python -c "import sys; print(sys.version)"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -U pytest wheel twine black
+          pip install -r requirements.txt
+      - name: Download and extract CSPICE 🌶️ 
+        run: |
+          wget -O - https://naif.jpl.nasa.gov/pub/naif/toolkit/C/PC_Linux_GCC_64bit/packages/cspice.tar.Z | gunzip -c | tar xC /tmp/ 
+      - name: Install SpiceyPy 🌶️ 🥧
+        env:
+          CSPICE_SRC_DIR: "/tmp/cspice"
+        run: |
+          python setup.py install
+      - name: Test 🧪 with coverage 📈
+        run: |
+          coverage run --source spiceypy -m pytest --pyargs spiceypy
+      - name: Upload 🆙 coverage 📈 report to codecov 
+        run: |
+          codecov
