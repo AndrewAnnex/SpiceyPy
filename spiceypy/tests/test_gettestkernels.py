@@ -25,7 +25,7 @@ SOFTWARE.
 import os
 import pytest
 
-from spiceypy.tests.gettestkernels import attempt_download
+from spiceypy.tests.gettestkernels import attempt_download, CoreKernels
 
 
 def test_gettestkernels():
@@ -43,4 +43,13 @@ def test_gettestkernels():
             "urlerror.txt",
             "urlerror.txt",
             1,
+        )
+    with pytest.raises(BaseException):
+        # download a file with an incorrect hash
+        attempt_download(
+            CoreKernels.lsk_url,
+            "badhashkernel.txt",
+            "badhashkernel.txt",
+            1,
+            provided_hash="11c9b4793b6676d464266e790262b986",
         )
