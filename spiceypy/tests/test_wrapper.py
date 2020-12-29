@@ -9356,8 +9356,12 @@ def test_subpt():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("JAN 1, 2006")
-    point1, alt1 = np.array(spice.subpt("near point", "earth", et, "lt+s", "moon"))
-    point2, alt2 = np.array(spice.subpt("intercept", "earth", et, "lt+s", "moon"))
+    point1, alt1 = np.array(
+        spice.subpt("near point", "earth", et, "lt+s", "moon"), dtype=object
+    )
+    point2, alt2 = np.array(
+        spice.subpt("intercept", "earth", et, "lt+s", "moon"), dtype=object
+    )
     dist = np.linalg.norm(np.subtract(point1, point2))
     sep = spice.vsep(point1, point2) * spice.dpr()
     npt.assert_almost_equal(dist, 16.705476097706171)
