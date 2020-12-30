@@ -32,7 +32,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r -U ci-requirements.txt
+          python -m pip install -U -r ci-requirements.txt
       - name: Install SpiceyPy 🌶️ 🥧 
         run: |
           python setup.py install
@@ -58,8 +58,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -U pytest wheel twine black
-          pip install -r requirements.txt
+          python -m pip install -U -r ci-requirements.txt
       - name: Download and extract the shared library for CSPICE 🌶️ 
         run: |
           mkdir -p /tmp/cspice/ 
@@ -91,8 +90,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -U pytest wheel twine black
-          pip install -r requirements.txt
+          python -m pip install -U -r ci-requirements.txt
       - name: Download and extract CSPICE 🌶️ 
         run: |
           wget -O - https://naif.jpl.nasa.gov/pub/naif/toolkit/C/PC_Linux_GCC_64bit/packages/cspice.tar.Z | gunzip -c | tar xC /tmp/ 
