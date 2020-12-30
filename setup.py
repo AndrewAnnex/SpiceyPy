@@ -30,6 +30,17 @@ from setuptools.dist import Distribution
 
 from get_spice import InstallCSpice
 
+DEV_CI_DEPENDENCIES = [
+    'numpy>=1.17.0;python_version>="3.5"',
+    "pytest>=2.9.0",
+    "pandas>=0.24.0",
+    "coverage>=5.1.0",
+    "codecov>=2.1.0",
+    "twine>=3.3.0",
+    "wheel",
+    "black",
+]
+
 TEST_DEPENDENCIES = [
     'numpy>=1.17.0;python_version>="3.5"',
     "pytest>=2.9.0",
@@ -107,7 +118,7 @@ setup(
     description="A Python Wrapper for the NAIF CSPICE Toolkit",
     long_description=readmetext,
     python_requires=">=3.6, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4",
-    keywords=["spiceypy", "spice", "naif", "jpl", "space", "geometry"],
+    keywords=["spiceypy", "spice", "naif", "jpl", "space", "geometry", "ephemeris"],
     url="https://github.com/AndrewAnnex/SpiceyPy",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
@@ -118,6 +129,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Operating System :: MacOS :: MacOS X",
         "Operating System :: POSIX :: Linux",
         "Operating System :: POSIX :: BSD :: FreeBSD",
@@ -134,5 +146,5 @@ setup(
     tests_require=TEST_DEPENDENCIES,
     cmdclass=cmdclass,
     test_suite="spiceypy.tests.test_wrapper.py",
-    extras_require={"testing": ["pytest"]},
+    extras_require={"testing": TEST_DEPENDENCIES, "dev": DEV_CI_DEPENDENCIES},
 )
