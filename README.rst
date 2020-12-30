@@ -113,7 +113,7 @@ as newer versions are released.
 
 - OS: OS X, Linux, Windows
 - CPU: 64bit only!
-- Python 3.6, 3.7, 3.8
+- Python 3.6, 3.7, 3.8, 3.9
 
 * Support for Python 2.7 ended with version 2.3.2 January 2020 *
 
