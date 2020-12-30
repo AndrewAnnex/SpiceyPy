@@ -32,8 +32,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -U pytest wheel twine black
-          pip install -r requirements.txt
+          pip install -r -U ci-requirements.txt
       - name: Install SpiceyPy 🌶️ 🥧 
         run: |
           python setup.py install

@@ -1,2 +1,4 @@
 numpy>=1.17.0
 setuptools>=38.0.0
+pytest>=5.4.0
+pandas>=0.24.0
