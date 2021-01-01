@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) [2015-2020] [Andrew Annex]
+Copyright (c) [2015-2021] [Andrew Annex]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -197,7 +197,14 @@ def test_to_improve_coverage():
     eim = stypes.empty_int_matrix(x=ctypes.c_int(4))
     # stypes.*MatrixType().from_param(param) when isinstance(param,Array)
     for stmt, typ in zip(
-        (stypes.DoubleMatrixType(), stypes.IntMatrixType(),), (float, int,)
+        (
+            stypes.DoubleMatrixType(),
+            stypes.IntMatrixType(),
+        ),
+        (
+            float,
+            int,
+        ),
     ):
         made_from_list = stmt.from_param(
             [[typ(1), typ(2), typ(3)], [typ(6), typ(4), typ(0)]]

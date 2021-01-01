@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) [2015-2020] [Andrew Annex]
+Copyright (c) [2015-2021] [Andrew Annex]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -437,8 +437,12 @@ def bodeul(body: int, et: float) -> Tuple[float, float, float, float]:
     w = ctypes.c_double()
     lam = ctypes.c_double()
     libspice.bodeul_(
-        ctypes.byref(body), ctypes.byref(et),
-        ctypes.byref(ra), ctypes.byref(dec), ctypes.byref(w), ctypes.byref(lam)
+        ctypes.byref(body),
+        ctypes.byref(et),
+        ctypes.byref(ra),
+        ctypes.byref(dec),
+        ctypes.byref(w),
+        ctypes.byref(lam),
     )
     return ra.value, dec.value, w.value, lam.value
 
