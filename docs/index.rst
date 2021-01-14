@@ -20,6 +20,7 @@ Contents:
 .. toctree::
    :maxdepth: 3
 
+   citation
    installation
    exampleone
    cells
