@@ -15618,6 +15618,13 @@ def writln(line: str, unit: int) -> None:
 @spice_error_check
 def xf2eul(xform: ndarray, axisa: int, axisb: int, axisc: int) -> Tuple[ndarray, int]:
     """
+    Convert a state transformation matrix to Euler angles and their
+    derivatives with respect to a specified set of axes.
+
+    The companion routine :func:`eul2xf` converts Euler angles and their
+    derivatives with respect to a specified set of axes to a state
+    transformation matrix.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xf2eul_c.html
 
     :param xform: state transformation matrix
@@ -15641,6 +15648,7 @@ def xf2rav(xform: ndarray) -> Tuple[ndarray, ndarray]:
     """
     This routine determines the rotation matrix and angular velocity
     of the rotation from a state transformation matrix.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xf2rav_c.html
 
     :param xform: state transformation matrix
