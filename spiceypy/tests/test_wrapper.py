@@ -10537,7 +10537,7 @@ def test_xposeg():
         spice.xposeg(np.array(m1)),
         [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]],
     )
-    m2 = np.random.rand((3, 4))
+    m2 = np.random.rand(3, 4)
     npt.assert_array_almost_equal(spice.xposeg(m2), m2.T)
 
 
