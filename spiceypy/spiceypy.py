@@ -2408,7 +2408,9 @@ def dgeodr(x: float, y: float, z: float, re: float, f: float) -> ndarray:
 
 
 @spice_error_check
-def diags2(symmat: Union[ndarray, Iterable[Iterable[float]]]) -> Tuple[ndarray, ndarray]:
+def diags2(
+    symmat: Union[ndarray, Iterable[Iterable[float]]]
+) -> Tuple[ndarray, ndarray]:
     """
     Diagonalize a symmetric 2x2 matrix.
 
@@ -8858,7 +8860,10 @@ def mtxvg(m1: ndarray, v2: ndarray) -> ndarray:
 
 
 @spice_error_check
-def mxm(m1: Union[ndarray, Iterable[Iterable[float]]], m2: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
+def mxm(
+    m1: Union[ndarray, Iterable[Iterable[float]]],
+    m2: Union[ndarray, Iterable[Iterable[float]]],
+) -> ndarray:
     """
     Multiply two 3x3 matrices.
 
@@ -8901,7 +8906,10 @@ def mxmg(
 
 
 @spice_error_check
-def mxmt(m1: Union[ndarray, Iterable[Iterable[float]]], m2: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
+def mxmt(
+    m1: Union[ndarray, Iterable[Iterable[float]]],
+    m2: Union[ndarray, Iterable[Iterable[float]]],
+) -> ndarray:
     """
     Multiply a 3x3 matrix and the transpose of another 3x3 matrix.
 
@@ -10159,7 +10167,9 @@ def radrec(inrange: float, re: float, dec: float) -> ndarray:
 
 
 @spice_error_check
-def rav2xf(rot: Union[ndarray, Iterable[Iterable[float]]], av: Iterable[float]) -> ndarray:
+def rav2xf(
+    rot: Union[ndarray, Iterable[Iterable[float]]], av: Iterable[float]
+) -> ndarray:
     """
     This routine determines a state transformation matrix
     from a rotation matrix and the angular velocity of the
