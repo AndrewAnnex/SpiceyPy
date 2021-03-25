@@ -25,6 +25,7 @@ cspice/
 
 # Test meta kernels
 spiceypy/tests/*.txt
+badhashkernel.txt
 
 # Docs
 docs/_build
