@@ -2408,7 +2408,7 @@ def dgeodr(x: float, y: float, z: float, re: float, f: float) -> ndarray:
 
 
 @spice_error_check
-def diags2(symmat: Iterable[Iterable[float]]) -> Tuple[ndarray, ndarray]:
+def diags2(symmat: Union[ndarray, Iterable[Iterable[float]]]) -> Tuple[ndarray, ndarray]:
     """
     Diagonalize a symmetric 2x2 matrix.
 
@@ -8630,7 +8630,7 @@ def lxqstr(string: str, qchar: str, first: int) -> Tuple[int, int]:
 
 @spice_error_check
 def m2eul(
-    r: Iterable[Iterable[float]], axis3: int, axis2: int, axis1: int
+    r: Union[ndarray, Iterable[Iterable[float]]], axis3: int, axis2: int, axis1: int
 ) -> Tuple[float, float, float]:
     """
     Factor a rotation matrix as a product of three rotations
@@ -8792,20 +8792,19 @@ def mtxm(m1: ndarray, m2: ndarray) -> ndarray:
 
 
 @spice_error_check
-def mtxmg(m1: ndarray, m2: ndarray, ncol1: int, nr1r2: int, ncol2: int) -> ndarray:
+def mtxmg(m1: ndarray, m2: ndarray) -> ndarray:
     """
     Multiply the transpose of a matrix with
     another matrix, both of arbitrary size.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mtxmg_c.html
 
-    :param m1: nr1r2 X ncol1 double precision matrix.
-    :param m2: nr1r2 X ncol2 double precision matrix.
-    :param ncol1: Column dimension of m1 and row dimension of mout.
-    :param nr1r2: Row dimension of m1 and m2.
-    :param ncol2: Column dimension of m2.
-    :return: Transpose of m1 times m2.
+    :param m1: N x M double precision matrix.
+    :param m2: N x O double precision matrix.
+    :return: Transpose of m1 times m2 (O x M).
     """
+    ncol1, ncol2 = len(m1[0]), len(m2[0])
+    nr1r2 = len(m1)
     m1 = stypes.to_double_matrix(m1)
     m2 = stypes.to_double_matrix(m2)
     mout = stypes.empty_double_matrix(x=ncol2, y=ncol1)
@@ -8836,7 +8835,7 @@ def mtxv(m1: ndarray, vin: ndarray) -> ndarray:
 
 
 @spice_error_check
-def mtxvg(m1: ndarray, v2: ndarray, ncol1: int, nr1r2: int) -> ndarray:
+def mtxvg(m1: ndarray, v2: ndarray) -> ndarray:
     """
     Multiply the transpose of a matrix and
     a vector of arbitrary size.
@@ -8845,10 +8844,10 @@ def mtxvg(m1: ndarray, v2: ndarray, ncol1: int, nr1r2: int) -> ndarray:
 
     :param m1: Left-hand matrix to be multiplied.
     :param v2: Right-hand vector to be multiplied.
-    :param ncol1: Column dimension of m1 and length of vout.
-    :param nr1r2: Row dimension of m1 and length of v2.
     :return: Product vector m1 transpose * v2.
     """
+    ncol1 = len(m1[0])
+    nr1r2 = len(v2)
     m1 = stypes.to_double_matrix(m1)
     v2 = stypes.to_double_vector(v2)
     ncol1 = ctypes.c_int(ncol1)
@@ -8859,7 +8858,7 @@ def mtxvg(m1: ndarray, v2: ndarray, ncol1: int, nr1r2: int) -> ndarray:
 
 
 @spice_error_check
-def mxm(m1: Iterable[Iterable[float]], m2: Iterable[Iterable[float]]) -> ndarray:
+def mxm(m1: Union[ndarray, Iterable[Iterable[float]]], m2: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
     """
     Multiply two 3x3 matrices.
 
@@ -8878,11 +8877,8 @@ def mxm(m1: Iterable[Iterable[float]], m2: Iterable[Iterable[float]]) -> ndarray
 
 @spice_error_check
 def mxmg(
-    m1: Iterable[Iterable[float]],
-    m2: Iterable[Iterable[float]],
-    nrow1: int,
-    ncol1: int,
-    ncol2: int,
+    m1: Union[ndarray, Iterable[Iterable[float]]],
+    m2: Union[ndarray, Iterable[Iterable[float]]],
 ) -> ndarray:
     """
     Multiply two double precision matrices of arbitrary size.
@@ -8891,11 +8887,9 @@ def mxmg(
 
     :param m1: nrow1 X ncol1 double precision matrix.
     :param m2: ncol1 X ncol2 double precision matrix.
-    :param nrow1: Row dimension of m1
-    :param ncol1: Column dimension of m1 and row dimension of m2.
-    :param ncol2: Column dimension of m2
     :return: nrow1 X ncol2 double precision matrix.
     """
+    nrow1, ncol1, ncol2 = len(m1), len(m1[0]), len(m2[0])
     m1 = stypes.to_double_matrix(m1)
     m2 = stypes.to_double_matrix(m2)
     mout = stypes.empty_double_matrix(x=ncol2, y=nrow1)
@@ -8907,7 +8901,7 @@ def mxmg(
 
 
 @spice_error_check
-def mxmt(m1: Iterable[Iterable[float]], m2: Iterable[Iterable[float]]) -> ndarray:
+def mxmt(m1: Union[ndarray, Iterable[Iterable[float]]], m2: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
     """
     Multiply a 3x3 matrix and the transpose of another 3x3 matrix.
 
@@ -10165,7 +10159,7 @@ def radrec(inrange: float, re: float, dec: float) -> ndarray:
 
 
 @spice_error_check
-def rav2xf(rot: Iterable[Iterable[float]], av: Iterable[float]) -> ndarray:
+def rav2xf(rot: Union[ndarray, Iterable[Iterable[float]]], av: Iterable[float]) -> ndarray:
     """
     This routine determines a state transformation matrix
     from a rotation matrix and the angular velocity of the
@@ -12481,7 +12475,7 @@ def spkw05(
     segid: str,
     gm: float,
     n: int,
-    states: Iterable[Iterable[float]],
+    states: Union[ndarray, Iterable[Iterable[float]]],
     epochs: Iterable[float],
 ) -> None:
     # see libspice args for solution to array[][N] problem
@@ -12531,7 +12525,7 @@ def spkw08(
     segid: str,
     degree: int,
     n: int,
-    states: Iterable[Iterable[float]],
+    states: Union[ndarray, Iterable[Iterable[float]]],
     epoch1: float,
     step: float,
 ) -> None:
@@ -12593,7 +12587,7 @@ def spkw09(
     segid: str,
     degree: int,
     n: int,
-    states: Iterable[Iterable[float]],
+    states: Union[ndarray, Iterable[Iterable[float]]],
     epochs: Iterable[float],
 ) -> None:
     """
@@ -12688,7 +12682,7 @@ def spkw12(
     segid: str,
     degree: int,
     n: int,
-    states: Iterable[Iterable[float]],
+    states: Union[ndarray, Iterable[Iterable[float]]],
     epoch0: float,
     step: float,
 ) -> None:
@@ -12749,7 +12743,7 @@ def spkw13(
     segid: str,
     degree: int,
     n: int,
-    states: Iterable[Iterable[float]],
+    states: Union[ndarray, Iterable[Iterable[float]]],
     epochs: Iterable[float],
 ) -> None:
     """
@@ -14113,7 +14107,7 @@ def tpictr(
 
 
 @spice_error_check
-def trace(matrix: Iterable[Iterable[float]]) -> float:
+def trace(matrix: Union[ndarray, Iterable[Iterable[float]]]) -> float:
     """
     Return the trace of a 3x3 matrix.
 
@@ -15158,7 +15152,7 @@ def vtmv(v1: ndarray, matrix: ndarray, v2: ndarray) -> float:
 
 
 @spice_error_check
-def vtmvg(v1: ndarray, matrix: ndarray, v2: ndarray, nrow: int, ncol: int) -> float:
+def vtmvg(v1: ndarray, matrix: ndarray, v2: ndarray) -> float:
     """
     Multiply the transpose of a n-dimensional
     column vector a nxm matrix,
@@ -15173,6 +15167,7 @@ def vtmvg(v1: ndarray, matrix: ndarray, v2: ndarray, nrow: int, ncol: int) -> fl
     :param ncol: Number of columns in matrix (number of rows in v2.)
     :return: the result of (v1**t * matrix * v2 )
     """
+    nrow, ncol = len(v1), len(v2)
     v1 = stypes.to_double_vector(v1)
     matrix = stypes.to_double_matrix(matrix)
     v2 = stypes.to_double_vector(v2)
@@ -15700,7 +15695,7 @@ def xpose(m: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
 
 
 @spice_error_check
-def xpose6(m: Iterable[Iterable[float]]) -> ndarray:
+def xpose6(m: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
     """
     Transpose a 6x6 matrix
 
@@ -15716,9 +15711,7 @@ def xpose6(m: Iterable[Iterable[float]]) -> ndarray:
 
 
 @spice_error_check
-def xposeg(
-    matrix: Union[ndarray, Iterable[Iterable[float]]], nrow: int, ncol: int
-) -> ndarray:
+def xposeg(matrix: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
     """
     Transpose a matrix of arbitrary size
     in place, the matrix need not be square.
@@ -15730,6 +15723,7 @@ def xposeg(
     :param ncol: Number of columns of input matrix
     :return: Transposed matrix
     """
+    ncol, nrow = len(matrix[0]), len(matrix)
     matrix = stypes.to_double_matrix(matrix)
     mout = stypes.empty_double_matrix(x=ncol, y=nrow)
     ncol = ctypes.c_int(ncol)
