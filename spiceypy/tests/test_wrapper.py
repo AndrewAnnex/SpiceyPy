@@ -4726,32 +4726,36 @@ def test_gftfov():
 
 
 def test_gfudb():
-    spice.kclear()
-    # load kernels
-    spice.furnsh(CoreKernels.testMetaKernel)
-    # begin test
-    et_start = spice.str2et("Jan 1 2001")
-    et_end = spice.str2et("Jan 1 2002")
-    result = spice.cell_double(40000)
-    cnfine = spice.cell_double(2)
-    spice.wninsd(et_start, et_end, cnfine)
-    step = 5.0 * spice.spd()
 
-    # make a udf callback
-    udf = spiceypy.utils.callbacks.SpiceUDFUNS(spice.udf)
+    # ensure no numpy bool conversion deprication warning is raised
+    with pytest.warns(None) as warnrec:
+        spice.kclear()
+        # load kernels
+        spice.furnsh(CoreKernels.testMetaKernel)
+        # begin test
+        et_start = spice.str2et("Jan 1 2001")
+        et_end = spice.str2et("Jan 1 2002")
+        result = spice.cell_double(40000)
+        cnfine = spice.cell_double(2)
+        spice.wninsd(et_start, et_end, cnfine)
+        step = 5.0 * spice.spd()
 
-    # define gfq
-    @spiceypy.utils.callbacks.SpiceUDFUNB
-    def gfq(udfunc, et):
-        # we are not using udfunc in this example
-        state, lt = spice.spkez(301, et, "IAU_EARTH", "NONE", 399)
-        return state[2] >= 0.0 and state[5] > 0.0
+        # make a udf callback
+        udf = spiceypy.utils.callbacks.SpiceUDFUNS(spice.udf)
 
-    # call gfudb
-    spice.gfudb(udf, gfq, step, cnfine, result)
-    # count
-    assert len(result) > 20  # true value is 28
-    spice.kclear()
+        # define gfq
+        @spiceypy.utils.callbacks.SpiceUDFUNB
+        def gfq(udfunc, et):
+            # we are not using udfunc in this example
+            state, lt = spice.spkez(301, et, "IAU_EARTH", "NONE", 399)
+            return state[2] >= 0.0 and state[5] > 0.0
+
+        # call gfudb
+        spice.gfudb(udf, gfq, step, cnfine, result)
+        # count
+        assert len(result) > 20  # true value is 28
+        spice.kclear()
+    assert not warnrec
 
 
 def test_gfudb2():

@@ -80,8 +80,9 @@ def SpiceUDFUNB(f: Callable[[UDFUNS, float], int]) -> UDFUNB:
 
     @functools.wraps(f)
     def wrapping_udfunb(udf: UDFUNS, et: float, xbool: POINTER(c_int)) -> None:
-        result = f(udf, et)
-        xbool[0] = c_int(result)  # https://github.com/numpy/numpy/issues/14397
+        # casting to bool fixes https://github.com/numpy/numpy/issues/14397
+        result = bool(f(udf, et))
+        xbool[0] = c_int(result)
 
     return UDFUNB(wrapping_udfunb)
 
