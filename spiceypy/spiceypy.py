@@ -282,7 +282,7 @@ def appndc(
 
 @spice_error_check
 def appndd(
-    item: Union[int, float, Iterable[float]], cell: Union[SpiceCell, Cell_Double]
+    item: Union[float, Iterable[float]], cell: Union[SpiceCell, Cell_Double]
 ) -> None:
     """
     Append an item to a double precision cell.
