@@ -3942,7 +3942,7 @@ def test_gfevnt():
     udrepu = spiceypy.utils.callbacks.SpiceUDREPU(spice.gfrepu)
     udrepf = spiceypy.utils.callbacks.SpiceUDREPF(spice.gfrepf)
     udbail = spiceypy.utils.callbacks.SpiceUDBAIL(spice.gfbail)
-    qdpars = np.zeros(10, dtype=np.float)
+    qdpars = np.zeros(10, dtype=float)
     qipars = np.zeros(10, dtype=np.int32)
     qlpars = np.zeros(10, dtype=np.int32)
     # call gfevnt
