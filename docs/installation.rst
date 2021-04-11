@@ -33,6 +33,8 @@ To verify this you can list the installed packages via this pip command::
 You should see spicepy in the output of this command.
 Or you can start a python interpreter and try importing SpiceyPy like so:
 
+As of 04/10/2021, spiceypy has experimental support for 64bit ARM processors for linux and macos (linux-aarch64 & osx-arm64) via the conda-forge distribution. 
+
 .. code:: python
 
     import spiceypy
