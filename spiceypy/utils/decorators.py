@@ -21,16 +21,25 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-__author__ = "AndrewAnnex"
-__version__ = "4.0.0"
 
-from .spiceypy import *
-from .utils import support_types
-from .utils import exceptions
+import functools
 
-# Default setting for error reporting so that programs don't just exit out!
-erract("set", 10, "return")
-errdev("set", 10, "null")
+class SwitchedDecorator:
+    def __init__(self, enabled_func):
+        self._enabled = False
+        self._enabled_func = enabled_func
 
-# in order to enable the multithread decorator 
-spicelock_for_multithread.enabled = True
+    @property
+    def enabled(self):
+        return self._enabled
+
+    @enabled.setter
+    def enabled(self, new_value):
+        if not isinstance(new_value, bool):
+            raise ValueError("enabled can only be set to a boolean value")
+        self._enabled = new_value
+
+    def __call__(self, target):
+        if self._enabled:
+            return self._enabled_func(target)
+        return target

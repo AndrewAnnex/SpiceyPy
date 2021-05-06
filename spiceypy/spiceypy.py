@@ -34,6 +34,7 @@ from .utils import support_types as stypes
 from .utils.libspicehelper import libspice
 from . import config
 
+
 from .utils.callbacks import (
     UDFUNC,
     UDFUNS,
@@ -74,33 +75,31 @@ _default_len_out = 256
 _SPICE_EK_MAXQSEL = 100  # Twice the 50 in gcc-linux-64
 _SPICE_EK_EKRCEX_ROOM_DEFAULT = 100  # Enough?
 
+from .utils.decorators import SwitchedDecorator
 import threading
 
-spicelock = threading.Lock()
+spicelock = threading.RLock()
 
-def spicelock_for_multithread(f):
+def _spicelock_for_multithread(f):
     """
+    Decorator for spiceypy to avoid concurrent calls to cspice lib.
+
     :return:
     """
 
     @functools.wraps(f)
     def lock(*args, **kwargs):
 
-        if not spicelock.locked():
-            spicelock.acquire()
+        with spicelock:
             try:
-                # this try handle if some error occurs
                 res = f(*args, **kwargs)
-            finally:
-                if spicelock.locked():
-                    spicelock.release()
-        else:
-            # some library methods calls other library methods, this "else" handle that
-            res = f(*args, **kwargs)
-
-        return res
+                return res
+            except BaseException:
+                raise
 
     return lock
+
+spicelock_for_multithread = SwitchedDecorator(_spicelock_for_multithread)
 
 def check_for_spice_error(f: Optional[Callable]) -> None:
     """
@@ -14573,7 +14572,7 @@ def tkfram(typid: int) -> Tuple[ndarray, int, bool]:
     return stypes.c_matrix_to_numpy(matrix), next_frame.value, bool(found.value)
 
 
-# @spicelock_for_multithread
+@spicelock_for_multithread
 @spice_error_check
 def tkvrsn(item: str) -> str:
     """
