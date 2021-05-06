@@ -75,31 +75,37 @@ _default_len_out = 256
 _SPICE_EK_MAXQSEL = 100  # Twice the 50 in gcc-linux-64
 _SPICE_EK_EKRCEX_ROOM_DEFAULT = 100  # Enough?
 
-from .utils.decorators import SwitchedDecorator
 import threading
 
-spicelock = threading.RLock()
+_spicelock = threading.RLock()
 
-def _spicelock_for_multithread(f):
+enablethreadinglock = False
+
+def spicelock_for_multithread(f):
     """
     Decorator for spiceypy to avoid concurrent calls to cspice lib.
 
     :return:
     """
-
     @functools.wraps(f)
     def lock(*args, **kwargs):
-
-        with spicelock:
+        if enablethreadinglock:
+            with _spicelock:
+                try:
+                    res = f(*args, **kwargs)
+                    return res
+                except BaseException:
+                    raise
+        else:
             try:
                 res = f(*args, **kwargs)
                 return res
             except BaseException:
                 raise
 
-    return lock
 
-spicelock_for_multithread = SwitchedDecorator(_spicelock_for_multithread)
+    return lock
+    
 
 def check_for_spice_error(f: Optional[Callable]) -> None:
     """
@@ -10479,7 +10485,7 @@ def q2m(q: ndarray) -> ndarray:
     return stypes.c_matrix_to_numpy(mout)
 
 
-# @spicelock_for_multithread
+@spicelock_for_multithread
 @spice_error_check
 def qcktrc(tracelen: int = _default_len_out) -> str:
     """

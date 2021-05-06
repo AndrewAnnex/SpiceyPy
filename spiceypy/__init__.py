@@ -27,10 +27,11 @@ __version__ = "4.0.0"
 from .spiceypy import *
 from .utils import support_types
 from .utils import exceptions
+from .spiceypy import enablethreadinglock
 
 # Default setting for error reporting so that programs don't just exit out!
 erract("set", 10, "return")
 errdev("set", 10, "null")
 
 # in order to enable the multithread decorator 
-spicelock_for_multithread.enabled = True
+enablethreadinglock = True

@@ -8,17 +8,26 @@ import threading
 
 from spiceypy.spiceypy import spkezr
 
-spicelock = threading.RLock()
+_spicelock = threading.RLock()
+
+enablethreadinglock = False
 
 def spicelock_for_multithread(f):
     """
+    Decorator for spiceypy to avoid concurrent calls to cspice lib.
+
     :return:
     """
-
     @functools.wraps(f)
     def lock(*args, **kwargs):
-
-        with spicelock:
+        if enablethreadinglock:
+            with _spicelock:
+                try:
+                    res = f(*args, **kwargs)
+                    return res
+                except BaseException:
+                    raise
+        else:
             try:
                 res = f(*args, **kwargs)
                 return res
@@ -26,7 +35,6 @@ def spicelock_for_multithread(f):
                 raise
 
     return lock
-
 
 # %%
 from multiprocessing.dummy import Pool as ThreadPool
@@ -39,10 +47,12 @@ tb1900 = spicelock_for_multithread(b1900)
 
 # %%
 print('Test thread pool without locking for b1900')
+spice.enablethreadinglock = False
 with ThreadPool() as pool:
-    test_b1900 = pool.map(lambda x: b1900(), range(10000))
+    test_b1900 = pool.map(lambda x: tb1900(), range(10000))
 
 print('Test thread pool with locking for b1900')
+spice.enablethreadinglock = True
 with ThreadPool() as pool:
     test_tb1900 = pool.map(lambda x: tb1900(), range(10000))
 
@@ -69,22 +79,24 @@ tspkezr = spicelock_for_multithread(spkezr)
 # %%
 # testing the spicelock_for_multithread decorator
 print('Test thread pool without locking for spkezr')
+spice.enablethreadinglock = False
 try:
     with ThreadPool() as pool:
-        test_spkezr = pool.map(lambda x: spkezr('EARTH',x,'J2000','NONE','SUN'),test_b1900)
+        test_spkezr = pool.map(lambda x: tspkezr('EARTH',x,'J2000','NONE','SUN'),test_b1900)
 except BaseException as e:
     print(e)
 
 
 print('Test thread pool with locking for spkezr')
+spice.enablethreadinglock = True
 with ThreadPool() as pool:
     test_tspkezr = pool.map(lambda x: tspkezr('EARTH',x,'J2000','NONE','SUN'),test_b1900)
 
 # %%
 # testing the wrapt library
 import wrapt
-wb1900 = wrapt.synchronized(spicelock)(b1900)
-wspkezr = wrapt.synchronized(spicelock)(spkezr)
+wb1900 = wrapt.synchronized(_spicelock)(b1900)
+wspkezr = wrapt.synchronized(_spicelock)(spkezr)
 # %%
 print('Test thread pool with spicelock_for_multithread decorator for spkezr')
 with ThreadPool() as pool:
