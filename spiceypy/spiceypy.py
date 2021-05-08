@@ -79,8 +79,6 @@ import threading
 
 _spicelock = threading.RLock()
 
-enablethreadinglock = False
-
 def spicelock_for_multithread(f):
     """
     Decorator for spiceypy to avoid concurrent calls to cspice lib.
@@ -89,7 +87,7 @@ def spicelock_for_multithread(f):
     """
     @functools.wraps(f)
     def lock(*args, **kwargs):
-        if enablethreadinglock:
+        if config.enable_threading_lock:
             with _spicelock:
                 try:
                     res = f(*args, **kwargs)
@@ -102,7 +100,6 @@ def spicelock_for_multithread(f):
                 return res
             except BaseException:
                 raise
-
 
     return lock
     
@@ -178,6 +175,57 @@ def spice_found_exception_thrower(f: Callable) -> Callable:
 
     return wrapper
 
+@contextmanager
+def no_threading_lock() -> Iterator[None]:
+    """
+    Temporarily disables spiceypy default behavior which locks the access to the 
+    SPICE library from multithreading cuncurrent operations.
+    All spice functions executed within the context manager will no longer lock the 
+    access.
+    """
+    current_threading_lock_state = config.enable_threading_lock
+    config.enable_threading_lock = False
+    yield
+    config.enable_threading_lock = current_threading_lock_state
+
+
+@contextmanager
+def threading_lock() -> Iterator[None]:
+    """
+    Temporarily enables spiceypy default behavior which locks the access to the 
+    SPICE library from multithreading cuncurrent operations.
+    All spice functions executed within the context manager will lock the 
+    access preventing the access from other cuncurrent threads.
+    """
+    current_threading_lock_state = config.enable_threading_lock
+    config.enable_threading_lock = True
+    yield
+    config.enable_threading_lock = current_threading_lock_state
+
+
+def threading_lock_off() -> None:
+    """
+    Method that turns off threading lock
+
+    """
+    config.enable_threading_lock = False
+
+
+def threading_lock_on() -> None:
+    """
+    Method that turns on threading lock
+
+    """
+    config.enable_threading_lock = True
+
+
+def get_threading_lock_state() -> bool:
+    """
+    Returns the current threading lock state
+
+    :return:
+    """
+    return config.enable_threading_lock
 
 @contextmanager
 def no_found_check() -> Iterator[None]:

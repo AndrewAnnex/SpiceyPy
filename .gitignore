@@ -45,3 +45,5 @@ spiceypy/utils/__pycache__/
 *.whl
 .pytest_cache/
 *.sqlite3
+spiceypy/utils/cspice.dll
+.vscode
