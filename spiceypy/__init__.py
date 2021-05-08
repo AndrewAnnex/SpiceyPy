@@ -32,6 +32,3 @@ from .spiceypy import enablethreadinglock
 # Default setting for error reporting so that programs don't just exit out!
 erract("set", 10, "return")
 errdev("set", 10, "null")
-
-# in order to enable the multithread decorator 
-enablethreadinglock = True
