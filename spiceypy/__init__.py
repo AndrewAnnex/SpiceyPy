@@ -27,7 +27,6 @@ __version__ = "4.0.0"
 from .spiceypy import *
 from .utils import support_types
 from .utils import exceptions
-from .spiceypy import enablethreadinglock
 
 # Default setting for error reporting so that programs don't just exit out!
 erract("set", 10, "return")
