@@ -8921,8 +8921,8 @@ def mxm(
 
 @spice_error_check
 def mxmg(
-    m1: Iterable[Iterable[float]],
-    m2: Iterable[Iterable[float]],
+    m1: Union[ndarray, Iterable[Iterable[float]]],
+    m2: Union[ndarray, Iterable[Iterable[float]]],
     nrow1: OptionalInt = None,
     ncol1: OptionalInt = None,
     ncol2: OptionalInt = None,
@@ -8973,7 +8973,7 @@ def mxmt(
 
 
 @spice_error_check
-def mxmtg(m1: ndarray, m2: ndarray, nrow1: int, nc1c2: int, nrow2: int) -> ndarray:
+def mxmtg(m1: Union[ndarray, Iterable[Iterable[float]]], m2: Union[ndarray, Iterable[Iterable[float]]], nrow1: OptionalInt = None, nc1c2: OptionalInt = None, nrow2: OptionalInt = None) -> ndarray:
     """
     Multiply a matrix and the transpose of a matrix, both of arbitrary size.
 
@@ -8986,6 +8986,8 @@ def mxmtg(m1: ndarray, m2: ndarray, nrow1: int, nc1c2: int, nrow2: int) -> ndarr
     :param nrow2: Row dimension of m2 and column dimension of mout.
     :return: Product matrix.
     """
+    warn_depricated_args(nrow1=nrow1, nc1c2=nc1c2, nrow2=nrow2)
+    nrow1, nc1c2, nrow2 = len(m1), len(m1[0]), len(m2)
     m1 = stypes.to_double_matrix(m1)
     m2 = stypes.to_double_matrix(m2)
     mout = stypes.empty_double_matrix(x=nrow2, y=nrow1)
@@ -9016,7 +9018,7 @@ def mxv(m1: ndarray, vin: ndarray) -> ndarray:
 
 
 @spice_error_check
-def mxvg(m1: ndarray, v2: ndarray, nrow1: int, nc1r2: int) -> ndarray:
+def mxvg(m1: Union[ndarray, Iterable[Iterable[float]]], v2: Union[ndarray, Iterable[Iterable[float]]], nrow1: OptionalInt = None, nc1r2: OptionalInt = None) -> ndarray:
     """
     Multiply a matrix and a vector of arbitrary size.
 
@@ -9028,6 +9030,8 @@ def mxvg(m1: ndarray, v2: ndarray, nrow1: int, nc1r2: int) -> ndarray:
     :param nc1r2: Column dimension of m1 and length of v2.
     :return: Product vector m1*v2
     """
+    warn_depricated_args(nrow1=nrow1, nc1r2=nc1r2)
+    nrow1, nc1r2 = len(m1), len(m1[0])
     m1 = stypes.to_double_matrix(m1)
     v2 = stypes.to_double_vector(v2)
     nrow1 = ctypes.c_int(nrow1)

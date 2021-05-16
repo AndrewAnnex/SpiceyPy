@@ -5930,6 +5930,14 @@ def test_mxv():
 def test_mxvg():
     m1 = np.array([[1.0, 1.0, 1.0], [2.0, 3.0, 4.0]])
     v2 = np.array([1.0, 2.0, 3.0])
+    mout = spice.mxvg(m1, v2)
+    expected = np.array([6.0, 20.0])
+    assert np.array_equal(mout, expected)
+    
+
+def test_mxvg_old_api():
+    m1 = np.array([[1.0, 1.0, 1.0], [2.0, 3.0, 4.0]])
+    v2 = np.array([1.0, 2.0, 3.0])
     mout = spice.mxvg(m1, v2, 2, 3)
     expected = np.array([6.0, 20.0])
     assert np.array_equal(mout, expected)
