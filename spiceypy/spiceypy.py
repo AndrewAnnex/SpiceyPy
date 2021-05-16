@@ -8871,7 +8871,9 @@ def mtxv(m1: ndarray, vin: ndarray) -> ndarray:
 
 
 @spice_error_check
-def mtxvg(m1: ndarray, v2: ndarray, ncol1: OptionalInt = None, nr1r2: OptionalInt = None) -> ndarray:
+def mtxvg(
+    m1: ndarray, v2: ndarray, ncol1: OptionalInt = None, nr1r2: OptionalInt = None
+) -> ndarray:
     """
     Multiply the transpose of a matrix and
     a vector of arbitrary size.
@@ -15256,7 +15258,13 @@ def vtmv(v1: ndarray, matrix: ndarray, v2: ndarray) -> float:
 
 
 @spice_error_check
-def vtmvg(v1: ndarray, matrix: ndarray, v2: ndarray, nrow: OptionalInt = None, ncol: OptionalInt = None) -> float:
+def vtmvg(
+    v1: ndarray,
+    matrix: ndarray,
+    v2: ndarray,
+    nrow: OptionalInt = None,
+    ncol: OptionalInt = None,
+) -> float:
     """
     Multiply the transpose of a n-dimensional
     column vector a nxm matrix,
@@ -15817,7 +15825,9 @@ def xpose6(m: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
 
 @spice_error_check
 def xposeg(
-    matrix: Union[ndarray, Iterable[Iterable[float]]], nrow: OptionalInt = None, ncol: OptionalInt = None
+    matrix: Union[ndarray, Iterable[Iterable[float]]],
+    nrow: OptionalInt = None,
+    ncol: OptionalInt = None,
 ) -> ndarray:
     """
     Transpose a matrix of arbitrary size
@@ -15833,7 +15843,7 @@ def xposeg(
     warn_depricated_args(nrow=nrow, ncol=ncol)
     ncol, nrow = len(matrix[0]), len(matrix)
     matrix = stypes.to_double_matrix(matrix)
-    mout = stypes.empty_double_matrix(x=ncol, y=nrow)
+    mout = stypes.empty_double_matrix(x=nrow, y=ncol)
     ncol = ctypes.c_int(ncol)
     nrow = ctypes.c_int(nrow)
     libspice.xposeg_c(matrix, nrow, ncol, mout)
