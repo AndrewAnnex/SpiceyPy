@@ -21,11 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+import warnings
 from contextlib import contextmanager
 from datetime import datetime, timezone
 import functools
 import ctypes
 from typing import Callable, Iterator, Iterable, Optional, Tuple, Union, Sequence
+
+OptionalInt = Optional[int]
 
 import numpy
 from numpy import ndarray, str_
@@ -73,6 +76,18 @@ _default_len_out = 256
 
 _SPICE_EK_MAXQSEL = 100  # Twice the 50 in gcc-linux-64
 _SPICE_EK_EKRCEX_ROOM_DEFAULT = 100  # Enough?
+
+
+def warn_depricated_args(**kwargs) -> None:
+    keys = list(kwargs.keys())
+    values = list(kwargs.values())
+    if any(values):
+        varnames = ", ".join(keys)
+        warnings.warn(
+            f"Specifying any of: {varnames} will be deprecated as of SpiceyPy 5.0.0",
+            DeprecationWarning,
+        )
+    pass
 
 
 def check_for_spice_error(f: Optional[Callable]) -> None:
@@ -8803,7 +8818,13 @@ def mtxm(m1: ndarray, m2: ndarray) -> ndarray:
 
 
 @spice_error_check
-def mtxmg(m1: ndarray, m2: ndarray) -> ndarray:
+def mtxmg(
+    m1: ndarray,
+    m2: ndarray,
+    ncol1: OptionalInt = None,
+    nr1r2: OptionalInt = None,
+    ncol2: OptionalInt = None,
+) -> ndarray:
     """
     Multiply the transpose of a matrix with
     another matrix, both of arbitrary size.
@@ -8812,8 +8833,12 @@ def mtxmg(m1: ndarray, m2: ndarray) -> ndarray:
 
     :param m1: N x M double precision matrix.
     :param m2: N x O double precision matrix.
+    :param ncol1: Column dimension of m1 and row dimension of mout.
+    :param nr1r2: Row dimension of m1 and m2.
+    :param ncol2: Column dimension of m2.
     :return: Transpose of m1 times m2 (O x M).
     """
+    warn_depricated_args(ncol1=ncol1, nr1r2=nr1r2, ncol2=ncol2)
     ncol1, ncol2 = len(m1[0]), len(m2[0])
     nr1r2 = len(m1)
     m1 = stypes.to_double_matrix(m1)
@@ -8846,7 +8871,7 @@ def mtxv(m1: ndarray, vin: ndarray) -> ndarray:
 
 
 @spice_error_check
-def mtxvg(m1: ndarray, v2: ndarray) -> ndarray:
+def mtxvg(m1: ndarray, v2: ndarray, ncol1: int, nr1r2: int) -> ndarray:
     """
     Multiply the transpose of a matrix and
     a vector of arbitrary size.
@@ -8855,8 +8880,11 @@ def mtxvg(m1: ndarray, v2: ndarray) -> ndarray:
 
     :param m1: Left-hand matrix to be multiplied.
     :param v2: Right-hand vector to be multiplied.
+    :param ncol1: Column dimension of m1 and length of vout.
+    :param nr1r2: Row dimension of m1 and length of v2.
     :return: Product vector m1 transpose * v2.
     """
+    warn_depricated_args(ncol1=ncol1, nr1r2=nr1r2)
     ncol1 = len(m1[0])
     nr1r2 = len(v2)
     m1 = stypes.to_double_matrix(m1)
@@ -8891,8 +8919,11 @@ def mxm(
 
 @spice_error_check
 def mxmg(
-    m1: Union[ndarray, Iterable[Iterable[float]]],
-    m2: Union[ndarray, Iterable[Iterable[float]]],
+    m1: Iterable[Iterable[float]],
+    m2: Iterable[Iterable[float]],
+    nrow1: int,
+    ncol1: int,
+    ncol2: int,
 ) -> ndarray:
     """
     Multiply two double precision matrices of arbitrary size.
@@ -8901,8 +8932,12 @@ def mxmg(
 
     :param m1: nrow1 X ncol1 double precision matrix.
     :param m2: ncol1 X ncol2 double precision matrix.
+    :param nrow1: Row dimension of m1
+    :param ncol1: Column dimension of m1 and row dimension of m2.
+    :param ncol2: Column dimension of m2
     :return: nrow1 X ncol2 double precision matrix.
     """
+    warn_depricated_args(nrow1=nrow1, ncol1=ncol1, ncol2=ncol2)
     nrow1, ncol1, ncol2 = len(m1), len(m1[0]), len(m2[0])
     m1 = stypes.to_double_matrix(m1)
     m2 = stypes.to_double_matrix(m2)
@@ -15221,7 +15256,7 @@ def vtmv(v1: ndarray, matrix: ndarray, v2: ndarray) -> float:
 
 
 @spice_error_check
-def vtmvg(v1: ndarray, matrix: ndarray, v2: ndarray) -> float:
+def vtmvg(v1: ndarray, matrix: ndarray, v2: ndarray, nrow: int, ncol: int) -> float:
     """
     Multiply the transpose of a n-dimensional
     column vector a nxm matrix,
@@ -15236,6 +15271,7 @@ def vtmvg(v1: ndarray, matrix: ndarray, v2: ndarray) -> float:
     :param ncol: Number of columns in matrix (number of rows in v2.)
     :return: the result of (v1**t * matrix * v2 )
     """
+    warn_depricated_args(nrow=nrow, ncol=ncol)
     nrow, ncol = len(v1), len(v2)
     v1 = stypes.to_double_vector(v1)
     matrix = stypes.to_double_matrix(matrix)
@@ -15780,7 +15816,9 @@ def xpose6(m: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
 
 
 @spice_error_check
-def xposeg(matrix: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
+def xposeg(
+    matrix: Union[ndarray, Iterable[Iterable[float]]], nrow: int, ncol: int
+) -> ndarray:
     """
     Transpose a matrix of arbitrary size
     in place, the matrix need not be square.
@@ -15788,11 +15826,14 @@ def xposeg(matrix: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/xposeg_c.html
 
     :param matrix: Matrix to be transposed
+    :param nrow: Number of rows of input matrix.
+    :param ncol: Number of columns of input matrix
     :return: Transposed matrix
     """
+    warn_depricated_args(nrow=nrow, ncol=ncol)
     ncol, nrow = len(matrix[0]), len(matrix)
     matrix = stypes.to_double_matrix(matrix)
-    mout = stypes.empty_double_matrix(x=nrow, y=ncol)
+    mout = stypes.empty_double_matrix(x=ncol, y=nrow)
     ncol = ctypes.c_int(ncol)
     nrow = ctypes.c_int(nrow)
     libspice.xposeg_c(matrix, nrow, ncol, mout)
