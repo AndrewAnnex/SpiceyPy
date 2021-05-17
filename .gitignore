@@ -45,3 +45,4 @@ spiceypy/utils/__pycache__/
 *.whl
 .pytest_cache/
 *.sqlite3
+/badhashkernel.txt
