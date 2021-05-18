@@ -47,3 +47,4 @@ spiceypy/utils/__pycache__/
 *.sqlite3
 spiceypy/utils/cspice.dll
 .vscode
+/badhashkernel.txt

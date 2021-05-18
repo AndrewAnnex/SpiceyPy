@@ -21,11 +21,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+import warnings
 from contextlib import contextmanager
 from datetime import datetime, timezone
 import functools
 import ctypes
 from typing import Callable, Iterator, Iterable, Optional, Tuple, Union, Sequence
+
 
 import numpy
 from numpy import ndarray, str_
@@ -69,6 +71,7 @@ from .utils.support_types import (
 __author__ = "AndrewAnnex"
 
 ################################################################################
+OptionalInt = Optional[int]
 
 _default_len_out = 256
 
@@ -103,6 +106,18 @@ def spicelock_for_multithread(f):
 
     return lock
     
+
+def warn_depricated_args(**kwargs) -> None:
+    keys = list(kwargs.keys())
+    values = list(kwargs.values())
+    if any(values):
+        varnames = ", ".join(keys)
+        warnings.warn(
+            f"Specifying any of: {varnames} will be deprecated as of SpiceyPy 5.0.0",
+            DeprecationWarning,
+        )
+    pass
+
 
 def check_for_spice_error(f: Optional[Callable]) -> None:
     """
@@ -782,7 +797,7 @@ def bschoc(
     ndim: int,
     lenvals: int,
     array: Union[ndarray, Iterable[str]],
-    order: Iterable[int],
+    order: Union[ndarray, Iterable[int]],
 ) -> int:
     """
     Do a binary search for a given value within a character string array,
@@ -808,7 +823,12 @@ def bschoc(
 
 @spicelock_for_multithread
 @spice_error_check
-def bschoi(value: int, ndim: int, array: Iterable[int], order: Iterable[int]) -> int:
+def bschoi(
+    value: int,
+    ndim: int,
+    array: Union[ndarray, Iterable[int]],
+    order: Union[ndarray, Iterable[int]],
+) -> int:
     """
     Do a binary search for a given value within an integer array,
     accompanied by an order vector.  Return the index of the
@@ -960,7 +980,7 @@ def ccifrm(
 @spicelock_for_multithread
 @spice_error_check
 def cgv2el(
-    center: Iterable[float],
+    center: Union[ndarray, Iterable[float]],
     vec1: Union[ndarray, Iterable[float]],
     vec2: Union[ndarray, Iterable[float]],
 ) -> Ellipse:
@@ -985,7 +1005,11 @@ def cgv2el(
 @spicelock_for_multithread
 @spice_error_check
 def chbder(
-    cp: Iterable[float], degp: int, x2s: Iterable[float], x: float, nderiv: int
+    cp: Union[ndarray, Iterable[float]],
+    degp: int,
+    x2s: Union[ndarray, Iterable[float]],
+    x: float,
+    nderiv: int,
 ) -> ndarray:
     """
     Given the coefficients for the Chebyshev expansion of a
@@ -1357,7 +1381,7 @@ def ckw02(
     stop: ndarray,
     quats: ndarray,
     avvs: ndarray,
-    rates: Iterable[float],
+    rates: Union[ndarray, Iterable[float]],
 ) -> None:
     """
     Write a type 2 segment to a C-kernel.
@@ -1409,7 +1433,7 @@ def ckw03(
     quats: ndarray,
     avvs: ndarray,
     nints: int,
-    starts: Iterable[float],
+    starts: Union[ndarray, Iterable[float]],
 ) -> None:
     """
     Add a type 3 segment to a C-kernel.
@@ -2582,7 +2606,9 @@ def dgeodr(x: float, y: float, z: float, re: float, f: float) -> ndarray:
 
 @spicelock_for_multithread
 @spice_error_check
-def diags2(symmat: Iterable[Iterable[float]]) -> Tuple[ndarray, ndarray]:
+def diags2(
+    symmat: Union[ndarray, Iterable[Iterable[float]]]
+) -> Tuple[ndarray, ndarray]:
     """
     Diagonalize a symmetric 2x2 matrix.
 
@@ -3944,7 +3970,7 @@ def ekaced(
     recno: int,
     column: str,
     nvals: int,
-    dvals: Iterable[float],
+    dvals: Union[ndarray, Iterable[float]],
     isnull: bool,
 ) -> None:
     """
@@ -3978,7 +4004,7 @@ def ekacei(
     recno: int,
     column: str,
     nvals: int,
-    ivals: Iterable[int],
+    ivals: Union[ndarray, Iterable[int]],
     isnull: bool,
 ) -> None:
     """
@@ -4012,10 +4038,10 @@ def ekaclc(
     column: str,
     vallen: int,
     cvals: Iterable[str],
-    entszs: Iterable[int],
+    entszs: Union[ndarray, Iterable[int]],
     nlflgs: Iterable[bool],
     rcptrs: ndarray,
-    wkindx: Iterable[int],
+    wkindx: Union[ndarray, Iterable[int]],
 ) -> ndarray:
     """
     Add an entire character column to an EK segment.
@@ -4054,11 +4080,11 @@ def ekacld(
     handle: int,
     segno: int,
     column: str,
-    dvals: Iterable[float],
-    entszs: Iterable[int],
+    dvals: Union[ndarray, Iterable[float]],
+    entszs: Union[ndarray, Iterable[int]],
     nlflgs: Iterable[bool],
     rcptrs: ndarray,
-    wkindx: Iterable[int],
+    wkindx: Union[ndarray, Iterable[int]],
 ) -> ndarray:
     """
     Add an entire double precision column to an EK segment.
@@ -4093,11 +4119,11 @@ def ekacli(
     handle: int,
     segno: int,
     column: str,
-    ivals: Iterable[int],
-    entszs: Iterable[int],
+    ivals: Union[ndarray, Iterable[int]],
+    entszs: Union[ndarray, Iterable[int]],
     nlflgs: Iterable[bool],
     rcptrs: ndarray,
-    wkindx: Iterable[int],
+    wkindx: Union[ndarray, Iterable[int]],
 ) -> ndarray:
     """
     Add an entire integer column to an EK segment.
@@ -4889,7 +4915,7 @@ def ekuced(
     recno: int,
     column: str,
     nvals: int,
-    dvals: Iterable[float],
+    dvals: Union[ndarray, Iterable[float]],
     isnull: bool,
 ) -> None:
     """
@@ -4923,7 +4949,7 @@ def ekucei(
     recno: int,
     column: str,
     nvals: int,
-    ivals: Iterable[int],
+    ivals: Union[ndarray, Iterable[int]],
     isnull: bool,
 ) -> None:
     """
@@ -5499,7 +5525,7 @@ def fn2lun(fname: str) -> int:
 @spice_error_check
 def fovray(
     inst: str,
-    raydir: Iterable[float],
+    raydir: Union[ndarray, Iterable[float]],
     rframe: str,
     abcorr: str,
     observer: str,
@@ -5581,7 +5607,7 @@ def fovtrg(
 
 @spicelock_for_multithread
 @spice_error_check
-def frame(x: Iterable[float]) -> Tuple[ndarray, ndarray, ndarray]:
+def frame(x: Union[ndarray, Iterable[float]]) -> Tuple[ndarray, ndarray, ndarray]:
     """
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/frame_c.html
 
@@ -5985,9 +6011,9 @@ def gfevnt(
     lenvals: int,
     qpnams: Iterable[str],
     qcpars: Iterable[str],
-    qdpars: Iterable[float],
-    qipars: Iterable[int],
-    qlpars: Iterable[int],
+    qdpars: Union[ndarray, Iterable[float]],
+    qipars: Union[ndarray, Iterable[int]],
+    qlpars: Union[ndarray, Iterable[int]],
     op: str,
     refval: float,
     tol: float,
@@ -6087,7 +6113,7 @@ def gfevnt(
 def gffove(
     inst: str,
     tshape: str,
-    raydir: Iterable[float],
+    raydir: Union[ndarray, Iterable[float]],
     target: str,
     tframe: str,
     abcorr: str,
@@ -6181,7 +6207,7 @@ def gfilum(
     fixref: str,
     abcorr: str,
     obsrvr: str,
-    spoint: Iterable[float],
+    spoint: Union[ndarray, Iterable[float]],
     relate: str,
     refval: float,
     adjust: float,
@@ -6859,7 +6885,7 @@ def gfsntc(
     abcorr: str,
     obsrvr: str,
     dref: str,
-    dvec: Iterable[float],
+    dvec: Union[ndarray, Iterable[float]],
     crdsys: str,
     coord: str,
     relate: str,
@@ -7916,7 +7942,7 @@ def irftrn(refa: str, refb: str) -> ndarray:
 
 @spicelock_for_multithread
 @spice_error_check
-def isordv(array: Iterable[int], n: int) -> bool:
+def isordv(array: Union[ndarray, Iterable[int]], n: int) -> bool:
     """
     Determine whether an array of n items contains the integers
     0 through n-1.
@@ -7961,7 +7987,7 @@ def isrchc(value: str, ndim: int, lenvals: int, array: Iterable[str]) -> int:
 
 @spicelock_for_multithread
 @spice_error_check
-def isrchd(value: float, ndim: int, array: Iterable[float]) -> int:
+def isrchd(value: float, ndim: int, array: Union[ndarray, Iterable[float]]) -> int:
     """
     Search for a given value within a double precision array. Return
     the index of the first matching array entry, or -1 if the key value
@@ -7984,7 +8010,7 @@ def isrchd(value: float, ndim: int, array: Iterable[float]) -> int:
 
 @spicelock_for_multithread
 @spice_error_check
-def isrchi(value: int, ndim: int, array: Iterable[int]) -> int:
+def isrchi(value: int, ndim: int, array: Union[ndarray, Iterable[int]]) -> int:
     """
     Search for a given value within an integer array. Return
     the index of the first matching array entry, or -1 if the key
@@ -8522,7 +8548,7 @@ def limbpt(
     abcorr: str,
     corloc: str,
     obsrvr: str,
-    refvec: Iterable[float],
+    refvec: Union[ndarray, Iterable[float]],
     rolstp: float,
     ncuts: int,
     schstp: float,
@@ -8768,7 +8794,7 @@ def lstlec(string: str, n: int, lenvals: int, array: Iterable[str]) -> int:
 
 @spicelock_for_multithread
 @spice_error_check
-def lstled(x: float, n: int, array: Iterable[float]) -> int:
+def lstled(x: float, n: int, array: Union[ndarray, Iterable[float]]) -> int:
     """
     Given a number x and an array of non-decreasing floats
     find the index of the largest array element less than or equal to x.
@@ -8788,7 +8814,7 @@ def lstled(x: float, n: int, array: Iterable[float]) -> int:
 
 @spicelock_for_multithread
 @spice_error_check
-def lstlei(x: int, n: int, array: Iterable[int]) -> int:
+def lstlei(x: int, n: int, array: Union[ndarray, Iterable[int]]) -> int:
     """
     Given a number x and an array of non-decreasing ints,
     find the index of the largest array element less than or equal to x.
@@ -8833,7 +8859,7 @@ def lstltc(string: str, n: int, lenvals: int, array: Iterable[str]) -> int:
 
 @spicelock_for_multithread
 @spice_error_check
-def lstltd(x: float, n: int, array: Iterable[float]) -> int:
+def lstltd(x: float, n: int, array: Union[ndarray, Iterable[float]]) -> int:
     """
     Given a number x and an array of non-decreasing floats
     find the index of the largest array element less than x.
@@ -8853,7 +8879,7 @@ def lstltd(x: float, n: int, array: Iterable[float]) -> int:
 
 @spicelock_for_multithread
 @spice_error_check
-def lstlti(x: int, n: int, array: Iterable[int]) -> int:
+def lstlti(x: int, n: int, array: Union[ndarray, Iterable[int]]) -> int:
     """
     Given a number x and an array of non-decreasing int,
     find the index of the largest array element less than x.
@@ -9013,7 +9039,7 @@ def lxqstr(string: str, qchar: str, first: int) -> Tuple[int, int]:
 @spicelock_for_multithread
 @spice_error_check
 def m2eul(
-    r: Iterable[Iterable[float]], axis3: int, axis2: int, axis1: int
+    r: Union[ndarray, Iterable[Iterable[float]]], axis3: int, axis2: int, axis1: int
 ) -> Tuple[float, float, float]:
     """
     Factor a rotation matrix as a product of three rotations
@@ -9182,20 +9208,29 @@ def mtxm(m1: ndarray, m2: ndarray) -> ndarray:
 
 @spicelock_for_multithread
 @spice_error_check
-def mtxmg(m1: ndarray, m2: ndarray, ncol1: int, nr1r2: int, ncol2: int) -> ndarray:
+def mtxmg(
+    m1: ndarray,
+    m2: ndarray,
+    ncol1: OptionalInt = None,
+    nr1r2: OptionalInt = None,
+    ncol2: OptionalInt = None,
+) -> ndarray:
     """
     Multiply the transpose of a matrix with
     another matrix, both of arbitrary size.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/mtxmg_c.html
 
-    :param m1: nr1r2 X ncol1 double precision matrix.
-    :param m2: nr1r2 X ncol2 double precision matrix.
+    :param m1: N x M double precision matrix.
+    :param m2: N x O double precision matrix.
     :param ncol1: Column dimension of m1 and row dimension of mout.
     :param nr1r2: Row dimension of m1 and m2.
     :param ncol2: Column dimension of m2.
-    :return: Transpose of m1 times m2.
+    :return: Transpose of m1 times m2 (O x M).
     """
+    warn_depricated_args(ncol1=ncol1, nr1r2=nr1r2, ncol2=ncol2)
+    ncol1, ncol2 = len(m1[0]), len(m2[0])
+    nr1r2 = len(m1)
     m1 = stypes.to_double_matrix(m1)
     m2 = stypes.to_double_matrix(m2)
     mout = stypes.empty_double_matrix(x=ncol2, y=ncol1)
@@ -9228,7 +9263,9 @@ def mtxv(m1: ndarray, vin: ndarray) -> ndarray:
 
 @spicelock_for_multithread
 @spice_error_check
-def mtxvg(m1: ndarray, v2: ndarray, ncol1: int, nr1r2: int) -> ndarray:
+def mtxvg(
+    m1: ndarray, v2: ndarray, ncol1: OptionalInt = None, nr1r2: OptionalInt = None
+) -> ndarray:
     """
     Multiply the transpose of a matrix and
     a vector of arbitrary size.
@@ -9241,6 +9278,9 @@ def mtxvg(m1: ndarray, v2: ndarray, ncol1: int, nr1r2: int) -> ndarray:
     :param nr1r2: Row dimension of m1 and length of v2.
     :return: Product vector m1 transpose * v2.
     """
+    warn_depricated_args(ncol1=ncol1, nr1r2=nr1r2)
+    ncol1 = len(m1[0])
+    nr1r2 = len(v2)
     m1 = stypes.to_double_matrix(m1)
     v2 = stypes.to_double_vector(v2)
     ncol1 = ctypes.c_int(ncol1)
@@ -9252,7 +9292,10 @@ def mtxvg(m1: ndarray, v2: ndarray, ncol1: int, nr1r2: int) -> ndarray:
 
 @spicelock_for_multithread
 @spice_error_check
-def mxm(m1: Iterable[Iterable[float]], m2: Iterable[Iterable[float]]) -> ndarray:
+def mxm(
+    m1: Union[ndarray, Iterable[Iterable[float]]],
+    m2: Union[ndarray, Iterable[Iterable[float]]],
+) -> ndarray:
     """
     Multiply two 3x3 matrices.
 
@@ -9272,11 +9315,11 @@ def mxm(m1: Iterable[Iterable[float]], m2: Iterable[Iterable[float]]) -> ndarray
 @spicelock_for_multithread
 @spice_error_check
 def mxmg(
-    m1: Iterable[Iterable[float]],
-    m2: Iterable[Iterable[float]],
-    nrow1: int,
-    ncol1: int,
-    ncol2: int,
+    m1: Union[ndarray, Iterable[Iterable[float]]],
+    m2: Union[ndarray, Iterable[Iterable[float]]],
+    nrow1: OptionalInt = None,
+    ncol1: OptionalInt = None,
+    ncol2: OptionalInt = None,
 ) -> ndarray:
     """
     Multiply two double precision matrices of arbitrary size.
@@ -9290,6 +9333,8 @@ def mxmg(
     :param ncol2: Column dimension of m2
     :return: nrow1 X ncol2 double precision matrix.
     """
+    warn_depricated_args(nrow1=nrow1, ncol1=ncol1, ncol2=ncol2)
+    nrow1, ncol1, ncol2 = len(m1), len(m1[0]), len(m2[0])
     m1 = stypes.to_double_matrix(m1)
     m2 = stypes.to_double_matrix(m2)
     mout = stypes.empty_double_matrix(x=ncol2, y=nrow1)
@@ -9302,7 +9347,10 @@ def mxmg(
 
 @spicelock_for_multithread
 @spice_error_check
-def mxmt(m1: Iterable[Iterable[float]], m2: Iterable[Iterable[float]]) -> ndarray:
+def mxmt(
+    m1: Union[ndarray, Iterable[Iterable[float]]],
+    m2: Union[ndarray, Iterable[Iterable[float]]],
+) -> ndarray:
     """
     Multiply a 3x3 matrix and the transpose of another 3x3 matrix.
 
@@ -9321,7 +9369,7 @@ def mxmt(m1: Iterable[Iterable[float]], m2: Iterable[Iterable[float]]) -> ndarra
 
 @spicelock_for_multithread
 @spice_error_check
-def mxmtg(m1: ndarray, m2: ndarray, nrow1: int, nc1c2: int, nrow2: int) -> ndarray:
+def mxmtg(m1: Union[ndarray, Iterable[Iterable[float]]], m2: Union[ndarray, Iterable[Iterable[float]]], nrow1: OptionalInt = None, nc1c2: OptionalInt = None, nrow2: OptionalInt = None) -> ndarray:
     """
     Multiply a matrix and the transpose of a matrix, both of arbitrary size.
 
@@ -9334,6 +9382,8 @@ def mxmtg(m1: ndarray, m2: ndarray, nrow1: int, nc1c2: int, nrow2: int) -> ndarr
     :param nrow2: Row dimension of m2 and column dimension of mout.
     :return: Product matrix.
     """
+    warn_depricated_args(nrow1=nrow1, nc1c2=nc1c2, nrow2=nrow2)
+    nrow1, nc1c2, nrow2 = len(m1), len(m1[0]), len(m2)
     m1 = stypes.to_double_matrix(m1)
     m2 = stypes.to_double_matrix(m2)
     mout = stypes.empty_double_matrix(x=nrow2, y=nrow1)
@@ -9366,7 +9416,7 @@ def mxv(m1: ndarray, vin: ndarray) -> ndarray:
 
 @spicelock_for_multithread
 @spice_error_check
-def mxvg(m1: ndarray, v2: ndarray, nrow1: int, nc1r2: int) -> ndarray:
+def mxvg(m1: Union[ndarray, Iterable[Iterable[float]]], v2: Union[ndarray, Iterable[Iterable[float]]], nrow1: OptionalInt = None, nc1r2: OptionalInt = None) -> ndarray:
     """
     Multiply a matrix and a vector of arbitrary size.
 
@@ -9378,6 +9428,8 @@ def mxvg(m1: ndarray, v2: ndarray, nrow1: int, nc1r2: int) -> ndarray:
     :param nc1r2: Column dimension of m1 and length of v2.
     :return: Product vector m1*v2
     """
+    warn_depricated_args(nrow1=nrow1, nc1r2=nc1r2)
+    nrow1, nc1r2 = len(m1), len(m1[0])
     m1 = stypes.to_double_matrix(m1)
     v2 = stypes.to_double_vector(v2)
     nrow1 = ctypes.c_int(nrow1)
@@ -9453,7 +9505,7 @@ def ncposr(string: str, chars: str, start: int) -> int:
 @spicelock_for_multithread
 @spice_error_check
 def nearpt(
-    positn: Iterable[float], a: float, b: float, c: float
+    positn: Union[ndarray, Iterable[float]], a: float, b: float, c: float
 ) -> Tuple[ndarray, float]:
     """
     locates the point on the surface of an ellipsoid that is nearest to a
@@ -9483,7 +9535,11 @@ def nearpt(
 @spicelock_for_multithread
 @spice_error_check
 def npedln(
-    a: float, b: float, c: float, linept: Iterable[float], linedr: Iterable[float]
+    a: float,
+    b: float,
+    c: float,
+    linept: Union[ndarray, Iterable[float]],
+    linedr: Union[ndarray, Iterable[float]],
 ) -> Tuple[ndarray, float]:
     """
     Find nearest point on a triaxial ellipsoid to a specified
@@ -9511,7 +9567,9 @@ def npedln(
 
 @spicelock_for_multithread
 @spice_error_check
-def npelpt(point: Iterable[float], ellips: Ellipse) -> Tuple[ndarray, float]:
+def npelpt(
+    point: Union[ndarray, Iterable[float]], ellips: Ellipse
+) -> Tuple[ndarray, float]:
     """
     Find the nearest point on an ellipse to a specified point, both
     in three-dimensional space, and find the distance between the
@@ -9533,7 +9591,9 @@ def npelpt(point: Iterable[float], ellips: Ellipse) -> Tuple[ndarray, float]:
 @spicelock_for_multithread
 @spice_error_check
 def nplnpt(
-    linpt: Iterable[float], lindir: Iterable[float], point: Iterable[float]
+    linpt: Union[ndarray, Iterable[float]],
+    lindir: Union[ndarray, Iterable[float]],
+    point: Union[ndarray, Iterable[float]],
 ) -> Tuple[ndarray, float]:
     """
     Find the nearest point on a line to a specified point,
@@ -9578,7 +9638,9 @@ def nvc2pl(normal: Union[Iterable[float], Iterable[float]], constant: float) -> 
 
 @spicelock_for_multithread
 @spice_error_check
-def nvp2pl(normal: Iterable[float], point: Iterable[float]) -> Plane:
+def nvp2pl(
+    normal: Union[ndarray, Iterable[float]], point: Union[ndarray, Iterable[float]]
+) -> Plane:
     """
     Make a plane from a normal vector and a point.
 
@@ -9950,7 +10012,7 @@ def pckw02(
     intlen: float,
     n: int,
     polydg: int,
-    cdata: Iterable[float],
+    cdata: Union[ndarray, Iterable[float]],
     btime: float,
 ) -> None:
     """
@@ -10240,10 +10302,10 @@ def pltexp(
 @spicelock_for_multithread
 @spice_error_check
 def pltnp(
-    point: Iterable[float],
-    v1: Iterable[float],
-    v2: Iterable[float],
-    v3: Iterable[float],
+    point: Union[ndarray, Iterable[float]],
+    v1: Union[ndarray, Iterable[float]],
+    v2: Union[ndarray, Iterable[float]],
+    v3: Union[ndarray, Iterable[float]],
 ) -> Tuple[ndarray, float]:
     """
     Find the nearest point on a triangular plate to a given point.
@@ -10270,7 +10332,7 @@ def pltnp(
 @spice_error_check
 def pltnrm(
     v1: Iterable[Union[float, float]],
-    v2: Iterable[float],
+    v2: Union[ndarray, Iterable[float]],
     v3: Iterable[Union[float, float]],
 ) -> ndarray:
     """
@@ -10314,7 +10376,9 @@ def pltvol(vrtces: Sequence[Iterable[float]], plates: Sequence[Iterable[int]]) -
 
 @spicelock_for_multithread
 @spice_error_check
-def polyds(coeffs: Iterable[float], deg: int, nderiv: int, t: int) -> ndarray:
+def polyds(
+    coeffs: Union[ndarray, Iterable[float]], deg: int, nderiv: int, t: int
+) -> ndarray:
     """
     Compute the value of a polynomial and it's first
     n derivatives at the value t.
@@ -10552,7 +10616,7 @@ def qcktrc(tracelen: int = _default_len_out) -> str:
 
 @spicelock_for_multithread
 @spice_error_check
-def qdq2av(q: ndarray, dq: Iterable[float]) -> ndarray:
+def qdq2av(q: ndarray, dq: Union[ndarray, Iterable[float]]) -> ndarray:
     """
     Derive angular velocity from a unit quaternion and its derivative
     with respect to time.
@@ -10572,7 +10636,9 @@ def qdq2av(q: ndarray, dq: Iterable[float]) -> ndarray:
 
 @spicelock_for_multithread
 @spice_error_check
-def qxq(q1: Union[ndarray, Iterable[float]], q2: Iterable[float]) -> ndarray:
+def qxq(
+    q1: Union[ndarray, Iterable[float]], q2: Union[ndarray, Iterable[float]]
+) -> ndarray:
     """
     Multiply two quaternions.
 
@@ -10617,7 +10683,9 @@ def radrec(inrange: float, re: float, dec: float) -> ndarray:
 
 @spicelock_for_multithread
 @spice_error_check
-def rav2xf(rot: Iterable[Iterable[float]], av: Iterable[float]) -> ndarray:
+def rav2xf(
+    rot: Union[ndarray, Iterable[Iterable[float]]], av: Union[ndarray, Iterable[float]]
+) -> ndarray:
     """
     This routine determines a state transformation matrix
     from a rotation matrix and the angular velocity of the
@@ -10679,7 +10747,7 @@ def rdtext(
 
 @spicelock_for_multithread
 @spice_error_check
-def reccyl(rectan: Iterable[float]) -> Tuple[float, float, float]:
+def reccyl(rectan: Union[ndarray, Iterable[float]]) -> Tuple[float, float, float]:
     """
     Convert from rectangular to cylindrical coordinates.
 
@@ -10701,7 +10769,9 @@ def reccyl(rectan: Iterable[float]) -> Tuple[float, float, float]:
 
 @spicelock_for_multithread
 @spice_error_check
-def recgeo(rectan: Iterable[float], re: float, f: float) -> Tuple[float, float, float]:
+def recgeo(
+    rectan: Union[ndarray, Iterable[float]], re: float, f: float
+) -> Tuple[float, float, float]:
     """
     Convert from rectangular coordinates to geodetic coordinates.
 
@@ -10885,7 +10955,7 @@ def removi(item: int, inset: SpiceCell) -> None:
 @spicelock_for_multithread
 @spice_error_check
 def reordc(
-    iorder: Iterable[int], ndim: int, lenvals: int, array: Iterable[str]
+    iorder: Union[ndarray, Iterable[int]], ndim: int, lenvals: int, array: Iterable[str]
 ) -> Iterable[str]:
     """
     Re-order the elements of an array of character strings
@@ -10909,7 +10979,11 @@ def reordc(
 
 @spicelock_for_multithread
 @spice_error_check
-def reordd(iorder: Iterable[int], ndim: int, array: Iterable[float]) -> ndarray:
+def reordd(
+    iorder: Union[ndarray, Iterable[int]],
+    ndim: int,
+    array: Union[ndarray, Iterable[float]],
+) -> ndarray:
     """
     Re-order the elements of a double precision array according to
     a given order vector.
@@ -10930,7 +11004,11 @@ def reordd(iorder: Iterable[int], ndim: int, array: Iterable[float]) -> ndarray:
 
 @spicelock_for_multithread
 @spice_error_check
-def reordi(iorder: Iterable[int], ndim: int, array: Iterable[int]) -> ndarray:
+def reordi(
+    iorder: Union[ndarray, Iterable[int]],
+    ndim: int,
+    array: Union[ndarray, Iterable[int]],
+) -> ndarray:
     """
     Re-order the elements of an integer array according to
     a given order vector.
@@ -10951,7 +11029,9 @@ def reordi(iorder: Iterable[int], ndim: int, array: Iterable[int]) -> ndarray:
 
 @spicelock_for_multithread
 @spice_error_check
-def reordl(iorder: Iterable[int], ndim: int, array: Iterable[bool]) -> ndarray:
+def reordl(
+    iorder: Union[ndarray, Iterable[int]], ndim: int, array: Iterable[bool]
+) -> ndarray:
     """
     Re-order the elements of a logical (Boolean) array according to
     a given order vector.
@@ -11267,7 +11347,9 @@ def rquad(a: float, b: float, c: float) -> Tuple[ndarray, ndarray]:
 
 @spicelock_for_multithread
 @spice_error_check
-def saelgv(vec1: Iterable[float], vec2: Iterable[float]) -> Tuple[ndarray, ndarray]:
+def saelgv(
+    vec1: Union[ndarray, Iterable[float]], vec2: Union[ndarray, Iterable[float]]
+) -> Tuple[ndarray, ndarray]:
     """
     Find semi-axis vectors of an ellipse generated by two arbitrary
     three-dimensional vectors.
@@ -11629,7 +11711,7 @@ def shellc(ndim: int, lenvals: int, array: Iterable[str]) -> Iterable[str]:
 
 @spicelock_for_multithread
 @spice_error_check
-def shelld(ndim: int, array: Iterable[float]) -> ndarray:
+def shelld(ndim: int, array: Union[ndarray, Iterable[float]]) -> ndarray:
     # Works!, use this as example for "I/O" parameters
     """
     Sort a double precision array using the Shell Sort algorithm.
@@ -11648,7 +11730,7 @@ def shelld(ndim: int, array: Iterable[float]) -> ndarray:
 
 @spicelock_for_multithread
 @spice_error_check
-def shelli(ndim: int, array: Iterable[int]) -> ndarray:
+def shelli(ndim: int, array: Union[ndarray, Iterable[int]]) -> ndarray:
     # Works!, use this as example for "I/O" parameters
     """
     Sort an integer array using the Shell Sort algorithm.
@@ -12010,7 +12092,10 @@ def spkaps(
 @spicelock_for_multithread
 @spice_error_check
 def spk14a(
-    handle: int, ncsets: int, coeffs: Iterable[float], epochs: Iterable[float]
+    handle: int,
+    ncsets: int,
+    coeffs: Union[ndarray, Iterable[float]],
+    epochs: Union[ndarray, Iterable[float]],
 ) -> None:
     """
     Add data to a type 14 SPK segment associated with handle. See
@@ -12129,7 +12214,7 @@ def spkcpo(
     outref: str,
     refloc: str,
     abcorr: str,
-    obspos: Iterable[float],
+    obspos: Union[ndarray, Iterable[float]],
     obsctr: str,
     obsref: str,
 ) -> Tuple[ndarray, float]:
@@ -12181,7 +12266,7 @@ def spkcpo(
 @spicelock_for_multithread
 @spice_error_check
 def spkcpt(
-    trgpos: Iterable[float],
+    trgpos: Union[ndarray, Iterable[float]],
     trgctr: str,
     trgref: str,
     et: float,
@@ -12243,7 +12328,7 @@ def spkcvo(
     outref: str,
     refloc: str,
     abcorr: str,
-    obssta: Iterable[float],
+    obssta: Union[ndarray, Iterable[float]],
     obsepc: float,
     obsctr: str,
     obsref: str,
@@ -12299,7 +12384,7 @@ def spkcvo(
 @spicelock_for_multithread
 @spice_error_check
 def spkcvt(
-    trgsta: Iterable[float],
+    trgsta: Union[ndarray, Iterable[float]],
     trgepc: float,
     trgctr: str,
     trgref: str,
@@ -12895,7 +12980,7 @@ def spkw02(
     intlen: float,
     n: int,
     polydg: int,
-    cdata: Iterable[float],
+    cdata: Union[ndarray, Iterable[float]],
     btime: float,
 ) -> None:
     """
@@ -12957,7 +13042,7 @@ def spkw03(
     intlen: float,
     n: int,
     polydg: int,
-    cdata: Iterable[float],
+    cdata: Union[ndarray, Iterable[float]],
     btime: float,
 ) -> None:
     """
@@ -13018,8 +13103,8 @@ def spkw05(
     segid: str,
     gm: float,
     n: int,
-    states: Iterable[Iterable[float]],
-    epochs: Iterable[float],
+    states: Union[ndarray, Iterable[Iterable[float]]],
+    epochs: Union[ndarray, Iterable[float]],
 ) -> None:
     # see libspice args for solution to array[][N] problem
     """
@@ -13069,7 +13154,7 @@ def spkw08(
     segid: str,
     degree: int,
     n: int,
-    states: Iterable[Iterable[float]],
+    states: Union[ndarray, Iterable[Iterable[float]]],
     epoch1: float,
     step: float,
 ) -> None:
@@ -13132,8 +13217,8 @@ def spkw09(
     segid: str,
     degree: int,
     n: int,
-    states: Iterable[Iterable[float]],
-    epochs: Iterable[float],
+    states: Union[ndarray, Iterable[Iterable[float]]],
+    epochs: Union[ndarray, Iterable[float]],
 ) -> None:
     """
     Write a type 9 segment to an SPK file.
@@ -13178,10 +13263,10 @@ def spkw10(
     first: float,
     last: float,
     segid: str,
-    consts: Iterable[float],
+    consts: Union[ndarray, Iterable[float]],
     n: int,
-    elems: Iterable[float],
-    epochs: Iterable[float],
+    elems: Union[ndarray, Iterable[float]],
+    epochs: Union[ndarray, Iterable[float]],
 ) -> None:
     """
     Write an SPK type 10 segment to the DAF open and attached to
@@ -13229,7 +13314,7 @@ def spkw12(
     segid: str,
     degree: int,
     n: int,
-    states: Iterable[Iterable[float]],
+    states: Union[ndarray, Iterable[Iterable[float]]],
     epoch0: float,
     step: float,
 ) -> None:
@@ -13291,8 +13376,8 @@ def spkw13(
     segid: str,
     degree: int,
     n: int,
-    states: Iterable[Iterable[float]],
-    epochs: Iterable[float],
+    states: Union[ndarray, Iterable[Iterable[float]]],
+    epochs: Union[ndarray, Iterable[float]],
 ) -> None:
     """
     Write a type 13 segment to an SPK file.
@@ -13343,7 +13428,7 @@ def spkw15(
     p: float,
     ecc: float,
     j2flg: float,
-    pv: Iterable[float],
+    pv: Union[ndarray, Iterable[float]],
     gm: float,
     j2: float,
     radius: float,
@@ -14239,7 +14324,9 @@ def sumai(array: Sequence[int]) -> int:
 
 @spicelock_for_multithread
 @spice_error_check
-def surfnm(a: float, b: float, c: float, point: Iterable[float]) -> ndarray:
+def surfnm(
+    a: float, b: float, c: float, point: Union[ndarray, Iterable[float]]
+) -> ndarray:
     """
     This routine computes the outward-pointing, unit normal vector
     from a point on the surface of an ellipsoid.
@@ -14299,7 +14386,11 @@ def surfpt(
 @spice_error_check
 @spice_found_exception_thrower
 def surfpv(
-    stvrtx: Iterable[float], stdir: Iterable[float], a: float, b: float, c: float
+    stvrtx: Union[ndarray, Iterable[float]],
+    stdir: Union[ndarray, Iterable[float]],
+    a: float,
+    b: float,
+    c: float,
 ) -> Tuple[ndarray, bool]:
     """
     Find the state (position and velocity) of the surface intercept
@@ -14411,7 +14502,7 @@ def termpt(
     abcorr: str,
     corloc: str,
     obsrvr: str,
-    refvec: Iterable[float],
+    refvec: Union[ndarray, Iterable[float]],
     rolstp: float,
     ncuts: int,
     schstp: float,
@@ -14694,7 +14785,7 @@ def tpictr(
 
 @spicelock_for_multithread
 @spice_error_check
-def trace(matrix: Iterable[Iterable[float]]) -> float:
+def trace(matrix: Union[ndarray, Iterable[Iterable[float]]]) -> float:
     """
     Return the trace of a 3x3 matrix.
 
@@ -14788,7 +14879,10 @@ def twopi() -> float:
 @spicelock_for_multithread
 @spice_error_check
 def twovec(
-    axdef: Iterable[float], indexa: int, plndef: Iterable[float], indexp: int
+    axdef: Union[ndarray, Iterable[float]],
+    indexa: int,
+    plndef: Union[ndarray, Iterable[float]],
+    indexp: int,
 ) -> ndarray:
     """
     Find the transformation to the right-handed frame having a
@@ -15104,7 +15198,9 @@ def utc2et(utcstr: str) -> float:
 
 @spicelock_for_multithread
 @spice_error_check
-def vadd(v1: Iterable[float], v2: Iterable[float]) -> ndarray:
+def vadd(
+    v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]]
+) -> ndarray:
     """Add two 3 dimensional vectors.
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vadd_c.html
 
@@ -15121,7 +15217,9 @@ def vadd(v1: Iterable[float], v2: Iterable[float]) -> ndarray:
 
 @spicelock_for_multithread
 @spice_error_check
-def vaddg(v1: Iterable[float], v2: Iterable[float], ndim: int) -> ndarray:
+def vaddg(
+    v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]], ndim: int
+) -> ndarray:
     """
     Add two n-dimensional vectors
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vaddg_c.html
@@ -15356,11 +15454,11 @@ def vlcom(
 @spice_error_check
 def vlcom3(
     a: float,
-    v1: Iterable[float],
+    v1: Union[ndarray, Iterable[float]],
     b: float,
-    v2: Iterable[float],
+    v2: Union[ndarray, Iterable[float]],
     c: float,
-    v3: Iterable[float],
+    v3: Union[ndarray, Iterable[float]],
 ) -> ndarray:
     """
     This subroutine computes the vector linear combination
@@ -15530,7 +15628,7 @@ def vperp(a: ndarray, b: ndarray) -> ndarray:
 
 @spicelock_for_multithread
 @spice_error_check
-def vprjp(vin: Iterable[float], plane: Plane) -> ndarray:
+def vprjp(vin: Union[ndarray, Iterable[float]], plane: Plane) -> ndarray:
     """
     Project a vector onto a specified plane, orthogonally.
 
@@ -15549,7 +15647,9 @@ def vprjp(vin: Iterable[float], plane: Plane) -> ndarray:
 @spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
-def vprjpi(vin: Iterable[float], projpl: Plane, invpl: Plane) -> Tuple[ndarray, bool]:
+def vprjpi(
+    vin: Union[ndarray, Iterable[float]], projpl: Plane, invpl: Plane
+) -> Tuple[ndarray, bool]:
     """
     Find the vector in a specified plane that maps to a specified
     vector in another plane under orthogonal projection.
@@ -15591,7 +15691,9 @@ def vproj(a: ndarray, b: ndarray) -> ndarray:
 
 @spicelock_for_multithread
 @spice_error_check
-def vrel(v1: Iterable[float], v2: Iterable[float]) -> float:
+def vrel(
+    v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]]
+) -> float:
     """
     Return the relative difference between two 3-dimensional vectors.
 
@@ -15608,7 +15710,9 @@ def vrel(v1: Iterable[float], v2: Iterable[float]) -> float:
 
 @spicelock_for_multithread
 @spice_error_check
-def vrelg(v1: Iterable[float], v2: Iterable[float], ndim: int) -> float:
+def vrelg(
+    v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]], ndim: int
+) -> float:
     """
     Return the relative difference between two vectors of general dimension.
 
@@ -15791,7 +15895,13 @@ def vtmv(v1: ndarray, matrix: ndarray, v2: ndarray) -> float:
 
 @spicelock_for_multithread
 @spice_error_check
-def vtmvg(v1: ndarray, matrix: ndarray, v2: ndarray, nrow: int, ncol: int) -> float:
+def vtmvg(
+    v1: ndarray,
+    matrix: ndarray,
+    v2: ndarray,
+    nrow: OptionalInt = None,
+    ncol: OptionalInt = None,
+) -> float:
     """
     Multiply the transpose of a n-dimensional
     column vector a nxm matrix,
@@ -15806,6 +15916,8 @@ def vtmvg(v1: ndarray, matrix: ndarray, v2: ndarray, nrow: int, ncol: int) -> fl
     :param ncol: Number of columns in matrix (number of rows in v2.)
     :return: the result of (v1**t * matrix * v2 )
     """
+    warn_depricated_args(nrow=nrow, ncol=ncol)
+    nrow, ncol = len(v1), len(v2)
     v1 = stypes.to_double_vector(v1)
     matrix = stypes.to_double_matrix(matrix)
     v2 = stypes.to_double_vector(v2)
@@ -16367,7 +16479,7 @@ def xpose(m: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
 
 @spicelock_for_multithread
 @spice_error_check
-def xpose6(m: Iterable[Iterable[float]]) -> ndarray:
+def xpose6(m: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
     """
     Transpose a 6x6 matrix
 
@@ -16385,7 +16497,9 @@ def xpose6(m: Iterable[Iterable[float]]) -> ndarray:
 @spicelock_for_multithread
 @spice_error_check
 def xposeg(
-    matrix: Union[ndarray, Iterable[Iterable[float]]], nrow: int, ncol: int
+    matrix: Union[ndarray, Iterable[Iterable[float]]],
+    nrow: OptionalInt = None,
+    ncol: OptionalInt = None,
 ) -> ndarray:
     """
     Transpose a matrix of arbitrary size
@@ -16398,8 +16512,10 @@ def xposeg(
     :param ncol: Number of columns of input matrix
     :return: Transposed matrix
     """
+    warn_depricated_args(nrow=nrow, ncol=ncol)
+    ncol, nrow = len(matrix[0]), len(matrix)
     matrix = stypes.to_double_matrix(matrix)
-    mout = stypes.empty_double_matrix(x=ncol, y=nrow)
+    mout = stypes.empty_double_matrix(x=nrow, y=ncol)
     ncol = ctypes.c_int(ncol)
     nrow = ctypes.c_int(nrow)
     libspice.xposeg_c(matrix, nrow, ncol, mout)
