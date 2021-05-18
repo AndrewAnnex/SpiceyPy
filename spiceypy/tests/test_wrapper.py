@@ -5882,7 +5882,7 @@ def test_mtxm():
 def test_mtxmg():
     m1 = np.array([[1.0, 2.0, 3.0, 0.0], [1.0, 1.0, 1.0, 1.0]])
     m2 = np.array([[1.0, 2.0, 3.0], [0.0, 0.0, 0.0]])
-    mout = spice.mtxmg(m1, m2, 4, 2, 3)
+    mout = spice.mtxmg(m1, m2)
     expected = np.array(
         [[1.0, 2.0, 3.0], [2.0, 4.0, 6.0], [3.0, 6.0, 9.0], [0.0, 0.0, 0.0]]
     )
@@ -5900,7 +5900,7 @@ def test_mtxv():
 def test_mtxvg():
     m1 = np.array([[1.0, 2.0], [1.0, 3.0], [1.0, 4.0]])
     v2 = np.array([1.0, 2.0, 3.0])
-    mout = spice.mtxvg(m1, v2, 2, 3)
+    mout = spice.mtxvg(m1, v2)
     expected = np.array([6.0, 20.0])
     assert np.array_equal(mout, expected)
 
@@ -5918,10 +5918,7 @@ def test_mxm():
 def test_mxmg():
     m1 = [[1.0, 4.0], [2.0, 5.0], [3.0, 6.0]]
     m2 = [[1.0, 2.0, 3.0], [2.0, 4.0, 6.0]]
-    nrow1 = 3
-    ncol1 = 2
-    ncol2 = 3
-    mout = np.array(spice.mxmg(m1, m2, nrow1, ncol1, ncol2))
+    mout = np.array(spice.mxmg(m1, m2))
     m1 = np.array(m1)
     m2 = np.array(m2)
     mout2 = np.dot(m1, m2)
@@ -5951,6 +5948,14 @@ def test_mxv():
 
 
 def test_mxvg():
+    m1 = np.array([[1.0, 1.0, 1.0], [2.0, 3.0, 4.0]])
+    v2 = np.array([1.0, 2.0, 3.0])
+    mout = spice.mxvg(m1, v2)
+    expected = np.array([6.0, 20.0])
+    assert np.array_equal(mout, expected)
+    
+
+def test_mxvg_old_api():
     m1 = np.array([[1.0, 1.0, 1.0], [2.0, 3.0, 4.0]])
     v2 = np.array([1.0, 2.0, 3.0])
     mout = spice.mxvg(m1, v2, 2, 3)
@@ -10209,7 +10214,7 @@ def test_vtmvg():
     v1 = np.array([1.0, 2.0, 3.0])
     v2 = np.array([1.0, 2.0])
     matrix = np.array([[2.0, 0.0], [1.0, 2.0], [1.0, 1.0]])
-    assert spice.vtmvg(v1, matrix, v2, 3, 2) == 21.0
+    assert spice.vtmvg(v1, matrix, v2) == 21.0
 
 
 def test_vupack():
@@ -10554,12 +10559,14 @@ def test_xpose():
 def test_xposeg():
     m1 = [[1.0, 2.0, 3.0], [0.0, 4.0, 5.0], [0.0, 6.0, 0.0]]
     npt.assert_array_almost_equal(
-        spice.xposeg(m1, 3, 3), [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]]
+        spice.xposeg(m1), [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]]
     )
     npt.assert_array_almost_equal(
-        spice.xposeg(np.array(m1), 3, 3),
+        spice.xposeg(np.array(m1)),
         [[1.0, 0.0, 0.0], [2.0, 4.0, 6.0], [3.0, 5.0, 0.0]],
     )
+    m2 = np.random.rand(3, 4)
+    npt.assert_array_almost_equal(spice.xposeg(m2), m2.T)
 
 
 def test_zzdynrot():
