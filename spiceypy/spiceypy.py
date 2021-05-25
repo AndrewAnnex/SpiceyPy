@@ -10598,7 +10598,7 @@ def q2m(q: ndarray) -> ndarray:
 
 
 @spicelock_for_multithread
-@spice_error_check
+# @spice_error_check # Commented in order to avoid RecursionError
 def qcktrc(tracelen: int = _default_len_out) -> str:
     """
     Return a string containing a traceback.
