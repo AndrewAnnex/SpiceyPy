@@ -52,7 +52,7 @@ def test_threading_lock():
     spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("Dec 25, 2007")
-    from multiprocessing import ThreadPool
+    from multiprocessing.pool import ThreadPool
     ets = np.array([et]*nOperations)
     state, ltime = spice.spkezr("Moon", et, "J2000", "NONE", "EARTH")
     state = np.array([state]*nOperations)
