@@ -78,7 +78,7 @@ _SPICE_EK_MAXQSEL = 100  # Twice the 50 in gcc-linux-64
 _SPICE_EK_EKRCEX_ROOM_DEFAULT = 100  # Enough?
 
 
-def warn_depricated_args(**kwargs) -> None:
+def warn_deprecated_args(**kwargs) -> None:
     keys = list(kwargs.keys())
     values = list(kwargs.values())
     if any(values):
@@ -86,6 +86,7 @@ def warn_depricated_args(**kwargs) -> None:
         warnings.warn(
             f"Specifying any of: {varnames} will be deprecated as of SpiceyPy 5.0.0",
             DeprecationWarning,
+            stacklevel=2
         )
     pass
 
@@ -8838,7 +8839,7 @@ def mtxmg(
     :param ncol2: Column dimension of m2.
     :return: Transpose of m1 times m2 (O x M).
     """
-    warn_depricated_args(ncol1=ncol1, nr1r2=nr1r2, ncol2=ncol2)
+    warn_deprecated_args(ncol1=ncol1, nr1r2=nr1r2, ncol2=ncol2)
     ncol1, ncol2 = len(m1[0]), len(m2[0])
     nr1r2 = len(m1)
     m1 = stypes.to_double_matrix(m1)
@@ -8886,7 +8887,7 @@ def mtxvg(
     :param nr1r2: Row dimension of m1 and length of v2.
     :return: Product vector m1 transpose * v2.
     """
-    warn_depricated_args(ncol1=ncol1, nr1r2=nr1r2)
+    warn_deprecated_args(ncol1=ncol1, nr1r2=nr1r2)
     ncol1 = len(m1[0])
     nr1r2 = len(v2)
     m1 = stypes.to_double_matrix(m1)
@@ -8939,7 +8940,7 @@ def mxmg(
     :param ncol2: Column dimension of m2
     :return: nrow1 X ncol2 double precision matrix.
     """
-    warn_depricated_args(nrow1=nrow1, ncol1=ncol1, ncol2=ncol2)
+    warn_deprecated_args(nrow1=nrow1, ncol1=ncol1, ncol2=ncol2)
     nrow1, ncol1, ncol2 = len(m1), len(m1[0]), len(m2[0])
     m1 = stypes.to_double_matrix(m1)
     m2 = stypes.to_double_matrix(m2)
@@ -8986,7 +8987,7 @@ def mxmtg(m1: Union[ndarray, Iterable[Iterable[float]]], m2: Union[ndarray, Iter
     :param nrow2: Row dimension of m2 and column dimension of mout.
     :return: Product matrix.
     """
-    warn_depricated_args(nrow1=nrow1, nc1c2=nc1c2, nrow2=nrow2)
+    warn_deprecated_args(nrow1=nrow1, nc1c2=nc1c2, nrow2=nrow2)
     nrow1, nc1c2, nrow2 = len(m1), len(m1[0]), len(m2)
     m1 = stypes.to_double_matrix(m1)
     m2 = stypes.to_double_matrix(m2)
@@ -9030,7 +9031,7 @@ def mxvg(m1: Union[ndarray, Iterable[Iterable[float]]], v2: Union[ndarray, Itera
     :param nc1r2: Column dimension of m1 and length of v2.
     :return: Product vector m1*v2
     """
-    warn_depricated_args(nrow1=nrow1, nc1r2=nc1r2)
+    warn_deprecated_args(nrow1=nrow1, nc1r2=nc1r2)
     nrow1, nc1r2 = len(m1), len(m1[0])
     m1 = stypes.to_double_matrix(m1)
     v2 = stypes.to_double_vector(v2)
@@ -14558,7 +14559,7 @@ def unorm(v1: ndarray) -> Tuple[ndarray, float]:
 
 
 @spice_error_check
-def unormg(v1: ndarray, ndim: int) -> Tuple[ndarray, float]:
+def unormg(v1: ndarray, ndim: OptionalInt = None) -> Tuple[ndarray, float]:
     """
     Normalize a double precision vector of arbitrary dimension and
     return its magnitude.
@@ -14569,6 +14570,8 @@ def unormg(v1: ndarray, ndim: int) -> Tuple[ndarray, float]:
     :param ndim: This is the dimension of v1 and vout.
     :return: Unit vector of v1, Magnitude of v1.
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     v1 = stypes.to_double_vector(v1)
     vout = stypes.empty_double_vector(ndim)
     vmag = ctypes.c_double()
@@ -14618,7 +14621,7 @@ def vadd(
 
 @spice_error_check
 def vaddg(
-    v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]], ndim: int
+    v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]], ndim: OptionalInt = None
 ) -> ndarray:
     """
     Add two n-dimensional vectors
@@ -14629,6 +14632,8 @@ def vaddg(
     :param ndim: Dimension of v1 and v2.
     :return: v1+v2
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     v1 = stypes.to_double_vector(v1)
     v2 = stypes.to_double_vector(v2)
     vout = stypes.empty_double_vector(ndim)
@@ -14691,7 +14696,7 @@ def vdist(v1: ndarray, v2: ndarray) -> float:
 
 
 @spice_error_check
-def vdistg(v1: ndarray, v2: ndarray, ndim: int) -> float:
+def vdistg(v1: ndarray, v2: ndarray, ndim: OptionalInt = None) -> float:
     """
     Return the distance between two vectors of arbitrary dimension.
 
@@ -14702,6 +14707,8 @@ def vdistg(v1: ndarray, v2: ndarray, ndim: int) -> float:
     :param ndim: Dimension of v1 and v2.
     :return: the distance between v1 and v2
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     v1 = stypes.to_double_vector(v1)
     v2 = stypes.to_double_vector(v2)
     ndim = ctypes.c_int(ndim)
@@ -14725,7 +14732,7 @@ def vdot(v1: ndarray, v2: ndarray) -> float:
 
 
 @spice_error_check
-def vdotg(v1: ndarray, v2: ndarray, ndim: int) -> float:
+def vdotg(v1: ndarray, v2: ndarray, ndim: OptionalInt = None) -> float:
     """
     Compute the dot product of two double precision vectors of
     arbitrary dimension.
@@ -14737,6 +14744,8 @@ def vdotg(v1: ndarray, v2: ndarray, ndim: int) -> float:
     :param ndim: Dimension of v1 and v2.
     :return: dot product of v1 and v2.
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     v1 = stypes.to_double_vector(v1)
     v2 = stypes.to_double_vector(v2)
     ndim = ctypes.c_int(ndim)
@@ -14760,7 +14769,7 @@ def vequ(v1: ndarray) -> ndarray:
 
 
 @spice_error_check
-def vequg(v1: ndarray, ndim: int) -> ndarray:
+def vequg(v1: ndarray, ndim: OptionalInt = None) -> ndarray:
     """
     Make one double precision vector of arbitrary dimension equal to another.
 
@@ -14770,6 +14779,8 @@ def vequg(v1: ndarray, ndim: int) -> ndarray:
     :param ndim: Dimension of vin (and also vout).
     :return: ndim-dimensional double precision vector set equal to vin.
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     v1 = stypes.to_double_vector(v1)
     vout = stypes.empty_double_vector(ndim)
     ndim = ctypes.c_int(ndim)
@@ -14794,7 +14805,7 @@ def vhat(v1: ndarray) -> ndarray:
 
 
 @spice_error_check
-def vhatg(v1: ndarray, ndim: int) -> ndarray:
+def vhatg(v1: ndarray, ndim: OptionalInt = None) -> ndarray:
     """
     Find the unit vector along a double precision vector of arbitrary dimension.
 
@@ -14804,6 +14815,8 @@ def vhatg(v1: ndarray, ndim: int) -> ndarray:
     :param ndim: Dimension of v1 (and also vout).
     :return: Unit vector v / abs(v).
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     v1 = stypes.to_double_vector(v1)
     vout = stypes.empty_double_vector(ndim)
     ndim = ctypes.c_int(ndim)
@@ -14905,7 +14918,7 @@ def vlcomg(
 
 
 @spice_error_check
-def vminug(vin: ndarray, ndim: int) -> ndarray:
+def vminug(vin: ndarray, ndim: OptionalInt = None) -> ndarray:
     """
     Negate a double precision vector of arbitrary dimension.
 
@@ -14915,6 +14928,8 @@ def vminug(vin: ndarray, ndim: int) -> ndarray:
     :param ndim: Dimension of vin.
     :return: ndim-dimensional double precision vector equal to -vin.
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(vin)
     vin = stypes.to_double_vector(vin)
     vout = stypes.empty_double_vector(ndim)
     ndim = ctypes.c_int(ndim)
@@ -14953,7 +14968,7 @@ def vnorm(v: ndarray) -> float:
 
 
 @spice_error_check
-def vnormg(v: ndarray, ndim: int) -> float:
+def vnormg(v: ndarray, ndim: OptionalInt = None) -> float:
     """
     Compute the magnitude of a double precision vector of arbitrary dimension.
 
@@ -14963,6 +14978,8 @@ def vnormg(v: ndarray, ndim: int) -> float:
     :param ndim: Dimension of v
     :return: magnitude of v calculated in a numerically stable way
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v)
     v = stypes.to_double_vector(v)
     ndim = ctypes.c_int(ndim)
     return libspice.vnormg_c(v, ndim)
@@ -15087,7 +15104,7 @@ def vrel(
 
 @spice_error_check
 def vrelg(
-    v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]], ndim: int
+    v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]], ndim: OptionalInt = None
 ) -> float:
     """
     Return the relative difference between two vectors of general dimension.
@@ -15099,6 +15116,8 @@ def vrelg(
     :param ndim: Dimension of v1 and v2.
     :return: the relative difference between v1 and v2.
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     v1 = stypes.to_double_vector(v1)
     v2 = stypes.to_double_vector(v2)
     ndim = ctypes.c_int(ndim)
@@ -15145,7 +15164,7 @@ def vscl(s: float, v1: ndarray) -> ndarray:
 
 
 @spice_error_check
-def vsclg(s: float, v1: ndarray, ndim: int) -> ndarray:
+def vsclg(s: float, v1: ndarray, ndim: OptionalInt = None) -> ndarray:
     """
     Multiply a scalar and a double precision vector of arbitrary dimension.
 
@@ -15156,6 +15175,8 @@ def vsclg(s: float, v1: ndarray, ndim: int) -> ndarray:
     :param ndim: Dimension of v1
     :return: Product vector, s*v1.
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     s = ctypes.c_double(s)
     v1 = stypes.to_double_vector(v1)
     vout = stypes.empty_double_vector(ndim)
@@ -15183,7 +15204,7 @@ def vsep(v1: ndarray, v2: ndarray) -> float:
 
 
 @spice_error_check
-def vsepg(v1: ndarray, v2: ndarray, ndim: int) -> float:
+def vsepg(v1: ndarray, v2: ndarray, ndim: OptionalInt = None) -> float:
     """
     Find the separation angle in radians between two double
     precision vectors of arbitrary dimension. This angle is defined
@@ -15196,6 +15217,8 @@ def vsepg(v1: ndarray, v2: ndarray, ndim: int) -> float:
     :param ndim: The number of elements in v1 and v2.
     :return: separation angle in radians
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     v1 = stypes.to_double_vector(v1)
     v2 = stypes.to_double_vector(v2)
     ndim = ctypes.c_int(ndim)
@@ -15222,7 +15245,7 @@ def vsub(v1: ndarray, v2: ndarray) -> ndarray:
 
 
 @spice_error_check
-def vsubg(v1: ndarray, v2: ndarray, ndim: int) -> ndarray:
+def vsubg(v1: ndarray, v2: ndarray, ndim: OptionalInt = None) -> ndarray:
     """
     Compute the difference between two double precision
     vectors of arbitrary dimension.
@@ -15234,6 +15257,8 @@ def vsubg(v1: ndarray, v2: ndarray, ndim: int) -> ndarray:
     :param ndim: Dimension of v1, v2, and vout.
     :return: Difference vector, v1 - v2.
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     v1 = stypes.to_double_vector(v1)
     v2 = stypes.to_double_vector(v2)
     vout = stypes.empty_double_vector(ndim)
@@ -15283,7 +15308,7 @@ def vtmvg(
     :param ncol: Number of columns in matrix (number of rows in v2.)
     :return: the result of (v1**t * matrix * v2 )
     """
-    warn_depricated_args(nrow=nrow, ncol=ncol)
+    warn_deprecated_args(nrow=nrow, ncol=ncol)
     nrow, ncol = len(v1), len(v2)
     v1 = stypes.to_double_vector(v1)
     matrix = stypes.to_double_matrix(matrix)
@@ -15326,7 +15351,7 @@ def vzero(v: ndarray) -> bool:
 
 
 @spice_error_check
-def vzerog(v: ndarray, ndim: int) -> bool:
+def vzerog(v: ndarray, ndim: OptionalInt = None) -> bool:
     """
     Indicate whether a general-dimensional vector is the zero vector.
 
@@ -15336,6 +15361,8 @@ def vzerog(v: ndarray, ndim: int) -> bool:
     :param ndim: Dimension of v
     :return: true if and only if v is the zero vector
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v)
     v = stypes.to_double_vector(v)
     ndim = ctypes.c_int(ndim)
     return bool(libspice.vzerog_c(v, ndim))
@@ -15852,7 +15879,7 @@ def xposeg(
     :param ncol: Number of columns of input matrix
     :return: Transposed matrix
     """
-    warn_depricated_args(nrow=nrow, ncol=ncol)
+    warn_deprecated_args(nrow=nrow, ncol=ncol)
     ncol, nrow = len(matrix[0]), len(matrix)
     matrix = stypes.to_double_matrix(matrix)
     mout = stypes.empty_double_matrix(x=nrow, y=ncol)

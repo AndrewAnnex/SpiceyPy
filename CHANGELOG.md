@@ -4,12 +4,37 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [4.0.1] - 2021-
+### Added
+- docs info about ARM support, currently limited to conda-forge spiceypy
+- docs citation info/basic intro
+- hash checksums for test kernels
+- offline install ci tests 
+- warn_deprecated_args function to aid future deprecations
+
+### Deprecated
+- added deprecation warnings for ncol/nrow params for: mtxmg, mtxvg, mxm, mxmg, mxmt, mxmtg, mxvg, vtmvg, xposeg pending next major release.
+- added deprecation warnings for ndim param for: unormg, vaddg, vdistg, vdotg, vequg, vhatg, vminug, vnromg, vrelg, vsclg, vsepg, vsubg, vzerog pending next major release.    
+
+### Changed
+- copyright year
+- a number of typehints to accept np.ndarray
+- changed test_wrapper to use a pytest autouse fixture to call reset/kclear automatically for most tests
+
+### Fixed
+- missing docs for xf2eul
+- numpy bool_ deprecation warnings
+- numpy float warning
+- type hint for appndd
+
 ## [4.0.0] - 2020-12-07
 ### Added
 - bodeul
+
 ### Changed
 - main branch is now the default branch
 - switched to use 'fromisoformat' in datetime2et
+
 ### Fixed
 - fixed nintvls spelling inconsistency 
 
