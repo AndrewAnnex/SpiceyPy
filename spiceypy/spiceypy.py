@@ -78,7 +78,7 @@ _SPICE_EK_MAXQSEL = 100  # Twice the 50 in gcc-linux-64
 _SPICE_EK_EKRCEX_ROOM_DEFAULT = 100  # Enough?
 
 
-def warn_depricated_args(**kwargs) -> None:
+def warn_deprecated_args(**kwargs) -> None:
     keys = list(kwargs.keys())
     values = list(kwargs.values())
     if any(values):
@@ -8838,7 +8838,7 @@ def mtxmg(
     :param ncol2: Column dimension of m2.
     :return: Transpose of m1 times m2 (O x M).
     """
-    warn_depricated_args(ncol1=ncol1, nr1r2=nr1r2, ncol2=ncol2)
+    warn_deprecated_args(ncol1=ncol1, nr1r2=nr1r2, ncol2=ncol2)
     ncol1, ncol2 = len(m1[0]), len(m2[0])
     nr1r2 = len(m1)
     m1 = stypes.to_double_matrix(m1)
@@ -8886,7 +8886,7 @@ def mtxvg(
     :param nr1r2: Row dimension of m1 and length of v2.
     :return: Product vector m1 transpose * v2.
     """
-    warn_depricated_args(ncol1=ncol1, nr1r2=nr1r2)
+    warn_deprecated_args(ncol1=ncol1, nr1r2=nr1r2)
     ncol1 = len(m1[0])
     nr1r2 = len(v2)
     m1 = stypes.to_double_matrix(m1)
@@ -8939,7 +8939,7 @@ def mxmg(
     :param ncol2: Column dimension of m2
     :return: nrow1 X ncol2 double precision matrix.
     """
-    warn_depricated_args(nrow1=nrow1, ncol1=ncol1, ncol2=ncol2)
+    warn_deprecated_args(nrow1=nrow1, ncol1=ncol1, ncol2=ncol2)
     nrow1, ncol1, ncol2 = len(m1), len(m1[0]), len(m2[0])
     m1 = stypes.to_double_matrix(m1)
     m2 = stypes.to_double_matrix(m2)
@@ -8986,7 +8986,7 @@ def mxmtg(m1: Union[ndarray, Iterable[Iterable[float]]], m2: Union[ndarray, Iter
     :param nrow2: Row dimension of m2 and column dimension of mout.
     :return: Product matrix.
     """
-    warn_depricated_args(nrow1=nrow1, nc1c2=nc1c2, nrow2=nrow2)
+    warn_deprecated_args(nrow1=nrow1, nc1c2=nc1c2, nrow2=nrow2)
     nrow1, nc1c2, nrow2 = len(m1), len(m1[0]), len(m2)
     m1 = stypes.to_double_matrix(m1)
     m2 = stypes.to_double_matrix(m2)
@@ -9030,7 +9030,7 @@ def mxvg(m1: Union[ndarray, Iterable[Iterable[float]]], v2: Union[ndarray, Itera
     :param nc1r2: Column dimension of m1 and length of v2.
     :return: Product vector m1*v2
     """
-    warn_depricated_args(nrow1=nrow1, nc1r2=nc1r2)
+    warn_deprecated_args(nrow1=nrow1, nc1r2=nc1r2)
     nrow1, nc1r2 = len(m1), len(m1[0])
     m1 = stypes.to_double_matrix(m1)
     v2 = stypes.to_double_vector(v2)
@@ -15283,7 +15283,7 @@ def vtmvg(
     :param ncol: Number of columns in matrix (number of rows in v2.)
     :return: the result of (v1**t * matrix * v2 )
     """
-    warn_depricated_args(nrow=nrow, ncol=ncol)
+    warn_deprecated_args(nrow=nrow, ncol=ncol)
     nrow, ncol = len(v1), len(v2)
     v1 = stypes.to_double_vector(v1)
     matrix = stypes.to_double_matrix(matrix)
@@ -15852,7 +15852,7 @@ def xposeg(
     :param ncol: Number of columns of input matrix
     :return: Transposed matrix
     """
-    warn_depricated_args(nrow=nrow, ncol=ncol)
+    warn_deprecated_args(nrow=nrow, ncol=ncol)
     ncol, nrow = len(matrix[0]), len(matrix)
     matrix = stypes.to_double_matrix(matrix)
     mout = stypes.empty_double_matrix(x=nrow, y=ncol)
