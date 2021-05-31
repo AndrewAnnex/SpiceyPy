@@ -748,6 +748,7 @@ def test_ckw03():
 
 
 def test_ckw05():
+    spice.kclear()
     ck5 = os.path.join(cwd, "type5.bc")
     if spice.exists(ck5):
         os.remove(ck5)  # pragma: no cover
@@ -891,6 +892,7 @@ def test_ckw05():
     spice.furnsh(ck5)
     cmat, av, clk = spice.ckgpav(-41000, epochs[0] + 0.5, 1.0, "J2000")
     assert clk == pytest.approx(0.5)
+    spice.kclear()
     if spice.exists(ck5):
         os.remove(ck5)  # pragma: no cover
 
@@ -2719,6 +2721,7 @@ def test_ekccnt():
     assert spice.ekntab() == 1
     assert spice.ektnam(0, 100) == "TEST_TABLE_EKCCNT"
     assert spice.ekccnt("TEST_TABLE_EKCCNT") == 1
+    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
@@ -2750,6 +2753,7 @@ def test_ekcii():
     assert (
         attdsc.nullok
     )  # this used to be false, although clearly it should be true given the call to ekbseg
+    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
@@ -2856,6 +2860,7 @@ def test_ekfind():
         nmrows != 0
     )  # should be 2 but I am not concerned about correctness in this case
     assert not error
+    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
@@ -2863,6 +2868,8 @@ def test_ekfind():
 
 def test_ekfind_stess():
     for i in range(10):
+        spice.kclear()
+        spice.reset()
         test_ekfind()
 
 
@@ -2896,6 +2903,7 @@ def test_ekgc():
     c, null = spice.ekgc(0, 1, 0, 4)
     assert not null
     # assert c == "2.0" this fails, c is an empty string despite found being true.
+    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
@@ -2931,6 +2939,7 @@ def test_ekgd():
     d, null = spice.ekgd(0, 1, 0)
     assert not null
     assert d == 2.0
+    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
@@ -2964,6 +2973,7 @@ def test_ekgi():
     i, null = spice.ekgi(0, 1, 0)
     assert not null
     assert i == 2
+    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
@@ -2988,6 +2998,7 @@ def test_ekifld():
     spice.ekacli(handle, segno, "c1", [1, 2], [1, 1], [False, False], rcptrs, [0, 0])
     spice.ekffld(handle, segno, rcptrs)
     spice.ekcls(handle)
+    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
@@ -3008,6 +3019,7 @@ def test_eklef():
     handle = spice.eklef(ekpath)
     assert handle is not None
     spice.ekuef(handle)
+    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
 
@@ -3027,6 +3039,7 @@ def test_eknseg():
     handle = spice.ekopr(ekpath)
     assert spice.eknseg(handle) == 1
     spice.ekcls(handle)
+    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
@@ -3129,6 +3142,7 @@ def test_ektnam():
     assert spice.ekntab() == 1
     assert spice.ektnam(0, 100) == "TEST_TABLE_EKTNAM"
     assert spice.ekccnt("TEST_TABLE_EKTNAM") == 1
+    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
