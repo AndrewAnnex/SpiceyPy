@@ -42,6 +42,7 @@ from spiceypy.tests.gettestkernels import (
     cwd,
 )
 
+
 @pytest.fixture(autouse=True)
 def clear_kernel_pool_and_reset():
     spice.kclear()
@@ -155,7 +156,7 @@ def test_badkpv():
     assert not spice.badkpv("spiceypy BADKPV test", "DTEST_VAL", "=", 3, 1, "N")
     spice.clpool()
     assert not spice.expool("DTEST_VAL")
-    
+
 
 def test_bltfrm():
     out_cell = spice.bltfrm(-1)
@@ -166,18 +167,18 @@ def test_bodc2n():
     spice.furnsh(CoreKernels.testMetaKernel)
     assert spice.bodc2n(399) == "EARTH"
     assert spice.bodc2n(0) == "SOLAR SYSTEM BARYCENTER"
-    
+
 
 def test_bodc2s():
     spice.furnsh(CoreKernels.testMetaKernel)
     assert spice.bodc2s(399) == "EARTH"
     assert spice.bodc2s(0) == "SOLAR SYSTEM BARYCENTER"
-    
+
 
 def test_boddef():
     spice.boddef("Jebediah", 117)
     assert spice.bodc2n(117) == "Jebediah"
-    
+
 
 def test_bodeul():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -206,33 +207,33 @@ def test_bodeul():
     npt.assert_almost_equal(dec, ref_dec, decimal=4)
     npt.assert_almost_equal(w, ref_w, decimal=4)
     npt.assert_almost_equal(lam, ref_lam, decimal=4)
-    
+
 
 def test_bodfnd():
     spice.furnsh(CoreKernels.testMetaKernel)
     assert spice.bodfnd(599, "RADII")
-    
+
 
 def test_bodn2c():
     spice.furnsh(CoreKernels.testMetaKernel)
     assert spice.bodn2c("EARTH") == 399
     with pytest.raises(spice.stypes.SpiceyError):
         spice.bodn2c("U.S.S. Enterprise")
-    
+
 
 def test_bods2c():
     spice.furnsh(CoreKernels.testMetaKernel)
     assert spice.bods2c("EARTH") == 399
     with pytest.raises(spice.stypes.SpiceyError):
         spice.bods2c("U.S.S. Enterprise")
-    
+
 
 def test_bodvar():
     spice.furnsh(CoreKernels.testMetaKernel)
     radii = spice.bodvar(399, "RADII", 3)
     expected = np.array([6378.140, 6378.140, 6356.755])
     np.testing.assert_array_almost_equal(expected, radii, decimal=1)
-    
+
 
 def test_bodvcd():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -240,7 +241,7 @@ def test_bodvcd():
     assert dim == 3
     expected = np.array([6378.140, 6378.140, 6356.755])
     np.testing.assert_array_almost_equal(expected, values, decimal=1)
-    
+
 
 def test_bodvrd():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -248,7 +249,7 @@ def test_bodvrd():
     assert dim == 3
     expected = np.array([6378.140, 6378.140, 6356.755])
     np.testing.assert_array_almost_equal(expected, values, decimal=1)
-    
+
 
 def test_brcktd():
     assert spice.brcktd(-1.0, 1.0, 10.0) == 1.0
@@ -440,7 +441,7 @@ def test_ckcov():
     assert [
         [cover[i * 2], cover[i * 2 + 1]] for i in range(spice.wncard(cover))
     ] == expected_intervals
-    
+
 
 def test_ckfrot():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -462,7 +463,7 @@ def test_ckfrot():
     )
     npt.assert_array_almost_equal(rotation, expected)
     assert ref == 1
-    
+
 
 def test_ckgp():
     spice.reset()
@@ -483,7 +484,7 @@ def test_ckgp():
     npt.assert_array_almost_equal(cmat, expected_cmat)
     assert clkout == 267832537952.0
     spice.reset()
-    
+
 
 def test_ckgpav():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -508,7 +509,7 @@ def test_ckgpav():
     npt.assert_array_almost_equal(cmat, expected_cmat)
     npt.assert_array_almost_equal(avout, expected_avout)
     assert clkout == 267832537952.0
-    
+
 
 def test_cklpf():
     spice.reset()
@@ -547,7 +548,7 @@ def test_ckobj():
     spice.furnsh(CassiniKernels.cassSclk)
     ids = spice.ckobj(CassiniKernels.cassCk)
     assert len(ids) == 1
-    
+
 
 def test_ckopn():
     # Spice crashes if ckcls detects nothing written to ck1
@@ -583,7 +584,7 @@ def test_ckupf():
     spice.ckupf(handle)
     spice.ckcls(handle)
     spice.reset()
-    
+
 
 def test_ckw01():
     ck1 = os.path.join(cwd, "type1.bc")
@@ -892,7 +893,7 @@ def test_ckw05():
     assert clk == pytest.approx(0.5)
     if spice.exists(ck5):
         os.remove(ck5)  # pragma: no cover
-    
+
 
 def test_stress_ckw05():
     for i in range(1000):
@@ -916,7 +917,7 @@ def test_clpool():
     spice.clpool()
     with pytest.raises(spice.stypes.SpiceyError):
         spice.gdpool("TEST_VAR", 0, 1)
-    
+
 
 def test_cmprss():
     strings = ["ABC...DE.F...", "...........", ".. ..AB....CD"]
@@ -1115,7 +1116,7 @@ def test_dafbbs():
     found = spice.daffpa()
     assert found
     spice.dafcls(handle)
-    
+
 
 def test_dafbfs():
     handle = spice.dafopr(CoreKernels.spk)
@@ -1123,7 +1124,7 @@ def test_dafbfs():
     found = spice.daffna()
     assert found
     spice.dafcls(handle)
-    
+
 
 def test_dafcls():
     handle = spice.dafopr(CoreKernels.spk)
@@ -1131,7 +1132,7 @@ def test_dafcls():
     found = spice.daffna()
     assert found
     spice.dafcls(handle)
-    
+
 
 def test_dafcs():
     handle = spice.dafopr(CoreKernels.spk)
@@ -1140,7 +1141,7 @@ def test_dafcs():
     found = spice.daffpa()
     assert found
     spice.dafcls(handle)
-    
+
 
 def test_dafdc():
     dafpath = os.path.join(cwd, "ex_dafdc.bc")
@@ -1208,7 +1209,7 @@ def test_dafec():
     ]
     assert done is False
     spice.dafcls(handle)
-    
+
 
 def test_daffna():
     handle = spice.dafopr(CoreKernels.spk)
@@ -1216,7 +1217,7 @@ def test_daffna():
     found = spice.daffna()
     assert found
     spice.dafcls(handle)
-    
+
 
 def test_daffpa():
     handle = spice.dafopr(CoreKernels.spk)
@@ -1224,7 +1225,7 @@ def test_daffpa():
     found = spice.daffpa()
     assert found
     spice.dafcls(handle)
-    
+
 
 def test_dafgda():
     # not a very good test...
@@ -1232,7 +1233,7 @@ def test_dafgda():
     elements = spice.dafgda(handle, 20, 20)
     assert elements == [0.0]
     spice.dafcls(handle)
-    
+
 
 def test_dafgh():
     handle = spice.dafopr(CoreKernels.spk)
@@ -1241,7 +1242,7 @@ def test_dafgh():
     searchHandle = spice.dafgh()
     assert searchHandle == handle
     spice.dafcls(handle)
-    
+
 
 def test_dafgn():
     handle = spice.dafopr(CoreKernels.spk)
@@ -1255,7 +1256,7 @@ def test_dafgn():
     outname = spice.dafgn(100)
     assert outname == "DE-405"
     spice.dafcls(handle)
-    
+
 
 def test_dafgs():
     handle = spice.dafopr(CoreKernels.spk)
@@ -1267,7 +1268,7 @@ def test_dafgs():
         out, [-9.46511378160646408796e07, 3.15662463183953464031e08]
     )
     spice.dafcls(handle)
-    
+
 
 def test_dafgsstress():
     # this is to show that memory issue with dafgs is fixed.
@@ -1325,7 +1326,7 @@ def test_dafgsr():
     # Cleanup
     spice.dafcls(handle)
     spice.reset()
-    
+
 
 def test_dafopr():
     handle = spice.dafopr(CoreKernels.spk)
@@ -1333,7 +1334,7 @@ def test_dafopr():
     found = spice.daffna()
     assert found
     spice.dafcls(handle)
-    
+
 
 def test_dafopw():
     handle = spice.dafopw(CoreKernels.spk)
@@ -1341,7 +1342,7 @@ def test_dafopw():
     found = spice.daffna()
     assert found
     spice.dafcls(handle)
-    
+
 
 def test_dafps_dafrs():
     dafpath = os.path.join(cwd, "ckopenkernel_dafps.bc")
@@ -1461,7 +1462,7 @@ def test_dafrda():
     # Cleanup
     spice.dafcls(handle)
     spice.reset()
-    
+
 
 def test_dafrfr():
     handle = spice.dafopr(CoreKernels.spk)
@@ -1472,7 +1473,7 @@ def test_dafrfr():
     assert ifname == ""
     assert fward == 7
     assert bward == 7
-    
+
 
 def test_dafus():
     handle = spice.dafopr(CoreKernels.spk)
@@ -1486,7 +1487,7 @@ def test_dafus():
         dc, [-9.46511378160646408796e07, 3.15662463183953464031e08]
     )
     npt.assert_array_almost_equal(ic, [1, 0, 1, 2, 1025, 27164])
-    
+
 
 def test_dasac_dasopr_dasec_dasdc():
     daspath = os.path.join(cwd, "ex_dasac.das")
@@ -1543,7 +1544,7 @@ def test_dasac_dasopr_dasec_dasdc():
     # done, so clean up
     if spice.exists(daspath):
         os.remove(daspath)  # pragma: no cover
-    
+
 
 def test_dasopw_dascls_dasopr():
     daspath = os.path.join(cwd, "ex_das.das")
@@ -1560,7 +1561,7 @@ def test_dasopw_dascls_dasopr():
     assert handle is not None
     if spice.exists(daspath):
         os.remove(daspath)  # pragma: no cover
-    
+
 
 def test_dcyldr():
     output = spice.dcyldr(1.0, 0.0, 0.0)
@@ -1578,7 +1579,7 @@ def test_deltet():
     delt_2004 = spice.deltet(et_2004, "ET")
     npt.assert_almost_equal(delt_1997, 62.1839353, decimal=6)
     npt.assert_almost_equal(delt_2004, 64.1839116, decimal=6)
-    
+
 
 def test_det():
     m1 = np.array([[5.0, -2.0, 1.0], [0.0, 3.0, -1.0], [2.0, 0.0, 7.0]])
@@ -1667,7 +1668,7 @@ def test_dlabfs():
     with pytest.raises(spice.stypes.SpiceyError):
         next = spice.dlafns(handle, current)
     spice.dascls(handle)
-    
+
 
 def test_dlabbs():
     handle = spice.dasopr(ExtraKernels.phobosDsk)
@@ -1677,7 +1678,7 @@ def test_dlabbs():
     with pytest.raises(spice.stypes.SpiceyError):
         prev = spice.dlafps(handle, current)
     spice.dascls(handle)
-    
+
 
 def test_dlatdr():
     output = spice.dlatdr(1.0, 0.0, 0.0)
@@ -1709,7 +1710,7 @@ def test_dpgrdr():
         [0.004618598844358383, 0.0023092994221791917, 0.9999866677515724],
     ]
     npt.assert_array_almost_equal(output, expected)
-    
+
 
 def test_dpmax():
     assert spice.dpmax() >= 1.0e37
@@ -1764,7 +1765,7 @@ def test_drdpgr():
         [-0.0, 2606.460468253308, 0.7071067811865475],
     ]
     npt.assert_array_almost_equal(output, expected)
-    
+
 
 def test_drdsph():
     output = spice.drdsph(1.0, np.pi / 2, np.pi)
@@ -1799,7 +1800,7 @@ def test_dskopn_dskcls():
     spice.dskcls(handle)
     if spice.exists(dskpath):
         os.remove(dskpath)  # pragma: no cover
-    
+
 
 def test_dskb02():
     # open the dsk file
@@ -1831,7 +1832,7 @@ def test_dskb02():
     assert voxsiz == pytest.approx(3.320691339664286)
     # cleanup
     spice.dascls(handle)
-    
+
 
 def test_dskd02():
     # open the dsk file
@@ -1850,7 +1851,7 @@ def test_dskd02():
         ],
     )
     spice.dascls(handle)
-    
+
 
 def test_dskgd():
     # open the dsk file
@@ -1877,7 +1878,7 @@ def test_dskgd():
     assert dskdsc.stop == pytest.approx(1577880066.183913)
     # cleanup
     spice.dascls(handle)
-    
+
 
 def test_dski02():
     # open the dsk file
@@ -1889,7 +1890,7 @@ def test_dski02():
     num_plates = spice.dski02(handle, dladsc, 2, 0, 3)
     assert len(num_plates) > 0
     spice.dascls(handle)
-    
+
 
 def test_dskn02():
     # open the dsk file
@@ -1903,7 +1904,7 @@ def test_dskn02():
         [0.20813166897151150203, 0.07187012861854354118, -0.97545676120650637309],
     )
     spice.dascls(handle)
-    
+
 
 def test_dskp02():
     # open the dsk file
@@ -1915,7 +1916,7 @@ def test_dskp02():
     npt.assert_almost_equal(plates[0], [1, 9, 2])
     npt.assert_almost_equal(plates[1], [1, 2, 3])
     spice.dascls(handle)
-    
+
 
 def test_dskv02():
     # open the dsk file
@@ -1933,7 +1934,7 @@ def test_dskv02():
         ],
     )
     spice.dascls(handle)
-    
+
 
 def test_dskw02_dskrb2_dskmi2():
     dskpath = os.path.join(cwd, "TESTdskw02.dsk")
@@ -2021,7 +2022,7 @@ def test_dskw02_dskrb2_dskmi2():
     # cleanup
     if spice.exists(dskpath):
         os.remove(dskpath)  # pragma: no cover
-    
+
 
 def test_dskx02():
     # open the dsk file
@@ -2041,7 +2042,7 @@ def test_dskx02():
     npt.assert_almost_equal(xpt, [12.36679999999999957083, 0.0, 0.0])
     # cleanup
     spice.dascls(handle)
-    
+
 
 def test_dskxsi():
     # load kernels
@@ -2067,7 +2068,7 @@ def test_dskxsi():
     assert ic[0] == 420
     assert dc[0] == pytest.approx(0.0)
     npt.assert_almost_equal(xpt, [12.36679999999999957083, 0.0, 0.0])
-    
+
 
 def test_dskxv():
     # load kernels
@@ -2093,7 +2094,7 @@ def test_dskxv():
     assert len(foundarray) == 1
     assert foundarray[0]
     npt.assert_almost_equal(xpt[0], [12.36679999999999957083, 0.0, 0.0])
-    
+
 
 def test_dskxv_2():
     # load kernels
@@ -2148,7 +2149,7 @@ def test_dskxv_2():
     assert len(xpt) == 32761
     assert len(foundarray) == 32761
     assert foundarray.all()
-    
+
 
 def test_dskz02():
     # open the dsk file
@@ -2160,7 +2161,7 @@ def test_dskz02():
     assert nv > 0
     assert nplates > 0
     spice.dascls(handle)
-    
+
 
 def test_dsphdr():
     output = spice.dsphdr(-1.0, 0.0, 0.0)
@@ -2211,7 +2212,7 @@ def test_dtpool():
         n, vartype = spice.dtpool(var)
         assert expectLen == n
         assert vartype == "N"
-    
+
 
 def test_ducrss():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -2230,7 +2231,7 @@ def test_ducrss():
         -3.6140021238340607e-11,
     ]
     npt.assert_array_almost_equal(z_new, z_expected)
-    
+
 
 def test_dvcrss():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -2291,7 +2292,7 @@ def test_dvpool():
     spice.dvpool("DTEST_VAL")
     assert not spice.expool("DTEST_VAL")
     spice.clpool()
-    
+
 
 def test_dvsep():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -2300,7 +2301,7 @@ def test_dvsep():
     state_m, mltime = spice.spkezr("MOON", et, "J2000", "NONE", "SUN")
     dsept = spice.dvsep(state_e, state_m)
     npt.assert_approx_equal(dsept, 3.8121194e-09)
-    
+
 
 def test_edlimb():
     viewpt = [2.0, 0.0, 0.0]
@@ -2394,7 +2395,7 @@ def test_edterm():
         "Ellipsoid", "MOON", et, "IAU_MOON", "LT+S", "EARTH", trmpts[2]
     )
     npt.assert_almost_equal(spice.dpr() * solar2, 89.730234322)
-    
+
 
 def test_ekacec():
     ekpath = os.path.join(cwd, "example_ekacec.ek")
@@ -2756,7 +2757,7 @@ def test_ekcls():
     assert spice.exists(ekpath)
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
-    
+
 
 def test_ekdelr():
     ekpath = os.path.join(cwd, "example_ekdelr.ek")
@@ -3052,7 +3053,7 @@ def test_ekops():
     handle = spice.ekops()
     assert handle is not None
     spice.ekcls(handle)
-    
+
 
 def test_ekopw():
     ekpath = os.path.join(cwd, "example_ekopw.ek")
@@ -3066,7 +3067,7 @@ def test_ekopw():
     spice.ekcls(testhandle)
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
-    
+
 
 def test_ekssum():
     ekpath = os.path.join(cwd, "example_ekssum.ek")
@@ -3300,14 +3301,14 @@ def test_et2lst():
     assert sc == 22
     assert time == "11:19:22"
     assert ampm == "11:19:22 A.M."
-    
+
 
 def test_et2utc():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = -527644192.5403653
     output = spice.et2utc(et, "J", 6)
     assert output == "JD 2445438.006415"
-    
+
 
 def test_et2utc_vectorized():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -3317,7 +3318,7 @@ def test_et2utc_vectorized():
         output,
         np.array(("JD 2445438.006415", "JD 2445438.006415", "JD 2445438.006415")),
     )
-    
+
 
 def test_etcal():
     et = np.arange(0.0, 20.0)
@@ -3348,7 +3349,7 @@ def test_eul2xf():
     ]
     out = spice.eul2xf(eul, 3, 1, 3)
     npt.assert_array_almost_equal(out, expected)
-    
+
 
 def test_ev2lin():
     # lightsail 2
@@ -3426,7 +3427,7 @@ def test_ev2lin():
         ]
     )
     npt.assert_array_almost_equal(expected_state_86400, state_86400)
-    
+
 
 def test_exists():
     assert spice.exists(CoreKernels.testMetaKernel)
@@ -3437,7 +3438,7 @@ def test_expool():
     spice.lmpool(textbuf)
     assert spice.expool("DELTET/K")
     assert spice.expool("DELTET/EB")
-    
+
 
 def test_expoolstress():
     # this is to show that the bug in lmpool is fixed (lenvals needs +=1)
@@ -3468,7 +3469,7 @@ def test_fovray():
         "CASSINI_ISS_NAC", [0.0, 0.0, 1.0], frame, "S", "CASSINI", et
     )
     assert visible is True
-    
+
 
 def test_fovtrg():
     # load kernels
@@ -3493,7 +3494,7 @@ def test_fovtrg():
         et,
     )
     assert visible is True
-    
+
 
 def test_frame():
     vec = [23.0, -3.0, 18.0]
@@ -3543,13 +3544,13 @@ def test_furnsh():
     spice.furnsh(CoreKernels.testMetaKernel)
     # 4 kernels + the meta kernel = 5
     assert spice.ktotal("ALL") == 5
-    
+
 
 def test_furnsh_vectorized():
     spice.furnsh([CoreKernels.testMetaKernel, ExtraKernels.voyagerSclk])
     # 4 + 1 + 1 = 6
     assert spice.ktotal("ALL") == 6
-    
+
 
 def test_gcpool():
     # same as pcpool test
@@ -3559,7 +3560,7 @@ def test_gcpool():
     spice.pcpool("pcpool_test", data)
     cvals = spice.gcpool("pcpool_test", 0, 30)
     assert data == cvals
-    
+
 
 def test_gdpool():
     # same as pdpool test
@@ -3567,7 +3568,7 @@ def test_gdpool():
     spice.pdpool("pdpool_array", data)
     dvals = spice.gdpool("pdpool_array", 0, 30)
     npt.assert_array_almost_equal(data, dvals)
-    
+
 
 def test_georec():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -3603,7 +3604,7 @@ def test_getelm():
     expected_epoch = -382310404.79526937
     npt.assert_array_almost_equal(expected_elems, elems)
     npt.assert_almost_equal(epoch, expected_epoch)
-    
+
 
 def test_getfat():
     arch, outtype = spice.getfat(CoreKernels.lsk)
@@ -3687,7 +3688,7 @@ def test_gfdist():
         "2007-APR-01 00:00:00.000000 (TDB)",
     ]
     assert temp_results == expected
-    
+
 
 def test_gfevnt():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -3749,7 +3750,7 @@ def test_gfevnt():
     if spice.gfbail():
         spice.gfclrh()  # pragma: no cover
     spice.gfsstp(0.5)
-    
+
 
 def test_gffove():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -3804,7 +3805,7 @@ def test_gffove():
     if spice.gfbail():
         spice.gfclrh()  # pragma: no cover
     spice.gfsstp(0.5)
-    
+
 
 def test_gfilum():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -3871,7 +3872,7 @@ def test_gfilum():
     assert startEpoch.startswith("1971 OCT 02")
     assert endEpoch.startswith("1971 NOV 29")
     # Cleanup
-    
+
 
 def test_gfinth():
     spice.gfinth(2)
@@ -3922,7 +3923,7 @@ def test_gfocce():
         spice.gfclrh()  # pragma: no cover
     count = spice.wncard(result)
     assert count == 1
-    
+
 
 def test_gfoclt():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -3954,7 +3955,7 @@ def test_gfoclt():
     end_time = spice.timout(end, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 41)
     assert start_time == "2001-DEC-14 20:10:14.203347 (TDB)"
     assert end_time == "2001-DEC-14 21:35:50.328804 (TDB)"
-    
+
 
 def test_gfpa():
     relate = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
@@ -4032,7 +4033,7 @@ def test_gfpa():
                 temp_results.append(timstr_left)
                 temp_results.append(timstr_right)
             assert temp_results == expected.get(relation)
-    
+
 
 def test_gfposc():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -4065,7 +4066,7 @@ def test_gfposc():
     end_time = spice.timout(end, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 41)
     assert start_time == end_time
     assert start_time == "2007-JUN-21 17:54:13.201561 (TDB)"
-    
+
 
 def test_gfrefn():
     s1 = [True, False]
@@ -4171,7 +4172,7 @@ def test_gfrfov():
     assert spice.timout(result[2], sTimout) == "2013-FEB-25 11:55:00 UTC"
     assert spice.timout(result[3], sTimout) == "2013-FEB-25 12:05:33 UTC"
     # Cleanup
-    
+
 
 def test_gfrr():
     relate = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
@@ -4256,7 +4257,7 @@ def test_gfrr():
                 temp_results.append(timstr_left)
                 temp_results.append(timstr_right)
             assert temp_results == expected.get(relation)
-    
+
 
 def test_gfsep():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -4307,7 +4308,7 @@ def test_gfsep():
             spice.timout(start, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 41)
         )
     assert temp_results == expected
-    
+
 
 def test_gfsntc():
     kernel = os.path.join(cwd, "gfnstc_test.tf")
@@ -4423,7 +4424,7 @@ def test_gfsubc():
     end_time = spice.timout(end, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 41)
     assert start_time == "2007-MAY-04 17:08:56.724320 (TDB)"
     assert end_time == "2007-AUG-09 01:51:29.307830 (TDB)"
-    
+
 
 def test_gftfov():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -4464,7 +4465,7 @@ def test_gftfov():
     assert spice.timout(result[2], sTimout) == "2013-FEB-25 11:55:00 UTC"
     assert spice.timout(result[3], sTimout) == "2013-FEB-25 12:04:30 UTC"
     # Cleanup
-    
+
 
 def test_gfudb():
     # ensure no numpy bool conversion deprication warning is raised
@@ -4525,7 +4526,7 @@ def test_gfudb2():
     spice.gfudb(gfq, gfb, step, cnfine, result)
     # count
     assert len(result) > 50  # true value is 56
-    
+
 
 def test_gfuds():
     relations = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
@@ -4560,7 +4561,7 @@ def test_gfuds():
         )
         assert len(result) > 0
     # cleanup
-    
+
 
 def test_gipool():
     # same as pipool test
@@ -4568,7 +4569,7 @@ def test_gipool():
     spice.pipool("pipool_array", data)
     ivals = spice.gipool("pipool_array", 0, 50)
     npt.assert_array_almost_equal(data, ivals)
-    
+
 
 def test_gnpool():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -4635,7 +4636,7 @@ def test_illum():
     npt.assert_almost_equal(spice.dpr() * phase, 9.206597597007834)
     npt.assert_almost_equal(spice.dpr() * solar, 90.26976568986987)
     npt.assert_almost_equal(spice.dpr() * emissn, 99.27359835825851)
-    
+
 
 def test_ilumin():
     # Same as first half of test_edterm
@@ -4678,7 +4679,7 @@ def test_ilumin():
         "Ellipsoid", "MOON", et, "IAU_MOON", "LT+S", "EARTH", trmpts[2]
     )
     npt.assert_almost_equal(spice.dpr() * solar2, 90.269765730)
-    
+
 
 def test_illumf():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -4709,7 +4710,7 @@ def test_illumf():
     assert emissn == pytest.approx(63.23618556218115)
     assert not lit  # Incidence angle is greater than 90deg
     assert visibl  # Emission angle is less than 90deg
-    
+
 
 def test_illumg():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -4734,7 +4735,7 @@ def test_illumg():
     assert phase == pytest.approx(161.859925246638)
     assert incid == pytest.approx(18.47670084384343)
     assert emissn == pytest.approx(143.6546170649875)
-    
+
 
 def test_inedpl():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -4780,7 +4781,7 @@ def test_inelpl():
     assert nxpts == 2.0
     npt.assert_array_almost_equal(expectedXpt1, xpt1, decimal=4)
     npt.assert_array_almost_equal(expectedXpt2, xpt2, decimal=4)
-    
+
 
 def test_inrypl():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -4794,7 +4795,7 @@ def test_inrypl():
     expectedXpt = np.array([180804.0, 47080.6050513, 0.0])
     assert nxpts == 1
     np.testing.assert_almost_equal(np.array(xpt), expectedXpt, decimal=6)
-    
+
 
 def test_insrtc():
     test_cell = spice.cell_char(10, 10)
@@ -4993,7 +4994,7 @@ def test_kdata():
     spice.furnsh(CoreKernels.testMetaKernel)
     file, ftype, source, handle = spice.kdata(0, "META", 400, 10, 50)
     assert ftype == "META"
-    
+
 
 def test_kepleq():
     p = 10000.0
@@ -5024,13 +5025,13 @@ def test_kinfo():
     spice.furnsh(CoreKernels.testMetaKernel)
     filetype, source, handle = spice.kinfo(CoreKernels.testMetaKernel, 80, 80)
     assert filetype == "META"
-    
+
 
 def test_kplfrm():
     spice.furnsh(CoreKernels.testMetaKernel)
     cell = spice.kplfrm(-1)
     assert cell.size > 100
-    
+
 
 def test_kpsolv():
     r = 0.0
@@ -5045,7 +5046,7 @@ def test_kpsolv():
             theta = theta + 0.1
         r = r + 0.05
         pass
-    
+
 
 def test_ktotal():
     # same as unload test
@@ -5054,7 +5055,7 @@ def test_ktotal():
     assert spice.ktotal("ALL") == 5
     spice.unload(CoreKernels.testMetaKernel)
     assert spice.ktotal("ALL") == 0
-    
+
 
 def test_kxtrct():
     # Tests from examples at this URL:  https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/kxtrct_c.html#Examples
@@ -5148,7 +5149,7 @@ def test_latsrf():
     radii = [spice.recrad(x)[0] for x in srfpts]
     assert radii[0] > 9.77
     assert radii[1] > 9.51
-    
+
 
 def test_lcase():
     assert spice.lcase("THIS IS AN EXAMPLE") == "THIS IS AN EXAMPLE".lower()
@@ -5243,7 +5244,7 @@ def test_limbpt():
     )
     assert points is not None
     assert len(points) == 3
-    
+
 
 def test_lmpool():
     lmpool_names = [
@@ -5288,7 +5289,7 @@ def test_lmpool():
         n, vartype = spice.dtpool(var)
         assert expectLen == n
         assert vartype == "N"
-    
+
 
 def test_lmpool_numpy():
     lmpool_names = [
@@ -5335,7 +5336,7 @@ def test_lmpool_numpy():
         n, vartype = spice.dtpool(var)
         assert expectLen == n
         assert vartype == "N"
-    
+
 
 def test_lmpoolstress():
     # occasional crash in lmpool believed to be caused by lenvals not being +=1'ed for end of line.
@@ -5631,7 +5632,7 @@ def test_mxvg():
     mout = spice.mxvg(m1, v2)
     expected = np.array([6.0, 20.0])
     assert np.array_equal(mout, expected)
-    
+
 
 def test_mxvg_old_api():
     m1 = np.array([[1.0, 1.0, 1.0], [2.0, 3.0, 4.0]])
@@ -5804,7 +5805,7 @@ def test_occult():
     # The Sun is in front of Mercury as seen by observer (DSS-13)
     assert occult_code_three == -3  # SPICE_OCCULT_TOTAL1
     # cleanup
-    
+
 
 def test_ordc():
     charset = spice.cell_char(10, 10)
@@ -5883,7 +5884,7 @@ def test_oscelt():
         1.00000000000000000000e00,
     ]
     npt.assert_array_almost_equal(elts, expected, decimal=4)
-    
+
 
 def test_oscltx_stress():
     for i in range(0, 30):
@@ -5910,7 +5911,7 @@ def test_oscltx():
         0.00000000000000000000e00,
     ]
     npt.assert_array_almost_equal(elts, expected, decimal=4)
-    
+
 
 def test_pckopn_pckw02_pckcls():
     pck = os.path.join(cwd, "test_pck.pck")
@@ -5934,25 +5935,25 @@ def test_pckcov():
     result = [x for x in cover]
     expected = [94305664.18380372, 757080064.1838132]
     npt.assert_array_almost_equal(result, expected)
-    
+
 
 def test_pckfrm():
     ids = spice.cell_int(1000)
     spice.pckfrm(ExtraKernels.earthHighPerPck, ids)
     assert ids[0] == 3000
-    
+
 
 def test_pcklof():
     handle = spice.pcklof(ExtraKernels.earthHighPerPck)
     assert handle != -1
     spice.pckuof(handle)
-    
+
 
 def test_pckuof():
     handle = spice.pcklof(ExtraKernels.earthHighPerPck)
     assert handle != -1
     spice.pckuof(handle)
-    
+
 
 def test_pcpool():
     import string
@@ -5961,14 +5962,14 @@ def test_pcpool():
     spice.pcpool("pcpool_test", data)
     cvals = spice.gcpool("pcpool_test", 0, 30, 4)
     assert data == cvals
-    
+
 
 def test_pdpool():
     data = np.arange(0.0, 10.0)
     spice.pdpool("pdpool_array", data)
     dvals = spice.gdpool("pdpool_array", 0, 30)
     npt.assert_array_almost_equal(data, dvals)
-    
+
 
 def test_pgrrec():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -5979,7 +5980,7 @@ def test_pgrrec():
     rectan = spice.pgrrec("Mars", 90.0 * spice.rpd(), 45 * spice.rpd(), 300, re, f)
     expected = [1.604650025e-13, -2.620678915e3, 2.592408909e3]
     npt.assert_array_almost_equal(rectan, expected)
-    
+
 
 def test_phaseq():
     relate = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
@@ -6047,7 +6048,7 @@ def test_phaseq():
                 temp_results.append(startPhase)
                 temp_results.append(stopPhase)
             npt.assert_array_almost_equal(temp_results, expected.get(relation))
-    
+
 
 def test_pi():
     assert spice.pi() == np.pi
@@ -6058,7 +6059,7 @@ def test_pipool():
     spice.pipool("pipool_array", data)
     ivals = spice.gipool("pipool_array", 0, 50)
     npt.assert_array_almost_equal(data, ivals)
-    
+
 
 def test_pjelpl():
     center = [1.0, 1.0, 1.0]
@@ -6293,7 +6294,7 @@ def test_pxfrm2():
     npt.assert_almost_equal(lon, 125.42089677611104, decimal=5)
     npt.assert_almost_equal(lat, -6.3718522103931585, decimal=5)
     # end of test
-    
+
 
 def test_q2m():
     mout = spice.q2m(np.array([0.5, 0.4, 0.3, 0.1]))
@@ -6462,7 +6463,7 @@ def test_recgeo():
     actual = [lon * spice.dpr(), lat * spice.dpr(), alt]
     expected = [118.000000, 32.000000, 0.001915518]
     npt.assert_array_almost_equal(actual, expected, decimal=4)
-    
+
 
 def test_reclat():
     expected1 = np.array([1.0, 0.0, 0.0])
@@ -6482,7 +6483,7 @@ def test_recpgr():
     actual = [lon * spice.dpr(), lat * spice.dpr(), alt]
     expected = [90.0, 45.0, 300.0]
     npt.assert_array_almost_equal(actual, expected, decimal=4)
-    
+
 
 def test_recrad():
     range1, ra1, dec1 = spice.recrad([1.0, 0.0, 0.0])
@@ -6685,7 +6686,7 @@ def test_scdecd():
     timein = spice.scencd(-32, "2/20538:39:768")
     sclkch = spice.scdecd(-32, timein)
     assert sclkch == "2/20538:39:768"
-    
+
 
 def test_sce2c():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -6693,7 +6694,7 @@ def test_sce2c():
     et = spice.str2et("1979 JUL 05 21:50:21.23379")
     sclkdp = spice.sce2c(-32, et)
     npt.assert_almost_equal(sclkdp, 985327949.9999709, decimal=6)
-    
+
 
 def test_sce2s():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -6701,7 +6702,7 @@ def test_sce2s():
     et = spice.str2et("1979 JUL 05 21:50:21.23379")
     sclkch = spice.sce2s(-32, et)
     assert sclkch == "2/20538:39:768"
-    
+
 
 def test_sce2t():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -6709,7 +6710,7 @@ def test_sce2t():
     et = spice.str2et("1979 JUL 05 21:50:21.23379")
     sclkdp = spice.sce2t(-32, et)
     npt.assert_almost_equal(sclkdp, 985327950.000000)
-    
+
 
 def test_scencd():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -6718,7 +6719,7 @@ def test_scencd():
     sclkdp = spice.scencd(-32, sclkch)
     npt.assert_almost_equal(sclkdp, 985327950.0)
     assert sclkch == "2/20538:39:768"
-    
+
 
 def test_scencd_vectorized():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -6726,7 +6727,7 @@ def test_scencd_vectorized():
     sclkch = "2/20538:39:768"
     sclkdp = spice.scencd(-32, 3 * [sclkch])
     npt.assert_almost_equal(sclkdp, 3 * [985327950.0], decimal=6)
-    
+
 
 def test_scfmt():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -6736,7 +6737,7 @@ def test_scfmt():
     stop = spice.scfmt(-32, pstop[0])
     assert start == "00011:00:001"
     assert stop == "04011:21:784"
-    
+
 
 def test_scpart():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -6744,7 +6745,7 @@ def test_scpart():
     pstart, pstop = spice.scpart(-32)
     assert pstart is not None
     assert pstop is not None
-    
+
 
 def test_scs2e():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -6753,7 +6754,7 @@ def test_scs2e():
     npt.assert_almost_equal(et, -646668528.58222842)
     utc = spice.et2utc(et, "C", 3, 50)
     assert utc == "1979 JUL 05 21:50:21.234"
-    
+
 
 def test_sct2e():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -6761,7 +6762,7 @@ def test_sct2e():
     et = spice.sct2e(-32, 985327965.0)
     utc = spice.et2utc(et, "C", 3, 50)
     assert utc == "1979 JUL 05 21:50:22.134"
-    
+
 
 def test_sct2e_vectorized():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -6771,14 +6772,14 @@ def test_sct2e_vectorized():
     to_test = spice.sct2e(-32, inputlist)
     expected = -646668527.6822292
     npt.assert_almost_equal(3 * [expected], to_test, decimal=6)
-    
+
 
 def test_sctiks():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     ticks = spice.sctiks(-32, "20656:14:768")
     assert ticks == 991499967.00000000
-    
+
 
 def test_sdiff():
     # SPICEINT_CELL
@@ -6908,7 +6909,7 @@ def test_sincpt():
     ]
     npt.assert_array_almost_equal(spoint, expected_spoint, 5)
     npt.assert_array_almost_equal(obspos, expected_obspos, 5)
-    
+
 
 def test_size():
     test_cell_one = spice.cell_int(8)
@@ -7263,7 +7264,7 @@ def test_spkacs():
     npt.assert_almost_equal(expected_lt, lt)
     npt.assert_almost_equal(expected_dlt, dlt)
     npt.assert_array_almost_equal(state, expected_state)
-    
+
 
 def test_spkapo():
     MARS = 499
@@ -7281,7 +7282,7 @@ def test_spkapo():
         1.11454124484200235456e07,
     ]
     npt.assert_array_almost_equal(pos_vec, expected_pos, decimal=5)
-    
+
 
 def test_spkapp():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -7297,7 +7298,7 @@ def test_spkapp():
         9.40678685353050170193e00,
     ]
     npt.assert_array_almost_equal(state_vec, expected_vec, decimal=6)
-    
+
 
 def test_spkaps():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -7412,7 +7413,6 @@ def test_spkcov():
     expected = [-94651137.81606464, 315662463.18395346]
     npt.assert_array_almost_equal(result, expected)
 
-    
 
 def test_spkcpo():
     spice.furnsh(ExtraKernels.earthStnSpk)
@@ -7543,7 +7543,7 @@ def test_spkez():
     ]
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(state, expected_state)
-    
+
 
 def test_spkezp():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -7557,7 +7557,7 @@ def test_spkezp():
     ]
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(pos, expected_pos)
-    
+
 
 def test_spkezr():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -7574,7 +7574,7 @@ def test_spkezr():
     ]
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(state, expected_state)
-    
+
 
 def test_spkezr_vectorized():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -7594,7 +7594,7 @@ def test_spkezr_vectorized():
     )
     npt.assert_allclose(lt, expected_lt)
     npt.assert_allclose(state, expected_state)
-    
+
 
 def test_spkgeo():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -7611,7 +7611,7 @@ def test_spkgeo():
     ]
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(state, expected_state)
-    
+
 
 def test_spkgps():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -7625,13 +7625,13 @@ def test_spkgps():
     ]
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(pos, expected_pos)
-    
+
 
 def test_spklef():
     handle = spice.spklef(CoreKernels.spk)
     assert handle != -1
     spice.spkuef(handle)
-    
+
 
 def test_spkltc():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -7651,7 +7651,7 @@ def test_spkltc():
     npt.assert_almost_equal(lt, expectedOneWayLt)
     npt.assert_almost_equal(dlt, expected_lt)
     npt.assert_array_almost_equal(state, expected_state, decimal=5)
-    
+
 
 def test_spkobj():
     # Same as test_spkcov
@@ -7663,7 +7663,7 @@ def test_spkobj():
     result = [x for x in cover]
     expected = [-94651137.81606464, 315662463.18395346]
     npt.assert_array_almost_equal(result, expected)
-    
+
 
 def test_spkopa():
     SPKOPA = os.path.join(cwd, "testspkopa.bsp")
@@ -7690,7 +7690,7 @@ def test_spkopa():
     # clean up
     if spice.exists(SPKOPA):
         os.remove(SPKOPA)  # pragma: no cover
-    
+
 
 def test_spkopn():
     # Same as test_spkw02
@@ -7769,7 +7769,7 @@ def test_spkpds():
     outframe = spice.frmnam(frame)
     spkpds_output = spice.spkpds(body, center, outframe, otype, first, last)
     npt.assert_almost_equal(spkpds_output, descr)
-    
+
 
 def test_spkpos():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -7783,7 +7783,7 @@ def test_spkpos():
     ]
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(pos, expected_pos)
-    
+
 
 def test_spkpos_vectorized():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -7804,7 +7804,7 @@ def test_spkpos_vectorized():
     ]
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(pos, expected_pos)
-    
+
 
 def test_spkpvn():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -7820,7 +7820,7 @@ def test_spkpvn():
         -1.28422514561611489370e00,
     ]
     npt.assert_array_almost_equal(state, expected_state)
-    
+
 
 def test_spksfs():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -7828,7 +7828,7 @@ def test_spksfs():
     et = spice.str2et("2001 FEB 18 UTC")
     handle, descr, ident = spice.spksfs(idcode, et, 41)
     assert ident == "DE-405"
-    
+
 
 def test_spkssb():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -7841,7 +7841,7 @@ def test_spkssb():
     state2 = spice.spkssb(targ2, et, frame)
     dist = spice.vdist(state1[0:3], state2[0:3])
     npt.assert_approx_equal(dist, 80854820.0, significant=7)
-    
+
 
 def test_spksub():
     SPKSUB = os.path.join(cwd, "testspksub.bsp")
@@ -7860,7 +7860,7 @@ def test_spksub():
     spice.spkcls(handle_test)
     if spice.exists(SPKSUB):
         os.remove(SPKSUB)  # pragma: no cover
-    
+
 
 def test_spkuds():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -7871,13 +7871,13 @@ def test_spkuds():
     assert begin == 54073
     assert end == 57950
     assert otype == 2
-    
+
 
 def test_spkuef():
     handle = spice.spklef(CoreKernels.spk)
     assert handle != -1
     spice.spkuef(handle)
-    
+
 
 def test_spkw02():
     spk2 = os.path.join(cwd, "test2.bsp")
@@ -8373,7 +8373,7 @@ def test_spkw15():
     if spice.exists(spk15):
         os.remove(spk15)  # pragma: no cover
     #
-    
+
 
 def test_spkw17():
     discrete_epochs = [100.0, 900.0]
@@ -8432,7 +8432,7 @@ def test_spkw17():
     if spice.exists(spk17):
         os.remove(spk17)  # pragma: no cover
     #
-    
+
 
 def test_spkw18():
     #
@@ -8532,7 +8532,7 @@ def test_spkw20():
     if spice.exists(spk20):
         os.remove(spk20)  # pragma: no cover
     #
-    
+
 
 def test_srfc2s():
     kernel = os.path.join(cwd, "srfc2s_ex1.tm")
@@ -8592,14 +8592,14 @@ def test_srfnrm():
     srf_rad = np.array([spice.recrad(x) for x in srfpts])
     nrm_rad = np.array([spice.recrad(x) for x in normals])
     assert np.any(np.not_equal(srf_rad, nrm_rad))
-    
+
 
 def test_srfrec():
     spice.furnsh(CoreKernels.testMetaKernel)
     x = spice.srfrec(399, 100.0 * spice.rpd(), 35.0 * spice.rpd())
     expected = [-906.24919474, 5139.59458217, 3654.29989637]
     npt.assert_array_almost_equal(x, expected)
-    
+
 
 def test_srfs2c():
     kernel = os.path.join(cwd, "srfs2c_ex1.tm")
@@ -8697,7 +8697,7 @@ def test_srfxpt():
     assert 0.0 == (trgepcs[1] - trgepc)
     assert 0.0 == spice.vnorm(spice.vsub(obsposs[1], obspos))
     # Cleanup
-    
+
 
 def test_ssize():
     cell = spice.cell_double(10)
@@ -8731,7 +8731,7 @@ def test_stelab():
         -147722.30606629714020527899,
     ]
     npt.assert_array_almost_equal(expected_cortarg, cortarg)
-    
+
 
 def test_stpool():
     kernel = os.path.join(cwd, "stpool_t.ker")
@@ -8760,7 +8760,7 @@ def test_str2et():
     date = "Thu Mar 20 12:53:29 PST 1997"
     et = spice.str2et(date)
     npt.assert_almost_equal(et, -87836728.81438904)
-    
+
 
 def test_datetime2et():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -8795,7 +8795,6 @@ def test_datetime2et():
     for expected, result in zip(expecteds, results):
         npt.assert_almost_equal(result, expected)
 
-    
 
 def test_et2datetime():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -8814,7 +8813,6 @@ def test_et2datetime():
     for expected, result in zip(expecteds, results):
         assert result == expected
 
-    
 
 def test_subpnt():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -8873,7 +8871,7 @@ def test_subpnt():
         opcrad, opclon, opclat = spice.reclat(obspos)
         npt.assert_almost_equal(opclon * spice.dpr(), expected[8], decimal=5)
         npt.assert_almost_equal(opclat * spice.dpr(), expected[10], decimal=5)
-    
+
 
 def test_subpt():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -8895,7 +8893,7 @@ def test_subpt():
     assert 0.0 == spice.vnorm(spice.vsub(points[1], point1))
     assert 0.0 == (alts[1] - alt1)
     # Cleanup
-    
+
 
 def test_subslr():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -8947,7 +8945,7 @@ def test_subslr():
         supcrd, supcln, supclt = spice.reclat(sunpos)
         npt.assert_almost_equal(supcln * spice.dpr(), expected[7], decimal=5)
         npt.assert_almost_equal(supclt * spice.dpr(), expected[8], decimal=5)
-    
+
 
 def test_subsol():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -8959,7 +8957,7 @@ def test_subsol():
     npt.assert_array_almost_equal(
         intercept, [5844.4362338, 509.16450054, -2494.39569089], decimal=4
     )
-    
+
 
 def test_sumad():
     assert spice.sumad([1.0, 2.0, 3.0]) == 6.0
@@ -9043,7 +9041,7 @@ def test_sxform_vectorized():
     et = np.arange(240) * step + et1
     xform = spice.sxform("IAU_EARTH", "J2000", et)
     assert len(xform) == 240
-    
+
 
 def test_szpool():
     assert spice.szpool("MAXVAR") == 26003
@@ -9083,7 +9081,7 @@ def test_termpt():
     )
     assert points is not None
     assert len(points) == 3
-    
+
 
 def test_timdef():
     LSK = os.path.join(cwd, CoreKernels.currentLSK)
@@ -9102,7 +9100,7 @@ def test_timdef():
     assert "UTC" == spice.timdef("SET", "SYSTEM", 10, "UTC")
     assert saveET == spice.str2et("2000-01-01T12:00:00")
     # Cleanup
-    
+
 
 def test_timout():
     sample = "Thu Oct 1 11:11:11 PDT 1111"
@@ -9112,7 +9110,7 @@ def test_timout():
     et = 188745364.0
     out = spice.timout(et, pic)
     assert out == "Sat Dec 24 18:14:59 PDT 2005"
-    
+
 
 def test_timout_vectorized():
     sample = "Thu Oct 1 11:11:11 PDT 1111"
@@ -9131,21 +9129,21 @@ def test_timout_vectorized():
     ]
     for e in expected:
         assert e in out
-    
+
 
 def test_tipbod():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("Jan 1 2005")
     tipm = spice.tipbod("J2000", 699, et)
     assert tipm is not None
-    
+
 
 def test_tisbod():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("Jan 1 2005")
     tsipm = spice.tisbod("J2000", 699, et)
     assert tsipm is not None
-    
+
 
 def test_tkfram():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -9160,7 +9158,7 @@ def test_tkfram():
     )
     npt.assert_array_almost_equal(rotation, expected)
     assert nextFrame == -82000
-    
+
 
 def test_tkvrsn():
     version = spice.tkvrsn("toolkit")
@@ -9235,7 +9233,7 @@ def teardown_test_trcoff():
     assert 0 == spice.trcdep()
     # Cleanup
     spice.reset()
-    
+
 
 def test_tsetyr():
     spice.reset()
@@ -9312,7 +9310,6 @@ def test_uddc():
 
     assert spice.uddc(udfunc, et, 1.0)
 
-    
 
 def test_uddf():
 
@@ -9327,7 +9324,7 @@ def test_uddf():
     deriv = spice.uddf(udfunc, et, 1.0)
 
     npt.assert_almost_equal(deriv, -0.000135670940)
-    
+
 
 def test_udf():
     assert spice.udf(0.0) == 0.0
@@ -9379,7 +9376,7 @@ def test_unitim():
     et = spice.str2et("Dec 19 2003")
     converted_et = spice.unitim(et, "ET", "JED")
     npt.assert_almost_equal(converted_et, 2452992.5007428653)
-    
+
 
 def test_unload():
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -9407,7 +9404,7 @@ def test_unload():
 def test_unload_emptystring():
     with pytest.raises(spice.stypes.SpiceyError):
         spice.unload("")
-    
+
 
 def test_unorm():
     v1 = np.array([5.0, 12.0, 0.0])
@@ -9433,7 +9430,7 @@ def test_utc2et():
     output = spice.utc2et(utcstr)
     assert output == 155185515.1831043
     # icy utc2et example gives 1.5518552e+08 as output
-    
+
 
 def test_vadd():
     v1 = [1.0, 2.0, 3.0]
@@ -9949,7 +9946,7 @@ def test_xf2eul():
         -7.292115373266558e-05,
     ]
     npt.assert_array_almost_equal(expected, eulang)
-    
+
 
 def test_xf2rav():
     e = [1.0, 0.0, 0.0]
@@ -9985,7 +9982,7 @@ def test_xfmsta():
         1.03575559016377728336e-08,
     ]
     npt.assert_array_almost_equal(state_lat, expected_lat_state)
-    
+
 
 def test_xpose6():
     m1 = [
@@ -10035,7 +10032,7 @@ def test_zzdynrot():
     )
     npt.assert_array_almost_equal(rotation, expected)
     assert frame == 1
-    
+
 
 def teardown_tests():
     # Tests that must be done last are put here and
