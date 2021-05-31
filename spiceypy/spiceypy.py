@@ -86,7 +86,7 @@ def warn_deprecated_args(**kwargs) -> None:
         warnings.warn(
             f"Specifying any of: {varnames} will be deprecated as of SpiceyPy 5.0.0",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
     pass
 
@@ -8974,7 +8974,13 @@ def mxmt(
 
 
 @spice_error_check
-def mxmtg(m1: Union[ndarray, Iterable[Iterable[float]]], m2: Union[ndarray, Iterable[Iterable[float]]], nrow1: OptionalInt = None, nc1c2: OptionalInt = None, nrow2: OptionalInt = None) -> ndarray:
+def mxmtg(
+    m1: Union[ndarray, Iterable[Iterable[float]]],
+    m2: Union[ndarray, Iterable[Iterable[float]]],
+    nrow1: OptionalInt = None,
+    nc1c2: OptionalInt = None,
+    nrow2: OptionalInt = None,
+) -> ndarray:
     """
     Multiply a matrix and the transpose of a matrix, both of arbitrary size.
 
@@ -9019,7 +9025,12 @@ def mxv(m1: ndarray, vin: ndarray) -> ndarray:
 
 
 @spice_error_check
-def mxvg(m1: Union[ndarray, Iterable[Iterable[float]]], v2: Union[ndarray, Iterable[Iterable[float]]], nrow1: OptionalInt = None, nc1r2: OptionalInt = None) -> ndarray:
+def mxvg(
+    m1: Union[ndarray, Iterable[Iterable[float]]],
+    v2: Union[ndarray, Iterable[Iterable[float]]],
+    nrow1: OptionalInt = None,
+    nc1r2: OptionalInt = None,
+) -> ndarray:
     """
     Multiply a matrix and a vector of arbitrary size.
 
@@ -14621,7 +14632,9 @@ def vadd(
 
 @spice_error_check
 def vaddg(
-    v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]], ndim: OptionalInt = None
+    v1: Union[ndarray, Iterable[float]],
+    v2: Union[ndarray, Iterable[float]],
+    ndim: OptionalInt = None,
 ) -> ndarray:
     """
     Add two n-dimensional vectors
@@ -15104,7 +15117,9 @@ def vrel(
 
 @spice_error_check
 def vrelg(
-    v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]], ndim: OptionalInt = None
+    v1: Union[ndarray, Iterable[float]],
+    v2: Union[ndarray, Iterable[float]],
+    ndim: OptionalInt = None,
 ) -> float:
     """
     Return the relative difference between two vectors of general dimension.

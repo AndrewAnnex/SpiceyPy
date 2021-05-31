@@ -76,7 +76,7 @@ class InstallSpiceyPy(install):
 
 
 class GetCSPICECommand(Command):
-    """ Custom command to get the correct cspice and build the shared library for spiceypy """
+    """Custom command to get the correct cspice and build the shared library for spiceypy"""
 
     description = "downloads cspice and builds the shared library"
     user_options = []
@@ -92,7 +92,7 @@ class GetCSPICECommand(Command):
 
 
 class BuildPyCommand(build_py):
-    """ Custom build command to ensure cspice is built and packaged """
+    """Custom build command to ensure cspice is built and packaged"""
 
     def run(self):
         InstallCSpice.get_cspice()
@@ -111,7 +111,7 @@ readme.close()
 
 setup(
     name="spiceypy",
-    version="4.0.0",
+    version="4.0.1",
     license="MIT",
     author="Andrew Annex",
     author_email="ama6fy@virginia.edu",
