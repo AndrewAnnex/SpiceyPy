@@ -14558,7 +14558,7 @@ def unorm(v1: ndarray) -> Tuple[ndarray, float]:
 
 
 @spice_error_check
-def unormg(v1: ndarray, ndim: int) -> Tuple[ndarray, float]:
+def unormg(v1: ndarray, ndim: OptionalInt = None) -> Tuple[ndarray, float]:
     """
     Normalize a double precision vector of arbitrary dimension and
     return its magnitude.
@@ -14569,6 +14569,8 @@ def unormg(v1: ndarray, ndim: int) -> Tuple[ndarray, float]:
     :param ndim: This is the dimension of v1 and vout.
     :return: Unit vector of v1, Magnitude of v1.
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     v1 = stypes.to_double_vector(v1)
     vout = stypes.empty_double_vector(ndim)
     vmag = ctypes.c_double()
@@ -14618,7 +14620,7 @@ def vadd(
 
 @spice_error_check
 def vaddg(
-    v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]], ndim: int
+    v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]], ndim: OptionalInt = None
 ) -> ndarray:
     """
     Add two n-dimensional vectors
@@ -14629,6 +14631,8 @@ def vaddg(
     :param ndim: Dimension of v1 and v2.
     :return: v1+v2
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     v1 = stypes.to_double_vector(v1)
     v2 = stypes.to_double_vector(v2)
     vout = stypes.empty_double_vector(ndim)
@@ -14691,7 +14695,7 @@ def vdist(v1: ndarray, v2: ndarray) -> float:
 
 
 @spice_error_check
-def vdistg(v1: ndarray, v2: ndarray, ndim: int) -> float:
+def vdistg(v1: ndarray, v2: ndarray, ndim: OptionalInt = None) -> float:
     """
     Return the distance between two vectors of arbitrary dimension.
 
@@ -14702,6 +14706,8 @@ def vdistg(v1: ndarray, v2: ndarray, ndim: int) -> float:
     :param ndim: Dimension of v1 and v2.
     :return: the distance between v1 and v2
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     v1 = stypes.to_double_vector(v1)
     v2 = stypes.to_double_vector(v2)
     ndim = ctypes.c_int(ndim)
@@ -14725,7 +14731,7 @@ def vdot(v1: ndarray, v2: ndarray) -> float:
 
 
 @spice_error_check
-def vdotg(v1: ndarray, v2: ndarray, ndim: int) -> float:
+def vdotg(v1: ndarray, v2: ndarray, ndim: OptionalInt = None) -> float:
     """
     Compute the dot product of two double precision vectors of
     arbitrary dimension.
@@ -14737,6 +14743,8 @@ def vdotg(v1: ndarray, v2: ndarray, ndim: int) -> float:
     :param ndim: Dimension of v1 and v2.
     :return: dot product of v1 and v2.
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     v1 = stypes.to_double_vector(v1)
     v2 = stypes.to_double_vector(v2)
     ndim = ctypes.c_int(ndim)
@@ -14760,7 +14768,7 @@ def vequ(v1: ndarray) -> ndarray:
 
 
 @spice_error_check
-def vequg(v1: ndarray, ndim: int) -> ndarray:
+def vequg(v1: ndarray, ndim: OptionalInt = None) -> ndarray:
     """
     Make one double precision vector of arbitrary dimension equal to another.
 
@@ -14770,6 +14778,8 @@ def vequg(v1: ndarray, ndim: int) -> ndarray:
     :param ndim: Dimension of vin (and also vout).
     :return: ndim-dimensional double precision vector set equal to vin.
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     v1 = stypes.to_double_vector(v1)
     vout = stypes.empty_double_vector(ndim)
     ndim = ctypes.c_int(ndim)
@@ -14794,7 +14804,7 @@ def vhat(v1: ndarray) -> ndarray:
 
 
 @spice_error_check
-def vhatg(v1: ndarray, ndim: int) -> ndarray:
+def vhatg(v1: ndarray, ndim: OptionalInt = None) -> ndarray:
     """
     Find the unit vector along a double precision vector of arbitrary dimension.
 
@@ -14804,6 +14814,8 @@ def vhatg(v1: ndarray, ndim: int) -> ndarray:
     :param ndim: Dimension of v1 (and also vout).
     :return: Unit vector v / abs(v).
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     v1 = stypes.to_double_vector(v1)
     vout = stypes.empty_double_vector(ndim)
     ndim = ctypes.c_int(ndim)
@@ -14905,7 +14917,7 @@ def vlcomg(
 
 
 @spice_error_check
-def vminug(vin: ndarray, ndim: int) -> ndarray:
+def vminug(vin: ndarray, ndim: OptionalInt = None) -> ndarray:
     """
     Negate a double precision vector of arbitrary dimension.
 
@@ -14915,6 +14927,8 @@ def vminug(vin: ndarray, ndim: int) -> ndarray:
     :param ndim: Dimension of vin.
     :return: ndim-dimensional double precision vector equal to -vin.
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(vin)
     vin = stypes.to_double_vector(vin)
     vout = stypes.empty_double_vector(ndim)
     ndim = ctypes.c_int(ndim)
@@ -14953,7 +14967,7 @@ def vnorm(v: ndarray) -> float:
 
 
 @spice_error_check
-def vnormg(v: ndarray, ndim: int) -> float:
+def vnormg(v: ndarray, ndim: OptionalInt = None) -> float:
     """
     Compute the magnitude of a double precision vector of arbitrary dimension.
 
@@ -14963,6 +14977,8 @@ def vnormg(v: ndarray, ndim: int) -> float:
     :param ndim: Dimension of v
     :return: magnitude of v calculated in a numerically stable way
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v)
     v = stypes.to_double_vector(v)
     ndim = ctypes.c_int(ndim)
     return libspice.vnormg_c(v, ndim)
@@ -15087,7 +15103,7 @@ def vrel(
 
 @spice_error_check
 def vrelg(
-    v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]], ndim: int
+    v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]], ndim: OptionalInt = None
 ) -> float:
     """
     Return the relative difference between two vectors of general dimension.
@@ -15099,6 +15115,8 @@ def vrelg(
     :param ndim: Dimension of v1 and v2.
     :return: the relative difference between v1 and v2.
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     v1 = stypes.to_double_vector(v1)
     v2 = stypes.to_double_vector(v2)
     ndim = ctypes.c_int(ndim)
@@ -15145,7 +15163,7 @@ def vscl(s: float, v1: ndarray) -> ndarray:
 
 
 @spice_error_check
-def vsclg(s: float, v1: ndarray, ndim: int) -> ndarray:
+def vsclg(s: float, v1: ndarray, ndim: OptionalInt = None) -> ndarray:
     """
     Multiply a scalar and a double precision vector of arbitrary dimension.
 
@@ -15156,6 +15174,8 @@ def vsclg(s: float, v1: ndarray, ndim: int) -> ndarray:
     :param ndim: Dimension of v1
     :return: Product vector, s*v1.
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     s = ctypes.c_double(s)
     v1 = stypes.to_double_vector(v1)
     vout = stypes.empty_double_vector(ndim)
@@ -15183,7 +15203,7 @@ def vsep(v1: ndarray, v2: ndarray) -> float:
 
 
 @spice_error_check
-def vsepg(v1: ndarray, v2: ndarray, ndim: int) -> float:
+def vsepg(v1: ndarray, v2: ndarray, ndim: OptionalInt = None) -> float:
     """
     Find the separation angle in radians between two double
     precision vectors of arbitrary dimension. This angle is defined
@@ -15196,6 +15216,8 @@ def vsepg(v1: ndarray, v2: ndarray, ndim: int) -> float:
     :param ndim: The number of elements in v1 and v2.
     :return: separation angle in radians
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     v1 = stypes.to_double_vector(v1)
     v2 = stypes.to_double_vector(v2)
     ndim = ctypes.c_int(ndim)
@@ -15222,7 +15244,7 @@ def vsub(v1: ndarray, v2: ndarray) -> ndarray:
 
 
 @spice_error_check
-def vsubg(v1: ndarray, v2: ndarray, ndim: int) -> ndarray:
+def vsubg(v1: ndarray, v2: ndarray, ndim: OptionalInt = None) -> ndarray:
     """
     Compute the difference between two double precision
     vectors of arbitrary dimension.
@@ -15234,6 +15256,8 @@ def vsubg(v1: ndarray, v2: ndarray, ndim: int) -> ndarray:
     :param ndim: Dimension of v1, v2, and vout.
     :return: Difference vector, v1 - v2.
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v1)
     v1 = stypes.to_double_vector(v1)
     v2 = stypes.to_double_vector(v2)
     vout = stypes.empty_double_vector(ndim)
@@ -15326,7 +15350,7 @@ def vzero(v: ndarray) -> bool:
 
 
 @spice_error_check
-def vzerog(v: ndarray, ndim: int) -> bool:
+def vzerog(v: ndarray, ndim: OptionalInt = None) -> bool:
     """
     Indicate whether a general-dimensional vector is the zero vector.
 
@@ -15336,6 +15360,8 @@ def vzerog(v: ndarray, ndim: int) -> bool:
     :param ndim: Dimension of v
     :return: true if and only if v is the zero vector
     """
+    warn_deprecated_args(ndim=ndim)
+    ndim = len(v)
     v = stypes.to_double_vector(v)
     ndim = ctypes.c_int(ndim)
     return bool(libspice.vzerog_c(v, ndim))

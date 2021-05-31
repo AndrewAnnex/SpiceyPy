@@ -14,6 +14,7 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
 ### Deprecated
 - added deprecation warnings for ncol/nrow params for: mtxmg, mtxvg, mxm, mxmg, mxmt, mxmtg, mxvg, vtmvg, xposeg pending next major release.
+- added deprecation warnings for ndim param for: unormg, vaddg, vdistg, vdotg, vequg, vhatg, vminug, vnromg, vrelg, vsclg, vsepg, vsubg, vzerog pending next major release.    
 
 ### Changed
 - copyright year
