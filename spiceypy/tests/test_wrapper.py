@@ -897,6 +897,8 @@ def test_ckw05():
 
 def test_stress_ckw05():
     for i in range(1000):
+        spice.kclear()
+        spice.reset()
         test_ckw05()
 
 
@@ -1273,6 +1275,8 @@ def test_dafgs():
 def test_dafgsstress():
     # this is to show that memory issue with dafgs is fixed.
     for i in range(500):
+        spice.kclear()
+        spice.reset()
         test_dafgs()
 
 
@@ -2653,6 +2657,8 @@ def test_ekacli():
 
 def test_ekacli_stress():
     for i in range(10):
+        spice.kclear()
+        spice.reset()
         test_ekacli()
 
 
@@ -2692,6 +2698,8 @@ def test_ekbseg():
 
 def test_ekbseg_stress():
     for i in range(10):
+        spice.kclear()
+        spice.reset()
         test_ekbseg()
 
 
@@ -2785,6 +2793,8 @@ def test_ekdelr():
 
 def test_ekdelr_stress():
     for i in range(10):
+        spice.kclear()
+        spice.reset()
         test_ekdelr()
 
 
@@ -2814,6 +2824,8 @@ def test_ekffld():
 
 def test_ekffld_stress():
     for i in range(10):
+        spice.kclear()
+        spice.reset()
         test_ekffld()
 
 
@@ -3443,6 +3455,8 @@ def test_expool():
 def test_expoolstress():
     # this is to show that the bug in lmpool is fixed (lenvals needs +=1)
     for i in range(500):
+        spice.kclear()
+        spice.reset()
         test_expool()
 
 
@@ -5341,6 +5355,8 @@ def test_lmpool_numpy():
 def test_lmpoolstress():
     # occasional crash in lmpool believed to be caused by lenvals not being +=1'ed for end of line.
     for i in range(500):
+        spice.kclear()
+        spice.reset()
         test_lmpool()
 
 
@@ -5888,6 +5904,8 @@ def test_oscelt():
 
 def test_oscltx_stress():
     for i in range(0, 30):
+        spice.kclear()
+        spice.reset()
         test_oscltx()
 
 
@@ -7044,6 +7062,8 @@ def test_spk14a():
 
 def test_spk14bstress():
     for i in range(30):
+        spice.kclear()
+        spice.reset()
         test_spk14a()
 
 
