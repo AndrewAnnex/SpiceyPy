@@ -86,6 +86,7 @@ def warn_deprecated_args(**kwargs) -> None:
         warnings.warn(
             f"Specifying any of: {varnames} will be deprecated as of SpiceyPy 5.0.0",
             DeprecationWarning,
+            stacklevel=2
         )
     pass
 

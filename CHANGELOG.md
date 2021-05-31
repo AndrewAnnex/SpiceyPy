@@ -19,6 +19,7 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 ### Changed
 - copyright year
 - a number of typehints to accept np.ndarray
+- changed test_wrapper to use a pytest autouse fixture to call reset/kclear automatically for most tests
 
 ### Fixed
 - missing docs for xf2eul

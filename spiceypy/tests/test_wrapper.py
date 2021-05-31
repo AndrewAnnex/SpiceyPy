@@ -42,6 +42,16 @@ from spiceypy.tests.gettestkernels import (
     cwd,
 )
 
+@pytest.fixture(autouse=True)
+def clear_kernel_pool_and_reset():
+    spice.kclear()
+    spice.reset()
+    # yield for test
+    yield
+    # clear kernel pool again
+    spice.kclear()
+    spice.reset()
+
 
 def setup_module(module):
     download_kernels()
@@ -141,13 +151,11 @@ def test_b1950():
 
 
 def test_badkpv():
-    spice.kclear()
     spice.pdpool("DTEST_VAL", [3.1415, 186.0, 282.397])
     assert not spice.badkpv("spiceypy BADKPV test", "DTEST_VAL", "=", 3, 1, "N")
     spice.clpool()
     assert not spice.expool("DTEST_VAL")
-    spice.kclear()
-
+    
 
 def test_bltfrm():
     out_cell = spice.bltfrm(-1)
@@ -155,30 +163,23 @@ def test_bltfrm():
 
 
 def test_bodc2n():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     assert spice.bodc2n(399) == "EARTH"
     assert spice.bodc2n(0) == "SOLAR SYSTEM BARYCENTER"
-    spice.kclear()
-
+    
 
 def test_bodc2s():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     assert spice.bodc2s(399) == "EARTH"
     assert spice.bodc2s(0) == "SOLAR SYSTEM BARYCENTER"
-    spice.kclear()
-
+    
 
 def test_boddef():
-    spice.kclear()
     spice.boddef("Jebediah", 117)
     assert spice.bodc2n(117) == "Jebediah"
-    spice.kclear()
-
+    
 
 def test_bodeul():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     # define body-fixed unit vectors
     xbf = [1.0, 0.0, 0.0]
@@ -205,62 +206,49 @@ def test_bodeul():
     npt.assert_almost_equal(dec, ref_dec, decimal=4)
     npt.assert_almost_equal(w, ref_w, decimal=4)
     npt.assert_almost_equal(lam, ref_lam, decimal=4)
-    spice.kclear()
-
+    
 
 def test_bodfnd():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     assert spice.bodfnd(599, "RADII")
-    spice.kclear()
-
+    
 
 def test_bodn2c():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     assert spice.bodn2c("EARTH") == 399
     with pytest.raises(spice.stypes.SpiceyError):
         spice.bodn2c("U.S.S. Enterprise")
-    spice.kclear()
-
+    
 
 def test_bods2c():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     assert spice.bods2c("EARTH") == 399
     with pytest.raises(spice.stypes.SpiceyError):
         spice.bods2c("U.S.S. Enterprise")
-    spice.kclear()
-
+    
 
 def test_bodvar():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     radii = spice.bodvar(399, "RADII", 3)
     expected = np.array([6378.140, 6378.140, 6356.755])
     np.testing.assert_array_almost_equal(expected, radii, decimal=1)
-    spice.kclear()
-
+    
 
 def test_bodvcd():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     dim, values = spice.bodvcd(399, "RADII", 3)
     assert dim == 3
     expected = np.array([6378.140, 6378.140, 6356.755])
     np.testing.assert_array_almost_equal(expected, values, decimal=1)
-    spice.kclear()
-
+    
 
 def test_bodvrd():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     dim, values = spice.bodvrd("EARTH", "RADII", 3)
     assert dim == 3
     expected = np.array([6378.140, 6378.140, 6356.755])
     np.testing.assert_array_almost_equal(expected, values, decimal=1)
-    spice.kclear()
-
+    
 
 def test_brcktd():
     assert spice.brcktd(-1.0, 1.0, 10.0) == 1.0
@@ -414,7 +402,6 @@ def test_cidfrm():
 
 def test_ckcls():
     # Spice crashes if ckcls detects nothing written to ck1
-    spice.kclear()
     ck1 = os.path.join(cwd, "ckopenkernel.bc")
     if spice.exists(ck1):
         os.remove(ck1)  # pragma: no cover
@@ -435,7 +422,6 @@ def test_ckcls():
     )
 
     spice.ckcls(handle)
-    spice.kclear()
     assert spice.exists(ck1)
     if spice.exists(ck1):
         os.remove(ck1)  # pragma: no cover
@@ -443,7 +429,6 @@ def test_ckcls():
 
 
 def test_ckcov():
-    spice.kclear()
     spice.furnsh(CassiniKernels.cassSclk)
     ckid = spice.ckobj(CassiniKernels.cassCk)[0]
     cover = spice.ckcov(CassiniKernels.cassCk, ckid, False, "INTERVAL", 0.0, "SCLK")
@@ -455,11 +440,9 @@ def test_ckcov():
     assert [
         [cover[i * 2], cover[i * 2 + 1]] for i in range(spice.wncard(cover))
     ] == expected_intervals
-    spice.kclear()
-
+    
 
 def test_ckfrot():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassSclk)
     spice.furnsh(CassiniKernels.cassCk)
@@ -479,11 +462,9 @@ def test_ckfrot():
     )
     npt.assert_array_almost_equal(rotation, expected)
     assert ref == 1
-    spice.kclear()
-
+    
 
 def test_ckgp():
-    spice.kclear()
     spice.reset()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassSclk)
@@ -502,11 +483,9 @@ def test_ckgp():
     npt.assert_array_almost_equal(cmat, expected_cmat)
     assert clkout == 267832537952.0
     spice.reset()
-    spice.kclear()
-
+    
 
 def test_ckgpav():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassSclk)
     spice.furnsh(CassiniKernels.cassCk)
@@ -529,11 +508,9 @@ def test_ckgpav():
     npt.assert_array_almost_equal(cmat, expected_cmat)
     npt.assert_array_almost_equal(avout, expected_avout)
     assert clkout == 267832537952.0
-    spice.kclear()
-
+    
 
 def test_cklpf():
-    spice.kclear()
     spice.reset()
     cklpf = os.path.join(cwd, "cklpfkernel.bc")
     if spice.exists(cklpf):
@@ -558,7 +535,6 @@ def test_cklpf():
     handle = spice.cklpf(cklpf)
     spice.ckupf(handle)
     spice.ckcls(handle)
-    spice.kclear()
     spice.reset()
     assert spice.exists(cklpf)
     if spice.exists(cklpf):
@@ -567,17 +543,14 @@ def test_cklpf():
 
 
 def test_ckobj():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassSclk)
     ids = spice.ckobj(CassiniKernels.cassCk)
     assert len(ids) == 1
-    spice.kclear()
-
+    
 
 def test_ckopn():
     # Spice crashes if ckcls detects nothing written to ck1
-    spice.kclear()
     ck1 = os.path.join(cwd, "ckopenkernel.bc")
     if spice.exists(ck1):
         os.remove(ck1)  # pragma: no cover
@@ -598,7 +571,6 @@ def test_ckopn():
     )
 
     spice.ckcls(handle)
-    spice.kclear()
     assert spice.exists(ck1)
     if spice.exists(ck1):
         os.remove(ck1)  # pragma: no cover
@@ -606,17 +578,14 @@ def test_ckopn():
 
 
 def test_ckupf():
-    spice.kclear()
     spice.reset()
     handle = spice.cklpf(CassiniKernels.cassCk)
     spice.ckupf(handle)
     spice.ckcls(handle)
     spice.reset()
-    spice.kclear()
-
+    
 
 def test_ckw01():
-    spice.kclear()
     ck1 = os.path.join(cwd, "type1.bc")
     if spice.exists(ck1):
         os.remove(ck1)  # pragma: no cover
@@ -665,13 +634,11 @@ def test_ckw01():
     spice.ckcls(handle)
     end_size = os.path.getsize(ck1)
     assert end_size != init_size
-    spice.kclear()
     if spice.exists(ck1):
         os.remove(ck1)  # pragma: no cover
 
 
 def test_ckw02():
-    spice.kclear()
     ck2 = os.path.join(cwd, "type2.bc")
     if spice.exists(ck2):
         os.remove(ck2)  # pragma: no cover
@@ -723,13 +690,11 @@ def test_ckw02():
     spice.ckcls(handle)
     end_size = os.path.getsize(ck2)
     assert end_size != init_size
-    spice.kclear()
     if spice.exists(ck2):
         os.remove(ck2)  # pragma: no cover
 
 
 def test_ckw03():
-    spice.kclear()
     ck3 = os.path.join(cwd, "type3.bc")
     if spice.exists(ck3):
         os.remove(ck3)  # pragma: no cover
@@ -777,13 +742,11 @@ def test_ckw03():
     spice.ckcls(handle)
     end_size = os.path.getsize(ck3)
     assert end_size != init_size
-    spice.kclear()
     if spice.exists(ck3):
         os.remove(ck3)  # pragma: no cover
 
 
 def test_ckw05():
-    spice.kclear()
     ck5 = os.path.join(cwd, "type5.bc")
     if spice.exists(ck5):
         os.remove(ck5)  # pragma: no cover
@@ -927,11 +890,9 @@ def test_ckw05():
     spice.furnsh(ck5)
     cmat, av, clk = spice.ckgpav(-41000, epochs[0] + 0.5, 1.0, "J2000")
     assert clk == pytest.approx(0.5)
-    spice.kclear()
     if spice.exists(ck5):
         os.remove(ck5)  # pragma: no cover
-    spice.kclear()
-
+    
 
 def test_stress_ckw05():
     for i in range(1000):
@@ -948,7 +909,6 @@ def test_clight():
 
 
 def test_clpool():
-    spice.kclear()
     spice.pdpool("TEST_VAR", [-666.0])
     value = spice.gdpool("TEST_VAR", 0, 1)
     assert len(value) == 1
@@ -956,8 +916,7 @@ def test_clpool():
     spice.clpool()
     with pytest.raises(spice.stypes.SpiceyError):
         spice.gdpool("TEST_VAR", 0, 1)
-    spice.kclear()
-
+    
 
 def test_cmprss():
     strings = ["ABC...DE.F...", "...........", ".. ..AB....CD"]
@@ -976,7 +935,6 @@ def test_cnmfrm():
 
 
 def test_conics():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("Dec 25, 2007")
     state, ltime = spice.spkezr("Moon", et, "J2000", "NONE", "EARTH")
@@ -985,7 +943,6 @@ def test_conics():
     later = et + 7.0 * spice.spd()
     later_state = spice.conics(elts, later)
     state, ltime = spice.spkezr("Moon", later, "J2000", "NONE", "EARTH")
-    spice.kclear()
     pert = np.array(later_state) - np.array(state)
     expected_pert = [
         -7.48885583081946242601e03,
@@ -1073,7 +1030,6 @@ def test_cposr():
 
 
 def test_cvpool():
-    spice.kclear()
     # add TEST_VAR_CVPOOL
     spice.pdpool("TEST_VAR_CVPOOL", [-646.0])
     # establish check for TEST_VAR_CVPOOL
@@ -1086,7 +1042,6 @@ def test_cvpool():
     assert len(value) == 1
     assert value[0] == 565.0
     spice.clpool()
-    spice.kclear()
     assert updated is True
 
 
@@ -1112,7 +1067,6 @@ def test_cylsph():
 
 def test_dafac():
     # Create new DAF using CKOPN
-    spice.kclear()
     dafpath = os.path.join(cwd, "ex_dafac.bc")
     if spice.exists(dafpath):
         os.remove(dafpath)  # pragma: no cover
@@ -1150,55 +1104,45 @@ def test_dafac():
     assert not done
     spice.dafcls(handle)
     assert not spice.failed()
-    spice.kclear()
     spice.reset()
     if spice.exists(dafpath):
         os.remove(dafpath)  # pragma: no cover
 
 
 def test_dafbbs():
-    spice.kclear()
     handle = spice.dafopr(CoreKernels.spk)
     spice.dafbbs(handle)
     found = spice.daffpa()
     assert found
     spice.dafcls(handle)
-    spice.kclear()
-
+    
 
 def test_dafbfs():
-    spice.kclear()
     handle = spice.dafopr(CoreKernels.spk)
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
     spice.dafcls(handle)
-    spice.kclear()
-
+    
 
 def test_dafcls():
-    spice.kclear()
     handle = spice.dafopr(CoreKernels.spk)
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
     spice.dafcls(handle)
-    spice.kclear()
-
+    
 
 def test_dafcs():
-    spice.kclear()
     handle = spice.dafopr(CoreKernels.spk)
     spice.dafbbs(handle)
     spice.dafcs(handle)
     found = spice.daffpa()
     assert found
     spice.dafcls(handle)
-    spice.kclear()
-
+    
 
 def test_dafdc():
-    spice.kclear()
     dafpath = os.path.join(cwd, "ex_dafdc.bc")
     if spice.exists(dafpath):
         os.remove(dafpath)  # pragma: no cover
@@ -1238,14 +1182,12 @@ def test_dafdc():
     assert nOut == 0
     spice.dafcls(handle)
     assert not spice.failed()
-    spice.kclear()
     spice.reset()
     if spice.exists(dafpath):
         os.remove(dafpath)  # pragma: no cover
 
 
 def test_dafec():
-    spice.kclear()
     handle = spice.dafopr(CoreKernels.spk)
     n, buffer, done = spice.dafec(handle, 13)
     assert n == 13
@@ -1266,52 +1208,42 @@ def test_dafec():
     ]
     assert done is False
     spice.dafcls(handle)
-    spice.kclear()
-
+    
 
 def test_daffna():
-    spice.kclear()
     handle = spice.dafopr(CoreKernels.spk)
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
     spice.dafcls(handle)
-    spice.kclear()
-
+    
 
 def test_daffpa():
-    spice.kclear()
     handle = spice.dafopr(CoreKernels.spk)
     spice.dafbbs(handle)
     found = spice.daffpa()
     assert found
     spice.dafcls(handle)
-    spice.kclear()
-
+    
 
 def test_dafgda():
     # not a very good test...
-    spice.kclear()
     handle = spice.dafopr(CoreKernels.spk)
     elements = spice.dafgda(handle, 20, 20)
     assert elements == [0.0]
     spice.dafcls(handle)
-    spice.kclear()
-
+    
 
 def test_dafgh():
-    spice.kclear()
     handle = spice.dafopr(CoreKernels.spk)
     spice.dafbbs(handle)
     spice.dafcs(handle)
     searchHandle = spice.dafgh()
     assert searchHandle == handle
     spice.dafcls(handle)
-    spice.kclear()
-
+    
 
 def test_dafgn():
-    spice.kclear()
     handle = spice.dafopr(CoreKernels.spk)
     spice.dafbfs(handle)
     found = spice.daffna()
@@ -1323,11 +1255,9 @@ def test_dafgn():
     outname = spice.dafgn(100)
     assert outname == "DE-405"
     spice.dafcls(handle)
-    spice.kclear()
-
+    
 
 def test_dafgs():
-    spice.kclear()
     handle = spice.dafopr(CoreKernels.spk)
     spice.dafbfs(handle)
     found = spice.daffna()
@@ -1337,8 +1267,7 @@ def test_dafgs():
         out, [-9.46511378160646408796e07, 3.15662463183953464031e08]
     )
     spice.dafcls(handle)
-    spice.kclear()
-
+    
 
 def test_dafgsstress():
     # this is to show that memory issue with dafgs is fixed.
@@ -1348,7 +1277,6 @@ def test_dafgsstress():
 
 def test_dafgsr():
     spice.reset()
-    spice.kclear()
     # Open DAF
     # N.B. The SPK used must use the LTL-IEEE double byte-ordering and format
     # This should be de405s.bsp from the test kernel set
@@ -1397,31 +1325,25 @@ def test_dafgsr():
     # Cleanup
     spice.dafcls(handle)
     spice.reset()
-    spice.kclear()
-
+    
 
 def test_dafopr():
-    spice.kclear()
     handle = spice.dafopr(CoreKernels.spk)
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
     spice.dafcls(handle)
-    spice.kclear()
-
+    
 
 def test_dafopw():
-    spice.kclear()
     handle = spice.dafopw(CoreKernels.spk)
     spice.dafbfs(handle)
     found = spice.daffna()
     assert found
     spice.dafcls(handle)
-    spice.kclear()
-
+    
 
 def test_dafps_dafrs():
-    spice.kclear()
     dafpath = os.path.join(cwd, "ckopenkernel_dafps.bc")
     if spice.exists(dafpath):
         os.remove(dafpath)  # pragma: no cover
@@ -1473,14 +1395,12 @@ def test_dafps_dafrs():
     assert ic[1] == -2999
     # cleanup
     spice.dafcls(handle)
-    spice.kclear()
     if spice.exists(dafpath):
         os.remove(dafpath)  # pragma: no cover
 
 
 def test_dafrda():
     spice.reset()
-    spice.kclear()
     # Open DAF
     # N.B. The SPK used must use the LTL-IEEE double byte-ordering and format
     # This should be de405s.bsp from the test kernel set
@@ -1541,11 +1461,9 @@ def test_dafrda():
     # Cleanup
     spice.dafcls(handle)
     spice.reset()
-    spice.kclear()
-
+    
 
 def test_dafrfr():
-    spice.kclear()
     handle = spice.dafopr(CoreKernels.spk)
     nd, ni, ifname, fward, bward, free = spice.dafrfr(handle)
     spice.dafcls(handle)
@@ -1554,11 +1472,9 @@ def test_dafrfr():
     assert ifname == ""
     assert fward == 7
     assert bward == 7
-    spice.kclear()
-
+    
 
 def test_dafus():
-    spice.kclear()
     handle = spice.dafopr(CoreKernels.spk)
     spice.dafbfs(handle)
     found = spice.daffna()
@@ -1570,11 +1486,9 @@ def test_dafus():
         dc, [-9.46511378160646408796e07, 3.15662463183953464031e08]
     )
     npt.assert_array_almost_equal(ic, [1, 0, 1, 2, 1025, 27164])
-    spice.kclear()
-
+    
 
 def test_dasac_dasopr_dasec_dasdc():
-    spice.kclear()
     daspath = os.path.join(cwd, "ex_dasac.das")
     if spice.exists(daspath):
         os.remove(daspath)  # pragma: no cover
@@ -1629,11 +1543,9 @@ def test_dasac_dasopr_dasec_dasdc():
     # done, so clean up
     if spice.exists(daspath):
         os.remove(daspath)  # pragma: no cover
-    spice.kclear()
-
+    
 
 def test_dasopw_dascls_dasopr():
-    spice.kclear()
     daspath = os.path.join(cwd, "ex_das.das")
     if spice.exists(daspath):
         os.remove(daspath)  # pragma: no cover
@@ -1648,8 +1560,7 @@ def test_dasopw_dascls_dasopr():
     assert handle is not None
     if spice.exists(daspath):
         os.remove(daspath)  # pragma: no cover
-    spice.kclear()
-
+    
 
 def test_dcyldr():
     output = spice.dcyldr(1.0, 0.0, 0.0)
@@ -1658,7 +1569,6 @@ def test_dcyldr():
 
 
 def test_deltet():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     UTC_1997 = "Jan 1 1997"
     UTC_2004 = "Jan 1 2004"
@@ -1668,8 +1578,7 @@ def test_deltet():
     delt_2004 = spice.deltet(et_2004, "ET")
     npt.assert_almost_equal(delt_1997, 62.1839353, decimal=6)
     npt.assert_almost_equal(delt_2004, 64.1839116, decimal=6)
-    spice.kclear()
-
+    
 
 def test_det():
     m1 = np.array([[5.0, -2.0, 1.0], [0.0, 3.0, -1.0], [2.0, 0.0, 7.0]])
@@ -1678,14 +1587,12 @@ def test_det():
 
 
 def test_dgeodr():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     size, radii = spice.bodvrd("EARTH", "RADII", 3)
     flat = (radii[0] - radii[2]) / radii[0]
     lon = 118.0 * spice.rpd()
     lat = 32.0 * spice.rpd()
     alt = 0.0
-    spice.kclear()
     rec = spice.latrec(lon, lat, alt)
     output = spice.dgeodr(rec[0], rec[1], rec[2], radii[0], flat)
     expected = [
@@ -1753,7 +1660,6 @@ def test_diff():
 
 
 def test_dlabfs():
-    spice.kclear()
     handle = spice.dasopr(ExtraKernels.phobosDsk)
     current = spice.dlabfs(handle)
     assert current is not None
@@ -1761,11 +1667,9 @@ def test_dlabfs():
     with pytest.raises(spice.stypes.SpiceyError):
         next = spice.dlafns(handle, current)
     spice.dascls(handle)
-    spice.kclear()
-
+    
 
 def test_dlabbs():
-    spice.kclear()
     handle = spice.dasopr(ExtraKernels.phobosDsk)
     current = spice.dlabbs(handle)
     assert current is not None
@@ -1773,8 +1677,7 @@ def test_dlabbs():
     with pytest.raises(spice.stypes.SpiceyError):
         prev = spice.dlafps(handle, current)
     spice.dascls(handle)
-    spice.kclear()
-
+    
 
 def test_dlatdr():
     output = spice.dlatdr(1.0, 0.0, 0.0)
@@ -1794,7 +1697,6 @@ def test_dp2hx():
 
 
 def test_dpgrdr():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     n, radii = spice.bodvrd("MARS", "RADII", 3)
     re = radii[0]
@@ -1807,8 +1709,7 @@ def test_dpgrdr():
         [0.004618598844358383, 0.0023092994221791917, 0.9999866677515724],
     ]
     npt.assert_array_almost_equal(output, expected)
-    spice.kclear()
-
+    
 
 def test_dpmax():
     assert spice.dpmax() >= 1.0e37
@@ -1829,14 +1730,12 @@ def test_drdcyl():
 
 
 def test_drdgeo():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     size, radii = spice.bodvrd("EARTH", "RADII", 3)
     flat = (radii[0] - radii[2]) / radii[0]
     lon = 118.0 * spice.rpd()
     lat = 32.0 * spice.rpd()
     alt = 0.0
-    spice.kclear()
     output = spice.drdgeo(lon, lat, alt, radii[0], flat)
     expected = [
         [-4780.329375996193, 1580.5982261675397, -0.3981344650201568],
@@ -1853,7 +1752,6 @@ def test_drdlat():
 
 
 def test_drdpgr():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     n, radii = spice.bodvrd("MARS", "RADII", 3)
     re = radii[0]
@@ -1866,8 +1764,7 @@ def test_drdpgr():
         [-0.0, 2606.460468253308, 0.7071067811865475],
     ]
     npt.assert_array_almost_equal(output, expected)
-    spice.kclear()
-
+    
 
 def test_drdsph():
     output = spice.drdsph(1.0, np.pi / 2, np.pi)
@@ -1886,17 +1783,14 @@ def test_dskgtl_dskstl():
 
 def test_dskobj_dsksrf():
     spice.reset()
-    spice.kclear()
     bodyids = spice.dskobj(ExtraKernels.phobosDsk)
     assert 401 in bodyids
     srfids = spice.dsksrf(ExtraKernels.phobosDsk, 401)
     assert 401 in srfids
-    spice.kclear()
     spice.reset()
 
 
 def test_dskopn_dskcls():
-    spice.kclear()
     dskpath = os.path.join(cwd, "TEST.dsk")
     if spice.exists(dskpath):
         os.remove(dskpath)  # pragma: no cover
@@ -1905,11 +1799,9 @@ def test_dskopn_dskcls():
     spice.dskcls(handle)
     if spice.exists(dskpath):
         os.remove(dskpath)  # pragma: no cover
-    spice.kclear()
-
+    
 
 def test_dskb02():
-    spice.kclear()
     # open the dsk file
     handle = spice.dasopr(ExtraKernels.phobosDsk)
     # get the dladsc from the file
@@ -1939,11 +1831,9 @@ def test_dskb02():
     assert voxsiz == pytest.approx(3.320691339664286)
     # cleanup
     spice.dascls(handle)
-    spice.kclear()
-
+    
 
 def test_dskd02():
-    spice.kclear()
     # open the dsk file
     handle = spice.dasopr(ExtraKernels.phobosDsk)
     # get the dladsc from the file
@@ -1960,11 +1850,9 @@ def test_dskd02():
         ],
     )
     spice.dascls(handle)
-    spice.kclear()
-
+    
 
 def test_dskgd():
-    spice.kclear()
     # open the dsk file
     handle = spice.dasopr(ExtraKernels.phobosDsk)
     # get the dladsc from the file
@@ -1989,11 +1877,9 @@ def test_dskgd():
     assert dskdsc.stop == pytest.approx(1577880066.183913)
     # cleanup
     spice.dascls(handle)
-    spice.kclear()
-
+    
 
 def test_dski02():
-    spice.kclear()
     # open the dsk file
     handle = spice.dasopr(ExtraKernels.phobosDsk)
     # get the dladsc from the file
@@ -2003,11 +1889,9 @@ def test_dski02():
     num_plates = spice.dski02(handle, dladsc, 2, 0, 3)
     assert len(num_plates) > 0
     spice.dascls(handle)
-    spice.kclear()
-
+    
 
 def test_dskn02():
-    spice.kclear()
     # open the dsk file
     handle = spice.dasopr(ExtraKernels.phobosDsk)
     # get the dladsc from the file
@@ -2019,11 +1903,9 @@ def test_dskn02():
         [0.20813166897151150203, 0.07187012861854354118, -0.97545676120650637309],
     )
     spice.dascls(handle)
-    spice.kclear()
-
+    
 
 def test_dskp02():
-    spice.kclear()
     # open the dsk file
     handle = spice.dasopr(ExtraKernels.phobosDsk)
     # get the dladsc from the file
@@ -2033,11 +1915,9 @@ def test_dskp02():
     npt.assert_almost_equal(plates[0], [1, 9, 2])
     npt.assert_almost_equal(plates[1], [1, 2, 3])
     spice.dascls(handle)
-    spice.kclear()
-
+    
 
 def test_dskv02():
-    spice.kclear()
     # open the dsk file
     handle = spice.dasopr(ExtraKernels.phobosDsk)
     # get the dladsc from the file
@@ -2053,11 +1933,9 @@ def test_dskv02():
         ],
     )
     spice.dascls(handle)
-    spice.kclear()
-
+    
 
 def test_dskw02_dskrb2_dskmi2():
-    spice.kclear()
     dskpath = os.path.join(cwd, "TESTdskw02.dsk")
     if spice.exists(dskpath):
         os.remove(dskpath)  # pragma: no cover
@@ -2143,11 +2021,9 @@ def test_dskw02_dskrb2_dskmi2():
     # cleanup
     if spice.exists(dskpath):
         os.remove(dskpath)  # pragma: no cover
-    spice.kclear()
-
+    
 
 def test_dskx02():
-    spice.kclear()
     # open the dsk file
     handle = spice.dasopr(ExtraKernels.phobosDsk)
     # get the dladsc from the file
@@ -2165,11 +2041,9 @@ def test_dskx02():
     npt.assert_almost_equal(xpt, [12.36679999999999957083, 0.0, 0.0])
     # cleanup
     spice.dascls(handle)
-    spice.kclear()
-
+    
 
 def test_dskxsi():
-    spice.kclear()
     # load kernels
     spice.furnsh(ExtraKernels.phobosDsk)
     # get handle
@@ -2193,11 +2067,9 @@ def test_dskxsi():
     assert ic[0] == 420
     assert dc[0] == pytest.approx(0.0)
     npt.assert_almost_equal(xpt, [12.36679999999999957083, 0.0, 0.0])
-    spice.kclear()
-
+    
 
 def test_dskxv():
-    spice.kclear()
     # load kernels
     spice.furnsh(ExtraKernels.phobosDsk)
     # get handle
@@ -2221,11 +2093,9 @@ def test_dskxv():
     assert len(foundarray) == 1
     assert foundarray[0]
     npt.assert_almost_equal(xpt[0], [12.36679999999999957083, 0.0, 0.0])
-    spice.kclear()
-
+    
 
 def test_dskxv_2():
-    spice.kclear()
     # load kernels
     spice.furnsh(ExtraKernels.phobosDsk)
     # get handle
@@ -2278,11 +2148,9 @@ def test_dskxv_2():
     assert len(xpt) == 32761
     assert len(foundarray) == 32761
     assert foundarray.all()
-    spice.kclear()
-
+    
 
 def test_dskz02():
-    spice.kclear()
     # open the dsk file
     handle = spice.dasopr(ExtraKernels.phobosDsk)
     # get the dladsc from the file
@@ -2292,8 +2160,7 @@ def test_dskz02():
     assert nv > 0
     assert nplates > 0
     spice.dascls(handle)
-    spice.kclear()
-
+    
 
 def test_dsphdr():
     output = spice.dsphdr(-1.0, 0.0, 0.0)
@@ -2302,7 +2169,6 @@ def test_dsphdr():
 
 
 def test_dtpool():
-    spice.kclear()
     lmpool_names = [
         "DELTET/DELTA_T_A",
         "DELTET/K",
@@ -2345,11 +2211,9 @@ def test_dtpool():
         n, vartype = spice.dtpool(var)
         assert expectLen == n
         assert vartype == "N"
-    spice.kclear()
-
+    
 
 def test_ducrss():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     z_earth = [0.0, 0.0, 1.0, 0.0, 0.0, 0.0]
     et = spice.str2et("Jan 1, 2009")
@@ -2366,11 +2230,9 @@ def test_ducrss():
         -3.6140021238340607e-11,
     ]
     npt.assert_array_almost_equal(z_new, z_expected)
-    spice.kclear()
-
+    
 
 def test_dvcrss():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     z_earth = [0.0, 0.0, 1.0, 0.0, 0.0, 0.0]
     et = spice.str2et("Jan 1, 2009")
@@ -2378,7 +2240,6 @@ def test_dvcrss():
     z_j2000 = np.dot(np.array(trans), np.array(z_earth))
     state, ltime = spice.spkezr("Sun", et, "J2000", "LT+S", "Earth")
     z = spice.dvcrss(state, z_j2000)
-    spice.kclear()
     expected = [
         -1.32672690582546606660e08,
         -2.70353812480484284461e07,
@@ -2398,12 +2259,10 @@ def test_dvdot():
 
 
 def test_dvhat():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("Jan 1, 2009")
     state, ltime = spice.spkezr("Sun", et, "J2000", "LT+S", "Earth")
     x_new = spice.dvhat(state)
-    spice.kclear()
     expected = [
         0.1834466376334262,
         -0.9019196633282948,
@@ -2427,25 +2286,21 @@ def test_dvnorm():
 
 
 def test_dvpool():
-    spice.kclear()
     spice.pdpool("DTEST_VAL", [3.1415, 186.0, 282.397])
     assert spice.expool("DTEST_VAL")
     spice.dvpool("DTEST_VAL")
     assert not spice.expool("DTEST_VAL")
     spice.clpool()
-    spice.kclear()
-
+    
 
 def test_dvsep():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("JAN 1 2009")
     state_e, eltime = spice.spkezr("EARTH", et, "J2000", "NONE", "SUN")
     state_m, mltime = spice.spkezr("MOON", et, "J2000", "NONE", "SUN")
     dsept = spice.dvsep(state_e, state_m)
     npt.assert_approx_equal(dsept, 3.8121194e-09)
-    spice.kclear()
-
+    
 
 def test_edlimb():
     viewpt = [2.0, 0.0, 0.0]
@@ -2459,7 +2314,6 @@ def test_edlimb():
 
 
 def test_edterm():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2007 FEB 3 00:00:00.000")
     # umbral
@@ -2540,11 +2394,9 @@ def test_edterm():
         "Ellipsoid", "MOON", et, "IAU_MOON", "LT+S", "EARTH", trmpts[2]
     )
     npt.assert_almost_equal(spice.dpr() * solar2, 89.730234322)
-    spice.kclear()
-
+    
 
 def test_ekacec():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekacec.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -2558,14 +2410,12 @@ def test_ekacec():
     recno = spice.ekappr(handle, segno)
     spice.ekacec(handle, segno, recno, "c1", 2, ["1.0", "2.0"], False)
     spice.ekcls(handle)
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
 
 
 def test_ekaced():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekaced.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -2579,14 +2429,12 @@ def test_ekaced():
     recno = spice.ekappr(handle, segno)
     spice.ekaced(handle, segno, recno, "c1", 2, [1.0, 2.0], False)
     spice.ekcls(handle)
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
 
 
 def test_ekmany():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekmany.ek")
     tablename = "test_table_ekmany"
     if spice.exists(ekpath):
@@ -2730,7 +2578,6 @@ def test_ekmany():
 
 
 def test_ekaclc():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekaclc.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -2750,14 +2597,12 @@ def test_ekaclc():
     )
     spice.ekffld(handle, segno, rcptrs)
     spice.ekcls(handle)
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
 
 
 def test_ekacld():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekacld.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -2777,14 +2622,12 @@ def test_ekacld():
     )
     spice.ekffld(handle, segno, rcptrs)
     spice.ekcls(handle)
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
 
 
 def test_ekacli():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekacli.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -2802,7 +2645,6 @@ def test_ekacli():
     spice.ekacli(handle, segno, "c1", [1, 2], [1, 1], [False, False], rcptrs, [0, 0])
     spice.ekffld(handle, segno, rcptrs)
     spice.ekcls(handle)
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
@@ -2814,7 +2656,6 @@ def test_ekacli_stress():
 
 
 def test_ekappr():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekappr.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -2825,7 +2666,6 @@ def test_ekappr():
     recno = spice.ekappr(handle, segno)
     spice.ekacei(handle, segno, recno, "c1", 2, [1, 2], False)
     spice.ekcls(handle)
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
@@ -2833,7 +2673,6 @@ def test_ekappr():
 
 def test_ekbseg():
     ekpath = os.path.join(cwd, "example_ekbseg.ek")
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     handle = spice.ekopn(ekpath, "Test EK", 100)
@@ -2845,7 +2684,6 @@ def test_ekbseg():
     ordids = [x for x in range(5)]
     spice.ekacei(handle, segno, recno, "INT_COL_1", 5, ordids, False)
     spice.ekcls(handle)
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
@@ -2857,7 +2695,6 @@ def test_ekbseg_stress():
 
 
 def test_ekccnt():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekccnt.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -2873,14 +2710,12 @@ def test_ekccnt():
     assert spice.ekntab() == 1
     assert spice.ektnam(0, 100) == "TEST_TABLE_EKCCNT"
     assert spice.ekccnt("TEST_TABLE_EKCCNT") == 1
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
 
 
 def test_ekcii():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekcii.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -2897,7 +2732,6 @@ def test_ekcii():
     assert spice.ektnam(0, 100) == "TEST_TABLE_EKCII"
     assert spice.ekccnt("TEST_TABLE_EKCII") == 1
     column, attdsc = spice.ekcii("TEST_TABLE_EKCII", 0, 30)
-    spice.kclear()
     assert column == "C1"
     assert attdsc.cclass == 1
     assert attdsc.dtype == 2
@@ -2913,7 +2747,7 @@ def test_ekcii():
 
 
 def test_ekcls():
-    spice.kclear()  # same as ekopn test
+    # same as ekopn test
     ekpath = os.path.join(cwd, "example_ekcls.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -2922,11 +2756,9 @@ def test_ekcls():
     assert spice.exists(ekpath)
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
-    spice.kclear()
-
+    
 
 def test_ekdelr():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekdelr.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -2945,7 +2777,6 @@ def test_ekdelr():
     spice.ekffld(handle, segno, rcptrs)
     spice.ekdelr(handle, segno, 2)
     spice.ekcls(handle)
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
@@ -2958,7 +2789,6 @@ def test_ekdelr_stress():
 
 def test_ekffld():
     # same as test_ekacli
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekffld.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -2976,7 +2806,6 @@ def test_ekffld():
     spice.ekacli(handle, segno, "c1", [1, 2], [1], [False, False], rcptrs, [1])
     spice.ekffld(handle, segno, rcptrs)
     spice.ekcls(handle)
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
@@ -2988,7 +2817,6 @@ def test_ekffld_stress():
 
 
 def test_ekfind():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekfind.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -3015,7 +2843,6 @@ def test_ekfind():
         nmrows != 0
     )  # should be 2 but I am not concerned about correctness in this case
     assert not error
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
@@ -3027,7 +2854,6 @@ def test_ekfind_stess():
 
 
 def test_ekgc():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekgc.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -3057,14 +2883,12 @@ def test_ekgc():
     c, null = spice.ekgc(0, 1, 0, 4)
     assert not null
     # assert c == "2.0" this fails, c is an empty string despite found being true.
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
 
 
 def test_ekgd():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekgd.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -3094,14 +2918,12 @@ def test_ekgd():
     d, null = spice.ekgd(0, 1, 0)
     assert not null
     assert d == 2.0
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
 
 
 def test_ekgi():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekgi.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -3129,7 +2951,6 @@ def test_ekgi():
     i, null = spice.ekgi(0, 1, 0)
     assert not null
     assert i == 2
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
@@ -3137,7 +2958,6 @@ def test_ekgi():
 
 def test_ekifld():
     # Same as test_ekacli
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekifld.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -3155,14 +2975,12 @@ def test_ekifld():
     spice.ekacli(handle, segno, "c1", [1, 2], [1, 1], [False, False], rcptrs, [0, 0])
     spice.ekffld(handle, segno, rcptrs)
     spice.ekcls(handle)
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
 
 
 def test_eklef():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_eklef.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -3182,7 +3000,6 @@ def test_eklef():
 
 
 def test_eknseg():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_eknseg.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -3197,7 +3014,6 @@ def test_eknseg():
     handle = spice.ekopr(ekpath)
     assert spice.eknseg(handle) == 1
     spice.ekcls(handle)
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
@@ -3208,20 +3024,17 @@ def test_ekntab():
 
 
 def test_ekopn():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ek.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     handle = spice.ekopn(ekpath, ekpath, 80)
     spice.ekcls(handle)
-    spice.kclear()
     assert spice.exists(ekpath)
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
 
 
 def test_ekopr():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekopr.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -3231,21 +3044,17 @@ def test_ekopr():
     testhandle = spice.ekopr(ekpath)
     assert testhandle is not None
     spice.ekcls(testhandle)
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
 
 
 def test_ekops():
-    spice.kclear()
     handle = spice.ekops()
     assert handle is not None
     spice.ekcls(handle)
-    spice.kclear()
-
+    
 
 def test_ekopw():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekopw.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -3257,11 +3066,9 @@ def test_ekopw():
     spice.ekcls(testhandle)
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
-    spice.kclear()
-
+    
 
 def test_ekssum():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekssum.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -3288,14 +3095,12 @@ def test_ekssum():
     assert c1descr.indexd is False
     # assert c1descr.null == True, for some reason this is actually false, SpikeEKAttDsc may not be working correctly
     spice.ekcls(handle)
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
 
 
 def test_ektnam():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ektnam.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -3311,7 +3116,6 @@ def test_ektnam():
     assert spice.ekntab() == 1
     assert spice.ektnam(0, 100) == "TEST_TABLE_EKTNAM"
     assert spice.ekccnt("TEST_TABLE_EKTNAM") == 1
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
     assert not spice.exists(ekpath)
@@ -3330,7 +3134,6 @@ def test_ekucei():
 
 
 def test_ekuef():
-    spice.kclear()
     ekpath = os.path.join(cwd, "example_ekuef.ek")
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
@@ -3342,7 +3145,6 @@ def test_ekuef():
     assert testhandle is not None
     spice.ekuef(testhandle)
     spice.ekcls(testhandle)
-    spice.kclear()
     if spice.exists(ekpath):
         os.remove(ekpath)  # pragma: no cover
 
@@ -3488,7 +3290,6 @@ def test_esrchc():
 
 
 def test_et2lst():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2004 may 17 16:30:00")
     hr, mn, sc, time, ampm = spice.et2lst(
@@ -3499,20 +3300,16 @@ def test_et2lst():
     assert sc == 22
     assert time == "11:19:22"
     assert ampm == "11:19:22 A.M."
-    spice.kclear()
-
+    
 
 def test_et2utc():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = -527644192.5403653
     output = spice.et2utc(et, "J", 6)
     assert output == "JD 2445438.006415"
-    spice.kclear()
-
+    
 
 def test_et2utc_vectorized():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = -527644192.5403653
     output = spice.et2utc(3 * [et], "J", 6)
@@ -3520,8 +3317,7 @@ def test_et2utc_vectorized():
         output,
         np.array(("JD 2445438.006415", "JD 2445438.006415", "JD 2445438.006415")),
     )
-    spice.kclear()
-
+    
 
 def test_etcal():
     et = np.arange(0.0, 20.0)
@@ -3539,7 +3335,6 @@ def test_eul2m():
 
 
 def test_eul2xf():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("Jan 1, 2009")
     expected = spice.sxform("IAU_EARTH", "J2000", et)
@@ -3553,11 +3348,9 @@ def test_eul2xf():
     ]
     out = spice.eul2xf(eul, 3, 1, 3)
     npt.assert_array_almost_equal(out, expected)
-    spice.kclear()
-
+    
 
 def test_ev2lin():
-    spice.kclear()
     # lightsail 2
     tle = [
         "1 44420U 19036AC  19311.70264562  .00005403  00000-0  12176-2 0  9991",
@@ -3620,7 +3413,6 @@ def test_ev2lin():
         ]
     )
     npt.assert_array_almost_equal(expected_state_3600, state_3600)
-    spice.kclear()
     # test at t86400
     state_86400 = spice.ev2lin(epoch + 86400, geophs, elems)
     expected_state_86400 = np.array(
@@ -3634,21 +3426,18 @@ def test_ev2lin():
         ]
     )
     npt.assert_array_almost_equal(expected_state_86400, state_86400)
-    spice.kclear()
-
+    
 
 def test_exists():
     assert spice.exists(CoreKernels.testMetaKernel)
 
 
 def test_expool():
-    spice.kclear()
     textbuf = ["DELTET/K = 1.657D-3", "DELTET/EB = 1.671D-2"]
     spice.lmpool(textbuf)
     assert spice.expool("DELTET/K")
     assert spice.expool("DELTET/EB")
-    spice.kclear()
-
+    
 
 def test_expoolstress():
     # this is to show that the bug in lmpool is fixed (lenvals needs +=1)
@@ -3661,7 +3450,6 @@ def test_failed():
 
 
 def test_fovray():
-    spice.kclear()
     # load kernels
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassSclk)
@@ -3680,11 +3468,9 @@ def test_fovray():
         "CASSINI_ISS_NAC", [0.0, 0.0, 1.0], frame, "S", "CASSINI", et
     )
     assert visible is True
-    spice.kclear()
-
+    
 
 def test_fovtrg():
-    spice.kclear()
     # load kernels
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassSclk)
@@ -3707,8 +3493,7 @@ def test_fovtrg():
         et,
     )
     assert visible is True
-    spice.kclear()
-
+    
 
 def test_frame():
     vec = [23.0, -3.0, 18.0]
@@ -3734,7 +3519,6 @@ def test_ftncls():
     import datetime
 
     spice.reset()
-    spice.kclear()
     # Create temporary filename
     FTNCLS = os.path.join(cwd, "ex_ftncls.txt")
     # Ensure file does not exist
@@ -3751,65 +3535,53 @@ def test_ftncls():
         closed_unit = spice.fn2lun(FTNCLS)
     # Cleanup
     spice.reset()
-    spice.kclear()
     if spice.exists(FTNCLS):
         os.remove(FTNCLS)  # pragma no cover
 
 
 def test_furnsh():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     # 4 kernels + the meta kernel = 5
     assert spice.ktotal("ALL") == 5
-    spice.kclear()
-
+    
 
 def test_furnsh_vectorized():
-    spice.kclear()
     spice.furnsh([CoreKernels.testMetaKernel, ExtraKernels.voyagerSclk])
     # 4 + 1 + 1 = 6
     assert spice.ktotal("ALL") == 6
-    spice.kclear()
-
+    
 
 def test_gcpool():
     # same as pcpool test
     import string
 
-    spice.kclear()
     data = [j + str(i) for i, j in enumerate(list(string.ascii_lowercase))]
     spice.pcpool("pcpool_test", data)
     cvals = spice.gcpool("pcpool_test", 0, 30)
     assert data == cvals
-    spice.kclear()
-
+    
 
 def test_gdpool():
     # same as pdpool test
-    spice.kclear()
     data = np.arange(0.0, 10.0)
     spice.pdpool("pdpool_array", data)
     dvals = spice.gdpool("pdpool_array", 0, 30)
     npt.assert_array_almost_equal(data, dvals)
-    spice.kclear()
-
+    
 
 def test_georec():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     size, radii = spice.bodvrd("EARTH", "RADII", 3)
     flat = (radii[0] - radii[2]) / radii[0]
     lon = 118.0 * spice.rpd()
     lat = 32.0 * spice.rpd()
     alt = 0.0
-    spice.kclear()
     output = spice.georec(lon, lat, alt, radii[0], flat)
     expected = [-2541.74621567, 4780.329376, 3360.4312092]
     npt.assert_array_almost_equal(expected, output)
 
 
 def test_getelm():
-    spice.kclear()
     tle = [
         "1 18123U 87 53  A 87324.61041692 -.00000023  00000-0 -75103-5 0 00675",
         "2 18123  98.8296 152.0074 0014950 168.7820 191.3688 14.12912554 21686",
@@ -3831,8 +3603,7 @@ def test_getelm():
     expected_epoch = -382310404.79526937
     npt.assert_array_almost_equal(expected_elems, elems)
     npt.assert_almost_equal(epoch, expected_epoch)
-    spice.kclear()
-
+    
 
 def test_getfat():
     arch, outtype = spice.getfat(CoreKernels.lsk)
@@ -3841,7 +3612,6 @@ def test_getfat():
 
 
 def test_getfov():
-    spice.kclear()
     kernel = os.path.join(cwd, "getfov_test.ti")
     if spice.exists(kernel):
         os.remove(kernel)  # pragma: no cover
@@ -3863,7 +3633,6 @@ def test_getfov():
     assert n == 3
     expected = np.array([[0.0, 0.8, 0.5], [0.4, 0.8, -0.2], [-0.4, 0.8, -0.2]])
     npt.assert_array_almost_equal(expected, bounds)
-    spice.kclear()
     if spice.exists(kernel):
         os.remove(kernel)  # pragma: no cover
 
@@ -3885,7 +3654,6 @@ def test_gfclrh():
 
 
 def test_gfdist():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et("2007 JAN 01 00:00:00 TDB")
     et1 = spice.str2et("2007 APR 01 00:00:00 TDB")
@@ -3919,11 +3687,9 @@ def test_gfdist():
         "2007-APR-01 00:00:00.000000 (TDB)",
     ]
     assert temp_results == expected
-    spice.kclear()
-
+    
 
 def test_gfevnt():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     #
     et_start = spice.str2et("2001 jan 01 00:00:00.000")
@@ -3983,11 +3749,9 @@ def test_gfevnt():
     if spice.gfbail():
         spice.gfclrh()  # pragma: no cover
     spice.gfsstp(0.5)
-    spice.kclear()
-
+    
 
 def test_gffove():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassCk)
     spice.furnsh(CassiniKernels.cassFk)
@@ -4040,11 +3804,9 @@ def test_gffove():
     if spice.gfbail():
         spice.gfclrh()  # pragma: no cover
     spice.gfsstp(0.5)
-    spice.kclear()
-
+    
 
 def test_gfilum():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.marsSpk)  # to get Phobos ephemeris
     # Hard-code the future position of MER-1
@@ -4109,8 +3871,7 @@ def test_gfilum():
     assert startEpoch.startswith("1971 OCT 02")
     assert endEpoch.startswith("1971 NOV 29")
     # Cleanup
-    spice.kclear()
-
+    
 
 def test_gfinth():
     spice.gfinth(2)
@@ -4119,7 +3880,6 @@ def test_gfinth():
 
 
 def test_gfocce():
-    spice.kclear()
     if spice.gfbail():
         spice.gfclrh()  # pragma: no cover
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -4162,11 +3922,9 @@ def test_gfocce():
         spice.gfclrh()  # pragma: no cover
     count = spice.wncard(result)
     assert count == 1
-    spice.kclear()
-
+    
 
 def test_gfoclt():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et("2001 DEC 01 00:00:00 TDB")
     et1 = spice.str2et("2002 JAN 01 00:00:00 TDB")
@@ -4196,8 +3954,7 @@ def test_gfoclt():
     end_time = spice.timout(end, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 41)
     assert start_time == "2001-DEC-14 20:10:14.203347 (TDB)"
     assert end_time == "2001-DEC-14 21:35:50.328804 (TDB)"
-    spice.kclear()
-
+    
 
 def test_gfpa():
     relate = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
@@ -4245,7 +4002,6 @@ def test_gfpa():
         ],
         "ABSMAX": ["2007-JAN-19 04:27:54.610", "2007-JAN-19 04:27:54.610"],
     }
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et("2006 DEC 01")
     et1 = spice.str2et("2007 JAN 31")
@@ -4276,11 +4032,9 @@ def test_gfpa():
                 temp_results.append(timstr_left)
                 temp_results.append(timstr_right)
             assert temp_results == expected.get(relation)
-    spice.kclear()
-
+    
 
 def test_gfposc():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et("2007 JAN 01")
     et1 = spice.str2et("2008 JAN 01")
@@ -4311,8 +4065,7 @@ def test_gfposc():
     end_time = spice.timout(end, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 41)
     assert start_time == end_time
     assert start_time == "2007-JUN-21 17:54:13.201561 (TDB)"
-    spice.kclear()
-
+    
 
 def test_gfrefn():
     s1 = [True, False]
@@ -4385,7 +4138,6 @@ def test_gfrepu():
 
 
 def test_gfrfov():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassCk)
     spice.furnsh(CassiniKernels.cassFk)
@@ -4419,8 +4171,7 @@ def test_gfrfov():
     assert spice.timout(result[2], sTimout) == "2013-FEB-25 11:55:00 UTC"
     assert spice.timout(result[3], sTimout) == "2013-FEB-25 12:05:33 UTC"
     # Cleanup
-    spice.kclear()
-
+    
 
 def test_gfrr():
     relate = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
@@ -4476,7 +4227,6 @@ def test_gfrr():
         ],
         "ABSMAX": ["2007-MAR-25 17:26:56.158", "2007-MAR-25 17:26:56.158"],
     }
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et("2007 JAN 01")
     et1 = spice.str2et("2007 APR 01")
@@ -4506,11 +4256,9 @@ def test_gfrr():
                 temp_results.append(timstr_left)
                 temp_results.append(timstr_right)
             assert temp_results == expected.get(relation)
-    spice.kclear()
-
+    
 
 def test_gfsep():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     expected = [
         "2007-JAN-03 14:20:24.628017 (TDB)",
@@ -4559,11 +4307,9 @@ def test_gfsep():
             spice.timout(start, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 41)
         )
     assert temp_results == expected
-    spice.kclear()
-
+    
 
 def test_gfsntc():
-    spice.kclear()
     kernel = os.path.join(cwd, "gfnstc_test.tf")
     if spice.exists(kernel):
         os.remove(kernel)  # pragma: no cover # pragma: no cover
@@ -4626,7 +4372,6 @@ def test_gfsntc():
     endstr = spice.timout(end, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 80)
     assert begstr == "2007-SEP-23 09:46:39.606982 (TDB)"
     assert endstr == "2007-SEP-23 09:46:39.606982 (TDB)"
-    spice.kclear()
     if spice.exists(kernel):
         os.remove(kernel)  # pragma: no cover # pragma: no cover
 
@@ -4647,7 +4392,6 @@ def test_gfstol():
 
 
 def test_gfsubc():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et("2007 JAN 01")
     et1 = spice.str2et("2008 JAN 01")
@@ -4679,11 +4423,9 @@ def test_gfsubc():
     end_time = spice.timout(end, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 41)
     assert start_time == "2007-MAY-04 17:08:56.724320 (TDB)"
     assert end_time == "2007-AUG-09 01:51:29.307830 (TDB)"
-    spice.kclear()
-
+    
 
 def test_gftfov():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassCk)
     spice.furnsh(CassiniKernels.cassFk)
@@ -4722,11 +4464,9 @@ def test_gftfov():
     assert spice.timout(result[2], sTimout) == "2013-FEB-25 11:55:00 UTC"
     assert spice.timout(result[3], sTimout) == "2013-FEB-25 12:04:30 UTC"
     # Cleanup
-    spice.kclear()
-
+    
 
 def test_gfudb():
-
     # ensure no numpy bool conversion deprication warning is raised
     with pytest.warns(None) as warnrec:
         spice.kclear()
@@ -4759,7 +4499,6 @@ def test_gfudb():
 
 
 def test_gfudb2():
-    spice.kclear()
     # load kernels
     spice.furnsh(CoreKernels.testMetaKernel)
     # begin test
@@ -4786,12 +4525,10 @@ def test_gfudb2():
     spice.gfudb(gfq, gfb, step, cnfine, result)
     # count
     assert len(result) > 50  # true value is 56
-    spice.kclear()
-
+    
 
 def test_gfuds():
     relations = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
-    spice.kclear()
     # load kernels
     spice.furnsh(CoreKernels.testMetaKernel)
     # begin test
@@ -4823,21 +4560,17 @@ def test_gfuds():
         )
         assert len(result) > 0
     # cleanup
-    spice.kclear()
-
+    
 
 def test_gipool():
     # same as pipool test
-    spice.kclear()
     data = np.arange(0, 10)
     spice.pipool("pipool_array", data)
     ivals = spice.gipool("pipool_array", 0, 50)
     npt.assert_array_almost_equal(data, ivals)
-    spice.kclear()
-
+    
 
 def test_gnpool():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     var = "BODY599*"
     index = 0
@@ -4854,7 +4587,6 @@ def test_gnpool():
         "BODY599_NUT_PREC_RA",
     ]
     kervar = spice.gnpool(var, index, room)
-    spice.kclear()
     assert set(expected) == set(kervar)
 
 
@@ -4888,7 +4620,6 @@ def test_ident():
 def test_illum():
     # Nearly the same as first half of test_edterm
     # possibly not smart to pick a terminator point for test.
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2007 FEB 3 00:00:00.000")
     trgepc, obspos, trmpts = spice.edterm(
@@ -4904,12 +4635,10 @@ def test_illum():
     npt.assert_almost_equal(spice.dpr() * phase, 9.206597597007834)
     npt.assert_almost_equal(spice.dpr() * solar, 90.26976568986987)
     npt.assert_almost_equal(spice.dpr() * emissn, 99.27359835825851)
-    spice.kclear()
-
+    
 
 def test_ilumin():
     # Same as first half of test_edterm
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2007 FEB 3 00:00:00.000")
     trgepc, obspos, trmpts = spice.edterm(
@@ -4949,11 +4678,9 @@ def test_ilumin():
         "Ellipsoid", "MOON", et, "IAU_MOON", "LT+S", "EARTH", trmpts[2]
     )
     npt.assert_almost_equal(spice.dpr() * solar2, 90.269765730)
-    spice.kclear()
-
+    
 
 def test_illumf():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassSclk)
     spice.furnsh(CassiniKernels.cassFk)
@@ -4982,11 +4709,9 @@ def test_illumf():
     assert emissn == pytest.approx(63.23618556218115)
     assert not lit  # Incidence angle is greater than 90deg
     assert visibl  # Emission angle is less than 90deg
-    spice.kclear()
-
+    
 
 def test_illumg():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassSclk)
     spice.furnsh(CassiniKernels.cassFk)
@@ -5009,11 +4734,9 @@ def test_illumg():
     assert phase == pytest.approx(161.859925246638)
     assert incid == pytest.approx(18.47670084384343)
     assert emissn == pytest.approx(143.6546170649875)
-    spice.kclear()
-
+    
 
 def test_inedpl():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     TIME = "Oct 31 2002, 12:55:00 PST"
     FRAME = "J2000"
@@ -5025,7 +4748,6 @@ def test_inedpl():
     pos = [pos[0] / radii[0] ** 2.0, pos[1] / radii[1] ** 2.0, pos[2] / radii[2] ** 2.0]
     plane = spice.nvc2pl(pos, 1.0)
     term = spice.inedpl(radii[0], radii[1], radii[2], plane)
-    spice.kclear()
     expected_center = [0.21512031, 0.15544527, 0.067391641]
     expected_s_major = [
         -3.73561164720596843836e03,
@@ -5045,7 +4767,6 @@ def test_inedpl():
 
 
 def test_inelpl():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     dim, radii = spice.bodvrd("SATURN", "RADII", 3)
     vertex = [100.0 * radii[0], 0.0, radii[0] * 100.0]
@@ -5059,11 +4780,9 @@ def test_inelpl():
     assert nxpts == 2.0
     npt.assert_array_almost_equal(expectedXpt1, xpt1, decimal=4)
     npt.assert_array_almost_equal(expectedXpt2, xpt2, decimal=4)
-    spice.kclear()
-
+    
 
 def test_inrypl():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     dim, radii = spice.bodvrd("SATURN", "RADII", 3)
     vertex = [3.0 * radii[0], 0.0, radii[2] * 0.5]
@@ -5075,8 +4794,7 @@ def test_inrypl():
     expectedXpt = np.array([180804.0, 47080.6050513, 0.0])
     assert nxpts == 1
     np.testing.assert_almost_equal(np.array(xpt), expectedXpt, decimal=6)
-    spice.kclear()
-
+    
 
 def test_insrtc():
     test_cell = spice.cell_char(10, 10)
@@ -5272,12 +4990,10 @@ def test_kclear():
 
 
 def test_kdata():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     file, ftype, source, handle = spice.kdata(0, "META", 400, 10, 50)
     assert ftype == "META"
-    spice.kclear()
-
+    
 
 def test_kepleq():
     p = 10000.0
@@ -5305,23 +5021,18 @@ def test_kepleq():
 
 
 def test_kinfo():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     filetype, source, handle = spice.kinfo(CoreKernels.testMetaKernel, 80, 80)
     assert filetype == "META"
-    spice.kclear()
-
+    
 
 def test_kplfrm():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     cell = spice.kplfrm(-1)
     assert cell.size > 100
-    spice.kclear()
-
+    
 
 def test_kpsolv():
-    spice.kclear()
     r = 0.0
     for i in range(1, 20):
         theta = 0.0
@@ -5334,19 +5045,16 @@ def test_kpsolv():
             theta = theta + 0.1
         r = r + 0.05
         pass
-    spice.kclear()
-
+    
 
 def test_ktotal():
-    spice.kclear()
     # same as unload test
     spice.furnsh(CoreKernels.testMetaKernel)
     # 4 kernels + the meta kernel = 5
     assert spice.ktotal("ALL") == 5
     spice.unload(CoreKernels.testMetaKernel)
     assert spice.ktotal("ALL") == 0
-    spice.kclear()
-
+    
 
 def test_kxtrct():
     # Tests from examples at this URL:  https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/kxtrct_c.html#Examples
@@ -5433,7 +5141,6 @@ def test_latsph():
 
 
 def test_latsrf():
-    spice.kclear()
     spice.furnsh(ExtraKernels.phobosDsk)
     srfpts = spice.latsrf(
         "DSK/UNPRIORITIZED", "phobos", 0.0, "iau_phobos", [[0.0, 45.0], [60.0, 45.0]]
@@ -5441,8 +5148,7 @@ def test_latsrf():
     radii = [spice.recrad(x)[0] for x in srfpts]
     assert radii[0] > 9.77
     assert radii[1] > 9.51
-    spice.kclear()
-
+    
 
 def test_lcase():
     assert spice.lcase("THIS IS AN EXAMPLE") == "THIS IS AN EXAMPLE".lower()
@@ -5450,7 +5156,6 @@ def test_lcase():
 
 
 def test_ldpool():
-    spice.kclear()
     ldpool_names = [
         "DELTET/DELTA_T_A",
         "DELTET/K",
@@ -5502,7 +5207,6 @@ def test_ldpool():
         n, vartype = spice.dtpool(var)
         assert expectLen == n
         assert vartype == "N"
-    spice.kclear()
     if spice.exists(kernel):
         os.remove(kernel)  # pragma: no cover
 
@@ -5514,7 +5218,6 @@ def test_lgrind():
 
 
 def test_limbpt():
-    spice.kclear()
     spice.furnsh(CoreKernels.spk)
     spice.furnsh(ExtraKernels.marsSpk)
     spice.furnsh(CoreKernels.pck)
@@ -5540,11 +5243,9 @@ def test_limbpt():
     )
     assert points is not None
     assert len(points) == 3
-    spice.kclear()
-
+    
 
 def test_lmpool():
-    spice.kclear()
     lmpool_names = [
         "DELTET/DELTA_T_A",
         "DELTET/K",
@@ -5587,11 +5288,9 @@ def test_lmpool():
         n, vartype = spice.dtpool(var)
         assert expectLen == n
         assert vartype == "N"
-    spice.kclear()
-
+    
 
 def test_lmpool_numpy():
-    spice.kclear()
     lmpool_names = [
         "DELTET/DELTA_T_A",
         "DELTET/K",
@@ -5636,8 +5335,7 @@ def test_lmpool_numpy():
         n, vartype = spice.dtpool(var)
         assert expectLen == n
         assert vartype == "N"
-    spice.kclear()
-
+    
 
 def test_lmpoolstress():
     # occasional crash in lmpool believed to be caused by lenvals not being +=1'ed for end of line.
@@ -5671,11 +5369,9 @@ def test_lparss():
 
 
 def test_lspcn():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("21 march 2005")
     lon = spice.dpr() * spice.lspcn("EARTH", et, "NONE")
-    spice.kclear()
     npt.assert_almost_equal(lon, 0.48153755894179384)
 
 
@@ -5736,7 +5432,6 @@ def test_lstlti():
 
 
 def test_ltime():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     OBS = 399
     TARGET = 5
@@ -5748,7 +5443,6 @@ def test_ltime():
     assert arrive_utc == "2004 JUL 04 00:48:38.717"
     receive, rtime = spice.ltime(et, OBS, "<-", TARGET)
     receive_utc = spice.et2utc(receive, "C", 3, 50)
-    spice.kclear()
     npt.assert_almost_equal(rtime, 2918.75247, decimal=4)
     assert receive_utc == "2004 JUL 03 23:11:21.248"
 
@@ -6058,7 +5752,6 @@ def test_nvp2pl():
 
 
 def test_occult():
-    spice.kclear()
     # load kernels
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.earthStnSpk)
@@ -6111,8 +5804,7 @@ def test_occult():
     # The Sun is in front of Mercury as seen by observer (DSS-13)
     assert occult_code_three == -3  # SPICE_OCCULT_TOTAL1
     # cleanup
-    spice.kclear()
-
+    
 
 def test_ordc():
     charset = spice.cell_char(10, 10)
@@ -6175,7 +5867,6 @@ def test_orderi():
 
 
 def test_oscelt():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("Dec 25, 2007")
     state, ltime = spice.spkezr("Moon", et, "J2000", "LT+S", "EARTH")
@@ -6192,8 +5883,7 @@ def test_oscelt():
         1.00000000000000000000e00,
     ]
     npt.assert_array_almost_equal(elts, expected, decimal=4)
-    spice.kclear()
-
+    
 
 def test_oscltx_stress():
     for i in range(0, 30):
@@ -6201,7 +5891,6 @@ def test_oscltx_stress():
 
 
 def test_oscltx():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("Dec 25, 2007")
     state, ltime = spice.spkezr("Moon", et, "J2000", "LT+S", "EARTH")
@@ -6221,26 +5910,22 @@ def test_oscltx():
         0.00000000000000000000e00,
     ]
     npt.assert_array_almost_equal(elts, expected, decimal=4)
-    spice.kclear()
-
+    
 
 def test_pckopn_pckw02_pckcls():
     pck = os.path.join(cwd, "test_pck.pck")
     if spice.exists(pck):
         os.remove(pck)  # pragma: no cover
-    spice.kclear()
     handle = spice.pckopn(pck, "Test PCK file", 5000)
     spice.pckw02(
         handle, 301, "j2000", 0.0, 3.0, "segid", 1.0, 3, 1, [1.0, 2.0, 3.0], 0.0
     )
     spice.pckcls(handle)
-    spice.kclear()
     if spice.exists(pck):
         os.remove(pck)  # pragma: no cover
 
 
 def test_pckcov():
-    spice.kclear()
     ids = spice.cell_int(1000)
     cover = spice.cell_double(2000)
     spice.pckfrm(ExtraKernels.earthHighPerPck, ids)
@@ -6249,55 +5934,43 @@ def test_pckcov():
     result = [x for x in cover]
     expected = [94305664.18380372, 757080064.1838132]
     npt.assert_array_almost_equal(result, expected)
-    spice.kclear()
-
+    
 
 def test_pckfrm():
-    spice.kclear()
     ids = spice.cell_int(1000)
     spice.pckfrm(ExtraKernels.earthHighPerPck, ids)
     assert ids[0] == 3000
-    spice.kclear()
-
+    
 
 def test_pcklof():
-    spice.kclear()
     handle = spice.pcklof(ExtraKernels.earthHighPerPck)
     assert handle != -1
     spice.pckuof(handle)
-    spice.kclear()
-
+    
 
 def test_pckuof():
-    spice.kclear()
     handle = spice.pcklof(ExtraKernels.earthHighPerPck)
     assert handle != -1
     spice.pckuof(handle)
-    spice.kclear()
-
+    
 
 def test_pcpool():
     import string
 
-    spice.kclear()
     data = [j + str(i) for i, j in enumerate(list(string.ascii_lowercase))]
     spice.pcpool("pcpool_test", data)
     cvals = spice.gcpool("pcpool_test", 0, 30, 4)
     assert data == cvals
-    spice.kclear()
-
+    
 
 def test_pdpool():
-    spice.kclear()
     data = np.arange(0.0, 10.0)
     spice.pdpool("pdpool_array", data)
     dvals = spice.gdpool("pdpool_array", 0, 30)
     npt.assert_array_almost_equal(data, dvals)
-    spice.kclear()
-
+    
 
 def test_pgrrec():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     n, radii = spice.bodvrd("MARS", "RADII", 3)
     re = radii[0]
@@ -6306,8 +5979,7 @@ def test_pgrrec():
     rectan = spice.pgrrec("Mars", 90.0 * spice.rpd(), 45 * spice.rpd(), 300, re, f)
     expected = [1.604650025e-13, -2.620678915e3, 2.592408909e3]
     npt.assert_array_almost_equal(rectan, expected)
-    spice.kclear()
-
+    
 
 def test_phaseq():
     relate = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
@@ -6345,7 +6017,6 @@ def test_phaseq():
         "LOCMAX": [3.055062862, 3.055062862, 3.074603891, 3.074603891],
         "ABSMAX": [3.074603891, 3.074603891],
     }
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et("2006 DEC 01")
     et1 = spice.str2et("2007 JAN 31")
@@ -6376,21 +6047,18 @@ def test_phaseq():
                 temp_results.append(startPhase)
                 temp_results.append(stopPhase)
             npt.assert_array_almost_equal(temp_results, expected.get(relation))
-    spice.kclear()
-
+    
 
 def test_pi():
     assert spice.pi() == np.pi
 
 
 def test_pipool():
-    spice.kclear()
     data = np.arange(0, 10)
     spice.pipool("pipool_array", data)
     ivals = spice.gipool("pipool_array", 0, 50)
     npt.assert_array_almost_equal(data, ivals)
-    spice.kclear()
-
+    
 
 def test_pjelpl():
     center = [1.0, 1.0, 1.0]
@@ -6549,7 +6217,6 @@ def test_prsint():
 
 
 def test_psv2pl():
-    spice.kclear()
     epoch = "Jan 1 2005"
     frame = "ECLIPJ2000"
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -6560,14 +6227,12 @@ def test_psv2pl():
     mstate, mltime = spice.spkezr("MOON", et, frame, "NONE", "EARTH BARYCENTER")
     em_plane = spice.psv2pl(mstate[0:3], mstate[0:3], mstate[3:6])
     em_norm, em_const = spice.pl2nvc(em_plane)
-    spice.kclear()
     npt.assert_almost_equal(
         spice.vsep(es_norm, em_norm) * spice.dpr(), 5.0424941, decimal=6
     )
 
 
 def test_pxform():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     lon = 118.25 * spice.rpd()
     lat = 34.05 * spice.rpd()
@@ -6580,14 +6245,12 @@ def test_pxform():
     f = (equatr - polar) / equatr
     epos = spice.georec(lon, lat, alt, equatr, f)
     rotate = np.array(spice.pxform("IAU_EARTH", "J2000", et))
-    spice.kclear()
     jstate = np.dot(epos, rotate)
     expected = np.array([5042.1309421, 1603.52962986, 3549.82398086])
     npt.assert_array_almost_equal(jstate, expected, decimal=4)
 
 
 def test_pxfrm2():
-    spice.kclear()
     # load kernels
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassSclk)
@@ -6630,8 +6293,7 @@ def test_pxfrm2():
     npt.assert_almost_equal(lon, 125.42089677611104, decimal=5)
     npt.assert_almost_equal(lat, -6.3718522103931585, decimal=5)
     # end of test
-    spice.kclear()
-
+    
 
 def test_q2m():
     mout = spice.q2m(np.array([0.5, 0.4, 0.3, 0.1]))
@@ -6716,7 +6378,6 @@ def test_rdtext():
     # Create ISO UTC datetime string using current time
     utcnow = datetime.datetime.utcnow().isoformat()
     spice.reset()
-    spice.kclear()
     # Create temporary filenames
     RDTEXT = os.path.join(cwd, "ex_rdtext.txt")
     xRDTEXT = os.path.join(cwd, "xex_rdtext.txt")
@@ -6776,7 +6437,6 @@ def test_rdtext():
     rdtext_helper(xRDTEXT, "", True)
     # Cleanup
     spice.reset()
-    spice.kclear()
     if spice.exists(RDTEXT):
         os.remove(RDTEXT)  # pragma no cover
     assert not spice.failed()
@@ -6794,7 +6454,6 @@ def test_reccyl():
 
 
 def test_recgeo():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     num_vals, radii = spice.bodvrd("EARTH", "RADII", 3)
     flat = (radii[0] - radii[2]) / radii[0]
@@ -6803,8 +6462,7 @@ def test_recgeo():
     actual = [lon * spice.dpr(), lat * spice.dpr(), alt]
     expected = [118.000000, 32.000000, 0.001915518]
     npt.assert_array_almost_equal(actual, expected, decimal=4)
-    spice.kclear()
-
+    
 
 def test_reclat():
     expected1 = np.array([1.0, 0.0, 0.0])
@@ -6816,7 +6474,6 @@ def test_reclat():
 
 
 def test_recpgr():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     num_vals, radii = spice.bodvrd("MARS", "RADII", 3)
     flat = (radii[0] - radii[2]) / radii[0]
@@ -6825,8 +6482,7 @@ def test_recpgr():
     actual = [lon * spice.dpr(), lat * spice.dpr(), alt]
     expected = [90.0, 45.0, 300.0]
     npt.assert_array_almost_equal(actual, expected, decimal=4)
-    spice.kclear()
-
+    
 
 def test_recrad():
     range1, ra1, dec1 = spice.recrad([1.0, 0.0, 0.0])
@@ -7024,68 +6680,55 @@ def test_scard():
 
 
 def test_scdecd():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     timein = spice.scencd(-32, "2/20538:39:768")
     sclkch = spice.scdecd(-32, timein)
     assert sclkch == "2/20538:39:768"
-    spice.kclear()
-
+    
 
 def test_sce2c():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     et = spice.str2et("1979 JUL 05 21:50:21.23379")
     sclkdp = spice.sce2c(-32, et)
     npt.assert_almost_equal(sclkdp, 985327949.9999709, decimal=6)
-    spice.kclear()
-
+    
 
 def test_sce2s():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     et = spice.str2et("1979 JUL 05 21:50:21.23379")
     sclkch = spice.sce2s(-32, et)
     assert sclkch == "2/20538:39:768"
-    spice.kclear()
-
+    
 
 def test_sce2t():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     et = spice.str2et("1979 JUL 05 21:50:21.23379")
     sclkdp = spice.sce2t(-32, et)
     npt.assert_almost_equal(sclkdp, 985327950.000000)
-    spice.kclear()
-
+    
 
 def test_scencd():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     sclkch = spice.scdecd(-32, 985327950.0, 50)
     sclkdp = spice.scencd(-32, sclkch)
     npt.assert_almost_equal(sclkdp, 985327950.0)
     assert sclkch == "2/20538:39:768"
-    spice.kclear()
-
+    
 
 def test_scencd_vectorized():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     sclkch = "2/20538:39:768"
     sclkdp = spice.scencd(-32, 3 * [sclkch])
     npt.assert_almost_equal(sclkdp, 3 * [985327950.0], decimal=6)
-    spice.kclear()
-
+    
 
 def test_scfmt():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     pstart, pstop = spice.scpart(-32)
@@ -7093,42 +6736,34 @@ def test_scfmt():
     stop = spice.scfmt(-32, pstop[0])
     assert start == "00011:00:001"
     assert stop == "04011:21:784"
-    spice.kclear()
-
+    
 
 def test_scpart():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     pstart, pstop = spice.scpart(-32)
     assert pstart is not None
     assert pstop is not None
-    spice.kclear()
-
+    
 
 def test_scs2e():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     et = spice.scs2e(-32, "2/20538:39:768")
     npt.assert_almost_equal(et, -646668528.58222842)
     utc = spice.et2utc(et, "C", 3, 50)
     assert utc == "1979 JUL 05 21:50:21.234"
-    spice.kclear()
-
+    
 
 def test_sct2e():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     et = spice.sct2e(-32, 985327965.0)
     utc = spice.et2utc(et, "C", 3, 50)
     assert utc == "1979 JUL 05 21:50:22.134"
-    spice.kclear()
-
+    
 
 def test_sct2e_vectorized():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     inputlist = 3 * [985327965.0]
@@ -7136,17 +6771,14 @@ def test_sct2e_vectorized():
     to_test = spice.sct2e(-32, inputlist)
     expected = -646668527.6822292
     npt.assert_almost_equal(3 * [expected], to_test, decimal=6)
-    spice.kclear()
-
+    
 
 def test_sctiks():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.voyagerSclk)
     ticks = spice.sctiks(-32, "20656:14:768")
     assert ticks == 991499967.00000000
-    spice.kclear()
-
+    
 
 def test_sdiff():
     # SPICEINT_CELL
@@ -7245,7 +6877,6 @@ def test_sigerr():
 
 
 def test_sincpt():
-    spice.kclear()
     # load kernels
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassSclk)
@@ -7277,8 +6908,7 @@ def test_sincpt():
     ]
     npt.assert_array_almost_equal(spoint, expected_spoint, 5)
     npt.assert_array_almost_equal(obspos, expected_obspos, 5)
-    spice.kclear()
-
+    
 
 def test_size():
     test_cell_one = spice.cell_int(8)
@@ -7399,7 +7029,6 @@ def test_spk14a():
     spk14 = os.path.join(cwd, "test14.bsp")
     if spice.exists(spk14):
         os.remove(spk14)  # pragma: no cover
-    spice.kclear()
     handle = spice.spkopn(spk14, "Type 14 SPK internal file name.", 1024)
     init_size = os.path.getsize(spk14)
     spice.spk14b(handle, "SAMPLE_SPK_TYPE_14_SEGMENT", 399, 0, "J2000", 100.0, 400.0, 2)
@@ -7407,7 +7036,6 @@ def test_spk14a():
     spice.spk14e(handle)
     spice.spkcls(handle)
     end_size = os.path.getsize(spk14)
-    spice.kclear()
     assert end_size != init_size
     if spice.exists(spk14):
         os.remove(spk14)  # pragma: no cover
@@ -7506,7 +7134,6 @@ def test_spk14b():
     spk14 = os.path.join(cwd, "test14.bsp")
     if spice.exists(spk14):
         os.remove(spk14)  # pragma: no cover
-    spice.kclear()
     handle = spice.spkopn(spk14, "Type 14 SPK internal file name.", 1024)
     init_size = os.path.getsize(spk14)
     spice.spk14b(handle, "SAMPLE_SPK_TYPE_14_SEGMENT", 399, 0, "J2000", 100.0, 400.0, 2)
@@ -7514,7 +7141,6 @@ def test_spk14b():
     spice.spk14e(handle)
     spice.spkcls(handle)
     end_size = os.path.getsize(spk14)
-    spice.kclear()
     assert end_size != init_size
     if spice.exists(spk14):
         os.remove(spk14)  # pragma: no cover
@@ -7608,7 +7234,6 @@ def test_spk14e():
     spk14 = os.path.join(cwd, "test14.bsp")
     if spice.exists(spk14):
         os.remove(spk14)  # pragma: no cover
-    spice.kclear()
     handle = spice.spkopn(spk14, "Type 14 SPK internal file name.", 1024)
     init_size = os.path.getsize(spk14)
     spice.spk14b(handle, "SAMPLE_SPK_TYPE_14_SEGMENT", 399, 0, "J2000", 100.0, 400.0, 2)
@@ -7616,14 +7241,12 @@ def test_spk14e():
     spice.spk14e(handle)
     spice.spkcls(handle)
     end_size = os.path.getsize(spk14)
-    spice.kclear()
     assert end_size != init_size
     if spice.exists(spk14):
         os.remove(spk14)  # pragma: no cover
 
 
 def test_spkacs():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2000 JAN 1 12:00:00 TDB")
     state, lt, dlt = spice.spkacs(301, et, "J2000", "lt+s", 399)
@@ -7640,11 +7263,9 @@ def test_spkacs():
     npt.assert_almost_equal(expected_lt, lt)
     npt.assert_almost_equal(expected_dlt, dlt)
     npt.assert_array_almost_equal(state, expected_state)
-    spice.kclear()
-
+    
 
 def test_spkapo():
-    spice.kclear()
     MARS = 499
     MOON = 301
     EPOCH = "Jan 1 2004 5:00 PM"
@@ -7660,11 +7281,9 @@ def test_spkapo():
         1.11454124484200235456e07,
     ]
     npt.assert_array_almost_equal(pos_vec, expected_pos, decimal=5)
-    spice.kclear()
-
+    
 
 def test_spkapp():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("Jan 1 2004 5:00 PM")
     state = spice.spkssb(301, et, "J2000")
@@ -7678,11 +7297,9 @@ def test_spkapp():
         9.40678685353050170193e00,
     ]
     npt.assert_array_almost_equal(state_vec, expected_vec, decimal=6)
-    spice.kclear()
-
+    
 
 def test_spkaps():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2000 JAN 1 12:00:00 TDB")
     stobs = spice.spkssb(399, et, "J2000")
@@ -7692,7 +7309,6 @@ def test_spkaps():
     acc = spice.vlcomg(3, 0.5 / 1.0, state0 + 3, -0.5 / 1.0, state2 + 3)
     acc = [acc[0], acc[1], acc[2], 0.0, 0.0, 0.0]
     state, lt, dlt = spice.spkaps(301, et, "j2000", "lt+s", stobs, acc)
-    spice.kclear()
     expected_lt = 1.3423106103603615
     expected_dlt = 1.073169085424106e-07
     expected_state = [
@@ -7713,7 +7329,6 @@ def test_spkcls():
     spk2 = os.path.join(cwd, "test2.bsp")
     if spice.exists(spk2):
         os.remove(spk2)  # pragma: no cover
-    spice.kclear()
     handle = spice.spkopn(spk2, "Type 2 SPK internal file name.", 4)
     init_size = os.path.getsize(spk2)
     discrete_epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
@@ -7773,14 +7388,12 @@ def test_spkcls():
     )
     spice.spkcls(handle)
     end_size = os.path.getsize(spk2)
-    spice.kclear()
     assert end_size != init_size
     if spice.exists(spk2):
         os.remove(spk2)  # pragma: no cover
 
 
 def test_spkcov():
-    spice.kclear()
 
     ids = spice.spkobj(CoreKernels.spk)
     temp_obj = ids[0]
@@ -7799,11 +7412,9 @@ def test_spkcov():
     expected = [-94651137.81606464, 315662463.18395346]
     npt.assert_array_almost_equal(result, expected)
 
-    spice.kclear()
-
+    
 
 def test_spkcpo():
-    spice.kclear()
     spice.furnsh(ExtraKernels.earthStnSpk)
     spice.furnsh(ExtraKernels.earthHighPerPck)
     spice.furnsh(ExtraKernels.earthTopoTf)
@@ -7813,7 +7424,6 @@ def test_spkcpo():
     state, lt = spice.spkcpo(
         "SUN", et, "DSS-14_TOPO", "OBSERVER", "CN+S", obspos, "EARTH", "ITRF93"
     )
-    spice.kclear()
     expected_lt = 497.93167787805714
     expected_state = [
         6.25122733012810498476e07,
@@ -7828,7 +7438,6 @@ def test_spkcpo():
 
 
 def test_spkcpt():
-    spice.kclear()
     spice.furnsh(ExtraKernels.earthStnSpk)
     spice.furnsh(ExtraKernels.earthHighPerPck)
     spice.furnsh(ExtraKernels.earthTopoTf)
@@ -7838,7 +7447,6 @@ def test_spkcpt():
     state, lt = spice.spkcpt(
         trgpos, "EARTH", "ITRF93", obstime, "ITRF93", "TARGET", "CN+S", "SUN"
     )
-    spice.kclear()
     expected_lt = 497.9321928250503
     expected_state = [
         -3.41263006568005401641e06,
@@ -7853,7 +7461,6 @@ def test_spkcpt():
 
 
 def test_spkcvo():
-    spice.kclear()
     spice.furnsh(ExtraKernels.earthStnSpk)
     spice.furnsh(ExtraKernels.earthHighPerPck)
     spice.furnsh(ExtraKernels.earthTopoTf)
@@ -7878,7 +7485,6 @@ def test_spkcvo():
         "EARTH",
         "ITRF93",
     )
-    spice.kclear()
     expected_lt = 497.93167787798325
     expected_state = [
         6.25122733012975975871e07,
@@ -7893,7 +7499,6 @@ def test_spkcvo():
 
 
 def test_spkcvt():
-    spice.kclear()
     spice.furnsh(ExtraKernels.earthStnSpk)
     spice.furnsh(ExtraKernels.earthHighPerPck)
     spice.furnsh(ExtraKernels.earthTopoTf)
@@ -7910,7 +7515,6 @@ def test_spkcvt():
     state, lt = spice.spkcvt(
         trgstate, 0.0, "EARTH", "ITRF93", obstime, "ITRF93", "TARGET", "CN+S", "SUN"
     )
-    spice.kclear()
     expected_lt = 497.932192824968
     expected_state = [
         -3.41263006574816117063e06,
@@ -7925,7 +7529,6 @@ def test_spkcvt():
 
 
 def test_spkez():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("July 4, 2003 11:00 AM PST")
     state, lt = spice.spkez(499, et, "J2000", "LT+S", 399)
@@ -7940,11 +7543,9 @@ def test_spkez():
     ]
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(state, expected_state)
-    spice.kclear()
-
+    
 
 def test_spkezp():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("July 4, 2003 11:00 AM PST")
     pos, lt = spice.spkezp(499, et, "J2000", "LT+S", 399)
@@ -7956,11 +7557,9 @@ def test_spkezp():
     ]
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(pos, expected_pos)
-    spice.kclear()
-
+    
 
 def test_spkezr():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("July 4, 2003 11:00 AM PST")
     state, lt = spice.spkezr("Mars", et, "J2000", "LT+S", "Earth")
@@ -7975,11 +7574,9 @@ def test_spkezr():
     ]
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(state, expected_state)
-    spice.kclear()
-
+    
 
 def test_spkezr_vectorized():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = np.full((100,), spice.str2et("July 4, 2003 11:00 AM PST"))
     state, lt = spice.spkezr("Mars", et, "J2000", "LT+S", "Earth")
@@ -7997,11 +7594,9 @@ def test_spkezr_vectorized():
     )
     npt.assert_allclose(lt, expected_lt)
     npt.assert_allclose(state, expected_state)
-    spice.kclear()
-
+    
 
 def test_spkgeo():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("July 4, 2003 11:00 AM PST")
     state, lt = spice.spkgeo(499, et, "J2000", 399)
@@ -8016,11 +7611,9 @@ def test_spkgeo():
     ]
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(state, expected_state)
-    spice.kclear()
-
+    
 
 def test_spkgps():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("July 4, 2003 11:00 AM PST")
     pos, lt = spice.spkgps(499, et, "J2000", 399)
@@ -8032,19 +7625,15 @@ def test_spkgps():
     ]
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(pos, expected_pos)
-    spice.kclear()
-
+    
 
 def test_spklef():
-    spice.kclear()
     handle = spice.spklef(CoreKernels.spk)
     assert handle != -1
     spice.spkuef(handle)
-    spice.kclear()
-
+    
 
 def test_spkltc():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2000 JAN 1 12:00:00 TDB")
     stobs = spice.spkssb(399, et, "j2000")
@@ -8062,12 +7651,10 @@ def test_spkltc():
     npt.assert_almost_equal(lt, expectedOneWayLt)
     npt.assert_almost_equal(dlt, expected_lt)
     npt.assert_array_almost_equal(state, expected_state, decimal=5)
-    spice.kclear()
-
+    
 
 def test_spkobj():
     # Same as test_spkcov
-    spice.kclear()
     cover = spice.cell_double(2000)
     ids = spice.spkobj(CoreKernels.spk)
     temp_obj = ids[0]
@@ -8076,14 +7663,12 @@ def test_spkobj():
     result = [x for x in cover]
     expected = [-94651137.81606464, 315662463.18395346]
     npt.assert_array_almost_equal(result, expected)
-    spice.kclear()
-
+    
 
 def test_spkopa():
     SPKOPA = os.path.join(cwd, "testspkopa.bsp")
     if spice.exists(SPKOPA):
         os.remove(SPKOPA)  # pragma: no cover
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2002 APR 27 00:00:00.000 TDB")
     # load subset from kernels
@@ -8105,15 +7690,13 @@ def test_spkopa():
     # clean up
     if spice.exists(SPKOPA):
         os.remove(SPKOPA)  # pragma: no cover
-    spice.kclear()
-
+    
 
 def test_spkopn():
     # Same as test_spkw02
     spk2 = os.path.join(cwd, "test2.bsp")
     if spice.exists(spk2):
         os.remove(spk2)  # pragma: no cover
-    spice.kclear()
     handle = spice.spkopn(spk2, "Type 2 SPK internal file name.", 4)
     init_size = os.path.getsize(spk2)
     discrete_epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
@@ -8173,14 +7756,12 @@ def test_spkopn():
     )
     spice.spkcls(handle)
     end_size = os.path.getsize(spk2)
-    spice.kclear()
     assert end_size != init_size
     if spice.exists(spk2):
         os.remove(spk2)  # pragma: no cover
 
 
 def test_spkpds():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2002 APR 27 00:00:00.000 TDB")
     handle, descr, ident = spice.spksfs(5, et, 41)
@@ -8188,11 +7769,9 @@ def test_spkpds():
     outframe = spice.frmnam(frame)
     spkpds_output = spice.spkpds(body, center, outframe, otype, first, last)
     npt.assert_almost_equal(spkpds_output, descr)
-    spice.kclear()
-
+    
 
 def test_spkpos():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("July 4, 2003 11:00 AM PST")
     pos, lt = spice.spkpos("Mars", et, "J2000", "LT+S", "Earth")
@@ -8204,11 +7783,9 @@ def test_spkpos():
     ]
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(pos, expected_pos)
-    spice.kclear()
-
+    
 
 def test_spkpos_vectorized():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et(["July 4, 2003 11:00 AM PST", "July 11, 2003 11:00 AM PST"])
     pos, lt = spice.spkpos("Mars", et, "J2000", "LT+S", "Earth")
@@ -8227,11 +7804,9 @@ def test_spkpos_vectorized():
     ]
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(pos, expected_pos)
-    spice.kclear()
-
+    
 
 def test_spkpvn():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2002 APR 27 00:00:00.000 TDB")
     handle, descr, ident = spice.spksfs(5, et, 41)
@@ -8245,21 +7820,17 @@ def test_spkpvn():
         -1.28422514561611489370e00,
     ]
     npt.assert_array_almost_equal(state, expected_state)
-    spice.kclear()
-
+    
 
 def test_spksfs():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     idcode = spice.bodn2c("PLUTO BARYCENTER")
     et = spice.str2et("2001 FEB 18 UTC")
     handle, descr, ident = spice.spksfs(idcode, et, 41)
     assert ident == "DE-405"
-    spice.kclear()
-
+    
 
 def test_spkssb():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     targ1 = 499
     epoch = "July 4, 2003 11:00 AM PST"
@@ -8270,14 +7841,12 @@ def test_spkssb():
     state2 = spice.spkssb(targ2, et, frame)
     dist = spice.vdist(state1[0:3], state2[0:3])
     npt.assert_approx_equal(dist, 80854820.0, significant=7)
-    spice.kclear()
-
+    
 
 def test_spksub():
     SPKSUB = os.path.join(cwd, "testspksub.bsp")
     if spice.exists(SPKSUB):
         os.remove(SPKSUB)  # pragma: no cover
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2002 APR 27 00:00:00.000 TDB")
     # load subset from kernels
@@ -8291,11 +7860,9 @@ def test_spksub():
     spice.spkcls(handle_test)
     if spice.exists(SPKSUB):
         os.remove(SPKSUB)  # pragma: no cover
-    spice.kclear()
-
+    
 
 def test_spkuds():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2002 APR 27 00:00:00.000 TDB")
     handle, descr, ident = spice.spksfs(5, et, 41)
@@ -8304,22 +7871,18 @@ def test_spkuds():
     assert begin == 54073
     assert end == 57950
     assert otype == 2
-    spice.kclear()
-
+    
 
 def test_spkuef():
-    spice.kclear()
     handle = spice.spklef(CoreKernels.spk)
     assert handle != -1
     spice.spkuef(handle)
-    spice.kclear()
-
+    
 
 def test_spkw02():
     spk2 = os.path.join(cwd, "test2.bsp")
     if spice.exists(spk2):
         os.remove(spk2)  # pragma: no cover
-    spice.kclear()
     handle = spice.spkopn(spk2, "Type 2 SPK internal file name.", 4)
     init_size = os.path.getsize(spk2)
     discrete_epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
@@ -8379,7 +7942,6 @@ def test_spkw02():
     )
     spice.spkcls(handle)
     end_size = os.path.getsize(spk2)
-    spice.kclear()
     assert end_size != init_size
     if spice.exists(spk2):
         os.remove(spk2)  # pragma: no cover
@@ -8389,7 +7951,6 @@ def test_spkw03():
     spk3 = os.path.join(cwd, "test3.bsp")
     if spice.exists(spk3):
         os.remove(spk3)  # pragma: no cover
-    spice.kclear()
     handle = spice.spkopn(spk3, "Type 3 SPK internal file name.", 4)
     init_size = os.path.getsize(spk3)
     discrete_epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
@@ -8485,7 +8046,6 @@ def test_spkw03():
     )
     spice.spkcls(handle)
     end_size = os.path.getsize(spk3)
-    spice.kclear()
     assert end_size != init_size
     if spice.exists(spk3):
         os.remove(spk3)  # pragma: no cover
@@ -8495,7 +8055,6 @@ def test_spkw05():
     spk5 = os.path.join(cwd, "test5.bsp")
     if spice.exists(spk5):
         os.remove(spk5)  # pragma: no cover
-    spice.kclear()
     handle = spice.spkopn(spk5, "Type 5 SPK internal file name.", 4)
     init_size = os.path.getsize(spk5)
     discrete_epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
@@ -8526,7 +8085,6 @@ def test_spkw05():
     )
     spice.spkcls(handle)
     end_size = os.path.getsize(spk5)
-    spice.kclear()
     assert end_size != init_size
     if spice.exists(spk5):
         os.remove(spk5)  # pragma: no cover
@@ -8536,7 +8094,6 @@ def test_spkw08():
     spk8 = os.path.join(cwd, "test8.bsp")
     if spice.exists(spk8):
         os.remove(spk8)  # pragma: no cover
-    spice.kclear()
     handle = spice.spkopn(spk8, "Type 8 SPK internal file name.", 4)
     init_size = os.path.getsize(spk8)
     discrete_epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
@@ -8569,7 +8126,6 @@ def test_spkw08():
     )
     spice.spkcls(handle)
     end_size = os.path.getsize(spk8)
-    spice.kclear()
     assert end_size != init_size
     if spice.exists(spk8):
         os.remove(spk8)  # pragma: no cover
@@ -8579,7 +8135,6 @@ def test_spkw09():
     spk9 = os.path.join(cwd, "test9.bsp")
     if spice.exists(spk9):
         os.remove(spk9)  # pragma: no cover
-    spice.kclear()
     handle = spice.spkopn(spk9, "Type 9 SPK internal file name.", 4)
     init_size = os.path.getsize(spk9)
     discrete_epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
@@ -8610,7 +8165,6 @@ def test_spkw09():
     )
     spice.spkcls(handle)
     end_size = os.path.getsize(spk9)
-    spice.kclear()
     assert end_size != init_size
     if spice.exists(spk9):
         os.remove(spk9)  # pragma: no cover
@@ -8618,7 +8172,6 @@ def test_spkw09():
 
 def test_spkw10():
     spk10 = os.path.join(cwd, "test10.bsp")
-    spice.kclear()
     tle = [
         "1 18123U 87 53  A 87324.61041692 -.00000023  00000-0 -75103-5 0 00675",
         "2 18123  98.8296 152.0074 0014950 168.7820 191.3688 14.12912554 21686",
@@ -8679,7 +8232,6 @@ def test_spkw10():
     spice.spkcls(handle)
     end_size = os.path.getsize(spk10)
     assert end_size != init_size
-    spice.kclear()
     if spice.exists(spk10):
         os.remove(spk10)  # pragma: no cover
 
@@ -8688,7 +8240,6 @@ def test_spkw12():
     spk12 = os.path.join(cwd, "test12.bsp")
     if spice.exists(spk12):
         os.remove(spk12)  # pragma: no cover
-    spice.kclear()
     handle = spice.spkopn(spk12, "Type 12 SPK internal file name.", 4)
     init_size = os.path.getsize(spk12)
     discrete_epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
@@ -8721,7 +8272,6 @@ def test_spkw12():
     )
     spice.spkcls(handle)
     end_size = os.path.getsize(spk12)
-    spice.kclear()
     assert end_size != init_size
     if spice.exists(spk12):
         os.remove(spk12)  # pragma: no cover
@@ -8731,7 +8281,6 @@ def test_spkw13():
     spk13 = os.path.join(cwd, "test13.bsp")
     if spice.exists(spk13):
         os.remove(spk13)  # pragma: no cover
-    spice.kclear()
     handle = spice.spkopn(spk13, "Type 13 SPK internal file name.", 4)
     init_size = os.path.getsize(spk13)
     discrete_epochs = [100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
@@ -8762,7 +8311,6 @@ def test_spkw13():
     )
     spice.spkcls(handle)
     end_size = os.path.getsize(spk13)
-    spice.kclear()
     assert end_size != init_size
     if spice.exists(spk13):
         os.remove(spk13)  # pragma: no cover
@@ -8770,7 +8318,6 @@ def test_spkw13():
 
 def test_spkw15():
     discrete_epochs = [100.0, 900.0]
-    spice.kclear()
     #
     spk15 = os.path.join(cwd, "test15.bsp")
     if spice.exists(spk15):
@@ -8826,12 +8373,10 @@ def test_spkw15():
     if spice.exists(spk15):
         os.remove(spk15)  # pragma: no cover
     #
-    spice.kclear()
-
+    
 
 def test_spkw17():
     discrete_epochs = [100.0, 900.0]
-    spice.kclear()
     #
     spk17 = os.path.join(cwd, "test17.bsp")
     if spice.exists(spk17):
@@ -8887,11 +8432,9 @@ def test_spkw17():
     if spice.exists(spk17):
         os.remove(spk17)  # pragma: no cover
     #
-    spice.kclear()
-
+    
 
 def test_spkw18():
-    spice.kclear()
     #
     spk18 = os.path.join(cwd, "test18.bsp")
     if spice.exists(spk18):
@@ -8940,14 +8483,12 @@ def test_spkw18():
     state, lt = spice.spkgeo(body, epochs[1], ref, center)
     npt.assert_array_equal(state, [102.0, 202.0, 302.0, 1.0, 1.0, 1.0])
     spice.spkcls(handle)
-    spice.kclear()
     # cleanup
     if spice.exists(spk18):
         os.remove(spk18)  # pragma: no cover
 
 
 def test_spkw20():
-    spice.kclear()
     #
     spk20 = os.path.join(cwd, "test20.bsp")
     if spice.exists(spk20):
@@ -8991,11 +8532,9 @@ def test_spkw20():
     if spice.exists(spk20):
         os.remove(spk20)  # pragma: no cover
     #
-    spice.kclear()
-
+    
 
 def test_srfc2s():
-    spice.kclear()
     kernel = os.path.join(cwd, "srfc2s_ex1.tm")
     if spice.exists(kernel):
         os.remove(kernel)  # pragma: no cover
@@ -9015,13 +8554,11 @@ def test_srfc2s():
     with pytest.raises(spice.stypes.SpiceyError):
         spice.srfc2s(1, -1)
     spice.reset()
-    spice.kclear()
     if spice.exists(kernel):
         os.remove(kernel)  # pragma: no cover
 
 
 def test_srfcss():
-    spice.kclear()
     kernel = os.path.join(cwd, "srfcss_ex1.tm")
     if spice.exists(kernel):
         os.remove(kernel)  # pragma: no cover
@@ -9041,13 +8578,11 @@ def test_srfcss():
     with pytest.raises(spice.stypes.SpiceyError):
         spice.srfcss(1, "ZZZ")
     spice.reset()
-    spice.kclear()
     if spice.exists(kernel):
         os.remove(kernel)  # pragma: no cover
 
 
 def test_srfnrm():
-    spice.kclear()
     spice.furnsh(CoreKernels.pck)
     spice.furnsh(ExtraKernels.phobosDsk)
     srfpts = spice.latsrf(
@@ -9057,20 +8592,16 @@ def test_srfnrm():
     srf_rad = np.array([spice.recrad(x) for x in srfpts])
     nrm_rad = np.array([spice.recrad(x) for x in normals])
     assert np.any(np.not_equal(srf_rad, nrm_rad))
-    spice.kclear()
-
+    
 
 def test_srfrec():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     x = spice.srfrec(399, 100.0 * spice.rpd(), 35.0 * spice.rpd())
     expected = [-906.24919474, 5139.59458217, 3654.29989637]
     npt.assert_array_almost_equal(x, expected)
-    spice.kclear()
-
+    
 
 def test_srfs2c():
-    spice.kclear()
     kernel = os.path.join(cwd, "srfs2c_ex1.tm")
     if spice.exists(kernel):
         os.remove(kernel)  # pragma: no cover
@@ -9093,13 +8624,11 @@ def test_srfs2c():
     with pytest.raises(spice.stypes.SpiceyError):
         spice.srfs2c("ZZZ", "MARS")
     spice.reset()
-    spice.kclear()
     if spice.exists(kernel):
         os.remove(kernel)  # pragma: no cover
 
 
 def test_srfscc():
-    spice.kclear()
     kernel = os.path.join(cwd, "srfscc_ex1.tm")
     if spice.exists(kernel):
         os.remove(kernel)  # pragma: no cover
@@ -9121,13 +8650,11 @@ def test_srfscc():
     with pytest.raises(spice.stypes.SpiceyError):
         spice.srfscc("ZZZ", 499)
     spice.reset()
-    spice.kclear()
     if spice.exists(kernel):
         os.remove(kernel)  # pragma: no cover
 
 
 def test_srfxpt():
-    spice.kclear()
     # load kernels
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassSclk)
@@ -9170,8 +8697,7 @@ def test_srfxpt():
     assert 0.0 == (trgepcs[1] - trgepc)
     assert 0.0 == spice.vnorm(spice.vsub(obsposs[1], obspos))
     # Cleanup
-    spice.kclear()
-
+    
 
 def test_ssize():
     cell = spice.cell_double(10)
@@ -9185,7 +8711,6 @@ def test_stelab():
     IDTARG = 301
     UTC = "July 4 2004"
     FRAME = "J2000"
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et(UTC)
     sobs = spice.spkssb(IDOBS, et, FRAME)
@@ -9206,11 +8731,9 @@ def test_stelab():
         -147722.30606629714020527899,
     ]
     npt.assert_array_almost_equal(expected_cortarg, cortarg)
-    spice.kclear()
-
+    
 
 def test_stpool():
-    spice.kclear()
     kernel = os.path.join(cwd, "stpool_t.ker")
     if spice.exists(kernel):
         os.remove(kernel)  # pragma: no cover
@@ -9228,22 +8751,18 @@ def test_stpool():
     string, n = spice.stpool("SPK_FILES", 1, "*")
     assert n == 57
     assert string == "this_is_the_full_path_specification_of_a_second_file_name"
-    spice.kclear()
     if spice.exists(kernel):
         os.remove(kernel)  # pragma: no cover
 
 
 def test_str2et():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     date = "Thu Mar 20 12:53:29 PST 1997"
     et = spice.str2et(date)
     npt.assert_almost_equal(et, -87836728.81438904)
-    spice.kclear()
-
+    
 
 def test_datetime2et():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     date = datetime(1997, 3, 20, 12, 53, 29)
     et = spice.datetime2et(date)
@@ -9276,11 +8795,9 @@ def test_datetime2et():
     for expected, result in zip(expecteds, results):
         npt.assert_almost_equal(result, expected)
 
-    spice.kclear()
-
+    
 
 def test_et2datetime():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = -87865528.8143913
     dt = spice.et2datetime(et)
@@ -9297,11 +8814,9 @@ def test_et2datetime():
     for expected, result in zip(expecteds, results):
         assert result == expected
 
-    spice.kclear()
-
+    
 
 def test_subpnt():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2008 aug 11 00:00:00")
     num_vals, radii = spice.bodvrd("MARS", "RADII", 3)
@@ -9358,11 +8873,9 @@ def test_subpnt():
         opcrad, opclon, opclat = spice.reclat(obspos)
         npt.assert_almost_equal(opclon * spice.dpr(), expected[8], decimal=5)
         npt.assert_almost_equal(opclat * spice.dpr(), expected[10], decimal=5)
-    spice.kclear()
-
+    
 
 def test_subpt():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("JAN 1, 2006")
     point1, alt1 = np.array(
@@ -9382,11 +8895,9 @@ def test_subpt():
     assert 0.0 == spice.vnorm(spice.vsub(points[1], point1))
     assert 0.0 == (alts[1] - alt1)
     # Cleanup
-    spice.kclear()
-
+    
 
 def test_subslr():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2008 aug 11 00:00:00")
     num_vals, radii = spice.bodvrd("MARS", "RADII", 3)
@@ -9436,11 +8947,9 @@ def test_subslr():
         supcrd, supcln, supclt = spice.reclat(sunpos)
         npt.assert_almost_equal(supcln * spice.dpr(), expected[7], decimal=5)
         npt.assert_almost_equal(supclt * spice.dpr(), expected[8], decimal=5)
-    spice.kclear()
-
+    
 
 def test_subsol():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     point = spice.subsol("near point", "earth", 0.0, "lt+s", "mars")
     npt.assert_array_almost_equal(
@@ -9450,8 +8959,7 @@ def test_subsol():
     npt.assert_array_almost_equal(
         intercept, [5844.4362338, 509.16450054, -2494.39569089], decimal=4
     )
-    spice.kclear()
-
+    
 
 def test_sumad():
     assert spice.sumad([1.0, 2.0, 3.0]) == 6.0
@@ -9482,7 +8990,6 @@ def test_surfpv():
 
 
 def test_swpool():
-    spice.kclear()
     # add TEST_VAR_SWPOOL
     spice.pdpool("TEST_VAR_SWPOOL", [-666.0])
     # establish check for TEST_VAR_SWPOOL
@@ -9495,12 +9002,10 @@ def test_swpool():
     assert len(value) == 1
     assert value[0] == 555.0
     spice.clpool()
-    spice.kclear()
     assert updated is True
 
 
 def test_sxform():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     lon = 118.25 * spice.rpd()
     lat = 34.05 * spice.rpd()
@@ -9514,7 +9019,6 @@ def test_sxform():
     estate = spice.georec(lon, lat, alt, equatr, f)
     estate = np.append(estate, [0.0, 0.0, 0.0])
     xform = np.array(spice.sxform("IAU_EARTH", "J2000", et))
-    spice.kclear()
     jstate = np.dot(xform, estate)
     expected = np.array(
         [
@@ -9530,7 +9034,6 @@ def test_sxform():
 
 
 def test_sxform_vectorized():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     utc1 = "January 1, 1990"
     utc2 = "January 1, 2010"
@@ -9540,8 +9043,7 @@ def test_sxform_vectorized():
     et = np.arange(240) * step + et1
     xform = spice.sxform("IAU_EARTH", "J2000", et)
     assert len(xform) == 240
-    spice.kclear()
-
+    
 
 def test_szpool():
     assert spice.szpool("MAXVAR") == 26003
@@ -9555,7 +9057,6 @@ def test_szpool():
 
 def test_termpt():
     spice.reset()
-    spice.kclear()
     spice.furnsh(CoreKernels.spk)
     spice.furnsh(ExtraKernels.marsSpk)
     spice.furnsh(CoreKernels.pck)
@@ -9582,11 +9083,9 @@ def test_termpt():
     )
     assert points is not None
     assert len(points) == 3
-    spice.kclear()
-
+    
 
 def test_timdef():
-    spice.kclear()
     LSK = os.path.join(cwd, CoreKernels.currentLSK)
     spice.furnsh(LSK)
     # Calendar - default is Gregorian
@@ -9603,25 +9102,21 @@ def test_timdef():
     assert "UTC" == spice.timdef("SET", "SYSTEM", 10, "UTC")
     assert saveET == spice.str2et("2000-01-01T12:00:00")
     # Cleanup
-    spice.kclear()
-
+    
 
 def test_timout():
     sample = "Thu Oct 1 11:11:11 PDT 1111"
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     pic, ok, err = spice.tpictr(sample)
     assert ok
     et = 188745364.0
     out = spice.timout(et, pic)
     assert out == "Sat Dec 24 18:14:59 PDT 2005"
-    spice.kclear()
-
+    
 
 def test_timout_vectorized():
     sample = "Thu Oct 1 11:11:11 PDT 1111"
     lenout = len(sample) + 2
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     pic, ok, err = spice.tpictr(sample, 64, 60)
     assert ok
@@ -9636,29 +9131,23 @@ def test_timout_vectorized():
     ]
     for e in expected:
         assert e in out
-    spice.kclear()
-
+    
 
 def test_tipbod():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("Jan 1 2005")
     tipm = spice.tipbod("J2000", 699, et)
     assert tipm is not None
-    spice.kclear()
-
+    
 
 def test_tisbod():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("Jan 1 2005")
     tsipm = spice.tisbod("J2000", 699, et)
     assert tsipm is not None
-    spice.kclear()
-
+    
 
 def test_tkfram():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassFk)
     rotation, nextFrame = spice.tkfram(-82001)
@@ -9671,8 +9160,7 @@ def test_tkfram():
     )
     npt.assert_array_almost_equal(rotation, expected)
     assert nextFrame == -82000
-    spice.kclear()
-
+    
 
 def test_tkvrsn():
     version = spice.tkvrsn("toolkit")
@@ -9732,7 +9220,6 @@ def test_trcnam():
 # test_trcoff() cannot be done anywhere but last
 def teardown_test_trcoff():
     spice.reset()
-    spice.kclear()
     # Initialize stack trace with two values, and test
     spice.chkin("A")
     spice.chkin("B")
@@ -9748,8 +9235,7 @@ def teardown_test_trcoff():
     assert 0 == spice.trcdep()
     # Cleanup
     spice.reset()
-    spice.kclear()
-
+    
 
 def test_tsetyr():
     spice.reset()
@@ -9815,7 +9301,6 @@ def test_ucrss():
 
 
 def test_uddc():
-    spice.kclear()
 
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("JAN 1 2009")
@@ -9827,11 +9312,9 @@ def test_uddc():
 
     assert spice.uddc(udfunc, et, 1.0)
 
-    spice.kclear()
-
+    
 
 def test_uddf():
-    spice.kclear()
 
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("JAN 1 2009")
@@ -9844,8 +9327,7 @@ def test_uddf():
     deriv = spice.uddf(udfunc, et, 1.0)
 
     npt.assert_almost_equal(deriv, -0.000135670940)
-    spice.kclear()
-
+    
 
 def test_udf():
     assert spice.udf(0.0) == 0.0
@@ -9893,16 +9375,13 @@ def test_union():
 
 
 def test_unitim():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("Dec 19 2003")
     converted_et = spice.unitim(et, "ET", "JED")
     npt.assert_almost_equal(converted_et, 2452992.5007428653)
-    spice.kclear()
-
+    
 
 def test_unload():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     # 4 kernels + the meta kernel = 5
     assert spice.ktotal("ALL") == 5
@@ -9916,7 +9395,6 @@ def test_unload():
     # Unload all kernels
     spice.unload(CoreKernels.testMetaKernel)
     assert spice.ktotal("ALL") == 0
-    spice.kclear()
     # Test passing the [list of kernels] as an argument to spice.unload
     spice.furnsh(kernel_list)
     assert spice.ktotal("ALL") == len(kernel_list)
@@ -9927,11 +9405,9 @@ def test_unload():
 
 
 def test_unload_emptystring():
-    spice.kclear()
     with pytest.raises(spice.stypes.SpiceyError):
         spice.unload("")
-    spice.kclear()
-
+    
 
 def test_unorm():
     v1 = np.array([5.0, 12.0, 0.0])
@@ -9952,14 +9428,12 @@ def test_unormg():
 
 
 def test_utc2et():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     utcstr = "December 1, 2004 15:04:11"
     output = spice.utc2et(utcstr)
     assert output == 155185515.1831043
     # icy utc2et example gives 1.5518552e+08 as output
-    spice.kclear()
-
+    
 
 def test_vadd():
     v1 = [1.0, 2.0, 3.0]
@@ -10461,7 +9935,6 @@ def test_wnvald():
 
 
 def test_xf2eul():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("Jan 1, 2009")
     m = spice.sxform("IAU_EARTH", "J2000", et)
@@ -10476,8 +9949,7 @@ def test_xf2eul():
         -7.292115373266558e-05,
     ]
     npt.assert_array_almost_equal(expected, eulang)
-    spice.kclear()
-
+    
 
 def test_xf2rav():
     e = [1.0, 0.0, 0.0]
@@ -10489,7 +9961,6 @@ def test_xf2rav():
 
 
 def test_xfmsta():
-    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("July 4, 2003 11:00 AM PST")
     state, lt = spice.spkezr("Mars", et, "J2000", "LT+S", "Earth")
@@ -10514,8 +9985,7 @@ def test_xfmsta():
         1.03575559016377728336e-08,
     ]
     npt.assert_array_almost_equal(state_lat, expected_lat_state)
-    spice.kclear()
-
+    
 
 def test_xpose6():
     m1 = [
@@ -10554,7 +10024,6 @@ def test_xposeg():
 
 
 def test_zzdynrot():
-    spice.kclear()
     spice.furnsh(ExtraKernels.mroFk)
     rotation, frame = spice.zzdynrot(-74900, 499, 221051477.42023)
     expected = np.array(
@@ -10566,8 +10035,7 @@ def test_zzdynrot():
     )
     npt.assert_array_almost_equal(rotation, expected)
     assert frame == 1
-    spice.kclear()
-
+    
 
 def teardown_tests():
     # Tests that must be done last are put here and
