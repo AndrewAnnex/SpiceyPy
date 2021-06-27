@@ -1,4 +1,4 @@
-name: PR and Merge builds (on master branch)
+name: PR and Merge builds (on main branch)
 
 on:
   pull_request:
