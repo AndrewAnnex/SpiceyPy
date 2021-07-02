@@ -18,5 +18,6 @@ Contents:
    insitu_sensing
    binary_pck
    other_stuff
+   extra_features
 
 
