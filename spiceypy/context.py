@@ -3,12 +3,12 @@ from contextlib import ContextDecorator
 from os import chdir, getcwd
 from os.path import dirname
 
-import spiceypy as spice
+from .spiceypy import furnsh, ktotal, unload
 
 LOGGER = logging.getLogger(__name__)
 
 
-def in_spice_dir(func):
+def _in_spice_dir(func):
     """Decorator used in the SpiceKernel context manager to load in a given folder."""
 
     def wrapper(*args, **kwargs):
@@ -29,17 +29,17 @@ class SpiceKernel(ContextDecorator):
         self.kernel_file = kernel_file
         self.kernel_dir = dirname(self.kernel_file)
 
-    @in_spice_dir
+    @_in_spice_dir
     def __enter__(self):
         """Move to spice directory, load spice kernel."""
-        spice.furnsh(self.kernel_file)
+        furnsh(self.kernel_file)
         logging.info(
-            f"Loaded {self.kernel_file}, {spice.ktotal('ALL')} kernels now loaded."
+            f"Loaded {self.kernel_file}, {ktotal('ALL')} kernels now loaded."
         )
 
-    @in_spice_dir
+    @_in_spice_dir
     def __exit__(self, exc, exca, excb):
-        spice.unload(self.kernel_file)
+        unload(self.kernel_file)
         logging.info(
-            f"Unloaded {self.kernel_file}, {spice.ktotal('ALL')} kernels still loaded"
+            f"Unloaded {self.kernel_file}, {ktotal('ALL')} kernels still loaded"
         )
