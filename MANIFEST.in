@@ -9,6 +9,10 @@ include README.rst
 # cspice files
 include spiceypy/utils/*.py
 
+# py.typed files for pep 561
+include spiceypy/py.typed
+include spiceypy/utils/py.typed
+
 # Docs
 include docs/conf.py
 include docs/*.rst

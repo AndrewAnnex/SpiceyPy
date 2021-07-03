@@ -42,6 +42,9 @@ jobs:
       - name: Upload 🆙 coverage 📈 report to codecov 
         run: |
           codecov
+      - name: MyPy checks
+        run: |
+          mypy ./spiceypy --show-error-context --show-error-codes --pretty
   test_offline_shared:
     runs-on: ubuntu-latest
     steps:
