@@ -1682,7 +1682,7 @@ def cyllat(r: float, lonc: float, z: float) -> Tuple[float, float, float]:
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/cyllat_c.html
 
     :param r: Distance of point from z axis.
-    :param lonc: Cylindrical angle of point from XZ plane(radians).
+    :param lonc: Cylindrical angle of point from XZ plane (radians).
     :param z: Height of point above XY plane.
     :return: Distance, Longitude (radians), and Latitude of point (radians).
     """
