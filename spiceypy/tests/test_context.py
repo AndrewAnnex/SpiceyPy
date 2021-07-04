@@ -21,8 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-import pytest
 import os
+from unittest.mock import patch
+
+import pytest
 
 import spiceypy as spice
 from spiceypy.context import SpiceKernel
@@ -55,21 +57,31 @@ def assert_loaded_kernels(num: int) -> None:
     assert spice.ktotal("ALL") == num
 
 
-def test_spicekernel_enter_exit_single():
+@pytest.mark.parametrize(
+    ["expected_num", "arg_to_pass"],
+    [
+        (1, CoreKernels.spk),
+        (len(CoreKernels.standardKernelList) + 1, CoreKernels.testMetaKernel),
+        (len(CoreKernels.standardKernelList), CoreKernels.standardKernelList),
+    ],
+)
+def test_spicekernel_enter_exit(expected_num, arg_to_pass):
     """Test that a single kernel is correctly loaded and unloaded."""
     assert_loaded_kernels(0)
-    with SpiceKernel(CoreKernels.spk):
-        assert_loaded_kernels(1)
+    with SpiceKernel(arg_to_pass):
+        assert_loaded_kernels(expected_num)
     assert_loaded_kernels(0)
 
 
-def test_spicekernel_enter_exit_meta():
-    """Test that the context manager loads and unloads metakernels correctly."""
+def test_spicekernel_enter_exit_invalid_list():
+    """Ensure that an error is raised if one of the kernels is invalid."""
     assert_loaded_kernels(0)
-    with SpiceKernel(CoreKernels.testMetaKernel):
-        # Expect the core kernels plus the metakernel itself.
-        assert_loaded_kernels(len(CoreKernels.standardKernelList) + 1)
-    assert_loaded_kernels(0)
+    with pytest.raises(FileNotFoundError):
+        kernels = CoreKernels.standardKernelList + ["invalid/file.txt"]
+        with SpiceKernel(kernels):
+            # If we get here, raise an error that isn't caught because the test has
+            # failed.
+            AssertionError("Expected error not raised")
 
 
 def test_spicekernel_exit_with_error():
@@ -83,7 +95,7 @@ def test_spicekernel_exit_with_error():
         assert_loaded_kernels(0)
 
 
-def test_spicekernel_directory_unchanged():
+def test_spicekernel_directory_change_user_transparent():
     """Test that the working directory is properly restored inside and after the
     context manager (ensuring user transparency)."""
     initial_dir = os.getcwd()
@@ -94,3 +106,12 @@ def test_spicekernel_directory_unchanged():
         os.chdir("..")
         inside_dir = os.getcwd()
     assert inside_dir == os.getcwd()
+
+
+@patch("spiceypy.context.chdir")
+def test_spicekernel_allow_change_dir(chdir_mock):
+    """Check that the allow_change_dir argument of SpiceKernel works."""
+    assert_loaded_kernels(0)
+    with SpiceKernel(CoreKernels.spk, allow_change_dir=False):
+        assert_loaded_kernels(1)
+    chdir_mock.assert_not_called()
