@@ -9148,11 +9148,10 @@ def teardown_test_trcoff():
 
 
 def test_tsetyr():
-    spice.reset()
     # Expand 2-digit year to full year, typically 4-digit
-    def tmp_getyr4(iy2):
-        return int(spice.etcal(spice.tparse("3/3/{:02}".format(iy2), 22)[0]).split()[0])
-
+    tmp_getyr4 = lambda iy2: int(
+        spice.etcal(spice.tparse("3/3/{:02}".format(iy2), 22)[0]).split()[0]
+    )
     # Find current lower bound on the 100 year interval of expansion,
     # so it can be restored on exit
     tsetyr_lowerbound = tmp_getyr4(0)
