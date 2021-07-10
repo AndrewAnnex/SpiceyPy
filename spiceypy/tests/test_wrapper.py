@@ -9148,8 +9148,8 @@ def teardown_test_trcoff():
 
 
 def test_tsetyr():
-    spice.reset()
     # Expand 2-digit year to full year, typically 4-digit
+
     def tmp_getyr4(iy2):
         return int(spice.etcal(spice.tparse("3/3/{:02}".format(iy2), 22)[0]).split()[0])
 
