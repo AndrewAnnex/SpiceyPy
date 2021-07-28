@@ -5557,8 +5557,8 @@ def getfat(file: str) -> Tuple[str, str]:
     :return: The architecture of the kernel file, The type of the kernel file.
     """
     file = stypes.string_to_char_p(file)
-    arclen = ctypes.c_int(4)
-    typlen = ctypes.c_int(4)
+    arclen = ctypes.c_int(5)
+    typlen = ctypes.c_int(5)
     arch = stypes.string_to_char_p(arclen)
     rettype = stypes.string_to_char_p(typlen)
     libspice.getfat_c(file, arclen, typlen, arch, rettype)
