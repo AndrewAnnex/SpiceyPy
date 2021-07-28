@@ -3576,6 +3576,10 @@ def test_getfat():
     arch, outtype = spice.getfat(CoreKernels.lsk)
     assert arch == "KPL"
     assert outtype == "LSK"
+    # Add test for resulting string with length > 3.
+    arch, outtype = spice.getfat(CassiniKernels.cassSclk)
+    assert arch == "KPL"
+    assert outtype == "SCLK"
 
 
 def test_getfov():
