@@ -90,20 +90,13 @@ def spicelock_for_multithread(f):
     """
     @functools.wraps(f)
     def lock(*args, **kwargs):
-        if config.enable_threading_lock:
-            with _spicelock:
-                try:
-                    res = f(*args, **kwargs)
-                    return res
-                except BaseException:
-                    raise
-        else:
+        ctx = _spicelock if config.enable_threading_lock else contextlib.suppress()
+        with ctx:
             try:
                 res = f(*args, **kwargs)
                 return res
             except BaseException:
                 raise
-
     return lock
     
 
