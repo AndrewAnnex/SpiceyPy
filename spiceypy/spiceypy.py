@@ -22,12 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 import warnings
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from datetime import datetime, timezone
 import functools
 import ctypes
 from typing import Callable, Iterator, Iterable, Optional, Tuple, Union, Sequence
-
+import threading
 
 import numpy
 from numpy import ndarray, str_
@@ -78,8 +78,6 @@ _default_len_out = 256
 _SPICE_EK_MAXQSEL = 100  # Twice the 50 in gcc-linux-64
 _SPICE_EK_EKRCEX_ROOM_DEFAULT = 100  # Enough?
 
-import threading
-
 _spicelock = threading.RLock()
 
 def spicelock_for_multithread(f):
@@ -90,7 +88,7 @@ def spicelock_for_multithread(f):
     """
     @functools.wraps(f)
     def lock(*args, **kwargs):
-        ctx = _spicelock if config.enable_threading_lock else contextlib.suppress()
+        ctx = _spicelock if config.enable_threading_lock else suppress()
         with ctx:
             try:
                 res = f(*args, **kwargs)
