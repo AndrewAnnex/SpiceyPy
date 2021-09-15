@@ -105,12 +105,12 @@ jobs:
       - name: Upload 🆙 coverage 📈 report to codecov 
         run: |
           codecov
-  build-wheels:
+  build_wheels:
+    runs-on: $${{ matrix.os }}
     strategy: 
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels of ${{ matrix.os }}
-    runs-on: $${{ matrix.os }}
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v2
