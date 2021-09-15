@@ -29,9 +29,22 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Display Python 🐍 version
         run: python -c "import sys; print(sys.version)"
-      - name: Install dependencies
+      - name: Install pip
         run: |
           python -m pip install --upgrade pip
+      - name: Get pip cache dir
+        id: pip-cache
+        run: |
+          echo "::set-output name=dir::$(pip cache dir)"
+      - name: pip cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-${{ matrix.python-version }}-pip-${{ hashFiles('**/ci-requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.python-version }}-pip-
+      - name: Install dependencies
+        run: |
           python -m pip install -U -r ci-requirements.txt
       - name: Install SpiceyPy 🌶️ 🥧 
         run: |
@@ -55,9 +68,22 @@ jobs:
           python-version: 3.9
       - name: Display Python 🐍 version
         run: python -c "import sys; print(sys.version)"
-      - name: Install dependencies
+      - name: Install pip
         run: |
           python -m pip install --upgrade pip
+      - name: Get pip cache dir
+        id: pip-cache
+        run: |
+          echo "::set-output name=dir::$(pip cache dir)"
+      - name: pip cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-3.9-pip-${{ hashFiles('**/ci-requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-3.9-pip-
+      - name: Install dependencies
+        run: | 
           python -m pip install -U -r ci-requirements.txt
       - name: Download and extract the shared library for CSPICE 🌶️ 
         run: |
@@ -87,9 +113,22 @@ jobs:
           python-version: 3.9
       - name: Display Python 🐍 version
         run: python -c "import sys; print(sys.version)"
-      - name: Install dependencies
+      - name: Install pip
         run: |
           python -m pip install --upgrade pip
+      - name: Get pip cache dir
+        id: pip-cache
+        run: |
+          echo "::set-output name=dir::$(pip cache dir)"
+      - name: pip cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-3.9-pip-${{ hashFiles('**/ci-requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-3.9-pip-
+      - name: Install dependencies
+        run : |
           python -m pip install -U -r ci-requirements.txt
       - name: Download and extract CSPICE 🌶️ 
         run: |
