@@ -97,10 +97,14 @@ class BuildPyCommand(build_py):
     """Custom build command to ensure cspice is built and packaged"""
 
     def run(self):
-        from get_spice import InstallCSpice
+        try:
+            from get_spice import InstallCSpice
 
-        InstallCSpice.get_cspice()
-        build_py.run(self)
+            InstallCSpice.get_cspice()
+        except ModuleNotFoundError as mnfe:
+            pass
+        finally:
+            build_py.run(self)
 
 
 cmdclass = {
