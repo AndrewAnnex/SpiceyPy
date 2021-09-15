@@ -28,8 +28,6 @@ from setuptools.command.install import install
 from setuptools.command.build_py import build_py
 from setuptools.dist import Distribution
 
-from get_spice import InstallCSpice
-
 DEV_CI_DEPENDENCIES = [
     'numpy>=1.17.0;python_version>="3.6"',
     "pytest>=2.9.0",
@@ -71,6 +69,8 @@ class InstallSpiceyPy(install):
         self.install_lib = self.install_platlib
 
     def run(self):
+        from get_spice import InstallCSpice
+
         InstallCSpice.get_cspice()
         install.run(self)
 
@@ -88,6 +88,8 @@ class GetCSPICECommand(Command):
         pass
 
     def run(self):
+        from get_spice import InstallCSpice
+
         InstallCSpice.get_cspice()
 
 
@@ -95,6 +97,8 @@ class BuildPyCommand(build_py):
     """Custom build command to ensure cspice is built and packaged"""
 
     def run(self):
+        from get_spice import InstallCSpice
+
         InstallCSpice.get_cspice()
         build_py.run(self)
 
@@ -139,7 +143,10 @@ setup(
     include_package_data=True,
     zip_safe=False,
     distclass=SpiceyPyBinaryDistribution,
-    package_data={"spiceypy": ["utils/*.so", "utils/*.dll"]},
+    package_data={
+        "spiceypy": ["utils/*.so", "utils/*.dll"],
+        "": ["get_spice.py", "LICENSE"],
+    },
     setup_requires=DEPENDENCIES,
     install_requires=DEPENDENCIES,
     requires=REQUIRES,
