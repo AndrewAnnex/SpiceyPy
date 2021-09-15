@@ -264,7 +264,7 @@ class InstallCSpice(object):
         global cspice_dir, lib_dir
         print("Checking the path", cspice_dir)
         if os.path.exists(cspice_dir):
-            # Make a temp directory for cspice just in case we need it, will get deleted at end
+            # Make a temp directory for cspice just in case we need it
             tmp_cspice_dir = tempfile.TemporaryDirectory(prefix="cspice_spiceypy_")
             tmp_cspice_dir_name = os.path.realpath(tmp_cspice_dir.name) + "/"
             print(
@@ -276,11 +276,13 @@ class InstallCSpice(object):
                 )
                 GetCSPICE(dst=tmp_cspice_dir_name)
             else:
+                # Trick for python <3.8, delete tmp dir so that we can write it over
+                tmp_cspice_dir.cleanup()
+                # newer shutil.copytree has a flag for this that negates need for this
                 shutil.copytree(
                     cspice_dir,
                     tmp_cspice_dir_name,
                     copy_function=shutil.copy,
-                    dirs_exist_ok=True,
                 )
             cspice_dir = tmp_cspice_dir_name
             lib_dir = os.path.join(tmp_cspice_dir_name, "lib")
@@ -313,7 +315,9 @@ class InstallCSpice(object):
             csupport_lib = os.path.join(
                 lib_dir, ("csupport.lib" if host_OS == "Windows" else "csupport.a")
             )
-
+            print(
+                f"In unpack spice, checking cspice_lib {cspice_lib} and csupport_lib {csupport_lib} inside {lib_dir}"
+            )
             if os.path.exists(cspice_lib) and os.path.exists(csupport_lib):
                 cwd = os.getcwd()
                 try:
