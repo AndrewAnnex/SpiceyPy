@@ -76,6 +76,7 @@ import shutil
 import subprocess
 import sys
 import time
+import tempfile
 import urllib
 import urllib.request
 import urllib.error
@@ -93,6 +94,8 @@ is_unix = host_OS in ("Linux", "Darwin", "FreeBSD")
 root_dir = os.path.dirname(os.path.realpath(__file__))
 # Make the directory path for cspice
 cspice_dir = os.environ.get(CSPICE_SRC_DIR, os.path.join(root_dir, "cspice"))
+# Make a temp directory for cspice just in case we need it, will get deleted at end
+tmp_cspice_dir = tempfile.TemporaryDirectory(prefix="cspice_spiceypy_")
 # Make the directory path for cspice/lib
 lib_dir = os.path.join(cspice_dir, "lib")
 
@@ -131,7 +134,7 @@ class GetCSPICE(object):
         ("Windows", "64bit"): ("PC_Windows_VisualC_64bit", "zip"),
     }
 
-    def __init__(self, version="N0066"):
+    def __init__(self, version="N0066", dst=None):
         """Init method that uses either the default N0066 toolkit version token
         or a user provided one.
         """
@@ -150,7 +153,9 @@ class GetCSPICE(object):
             ).format(version, distribution, cspice)
 
             # Setup the local directory (where the package will be downloaded)
-            self._root = os.path.realpath(os.path.dirname(__file__))
+            if dst is None:
+                dst = os.path.realpath(os.path.dirname(__file__))
+            self._root = dst
 
             # Download the file
             print("Downloading CSPICE for {0}...".format(distribution))
@@ -258,9 +263,21 @@ class InstallCSpice(object):
 
     @staticmethod
     def check_for_spice():
+        global cspice_dir, tmp_cspice_dir, lib_dir
         print("Checking the path", cspice_dir)
         if os.path.exists(cspice_dir):
             print(f"Found CSPICE source at {cspice_dir}")
+            if not os.access(cspice_dir, os.R_OK):
+                print(
+                    f"Unable to read {cspice_dir}, Attempting to install CSPICE for you"
+                )
+                GetCSPICE(dst=tmp_cspice_dir.name)
+            else:
+                shutil.copytree(
+                    cspice_dir, tmp_cspice_dir.name, copy_function=shutil.copy
+                )
+            cspice_dir = tmp_cspice_dir.name
+            lib_dir = os.path.join(tmp_cspice_dir.name, "lib")
             return True
         elif os.environ.get(CSPICE_SHARED_LIB) is not None:
             print(f"User has provided a shared library...")
@@ -274,7 +291,7 @@ class InstallCSpice(object):
             )
             print(message)
             # Download cspice using getspice.py
-            GetCSPICE(version="N0066")
+            GetCSPICE()
         if not os.path.exists(cspice_dir):
             message = "Unable to find CSPICE at {0}. Exiting".format(cspice_dir)
             sys.exit(message)
@@ -375,7 +392,7 @@ class InstallCSpice(object):
         if shared_lib_path:
             # we have the path to the shared library, just move it
             print(
-                "Attempting to move: {0}   to: {1}".format(shared_lib_path, destination)
+                "Attempting to move: {0} to: {1}".format(shared_lib_path, destination)
             )
             try:
                 shutil.copyfile(shared_lib_path, destination)
@@ -395,7 +412,7 @@ class InstallCSpice(object):
     def cleanup():
         # Remove CSPICE folder
         try:
-            shutil.rmtree(os.path.join(os.getcwd(), "cspice"))
+            shutil.rmtree(cspice_dir)
         except OSError as e:
             print("Error Cleaning up cspice folder")
             raise e
