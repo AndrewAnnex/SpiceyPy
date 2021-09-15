@@ -83,6 +83,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ matrix.python-version }}-pip-
       - name: Install dependencies
+        run: | 
           python -m pip install -U -r ci-requirements.txt
       - name: Download and extract the shared library for CSPICE 🌶️ 
         run: |
@@ -127,6 +128,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ matrix.python-version }}-pip-
       - name: Install dependencies
+        run : |
           python -m pip install -U -r ci-requirements.txt
       - name: Download and extract CSPICE 🌶️ 
         run: |
