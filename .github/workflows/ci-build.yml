@@ -106,11 +106,11 @@ jobs:
         run: |
           codecov
   build-wheels:
-    name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels of ${{ matrix.os }}
-    runs-on:
-    strategy: $${{ matrix.os }}
+    strategy: 
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
+    name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels of ${{ matrix.os }}
+    runs-on: $${{ matrix.os }}
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v2
