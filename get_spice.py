@@ -94,8 +94,6 @@ is_unix = host_OS in ("Linux", "Darwin", "FreeBSD")
 root_dir = os.path.dirname(os.path.realpath(__file__))
 # Make the directory path for cspice
 cspice_dir = os.environ.get(CSPICE_SRC_DIR, os.path.join(root_dir, "cspice"))
-# Make a temp directory for cspice just in case we need it, will get deleted at end
-tmp_cspice_dir = tempfile.TemporaryDirectory(prefix="cspice_spiceypy_")
 # Make the directory path for cspice/lib
 lib_dir = os.path.join(cspice_dir, "lib")
 
@@ -263,9 +261,11 @@ class InstallCSpice(object):
 
     @staticmethod
     def check_for_spice():
-        global cspice_dir, tmp_cspice_dir, lib_dir
+        global cspice_dir, lib_dir
         print("Checking the path", cspice_dir)
         if os.path.exists(cspice_dir):
+            # Make a temp directory for cspice just in case we need it, will get deleted at end
+            tmp_cspice_dir = tempfile.TemporaryDirectory(prefix="cspice_spiceypy_")
             print(f"Found CSPICE source at {cspice_dir}")
             if not os.access(cspice_dir, os.R_OK):
                 print(
