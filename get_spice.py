@@ -266,18 +266,25 @@ class InstallCSpice(object):
         if os.path.exists(cspice_dir):
             # Make a temp directory for cspice just in case we need it, will get deleted at end
             tmp_cspice_dir = tempfile.TemporaryDirectory(prefix="cspice_spiceypy_")
-            print(f"Found CSPICE source at {cspice_dir}")
+            tmp_cspice_dir_name = os.path.realpath(tmp_cspice_dir.name) + "/"
+            print(
+                f"Found CSPICE source at {cspice_dir}, copying to {tmp_cspice_dir_name}"
+            )
             if not os.access(cspice_dir, os.R_OK):
                 print(
                     f"Unable to read {cspice_dir}, Attempting to install CSPICE for you"
                 )
-                GetCSPICE(dst=tmp_cspice_dir.name)
+                GetCSPICE(dst=tmp_cspice_dir_name)
             else:
                 shutil.copytree(
-                    cspice_dir, tmp_cspice_dir.name, copy_function=shutil.copy
+                    cspice_dir,
+                    tmp_cspice_dir_name,
+                    copy_function=shutil.copy,
+                    dirs_exist_ok=True,
                 )
-            cspice_dir = tmp_cspice_dir.name
-            lib_dir = os.path.join(tmp_cspice_dir.name, "lib")
+            cspice_dir = tmp_cspice_dir_name
+            lib_dir = os.path.join(tmp_cspice_dir_name, "lib")
+            print(f"Final cspice_dir: {cspice_dir}, lib_dir: {lib_dir}")
             return True
         elif os.environ.get(CSPICE_SHARED_LIB) is not None:
             print(f"User has provided a shared library...")
