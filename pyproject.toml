@@ -1,0 +1,39 @@
+[project]
+name = "spiceypy"
+version="4.0.2"
+author="Andrew Annex"
+author_email="ama6fy@virginia.edu"
+description="A Python Wrapper for the NAIF CSPICE Toolkit"
+license = "MIT"
+homepage = "https://github.com/AndrewAnnex/SpiceyPy"
+repository = "https://github.com/AndrewAnnex/SpiceyPy"
+documentation = "https://spiceypy.readthedocs.io"
+keywords=["spiceypy", "spice", "naif", "jpl", "space", "geometry", "ephemeris"]
+readme = "README.rst"
+classifiers=[
+    "Development Status :: 5 - Production/Stable",
+    "Natural Language :: English",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: POSIX :: BSD :: FreeBSD",
+    "Operating System :: Microsoft :: Windows",
+]
+requires-python = ">=3.6, <4"
+dependencies = ["numpy>=1.17.0"]
+
+[build-system]
+requires = ["setuptools >= 42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+[tool.cibuildwheel]
+build-verbosity = 2
+before-test = "pip install -r ci-requirements.txt"
+test-command = "pytest spiceypy/tests"

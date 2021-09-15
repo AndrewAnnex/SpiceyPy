@@ -31,7 +31,7 @@ from setuptools.dist import Distribution
 from get_spice import InstallCSpice
 
 DEV_CI_DEPENDENCIES = [
-    'numpy>=1.17.0;python_version>="3.5"',
+    'numpy>=1.17.0;python_version>="3.6"',
     "pytest>=2.9.0",
     "pandas>=0.24.0",
     "coverage>=5.1.0",
@@ -42,12 +42,12 @@ DEV_CI_DEPENDENCIES = [
 ]
 
 TEST_DEPENDENCIES = [
-    'numpy>=1.17.0;python_version>="3.5"',
+    'numpy>=1.17.0;python_version>="3.6"',
     "pytest>=2.9.0",
     "pandas>=0.24.0",
 ]
 DEPENDENCIES = [
-    'numpy>=1.17.0;python_version>="3.5"',
+    'numpy>=1.17.0;python_version>="3.6"',
 ]
 REQUIRES = ["numpy"]
 
