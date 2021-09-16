@@ -69,10 +69,14 @@ class InstallSpiceyPy(install):
         self.install_lib = self.install_platlib
 
     def run(self):
-        from get_spice import InstallCSpice
+        try:
+            from get_spice import InstallCSpice
 
-        InstallCSpice.get_cspice()
-        install.run(self)
+            InstallCSpice.get_cspice()
+        except ModuleNotFoundError as mnfe:
+            pass
+        finally:
+            install.run(self)
 
 
 class GetCSPICECommand(Command):
@@ -88,9 +92,12 @@ class GetCSPICECommand(Command):
         pass
 
     def run(self):
-        from get_spice import InstallCSpice
+        try:
+            from get_spice import InstallCSpice
 
-        InstallCSpice.get_cspice()
+            InstallCSpice.get_cspice()
+        except ModuleNotFoundError as mnfe:
+            pass
 
 
 class BuildPyCommand(build_py):
