@@ -76,6 +76,7 @@ import shutil
 import subprocess
 import sys
 import time
+import tempfile
 import urllib
 import urllib.request
 import urllib.error
@@ -131,7 +132,7 @@ class GetCSPICE(object):
         ("Windows", "64bit"): ("PC_Windows_VisualC_64bit", "zip"),
     }
 
-    def __init__(self, version="N0066"):
+    def __init__(self, version="N0066", dst=None):
         """Init method that uses either the default N0066 toolkit version token
         or a user provided one.
         """
@@ -150,7 +151,9 @@ class GetCSPICE(object):
             ).format(version, distribution, cspice)
 
             # Setup the local directory (where the package will be downloaded)
-            self._root = os.path.realpath(os.path.dirname(__file__))
+            if dst is None:
+                dst = os.path.realpath(os.path.dirname(__file__))
+            self._root = dst
 
             # Download the file
             print("Downloading CSPICE for {0}...".format(distribution))
@@ -258,9 +261,32 @@ class InstallCSpice(object):
 
     @staticmethod
     def check_for_spice():
+        global cspice_dir, lib_dir
         print("Checking the path", cspice_dir)
         if os.path.exists(cspice_dir):
-            print(f"Found CSPICE source at {cspice_dir}")
+            # Make a temp directory for cspice just in case we need it
+            tmp_cspice_dir = tempfile.TemporaryDirectory(prefix="cspice_spiceypy_")
+            tmp_cspice_dir_name = os.path.realpath(tmp_cspice_dir.name) + "/"
+            print(
+                f"Found CSPICE source at {cspice_dir}, copying to {tmp_cspice_dir_name}"
+            )
+            if not os.access(cspice_dir, os.R_OK):
+                print(
+                    f"Unable to read {cspice_dir}, Attempting to install CSPICE for you"
+                )
+                GetCSPICE(dst=tmp_cspice_dir_name)
+            else:
+                # Trick for python <3.8, delete tmp dir so that we can write it over
+                tmp_cspice_dir.cleanup()
+                # newer shutil.copytree has a flag for this that negates need for this
+                shutil.copytree(
+                    cspice_dir,
+                    tmp_cspice_dir_name,
+                    copy_function=shutil.copy,
+                )
+            cspice_dir = tmp_cspice_dir_name
+            lib_dir = os.path.join(tmp_cspice_dir_name, "lib")
+            print(f"Final cspice_dir: {cspice_dir}, lib_dir: {lib_dir}")
             return True
         elif os.environ.get(CSPICE_SHARED_LIB) is not None:
             print(f"User has provided a shared library...")
@@ -274,7 +300,7 @@ class InstallCSpice(object):
             )
             print(message)
             # Download cspice using getspice.py
-            GetCSPICE(version="N0066")
+            GetCSPICE()
         if not os.path.exists(cspice_dir):
             message = "Unable to find CSPICE at {0}. Exiting".format(cspice_dir)
             sys.exit(message)
@@ -289,7 +315,9 @@ class InstallCSpice(object):
             csupport_lib = os.path.join(
                 lib_dir, ("csupport.lib" if host_OS == "Windows" else "csupport.a")
             )
-
+            print(
+                f"In unpack spice, checking cspice_lib {cspice_lib} and csupport_lib {csupport_lib} inside {lib_dir}"
+            )
             if os.path.exists(cspice_lib) and os.path.exists(csupport_lib):
                 cwd = os.getcwd()
                 try:
@@ -375,7 +403,7 @@ class InstallCSpice(object):
         if shared_lib_path:
             # we have the path to the shared library, just move it
             print(
-                "Attempting to move: {0}   to: {1}".format(shared_lib_path, destination)
+                "Attempting to move: {0} to: {1}".format(shared_lib_path, destination)
             )
             try:
                 shutil.copyfile(shared_lib_path, destination)
@@ -395,7 +423,7 @@ class InstallCSpice(object):
     def cleanup():
         # Remove CSPICE folder
         try:
-            shutil.rmtree(os.path.join(os.getcwd(), "cspice"))
+            shutil.rmtree(cspice_dir)
         except OSError as e:
             print("Error Cleaning up cspice folder")
             raise e
