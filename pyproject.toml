@@ -33,18 +33,16 @@ requires = ["setuptools >= 42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
-# Skip 32-bit builds
-skip = ["*-win32", "*-manylinux_i686"]
-# Disable building PyPy wheels on all platforms
-skip = "pp*"
+# Skip 32-bit builds and pypy
+skip = ["*-win32", "*-manylinux_i686", "pp*"]
 # other options
 build-verbosity = 2
 before-build = "python get_spice.py"
 before-test = "pip install -r ci-requirements.txt"
 test-command = "pytest spiceypy/tests"
 
-
 [tool.cibuildwheel.macos]
+# to start just try to get amd64 working, later we can worry about arm
 archs = ["x86_64"]
 
 [tool.cibuildwheel.linux]
