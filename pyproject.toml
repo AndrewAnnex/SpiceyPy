@@ -34,7 +34,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
 # Skip 32-bit builds and pypy
-skip = ["*-win32", "*-manylinux_i686", "pp*"]
+skip = ["*-win32", "*-manylinux_i686", "pypy*"]
 # other options
 build-verbosity = 2
 before-build = "python get_spice.py"
