@@ -120,6 +120,33 @@ cmdclass = {
     "get_cspice": GetCSPICECommand,
 }
 
+# https://stackoverflow.com/questions/45150304/how-to-force-a-python-wheel-to-be-platform-specific-when-building-it
+# http://lepture.com/en/2014/python-on-a-hard-wheel
+try:
+    from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+
+    class generic_bdist_wheel(_bdist_wheel):
+        """
+        override for bdist_wheel
+        """
+
+        def finalize_options(self) -> None:
+            _bdist_wheel.finalize_options(self)
+            self.root_is_pure = False
+
+        def get_tag(self) -> (str, str, str):
+            python, abi, plat = _bdist_wheel.get_tag(self)
+            python = "py36.py37.py38.py39"
+            return python, abi, plat
+
+    # add our override to the cmdclass dict so we can inject this behavior
+    cmdclass["bdist_wheel"] = generic_bdist_wheel
+
+except ImportError:
+    # we don't have wheel installed so there is nothing to change
+    pass
+
+
 readme = open("README.rst", "r")
 readmetext = readme.read()
 readme.close()
