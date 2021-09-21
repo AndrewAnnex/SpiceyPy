@@ -131,10 +131,6 @@ jobs:
       - name: Build wheels for SpiceyPy 🌶️ 🥧
         run: |
           python -m cibuildwheel --output-dir wheelhouse
-      - name: Inspect outputs for SpiceyPy 🌶️ 🥧
-        run: | 
-          ls ./wheelhouse/ 
-          python -m zipfile --list ./wheelhouse/*.whl
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
         uses: actions/upload-artifact@v2
         with:
