@@ -36,6 +36,7 @@ build-backend = "setuptools.build_meta"
 # Skip 32-bit builds and pypy
 skip = ["*-win32", "*-manylinux_i686", "pypy*"]
 # other options
+build-frontend = "build"
 build-verbosity = 2
 before-build = "python get_spice.py"
 before-test = "pip install -r ci-requirements.txt"
