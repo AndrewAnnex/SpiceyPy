@@ -39,7 +39,7 @@ skip = ["*-win32", "*-manylinux_i686", "pypy*"]
 build-verbosity = 2
 before-build = "python get_spice.py"
 before-test = "pip install -r ci-requirements.txt"
-test-command = "pytest spiceypy/tests"
+test-command = "pytest --pyargs {project}"
 
 [tool.cibuildwheel.macos]
 # to start just try to get amd64 working, later we can worry about arm
