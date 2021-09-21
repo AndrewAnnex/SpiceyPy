@@ -136,7 +136,7 @@ try:
 
         def get_tag(self) -> (str, str, str):
             python, abi, plat = _bdist_wheel.get_tag(self)
-            return "py3", "abi3", plat
+            return "py3", "none", plat
 
     # add our override to the cmdclass dict so we can inject this behavior
     cmdclass["bdist_wheel"] = generic_bdist_wheel
