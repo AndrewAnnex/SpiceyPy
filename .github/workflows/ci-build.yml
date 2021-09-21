@@ -133,7 +133,7 @@ jobs:
           python -m cibuildwheel --output-dir wheelhouse
       - name: Inspect outputs for SpiceyPy 🌶️ 🥧
         run: | 
-          ls ./wheelhouse/ -lahtr
+          ls ./wheelhouse/ 
           python -m zipfile --list ./wheelhouse/*.whl
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
         uses: actions/upload-artifact@v2
