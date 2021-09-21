@@ -114,6 +114,9 @@ jobs:
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v2
+      - name: Setup 🔬🍦🏗️ 
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1.4.1
       - name: Set up Python 🐍 3.9
         uses: actions/setup-python@v2
         with:
@@ -128,12 +131,12 @@ jobs:
       - name: Build wheels for SpiceyPy 🌶️ 🥧
         run: |
           python -m cibuildwheel --output-dir wheelhouse
-      - name: Inspect outputs
+      - name: Inspect outputs for SpiceyPy 🌶️ 🥧
         run: | 
           ls ./wheelhouse/ -lahtr
           ls ./ -lahtr
           python -m zipfile --list ./wheelhouse/*.whl
-      - name: Upload wheels
+      - name: Upload wheels for SpiceyPy 🌶️ 🥧
         uses: actions/upload-artifact@v2
         with:
           name: spiceypy_wheels
