@@ -107,6 +107,8 @@ jobs:
           codecov
   build_wheels:
     runs-on: ${{ matrix.os }}
+    env:
+      MACOSX_DEPLOYMENT_TARGET: "10.11"
     strategy: 
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
