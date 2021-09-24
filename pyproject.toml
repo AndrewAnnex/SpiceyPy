@@ -43,7 +43,7 @@ before-build = "python get_spice.py"
 before-test = "pip install -r ci-requirements.txt"
 test-command = [
     "coverage run --source {package} -m pytest --pyargs {project}",
-    "cd {output_dir} && coverage combine --append {package} && codecov"
+    "(codecov; exit 0)"
 ]
 
 [tool.cibuildwheel.macos]
