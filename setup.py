@@ -28,10 +28,8 @@ from setuptools.command.install import install
 from setuptools.command.build_py import build_py
 from setuptools.dist import Distribution
 
-from get_spice import InstallCSpice
-
 DEV_CI_DEPENDENCIES = [
-    'numpy>=1.17.0;python_version>="3.5"',
+    'numpy>=1.17.0;python_version>="3.6"',
     "pytest>=2.9.0",
     "pandas>=0.24.0",
     "coverage>=5.1.0",
@@ -42,12 +40,12 @@ DEV_CI_DEPENDENCIES = [
 ]
 
 TEST_DEPENDENCIES = [
-    'numpy>=1.17.0;python_version>="3.5"',
+    'numpy>=1.17.0;python_version>="3.6"',
     "pytest>=2.9.0",
     "pandas>=0.24.0",
 ]
 DEPENDENCIES = [
-    'numpy>=1.17.0;python_version>="3.5"',
+    'numpy>=1.17.0;python_version>="3.6"',
 ]
 REQUIRES = ["numpy"]
 
@@ -71,8 +69,14 @@ class InstallSpiceyPy(install):
         self.install_lib = self.install_platlib
 
     def run(self):
-        InstallCSpice.get_cspice()
-        install.run(self)
+        try:
+            from get_spice import InstallCSpice
+
+            InstallCSpice.get_cspice()
+        except ModuleNotFoundError as mnfe:
+            pass
+        finally:
+            install.run(self)
 
 
 class GetCSPICECommand(Command):
@@ -88,15 +92,26 @@ class GetCSPICECommand(Command):
         pass
 
     def run(self):
-        InstallCSpice.get_cspice()
+        try:
+            from get_spice import InstallCSpice
+
+            InstallCSpice.get_cspice()
+        except ModuleNotFoundError as mnfe:
+            pass
 
 
 class BuildPyCommand(build_py):
     """Custom build command to ensure cspice is built and packaged"""
 
     def run(self):
-        InstallCSpice.get_cspice()
-        build_py.run(self)
+        try:
+            from get_spice import InstallCSpice
+
+            InstallCSpice.get_cspice()
+        except ModuleNotFoundError as mnfe:
+            pass
+        finally:
+            build_py.run(self)
 
 
 cmdclass = {
@@ -104,6 +119,32 @@ cmdclass = {
     "build_py": BuildPyCommand,
     "get_cspice": GetCSPICECommand,
 }
+
+# https://stackoverflow.com/questions/45150304/how-to-force-a-python-wheel-to-be-platform-specific-when-building-it
+# http://lepture.com/en/2014/python-on-a-hard-wheel
+try:
+    from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+
+    class generic_bdist_wheel(_bdist_wheel):
+        """
+        override for bdist_wheel
+        """
+
+        def finalize_options(self) -> None:
+            _bdist_wheel.finalize_options(self)
+            self.root_is_pure = False
+
+        def get_tag(self) -> (str, str, str):
+            python, abi, plat = _bdist_wheel.get_tag(self)
+            return "py3", "none", plat
+
+    # add our override to the cmdclass dict so we can inject this behavior
+    cmdclass["bdist_wheel"] = generic_bdist_wheel
+
+except ImportError:
+    # we don't have wheel installed so there is nothing to change
+    pass
+
 
 readme = open("README.rst", "r")
 readmetext = readme.read()
@@ -139,7 +180,10 @@ setup(
     include_package_data=True,
     zip_safe=False,
     distclass=SpiceyPyBinaryDistribution,
-    package_data={"spiceypy": ["utils/*.so", "utils/*.dll"]},
+    package_data={
+        "spiceypy": ["utils/*.so", "utils/*.dll"],
+        "": ["get_spice.py", "LICENSE"],
+    },
     setup_requires=DEPENDENCIES,
     install_requires=DEPENDENCIES,
     requires=REQUIRES,
