@@ -105,37 +105,4 @@ jobs:
       - name: Upload 🆙 coverage 📈 report to codecov 
         run: |
           codecov
-  build_wheels:
-    runs-on: ${{ matrix.os }}
-    env:
-      MACOSX_DEPLOYMENT_TARGET: "10.11"
-    strategy: 
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels of ${{ matrix.os }}
-    steps:
-      - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v2
-      - name: Setup 🔬🍦🏗️ 
-        if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1.4.1
-      - name: Set up Python 🐍 3.9
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-      - name: Display Python 🐍 Version
-        run: python -c "import sys; print(sys.version)"
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r ci-requirements.txt
-          python -m pip install cibuildwheel==2.1.2
-      - name: Build wheels for SpiceyPy 🌶️ 🥧
-        run: |
-          python -m cibuildwheel --output-dir wheelhouse
-      - name: Upload wheels for SpiceyPy 🌶️ 🥧
-        uses: actions/upload-artifact@v2
-        with:
-          name: spiceypy_wheels
-          path: ./wheelhouse/*.whl
 
