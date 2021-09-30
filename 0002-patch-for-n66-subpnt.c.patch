@@ -1,0 +1,41 @@
+From 104ac280822bd45a130a11afdcd84640f64ca999 Mon Sep 17 00:00:00 2001
+From: Andrew Annex <ama6fy@virginia.edu>
+Date: Sun, 11 Apr 2021 14:44:43 -0400
+Subject: [PATCH 2/2] patch for n66 subpnt.c
+
+---
+ cspice/src/cspice/subpnt.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/cspice/src/cspice/subpnt.c b/cspice/src/cspice/subpnt.c
+index ddf10b6..181a5b3 100644
+--- a/cspice/src/cspice/subpnt.c
++++ b/cspice/src/cspice/subpnt.c
+@@ -2095,6 +2095,13 @@ static integer c__3 = 3;
+ 
+ /* $ Version */
+ 
++/* -    SPICELIB Version 2.1.0, 25-OCT-2017 (NJB) */
++
++/*        Bug fix: TRGEPC is now initialized prior to first use. */
++/*        Previously the lack of initialization could cause this routine */
++/*        to fail to find DSK data within the time bounds of a DSK */
++/*        segment. */
++
+ /* -    SPICELIB Version 2.0.0, 04-APR-2017 (NJB) */
+ 
+ /*        Added FAILED tests. */
+@@ -2504,6 +2511,10 @@ static integer c__3 = 3;
+ 
+     vminus_(tpos, obspos);
+ 
++/*     Make a first estimate of the target epoch. */
++
++    *trgepc = *et + s * lt;
++
+ /*     Find the sub-observer point given the target epoch, */
+ /*     observer-target position, and target body orientation we've */
+ /*     already computed. If we're not using light time correction, this */
+-- 
+2.28.0
+

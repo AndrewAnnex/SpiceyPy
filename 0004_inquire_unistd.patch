@@ -1,0 +1,18 @@
+commit e146f58a410184863e5ce4615f4e297b754664a4
+Author: Andrew Annex <ama6fy@virginia.edu>
+Date:   Fri Apr 9 18:42:56 2021 -0400
+
+    patch for inquire.c
+
+diff --git a/cspice/src/cspice/inquire.c b/cspice/src/cspice/inquire.c
+index 2949165..fe6bc39 100644
+--- a/cspice/src/cspice/inquire.c
++++ b/cspice/src/cspice/inquire.c
+@@ -1,6 +1,7 @@
+ #include "f2c.h"
+ #include "fio.h"
+ #include "string.h"
++#include <unistd.h>
+ #ifdef KR_headers
+ integer f_inqu(a) inlist *a;
+ #else

@@ -460,5 +460,93 @@ class InstallCSpice(object):
         InstallCSpice.move_to_root_directory(shared_lib_path=cspice_shared_lib)
 
 
+def download_cspice():
+    global cspice_dir, lib_dir
+    tmp_cspice_dir = tempfile.TemporaryDirectory(prefix="cspice_spiceypy_")
+    tmp_cspice_dir_name = os.path.realpath(tmp_cspice_dir.name) + "/"
+    if os.access(cspice_dir, os.R_OK):
+        # Trick for python <3.8, delete tmp dir so that we can write it over
+        tmp_cspice_dir.cleanup()
+        # newer shutil.copytree has a flag for this that negates need for this
+        shutil.copytree(
+            cspice_dir,
+            tmp_cspice_dir_name,
+            copy_function=shutil.copy,
+        )
+    else:
+        GetCSPICE(dst=tmp_cspice_dir_name)
+    cspice_dir = tmp_cspice_dir_name
+    lib_dir = os.path.join(tmp_cspice_dir_name, "lib")
+    pass
+
+
+def apply_patches():
+    # todo what dir do I need to be in?
+    iswin = "-windows" if host_OS == "Windows" else ""
+    patches = [
+        f"0001-patch-for-n66-dskx02.c{iswin}.patch ",
+        f"0002-patch-for-n66-subpnt.c{iswin}.patch",
+    ]
+    if host_OS == "Darwin":
+        patches.append("0004_inquire_unistd.patch")
+    for p in patches:
+        windows_build = subprocess.Popen(f"git apply {p}", shell=True)
+        status = windows_build.wait()
+    pass
+
+
+def build_cspice() -> str:
+    global cspice_dir, host_OS
+    # TODO more logic from https://github.com/conda-forge/cspice-feedstock/blob/master/recipe/build.sh
+    if is_unix:
+        cmds = [
+            "gcc -Iinclude -c -fPIC -O2 -ansi -pedantic ./src/cspice/*.c",
+            "gcc -shared -pedantic -fPIC -O2 -lm *.o -o libcspice.so",
+        ]
+    else:
+        cmds = ["makeDynamicSpice.bat"]
+        if host_OS == "Windows":
+            destination = os.path.join(cspice_dir, "src", "cspice")
+            def_file = os.path.join(root_dir, "cspice.def")
+            make_bat = os.path.join(root_dir, "makeDynamicSpice.bat")
+            shutil.copy(def_file, destination)
+            shutil.copy(make_bat, destination)
+    try:
+        for cmd in cmds:
+            compile = subprocess.Popen(cmd, shell=True)
+            status = compile.wait()
+            if status != 0:
+                raise BaseException("{0}".format(status))
+    except BaseException as errorInst:
+        status = errorInst.args
+        sys.exit(
+            "Error: compilation of shared cspice.so build exit status: {0}".format(
+                status
+            )
+        )
+    return "TODO: path to spice library"
+
+
+def get_spice():
+    # first see if cspice shared library is provided
+    destination = os.path.join(root_dir, "spiceypy", "utils")
+    shared_library_path = os.environ.get(CSPICE_SHARED_LIB)
+    if shared_library_path is not None:
+        print(f"User has provided a shared library...")
+        # todo: what if we can't read the file? we need to jump to building it... doubtful this happens
+        pass  # now we don't need to do that much
+    else:
+        # okay, now we either are given a src dir, have already downloaded it, or don't have it
+        download_cspice()
+        # okay now that we have the source in a writeable directory we can apply patches
+        apply_patches()  # maybe add env var to disable
+        # now build
+        shared_library_path = build_cspice()
+    # okay now move shared library to dst dir
+    shutil.copyfile(shared_library_path, destination)
+    # and now we are done!
+    return 0
+
+
 if __name__ == "__main__":
-    InstallCSpice.get_cspice()
+    get_spice()
