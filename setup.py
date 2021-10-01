@@ -70,9 +70,9 @@ class InstallSpiceyPy(install):
 
     def run(self):
         try:
-            from get_spice import InstallCSpice
+            from get_spice import get_spice as gs
 
-            InstallCSpice.get_cspice()
+            gs()
         except ModuleNotFoundError as mnfe:
             pass
         finally:
@@ -93,9 +93,9 @@ class GetCSPICECommand(Command):
 
     def run(self):
         try:
-            from get_spice import InstallCSpice
+            from get_spice import get_spice as gs
 
-            InstallCSpice.get_cspice()
+            gs()
         except ModuleNotFoundError as mnfe:
             pass
 
@@ -105,9 +105,9 @@ class BuildPyCommand(build_py):
 
     def run(self):
         try:
-            from get_spice import InstallCSpice
+            from get_spice import get_spice as gs
 
-            InstallCSpice.get_cspice()
+            gs()
         except ModuleNotFoundError as mnfe:
             pass
         finally:
@@ -181,7 +181,7 @@ setup(
     zip_safe=False,
     distclass=SpiceyPyBinaryDistribution,
     package_data={
-        "spiceypy": ["utils/*.so", "utils/*.dll"],
+        "spiceypy": ["utils/*.so.*", "utils/*.dll", "utils/*.dylib"],
         "": ["get_spice.py", "LICENSE"],
     },
     setup_requires=DEPENDENCIES,
