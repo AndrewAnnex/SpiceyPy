@@ -46,3 +46,6 @@ spiceypy/utils/__pycache__/
 .pytest_cache/
 *.sqlite3
 /badhashkernel.txt
+*.dll
+*.dylib
+*.so.*

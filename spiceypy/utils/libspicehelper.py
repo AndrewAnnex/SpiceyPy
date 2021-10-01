@@ -29,8 +29,23 @@ from . import support_types as stypes
 from . import callbacks
 
 host_OS = platform.system()
-sharedLib = "cspice.dll" if host_OS == "Windows" else "spice.so"
-sitePath = os.path.join(os.path.dirname(__file__), sharedLib)
+if host_OS == "Windows":
+    sharedLib = "libcspice.dll"
+elif host_OS == "Darwin":
+    sharedLib = "libcspice.dylib"
+else:
+    sharedLib = "libcspice.so.66"
+
+try:
+    import importlib.resources as importlib_resources
+except ImportError:
+    # Try backport for python < 3.7 `importlib_resources`.
+    import importlib_resources
+
+
+sitePath = os.path.join(
+    os.path.dirname(__file__), sharedLib
+)  #  todo replace with importlib
 libspice = CDLL(sitePath)
 
 s_cell_p = POINTER(stypes.SpiceCell)
