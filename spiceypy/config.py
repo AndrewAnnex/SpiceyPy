@@ -23,3 +23,5 @@ SOFTWARE.
 """
 
 catch_false_founds = True
+
+enable_threading_lock = True

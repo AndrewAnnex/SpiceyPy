@@ -66,6 +66,22 @@ def setup_module(module):
     download_kernels()
 
 
+def test_threading_lock():
+    nOperations = 1000
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = spice.str2et("Dec 25, 2007")
+    from multiprocessing.pool import ThreadPool
+    ets = np.array([et]*nOperations)
+    state, ltime = spice.spkezr("Moon", et, "J2000", "NONE", "EARTH")
+    state = np.array([state]*nOperations)
+    with ThreadPool(processes = 2) as pool:
+        with spice.threading_lock():
+            states = pool.map(lambda x: spice.spkezr("Moon", x, "J2000", "NONE", "EARTH")[0],ets)
+    states = np.array(states)
+    spice.kclear()
+    npt.assert_array_almost_equal(states, state, decimal=5)
+
 def test_appndc():
     test_cell = spice.cell_char(10, 10)
     spice.appndc("one", test_cell)

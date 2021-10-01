@@ -22,12 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 import warnings
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from datetime import datetime, timezone
 import functools
 import ctypes
 from typing import Callable, Iterator, Iterable, Optional, Tuple, Union, Sequence
-
+import threading
 
 import numpy
 from numpy import ndarray, str_
@@ -35,6 +35,7 @@ from numpy import ndarray, str_
 from .utils import support_types as stypes
 from .utils.libspicehelper import libspice
 from . import config
+
 
 from .utils.callbacks import (
     UDFUNC,
@@ -77,6 +78,25 @@ _default_len_out = 256
 _SPICE_EK_MAXQSEL = 100  # Twice the 50 in gcc-linux-64
 _SPICE_EK_EKRCEX_ROOM_DEFAULT = 100  # Enough?
 
+_spicelock = threading.RLock()
+
+def spicelock_for_multithread(f):
+    """
+    Decorator for spiceypy to avoid concurrent calls to cspice lib.
+
+    :return:
+    """
+    @functools.wraps(f)
+    def lock(*args, **kwargs):
+        ctx = _spicelock if config.enable_threading_lock else suppress()
+        with ctx:
+            try:
+                res = f(*args, **kwargs)
+                return res
+            except BaseException:
+                raise
+    return lock
+    
 
 def warn_deprecated_args(**kwargs) -> None:
     keys = list(kwargs.keys())
@@ -162,6 +182,57 @@ def spice_found_exception_thrower(f: Callable) -> Callable:
 
     return wrapper
 
+@contextmanager
+def no_threading_lock() -> Iterator[None]:
+    """
+    Temporarily disables spiceypy default behavior which locks the access to the 
+    SPICE library from multithreading cuncurrent operations.
+    All spice functions executed within the context manager will no longer lock the 
+    access.
+    """
+    current_threading_lock_state = config.enable_threading_lock
+    config.enable_threading_lock = False
+    yield
+    config.enable_threading_lock = current_threading_lock_state
+
+
+@contextmanager
+def threading_lock() -> Iterator[None]:
+    """
+    Temporarily enables spiceypy default behavior which locks the access to the 
+    SPICE library from multithreading cuncurrent operations.
+    All spice functions executed within the context manager will lock the 
+    access preventing the access from other cuncurrent threads.
+    """
+    current_threading_lock_state = config.enable_threading_lock
+    config.enable_threading_lock = True
+    yield
+    config.enable_threading_lock = current_threading_lock_state
+
+
+def threading_lock_off() -> None:
+    """
+    Method that turns off threading lock
+
+    """
+    config.enable_threading_lock = False
+
+
+def threading_lock_on() -> None:
+    """
+    Method that turns on threading lock
+
+    """
+    config.enable_threading_lock = True
+
+
+def get_threading_lock_state() -> bool:
+    """
+    Returns the current threading lock state
+
+    :return:
+    """
+    return config.enable_threading_lock
 
 @contextmanager
 def no_found_check() -> Iterator[None]:
@@ -274,6 +345,7 @@ def cell_time(cell_size) -> SpiceCell:
 # A
 
 
+@spicelock_for_multithread
 @spice_error_check
 def appndc(
     item: Union[str, Iterable[str], ndarray, str_],
@@ -296,6 +368,7 @@ def appndc(
         libspice.appndc_c(item, cell)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def appndd(
     item: Union[float, Iterable[float]], cell: Union[SpiceCell, Cell_Double]
@@ -317,6 +390,7 @@ def appndd(
         libspice.appndd_c(item, cell)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def appndi(item: Union[Iterable[int], int], cell: Union[SpiceCell, Cell_Int]) -> None:
     """
@@ -336,6 +410,7 @@ def appndi(item: Union[Iterable[int], int], cell: Union[SpiceCell, Cell_Int]) ->
         libspice.appndi_c(item, cell)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def axisar(axis: Union[ndarray, Iterable[float]], angle: float) -> ndarray:
     """
@@ -359,6 +434,7 @@ def axisar(axis: Union[ndarray, Iterable[float]], angle: float) -> ndarray:
 # B
 
 
+@spicelock_for_multithread
 @spice_error_check
 def b1900() -> float:
     """
@@ -371,6 +447,7 @@ def b1900() -> float:
     return libspice.b1900_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def b1950() -> float:
     """
@@ -383,6 +460,7 @@ def b1950() -> float:
     return libspice.b1950_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def badkpv(
     caller: str, name: str, comp: str, insize: int, divby: int, intype: str
@@ -410,6 +488,7 @@ def badkpv(
     return bool(libspice.badkpv_c(caller, name, comp, insize, divby, intype))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def bltfrm(frmcls: int, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     """
@@ -429,6 +508,7 @@ def bltfrm(frmcls: int, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     return out_cell
 
 
+@spicelock_for_multithread
 @spice_error_check
 def bodeul(body: int, et: float) -> Tuple[float, float, float, float]:
     """
@@ -463,6 +543,7 @@ def bodeul(body: int, et: float) -> Tuple[float, float, float, float]:
     return ra.value, dec.value, w.value, lam.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def bodc2n(code: int, lenout: int = _default_len_out) -> Tuple[str, bool]:
@@ -484,6 +565,7 @@ def bodc2n(code: int, lenout: int = _default_len_out) -> Tuple[str, bool]:
     return stypes.to_python_string(name), bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def bodc2s(code: int, lenout: int = _default_len_out) -> str:
     """
@@ -504,6 +586,7 @@ def bodc2s(code: int, lenout: int = _default_len_out) -> str:
     return stypes.to_python_string(name)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def boddef(name: str, code: int) -> None:
     """
@@ -520,6 +603,7 @@ def boddef(name: str, code: int) -> None:
     libspice.boddef_c(name, code)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def bodfnd(body: int, item: str) -> bool:
     """
@@ -537,6 +621,7 @@ def bodfnd(body: int, item: str) -> bool:
     return bool(libspice.bodfnd_c(body, item))
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def bodn2c(name: str) -> Tuple[int, bool]:
@@ -556,6 +641,7 @@ def bodn2c(name: str) -> Tuple[int, bool]:
     return code.value, bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def bods2c(name: str) -> Tuple[int, bool]:
@@ -574,6 +660,7 @@ def bods2c(name: str) -> Tuple[int, bool]:
     return code.value, bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def bodvar(body: int, item: str, dim: int) -> ndarray:
     """
@@ -600,6 +687,7 @@ def bodvar(body: int, item: str, dim: int) -> ndarray:
     return stypes.c_vector_to_python(values)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def bodvcd(bodyid: int, item: str, maxn: int) -> Tuple[int, ndarray]:
     """
@@ -625,6 +713,7 @@ def bodvcd(bodyid: int, item: str, maxn: int) -> Tuple[int, ndarray]:
     return dim.value, stypes.c_vector_to_python(values)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def bodvrd(bodynm: str, item: str, maxn: int) -> Tuple[int, ndarray]:
     """
@@ -649,6 +738,7 @@ def bodvrd(bodynm: str, item: str, maxn: int) -> Tuple[int, ndarray]:
     return dim.value, stypes.c_vector_to_python(values)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def brcktd(number: float, end1: float, end2: float) -> float:
     """
@@ -670,6 +760,7 @@ def brcktd(number: float, end1: float, end2: float) -> float:
     return libspice.brcktd_c(number, end1, end2)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def brckti(number: int, end1: int, end2: int) -> int:
     """
@@ -691,6 +782,7 @@ def brckti(number: int, end1: int, end2: int) -> int:
     return libspice.brckti_c(number, end1, end2)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def bschoc(
     value: Union[str_, str],
@@ -721,6 +813,7 @@ def bschoc(
     return libspice.bschoc_c(value, ndim, lenvals, array, order)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def bschoi(
     value: int,
@@ -748,6 +841,7 @@ def bschoi(
     return libspice.bschoi_c(value, ndim, array, order)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def bsrchc(value: str, ndim: int, lenvals: int, array: Iterable[str]) -> int:
     """
@@ -770,6 +864,7 @@ def bsrchc(value: str, ndim: int, lenvals: int, array: Iterable[str]) -> int:
     return libspice.bsrchc_c(value, ndim, lenvals, array)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def bsrchd(value: float, ndim: int, array: ndarray) -> int:
     """
@@ -790,6 +885,7 @@ def bsrchd(value: float, ndim: int, array: ndarray) -> int:
     return libspice.bsrchd_c(value, ndim, array)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def bsrchi(value: int, ndim: int, array: ndarray) -> int:
     """
@@ -814,6 +910,7 @@ def bsrchi(value: int, ndim: int, array: ndarray) -> int:
 # C
 
 
+@spicelock_for_multithread
 @spice_error_check
 def card(cell: SpiceCell) -> int:
     """
@@ -828,6 +925,7 @@ def card(cell: SpiceCell) -> int:
     return libspice.card_c(ctypes.byref(cell))
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def ccifrm(
@@ -871,6 +969,7 @@ def ccifrm(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def cgv2el(
     center: Union[ndarray, Iterable[float]],
@@ -895,6 +994,7 @@ def cgv2el(
     return ellipse
 
 
+@spicelock_for_multithread
 @spice_error_check
 def chbder(
     cp: Union[ndarray, Iterable[float]],
@@ -928,6 +1028,7 @@ def chbder(
     return stypes.c_vector_to_python(dpdxs)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def chkin(module: str) -> None:
     """
@@ -941,6 +1042,7 @@ def chkin(module: str) -> None:
     libspice.chkin_c(module)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def chkout(module: str) -> None:
     """
@@ -954,6 +1056,7 @@ def chkout(module: str) -> None:
     libspice.chkout_c(module)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def cidfrm(cent: int, lenout: int = _default_len_out) -> Tuple[int, str, bool]:
@@ -977,6 +1080,7 @@ def cidfrm(cent: int, lenout: int = _default_len_out) -> Tuple[int, str, bool]:
     return frcode.value, stypes.to_python_string(frname), bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ckcls(handle: int) -> None:
     """
@@ -990,6 +1094,7 @@ def ckcls(handle: int) -> None:
     libspice.ckcls_c(handle)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ckcov(
     ck: str,
@@ -1028,6 +1133,7 @@ def ckcov(
     return cover
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def ckfrot(inst: int, et: float) -> Tuple[ndarray, int, bool]:
@@ -1056,6 +1162,7 @@ def ckfrot(inst: int, et: float) -> Tuple[ndarray, int, bool]:
     return stypes.c_matrix_to_numpy(rotate_m), ref.value, bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def ckgp(
@@ -1087,6 +1194,7 @@ def ckgp(
     return stypes.c_matrix_to_numpy(cmat), clkout.value, bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def ckgpav(
@@ -1126,6 +1234,7 @@ def ckgpav(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def cklpf(filename: str) -> int:
     """
@@ -1144,6 +1253,7 @@ def cklpf(filename: str) -> int:
     return handle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ckobj(ck: str, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     """
@@ -1165,6 +1275,7 @@ def ckobj(ck: str, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     return out_cell
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ckopn(filename: str, ifname: str, ncomch: int) -> int:
     """
@@ -1185,6 +1296,7 @@ def ckopn(filename: str, ifname: str, ncomch: int) -> int:
     return handle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ckupf(handle: int) -> None:
     """
@@ -1199,6 +1311,7 @@ def ckupf(handle: int) -> None:
     libspice.ckupf_c(handle)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ckw01(
     handle: int,
@@ -1246,6 +1359,7 @@ def ckw01(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ckw02(
     handle: int,
@@ -1296,6 +1410,7 @@ def ckw02(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ckw03(
     handle: int,
@@ -1361,6 +1476,7 @@ def ckw03(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ckw05(
     handle: int,
@@ -1436,6 +1552,7 @@ def cleard() -> NotImplementedError:
     raise NotImplementedError
 
 
+@spicelock_for_multithread
 @spice_error_check
 def clight() -> float:
     """
@@ -1448,6 +1565,7 @@ def clight() -> float:
     return libspice.clight_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def clpool() -> None:
     """
@@ -1459,6 +1577,7 @@ def clpool() -> None:
     libspice.clpool_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def cltext(fname: str) -> None:
     """
@@ -1488,6 +1607,7 @@ def cltext(fname: str) -> None:
     libspice.cltext_(fname_p, fname_len)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def cmprss(delim: str, n: int, instr: str, lenout: int = _default_len_out) -> str:
     """
@@ -1511,6 +1631,7 @@ def cmprss(delim: str, n: int, instr: str, lenout: int = _default_len_out) -> st
     return stypes.to_python_string(output)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def cnmfrm(cname: str, lenout: int = _default_len_out) -> Tuple[int, str, bool]:
@@ -1534,6 +1655,7 @@ def cnmfrm(cname: str, lenout: int = _default_len_out) -> Tuple[int, str, bool]:
     return frcode.value, stypes.to_python_string(frname), bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def conics(elts: ndarray, et: float) -> ndarray:
     """
@@ -1554,6 +1676,7 @@ def conics(elts: ndarray, et: float) -> ndarray:
     return stypes.c_vector_to_python(state)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def convrt(
     x: Union[float, Iterable[float]], inunit: str, outunit: str
@@ -1587,6 +1710,7 @@ def convrt(
         return y.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def copy(cell: SpiceCell) -> SpiceCell:
     """
@@ -1613,6 +1737,7 @@ def copy(cell: SpiceCell) -> SpiceCell:
     return newcopy
 
 
+@spicelock_for_multithread
 @spice_error_check
 def cpos(string: str, chars: str, start: int) -> int:
     """
@@ -1635,6 +1760,7 @@ def cpos(string: str, chars: str, start: int) -> int:
     return libspice.cpos_c(string, chars, start)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def cposr(string: str, chars: str, start: int) -> int:
     """
@@ -1657,6 +1783,7 @@ def cposr(string: str, chars: str, start: int) -> int:
     return libspice.cposr_c(string, chars, start)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def cvpool(agent: str) -> bool:
     """
@@ -1674,6 +1801,7 @@ def cvpool(agent: str) -> bool:
     return bool(update.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def cyllat(r: float, lonc: float, z: float) -> Tuple[float, float, float]:
     """
@@ -1698,6 +1826,7 @@ def cyllat(r: float, lonc: float, z: float) -> Tuple[float, float, float]:
     return radius.value, lon.value, lat.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def cylrec(r: float, lon: float, z: float) -> ndarray:
     """
@@ -1718,6 +1847,7 @@ def cylrec(r: float, lon: float, z: float) -> ndarray:
     return stypes.c_vector_to_python(rectan)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def cylsph(r: float, lonc: float, z: float) -> Tuple[float, float, float]:
     """
@@ -1749,6 +1879,7 @@ def cylsph(r: float, lonc: float, z: float) -> Tuple[float, float, float]:
 # D
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dafac(handle: int, buffer: Sequence[str]) -> None:
     """
@@ -1768,6 +1899,7 @@ def dafac(handle: int, buffer: Sequence[str]) -> None:
     libspice.dafac_c(handle, n, lenvals, buffer)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dafbbs(handle: int) -> None:
     """
@@ -1781,6 +1913,7 @@ def dafbbs(handle: int) -> None:
     libspice.dafbbs_c(handle)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dafbfs(handle: int) -> None:
     """
@@ -1794,6 +1927,7 @@ def dafbfs(handle: int) -> None:
     libspice.dafbfs_c(handle)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dafcls(handle: int) -> None:
     """
@@ -1807,6 +1941,7 @@ def dafcls(handle: int) -> None:
     libspice.dafcls_c(handle)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dafcs(handle: int) -> None:
     """
@@ -1821,6 +1956,7 @@ def dafcs(handle: int) -> None:
     libspice.dafcs_c(handle)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dafdc(handle: int) -> None:
     """
@@ -1834,6 +1970,7 @@ def dafdc(handle: int) -> None:
     libspice.dafdc_c(handle)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dafec(
     handle: int, bufsiz: int, lenout: int = _default_len_out
@@ -1868,6 +2005,7 @@ def dafec(
     return n.value, stypes.c_vector_to_python(buffer), bool(done.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def daffna() -> bool:
     """
@@ -1882,6 +2020,7 @@ def daffna() -> bool:
     return bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def daffpa() -> bool:
     """
@@ -1896,6 +2035,7 @@ def daffpa() -> bool:
     return bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dafgda(handle: int, begin: int, end: int) -> ndarray:
     """
@@ -1916,6 +2056,7 @@ def dafgda(handle: int, begin: int, end: int) -> ndarray:
     return stypes.c_vector_to_python(data)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dafgh() -> int:
     """
@@ -1930,6 +2071,7 @@ def dafgh() -> int:
     return outvalue.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dafgn(lenout: int = _default_len_out) -> str:
     """
@@ -1946,6 +2088,7 @@ def dafgn(lenout: int = _default_len_out) -> str:
     return stypes.to_python_string(name)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dafgs(n: int = 125) -> ndarray:
     # The 125 may be a hard set,
@@ -1964,6 +2107,7 @@ def dafgs(n: int = 125) -> ndarray:
     return stypes.c_vector_to_python(retarray)[0:n]
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def dafgsr(handle: int, recno: int, begin: int, end: int) -> Tuple[ndarray, bool]:
@@ -1989,6 +2133,7 @@ def dafgsr(handle: int, recno: int, begin: int, end: int) -> Tuple[ndarray, bool
     return stypes.c_vector_to_python(data), bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dafopr(fname: str) -> int:
     """
@@ -2005,6 +2150,7 @@ def dafopr(fname: str) -> int:
     return handle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dafopw(fname: str) -> int:
     """
@@ -2021,6 +2167,7 @@ def dafopw(fname: str) -> int:
     return handle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dafps(nd: int, ni: int, dc: ndarray, ic: ndarray) -> ndarray:
     """
@@ -2044,6 +2191,7 @@ def dafps(nd: int, ni: int, dc: ndarray, ic: ndarray) -> ndarray:
     return stypes.c_vector_to_python(outsum)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dafrda(handle: int, begin: int, end: int) -> ndarray:
     """
@@ -2068,6 +2216,7 @@ def dafrda(handle: int, begin: int, end: int) -> ndarray:
     return stypes.c_vector_to_python(data)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dafrfr(
     handle: int, lenout: int = _default_len_out
@@ -2114,6 +2263,7 @@ def dafrfr(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dafrs(insum: ndarray) -> None:
     """
@@ -2127,6 +2277,7 @@ def dafrs(insum: ndarray) -> None:
     libspice.dafrs_c(ctypes.byref(insum))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dafus(insum: ndarray, nd: int, ni: int) -> Tuple[ndarray, ndarray]:
     """
@@ -2148,6 +2299,7 @@ def dafus(insum: ndarray, nd: int, ni: int) -> Tuple[ndarray, ndarray]:
     return stypes.c_vector_to_python(dc), stypes.c_vector_to_python(ic)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dasac(handle: int, buffer: Sequence[str]) -> None:
     """
@@ -2167,6 +2319,7 @@ def dasac(handle: int, buffer: Sequence[str]) -> None:
     libspice.dasac_c(handle, n, buflen, buffer)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dascls(handle: int) -> None:
     """
@@ -2180,6 +2333,7 @@ def dascls(handle: int) -> None:
     libspice.dascls_c(handle)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dasdc(handle: int) -> None:
     """
@@ -2194,6 +2348,7 @@ def dasdc(handle: int) -> None:
     libspice.dasdc_c(handle)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dasec(
     handle: int, bufsiz: int = _default_len_out, buflen: int = _default_len_out
@@ -2228,6 +2383,7 @@ def dasec(
     return n.value, stypes.c_vector_to_python(buffer), done.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dashfn(handle: int, lenout: int = _default_len_out) -> str:
     """
@@ -2246,6 +2402,7 @@ def dashfn(handle: int, lenout: int = _default_len_out) -> str:
     return stypes.to_python_string(fname)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dasonw(fname: str, ftype: str, ifname: str, ncomch: int) -> int:
     """
@@ -2278,6 +2435,7 @@ def dasonw(fname: str, ftype: str, ifname: str, ncomch: int) -> int:
     return handle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dasopr(fname: str) -> int:
     """
@@ -2294,6 +2452,7 @@ def dasopr(fname: str) -> int:
     return handle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dasopw(fname: str) -> int:
     """
@@ -2309,6 +2468,7 @@ def dasopw(fname: str) -> int:
     return handle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dasrfr(
     handle: int, lenout: int = _default_len_out
@@ -2354,6 +2514,7 @@ def dasrfr(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dcyldr(x: float, y: float, z: float) -> ndarray:
     """
@@ -2375,6 +2536,7 @@ def dcyldr(x: float, y: float, z: float) -> ndarray:
     return stypes.c_matrix_to_numpy(jacobi)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def deltet(epoch: float, eptype: str) -> float:
     """
@@ -2393,6 +2555,7 @@ def deltet(epoch: float, eptype: str) -> float:
     return delta.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def det(m1: ndarray) -> float:
     """
@@ -2407,6 +2570,7 @@ def det(m1: ndarray) -> float:
     return libspice.det_c(m1)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dgeodr(x: float, y: float, z: float, re: float, f: float) -> ndarray:
     """
@@ -2432,6 +2596,7 @@ def dgeodr(x: float, y: float, z: float, re: float, f: float) -> ndarray:
     return stypes.c_matrix_to_numpy(jacobi)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def diags2(
     symmat: Union[ndarray, Iterable[Iterable[float]]]
@@ -2453,6 +2618,7 @@ def diags2(
     return stypes.c_matrix_to_numpy(diag), stypes.c_matrix_to_numpy(rotateout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def diff(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     """
@@ -2480,6 +2646,7 @@ def diff(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     return c
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def dlabbs(handle: int) -> Tuple[SpiceDLADescr, bool]:
@@ -2498,6 +2665,7 @@ def dlabbs(handle: int) -> Tuple[SpiceDLADescr, bool]:
     return descr, bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def dlabfs(handle: int) -> Tuple[SpiceDLADescr, bool]:
@@ -2516,6 +2684,7 @@ def dlabfs(handle: int) -> Tuple[SpiceDLADescr, bool]:
     return descr, bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def dlafns(handle: int, descr: SpiceDLADescr) -> Tuple[SpiceDLADescr, bool]:
@@ -2538,6 +2707,7 @@ def dlafns(handle: int, descr: SpiceDLADescr) -> Tuple[SpiceDLADescr, bool]:
     return nxtdsc, bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def dlafps(handle: int, descr: SpiceDLADescr) -> Tuple[SpiceDLADescr, bool]:
@@ -2560,6 +2730,7 @@ def dlafps(handle: int, descr: SpiceDLADescr) -> Tuple[SpiceDLADescr, bool]:
     return prvdsc, bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dlatdr(x: float, y: float, z: float) -> ndarray:
     """
@@ -2581,6 +2752,7 @@ def dlatdr(x: float, y: float, z: float) -> ndarray:
     return stypes.c_matrix_to_numpy(jacobi)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dp2hx(number: float, lenout: int = _default_len_out) -> str:
     """
@@ -2601,6 +2773,7 @@ def dp2hx(number: float, lenout: int = _default_len_out) -> str:
     return stypes.to_python_string(string)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dpgrdr(body: str, x: float, y: float, z: int, re: float, f: float) -> ndarray:
     """
@@ -2628,6 +2801,7 @@ def dpgrdr(body: str, x: float, y: float, z: int, re: float, f: float) -> ndarra
     return stypes.c_matrix_to_numpy(jacobi)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dpmax() -> float:
     """
@@ -2643,6 +2817,7 @@ def dpmax() -> float:
     return libspice.dpmax_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dpmin() -> float:
     """
@@ -2658,6 +2833,7 @@ def dpmin() -> float:
     return libspice.dpmin_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dpr() -> float:
     """
@@ -2670,6 +2846,7 @@ def dpr() -> float:
     return libspice.dpr_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def drdcyl(r: float, lon: float, z: float) -> ndarray:
     """
@@ -2691,6 +2868,7 @@ def drdcyl(r: float, lon: float, z: float) -> ndarray:
     return stypes.c_matrix_to_numpy(jacobi)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def drdgeo(lon: float, lat: float, alt: float, re: float, f: float) -> ndarray:
     """
@@ -2716,6 +2894,7 @@ def drdgeo(lon: float, lat: float, alt: float, re: float, f: float) -> ndarray:
     return stypes.c_matrix_to_numpy(jacobi)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def drdlat(r: float, lon: float, lat: float) -> ndarray:
     """
@@ -2737,6 +2916,7 @@ def drdlat(r: float, lon: float, lat: float) -> ndarray:
     return stypes.c_matrix_to_numpy(jacobi)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def drdpgr(body: str, lon: float, lat: float, alt: int, re: float, f: float) -> ndarray:
     """
@@ -2764,6 +2944,7 @@ def drdpgr(body: str, lon: float, lat: float, alt: int, re: float, f: float) -> 
     return stypes.c_matrix_to_numpy(jacobi)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def drdsph(r: float, colat: float, lon: float) -> ndarray:
     """
@@ -2785,6 +2966,7 @@ def drdsph(r: float, colat: float, lon: float) -> ndarray:
     return stypes.c_matrix_to_numpy(jacobi)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dskb02(
     handle: int, dladsc: SpiceDLADescr
@@ -2841,6 +3023,7 @@ def dskb02(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dskcls(handle: int, optmiz: bool = False) -> None:
     """
@@ -2857,6 +3040,7 @@ def dskcls(handle: int, optmiz: bool = False) -> None:
     libspice.dskcls_c(handle, optmiz)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dskd02(
     handle: int, dladsc: SpiceDLADescr, item: int, start: int, room: int
@@ -2884,6 +3068,7 @@ def dskd02(
     return stypes.c_vector_to_python(values)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dskgd(handle: int, dladsc: SpiceDLADescr) -> SpiceDSKDescr:
     """
@@ -2902,6 +3087,7 @@ def dskgd(handle: int, dladsc: SpiceDLADescr) -> SpiceDSKDescr:
     return dskdsc
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dskgtl(keywrd: int) -> float:
     """
@@ -2918,6 +3104,7 @@ def dskgtl(keywrd: int) -> float:
     return dpval.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dski02(
     handle: int, dladsc: SpiceDLADescr, item: int, start: int, room: int
@@ -2944,6 +3131,7 @@ def dski02(
     return stypes.c_matrix_to_numpy(values)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dskmi2(
     vrtces: ndarray,
@@ -3008,6 +3196,7 @@ def dskmi2(
     return stypes.c_vector_to_python(spaixd), stypes.c_vector_to_python(spaixi)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dskn02(handle: int, dladsc: SpiceDLADescr, plid: int) -> ndarray:
     """
@@ -3028,6 +3217,7 @@ def dskn02(handle: int, dladsc: SpiceDLADescr, plid: int) -> ndarray:
     return stypes.c_vector_to_python(normal)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dskobj(dsk: str) -> SpiceCell:
     """
@@ -3045,6 +3235,7 @@ def dskobj(dsk: str) -> SpiceCell:
     return bodids
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dskopn(fname: str, ifname: str, ncomch: int) -> int:
     """
@@ -3065,6 +3256,7 @@ def dskopn(fname: str, ifname: str, ncomch: int) -> int:
     return handle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dskp02(handle: int, dladsc: SpiceDLADescr, start: int, room: int) -> ndarray:
     """
@@ -3088,6 +3280,7 @@ def dskp02(handle: int, dladsc: SpiceDLADescr, start: int, room: int) -> ndarray
     return stypes.c_matrix_to_numpy(plates)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dskrb2(
     vrtces: ndarray, plates: ndarray, corsys: int, corpar: ndarray
@@ -3126,6 +3319,7 @@ def dskrb2(
     return mncor3.value, mxcor3.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dsksrf(dsk: str, bodyid: int) -> SpiceCell:
     """
@@ -3145,6 +3339,7 @@ def dsksrf(dsk: str, bodyid: int) -> SpiceCell:
     return srfids
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dskstl(keywrd: int, dpval: float) -> None:
     """
@@ -3161,6 +3356,7 @@ def dskstl(keywrd: int, dpval: float) -> None:
     libspice.dskstl_c(keywrd, dpval)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dskv02(handle: int, dladsc: SpiceDLADescr, start: int, room: int) -> ndarray:
     """
@@ -3183,6 +3379,7 @@ def dskv02(handle: int, dladsc: SpiceDLADescr, start: int, room: int) -> ndarray
     return stypes.c_matrix_to_numpy(vrtces)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dskw02(
     handle: int,
@@ -3276,6 +3473,7 @@ def dskw02(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dskx02(
     handle: int, dladsc: SpiceDLADescr, vertex: ndarray, raydir: ndarray
@@ -3311,6 +3509,7 @@ def dskx02(
     return plid.value, stypes.c_vector_to_python(xpt), bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def dskxsi(
@@ -3387,6 +3586,7 @@ def dskxsi(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dskxv(
     pri: bool,
@@ -3429,6 +3629,7 @@ def dskxv(
     return stypes.c_matrix_to_numpy(xptarr), stypes.c_vector_to_python(fndarr)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dskz02(handle: int, dladsc: SpiceDLADescr) -> Tuple[int, int]:
     """
@@ -3448,6 +3649,7 @@ def dskz02(handle: int, dladsc: SpiceDLADescr) -> Tuple[int, int]:
     return nv.value, np.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dsphdr(x: float, y: float, z: float) -> ndarray:
     """
@@ -3470,6 +3672,7 @@ def dsphdr(x: float, y: float, z: float) -> ndarray:
     return stypes.c_matrix_to_numpy(jacobi)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def dtpool(name: str) -> Tuple[int, str, bool]:
@@ -3491,6 +3694,7 @@ def dtpool(name: str) -> Tuple[int, str, bool]:
     return n.value, stypes.to_python_string(typeout.value), bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ducrss(s1: ndarray, s2: ndarray) -> ndarray:
     """
@@ -3511,6 +3715,7 @@ def ducrss(s1: ndarray, s2: ndarray) -> ndarray:
     return stypes.c_vector_to_python(sout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dvcrss(s1: ndarray, s2: ndarray) -> ndarray:
     """
@@ -3531,6 +3736,7 @@ def dvcrss(s1: ndarray, s2: ndarray) -> ndarray:
     return stypes.c_vector_to_python(sout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dvdot(s1: Sequence[float], s2: Sequence[float]) -> float:
     """
@@ -3549,6 +3755,7 @@ def dvdot(s1: Sequence[float], s2: Sequence[float]) -> float:
     return libspice.dvdot_c(s1, s2)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dvhat(s1: ndarray) -> ndarray:
     """
@@ -3567,6 +3774,7 @@ def dvhat(s1: ndarray) -> ndarray:
     return stypes.c_vector_to_python(sout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dvnorm(state: ndarray) -> float:
     """
@@ -3583,6 +3791,7 @@ def dvnorm(state: ndarray) -> float:
     return libspice.dvnorm_c(state)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dvpool(name: str) -> None:
     """
@@ -3596,6 +3805,7 @@ def dvpool(name: str) -> None:
     libspice.dvpool_c(name)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def dvsep(s1: ndarray, s2: ndarray) -> float:
     """
@@ -3618,6 +3828,7 @@ def dvsep(s1: ndarray, s2: ndarray) -> float:
 # E
 
 
+@spicelock_for_multithread
 @spice_error_check
 def edlimb(
     a: float,
@@ -3645,6 +3856,7 @@ def edlimb(
     return limb
 
 
+@spicelock_for_multithread
 @spice_error_check
 def edterm(
     trmtyp: str,
@@ -3707,6 +3919,7 @@ def edterm(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekacec(
     handle: int,
@@ -3741,6 +3954,7 @@ def ekacec(
     libspice.ekacec_c(handle, segno, recno, column, nvals, vallen, cvals, isnull)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekaced(
     handle: int,
@@ -3774,6 +3988,7 @@ def ekaced(
     libspice.ekaced_c(handle, segno, recno, column, nvals, dvals, isnull)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekacei(
     handle: int,
@@ -3807,6 +4022,7 @@ def ekacei(
     libspice.ekacei_c(handle, segno, recno, column, nvals, ivals, isnull)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekaclc(
     handle: int,
@@ -3850,6 +4066,7 @@ def ekaclc(
     return stypes.c_vector_to_python(wkindx)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekacld(
     handle: int,
@@ -3888,6 +4105,7 @@ def ekacld(
     return stypes.c_vector_to_python(wkindx)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekacli(
     handle: int,
@@ -3926,6 +4144,7 @@ def ekacli(
     return stypes.c_vector_to_python(wkindx)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekappr(handle: int, segno: int) -> int:
     """
@@ -3944,6 +4163,7 @@ def ekappr(handle: int, segno: int) -> int:
     return recno.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekbseg(
     handle: int, tabnam: str, cnames: Sequence[str], decls: Sequence[str]
@@ -3975,6 +4195,7 @@ def ekbseg(
     return segno.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekccnt(table: str) -> int:
     """
@@ -3992,6 +4213,7 @@ def ekccnt(table: str) -> int:
     return ccount.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekcii(
     table: str, cindex: int, lenout: int = _default_len_out
@@ -4016,6 +4238,7 @@ def ekcii(
     return stypes.to_python_string(column), attdsc
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekcls(handle: int) -> None:
     """
@@ -4029,6 +4252,7 @@ def ekcls(handle: int) -> None:
     libspice.ekcls_c(handle)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekdelr(handle: int, segno: int, recno: int) -> None:
     """
@@ -4046,6 +4270,7 @@ def ekdelr(handle: int, segno: int, recno: int) -> None:
     libspice.ekdelr_c(handle, segno, recno)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekffld(handle: int, segno: int, rcptrs: ndarray) -> None:
     """
@@ -4063,6 +4288,7 @@ def ekffld(handle: int, segno: int, rcptrs: ndarray) -> None:
     libspice.ekffld_c(handle, segno, ctypes.cast(rcptrs, ctypes.POINTER(ctypes.c_int)))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekfind(query: str, lenout: int = _default_len_out) -> Tuple[int, int, str]:
     """
@@ -4086,6 +4312,7 @@ def ekfind(query: str, lenout: int = _default_len_out) -> Tuple[int, int, str]:
     return nmrows.value, error.value, stypes.to_python_string(errmsg)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def ekgc(
@@ -4118,6 +4345,7 @@ def ekgc(
     return stypes.to_python_string(cdata), null.value, bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def ekgd(selidx: int, row: int, element: int) -> Tuple[float, int, bool]:
@@ -4151,6 +4379,7 @@ def ekgd(selidx: int, row: int, element: int) -> Tuple[float, int, bool]:
     return ddata.value, null.value, bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def ekgi(selidx: int, row: int, element: int) -> Tuple[int, int, bool]:
@@ -4184,6 +4413,7 @@ def ekgi(selidx: int, row: int, element: int) -> Tuple[int, int, bool]:
     return idata.value, null.value, bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekifld(
     handle: int,
@@ -4235,6 +4465,7 @@ def ekifld(
     return segno.value, stypes.c_vector_to_python(recptrs)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekinsr(handle: int, segno: int, recno: int) -> None:
     """
@@ -4253,6 +4484,7 @@ def ekinsr(handle: int, segno: int, recno: int) -> None:
     libspice.ekinsr_c(handle, segno, recno)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def eklef(fname: str) -> int:
     """
@@ -4269,6 +4501,7 @@ def eklef(fname: str) -> int:
     return handle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def eknelt(selidx: int, row: int) -> int:
     """
@@ -4286,6 +4519,7 @@ def eknelt(selidx: int, row: int) -> int:
     return libspice.eknelt_c(selidx, row)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def eknseg(handle: int) -> int:
     """
@@ -4300,6 +4534,7 @@ def eknseg(handle: int) -> int:
     return libspice.eknseg_c(handle)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekntab() -> int:
     """
@@ -4314,6 +4549,7 @@ def ekntab() -> int:
     return n.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekopn(fname: str, ifname: str, ncomch: int) -> int:
     """
@@ -4334,6 +4570,7 @@ def ekopn(fname: str, ifname: str, ncomch: int) -> int:
     return handle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekopr(fname: str) -> int:
     """
@@ -4350,6 +4587,7 @@ def ekopr(fname: str) -> int:
     return handle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekops() -> int:
     """
@@ -4365,6 +4603,7 @@ def ekops() -> int:
     return handle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekopw(fname: str) -> int:
     """
@@ -4381,6 +4620,7 @@ def ekopw(fname: str) -> int:
     return handle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekpsel(
     query: str, msglen: int, tablen: int, collen: int
@@ -4450,6 +4690,7 @@ def ekpsel(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekrcec(
     handle: int,
@@ -4501,6 +4742,7 @@ def ekrcec(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekrced(
     handle: int,
@@ -4542,6 +4784,7 @@ def ekrced(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekrcei(
     handle: int,
@@ -4583,6 +4826,7 @@ def ekrcei(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekssum(handle: int, segno: int) -> SpiceEKSegSum:
     """
@@ -4601,6 +4845,7 @@ def ekssum(handle: int, segno: int) -> SpiceEKSegSum:
     return segsum
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ektnam(n: int, lenout: int = _default_len_out) -> str:
     """
@@ -4619,6 +4864,7 @@ def ektnam(n: int, lenout: int = _default_len_out) -> str:
     return stypes.to_python_string(table)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekucec(
     handle: int,
@@ -4653,6 +4899,7 @@ def ekucec(
     libspice.ekucec_c(handle, segno, recno, column, nvals, vallen, cvals, isnull)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekuced(
     handle: int,
@@ -4686,6 +4933,7 @@ def ekuced(
     libspice.ekaced_c(handle, segno, recno, column, nvals, dvals, isnull)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekucei(
     handle: int,
@@ -4719,6 +4967,7 @@ def ekucei(
     libspice.ekucei_c(handle, segno, recno, column, nvals, ivals, isnull)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ekuef(handle: int) -> None:
     """
@@ -4734,6 +4983,7 @@ def ekuef(handle: int) -> None:
     libspice.ekuef_c(handle)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def el2cgv(ellipse: Ellipse) -> Tuple[ndarray, ndarray, ndarray]:
     """
@@ -4758,6 +5008,7 @@ def el2cgv(ellipse: Ellipse) -> Tuple[ndarray, ndarray, ndarray]:
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def elemc(item: str, inset: SpiceCell) -> bool:
     """
@@ -4774,6 +5025,7 @@ def elemc(item: str, inset: SpiceCell) -> bool:
     return bool(libspice.elemc_c(item, ctypes.byref(inset)))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def elemd(item: float, inset: SpiceCell) -> bool:
     """
@@ -4791,6 +5043,7 @@ def elemd(item: float, inset: SpiceCell) -> bool:
     return bool(libspice.elemd_c(item, ctypes.byref(inset)))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def elemi(item: int, inset: SpiceCell) -> bool:
     """
@@ -4808,6 +5061,7 @@ def elemi(item: int, inset: SpiceCell) -> bool:
     return bool(libspice.elemi_c(item, ctypes.byref(inset)))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def eqncpv(
     et: float,
@@ -4840,6 +5094,7 @@ def eqncpv(
     return stypes.c_vector_to_python(state)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def eqstr(a: str, b: str) -> bool:
     """
@@ -4983,6 +5238,7 @@ def esrchc(value: str, array: Sequence[str]) -> int:
     return libspice.esrchc_c(value, ndim, lenvals, array)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def et2lst(
     et: float,
@@ -5044,6 +5300,7 @@ def et2lst(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def et2utc(
     et: Union[float, Iterable[float]],
@@ -5079,6 +5336,7 @@ def et2utc(
         return stypes.to_python_string(utcstr)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def etcal(
     et: Union[float, ndarray], lenout: int = _default_len_out
@@ -5109,6 +5367,7 @@ def etcal(
         return stypes.to_python_string(string)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def eul2m(
     angle3: float, angle2: float, angle1: float, axis3: int, axis2: int, axis1: int
@@ -5137,6 +5396,7 @@ def eul2m(
     return stypes.c_matrix_to_numpy(r)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def eul2xf(eulang: Sequence[float], axisa: int, axisb: int, axisc: int) -> ndarray:
     """
@@ -5162,6 +5422,7 @@ def eul2xf(eulang: Sequence[float], axisa: int, axisb: int, axisc: int) -> ndarr
     return stypes.c_matrix_to_numpy(xform)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ev2lin(et: float, geophs: Sequence[float], elems: Sequence[float]) -> ndarray:
     """
@@ -5186,6 +5447,7 @@ def ev2lin(et: float, geophs: Sequence[float], elems: Sequence[float]) -> ndarra
     return stypes.c_vector_to_python(state)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def exists(fname: str) -> bool:
     """
@@ -5200,6 +5462,7 @@ def exists(fname: str) -> bool:
     return bool(libspice.exists_c(fname))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def expool(name: str) -> bool:
     """
@@ -5231,6 +5494,7 @@ def failed() -> bool:
     return bool(libspice.failed_c())
 
 
+@spicelock_for_multithread
 @spice_error_check
 def fn2lun(fname: str) -> int:
     """
@@ -5249,6 +5513,7 @@ def fn2lun(fname: str) -> int:
     return unit_out.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def fovray(
     inst: str,
@@ -5285,6 +5550,7 @@ def fovray(
     return bool(visible.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def fovtrg(
     inst: str,
@@ -5331,6 +5597,7 @@ def fovtrg(
     return bool(visible.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def frame(x: Union[ndarray, Iterable[float]]) -> Tuple[ndarray, ndarray, ndarray]:
     """
@@ -5350,6 +5617,7 @@ def frame(x: Union[ndarray, Iterable[float]]) -> Tuple[ndarray, ndarray, ndarray
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def frinfo(frcode: int) -> Tuple[int, int, int, bool]:
@@ -5374,6 +5642,7 @@ def frinfo(frcode: int) -> Tuple[int, int, int, bool]:
     return cent.value, frclss.value, clssid.value, bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def frmnam(frcode: int, lenout: int = _default_len_out) -> str:
     """
@@ -5392,6 +5661,7 @@ def frmnam(frcode: int, lenout: int = _default_len_out) -> str:
     return stypes.to_python_string(frname)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ftncls(unit: int) -> None:
     """
@@ -5405,6 +5675,7 @@ def ftncls(unit: int) -> None:
     libspice.ftncls_c(unit)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def furnsh(path: Union[str, Iterable[str]]) -> None:
     """
@@ -5426,6 +5697,7 @@ def furnsh(path: Union[str, Iterable[str]]) -> None:
 # G
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def gcpool(
@@ -5464,6 +5736,7 @@ def gcpool(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def gdpool(name: str, start: int, room: int) -> Tuple[ndarray, bool]:
@@ -5494,6 +5767,7 @@ def gdpool(name: str, start: int, room: int) -> Tuple[ndarray, bool]:
     return stypes.c_vector_to_python(values)[0 : n.value], bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def georec(lon: float, lat: float, alt: float, re: float, f: float) -> ndarray:
     """
@@ -5521,6 +5795,7 @@ def georec(lon: float, lat: float, alt: float, re: float, f: float) -> ndarray:
 # getcml not really needed
 
 
+@spicelock_for_multithread
 @spice_error_check
 def getelm(frstyr: int, lineln: int, lines: Iterable[str]) -> Tuple[float, ndarray]:
     """
@@ -5546,6 +5821,7 @@ def getelm(frstyr: int, lineln: int, lines: Iterable[str]) -> Tuple[float, ndarr
     return epoch.value, stypes.c_vector_to_python(elems)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def getfat(file: str) -> Tuple[str, str]:
     """
@@ -5565,6 +5841,7 @@ def getfat(file: str) -> Tuple[str, str]:
     return stypes.to_python_string(arch), stypes.to_python_string(rettype)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def getfov(
     instid: int,
@@ -5629,6 +5906,7 @@ def getmsg(option: str, lenout: int = _default_len_out) -> str:
     return stypes.to_python_string(msg)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfbail() -> bool:
     """
@@ -5641,6 +5919,7 @@ def gfbail() -> bool:
     return bool(libspice.gfbail_c())
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfclrh() -> None:
     """
@@ -5653,6 +5932,7 @@ def gfclrh() -> None:
     libspice.gfclrh_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfdist(
     target: str,
@@ -5713,6 +5993,7 @@ def gfdist(
     return result
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfevnt(
     udstep: UDSTEP,
@@ -5819,6 +6100,7 @@ def gfevnt(
     return result
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gffove(
     inst: str,
@@ -5907,6 +6189,7 @@ def gffove(
     return result
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfilum(
     method: str,
@@ -5986,6 +6269,7 @@ def gfilum(
     return result
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfinth(sigcode: int) -> None:
     """
@@ -6001,6 +6285,7 @@ def gfinth(sigcode: int) -> None:
     libspice.gfinth_c(sigcode)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfocce(
     occtyp: str,
@@ -6099,6 +6384,7 @@ def gfocce(
     return result
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfoclt(
     occtyp: str,
@@ -6167,6 +6453,7 @@ def gfoclt(
     return result
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfpa(
     target: str,
@@ -6232,6 +6519,7 @@ def gfpa(
     return result
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfposc(
     target: str,
@@ -6304,6 +6592,7 @@ def gfposc(
     return result
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfrefn(t1: float, t2: float, s1: Union[bool, int], s2: Union[bool, int]) -> float:
     """
@@ -6327,6 +6616,7 @@ def gfrefn(t1: float, t2: float, s1: Union[bool, int], s2: Union[bool, int]) -> 
     return t.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfrepf() -> None:
     """
@@ -6338,6 +6628,7 @@ def gfrepf() -> None:
     libspice.gfrepf_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfrepi(
     window: Union[SpiceCell, SpiceCellPointer], begmss: str, endmss: str
@@ -6361,6 +6652,7 @@ def gfrepi(
     libspice.gfrepi_c(window, begmss, endmss)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfrepu(ivbeg: float, ivend: float, time: float) -> None:
     """
@@ -6379,6 +6671,7 @@ def gfrepu(ivbeg: float, ivend: float, time: float) -> None:
     libspice.gfrepu_c(ivbeg, ivend, time)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfrfov(
     inst: str,
@@ -6432,6 +6725,7 @@ def gfrfov(
     return result
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfrr(
     target: str,
@@ -6492,6 +6786,7 @@ def gfrr(
     return result
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfsep(
     targ1: str,
@@ -6573,6 +6868,7 @@ def gfsep(
     return result
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfsntc(
     target: str,
@@ -6657,6 +6953,7 @@ def gfsntc(
     return result
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfsstp(step: float) -> None:
     """
@@ -6670,6 +6967,7 @@ def gfsstp(step: float) -> None:
     libspice.gfsstp_c(step)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfstep(time: float) -> float:
     """
@@ -6686,6 +6984,7 @@ def gfstep(time: float) -> float:
     return step.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfstol(value: float) -> None:
     """
@@ -6702,6 +7001,7 @@ def gfstol(value: float) -> None:
     libspice.gfstol_c(value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfsubc(
     target: str,
@@ -6778,6 +7078,7 @@ def gfsubc(
     return result
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gftfov(
     inst: str,
@@ -6836,6 +7137,7 @@ def gftfov(
     return result
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfudb(
     udfuns: UDFUNS, udfunb: UDFUNB, step: float, cnfine: SpiceCell, result: SpiceCell
@@ -6856,6 +7158,7 @@ def gfudb(
     libspice.gfudb_c(udfuns, udfunb, step, ctypes.byref(cnfine), ctypes.byref(result))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def gfuds(
     udfuns: UDFUNS,
@@ -6903,6 +7206,7 @@ def gfuds(
     return result
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def gipool(name: str, start: int, room: int) -> Tuple[ndarray, bool]:
@@ -6926,6 +7230,7 @@ def gipool(name: str, start: int, room: int) -> Tuple[ndarray, bool]:
     return stypes.c_vector_to_python(ivals)[0 : n.value], bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def gnpool(
@@ -6959,6 +7264,7 @@ def gnpool(
 # H
 
 
+@spicelock_for_multithread
 @spice_error_check
 def halfpi() -> float:
     """
@@ -6972,6 +7278,7 @@ def halfpi() -> float:
     return libspice.halfpi_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def hrmint(
     xvals: Sequence[float], yvals: Sequence[float], x: int
@@ -6998,6 +7305,7 @@ def hrmint(
     return f.value, df.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def hx2dp(string: str) -> Union[float, str]:
     """
@@ -7026,6 +7334,7 @@ def hx2dp(string: str) -> Union[float, str]:
 # I
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ident() -> ndarray:
     """
@@ -7040,6 +7349,7 @@ def ident() -> ndarray:
     return stypes.c_matrix_to_numpy(matrix)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def illum(
     target: str, et: float, abcorr: str, obsrvr: str, spoint: ndarray
@@ -7085,6 +7395,7 @@ def illum(
     return phase.value, solar.value, emissn.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def illumf(
     method: str,
@@ -7166,6 +7477,7 @@ def illumf(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def illumg(
     method: str,
@@ -7238,6 +7550,7 @@ def illumg(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ilumin(
     method: str,
@@ -7302,6 +7615,7 @@ def ilumin(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def inedpl(a: float, b: float, c: float, plane: Plane) -> Tuple[Ellipse, bool]:
@@ -7328,6 +7642,7 @@ def inedpl(a: float, b: float, c: float, plane: Plane) -> Tuple[Ellipse, bool]:
     return ellipse, bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def inelpl(ellips: Ellipse, plane: Plane) -> Tuple[int, ndarray, ndarray]:
     """
@@ -7353,6 +7668,7 @@ def inelpl(ellips: Ellipse, plane: Plane) -> Tuple[int, ndarray, ndarray]:
     return nxpts.value, stypes.c_vector_to_python(xpt1), stypes.c_vector_to_python(xpt2)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def inrypl(
     vertex: Iterable[Union[float, float]],
@@ -7381,6 +7697,7 @@ def inrypl(
     return nxpts.value, stypes.c_vector_to_python(xpt)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def insrtc(item: Union[str, Iterable[str]], inset: SpiceCell) -> None:
     """
@@ -7400,6 +7717,7 @@ def insrtc(item: Union[str, Iterable[str]], inset: SpiceCell) -> None:
         libspice.insrtc_c(item, ctypes.byref(inset))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def insrtd(item: Union[float, Iterable[float]], inset: SpiceCell) -> None:
     """
@@ -7419,6 +7737,7 @@ def insrtd(item: Union[float, Iterable[float]], inset: SpiceCell) -> None:
         libspice.insrtd_c(item, ctypes.byref(inset))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def insrti(item: Union[Iterable[int], int], inset: SpiceCell) -> None:
     """
@@ -7438,6 +7757,7 @@ def insrti(item: Union[Iterable[int], int], inset: SpiceCell) -> None:
         libspice.insrti_c(item, ctypes.byref(inset))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def inter(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     """
@@ -7466,6 +7786,7 @@ def inter(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     return c
 
 
+@spicelock_for_multithread
 @spice_error_check
 def intmax() -> int:
     """
@@ -7479,6 +7800,7 @@ def intmax() -> int:
     return libspice.intmax_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def intmin() -> int:
     """
@@ -7492,6 +7814,7 @@ def intmin() -> int:
     return libspice.intmin_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def invert(m: ndarray) -> ndarray:
     """
@@ -7508,6 +7831,7 @@ def invert(m: ndarray) -> ndarray:
     return stypes.c_matrix_to_numpy(mout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def invort(m: ndarray) -> ndarray:
     """
@@ -7526,6 +7850,7 @@ def invort(m: ndarray) -> ndarray:
     return stypes.c_matrix_to_numpy(mout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def irfnam(index: int) -> str:
     """
@@ -7544,6 +7869,7 @@ def irfnam(index: int) -> str:
     return stypes.to_python_string(name)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def irfnum(name: str) -> int:
     """
@@ -7562,6 +7888,7 @@ def irfnum(name: str) -> int:
     return index.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def irfrot(refa: int, refb: int) -> ndarray:
     """
@@ -7582,6 +7909,7 @@ def irfrot(refa: int, refb: int) -> ndarray:
     return stypes.c_matrix_to_numpy(rotab).T
 
 
+@spicelock_for_multithread
 @spice_error_check
 def irftrn(refa: str, refb: str) -> ndarray:
     """
@@ -7604,6 +7932,7 @@ def irftrn(refa: str, refb: str) -> ndarray:
     return stypes.c_matrix_to_numpy(rotab).T
 
 
+@spicelock_for_multithread
 @spice_error_check
 def isordv(array: Union[ndarray, Iterable[int]], n: int) -> bool:
     """
@@ -7623,6 +7952,7 @@ def isordv(array: Union[ndarray, Iterable[int]], n: int) -> bool:
     return bool(libspice.isordv_c(array, n))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def isrchc(value: str, ndim: int, lenvals: int, array: Iterable[str]) -> int:
     """
@@ -7647,6 +7977,7 @@ def isrchc(value: str, ndim: int, lenvals: int, array: Iterable[str]) -> int:
     return libspice.isrchc_c(value, ndim, lenvals, array)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def isrchd(value: float, ndim: int, array: Union[ndarray, Iterable[float]]) -> int:
     """
@@ -7669,6 +8000,7 @@ def isrchd(value: float, ndim: int, array: Union[ndarray, Iterable[float]]) -> i
     return libspice.isrchd_c(value, ndim, array)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def isrchi(value: int, ndim: int, array: Union[ndarray, Iterable[int]]) -> int:
     """
@@ -7691,6 +8023,7 @@ def isrchi(value: int, ndim: int, array: Union[ndarray, Iterable[int]]) -> int:
     return libspice.isrchi_c(value, ndim, array)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def isrot(m: ndarray, ntol: float, dtol: float) -> bool:
     """
@@ -7711,6 +8044,7 @@ def isrot(m: ndarray, ntol: float, dtol: float) -> bool:
     return bool(libspice.isrot_c(m, ntol, dtol))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def iswhsp(string: str) -> bool:
     """
@@ -7732,6 +8066,7 @@ def iswhsp(string: str) -> bool:
 # J
 
 
+@spicelock_for_multithread
 @spice_error_check
 def j1900() -> float:
     """
@@ -7742,6 +8077,7 @@ def j1900() -> float:
     return libspice.j1900_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def j1950() -> float:
     """
@@ -7752,6 +8088,7 @@ def j1950() -> float:
     return libspice.j1950_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def j2000() -> float:
     """
@@ -7762,6 +8099,7 @@ def j2000() -> float:
     return libspice.j2000_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def j2100() -> float:
     """
@@ -7772,6 +8110,7 @@ def j2100() -> float:
     return libspice.j2100_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def jyear() -> float:
     """
@@ -7786,6 +8125,7 @@ def jyear() -> float:
 # K
 
 
+@spicelock_for_multithread
 @spice_error_check
 def kclear() -> None:
     """
@@ -7799,6 +8139,7 @@ def kclear() -> None:
     libspice.kclear_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def kdata(
@@ -7855,6 +8196,7 @@ def kdata(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def kepleq(ml: float, h: float, k: float) -> float:
     """
@@ -7874,6 +8216,7 @@ def kepleq(ml: float, h: float, k: float) -> float:
     return f
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def kinfo(
@@ -7910,6 +8253,7 @@ def kinfo(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def kplfrm(frmcls: int, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     """
@@ -7929,6 +8273,7 @@ def kplfrm(frmcls: int, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     return out_cell
 
 
+@spicelock_for_multithread
 @spice_error_check
 def kpsolv(evec: Tuple[float, float]) -> float:
     """
@@ -7946,6 +8291,7 @@ def kpsolv(evec: Tuple[float, float]) -> float:
     return x
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ktotal(kind: str) -> int:
     """
@@ -7963,6 +8309,7 @@ def ktotal(kind: str) -> int:
     return count.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def kxtrct(
@@ -8028,6 +8375,7 @@ def kxtrct(
 # L
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lastnb(string: str) -> int:
     """
@@ -8043,6 +8391,7 @@ def lastnb(string: str) -> int:
     return libspice.lastnb_c(string)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def latcyl(radius: float, lon: float, lat: float) -> Tuple[float, float, float]:
     """
@@ -8067,6 +8416,7 @@ def latcyl(radius: float, lon: float, lat: float) -> Tuple[float, float, float]:
     return r.value, lonc.value, z.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def latrec(
     radius: float, longitude: Union[float, float], latitude: Union[float, float]
@@ -8089,6 +8439,7 @@ def latrec(
     return stypes.c_vector_to_python(rectan)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def latsph(radius: float, lon: float, lat: float) -> Tuple[float, float, float]:
     """
@@ -8113,6 +8464,7 @@ def latsph(radius: float, lon: float, lat: float) -> Tuple[float, float, float]:
     return rho.value, colat.value, lons.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def latsrf(
     method: str, target: str, et: float, fixref: str, lonlat: Sequence[Sequence[float]]
@@ -8144,6 +8496,7 @@ def latsrf(
     return stypes.c_matrix_to_numpy(srfpts)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lcase(instr: str, lenout: int = _default_len_out) -> str:
     """
@@ -8162,6 +8515,7 @@ def lcase(instr: str, lenout: int = _default_len_out) -> str:
     return stypes.to_python_string(outstr)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ldpool(filename: str) -> None:
     """
@@ -8176,6 +8530,7 @@ def ldpool(filename: str) -> None:
     libspice.ldpool_c(filename)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def limbpt(
     method: str,
@@ -8265,6 +8620,7 @@ def limbpt(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lgrind(
     xvals: Sequence[float], yvals: Sequence[float], x: float
@@ -8292,6 +8648,7 @@ def lgrind(
     return p.value, dp.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lmpool(cvals: Union[ndarray, Iterable[str]]) -> None:
     """
@@ -8308,6 +8665,7 @@ def lmpool(cvals: Union[ndarray, Iterable[str]]) -> None:
     libspice.lmpool_c(cvals, lenvals, n)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lparse(inlist: str, delim: str, nmax: int) -> Iterable[str]:
     """
@@ -8330,6 +8688,7 @@ def lparse(inlist: str, delim: str, nmax: int) -> Iterable[str]:
     return [stypes.to_python_string(x.value) for x in items[0 : n.value]]
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lparsm(
     inlist: str, delims: str, nmax: int, lenout: Optional[int] = None
@@ -8358,6 +8717,7 @@ def lparsm(
     return [stypes.to_python_string(x.value) for x in items][0 : n.value]
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lparss(inlist: str, delims: str, nmax: int = 20, length: int = 50) -> SpiceCell:
     """
@@ -8379,6 +8739,7 @@ def lparss(inlist: str, delims: str, nmax: int = 20, length: int = 50) -> SpiceC
     return return_set
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lspcn(body: str, et: float, abcorr: str) -> float:
     """
@@ -8398,6 +8759,7 @@ def lspcn(body: str, et: float, abcorr: str) -> float:
     return libspice.lspcn_c(body, et, abcorr)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lstlec(string: str, n: int, lenvals: int, array: Iterable[str]) -> int:
     """
@@ -8422,6 +8784,7 @@ def lstlec(string: str, n: int, lenvals: int, array: Iterable[str]) -> int:
     return libspice.lstlec_c(string, n, lenvals, array)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lstled(x: float, n: int, array: Union[ndarray, Iterable[float]]) -> int:
     """
@@ -8441,6 +8804,7 @@ def lstled(x: float, n: int, array: Union[ndarray, Iterable[float]]) -> int:
     return libspice.lstled_c(x, n, array)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lstlei(x: int, n: int, array: Union[ndarray, Iterable[int]]) -> int:
     """
@@ -8460,6 +8824,7 @@ def lstlei(x: int, n: int, array: Union[ndarray, Iterable[int]]) -> int:
     return libspice.lstlei_c(x, n, array)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lstltc(string: str, n: int, lenvals: int, array: Iterable[str]) -> int:
     """
@@ -8484,6 +8849,7 @@ def lstltc(string: str, n: int, lenvals: int, array: Iterable[str]) -> int:
     return libspice.lstltc_c(string, n, lenvals, array)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lstltd(x: float, n: int, array: Union[ndarray, Iterable[float]]) -> int:
     """
@@ -8503,6 +8869,7 @@ def lstltd(x: float, n: int, array: Union[ndarray, Iterable[float]]) -> int:
     return libspice.lstltd_c(x, n, array)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lstlti(x: int, n: int, array: Union[ndarray, Iterable[int]]) -> int:
     """
@@ -8522,6 +8889,7 @@ def lstlti(x: int, n: int, array: Union[ndarray, Iterable[int]]) -> int:
     return libspice.lstlti_c(x, n, array)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ltime(etobs: float, obs: int, direct: str, targ: int) -> Tuple[float, float]:
     """
@@ -8550,6 +8918,7 @@ def ltime(etobs: float, obs: int, direct: str, targ: int) -> Tuple[float, float]
     return ettarg.value, elapsd.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lx4dec(string: str, first: int) -> Tuple[int, int]:
     """
@@ -8570,6 +8939,7 @@ def lx4dec(string: str, first: int) -> Tuple[int, int]:
     return last.value, nchar.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lx4num(string: str, first: int) -> Tuple[int, int]:
     """
@@ -8590,6 +8960,7 @@ def lx4num(string: str, first: int) -> Tuple[int, int]:
     return last.value, nchar.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lx4sgn(string: str, first: int) -> Tuple[int, int]:
     """
@@ -8610,6 +8981,7 @@ def lx4sgn(string: str, first: int) -> Tuple[int, int]:
     return last.value, nchar.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lx4uns(string: str, first: int) -> Tuple[int, int]:
     """
@@ -8630,6 +9002,7 @@ def lx4uns(string: str, first: int) -> Tuple[int, int]:
     return last.value, nchar.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def lxqstr(string: str, qchar: str, first: int) -> Tuple[int, int]:
     """
@@ -8655,6 +9028,7 @@ def lxqstr(string: str, qchar: str, first: int) -> Tuple[int, int]:
 # M
 
 
+@spicelock_for_multithread
 @spice_error_check
 def m2eul(
     r: Union[ndarray, Iterable[Iterable[float]]], axis3: int, axis2: int, axis1: int
@@ -8690,6 +9064,7 @@ def m2eul(
     return angle3.value, angle2.value, angle1.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def m2q(r: ndarray) -> ndarray:
     """
@@ -8706,6 +9081,7 @@ def m2q(r: ndarray) -> ndarray:
     return stypes.c_vector_to_python(q)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def matchi(string: str, templ: str, wstr: str, wchr: str) -> bool:
     """
@@ -8727,6 +9103,7 @@ def matchi(string: str, templ: str, wstr: str, wchr: str) -> bool:
     return bool(libspice.matchi_c(string, templ, wstr, wchr))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def matchw(string: str, templ: str, wstr: str, wchr: str) -> bool:
     # ctypes.c_char(wstr.encode(encoding='UTF-8')
@@ -8756,6 +9133,7 @@ def matchw(string: str, templ: str, wstr: str, wchr: str) -> bool:
 # odd as arguments must be parsed and not really important
 
 
+@spicelock_for_multithread
 @spice_error_check
 def mequ(m1: ndarray) -> ndarray:
     """
@@ -8772,6 +9150,7 @@ def mequ(m1: ndarray) -> ndarray:
     return stypes.c_matrix_to_numpy(mout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def mequg(m1: ndarray, nr: int, nc: int) -> ndarray:
     """
@@ -8800,6 +9179,7 @@ def mequg(m1: ndarray, nr: int, nc: int) -> ndarray:
 # odd as arguments must be parsed and not really important
 
 
+@spicelock_for_multithread
 @spice_error_check
 def mtxm(m1: ndarray, m2: ndarray) -> ndarray:
     """
@@ -8818,6 +9198,7 @@ def mtxm(m1: ndarray, m2: ndarray) -> ndarray:
     return stypes.c_matrix_to_numpy(mout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def mtxmg(
     m1: ndarray,
@@ -8852,6 +9233,7 @@ def mtxmg(
     return stypes.c_matrix_to_numpy(mout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def mtxv(m1: ndarray, vin: ndarray) -> ndarray:
     """
@@ -8871,6 +9253,7 @@ def mtxv(m1: ndarray, vin: ndarray) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def mtxvg(
     m1: ndarray, v2: ndarray, ncol1: OptionalInt = None, nr1r2: OptionalInt = None
@@ -8899,6 +9282,7 @@ def mtxvg(
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def mxm(
     m1: Union[ndarray, Iterable[Iterable[float]]],
@@ -8920,6 +9304,7 @@ def mxm(
     return stypes.c_matrix_to_numpy(mout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def mxmg(
     m1: Union[ndarray, Iterable[Iterable[float]]],
@@ -8952,6 +9337,7 @@ def mxmg(
     return stypes.c_matrix_to_numpy(mout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def mxmt(
     m1: Union[ndarray, Iterable[Iterable[float]]],
@@ -8973,6 +9359,7 @@ def mxmt(
     return stypes.c_matrix_to_numpy(mout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def mxmtg(
     m1: Union[ndarray, Iterable[Iterable[float]]],
@@ -9005,6 +9392,7 @@ def mxmtg(
     return stypes.c_matrix_to_numpy(mout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def mxv(m1: ndarray, vin: ndarray) -> ndarray:
     """
@@ -9024,6 +9412,7 @@ def mxv(m1: ndarray, vin: ndarray) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def mxvg(
     m1: Union[ndarray, Iterable[Iterable[float]]],
@@ -9057,6 +9446,7 @@ def mxvg(
 # N
 
 
+@spicelock_for_multithread
 @spice_error_check
 def namfrm(frname: str) -> int:
     """
@@ -9073,6 +9463,7 @@ def namfrm(frname: str) -> int:
     return frcode.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ncpos(string: str, chars: str, start: int) -> int:
     """
@@ -9093,6 +9484,7 @@ def ncpos(string: str, chars: str, start: int) -> int:
     return libspice.ncpos_c(string, chars, start)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ncposr(string: str, chars: str, start: int) -> int:
     """
@@ -9113,6 +9505,7 @@ def ncposr(string: str, chars: str, start: int) -> int:
     return libspice.ncposr_c(string, chars, start)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def nearpt(
     positn: Union[ndarray, Iterable[float]], a: float, b: float, c: float
@@ -9142,6 +9535,7 @@ def nearpt(
     return stypes.c_vector_to_python(npoint), alt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def npedln(
     a: float,
@@ -9174,6 +9568,7 @@ def npedln(
     return stypes.c_vector_to_python(pnear), dist.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def npelpt(
     point: Union[ndarray, Iterable[float]], ellips: Ellipse
@@ -9196,6 +9591,7 @@ def npelpt(
     return stypes.c_vector_to_python(pnear), dist.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def nplnpt(
     linpt: Union[ndarray, Iterable[float]],
@@ -9224,6 +9620,7 @@ def nplnpt(
     return stypes.c_vector_to_python(pnear), dist.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def nvc2pl(normal: Union[Iterable[float], Iterable[float]], constant: float) -> Plane:
     """
@@ -9242,6 +9639,7 @@ def nvc2pl(normal: Union[Iterable[float], Iterable[float]], constant: float) -> 
     return plane
 
 
+@spicelock_for_multithread
 @spice_error_check
 def nvp2pl(
     normal: Union[ndarray, Iterable[float]], point: Union[ndarray, Iterable[float]]
@@ -9266,6 +9664,7 @@ def nvp2pl(
 # O
 
 
+@spicelock_for_multithread
 @spice_error_check
 def occult(
     target1: str,
@@ -9321,6 +9720,7 @@ def occult(
     return occult_code.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ordc(item: str, inset: SpiceCell) -> int:
     """
@@ -9341,6 +9741,7 @@ def ordc(item: str, inset: SpiceCell) -> int:
     return libspice.ordc_c(item, ctypes.byref(inset))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ordd(item: float, inset: SpiceCell) -> int:
     """
@@ -9360,6 +9761,7 @@ def ordd(item: float, inset: SpiceCell) -> int:
     return libspice.ordd_c(item, ctypes.byref(inset))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ordi(item: int, inset: SpiceCell) -> int:
     """
@@ -9380,6 +9782,7 @@ def ordi(item: int, inset: SpiceCell) -> int:
     return libspice.ordi_c(item, ctypes.byref(inset))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def orderc(array: Sequence[str], ndim: Optional[int] = None) -> ndarray:
     """
@@ -9402,6 +9805,7 @@ def orderc(array: Sequence[str], ndim: Optional[int] = None) -> ndarray:
     return stypes.c_vector_to_python(iorder)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def orderd(array: Sequence[float], ndim: Optional[int] = None) -> ndarray:
     """
@@ -9423,6 +9827,7 @@ def orderd(array: Sequence[float], ndim: Optional[int] = None) -> ndarray:
     return stypes.c_vector_to_python(iorder)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def orderi(array: Sequence[int], ndim: Optional[int] = None) -> ndarray:
     """
@@ -9444,6 +9849,7 @@ def orderi(array: Sequence[int], ndim: Optional[int] = None) -> ndarray:
     return stypes.c_vector_to_python(iorder)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def oscelt(state: ndarray, et: float, mu: Union[float, int]) -> ndarray:
     """
@@ -9490,6 +9896,7 @@ def oscltx(state: ndarray, et: float, mu: int) -> ndarray:
 
 ################################################################################
 # P
+@spicelock_for_multithread
 @spice_error_check
 def pckcls(handle: int) -> None:
     """
@@ -9503,6 +9910,7 @@ def pckcls(handle: int) -> None:
     libspice.pckcls_c(handle)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pckcov(pck: str, idcode: int, cover: SpiceCell) -> None:
     """
@@ -9522,6 +9930,7 @@ def pckcov(pck: str, idcode: int, cover: SpiceCell) -> None:
     libspice.pckcov_c(pck, idcode, ctypes.byref(cover))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pckfrm(pck: str, ids: SpiceCell) -> None:
     """
@@ -9539,6 +9948,7 @@ def pckfrm(pck: str, ids: SpiceCell) -> None:
     libspice.pckfrm_c(pck, ctypes.byref(ids))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pcklof(filename: str) -> int:
     """
@@ -9557,6 +9967,7 @@ def pcklof(filename: str) -> int:
     return handle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pckopn(name: str, ifname: str, ncomch: int) -> int:
     """
@@ -9577,6 +9988,7 @@ def pckopn(name: str, ifname: str, ncomch: int) -> int:
     return handle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pckuof(handle: int) -> None:
     """
@@ -9591,6 +10003,7 @@ def pckuof(handle: int) -> None:
     libspice.pckuof_c(handle)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pckw02(
     handle: int,
@@ -9640,6 +10053,7 @@ def pckw02(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pcpool(name: str, cvals: Sequence[str]) -> None:
     """
@@ -9659,6 +10073,7 @@ def pcpool(name: str, cvals: Sequence[str]) -> None:
     libspice.pcpool_c(name, n, lenvals, cvals)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pdpool(name: str, dvals: Union[ndarray, Iterable[float]]) -> None:
     """
@@ -9677,6 +10092,7 @@ def pdpool(name: str, dvals: Union[ndarray, Iterable[float]]) -> None:
     libspice.pdpool_c(name, n, dvals)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pgrrec(body: str, lon: float, lat: float, alt: int, re: float, f: float) -> ndarray:
     """
@@ -9703,6 +10119,7 @@ def pgrrec(body: str, lon: float, lat: float, alt: int, re: float, f: float) -> 
     return stypes.c_vector_to_python(rectan)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def phaseq(et: float, target: str, illmn: str, obsrvr: str, abcorr: str) -> float:
     """
@@ -9726,6 +10143,7 @@ def phaseq(et: float, target: str, illmn: str, obsrvr: str, abcorr: str) -> floa
     return libspice.phaseq_c(et, target, illmn, obsrvr, abcorr)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pi() -> float:
     """
@@ -9739,6 +10157,7 @@ def pi() -> float:
     return libspice.pi_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pipool(name: str, ivals: ndarray) -> None:
     """
@@ -9756,6 +10175,7 @@ def pipool(name: str, ivals: ndarray) -> None:
     libspice.pipool_c(name, n, ivals)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pjelpl(elin: Ellipse, plane: Plane) -> Ellipse:
     """
@@ -9774,6 +10194,7 @@ def pjelpl(elin: Ellipse, plane: Plane) -> Ellipse:
     return elout
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pl2nvc(plane: Plane) -> Tuple[ndarray, float]:
     """
@@ -9793,6 +10214,7 @@ def pl2nvc(plane: Plane) -> Tuple[ndarray, float]:
     return stypes.c_vector_to_python(normal), constant.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pl2nvp(plane: Plane) -> Tuple[ndarray, ndarray]:
     """
@@ -9811,6 +10233,7 @@ def pl2nvp(plane: Plane) -> Tuple[ndarray, ndarray]:
     return stypes.c_vector_to_python(normal), stypes.c_vector_to_python(point)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pl2psv(plane: Plane) -> Tuple[ndarray, ndarray, ndarray]:
     """
@@ -9836,6 +10259,7 @@ def pl2psv(plane: Plane) -> Tuple[ndarray, ndarray, ndarray]:
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pltar(vrtces: Sequence[Iterable[float]], plates: Sequence[Iterable[int]]) -> float:
     """
@@ -9854,6 +10278,7 @@ def pltar(vrtces: Sequence[Iterable[float]], plates: Sequence[Iterable[int]]) ->
     return libspice.pltar_c(nv, vrtces, np, plates)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pltexp(
     iverts: Iterable[Union[Iterable[Union[float, float]], Iterable[float]]],
@@ -9877,6 +10302,7 @@ def pltexp(
     return stypes.c_matrix_to_numpy(overts)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pltnp(
     point: Union[ndarray, Iterable[float]],
@@ -9905,6 +10331,7 @@ def pltnp(
     return stypes.c_vector_to_python(pnear), dist.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pltnrm(
     v1: Iterable[Union[float, float]],
@@ -9930,6 +10357,7 @@ def pltnrm(
     return stypes.c_vector_to_python(normal)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pltvol(vrtces: Sequence[Iterable[float]], plates: Sequence[Iterable[int]]) -> float:
     """
@@ -9949,6 +10377,7 @@ def pltvol(vrtces: Sequence[Iterable[float]], plates: Sequence[Iterable[int]]) -
     return libspice.pltvol_c(nv, vrtces, np, plates)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def polyds(
     coeffs: Union[ndarray, Iterable[float]], deg: int, nderiv: int, t: int
@@ -9974,6 +10403,7 @@ def polyds(
     return stypes.c_vector_to_python(p)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pos(string: str, substr: str, start: int) -> int:
     """
@@ -9995,6 +10425,7 @@ def pos(string: str, substr: str, start: int) -> int:
     return libspice.pos_c(string, substr, start)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def posr(string: str, substr: str, start: int) -> int:
     """
@@ -10020,6 +10451,7 @@ def posr(string: str, substr: str, start: int) -> int:
 # skip for no as this is not really an important function for python users
 
 
+@spicelock_for_multithread
 @spice_error_check
 def prop2b(gm: float, pvinit: ndarray, dt: float) -> ndarray:
     """
@@ -10042,6 +10474,7 @@ def prop2b(gm: float, pvinit: ndarray, dt: float) -> ndarray:
     return stypes.c_vector_to_python(pvprop)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def prsdp(string: str) -> float:
     """
@@ -10058,6 +10491,7 @@ def prsdp(string: str) -> float:
     return dpval.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def prsint(string: str) -> int:
     """
@@ -10074,6 +10508,7 @@ def prsint(string: str) -> int:
     return intval.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def psv2pl(point: ndarray, span1: ndarray, span2: ndarray) -> Plane:
     """
@@ -10097,6 +10532,7 @@ def psv2pl(point: ndarray, span1: ndarray, span2: ndarray) -> Plane:
 # skip putcml, is this really needed for python users?
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pxform(fromstr: str, tostr: str, et: float) -> ndarray:
     """
@@ -10118,6 +10554,7 @@ def pxform(fromstr: str, tostr: str, et: float) -> ndarray:
     return stypes.c_matrix_to_numpy(rotatematrix)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def pxfrm2(frame_from: str, frame_to: str, etfrom: float, etto: float) -> ndarray:
     """
@@ -10146,6 +10583,7 @@ def pxfrm2(frame_from: str, frame_to: str, etfrom: float, etto: float) -> ndarra
 # Q
 
 
+@spicelock_for_multithread
 @spice_error_check
 def q2m(q: ndarray) -> ndarray:
     """
@@ -10162,7 +10600,8 @@ def q2m(q: ndarray) -> ndarray:
     return stypes.c_matrix_to_numpy(mout)
 
 
-# @spice_error_check
+@spicelock_for_multithread
+# @spice_error_check # Commented in order to avoid RecursionError
 def qcktrc(tracelen: int = _default_len_out) -> str:
     """
     Return a string containing a traceback.
@@ -10178,6 +10617,7 @@ def qcktrc(tracelen: int = _default_len_out) -> str:
     return stypes.to_python_string(tracestr)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def qdq2av(q: ndarray, dq: Union[ndarray, Iterable[float]]) -> ndarray:
     """
@@ -10197,6 +10637,7 @@ def qdq2av(q: ndarray, dq: Union[ndarray, Iterable[float]]) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def qxq(
     q1: Union[ndarray, Iterable[float]], q2: Union[ndarray, Iterable[float]]
@@ -10221,6 +10662,7 @@ def qxq(
 # R
 
 
+@spicelock_for_multithread
 @spice_error_check
 def radrec(inrange: float, re: float, dec: float) -> ndarray:
     """
@@ -10242,6 +10684,7 @@ def radrec(inrange: float, re: float, dec: float) -> ndarray:
     return stypes.c_vector_to_python(rectan)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def rav2xf(
     rot: Union[ndarray, Iterable[Iterable[float]]], av: Union[ndarray, Iterable[float]]
@@ -10264,6 +10707,7 @@ def rav2xf(
     return stypes.c_matrix_to_numpy(xform)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def raxisa(matrix: ndarray) -> Tuple[ndarray, float]:
     """
@@ -10282,6 +10726,7 @@ def raxisa(matrix: ndarray) -> Tuple[ndarray, float]:
     return stypes.c_vector_to_python(axis), angle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def rdtext(
     file: str, lenout: int = _default_len_out
@@ -10303,6 +10748,7 @@ def rdtext(
     return stypes.to_python_string(line), bool(eof.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def reccyl(rectan: Union[ndarray, Iterable[float]]) -> Tuple[float, float, float]:
     """
@@ -10324,6 +10770,7 @@ def reccyl(rectan: Union[ndarray, Iterable[float]]) -> Tuple[float, float, float
     return radius.value, lon.value, z.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def recgeo(
     rectan: Union[ndarray, Iterable[float]], re: float, f: float
@@ -10358,6 +10805,7 @@ def recgeo(
     return longitude.value, latitude.value, alt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def reclat(rectan: Union[ndarray, Iterable[float]]) -> Tuple[float, float, float]:
     """
@@ -10378,6 +10826,7 @@ def reclat(rectan: Union[ndarray, Iterable[float]]) -> Tuple[float, float, float
     return radius.value, longitude.value, latitude.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def recpgr(
     body: str, rectan: Union[ndarray, Iterable[float]], re: float, f: float
@@ -10409,6 +10858,7 @@ def recpgr(
     return lon.value, lat.value, alt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def recrad(rectan: Union[ndarray, Iterable[float]]) -> Tuple[float, float, float]:
     """
@@ -10432,6 +10882,7 @@ def recrad(rectan: Union[ndarray, Iterable[float]]) -> Tuple[float, float, float
     return outrange.value, ra.value, dec.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def recsph(rectan: ndarray) -> Tuple[float, float, float]:
     """
@@ -10453,6 +10904,7 @@ def recsph(rectan: ndarray) -> Tuple[float, float, float]:
     return r.value, colat.value, lon.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def removc(item: str, inset: SpiceCell) -> None:
     """
@@ -10469,6 +10921,7 @@ def removc(item: str, inset: SpiceCell) -> None:
     libspice.removc_c(item, ctypes.byref(inset))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def removd(item: float, inset: SpiceCell) -> None:
     """
@@ -10485,6 +10938,7 @@ def removd(item: float, inset: SpiceCell) -> None:
     libspice.removd_c(item, ctypes.byref(inset))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def removi(item: int, inset: SpiceCell) -> None:
     """
@@ -10501,6 +10955,7 @@ def removi(item: int, inset: SpiceCell) -> None:
     libspice.removi_c(item, ctypes.byref(inset))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def reordc(
     iorder: Union[ndarray, Iterable[int]], ndim: int, lenvals: int, array: Iterable[str]
@@ -10525,6 +10980,7 @@ def reordc(
     return [stypes.to_python_string(x.value) for x in array]
 
 
+@spicelock_for_multithread
 @spice_error_check
 def reordd(
     iorder: Union[ndarray, Iterable[int]],
@@ -10549,6 +11005,7 @@ def reordd(
     return stypes.c_vector_to_python(array)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def reordi(
     iorder: Union[ndarray, Iterable[int]],
@@ -10573,6 +11030,7 @@ def reordi(
     return stypes.c_vector_to_python(array)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def reordl(
     iorder: Union[ndarray, Iterable[int]], ndim: int, array: Iterable[bool]
@@ -10595,6 +11053,7 @@ def reordl(
     return stypes.c_int_vector_to_bool_python(array)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def repmc(instr: str, marker: str, value: str, lenout: Optional[int] = None) -> str:
     """
@@ -10618,6 +11077,7 @@ def repmc(instr: str, marker: str, value: str, lenout: Optional[int] = None) -> 
     return stypes.to_python_string(out)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def repmct(
     instr: str, marker: str, value: int, repcase: str, lenout: Optional[int] = None
@@ -10646,6 +11106,7 @@ def repmct(
     return stypes.to_python_string(out)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def repmd(instr: str, marker: str, value: float, sigdig: int) -> str:
     """
@@ -10669,6 +11130,7 @@ def repmd(instr: str, marker: str, value: float, sigdig: int) -> str:
     return stypes.to_python_string(out)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def repmf(
     instr: str,
@@ -10703,6 +11165,7 @@ def repmf(
     return stypes.to_python_string(out)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def repmi(instr: str, marker: str, value: int, lenout: Optional[int] = None) -> str:
     """
@@ -10726,6 +11189,7 @@ def repmi(instr: str, marker: str, value: int, lenout: Optional[int] = None) -> 
     return stypes.to_python_string(out)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def repmot(
     instr: str, marker: str, value: int, repcase: str, lenout: Optional[int] = None
@@ -10765,6 +11229,7 @@ def reset() -> None:
     libspice.reset_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def return_c() -> bool:
     """
@@ -10777,6 +11242,7 @@ def return_c() -> bool:
     return bool(libspice.return_c())
 
 
+@spicelock_for_multithread
 @spice_error_check
 def rotate(angle: float, iaxis: int) -> ndarray:
     """
@@ -10797,6 +11263,7 @@ def rotate(angle: float, iaxis: int) -> ndarray:
     return stypes.c_matrix_to_numpy(mout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def rotmat(m1: ndarray, angle: float, iaxis: int) -> ndarray:
     """
@@ -10819,6 +11286,7 @@ def rotmat(m1: ndarray, angle: float, iaxis: int) -> ndarray:
     return stypes.c_matrix_to_numpy(mout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def rotvec(v1: Iterable[Union[float, float]], angle: float, iaxis: int) -> ndarray:
     """
@@ -10841,6 +11309,7 @@ def rotvec(v1: Iterable[Union[float, float]], angle: float, iaxis: int) -> ndarr
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def rpd() -> float:
     """
@@ -10853,6 +11322,7 @@ def rpd() -> float:
     return libspice.rpd_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def rquad(a: float, b: float, c: float) -> Tuple[ndarray, ndarray]:
     """
@@ -10878,6 +11348,7 @@ def rquad(a: float, b: float, c: float) -> Tuple[ndarray, ndarray]:
 # S
 
 
+@spicelock_for_multithread
 @spice_error_check
 def saelgv(
     vec1: Union[ndarray, Iterable[float]], vec2: Union[ndarray, Iterable[float]]
@@ -10900,6 +11371,7 @@ def saelgv(
     return stypes.c_vector_to_python(smajor), stypes.c_vector_to_python(sminor)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def scard(incard: int, cell: SpiceCell) -> SpiceCell:
     """
@@ -10917,6 +11389,7 @@ def scard(incard: int, cell: SpiceCell) -> SpiceCell:
     return cell
 
 
+@spicelock_for_multithread
 @spice_error_check
 def scdecd(
     sc: int, sclkdp: float, lenout: int = _default_len_out, mxpart: Optional[int] = None
@@ -10942,6 +11415,7 @@ def scdecd(
     return stypes.to_python_string(sclkch)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def sce2c(sc: int, et: float) -> float:
     """
@@ -10964,6 +11438,7 @@ def sce2c(sc: int, et: float) -> float:
     return sclkdp.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def sce2s(sc: int, et: float, lenout: int = _default_len_out) -> str:
     """
@@ -10985,6 +11460,7 @@ def sce2s(sc: int, et: float, lenout: int = _default_len_out) -> str:
     return stypes.to_python_string(sclkch)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def sce2t(sc: int, et: float) -> float:
     """
@@ -11006,6 +11482,7 @@ def sce2t(sc: int, et: float) -> float:
     return sclkdp.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def scencd(
     sc: int, sclkch: Union[str, Iterable[str]], mxpart: Optional[int] = None
@@ -11035,6 +11512,7 @@ def scencd(
         return sclkdp.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def scfmt(sc: int, ticks: float, lenout: int = _default_len_out) -> str:
     """
@@ -11055,6 +11533,7 @@ def scfmt(sc: int, ticks: float, lenout: int = _default_len_out) -> str:
     return stypes.to_python_string(clkstr)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def scpart(sc: int) -> Tuple[ndarray, ndarray]:
     """
@@ -11080,6 +11559,7 @@ def scpart(sc: int) -> Tuple[ndarray, ndarray]:
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def scs2e(sc: int, sclkch: str) -> float:
     """
@@ -11098,6 +11578,7 @@ def scs2e(sc: int, sclkch: str) -> float:
     return et.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def sct2e(sc: int, sclkdp: Union[float, Iterable[float]]) -> Union[float, ndarray]:
     """
@@ -11125,6 +11606,7 @@ def sct2e(sc: int, sclkdp: Union[float, Iterable[float]]) -> Union[float, ndarra
         return et.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def sctiks(sc: int, clkstr: str) -> float:
     """
@@ -11143,6 +11625,7 @@ def sctiks(sc: int, clkstr: str) -> float:
     return ticks.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def sdiff(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     """
@@ -11172,6 +11655,7 @@ def sdiff(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     return c
 
 
+@spicelock_for_multithread
 @spice_error_check
 def set_c(a: SpiceCell, op: str, b: SpiceCell) -> bool:
     """
@@ -11192,6 +11676,7 @@ def set_c(a: SpiceCell, op: str, b: SpiceCell) -> bool:
     return bool(libspice.set_c(ctypes.byref(a), op, ctypes.byref(b)))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def setmsg(message: str) -> None:
     """
@@ -11205,6 +11690,7 @@ def setmsg(message: str) -> None:
     libspice.setmsg_c(message)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def shellc(ndim: int, lenvals: int, array: Iterable[str]) -> Iterable[str]:
     # This works! looks like this is a mutable 2d char array
@@ -11226,6 +11712,7 @@ def shellc(ndim: int, lenvals: int, array: Iterable[str]) -> Iterable[str]:
     return stypes.c_vector_to_python(array)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def shelld(ndim: int, array: Union[ndarray, Iterable[float]]) -> ndarray:
     # Works!, use this as example for "I/O" parameters
@@ -11244,6 +11731,7 @@ def shelld(ndim: int, array: Union[ndarray, Iterable[float]]) -> ndarray:
     return stypes.c_vector_to_python(array)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def shelli(ndim: int, array: Union[ndarray, Iterable[int]]) -> ndarray:
     # Works!, use this as example for "I/O" parameters
@@ -11275,6 +11763,7 @@ def sigerr(message: str) -> None:
     libspice.sigerr_c(message)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def sincpt(
@@ -11344,6 +11833,7 @@ def sincpt(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def size(cell: SpiceCell) -> int:
     """
@@ -11359,6 +11849,7 @@ def size(cell: SpiceCell) -> int:
     return libspice.size_c(ctypes.byref(cell))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spd() -> float:
     """
@@ -11371,6 +11862,7 @@ def spd() -> float:
     return libspice.spd_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def sphcyl(radius: float, colat: float, slon: float) -> Tuple[float, float, float]:
     """
@@ -11399,6 +11891,7 @@ def sphcyl(radius: float, colat: float, slon: float) -> Tuple[float, float, floa
     return r.value, lon.value, z.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def sphlat(r: float, colat: float, lons: float) -> Tuple[float, float, float]:
     """
@@ -11426,6 +11919,7 @@ def sphlat(r: float, colat: float, lons: float) -> Tuple[float, float, float]:
     return radius.value, lon.value, lat.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def sphrec(r: float, colat: float, lon: float) -> ndarray:
     """
@@ -11446,6 +11940,7 @@ def sphrec(r: float, colat: float, lon: float) -> ndarray:
     return stypes.c_vector_to_python(rectan)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkacs(
     targ: int, et: float, ref: str, abcorr: str, obs: int
@@ -11482,6 +11977,7 @@ def spkacs(
     return stypes.c_vector_to_python(starg), lt.value, dlt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkapo(
     targ: int, et: float, ref: str, sobs: ndarray, abcorr: str
@@ -11512,6 +12008,7 @@ def spkapo(
     return stypes.c_vector_to_python(ptarg), lt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkapp(
     targ: int, et: float, ref: str, sobs: ndarray, abcorr: str
@@ -11546,6 +12043,7 @@ def spkapp(
     return stypes.c_vector_to_python(starg), lt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkaps(
     targ: int,
@@ -11594,6 +12092,7 @@ def spkaps(
     return stypes.c_vector_to_python(starg), lt.value, dlt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spk14a(
     handle: int,
@@ -11619,6 +12118,7 @@ def spk14a(
     libspice.spk14a_c(handle, ncsets, coeffs, epochs)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spk14b(
     handle: int,
@@ -11656,6 +12156,7 @@ def spk14b(
     libspice.spk14b_c(handle, segid, body, center, framename, first, last, chbdeg)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spk14e(handle: int) -> None:
     """
@@ -11670,6 +12171,7 @@ def spk14e(handle: int) -> None:
     libspice.spk14e_c(handle)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkcls(handle: int) -> None:
     """
@@ -11683,6 +12185,7 @@ def spkcls(handle: int) -> None:
     libspice.spkcls_c(handle)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkcov(spk: str, idcode: int, cover: Optional[SpiceCell] = None) -> SpiceCell:
     """
@@ -11706,6 +12209,7 @@ def spkcov(spk: str, idcode: int, cover: Optional[SpiceCell] = None) -> SpiceCel
     return cover
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkcpo(
     target: str,
@@ -11762,6 +12266,7 @@ def spkcpo(
     return stypes.c_vector_to_python(state), lt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkcpt(
     trgpos: Union[ndarray, Iterable[float]],
@@ -11818,6 +12323,7 @@ def spkcpt(
     return stypes.c_vector_to_python(state), lt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkcvo(
     target: str,
@@ -11878,6 +12384,7 @@ def spkcvo(
     return stypes.c_vector_to_python(state), lt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkcvt(
     trgsta: Union[ndarray, Iterable[float]],
@@ -11938,6 +12445,7 @@ def spkcvt(
     return stypes.c_vector_to_python(state), lt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkez(
     targ: int, et: float, ref: str, abcorr: str, obs: int
@@ -11969,6 +12477,7 @@ def spkez(
     return stypes.c_vector_to_python(starg), lt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkezp(
     targ: int, et: float, ref: str, abcorr: str, obs: int
@@ -12000,6 +12509,7 @@ def spkezp(
     return stypes.c_vector_to_python(ptarg), lt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkezr(
     targ: str, et: Union[ndarray, float], ref: str, abcorr: str, obs: str
@@ -12044,6 +12554,7 @@ def spkezr(
         return stypes.c_vector_to_python(starg), lt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkgeo(targ: int, et: float, ref: str, obs: int) -> Tuple[ndarray, float]:
     """
@@ -12068,6 +12579,7 @@ def spkgeo(targ: int, et: float, ref: str, obs: int) -> Tuple[ndarray, float]:
     return stypes.c_vector_to_python(state), lt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkgps(targ: int, et: float, ref: str, obs: int) -> Tuple[ndarray, float]:
     """
@@ -12092,6 +12604,7 @@ def spkgps(targ: int, et: float, ref: str, obs: int) -> Tuple[ndarray, float]:
     return stypes.c_vector_to_python(position), lt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spklef(filename: str) -> int:
     """
@@ -12109,6 +12622,7 @@ def spklef(filename: str) -> int:
     return handle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkltc(
     targ: int, et: float, ref: str, abcorr: str, stobs: ndarray
@@ -12144,6 +12658,7 @@ def spkltc(
     return stypes.c_vector_to_python(starg), lt.value, dlt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkobj(spk: str, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     """
@@ -12163,6 +12678,7 @@ def spkobj(spk: str, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     return out_cell
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkopa(filename: str) -> int:
     """
@@ -12179,6 +12695,7 @@ def spkopa(filename: str) -> int:
     return handle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkopn(filename: str, ifname: str, ncomch: int) -> int:
     """
@@ -12199,6 +12716,7 @@ def spkopn(filename: str, ifname: str, ncomch: int) -> int:
     return handle.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkpds(
     body: int, center: int, framestr: str, typenum: int, first: float, last: float
@@ -12228,6 +12746,7 @@ def spkpds(
     return stypes.c_vector_to_python(descr)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkpos(
     targ: str, et: Union[float, ndarray], ref: str, abcorr: str, obs: str
@@ -12268,6 +12787,7 @@ def spkpos(
         return stypes.c_vector_to_python(ptarg), lt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkpvn(handle: int, descr: ndarray, et: float) -> Tuple[int, ndarray, int]:
     """
@@ -12295,6 +12815,7 @@ def spkpvn(handle: int, descr: ndarray, et: float) -> Tuple[int, ndarray, int]:
     return ref.value, stypes.c_vector_to_python(state), center.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def spksfs(body: int, et: float, idlen: int) -> Tuple[int, ndarray, str, bool]:
@@ -12332,6 +12853,7 @@ def spksfs(body: int, et: float, idlen: int) -> Tuple[int, ndarray, str, bool]:
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkssb(targ: int, et: float, ref: str) -> ndarray:
     """
@@ -12353,6 +12875,7 @@ def spkssb(targ: int, et: float, ref: str) -> ndarray:
     return stypes.c_vector_to_python(starg)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spksub(
     handle: int, descr: ndarray, identin: str, begin: float, end: float, newh: int
@@ -12380,6 +12903,7 @@ def spksub(
     libspice.spksub_c(handle, descr, identin, begin, end, newh)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkuds(descr: ndarray) -> Tuple[int, int, int, int, float, float, int, int]:
     """
@@ -12431,6 +12955,7 @@ def spkuds(descr: ndarray) -> Tuple[int, int, int, int, float, float, int, int]:
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkuef(handle: int) -> None:
     """
@@ -12445,6 +12970,7 @@ def spkuef(handle: int) -> None:
     libspice.spkuef_c(handle)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkw02(
     handle: int,
@@ -12506,6 +13032,7 @@ def spkw02(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkw03(
     handle: int,
@@ -12567,6 +13094,7 @@ def spkw03(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkw05(
     handle: int,
@@ -12617,6 +13145,7 @@ def spkw05(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkw08(
     handle: int,
@@ -12679,6 +13208,7 @@ def spkw08(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkw09(
     handle: int,
@@ -12726,6 +13256,7 @@ def spkw09(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkw10(
     handle: int,
@@ -12774,6 +13305,7 @@ def spkw10(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkw12(
     handle: int,
@@ -12835,6 +13367,7 @@ def spkw12(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkw13(
     handle: int,
@@ -12882,6 +13415,7 @@ def spkw13(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkw15(
     handle: int,
@@ -12963,6 +13497,7 @@ def spkw15(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkw17(
     handle: int,
@@ -13010,6 +13545,7 @@ def spkw17(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkw18(
     handle: int,
@@ -13069,6 +13605,7 @@ def spkw18(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def spkw20(
     handle: int,
@@ -13142,6 +13679,7 @@ def spkw20(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def srfc2s(code: int, bodyid: int, srflen: int = _default_len_out) -> Tuple[str, bool]:
@@ -13169,6 +13707,7 @@ def srfc2s(code: int, bodyid: int, srflen: int = _default_len_out) -> Tuple[str,
     return stypes.to_python_string(srfstr), bool(isname.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def srfcss(code: int, bodstr: str, srflen: int = _default_len_out) -> Tuple[str, bool]:
@@ -13194,6 +13733,7 @@ def srfcss(code: int, bodstr: str, srflen: int = _default_len_out) -> Tuple[str,
     return stypes.to_python_string(srfstr), bool(isname.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def srfnrm(
     method: str, target: str, et: float, fixref: str, srfpts: ndarray
@@ -13225,6 +13765,7 @@ def srfnrm(
     return stypes.c_matrix_to_numpy(normls)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def srfrec(body: int, longitude: float, latitude: float) -> ndarray:
     """
@@ -13246,6 +13787,7 @@ def srfrec(body: int, longitude: float, latitude: float) -> ndarray:
     return stypes.c_vector_to_python(rectan)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def srfs2c(srfstr: str, bodstr: str) -> Tuple[int, bool]:
@@ -13268,6 +13810,7 @@ def srfs2c(srfstr: str, bodstr: str) -> Tuple[int, bool]:
     return code.value, bool(isname.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def srfscc(srfstr: str, bodyid: int) -> Tuple[int, bool]:
@@ -13290,6 +13833,7 @@ def srfscc(srfstr: str, bodyid: int) -> Tuple[int, bool]:
     return code.value, bool(isname.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def srfxpt(
@@ -13398,6 +13942,7 @@ def srfxpt(
         )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ssize(newsize: int, cell: SpiceCell) -> SpiceCell:
     """
@@ -13415,6 +13960,7 @@ def ssize(newsize: int, cell: SpiceCell) -> SpiceCell:
     return cell
 
 
+@spicelock_for_multithread
 @spice_error_check
 def stelab(pobj: ndarray, vobs: ndarray) -> ndarray:
     """
@@ -13438,6 +13984,7 @@ def stelab(pobj: ndarray, vobs: ndarray) -> ndarray:
     return stypes.c_vector_to_python(appobj)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def stpool(
@@ -13471,6 +14018,7 @@ def stpool(
     return stypes.to_python_string(strout), sizet.value, bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def str2et(time: Union[str, Iterable[str]]) -> Union[float, ndarray]:
     """
@@ -13497,6 +14045,7 @@ def str2et(time: Union[str, Iterable[str]]) -> Union[float, ndarray]:
         return et.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def datetime2et(dt: Union[Iterable[datetime], datetime]) -> Union[ndarray, float]:
     """
@@ -13544,6 +14093,7 @@ else:
         return datetime.strptime(s, "%Y-%m-%dT%H:%M:%S.%f").replace(tzinfo=timezone.utc)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def et2datetime(et: Union[Iterable[float], float]) -> Union[ndarray, datetime]:
     """
@@ -13562,6 +14112,7 @@ def et2datetime(et: Union[Iterable[float], float]) -> Union[ndarray, datetime]:
         return fromisoformat(result)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def subpnt(
     method: str, target: str, et: float, fixref: str, abcorr: str, obsrvr: str
@@ -13605,6 +14156,7 @@ def subpnt(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def subpt(
     method: str,
@@ -13665,6 +14217,7 @@ def subpt(
         return stypes.c_vector_to_python(spoint), alt.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def subslr(
     method: str, target: str, et: float, fixref: str, abcorr: str, obsrvr: str
@@ -13708,6 +14261,7 @@ def subslr(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def subsol(method: str, target: str, et: float, abcorr: str, obsrvr: str) -> ndarray:
     """
@@ -13739,6 +14293,7 @@ def subsol(method: str, target: str, et: float, abcorr: str, obsrvr: str) -> nda
     return stypes.c_vector_to_python(spoint)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def sumad(array: Sequence[float]) -> float:
     """
@@ -13754,6 +14309,7 @@ def sumad(array: Sequence[float]) -> float:
     return libspice.sumad_c(array, n)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def sumai(array: Sequence[int]) -> int:
     """
@@ -13769,6 +14325,7 @@ def sumai(array: Sequence[int]) -> int:
     return libspice.sumai_c(array, n)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def surfnm(
     a: float, b: float, c: float, point: Union[ndarray, Iterable[float]]
@@ -13794,6 +14351,7 @@ def surfnm(
     return stypes.c_vector_to_python(normal)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def surfpt(
@@ -13827,6 +14385,7 @@ def surfpt(
     return stypes.c_vector_to_python(point), bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def surfpv(
@@ -13860,6 +14419,7 @@ def surfpv(
     return stypes.c_vector_to_python(stx), bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def swpool(agent: str, nnames: int, lenvals: int, names: Iterable[str]) -> None:
     """
@@ -13880,6 +14440,7 @@ def swpool(agent: str, nnames: int, lenvals: int, names: Iterable[str]) -> None:
     libspice.swpool_c(agent, nnames, lenvals, names)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def sxform(instring: str, tostring: str, et: Union[float, ndarray]) -> ndarray:
     """
@@ -13910,6 +14471,7 @@ def sxform(instring: str, tostring: str, et: Union[float, ndarray]) -> ndarray:
         return stypes.c_matrix_to_numpy(xform)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def szpool(name: str) -> Tuple[int, bool]:
@@ -13932,6 +14494,7 @@ def szpool(name: str) -> Tuple[int, bool]:
 # T
 
 
+@spicelock_for_multithread
 @spice_error_check
 def termpt(
     method: str,
@@ -14031,6 +14594,7 @@ def termpt(
     )
 
 
+@spicelock_for_multithread
 @spice_error_check
 def timdef(action: str, item: str, lenout: int, value: Optional[str] = None) -> str:
     """
@@ -14055,6 +14619,7 @@ def timdef(action: str, item: str, lenout: int, value: Optional[str] = None) -> 
     return stypes.to_python_string(value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def timout(
     et: Union[ndarray, float], pictur: str, lenout: int = _default_len_out
@@ -14087,6 +14652,7 @@ def timout(
         return stypes.to_python_string(output)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def tipbod(ref: str, body: int, et: float) -> ndarray:
     """
@@ -14109,6 +14675,7 @@ def tipbod(ref: str, body: int, et: float) -> ndarray:
     return stypes.c_matrix_to_numpy(retmatrix)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def tisbod(ref: str, body: int, et: float) -> ndarray:
     """
@@ -14130,6 +14697,7 @@ def tisbod(ref: str, body: int, et: float) -> ndarray:
     return stypes.c_matrix_to_numpy(retmatrix)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def tkfram(typid: int) -> Tuple[ndarray, int, bool]:
@@ -14152,7 +14720,8 @@ def tkfram(typid: int) -> Tuple[ndarray, int, bool]:
     return stypes.c_matrix_to_numpy(matrix), next_frame.value, bool(found.value)
 
 
-# @spice_error_check
+@spicelock_for_multithread
+@spice_error_check
 def tkvrsn(item: str) -> str:
     """
     Given an item such as the Toolkit or an entry point name, return
@@ -14167,6 +14736,7 @@ def tkvrsn(item: str) -> str:
     return stypes.to_python_string(libspice.tkvrsn_c(item))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def tparse(instring: str, lenout: int = _default_len_out) -> Tuple[float, str]:
     """
@@ -14187,6 +14757,7 @@ def tparse(instring: str, lenout: int = _default_len_out) -> Tuple[float, str]:
     return sp2000.value, stypes.to_python_string(errmsg)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def tpictr(
     sample: str, lenout: int = _default_len_out, lenerr: int = _default_len_out
@@ -14215,6 +14786,7 @@ def tpictr(
     return stypes.to_python_string(pictur), ok.value, stypes.to_python_string(errmsg)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def trace(matrix: Union[ndarray, Iterable[Iterable[float]]]) -> float:
     """
@@ -14229,6 +14801,7 @@ def trace(matrix: Union[ndarray, Iterable[Iterable[float]]]) -> float:
     return libspice.trace_c(matrix)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def trcdep() -> int:
     """
@@ -14243,6 +14816,7 @@ def trcdep() -> int:
     return depth.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def trcnam(index: int, namlen: int = _default_len_out) -> str:
     """
@@ -14263,6 +14837,7 @@ def trcnam(index: int, namlen: int = _default_len_out) -> str:
     return stypes.to_python_string(name)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def trcoff() -> None:
     """
@@ -14274,6 +14849,7 @@ def trcoff() -> None:
     libspice.trcoff_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def tsetyr(year: int) -> None:
     """
@@ -14289,6 +14865,7 @@ def tsetyr(year: int) -> None:
     libspice.tsetyr_c(year)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def twopi() -> float:
     """
@@ -14302,6 +14879,7 @@ def twopi() -> float:
     return libspice.twopi_c()
 
 
+@spicelock_for_multithread
 @spice_error_check
 def twovec(
     axdef: Union[ndarray, Iterable[float]],
@@ -14331,6 +14909,7 @@ def twovec(
     return stypes.c_matrix_to_numpy(mout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def txtopn(fname: str) -> int:
     """
@@ -14350,6 +14929,7 @@ def txtopn(fname: str) -> int:
     return unit_out.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def tyear() -> float:
     """
@@ -14366,6 +14946,7 @@ def tyear() -> float:
 # U
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ucase(inchar: str, lenout: Optional[int] = None) -> str:
     """
@@ -14386,6 +14967,7 @@ def ucase(inchar: str, lenout: Optional[int] = None) -> str:
     return stypes.to_python_string(outchar)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def ucrss(v1: ndarray, v2: ndarray) -> ndarray:
     """
@@ -14439,6 +15021,7 @@ def uddc(udfunc: UDFUNC, x: float, dx: float) -> bool:
     return bool(isdescr.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def uddf(udfunc: UDFUNC, x: float, dx: float) -> float:
     """
@@ -14486,6 +15069,7 @@ def udf(x: float) -> float:
     return value.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def union(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     """
@@ -14514,6 +15098,7 @@ def union(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     return c
 
 
+@spicelock_for_multithread
 @spice_error_check
 def unitim(epoch: float, insys: str, outsys: str) -> float:
     """
@@ -14535,6 +15120,7 @@ def unitim(epoch: float, insys: str, outsys: str) -> float:
     return libspice.unitim_c(epoch, insys, outsys)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def unload(filename: Union[str, Iterable[str]]) -> None:
     """
@@ -14552,6 +15138,7 @@ def unload(filename: Union[str, Iterable[str]]) -> None:
         libspice.unload_c(filename)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def unorm(v1: ndarray) -> Tuple[ndarray, float]:
     """
@@ -14569,6 +15156,7 @@ def unorm(v1: ndarray) -> Tuple[ndarray, float]:
     return stypes.c_vector_to_python(vout), vmag.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def unormg(v1: ndarray, ndim: OptionalInt = None) -> Tuple[ndarray, float]:
     """
@@ -14591,6 +15179,7 @@ def unormg(v1: ndarray, ndim: OptionalInt = None) -> Tuple[ndarray, float]:
     return stypes.c_vector_to_python(vout), vmag.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def utc2et(utcstr: str) -> float:
     """
@@ -14612,6 +15201,7 @@ def utc2et(utcstr: str) -> float:
 # V
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vadd(
     v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]]
@@ -14630,6 +15220,7 @@ def vadd(
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vaddg(
     v1: Union[ndarray, Iterable[float]],
@@ -14655,6 +15246,7 @@ def vaddg(
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def valid(insize: int, n: int, inset: SpiceCell) -> SpiceCell:
     """
@@ -14674,6 +15266,7 @@ def valid(insize: int, n: int, inset: SpiceCell) -> SpiceCell:
     return inset
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vcrss(v1: ndarray, v2: ndarray) -> ndarray:
     """
@@ -14692,6 +15285,7 @@ def vcrss(v1: ndarray, v2: ndarray) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vdist(v1: ndarray, v2: ndarray) -> float:
     """
@@ -14708,6 +15302,7 @@ def vdist(v1: ndarray, v2: ndarray) -> float:
     return libspice.vdist_c(v1, v2)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vdistg(v1: ndarray, v2: ndarray, ndim: OptionalInt = None) -> float:
     """
@@ -14728,6 +15323,7 @@ def vdistg(v1: ndarray, v2: ndarray, ndim: OptionalInt = None) -> float:
     return libspice.vdistg_c(v1, v2, ndim)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vdot(v1: ndarray, v2: ndarray) -> float:
     """
@@ -14744,6 +15340,7 @@ def vdot(v1: ndarray, v2: ndarray) -> float:
     return libspice.vdot_c(v1, v2)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vdotg(v1: ndarray, v2: ndarray, ndim: OptionalInt = None) -> float:
     """
@@ -14765,6 +15362,7 @@ def vdotg(v1: ndarray, v2: ndarray, ndim: OptionalInt = None) -> float:
     return libspice.vdotg_c(v1, v2, ndim)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vequ(v1: ndarray) -> ndarray:
     """
@@ -14781,6 +15379,7 @@ def vequ(v1: ndarray) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vequg(v1: ndarray, ndim: OptionalInt = None) -> ndarray:
     """
@@ -14801,6 +15400,7 @@ def vequg(v1: ndarray, ndim: OptionalInt = None) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vhat(v1: ndarray) -> ndarray:
     """
@@ -14817,6 +15417,7 @@ def vhat(v1: ndarray) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vhatg(v1: ndarray, ndim: OptionalInt = None) -> ndarray:
     """
@@ -14837,6 +15438,7 @@ def vhatg(v1: ndarray, ndim: OptionalInt = None) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vlcom(
     a: float,
@@ -14865,6 +15467,7 @@ def vlcom(
     return stypes.c_vector_to_python(sumv)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vlcom3(
     a: float,
@@ -14899,6 +15502,7 @@ def vlcom3(
     return stypes.c_vector_to_python(sumv)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vlcomg(
     n: int,
@@ -14930,6 +15534,7 @@ def vlcomg(
     return stypes.c_vector_to_python(sumv)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vminug(vin: ndarray, ndim: OptionalInt = None) -> ndarray:
     """
@@ -14950,6 +15555,7 @@ def vminug(vin: ndarray, ndim: OptionalInt = None) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vminus(vin: ndarray) -> ndarray:
     """
@@ -14966,6 +15572,7 @@ def vminus(vin: ndarray) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vnorm(v: ndarray) -> float:
     """
@@ -14980,6 +15587,7 @@ def vnorm(v: ndarray) -> float:
     return libspice.vnorm_c(v)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vnormg(v: ndarray, ndim: OptionalInt = None) -> float:
     """
@@ -14998,6 +15606,7 @@ def vnormg(v: ndarray, ndim: OptionalInt = None) -> float:
     return libspice.vnormg_c(v, ndim)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vpack(x: float, y: float, z: float) -> ndarray:
     """
@@ -15018,6 +15627,7 @@ def vpack(x: float, y: float, z: float) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vperp(a: ndarray, b: ndarray) -> ndarray:
     """
@@ -15037,6 +15647,7 @@ def vperp(a: ndarray, b: ndarray) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vprjp(vin: Union[ndarray, Iterable[float]], plane: Plane) -> ndarray:
     """
@@ -15054,6 +15665,7 @@ def vprjp(vin: Union[ndarray, Iterable[float]], plane: Plane) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 @spice_found_exception_thrower
 def vprjpi(
@@ -15079,6 +15691,7 @@ def vprjpi(
     return stypes.c_vector_to_python(vout), bool(found.value)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vproj(a: ndarray, b: ndarray) -> ndarray:
     """
@@ -15097,6 +15710,7 @@ def vproj(a: ndarray, b: ndarray) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vrel(
     v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]]
@@ -15115,6 +15729,7 @@ def vrel(
     return libspice.vrel_c(v1, v2)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vrelg(
     v1: Union[ndarray, Iterable[float]],
@@ -15139,6 +15754,7 @@ def vrelg(
     return libspice.vrelg_c(v1, v2, ndim)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vrotv(v: ndarray, axis: ndarray, theta: float) -> ndarray:
     """
@@ -15160,6 +15776,7 @@ def vrotv(v: ndarray, axis: ndarray, theta: float) -> ndarray:
     return stypes.c_vector_to_python(r)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vscl(s: float, v1: ndarray) -> ndarray:
     """
@@ -15178,6 +15795,7 @@ def vscl(s: float, v1: ndarray) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vsclg(s: float, v1: ndarray, ndim: OptionalInt = None) -> ndarray:
     """
@@ -15200,6 +15818,7 @@ def vsclg(s: float, v1: ndarray, ndim: OptionalInt = None) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vsep(v1: ndarray, v2: ndarray) -> float:
     """
@@ -15218,6 +15837,7 @@ def vsep(v1: ndarray, v2: ndarray) -> float:
     return libspice.vsep_c(v1, v2)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vsepg(v1: ndarray, v2: ndarray, ndim: OptionalInt = None) -> float:
     """
@@ -15240,6 +15860,7 @@ def vsepg(v1: ndarray, v2: ndarray, ndim: OptionalInt = None) -> float:
     return libspice.vsepg_c(v1, v2, ndim)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vsub(v1: ndarray, v2: ndarray) -> ndarray:
     """
@@ -15259,6 +15880,7 @@ def vsub(v1: ndarray, v2: ndarray) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vsubg(v1: ndarray, v2: ndarray, ndim: OptionalInt = None) -> ndarray:
     """
@@ -15282,6 +15904,7 @@ def vsubg(v1: ndarray, v2: ndarray, ndim: OptionalInt = None) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vtmv(v1: ndarray, matrix: ndarray, v2: ndarray) -> float:
     """
@@ -15301,6 +15924,7 @@ def vtmv(v1: ndarray, matrix: ndarray, v2: ndarray) -> float:
     return libspice.vtmv_c(v1, matrix, v2)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vtmvg(
     v1: ndarray,
@@ -15333,6 +15957,7 @@ def vtmvg(
     return libspice.vtmvg_c(v1, matrix, v2, nrow, ncol)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vupack(v: ndarray) -> Tuple[float, float, float]:
     """
@@ -15351,6 +15976,7 @@ def vupack(v: ndarray) -> Tuple[float, float, float]:
     return x.value, y.value, z.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vzero(v: ndarray) -> bool:
     """
@@ -15365,6 +15991,7 @@ def vzero(v: ndarray) -> bool:
     return bool(libspice.vzero_c(v))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def vzerog(v: ndarray, ndim: OptionalInt = None) -> bool:
     """
@@ -15387,6 +16014,7 @@ def vzerog(v: ndarray, ndim: OptionalInt = None) -> bool:
 # W
 
 
+@spicelock_for_multithread
 @spice_error_check
 def wncard(window: SpiceCell) -> int:
     """
@@ -15402,6 +16030,7 @@ def wncard(window: SpiceCell) -> int:
     return libspice.wncard_c(window)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def wncomd(left: float, right: float, window: SpiceCell) -> SpiceCell:
     """
@@ -15424,6 +16053,7 @@ def wncomd(left: float, right: float, window: SpiceCell) -> SpiceCell:
     return result
 
 
+@spicelock_for_multithread
 @spice_error_check
 def wncond(left: float, right: float, window: SpiceCell) -> SpiceCell:
     """
@@ -15444,6 +16074,7 @@ def wncond(left: float, right: float, window: SpiceCell) -> SpiceCell:
     return window
 
 
+@spicelock_for_multithread
 @spice_error_check
 def wndifd(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     """
@@ -15465,6 +16096,7 @@ def wndifd(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     return c
 
 
+@spicelock_for_multithread
 @spice_error_check
 def wnelmd(point: float, window: SpiceCell) -> bool:
     """
@@ -15483,6 +16115,7 @@ def wnelmd(point: float, window: SpiceCell) -> bool:
     return bool(libspice.wnelmd_c(point, ctypes.byref(window)))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def wnexpd(left: float, right: float, window: SpiceCell) -> SpiceCell:
     """
@@ -15503,6 +16136,7 @@ def wnexpd(left: float, right: float, window: SpiceCell) -> SpiceCell:
     return window
 
 
+@spicelock_for_multithread
 @spice_error_check
 def wnextd(side: str, window: SpiceCell) -> SpiceCell:
     """
@@ -15523,6 +16157,7 @@ def wnextd(side: str, window: SpiceCell) -> SpiceCell:
     return window
 
 
+@spicelock_for_multithread
 @spice_error_check
 def wnfetd(window: SpiceCell, n: int) -> Tuple[float, float]:
     """
@@ -15543,6 +16178,7 @@ def wnfetd(window: SpiceCell, n: int) -> Tuple[float, float]:
     return left.value, right.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def wnfild(small: float, window: SpiceCell) -> SpiceCell:
     """
@@ -15561,6 +16197,7 @@ def wnfild(small: float, window: SpiceCell) -> SpiceCell:
     return window
 
 
+@spicelock_for_multithread
 @spice_error_check
 def wnfltd(small: float, window: SpiceCell) -> SpiceCell:
     """
@@ -15579,6 +16216,7 @@ def wnfltd(small: float, window: SpiceCell) -> SpiceCell:
     return window
 
 
+@spicelock_for_multithread
 @spice_error_check
 def wnincd(left: float, right: float, window: SpiceCell) -> bool:
     """
@@ -15598,6 +16236,7 @@ def wnincd(left: float, right: float, window: SpiceCell) -> bool:
     return bool(libspice.wnincd_c(left, right, ctypes.byref(window)))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def wninsd(left: float, right: float, window: SpiceCell) -> None:
     """
@@ -15616,6 +16255,7 @@ def wninsd(left: float, right: float, window: SpiceCell) -> None:
     libspice.wninsd_c(left, right, ctypes.byref(window))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def wnintd(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     """
@@ -15638,6 +16278,7 @@ def wnintd(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     return c
 
 
+@spicelock_for_multithread
 @spice_error_check
 def wnreld(a: SpiceCell, op: str, b: SpiceCell) -> bool:
     """
@@ -15659,6 +16300,7 @@ def wnreld(a: SpiceCell, op: str, b: SpiceCell) -> bool:
     return bool(libspice.wnreld_c(ctypes.byref(a), op, ctypes.byref(b)))
 
 
+@spicelock_for_multithread
 @spice_error_check
 def wnsumd(window: SpiceCell) -> Tuple[float, float, float, int, int]:
     """
@@ -15691,6 +16333,7 @@ def wnsumd(window: SpiceCell) -> Tuple[float, float, float, int, int]:
     return meas.value, avg.value, stddev.value, shortest.value, longest.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def wnunid(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     """
@@ -15711,6 +16354,7 @@ def wnunid(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     return c
 
 
+@spicelock_for_multithread
 @spice_error_check
 def wnvald(insize: int, n: int, window: SpiceCell) -> SpiceCell:
     """
@@ -15732,6 +16376,7 @@ def wnvald(insize: int, n: int, window: SpiceCell) -> SpiceCell:
     return window
 
 
+@spicelock_for_multithread
 @spice_error_check
 def writln(line: str, unit: int) -> None:
     """
@@ -15769,6 +16414,7 @@ def writln(line: str, unit: int) -> None:
 # X
 
 
+@spicelock_for_multithread
 @spice_error_check
 def xf2eul(xform: ndarray, axisa: int, axisb: int, axisc: int) -> Tuple[ndarray, int]:
     """
@@ -15797,6 +16443,7 @@ def xf2eul(xform: ndarray, axisa: int, axisb: int, axisc: int) -> Tuple[ndarray,
     return stypes.c_vector_to_python(eulang), unique.value
 
 
+@spicelock_for_multithread
 @spice_error_check
 def xf2rav(xform: ndarray) -> Tuple[ndarray, ndarray]:
     """
@@ -15817,6 +16464,7 @@ def xf2rav(xform: ndarray) -> Tuple[ndarray, ndarray]:
     return stypes.c_matrix_to_numpy(rot), stypes.c_vector_to_python(av)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def xfmsta(
     input_state: ndarray, input_coord_sys: str, output_coord_sys: str, body: str
@@ -15845,6 +16493,7 @@ def xfmsta(
     return stypes.c_vector_to_python(output_state)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def xpose(m: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
     """
@@ -15861,6 +16510,7 @@ def xpose(m: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
     return stypes.c_matrix_to_numpy(mout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def xpose6(m: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
     """
@@ -15877,6 +16527,7 @@ def xpose6(m: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
     return stypes.c_matrix_to_numpy(mout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def xposeg(
     matrix: Union[ndarray, Iterable[Iterable[float]]],
@@ -15904,6 +16555,7 @@ def xposeg(
     return stypes.c_matrix_to_numpy(mout)
 
 
+@spicelock_for_multithread
 @spice_error_check
 def zzdynrot(typid: int, center: int, et: float) -> Tuple[ndarray, int]:
     """
