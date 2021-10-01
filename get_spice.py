@@ -327,11 +327,10 @@ def build_cspice() -> str:
     """
     global cspice_dir, host_OS
     if is_unix:
+        libname = f"libcspice.so"
         if host_OS == "Darwin":
-            libname = f"libcspice.{spice_num_v}.dylib"
             extra_flags = f"-dynamiclib -install_name @rpath/{libname}"
         else:
-            libname = f"libcspice.so.{spice_num_v}"
             extra_flags = f"-shared -Wl,-soname,{libname}"
         destination = cspice_dir
         os.chdir(destination)
@@ -366,12 +365,13 @@ def get_spice() -> None:
     :return: None
     """
     # set final destination for cspice dynamic library
-    destination = os.path.join(root_dir, "spiceypy", "utils/")
+    destination = os.path.join(
+        root_dir, "spiceypy", "utils", "libcspice.so" if is_unix else "libcspice.dll"
+    )
     # first see if cspice shared library is provided
     shared_library_path = os.environ.get(CSPICE_SHARED_LIB)
     if shared_library_path is not None:
         print(f"User has provided a shared library...")
-        # todo: do I need to rename it to something else? or should I really just move that check to libspicehelper.py?
         # todo: what if we can't read the file? we need to jump to building it... doubtful this happens
         pass  # now we don't need to do that much
     else:
@@ -389,7 +389,7 @@ def get_spice() -> None:
         print("Building cspice")
         shared_library_path = build_cspice()
     # okay now move shared library to dst dir
-    shutil.copy(shared_library_path, destination)
+    shutil.copyfile(shared_library_path, destination)
     # cleanup tmp dir
     if tmp_cspice_dir_name is not None:
         if os.path.exists(tmp_cspice_dir_name) and os.path.isdir(tmp_cspice_dir_name):

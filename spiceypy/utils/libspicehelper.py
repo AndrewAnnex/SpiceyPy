@@ -31,10 +31,8 @@ from . import callbacks
 host_OS = platform.system()
 if host_OS == "Windows":
     sharedLib = "libcspice.dll"
-elif host_OS == "Darwin":
-    sharedLib = "libcspice.dylib"
 else:
-    sharedLib = "libcspice.so.66"
+    sharedLib = "libcspice.so"
 
 try:
     import importlib.resources as importlib_resources
