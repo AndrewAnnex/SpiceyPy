@@ -42,10 +42,8 @@ except ImportError:
     # Try backport for python < 3.7 `importlib_resources`.
     import importlib_resources
 
-
-sitePath = os.path.join(
-    os.path.dirname(__file__), sharedLib
-)  #  todo replace with importlib
+# todo replace with importlib
+sitePath = os.path.join(os.path.dirname(__file__), sharedLib)
 libspice = CDLL(sitePath)
 
 s_cell_p = POINTER(stypes.SpiceCell)

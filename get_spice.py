@@ -369,9 +369,9 @@ def get_spice() -> None:
     destination = os.path.join(root_dir, "spiceypy", "utils/")
     # first see if cspice shared library is provided
     shared_library_path = os.environ.get(CSPICE_SHARED_LIB)
-    print(destination, shared_library_path)
     if shared_library_path is not None:
         print(f"User has provided a shared library...")
+        # todo: do I need to rename it to something else? or should I really just move that check to libspicehelper.py?
         # todo: what if we can't read the file? we need to jump to building it... doubtful this happens
         pass  # now we don't need to do that much
     else:
@@ -391,8 +391,9 @@ def get_spice() -> None:
     # okay now move shared library to dst dir
     shutil.copy(shared_library_path, destination)
     # cleanup tmp dir
-    if os.path.exists(tmp_cspice_dir_name) and os.path.isdir(tmp_cspice_dir_name):
-        shutil.rmtree(tmp_cspice_dir_name)
+    if tmp_cspice_dir_name is not None:
+        if os.path.exists(tmp_cspice_dir_name) and os.path.isdir(tmp_cspice_dir_name):
+            shutil.rmtree(tmp_cspice_dir_name)
     # and now we are done!
     print("Done!")
 
