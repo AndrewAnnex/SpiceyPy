@@ -298,7 +298,7 @@ def prepare_cspice() -> None:
     global cspice_dir, tmp_cspice_root_dir
     with tempfile.TemporaryDirectory(prefix="cspice_spiceypy_") as tmp_dir:
         # Trick for python <3.8, delete tmp dir so that we can write it overwrite it
-        tmp_cspice_root_dir = str((Path(tmp_dir.name)).absolute())
+        tmp_cspice_root_dir = str((Path(tmp_dir)).absolute())
     tmp_cspice_src_dir = os.path.join(tmp_cspice_root_dir, "cspice")
     if os.access(cspice_dir, os.R_OK):
         print("Found usable CSPICE src directory", flush=True)
