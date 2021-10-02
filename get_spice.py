@@ -382,7 +382,10 @@ def get_spice() -> None:
     )
     # check if the shared library already exists, if it does we are done
     if Path(destination).is_file():
-        print("Done! shared library for cspice already exists in destination")
+        print(
+            "Done! shared library for cspice already exists in destination. Done!",
+            flush=True,
+        )
         return
     # next see if cspice shared library is provided
     shared_library_path = os.environ.get(CSPICE_SHARED_LIB)
@@ -405,6 +408,8 @@ def get_spice() -> None:
         print("Building cspice", flush=True)
         shared_library_path = build_cspice()
     print(f"Copying built cspice: {shared_library_path} to {destination}", flush=True)
+    # first make the directory for the destination if it doesn't exist
+    Path(destination).parent.mkdir(parents=True, exist_ok=True)
     # okay now move shared library to dst dir
     shutil.copyfile(shared_library_path, destination)
     # cleanup tmp dir
