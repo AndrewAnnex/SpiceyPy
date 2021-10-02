@@ -353,9 +353,14 @@ def build_cspice() -> str:
     shared_lib_path = [
         str(p.absolute())
         for p in Path(destination).glob("*.*")
-        if p.suffix in (".dll", ".66", ".dylib")
-    ][0]
-
+        if p.suffix in (".dll", ".66", ".dylib", ".so")
+    ]
+    if len(shared_lib_path) != 1:
+        raise RuntimeError(
+            f'Could not find built shared library of SpiceyPy in {list(Path(destination).glob("*.*"))}'
+        )
+    else:
+        shared_lib_path = shared_lib_path[0]
     return shared_lib_path
 
 
