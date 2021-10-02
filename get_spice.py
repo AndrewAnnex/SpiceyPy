@@ -96,10 +96,8 @@ is_unix = host_OS in ("Linux", "Darwin", "FreeBSD")
 root_dir = os.path.dirname(os.path.realpath(__file__))
 # Make the directory path for cspice
 cspice_dir = os.environ.get(CSPICE_SRC_DIR, os.path.join(root_dir, "cspice"))
-# Make the directory path for cspice/lib
-lib_dir = os.path.join(cspice_dir, "lib")
 # and make a global tmp cspice directory
-tmp_cspice_dir_name = None
+tmp_cspice_root_dir = None
 # versions
 spice_version = "N0066"
 spice_num_v = "66"
@@ -263,7 +261,7 @@ def copy_supplements() -> None:
     to cspice directory
     """
     patches = list(Path().cwd().glob("*.patch"))
-    print("copy: ", cspice_dir)
+    print("copy supplements to: ", cspice_dir, flush=True)
     for p in patches:
         shutil.copy(p, cspice_dir)
     if host_OS == "Windows":
@@ -284,6 +282,7 @@ def apply_patches() -> None:
         patches.append("0004_inquire_unistd.patch")
     for p in patches:
         try:
+            print(f"Applying Patch {p}", flush=True)
             patch_cmd = subprocess.run(["git", "apply", "--reject", p], check=True)
         except subprocess.CalledProcessError as cpe:
             raise cpe
@@ -296,26 +295,26 @@ def prepare_cspice() -> None:
     If not provided by the user, or if not readable, download a fresh copy
     :return: None
     """
-    global cspice_dir, lib_dir, tmp_cspice_dir_name
-    tmp_cspice_dir = tempfile.TemporaryDirectory(prefix="cspice_spiceypy_")
-    tmp_cspice_dir_name = os.path.realpath(tmp_cspice_dir.name)
-    # Trick for python <3.8, delete tmp dir so that we can write it over
-    tmp_cspice_dir.cleanup()
+    global cspice_dir, tmp_cspice_root_dir
+    with tempfile.TemporaryDirectory(prefix="cspice_spiceypy_") as tmp_dir:
+        # Trick for python <3.8, delete tmp dir so that we can write it overwrite it
+        tmp_cspice_root_dir = str((Path(tmp_dir.name)).absolute())
+    tmp_cspice_src_dir = os.path.join(tmp_cspice_root_dir, "cspice")
     if os.access(cspice_dir, os.R_OK):
-        print("Found usable CSPICE src directory")
+        print("Found usable CSPICE src directory", flush=True)
         # newer shutil.copytree has a flag for this that negates need for this
         shutil.copytree(
             cspice_dir + "/",
-            tmp_cspice_dir_name + "cspice/",
+            tmp_cspice_src_dir,
             copy_function=shutil.copy,
         )
     else:
-        Path(tmp_cspice_dir_name).mkdir(exist_ok=True, parents=True)
-        print("Downloading CSPICE src from NAIF")
-        GetCSPICE(dst=tmp_cspice_dir_name)
-    cspice_dir = tmp_cspice_dir_name
-    lib_dir = os.path.join(tmp_cspice_dir_name, "lib")
-    print("end of prep:", cspice_dir)
+        print("Downloading CSPICE src from NAIF", flush=True)
+        Path(tmp_cspice_src_dir).mkdir(exist_ok=True, parents=True)
+        GetCSPICE(dst=tmp_cspice_root_dir)
+    # okay cspice_dir need to be inside the root level cspice src dir
+    cspice_dir = tmp_cspice_root_dir
+    print("end of prep:", cspice_dir, flush=True)
     # okay now copy any and all files needed for building
     pass
 
@@ -361,44 +360,57 @@ def build_cspice() -> str:
         )
     else:
         shared_lib_path = shared_lib_path[0]
+    print(shared_lib_path, flush=True)
     return shared_lib_path
 
 
 def get_spice() -> None:
     """
-    Main routine to build or not spice
+    Main routine to build or not build cspice
+    expected tmp src dir layout
+    /tmpdir/ < top level temporary directory from TemporaryDirectory
+           /cspice/ < directory containing contents of source code for cspice
+                  /lib
+                  /bin
+                  /src/cspice/
+                  ...
     :return: None
     """
     # set final destination for cspice dynamic library
     destination = os.path.join(
         root_dir, "spiceypy", "utils", "libcspice.so" if is_unix else "libcspice.dll"
     )
-    # first see if cspice shared library is provided
+    # check if the shared library already exists, if it does we are done
+    if Path(destination).is_file():
+        print("Done! shared library for cspice already exists in destination")
+        return
+    # next see if cspice shared library is provided
     shared_library_path = os.environ.get(CSPICE_SHARED_LIB)
     if shared_library_path is not None:
-        print(f"User has provided a shared library...")
+        print(f"User has provided a shared library...", flush=True)
         # todo: what if we can't read the file? we need to jump to building it... doubtful this happens
         pass  # now we don't need to do that much
     else:
         # okay, now we either are given a src dir, have already downloaded it, or don't have it
-        print("Preparing cspice")
+        print("Preparing cspice", flush=True)
         prepare_cspice()
         # add the patches
-        print("Copying supplements")
+        print("Copying supplements", flush=True)
         copy_supplements()
         # okay now that we have the source in a writeable directory we can apply patches
         if CSPICE_NO_PATCH not in os.environ:
-            print("Apply patches")
+            print("Apply patches", flush=True)
             apply_patches()
         # now build
-        print("Building cspice")
+        print("Building cspice", flush=True)
         shared_library_path = build_cspice()
+    print(f"Copying built cspice: {shared_library_path} to {destination}", flush=True)
     # okay now move shared library to dst dir
     shutil.copyfile(shared_library_path, destination)
     # cleanup tmp dir
-    if tmp_cspice_dir_name is not None:
-        if os.path.exists(tmp_cspice_dir_name) and os.path.isdir(tmp_cspice_dir_name):
-            shutil.rmtree(tmp_cspice_dir_name)
+    if tmp_cspice_root_dir is not None:
+        if os.path.exists(tmp_cspice_root_dir) and os.path.isdir(tmp_cspice_root_dir):
+            shutil.rmtree(tmp_cspice_root_dir)
     # and now we are done!
     print("Done!")
 

@@ -97,6 +97,8 @@ class GetCSPICECommand(Command):
 
             gs()
         except ModuleNotFoundError as mnfe:
+            print("Could not import get_spice")
+            raise mnfe
             pass
 
 
@@ -109,6 +111,8 @@ class BuildPyCommand(build_py):
 
             gs()
         except ModuleNotFoundError as mnfe:
+            print("Could not import get_spice")
+            raise mnfe
             pass
         finally:
             build_py.run(self)
@@ -129,6 +133,18 @@ try:
         """
         override for bdist_wheel
         """
+
+        def run(self):
+            try:
+                from get_spice import get_spice as gs
+
+                gs()
+            except ModuleNotFoundError as mnfe:
+                print("Could not import get_spice")
+                raise mnfe
+                pass
+            finally:
+                super().run()
 
         def finalize_options(self) -> None:
             _bdist_wheel.finalize_options(self)
