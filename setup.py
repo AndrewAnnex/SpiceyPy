@@ -94,7 +94,7 @@ class InstallSpiceyPy(install):
             print("Could not import try_get_spice")
             raise mnfe
         finally:
-            install.run(self)
+            super().run()
 
 
 class GetCSPICECommand(Command):
@@ -129,7 +129,7 @@ class BuildPyCommand(build_py):
             raise mnfe
             pass
         finally:
-            build_py.run(self)
+            super().run()
 
 
 cmdclass = {
