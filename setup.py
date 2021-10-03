@@ -23,10 +23,13 @@ SOFTWARE.
 """
 __author__ = "AndrewAnnex"
 
-from setuptools import setup, Command
+from setuptools import setup, Command, find_packages
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
 from setuptools.dist import Distribution
+import os
+import sys
+from pathlib import Path
 
 DEV_CI_DEPENDENCIES = [
     'numpy>=1.17.0;python_version>="3.6"',
@@ -50,6 +53,21 @@ DEPENDENCIES = [
 REQUIRES = ["numpy"]
 
 
+def try_get_spice():
+    try:
+        file = Path(__file__).resolve()
+        curdir = file.parent
+        sys.path.append(str(curdir))
+        from get_spice import main
+
+        main()
+
+    except ModuleNotFoundError as mnfe:
+        print("Could not import try_get_spice")
+        raise mnfe
+        pass
+
+
 class SpiceyPyBinaryDistribution(Distribution):
     def is_pure(self):
         return False
@@ -70,11 +88,10 @@ class InstallSpiceyPy(install):
 
     def run(self):
         try:
-            from get_spice import get_spice as gs
-
-            gs()
+            try_get_spice()
         except ModuleNotFoundError as mnfe:
-            pass
+            print("Could not import try_get_spice")
+            raise mnfe
         finally:
             install.run(self)
 
@@ -93,11 +110,9 @@ class GetCSPICECommand(Command):
 
     def run(self):
         try:
-            from get_spice import get_spice as gs
-
-            gs()
+            try_get_spice()
         except ModuleNotFoundError as mnfe:
-            print("Could not import get_spice")
+            print("Could not import try_get_spice")
             raise mnfe
             pass
 
@@ -107,11 +122,9 @@ class BuildPyCommand(build_py):
 
     def run(self):
         try:
-            from get_spice import get_spice as gs
-
-            gs()
+            try_get_spice()
         except ModuleNotFoundError as mnfe:
-            print("Could not import get_spice")
+            print("Could not import try_get_spice")
             raise mnfe
             pass
         finally:
@@ -136,15 +149,13 @@ try:
 
         def run(self):
             try:
-                from get_spice import get_spice as gs
-
-                gs()
+                try_get_spice()
             except ModuleNotFoundError as mnfe:
-                print("Could not import get_spice")
+                print("Could not import try_get_spice")
                 raise mnfe
                 pass
             finally:
-                super().run()
+                _bdist_wheel.run(self)
 
         def finalize_options(self) -> None:
             _bdist_wheel.finalize_options(self)
@@ -192,7 +203,7 @@ setup(
         "Operating System :: POSIX :: BSD :: FreeBSD",
         "Operating System :: Microsoft :: Windows",
     ],
-    packages=["spiceypy", "spiceypy.tests", "spiceypy.utils"],
+    packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
     distclass=SpiceyPyBinaryDistribution,

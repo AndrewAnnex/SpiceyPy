@@ -46,7 +46,7 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
 ## [3.1.1] - 2020-05-25
 ### Fixed
-- missing get_spice.py in manifest
+- missing try_get_spice.py in manifest
 
 ## [3.1.0] - 2020-05-25
 ### Added
@@ -60,7 +60,7 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 ### Changed
 - switch to codecov for code coverage
 - various support type changes
-- renamed getspice.py to get_spice.py
+- renamed getspice.py to try_get_spice.py
 
 ### Fixed
 - fixed missing doc strings for callbacks

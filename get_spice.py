@@ -93,7 +93,7 @@ os_supported = host_OS in ("Linux", "Darwin", "FreeBSD", "Windows")
 # Get platform is Unix-like OS or not
 is_unix = host_OS in ("Linux", "Darwin", "FreeBSD")
 # Get current working directory
-root_dir = os.path.dirname(os.path.realpath(__file__))
+root_dir = str(Path(os.path.realpath(__file__)).parent)
 # Make the directory path for cspice
 cspice_dir = os.environ.get(CSPICE_SRC_DIR, os.path.join(root_dir, "cspice"))
 # and make a global tmp cspice directory
@@ -334,8 +334,8 @@ def build_cspice() -> str:
         destination = cspice_dir
         os.chdir(destination)
         cmds = [
-            "gcc -Iinclude -c -fPIC -O2 -ansi -pedantic ./cspice/src/cspice/*.c",
-            f"gcc {extra_flags} -fPIC -O2 -pedantic -lm *.o -o {libname}",
+            "gcc -Iinclude -c -fPIC -O2 -ansi ./cspice/src/cspice/*.c",
+            f"gcc {extra_flags} -fPIC -O2 -lm *.o -o {libname}",
         ]
     elif host_OS == "Windows":
         destination = os.path.join(cspice_dir, "cspice", "src", "cspice")
@@ -364,7 +364,7 @@ def build_cspice() -> str:
     return shared_lib_path
 
 
-def get_spice() -> None:
+def main() -> None:
     """
     Main routine to build or not build cspice
     expected tmp src dir layout
@@ -421,4 +421,4 @@ def get_spice() -> None:
 
 
 if __name__ == "__main__":
-    get_spice()
+    main()
