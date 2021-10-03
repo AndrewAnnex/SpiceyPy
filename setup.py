@@ -54,18 +54,19 @@ REQUIRES = ["numpy"]
 
 
 def try_get_spice():
+    file = Path(__file__).resolve()
+    curdir = str(file.parent)
     try:
-        file = Path(__file__).resolve()
-        curdir = file.parent
-        sys.path.append(str(curdir))
+        sys.path.append(curdir)
         from get_spice import main
 
         main()
-
     except ModuleNotFoundError as mnfe:
-        print("Could not import try_get_spice")
+        print("Could not import get_spice")
         raise mnfe
         pass
+    finally:
+        sys.path.remove(curdir)
 
 
 class SpiceyPyBinaryDistribution(Distribution):
@@ -203,7 +204,7 @@ setup(
         "Operating System :: POSIX :: BSD :: FreeBSD",
         "Operating System :: Microsoft :: Windows",
     ],
-    packages=find_packages(),
+    packages=find_packages(include="spiceypy"),
     include_package_data=True,
     zip_safe=False,
     distclass=SpiceyPyBinaryDistribution,
