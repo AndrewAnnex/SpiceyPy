@@ -23,7 +23,7 @@ SOFTWARE.
 """
 __author__ = "AndrewAnnex"
 
-from setuptools import setup, Command, find_packages
+from setuptools import setup, Command, find_packages, Extension
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
 from setuptools.dist import Distribution
@@ -52,6 +52,21 @@ DEPENDENCIES = [
 ]
 REQUIRES = ["numpy"]
 
+from pathlib import Path
+
+
+def glob(dir) -> list:
+    return list(map(str, Path(dir).glob("*.c")))
+
+
+cspice_module = Extension(
+    "cspice",
+    language="c",
+    sources=glob("./cspice/src/cspice/"),
+    include_dirs="./cspice/lib",
+    extra_compile_args="-fPIC -O2 -ansi",
+)
+
 
 def try_get_spice():
     file = Path(__file__).resolve()
@@ -69,74 +84,7 @@ def try_get_spice():
         sys.path.remove(curdir)
 
 
-class SpiceyPyBinaryDistribution(Distribution):
-    def is_pure(self):
-        return False
-
-    def root_is_pure(self):
-        return False
-
-
-class InstallSpiceyPy(install):
-    """Class that extends the install command and encapsulates the
-    process for installing the required CSPICE distribution at the
-    right place.
-    """
-
-    def finalize_options(self):
-        install.finalize_options(self)
-        self.install_lib = self.install_platlib
-
-    def run(self):
-        try:
-            try_get_spice()
-        except ModuleNotFoundError as mnfe:
-            print("Could not import try_get_spice")
-            raise mnfe
-        finally:
-            super().run()
-
-
-class GetCSPICECommand(Command):
-    """Custom command to get the correct cspice and build the shared library for spiceypy"""
-
-    description = "downloads cspice and builds the shared library"
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        try:
-            try_get_spice()
-        except ModuleNotFoundError as mnfe:
-            print("Could not import try_get_spice")
-            raise mnfe
-            pass
-
-
-class BuildPyCommand(build_py):
-    """Custom build command to ensure cspice is built and packaged"""
-
-    def run(self):
-        try:
-            try_get_spice()
-        except ModuleNotFoundError as mnfe:
-            print("Could not import try_get_spice")
-            raise mnfe
-            pass
-        finally:
-            super().run()
-
-
-cmdclass = {
-    "install": InstallSpiceyPy,
-    "build_py": BuildPyCommand,
-    "get_cspice": GetCSPICECommand,
-}
+cmdclass = {}
 
 # https://stackoverflow.com/questions/45150304/how-to-force-a-python-wheel-to-be-platform-specific-when-building-it
 # http://lepture.com/en/2014/python-on-a-hard-wheel
@@ -173,7 +121,6 @@ except ImportError:
     # we don't have wheel installed so there is nothing to change
     pass
 
-
 readme = open("README.rst", "r")
 readmetext = readme.read()
 readme.close()
@@ -207,7 +154,7 @@ setup(
     packages=find_packages(include="spiceypy"),
     include_package_data=True,
     zip_safe=False,
-    distclass=SpiceyPyBinaryDistribution,
+    ext_modules=[cspice_module],
     package_data={
         "spiceypy": ["utils/*.so.*", "utils/*.dll", "utils/*.dylib"],
         "": ["get_spice.py", "LICENSE"],
