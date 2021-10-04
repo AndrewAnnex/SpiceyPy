@@ -56,8 +56,8 @@ REQUIRES = ["numpy"]
 def try_get_spice():
     file = Path(__file__).resolve()
     curdir = str(file.parent)
+    sys.path.append(curdir)
     try:
-        sys.path.append(curdir)
         from get_spice import main
 
         main()
@@ -88,13 +88,8 @@ class InstallSpiceyPy(install):
         self.install_lib = self.install_platlib
 
     def run(self):
-        try:
-            try_get_spice()
-        except ModuleNotFoundError as mnfe:
-            print("Could not import try_get_spice")
-            raise mnfe
-        finally:
-            super().run()
+        try_get_spice()
+        super().run()
 
 
 class GetCSPICECommand(Command):
@@ -110,26 +105,15 @@ class GetCSPICECommand(Command):
         pass
 
     def run(self):
-        try:
-            try_get_spice()
-        except ModuleNotFoundError as mnfe:
-            print("Could not import try_get_spice")
-            raise mnfe
-            pass
+        try_get_spice()
 
 
 class BuildPyCommand(build_py):
     """Custom build command to ensure cspice is built and packaged"""
 
     def run(self):
-        try:
-            try_get_spice()
-        except ModuleNotFoundError as mnfe:
-            print("Could not import try_get_spice")
-            raise mnfe
-            pass
-        finally:
-            super().run()
+        try_get_spice()
+        super().run()
 
 
 cmdclass = {
@@ -149,14 +133,8 @@ try:
         """
 
         def run(self):
-            try:
-                try_get_spice()
-            except ModuleNotFoundError as mnfe:
-                print("Could not import try_get_spice")
-                raise mnfe
-                pass
-            finally:
-                _bdist_wheel.run(self)
+            try_get_spice()
+            _bdist_wheel.run(self)
 
         def finalize_options(self) -> None:
             _bdist_wheel.finalize_options(self)
@@ -204,7 +182,7 @@ setup(
         "Operating System :: POSIX :: BSD :: FreeBSD",
         "Operating System :: Microsoft :: Windows",
     ],
-    packages=find_packages(include="spiceypy"),
+    packages=["spiceypy", "spiceypy.tests", "spiceypy.utils"],
     include_package_data=True,
     zip_safe=False,
     distclass=SpiceyPyBinaryDistribution,
