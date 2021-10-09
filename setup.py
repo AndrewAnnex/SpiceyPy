@@ -86,6 +86,7 @@ class InstallSpiceyPy(install):
     def finalize_options(self):
         install.finalize_options(self)
         self.install_lib = self.install_platlib
+        self.root_is_pure = False
 
     def run(self):
         try_get_spice()
@@ -113,7 +114,7 @@ class BuildPyCommand(build_py):
 
     def run(self):
         try_get_spice()
-        super().run()
+        build_py.run(self)
 
 
 cmdclass = {

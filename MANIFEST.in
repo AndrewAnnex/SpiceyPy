@@ -11,6 +11,9 @@ include README.rst
 # cspice files
 include spiceypy/utils/*.py
 
+# exclude cspice source
+exclude cspice/
+
 # Docs
 include docs/conf.py
 include docs/*.rst
