@@ -64,7 +64,7 @@ cspice_module = Extension(
     language="c",
     sources=glob("./cspice/src/cspice/"),
     include_dirs="./cspice/lib",
-    extra_compile_args="-fPIC -O2 -ansi",
+    extra_compile_args=["-fPIC", "-O2", "-ansi"],
 )
 
 
