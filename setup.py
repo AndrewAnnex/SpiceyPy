@@ -84,7 +84,7 @@ cspice_module = Extension(
         "./cspice/src/cspice/",
         "./cspice/src/csupport/",
     ],
-    extra_compile_args=["-fPIC", "-O2", "-ansi"],
+    extra_compile_args=["-fPIC", "-ansi"],
 )
 
 cmdclass = {}
