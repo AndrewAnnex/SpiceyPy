@@ -54,9 +54,6 @@ REQUIRES = ["numpy"]
 
 
 def try_get_spice():
-    file = Path(__file__).resolve()
-    curdir = str(file.parent)
-    sys.path.append(curdir)
     try:
         from get_spice import main
 
@@ -65,8 +62,6 @@ def try_get_spice():
         print("Could not import get_spice")
         raise mnfe
         pass
-    finally:
-        sys.path.remove(curdir)
 
 
 class SpiceyPyBinaryDistribution(Distribution):
