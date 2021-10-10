@@ -1,7 +1,7 @@
 # include patches
 include *.patch
 # include getspice
-include try_get_spice.py
+include get_spice.py
 
 # Misc
 include LICENSE

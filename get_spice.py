@@ -272,7 +272,7 @@ def copy_supplements() -> None:
 
 
 def apply_patches() -> None:
-    os.chdir(cspice_dir)
+    # os.chdir(cspice_dir)
     iswin = "-windows" if host_OS == "Windows" else ""
     patches = [
         f"0001-patch-for-n66-dskx02.c{iswin}.patch",

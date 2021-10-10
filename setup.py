@@ -30,6 +30,7 @@ from setuptools.dist import Distribution
 import os
 import sys
 from pathlib import Path
+from itertools import chain
 
 DEV_CI_DEPENDENCIES = [
     'numpy>=1.17.0;python_version>="3.6"',
@@ -52,37 +53,39 @@ DEPENDENCIES = [
 ]
 REQUIRES = ["numpy"]
 
-from pathlib import Path
+
+def glob(dir, ext="*.c") -> list:
+    return list(map(str, Path(dir).glob(ext)))
 
 
-def glob(dir) -> list:
-    return list(map(str, Path(dir).glob("*.c")))
+CSPICE_SRC_DIR = "CSPICE_SRC_DIR"
+# Get current working directory
+root_dir = str(Path().cwd())
+# Make the directory path for cspice
+cspice_dir = os.environ.get(CSPICE_SRC_DIR, os.path.join(root_dir, "cspice/"))
 
+if not Path(cspice_dir).exists():
+    from get_spice import GetCSPICE, copy_supplements, apply_patches
+
+    GetCSPICE()
+    apply_patches()
 
 cspice_module = Extension(
     "cspice",
     language="c",
-    sources=glob("./cspice/src/cspice/"),
-    include_dirs="./cspice/lib",
+    sources=[
+        *chain(
+            glob("./cspice/src/cspice/"),
+            glob("./cspice/src/csupport/"),
+        )
+    ],
+    include_dirs=[
+        "./cspice/include/",
+        "./cspice/src/cspice/",
+        "./cspice/src/csupport/",
+    ],
     extra_compile_args=["-fPIC", "-O2", "-ansi"],
 )
-
-
-def try_get_spice():
-    file = Path(__file__).resolve()
-    curdir = str(file.parent)
-    try:
-        sys.path.append(curdir)
-        from get_spice import main
-
-        main()
-    except ModuleNotFoundError as mnfe:
-        print("Could not import get_spice")
-        raise mnfe
-        pass
-    finally:
-        sys.path.remove(curdir)
-
 
 cmdclass = {}
 
@@ -97,14 +100,7 @@ try:
         """
 
         def run(self):
-            try:
-                try_get_spice()
-            except ModuleNotFoundError as mnfe:
-                print("Could not import try_get_spice")
-                raise mnfe
-                pass
-            finally:
-                _bdist_wheel.run(self)
+            _bdist_wheel.run(self)
 
         def finalize_options(self) -> None:
             _bdist_wheel.finalize_options(self)
