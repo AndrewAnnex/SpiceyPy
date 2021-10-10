@@ -29,6 +29,7 @@ from setuptools.command.build_py import build_py
 from setuptools.dist import Distribution
 import os
 import sys
+import platform
 from pathlib import Path
 from itertools import chain
 
