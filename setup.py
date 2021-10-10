@@ -63,6 +63,13 @@ CSPICE_SRC_DIR = "CSPICE_SRC_DIR"
 root_dir = str(Path().cwd())
 # Make the directory path for cspice
 cspice_dir = os.environ.get(CSPICE_SRC_DIR, os.path.join(root_dir, "cspice/"))
+# get system
+system = platform.system()
+if system == 'Windows':
+    extra_compile_args = ["-D_COMPLEX_DEFINED", "-DMSDOS", "-DOMIT_BLANK_CC", "-DNON_ANSI_STDIO"]
+else:
+    extra_compile_args = ["-fPIC", "-ansi"]
+
 
 if not Path(cspice_dir).exists():
     from get_spice import GetCSPICE, copy_supplements, apply_patches
