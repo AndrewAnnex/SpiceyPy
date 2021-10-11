@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 __author__ = "AndrewAnnex"
-
-from setuptools import setup, Command, find_packages
+from setuptools import find_packages
+from setuptools import setup, Command
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
 from setuptools.dist import Distribution
@@ -170,7 +170,8 @@ setup(
         "Operating System :: POSIX :: BSD :: FreeBSD",
         "Operating System :: Microsoft :: Windows",
     ],
-    packages=find_packages(where='src'),
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
     include_package_data=True,
     zip_safe=False,
     distclass=SpiceyPyBinaryDistribution,

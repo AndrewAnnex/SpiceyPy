@@ -9,7 +9,11 @@ include requirements.txt
 include README.rst
 
 # spiceypy
-graft src
+include src/spiceypy/*.py
+include src/spiceypy/utils/*.py
+exclude src/spiceypy/__pycache__/*.pyc
+exclude src/spiceypy/utils/__pycache__/*.pyc
+exclude src/spiceypy/tests/__pycache__/*.pyc
 
 # exclude cspice source
 exclude cspice
