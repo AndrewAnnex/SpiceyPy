@@ -23,7 +23,7 @@ SOFTWARE.
 """
 __author__ = "AndrewAnnex"
 
-from setuptools import setup, Command, find_packages
+from setuptools import setup, Command
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
 from setuptools.dist import Distribution
@@ -85,7 +85,7 @@ class InstallSpiceyPy(install):
 
     def run(self):
         try_get_spice()
-        super().run()
+        install.run(self)
 
 
 class GetCSPICECommand(Command):
@@ -127,10 +127,6 @@ try:
         """
         override for bdist_wheel
         """
-
-        def run(self):
-            try_get_spice()
-            _bdist_wheel.run(self)
 
         def finalize_options(self) -> None:
             _bdist_wheel.finalize_options(self)
