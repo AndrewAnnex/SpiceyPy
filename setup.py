@@ -183,7 +183,7 @@ setup(
     zip_safe=False,
     distclass=SpiceyPyBinaryDistribution,
     package_data={
-        "spiceypy": ["utils/*.so.*", "utils/*.dll", "utils/*.dylib"],
+        "spiceypy": ["utils/*.so", "utils/*.dll", "utils/*.dylib"],
         "": ["get_spice.py", "LICENSE"],
     },
     setup_requires=DEPENDENCIES,

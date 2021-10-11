@@ -34,12 +34,6 @@ if host_OS == "Windows":
 else:
     sharedLib = "libcspice.so"
 
-try:
-    import importlib.resources as importlib_resources
-except ImportError:
-    # Try backport for python < 3.7 `importlib_resources`.
-    import importlib_resources
-
 # todo replace with importlib
 sitePath = os.path.join(os.path.dirname(__file__), sharedLib)
 libspice = CDLL(sitePath)
