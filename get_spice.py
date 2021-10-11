@@ -93,7 +93,7 @@ os_supported = host_OS in ("Linux", "Darwin", "FreeBSD", "Windows")
 # Get platform is Unix-like OS or not
 is_unix = host_OS in ("Linux", "Darwin", "FreeBSD")
 # Get current working directory
-root_dir = str(Path(os.path.realpath(__file__)).parent)
+root_dir = os.path.dirname(os.path.realpath(__file__))
 # Make the directory path for cspice
 cspice_dir = os.environ.get(CSPICE_SRC_DIR, os.path.join(root_dir, "cspice"))
 # and make a global tmp cspice directory
@@ -412,10 +412,6 @@ def main() -> None:
     Path(destination).parent.mkdir(parents=True, exist_ok=True)
     # okay now move shared library to dst dir
     shutil.copyfile(shared_library_path, destination)
-    # cleanup tmp dir
-    if tmp_cspice_root_dir is not None:
-        if os.path.exists(tmp_cspice_root_dir) and os.path.isdir(tmp_cspice_root_dir):
-            shutil.rmtree(tmp_cspice_root_dir)
     # and now we are done!
     print("Done!")
 
