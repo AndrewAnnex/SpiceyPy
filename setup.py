@@ -23,7 +23,7 @@ SOFTWARE.
 """
 __author__ = "AndrewAnnex"
 
-from setuptools import setup, Command
+from setuptools import setup, Command, find_packages
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
 from setuptools.dist import Distribution
@@ -170,7 +170,7 @@ setup(
         "Operating System :: POSIX :: BSD :: FreeBSD",
         "Operating System :: Microsoft :: Windows",
     ],
-    packages=["spiceypy", "spiceypy.tests", "spiceypy.utils"],
+    packages=find_packages(where='src'),
     include_package_data=True,
     zip_safe=False,
     distclass=SpiceyPyBinaryDistribution,

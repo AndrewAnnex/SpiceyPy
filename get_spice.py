@@ -378,7 +378,7 @@ def main() -> None:
     """
     # set final destination for cspice dynamic library
     destination = os.path.join(
-        root_dir, "spiceypy", "utils", "libcspice.so" if is_unix else "libcspice.dll"
+        root_dir, "src", "spiceypy", "utils", "libcspice.so" if is_unix else "libcspice.dll"
     )
     # check if the shared library already exists, if it does we are done
     if Path(destination).is_file():

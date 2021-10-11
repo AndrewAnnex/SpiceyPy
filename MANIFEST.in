@@ -8,11 +8,11 @@ include LICENSE
 include requirements.txt
 include README.rst
 
-# cspice files
-include spiceypy/utils/*.py
+# spiceypy
+graft src
 
 # exclude cspice source
-exclude cspice/
+exclude cspice
 
 # Docs
 include docs/conf.py
@@ -25,7 +25,7 @@ include cspice.def
 include makeDynamicSpice.bat
 
 # Tests
-include spiceypy/tests/__init__.py
-include spiceypy/tests/test_*.py
-include spiceypy/tests/gettestkernels.py
-exclude spiceypy/tests/exampleKernels.txt
+include src/spiceypy/tests/__init__.py
+include src/spiceypy/tests/test_*.py
+include src/spiceypy/tests/gettestkernels.py
+exclude src/spiceypy/tests/exampleKernels.txt
