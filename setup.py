@@ -27,9 +27,6 @@ from setuptools import setup, Command
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
 from setuptools.dist import Distribution
-import os
-import sys
-from pathlib import Path
 
 DEV_CI_DEPENDENCIES = [
     'numpy>=1.17.0;python_version>="3.6"',
@@ -81,7 +78,6 @@ class InstallSpiceyPy(install):
     def finalize_options(self):
         install.finalize_options(self)
         self.install_lib = self.install_platlib
-        self.root_is_pure = False
 
     def run(self):
         try_get_spice()
