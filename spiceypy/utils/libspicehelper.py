@@ -25,18 +25,13 @@ SOFTWARE.
 from ctypes import CDLL, POINTER, c_int, c_double, c_char, c_char_p, c_void_p
 import os
 import platform
+from ctypes.util import find_library
+
 from . import support_types as stypes
 from . import callbacks
 
-host_OS = platform.system()
-if host_OS == "Windows":
-    sharedLib = "libcspice.dll"
-else:
-    sharedLib = "libcspice.so"
+libspice = CDLL(find_library("cspice"))
 
-# todo replace with importlib
-sitePath = os.path.join(os.path.dirname(__file__), sharedLib)
-libspice = CDLL(sitePath)
 
 s_cell_p = POINTER(stypes.SpiceCell)
 s_elip_p = POINTER(stypes.Ellipse)
