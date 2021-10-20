@@ -133,6 +133,9 @@ readme = open("README.rst", "r")
 readmetext = readme.read()
 readme.close()
 
+# todo: https://setuptools.pypa.io/en/latest/userguide/extension.html, 
+# https://setuptools.pypa.io/en/latest/deprecated/distutils/extending.html?highlight=cmdclass#integrating-new-commands
+
 setup(
-    cmdclass=cmdclass, # todo: https://setuptools.pypa.io/en/latest/userguide/extension.html, https://setuptools.pypa.io/en/latest/deprecated/distutils/extending.html?highlight=cmdclass#integrating-new-commands
+    cmdclass=cmdclass, 
 )
