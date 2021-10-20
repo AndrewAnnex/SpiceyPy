@@ -45,6 +45,7 @@ def try_get_spice():
         raise mnfe
         pass
 
+
 class InstallSpiceyPy(install):
     """Class that extends the install command and encapsulates the
     process for installing the required CSPICE distribution at the
@@ -56,25 +57,16 @@ class InstallSpiceyPy(install):
         self.install_lib = self.install_platlib
 
     def run(self):
-        try:
-            try_get_spice()
-        except ModuleNotFoundError as mnfe:
-            print("Could not import try_get_spice")
-            raise mnfe
-        finally:
-            install.run(self)
+        try_get_spice()
+        install.run(self)
+
 
 class BuildPyCommand(build_py):
     """Custom build command to ensure cspice is built and packaged"""
 
     def run(self):
-        try:
-            try_get_spice()
-        except ModuleNotFoundError as mnfe:
-            print("Could not import try_get_spice")
-            raise mnfe
-        finally:
-            build_py.run(self)
+        try_get_spice()
+        build_py.run(self)
 
 
 cmdclass = {
@@ -93,13 +85,8 @@ try:
         """
 
         def run(self):
-            try:
-                try_get_spice()
-            except ModuleNotFoundError as mnfe:
-                print("Could not import try_get_spice")
-                raise mnfe
-            finally:
-                _bdist_wheel.run(self)
+            try_get_spice()
+            _bdist_wheel.run(self)
 
         def finalize_options(self) -> None:
             _bdist_wheel.finalize_options(self)
