@@ -23,26 +23,16 @@ SOFTWARE.
 """
 
 from ctypes import CDLL, POINTER, c_int, c_double, c_char, c_char_p, c_void_p
+from ctypes.util import find_library
 import os
 import platform
+
 from . import support_types as stypes
 from . import callbacks
 
-host_OS = platform.system()
-if host_OS == "Windows":
-    sharedLib = "libcspice.dll"
-else:
-    sharedLib = "libcspice.so"
-
-try:
-    import importlib.resources as importlib_resources
-except ImportError:
-    # Try backport for python < 3.7 `importlib_resources`.
-    import importlib_resources
-
-# todo replace with importlib
-sitePath = os.path.join(os.path.dirname(__file__), sharedLib)
-libspice = CDLL(sitePath)
+#TODO: this seems to work, but verify that spiceypy's spice is loaded and not a system installed one
+libspice_path = find_library("cspice")
+libspice = CDLL(libspice_path)
 
 s_cell_p = POINTER(stypes.SpiceCell)
 s_elip_p = POINTER(stypes.Ellipse)
