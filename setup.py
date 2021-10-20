@@ -23,10 +23,9 @@ SOFTWARE.
 """
 __author__ = "AndrewAnnex"
 
-from setuptools import setup, Command, find_packages
+from setuptools import setup, Command
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
-from setuptools.dist import Distribution
 import os
 import sys
 from pathlib import Path
@@ -45,15 +44,6 @@ def try_get_spice():
         print("Could not import try_get_spice")
         raise mnfe
         pass
-
-
-class SpiceyPyBinaryDistribution(Distribution): # TODO: deprecate this?
-    def is_pure(self):
-        return False
-
-    def root_is_pure(self):
-        return False
-
 
 class InstallSpiceyPy(install):
     """Class that extends the install command and encapsulates the
@@ -83,7 +73,6 @@ class BuildPyCommand(build_py):
         except ModuleNotFoundError as mnfe:
             print("Could not import try_get_spice")
             raise mnfe
-            pass
         finally:
             build_py.run(self)
 
@@ -109,7 +98,6 @@ try:
             except ModuleNotFoundError as mnfe:
                 print("Could not import try_get_spice")
                 raise mnfe
-                pass
             finally:
                 _bdist_wheel.run(self)
 
