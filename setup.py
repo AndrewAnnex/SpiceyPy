@@ -39,7 +39,8 @@ def try_get_spice():
         from get_spice import main
 
         main()
-
+    except IOError as e:
+        print('Caught file not found')
     except ModuleNotFoundError as mnfe:
         print("Could not import try_get_spice")
         raise mnfe
