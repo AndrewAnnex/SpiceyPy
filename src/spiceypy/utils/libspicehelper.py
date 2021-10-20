@@ -31,7 +31,12 @@ from . import support_types as stypes
 from . import callbacks
 
 #TODO: this seems to work, but verify that spiceypy's spice is loaded and not a system installed one
+os.environ['LD_LIBRARY_PATH'] = os.getcwd() 
 libspice_path = find_library("cspice")
+
+if not libspice_path:
+    libspice_path = os.environ.get('CSPICE_SHARED_LIB',None)
+
 libspice = CDLL(libspice_path)
 
 s_cell_p = POINTER(stypes.SpiceCell)
