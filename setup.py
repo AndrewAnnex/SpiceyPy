@@ -30,21 +30,29 @@ import os
 import sys
 from pathlib import Path
 
+passnumber = 0
 
 def try_get_spice():
+    global passnumber
+    print('try_get_spice', passnumber)
+    if passnumber > 0:
+       print('already built libcspice')
+       return
     try:
-        file = Path(__file__).resolve()
-        curdir = file.parent
+        thisfile = Path(__file__).resolve(strict=False)
+        curdir = thisfile.parent
         sys.path.append(str(curdir))
         from get_spice import main
-
         main()
-    except IOError as e:
+        passnumber +=1
+    except Exception as e:
         print('Caught file not found')
+        print(e)
+        pass
     except ModuleNotFoundError as mnfe:
         print("Could not import try_get_spice")
-        raise mnfe
         pass
+    return 
 
 
 class InstallSpiceyPy(install):
