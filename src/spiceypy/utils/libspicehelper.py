@@ -36,6 +36,11 @@ libspice_path = find_library("cspice")
 
 if not libspice_path:
     libspice_path = os.environ.get('CSPICE_SHARED_LIB',None)
+if not libspice_path:
+    # fallback to find file relative to current path
+    host_OS = platform.system()
+    sharedLib = "libcspice.dll" if host_OS == "Windows" else "libcspice.so"
+    libspice_path = os.path.join(os.path.dirname(__file__), sharedLib)
 
 libspice = CDLL(libspice_path)
 
