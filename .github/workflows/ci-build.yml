@@ -48,6 +48,7 @@ jobs:
           python -m pip install -U -r ci-requirements.txt
       - name: Install SpiceyPy 🌶️ 🥧 
         run: |
+          python setup.py sdist
           python -m pip install ./dist/*.tar.gz
       - name: Test 🧪 with coverage 📈
         run: |
