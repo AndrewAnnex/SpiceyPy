@@ -412,10 +412,11 @@ def main() -> None:
     Path(destination).parent.mkdir(parents=True, exist_ok=True)
     # okay now move shared library to dst dir
     shutil.copyfile(shared_library_path, destination)
-    # cleanup tmp dir
-    if tmp_cspice_root_dir is not None:
-        if os.path.exists(tmp_cspice_root_dir) and os.path.isdir(tmp_cspice_root_dir):
-            shutil.rmtree(tmp_cspice_root_dir)
+    # cleanup tmp dir, windows seems to fail with this:
+    #    PermissionError: [WinError 32] The process cannot access the file because it is being used by another process
+    # if tmp_cspice_root_dir is not None:
+    #     if os.path.exists(tmp_cspice_root_dir) and os.path.isdir(tmp_cspice_root_dir):
+    #         shutil.rmtree(tmp_cspice_root_dir)
     # and now we are done!
     print("Done!")
 

@@ -78,10 +78,11 @@ class BuildPyCommand(build_py):
         build_py.run(self)
 
 
-cmdclass = {
-    "install": InstallSpiceyPy,
-    "build_py": BuildPyCommand, #TODO override build_ext instead?
-}
+# cmdclass = {
+#     "install": InstallSpiceyPy,
+#     "build_py": BuildPyCommand, #TODO override build_ext instead?
+# }
+cmdclass = {}
 
 # https://stackoverflow.com/questions/45150304/how-to-force-a-python-wheel-to-be-platform-specific-when-building-it
 # http://lepture.com/en/2014/python-on-a-hard-wheel
@@ -92,10 +93,6 @@ try:
         """
         override for bdist_wheel
         """
-
-        def run(self):
-            try_get_spice()
-            _bdist_wheel.run(self)
 
         def finalize_options(self) -> None:
             _bdist_wheel.finalize_options(self)
@@ -120,9 +117,8 @@ readme.close()
 # todo: https://setuptools.pypa.io/en/latest/userguide/extension.html, 
 # https://setuptools.pypa.io/en/latest/deprecated/distutils/extending.html?highlight=cmdclass#integrating-new-commands
 
-# setup(
-#     cmdclass=cmdclass, 
-# )
+setup(
+    cmdclass=cmdclass, 
+)
 
-setup()
 
