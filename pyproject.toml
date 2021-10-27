@@ -3,6 +3,8 @@ requires = ["setuptools >= 42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
+# use build instead of pip to build wheels
+build-frontend = "build"
 # Only build on CPython 3.9
 build = "cp39-*"
 # Skip 32-bit builds and pypy
