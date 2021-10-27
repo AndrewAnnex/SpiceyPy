@@ -27,6 +27,7 @@ jobs:
           python -m pip install -r ci-requirements.txt
       - name: Build 🛠️ sdist source and Install SpiceyPy 🌶️ 🥧
         run: |
+          python get_spice.py
           python -m build --sdist
           pip install dist/*.tar.gz --user
       - name: Test 🧪 with coverage 📈

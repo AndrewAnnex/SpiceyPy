@@ -120,6 +120,9 @@ readme.close()
 # todo: https://setuptools.pypa.io/en/latest/userguide/extension.html, 
 # https://setuptools.pypa.io/en/latest/deprecated/distutils/extending.html?highlight=cmdclass#integrating-new-commands
 
-setup(
-    cmdclass=cmdclass, 
-)
+# setup(
+#     cmdclass=cmdclass, 
+# )
+
+setup()
+
