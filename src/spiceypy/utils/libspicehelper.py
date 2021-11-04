@@ -35,7 +35,7 @@ os.environ['LD_LIBRARY_PATH'] = os.getcwd()
 libspice_path = find_library("cspice")
 
 if not libspice_path:
-    libspice_path = os.environ.get('CSPICE_SHARED_LIB',None)
+    libspice_path = os.environ.get('CSPICE_SHARED_LIB', None)
 if not libspice_path:
     # fallback to find file relative to current path
     host_OS = platform.system()

@@ -23,7 +23,7 @@ SOFTWARE.
 """
 __author__ = "AndrewAnnex"
 
-from setuptools import setup, Command
+from setuptools import setup, Command, find_packages
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
 import os
@@ -78,11 +78,10 @@ class BuildPyCommand(build_py):
         build_py.run(self)
 
 
-# cmdclass = {
-#     "install": InstallSpiceyPy,
-#     "build_py": BuildPyCommand, #TODO override build_ext instead?
-# }
-cmdclass = {}
+cmdclass = {
+    "install": InstallSpiceyPy,
+    "build_py": BuildPyCommand, #TODO override build_ext instead?
+}
 
 # https://stackoverflow.com/questions/45150304/how-to-force-a-python-wheel-to-be-platform-specific-when-building-it
 # http://lepture.com/en/2014/python-on-a-hard-wheel
@@ -118,6 +117,10 @@ readme.close()
 # https://setuptools.pypa.io/en/latest/deprecated/distutils/extending.html?highlight=cmdclass#integrating-new-commands
 
 setup(
+    packages=find_packages('src'),
+    package_dir={"": "src"},
+    package_data={"spiceypy": ["utils/*.so", "utils/*.dylib", "utils/*.dll"]},
+    include_package_data=True,
     cmdclass=cmdclass, 
 )
 
