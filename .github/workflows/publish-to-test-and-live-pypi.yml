@@ -44,9 +44,13 @@ jobs:
       MACOSX_DEPLOYMENT_TARGET: "10.11"
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
-    name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels for ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+        - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "x86_64"}
+        - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "aarch64"}
+        - config: {"name": "macOS", "os": "macos-latest", "arch": "x86_64"}
+        - config: {"name": "macOS", "os": "macos-latest", "arch": "arm64"}
+        - config: {"name": "Windows", "os": "windows-latest", "arch": "AMD64"}  
+    name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels for ${{ matrix.config.os }} ${{ matrix.config.arch }}
+    runs-on: ${{ matrix.config.os }}
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v2
@@ -66,6 +70,8 @@ jobs:
           python -m pip install cibuildwheel==2.1.2
       - name: Build wheels for SpiceyPy 🌶️ 🥧
         timeout-minutes: 45
+        env: |
+          CIBW_ARCHS: "${{ matrix.config.arch }}"
         run: |
           python -m cibuildwheel --output-dir wheelhouse
       - name: Upload wheels for SpiceyPy 🌶️ 🥧

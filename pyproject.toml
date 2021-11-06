@@ -21,10 +21,3 @@ before-test = [
 test-command = [
     "coverage run --source {package} -m pytest --pyargs {project}",
 ]
-
-[tool.cibuildwheel.macos]
-# to start just try to get amd64 working, later we can worry about arm
-archs = ["x86_64", "arm64"]
-
-[tool.cibuildwheel.linux]
-archs = ["x86_64", "aarch64"]
