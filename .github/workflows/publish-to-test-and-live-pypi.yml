@@ -40,8 +40,6 @@ jobs:
         with:
           path: dist/*.tar.gz
   build_wheels:
-    env:
-      MACOSX_DEPLOYMENT_TARGET: "10.11"
     strategy:
       matrix:
         include:
@@ -53,6 +51,7 @@ jobs:
     name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels for ${{ matrix.config.os }} ${{ matrix.config.arch }}
     env: 
       CIBW_ARCHS: ${{ matrix.config.arch }}
+      MACOSX_DEPLOYMENT_TARGET: "10.11"
     runs-on: ${{ matrix.config.os }}
     steps:
       - name: Checkout 🌶️ 🥧
