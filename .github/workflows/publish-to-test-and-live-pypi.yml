@@ -44,11 +44,12 @@ jobs:
       MACOSX_DEPLOYMENT_TARGET: "10.11"
     strategy:
       matrix:
-        - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "x86_64"}
-        - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "aarch64"}
-        - config: {"name": "macOS", "os": "macos-latest", "arch": "x86_64"}
-        - config: {"name": "macOS", "os": "macos-latest", "arch": "arm64"}
-        - config: {"name": "Windows", "os": "windows-latest", "arch": "AMD64"}  
+        include:
+          - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "x86_64"}
+          - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "aarch64"}
+          - config: {"name": "macOS", "os": "macos-latest", "arch": "x86_64"}
+          - config: {"name": "macOS", "os": "macos-latest", "arch": "arm64"}
+          - config: {"name": "Windows", "os": "windows-latest", "arch": "AMD64"}  
     name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels for ${{ matrix.config.os }} ${{ matrix.config.arch }}
     runs-on: ${{ matrix.config.os }}
     steps:
