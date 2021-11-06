@@ -26,6 +26,7 @@ __author__ = "AndrewAnnex"
 from setuptools import setup, Command, find_packages
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
+from setuptools.dist import Distribution
 import os
 import sys
 from pathlib import Path
@@ -55,6 +56,14 @@ def try_get_spice():
     return 
 
 
+class SpiceyPyBinaryDistribution(Distribution):
+    def is_pure(self):
+        return False
+
+    def root_is_pure(self):
+        return False
+
+
 class InstallSpiceyPy(install):
     """Class that extends the install command and encapsulates the
     process for installing the required CSPICE distribution at the
@@ -62,12 +71,12 @@ class InstallSpiceyPy(install):
     """
 
     def finalize_options(self):
-        install.finalize_options(self)
+        super().finalize_options()
         self.install_lib = self.install_platlib
 
     def run(self):
         try_get_spice()
-        install.run(self)
+        return super().run()
 
 
 class BuildPyCommand(build_py):
@@ -75,12 +84,12 @@ class BuildPyCommand(build_py):
 
     def run(self):
         try_get_spice()
-        build_py.run(self)
+        return super().run()
 
 
 cmdclass = {
     "install": InstallSpiceyPy,
-    "build_py": BuildPyCommand, #TODO override build_ext instead?
+    "build_py": BuildPyCommand, 
 }
 
 # https://stackoverflow.com/questions/45150304/how-to-force-a-python-wheel-to-be-platform-specific-when-building-it
@@ -92,13 +101,17 @@ try:
         """
         override for bdist_wheel
         """
+        root_is_pure = False
 
         def finalize_options(self) -> None:
-            _bdist_wheel.finalize_options(self)
+            self.root_is_pure = False
+            super().finalize_options()
             self.root_is_pure = False
 
         def get_tag(self) -> (str, str, str):
-            python, abi, plat = _bdist_wheel.get_tag(self)
+            self.root_is_pure = False
+            python, abi, plat = super().get_tag()
+            self.root_is_pure = False
             return "py3", "none", plat
 
     # add our override to the cmdclass dict so we can inject this behavior
@@ -117,6 +130,7 @@ readme.close()
 # https://setuptools.pypa.io/en/latest/deprecated/distutils/extending.html?highlight=cmdclass#integrating-new-commands
 
 setup(
+    distclass=SpiceyPyBinaryDistribution,
     packages=find_packages('src'),
     package_dir={"": "src"},
     package_data={"spiceypy": ["utils/*.so", "utils/*.dylib", "utils/*.dll"]},
