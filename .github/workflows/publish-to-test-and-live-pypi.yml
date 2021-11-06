@@ -51,6 +51,8 @@ jobs:
           - config: {"name": "macOS", "os": "macos-latest", "arch": "arm64"}
           - config: {"name": "Windows", "os": "windows-latest", "arch": "AMD64"}  
     name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels for ${{ matrix.config.os }} ${{ matrix.config.arch }}
+    env: 
+      CIBW_ARCHS: ${{ matrix.config.arch }}
     runs-on: ${{ matrix.config.os }}
     steps:
       - name: Checkout 🌶️ 🥧
@@ -71,8 +73,6 @@ jobs:
           python -m pip install cibuildwheel==2.1.2
       - name: Build wheels for SpiceyPy 🌶️ 🥧
         timeout-minutes: 45
-        env: |
-          CIBW_ARCHS: "${{ matrix.config.arch }}"
         run: |
           python -m cibuildwheel --output-dir wheelhouse
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
