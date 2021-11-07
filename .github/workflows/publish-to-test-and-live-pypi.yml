@@ -76,7 +76,7 @@ jobs:
           python -m pip install -r ci-requirements.txt
           python -m pip install cibuildwheel==2.1.2
       - name: Build wheels for SpiceyPy 🌶️ 🥧
-        timeout-minutes: 90
+        timeout-minutes: 120
         run: |
           python -m cibuildwheel --output-dir wheelhouse
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
