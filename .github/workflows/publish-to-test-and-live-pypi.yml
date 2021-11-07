@@ -39,6 +39,9 @@ jobs:
           cd ./dist
           tar -czvf ./spiceypy-${SPICEYPY_VER}.tar.gz ./spiceypy-${SPICEYPY_VER}
           cd ..
+      - uses: actions/upload-artifact@v2
+        with:
+          path: dist/*.tar.gz
       - name: Install SpiceyPy 🌶️ 🥧
         run: |
           pip install dist/*.tar.gz --user
@@ -48,9 +51,6 @@ jobs:
       - name: Upload coverage report to codecov
         run: |
           codecov
-      - uses: actions/upload-artifact@v2
-        with:
-          path: dist/*.tar.gz
   build_wheels:
     strategy:
       matrix:
@@ -82,7 +82,7 @@ jobs:
         with:
           path: |
             src/spiceypy/utils/libcspice.so
-          key: ${{ runner.os }}-${{ hashFiles('get_spice.py') }}-${{ hashFiles('setup.cfg') }}
+          key: ${{ matrix.config.os }}-${{ matrix.config.arch }}-${{ hashFiles('get_spice.py') }}-${{ hashFiles('setup.cfg') }}
       - name: Set up Python 🐍 3.9
         uses: actions/setup-python@v2
         with:
