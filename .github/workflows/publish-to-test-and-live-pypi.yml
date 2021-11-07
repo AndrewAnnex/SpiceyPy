@@ -29,16 +29,9 @@ jobs:
         run: |
           python get_spice.py
           python -m build --sdist
-          pip install dist/*.tar.gz --user
-      - name: Test 🧪 with coverage 📈
-        run: |
-          coverage run --source spiceypy -m pytest --pyargs spiceypy
-      - name: Upload coverage report to codecov
-        run: |
-          codecov
       - name: Edit sdist manually to exclude libspice because of setuptools bug/misuse 
         run: |
-          SPICEYPY_VER=`echo dist/*.tar.gz | cut -d'-' -f2 | cut -d'.' -f1 -f2 -f3`
+          SPICEYPY_VER=`echo dist/*.tar.gz | cut -d'-' -f2 | cut -d'.' -f1,2,3`
           tar -xzvf ./dist/spiceypy-${SPICEYPY_VER}.tar.gz -C ./dist/
           rm ./dist/spiceypy-${SPICEYPY_VER}/src/spiceypy/utils/libcspice.so
           sed -i.backup '/libcspice/d' ./dist/spiceypy-${SPICEYPY_VER}/src/spiceypy.egg-info/SOURCES.txt
@@ -46,6 +39,15 @@ jobs:
           cd ./dist
           tar -czvf ./spiceypy-${SPICEYPY_VER}.tar.gz ./spiceypy-${SPICEYPY_VER}
           cd ..
+      - name: Install SpiceyPy 🌶️ 🥧
+        run: |
+          pip install dist/*.tar.gz --user
+      - name: Test 🧪 with coverage 📈
+        run: |
+          coverage run --source spiceypy -m pytest --pyargs spiceypy
+      - name: Upload coverage report to codecov
+        run: |
+          codecov
       - uses: actions/upload-artifact@v2
         with:
           path: dist/*.tar.gz
