@@ -36,6 +36,16 @@ jobs:
       - name: Upload coverage report to codecov
         run: |
           codecov
+      - name: Edit sdist manually to exclude libspice because of setuptools bug/misuse 
+        run: |
+          SPICEYPY_VER=`echo dist/*.tar.gz | cut -d'-' -f2 | cut -d'.' -f1 -f2 -f3`
+          tar -xzvf ./dist/spiceypy-${SPICEYPY_VER}.tar.gz -C ./dist/
+          rm ./dist/spiceypy-${SPICEYPY_VER}/src/spiceypy/utils/libcspice.so
+          sed -i.backup '/libcspice/d' ./dist/spiceypy-${SPICEYPY_VER}/src/spiceypy.egg-info/SOURCES.txt
+          rm ./dist/spiceypy-${SPICEYPY_VER}/src/spiceypy.egg-info/SOURCES.txt.backup
+          cd ./dist
+          tar -czvf ./spiceypy-${SPICEYPY_VER}.tar.gz ./spiceypy-${SPICEYPY_VER}
+          cd ..
       - uses: actions/upload-artifact@v2
         with:
           path: dist/*.tar.gz
@@ -64,6 +74,13 @@ jobs:
         uses: docker/setup-qemu-action@v1
         with:
           platforms: all
+      - name: Cache libcspice.so for aarch64 builds because they take an hour to build with qemu
+        if: matrix.config.arch == 'aarch64'
+        uses: actions/cache@v2
+        with:
+          path: |
+            src/spiceypy/utils/libcspice.so
+          key: ${{ runner.os }}-${{ hashFiles('get_spice.py') }}-${{ hashFiles('setup.cfg') }}
       - name: Set up Python 🐍 3.9
         uses: actions/setup-python@v2
         with:
