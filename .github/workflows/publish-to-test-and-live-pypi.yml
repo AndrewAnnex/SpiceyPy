@@ -29,16 +29,6 @@ jobs:
         run: |
           python get_spice.py
           python -m build --sdist
-      - name: Edit sdist manually to exclude libspice because of setuptools bug/misuse 
-        run: |
-          SPICEYPY_VER=`echo dist/*.tar.gz | cut -d'-' -f2 | cut -d'.' -f1,2,3`
-          tar -xzvf ./dist/spiceypy-${SPICEYPY_VER}.tar.gz -C ./dist/
-          rm ./dist/spiceypy-${SPICEYPY_VER}/src/spiceypy/utils/libcspice.so
-          sed -i.backup '/libcspice/d' ./dist/spiceypy-${SPICEYPY_VER}/src/spiceypy.egg-info/SOURCES.txt
-          rm ./dist/spiceypy-${SPICEYPY_VER}/src/spiceypy.egg-info/SOURCES.txt.backup
-          cd ./dist
-          tar -cv --gunzip --file=spiceypy-${SPICEYPY_VER}.tar.gz spiceypy-${SPICEYPY_VER}
-          cd ..
       - uses: actions/upload-artifact@v2
         with:
           path: dist/*.tar.gz
@@ -80,8 +70,7 @@ jobs:
         if: matrix.config.arch == 'aarch64'
         uses: actions/cache@v2
         with:
-          path: |
-            src/spiceypy/utils/libcspice.so
+          path: /project/src/spiceypy/utils/libcspice.so
           key: ${{ matrix.config.os }}-${{ matrix.config.arch }}-${{ hashFiles('get_spice.py') }}-${{ hashFiles('setup.cfg') }}
       - name: Set up Python 🐍 3.9
         uses: actions/setup-python@v2

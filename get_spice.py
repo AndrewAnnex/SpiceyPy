@@ -260,6 +260,7 @@ def copy_supplements() -> None:
     Copy supplement files (patches, windows build files)
     to cspice directory
     """
+    cwd = os.getcwd()
     patches = list(Path().cwd().glob("*.patch"))
     print("copy supplements to: ", cspice_dir, flush=True)
     for p in patches:
@@ -269,9 +270,11 @@ def copy_supplements() -> None:
         cspice_src_dir = os.path.join(cspice_dir, "cspice", "src", "cspice")
         for w in windows_files:
             shutil.copy(w, cspice_src_dir)
-
+    os.chdir(cwd)
+    pass
 
 def apply_patches() -> None:
+    cwd = os.getcwd()
     os.chdir(cspice_dir)
     iswin = "-windows" if host_OS == "Windows" else ""
     patches = [
@@ -286,6 +289,7 @@ def apply_patches() -> None:
             patch_cmd = subprocess.run(["git", "apply", "--reject", p], check=True)
         except subprocess.CalledProcessError as cpe:
             raise cpe
+    os.chdir(cwd)
     pass
 
 
@@ -295,6 +299,7 @@ def prepare_cspice() -> None:
     If not provided by the user, or if not readable, download a fresh copy
     :return: None
     """
+    cwd = os.getcwd()
     global cspice_dir, tmp_cspice_root_dir
     with tempfile.TemporaryDirectory(prefix="cspice_spiceypy_") as tmp_dir:
         # Trick for python <3.8, delete tmp dir so that we can write it overwrite it
@@ -315,6 +320,7 @@ def prepare_cspice() -> None:
     # okay cspice_dir need to be inside the root level cspice src dir
     cspice_dir = tmp_cspice_root_dir
     print("end of prep:", cspice_dir, flush=True)
+    os.chdir(cwd)
     # okay now copy any and all files needed for building
     pass
 
@@ -324,6 +330,7 @@ def build_cspice() -> str:
     Builds cspice
     :return: absolute path to new compiled shared library
     """
+    cwd = os.getcwd()
     global cspice_dir, host_OS
     if is_unix:
         libname = f"libcspice.so"
@@ -342,11 +349,13 @@ def build_cspice() -> str:
         os.chdir(destination)
         cmds = ["makeDynamicSpice.bat"]
     else:
+        os.chdir(cwd)
         raise NotImplementedError(f"non implemented host os for build {host_OS}")
     try:
         for cmd in cmds:
             _ = subprocess.run(cmd, shell=True, check=True)
     except subprocess.CalledProcessError as cpe:
+        os.chdir(cwd)
         pass
     # get the built shared library
     shared_lib_path = [
@@ -355,12 +364,14 @@ def build_cspice() -> str:
         if p.suffix in (".dll", ".66", ".dylib", ".so")
     ]
     if len(shared_lib_path) != 1:
+        os.chdir(cwd)
         raise RuntimeError(
             f'Could not find built shared library of SpiceyPy in {list(Path(destination).glob("*.*"))}'
         )
     else:
         shared_lib_path = shared_lib_path[0]
     print(shared_lib_path, flush=True)
+    os.chdir(cwd)
     return shared_lib_path
 
 
@@ -376,6 +387,7 @@ def main() -> None:
                   ...
     :return: None
     """
+    cwd = os.getcwd()
     # set final destination for cspice dynamic library
     destination = os.path.join(
         root_dir, "src", "spiceypy", "utils", "libcspice.so" if is_unix else "libcspice.dll"
@@ -418,6 +430,7 @@ def main() -> None:
     #     if os.path.exists(tmp_cspice_root_dir) and os.path.isdir(tmp_cspice_root_dir):
     #         shutil.rmtree(tmp_cspice_root_dir)
     # and now we are done!
+    os.chdir(cwd)
     print("Done!")
 
 
