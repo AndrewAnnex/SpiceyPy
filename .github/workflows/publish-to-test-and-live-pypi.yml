@@ -37,7 +37,7 @@ jobs:
           sed -i.backup '/libcspice/d' ./dist/spiceypy-${SPICEYPY_VER}/src/spiceypy.egg-info/SOURCES.txt
           rm ./dist/spiceypy-${SPICEYPY_VER}/src/spiceypy.egg-info/SOURCES.txt.backup
           cd ./dist
-          tar -czvf ./spiceypy-${SPICEYPY_VER}.tar.gz ./spiceypy-${SPICEYPY_VER}
+          tar -cv --gunzip --file=spiceypy-${SPICEYPY_VER}.tar.gz spiceypy-${SPICEYPY_VER}
           cd ..
       - uses: actions/upload-artifact@v2
         with:
