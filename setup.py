@@ -86,11 +86,10 @@ class BuildPyCommand(build_py):
         try_get_spice()
         return super().run()
 
-try_get_spice()
 
 cmdclass = {
-    # "install": InstallSpiceyPy,
-    # "build_py": BuildPyCommand, 
+    "install": InstallSpiceyPy,
+    "build_py": BuildPyCommand, 
 }
 
 # https://stackoverflow.com/questions/45150304/how-to-force-a-python-wheel-to-be-platform-specific-when-building-it
