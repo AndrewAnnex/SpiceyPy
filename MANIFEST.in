@@ -1,13 +1,12 @@
-# get spice script
+# include patches
+include *.patch
+# include getspice
 include get_spice.py
 
 # Misc
 include LICENSE
 include requirements.txt
 include README.rst
-
-# cspice files
-include spiceypy/utils/*.py
 
 # Docs
 include docs/conf.py
@@ -20,7 +19,9 @@ include cspice.def
 include makeDynamicSpice.bat
 
 # Tests
-include spiceypy/tests/__init__.py
-include spiceypy/tests/test_*.py
-include spiceypy/tests/gettestkernels.py
-exclude spiceypy/tests/exampleKernels.txt
+exclude src/spiceypy/tests/exampleKernels.txt
+
+# Ensure no shared libraries are included in sdist! note I think this breaks 906a7650ba813a32e2f10a8dcf9afd946b774b67, maybe do this manually instead?
+global-exclude *.so
+global-exclude *.dylib
+global-exclude *.dll

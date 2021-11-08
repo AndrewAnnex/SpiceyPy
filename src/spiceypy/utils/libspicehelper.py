@@ -23,15 +23,26 @@ SOFTWARE.
 """
 
 from ctypes import CDLL, POINTER, c_int, c_double, c_char, c_char_p, c_void_p
+from ctypes.util import find_library
 import os
 import platform
+
 from . import support_types as stypes
 from . import callbacks
 
-host_OS = platform.system()
-sharedLib = "cspice.dll" if host_OS == "Windows" else "spice.so"
-sitePath = os.path.join(os.path.dirname(__file__), sharedLib)
-libspice = CDLL(sitePath)
+#TODO: this seems to work, but verify that spiceypy's spice is loaded and not a system installed one
+os.environ['LD_LIBRARY_PATH'] = os.getcwd() 
+libspice_path = find_library("cspice")
+
+if not libspice_path:
+    libspice_path = os.environ.get('CSPICE_SHARED_LIB', None)
+if not libspice_path:
+    # fallback to find file relative to current path
+    host_OS = platform.system()
+    sharedLib = "libcspice.dll" if host_OS == "Windows" else "libcspice.so"
+    libspice_path = os.path.join(os.path.dirname(__file__), sharedLib)
+
+libspice = CDLL(libspice_path)
 
 s_cell_p = POINTER(stypes.SpiceCell)
 s_elip_p = POINTER(stypes.Ellipse)

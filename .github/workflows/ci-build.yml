@@ -48,7 +48,8 @@ jobs:
           python -m pip install -U -r ci-requirements.txt
       - name: Install SpiceyPy 🌶️ 🥧 
         run: |
-          python setup.py install
+          python get_spice.py
+          python -m pip install .
       - name: Test 🧪 with coverage 📈
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy
@@ -93,7 +94,8 @@ jobs:
         env:
           CSPICE_SHARED_LIB: "/tmp/cspice/lib/libcspice.so"
         run: |
-          python setup.py install
+          python get_spice.py
+          python -m pip install .
       - name: Test 🧪 with coverage 📈
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy
@@ -137,7 +139,8 @@ jobs:
         env:
           CSPICE_SRC_DIR: "/tmp/cspice"
         run: |
-          python setup.py install
+          python get_spice.py
+          python -m pip install .
       - name: Test 🧪 with coverage 📈
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy

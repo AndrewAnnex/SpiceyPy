@@ -23,31 +23,37 @@ SOFTWARE.
 """
 __author__ = "AndrewAnnex"
 
-from setuptools import setup, Command
+from setuptools import setup, Command, find_packages
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
 from setuptools.dist import Distribution
+import os
+import sys
+from pathlib import Path
 
-DEV_CI_DEPENDENCIES = [
-    'numpy>=1.17.0;python_version>="3.6"',
-    "pytest>=2.9.0",
-    "pandas>=0.24.0",
-    "coverage>=5.1.0",
-    "codecov>=2.1.0",
-    "twine>=3.3.0",
-    "wheel",
-    "black",
-]
+passnumber = 0
 
-TEST_DEPENDENCIES = [
-    'numpy>=1.17.0;python_version>="3.6"',
-    "pytest>=2.9.0",
-    "pandas>=0.24.0",
-]
-DEPENDENCIES = [
-    'numpy>=1.17.0;python_version>="3.6"',
-]
-REQUIRES = ["numpy"]
+def try_get_spice():
+    global passnumber
+    print('try_get_spice', passnumber)
+    if passnumber > 0:
+       print('already built libcspice')
+       return
+    try:
+        thisfile = Path(__file__).resolve(strict=False)
+        curdir = thisfile.parent
+        sys.path.append(str(curdir))
+        from get_spice import main
+        main()
+        passnumber +=1
+    except Exception as e:
+        print('Caught file not found')
+        print(e)
+        pass
+    except ModuleNotFoundError as mnfe:
+        print("Could not import try_get_spice")
+        pass
+    return 
 
 
 class SpiceyPyBinaryDistribution(Distribution):
@@ -65,59 +71,25 @@ class InstallSpiceyPy(install):
     """
 
     def finalize_options(self):
-        install.finalize_options(self)
+        super().finalize_options()
         self.install_lib = self.install_platlib
 
     def run(self):
-        try:
-            from get_spice import InstallCSpice
-
-            InstallCSpice.get_cspice()
-        except ModuleNotFoundError as mnfe:
-            pass
-        finally:
-            install.run(self)
-
-
-class GetCSPICECommand(Command):
-    """Custom command to get the correct cspice and build the shared library for spiceypy"""
-
-    description = "downloads cspice and builds the shared library"
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        try:
-            from get_spice import InstallCSpice
-
-            InstallCSpice.get_cspice()
-        except ModuleNotFoundError as mnfe:
-            pass
+        try_get_spice()
+        return super().run()
 
 
 class BuildPyCommand(build_py):
     """Custom build command to ensure cspice is built and packaged"""
 
     def run(self):
-        try:
-            from get_spice import InstallCSpice
-
-            InstallCSpice.get_cspice()
-        except ModuleNotFoundError as mnfe:
-            pass
-        finally:
-            build_py.run(self)
+        try_get_spice()
+        return super().run()
 
 
 cmdclass = {
     "install": InstallSpiceyPy,
-    "build_py": BuildPyCommand,
-    "get_cspice": GetCSPICECommand,
+    "build_py": BuildPyCommand, 
 }
 
 # https://stackoverflow.com/questions/45150304/how-to-force-a-python-wheel-to-be-platform-specific-when-building-it
@@ -129,13 +101,17 @@ try:
         """
         override for bdist_wheel
         """
+        root_is_pure = False
 
         def finalize_options(self) -> None:
-            _bdist_wheel.finalize_options(self)
+            self.root_is_pure = False
+            super().finalize_options()
             self.root_is_pure = False
 
         def get_tag(self) -> (str, str, str):
-            python, abi, plat = _bdist_wheel.get_tag(self)
+            self.root_is_pure = False
+            python, abi, plat = super().get_tag()
+            self.root_is_pure = False
             return "py3", "none", plat
 
     # add our override to the cmdclass dict so we can inject this behavior
@@ -150,45 +126,16 @@ readme = open("README.rst", "r")
 readmetext = readme.read()
 readme.close()
 
+# todo: https://setuptools.pypa.io/en/latest/userguide/extension.html, 
+# https://setuptools.pypa.io/en/latest/deprecated/distutils/extending.html?highlight=cmdclass#integrating-new-commands
+
 setup(
-    name="spiceypy",
-    version="4.0.2",
-    license="MIT",
-    author="Andrew Annex",
-    author_email="ama6fy@virginia.edu",
-    description="A Python Wrapper for the NAIF CSPICE Toolkit",
-    long_description=readmetext,
-    python_requires=">=3.6, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4",
-    keywords=["spiceypy", "spice", "naif", "jpl", "space", "geometry", "ephemeris"],
-    url="https://github.com/AndrewAnnex/SpiceyPy",
-    classifiers=[
-        "Development Status :: 5 - Production/Stable",
-        "Natural Language :: English",
-        "Topic :: Scientific/Engineering",
-        "Topic :: Scientific/Engineering :: Astronomy",
-        "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Operating System :: MacOS :: MacOS X",
-        "Operating System :: POSIX :: Linux",
-        "Operating System :: POSIX :: BSD :: FreeBSD",
-        "Operating System :: Microsoft :: Windows",
-    ],
-    packages=["spiceypy", "spiceypy.tests", "spiceypy.utils"],
-    include_package_data=True,
-    zip_safe=False,
     distclass=SpiceyPyBinaryDistribution,
-    package_data={
-        "spiceypy": ["utils/*.so", "utils/*.dll"],
-        "": ["get_spice.py", "LICENSE"],
-    },
-    setup_requires=DEPENDENCIES,
-    install_requires=DEPENDENCIES,
-    requires=REQUIRES,
-    tests_require=TEST_DEPENDENCIES,
-    cmdclass=cmdclass,
-    test_suite="spiceypy.tests.test_wrapper.py",
-    extras_require={"testing": TEST_DEPENDENCIES, "dev": DEV_CI_DEPENDENCIES},
+    packages=find_packages('src'),
+    package_dir={"": "src"},
+    package_data={"spiceypy": ["utils/*.so", "utils/*.dylib", "utils/*.dll"]},
+    include_package_data=True,
+    cmdclass=cmdclass, 
 )
+
+

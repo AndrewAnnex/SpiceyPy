@@ -25,35 +25,50 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r ci-requirements.txt
-      - name: Install SpiceyPy 🌶️ 🥧
+      - name: Build 🛠️ sdist source and Install SpiceyPy 🌶️ 🥧
         run: |
-          python setup.py install
+          python -m build --sdist
+          pip install dist/*.tar.gz --user
       - name: Test 🧪 with coverage 📈
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy
       - name: Upload coverage report to codecov
         run: |
           codecov
-      - name: Build 🛠️ sdist source
-        run: |
-          python setup.py sdist
       - uses: actions/upload-artifact@v2
         with:
           path: dist/*.tar.gz
   build_wheels:
-    env:
-      MACOSX_DEPLOYMENT_TARGET: "10.11"
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
-    name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels for ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+        include:
+          - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "x86_64"}
+          - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "aarch64"}
+          - config: {"name": "macOS", "os": "macos-latest", "arch": "x86_64"}
+          - config: {"name": "macOS", "os": "macos-latest", "arch": "arm64"}
+          - config: {"name": "Windows", "os": "windows-latest", "arch": "AMD64"}  
+    name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels for ${{ matrix.config.os }} ${{ matrix.config.arch }}
+    env: 
+      CIBW_ARCHS: ${{ matrix.config.arch }}
+      MACOSX_DEPLOYMENT_TARGET: "10.11"
+    runs-on: ${{ matrix.config.os }}
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v2
       - name: Setup 🔬🍦🏗️
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1.4.1
+      - name: Set up QEMU for arm64 builds
+        if: matrix.config.arch == 'aarch64'
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: all
+      - name: Cache libcspice.so for aarch64 builds because they take an hour to build with qemu
+        if: matrix.config.arch == 'aarch64'
+        uses: actions/cache@v2
+        with:
+          path: /project/src/spiceypy/utils/libcspice.so
+          key: ${{ matrix.config.os }}-${{ matrix.config.arch }}-${{ hashFiles('get_spice.py') }}-${{ hashFiles('setup.cfg') }}
       - name: Set up Python 🐍 3.9
         uses: actions/setup-python@v2
         with:
@@ -66,6 +81,7 @@ jobs:
           python -m pip install -r ci-requirements.txt
           python -m pip install cibuildwheel==2.1.2
       - name: Build wheels for SpiceyPy 🌶️ 🥧
+        timeout-minutes: 120
         run: |
           python -m cibuildwheel --output-dir wheelhouse
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
