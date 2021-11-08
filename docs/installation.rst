@@ -56,16 +56,20 @@ For example, if you have downloaded SpiceyPy and the CSPICE toolkit, and extract
 .. code-block:: bash
 
             export CSPICE_SRC_DIR="/tmp/cspice"
-            python setup.py install
+            pip install .
 
 Or if you have a shared library of CSPICE located at /tmp/cspice.so, you can run:
 
 .. code-block:: bash
 
-            export CSPICE_SHARED_LIB="/tmp/cspice.so"
-            python setup.py install
+            export CSPICE_SHARED_LIB="/tmp/libcspice.so"
+            pip install .
 
 Both examples above assume you have cloned the SpiceyPy repository and are running those commands within the project directory.
+
+.. note::
+    As of version 4.0.3 you can also add libcspice to you LD_LIBRARY_PATH or use the CSPICE_SHARED_LIB environment variable 
+    at runtime (prior to importing spiceypy) to override which cspice shared library is used.
 
 A simple example program
 ------------------------
