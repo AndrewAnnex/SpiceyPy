@@ -25,5 +25,5 @@ conda:
 python:
    version: 3.7
    install:
-     - method: setuptools
+     - method: pip
        path: .

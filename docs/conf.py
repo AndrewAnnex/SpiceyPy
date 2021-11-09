@@ -38,6 +38,7 @@ extensions = [
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
     "sphinx_copybutton",
+    "myst_parser",
 ]
 
 # conf for copybutton
@@ -278,7 +279,7 @@ texinfo_documents = [
 epub_title = "SpiceyPy"
 epub_author = "Andrew Annex"
 epub_publisher = "Andrew Annex"
-epub_copyright = "2014-2020, Andrew Annex"
+epub_copyright = "2014-2021, Andrew Annex"
 
 # The basename for the epub file. It defaults to the project name.
 # epub_basename = 'SpiceyPy'
