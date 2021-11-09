@@ -10,6 +10,7 @@ dependencies:
   - sphinx==2.3.1
   - myst-parser
   - sphinx-copybutton
+  - pip
   - pip:
     - sphinx_autodoc_typehints
 
