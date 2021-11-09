@@ -38,7 +38,7 @@ extensions = [
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
     "sphinx_copybutton",
-    "myst-parser",
+    "myst_parser",
 ]
 
 # conf for copybutton

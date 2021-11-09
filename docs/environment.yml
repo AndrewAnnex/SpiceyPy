@@ -1,11 +1,11 @@
 name: SPICEYPY_DOCS
 
 channels:
-  - defaults
   - conda-forge
+  - nodefaults
 
 dependencies:
-  - python=3
+  - python=3.9
   - numpy
   - sphinx==2.3.1
   - myst-parser
