@@ -51,6 +51,7 @@ Contents:
 
    citation
    installation
+   changelog
    exampleone
    cells
    exceptions

@@ -2,11 +2,14 @@ name: SPICEYPY_DOCS
 
 channels:
   - defaults
+  - conda-forge
 
 dependencies:
   - python=3
   - numpy
   - sphinx==2.3.1
+  - myst-parser
+  - sphinx-copybutton
   - pip:
     - sphinx_autodoc_typehints
-    - sphinx-copybutton
+
