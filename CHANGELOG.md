@@ -4,6 +4,22 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [4.0.3] - 2021-11-??
+
+## Added
+- changelog now rendered in docs
+- runtime override of cspice via env var or ld_library_path
+- pyproject.toml and setup.cfg
+- CSPICE N66 patches from NAIF
+- builds for aarch64 and macos arm64
+
+## Changed
+- switched to src layout
+- switched "cspice.dll/.so" to "libcspice.dll/so"
+- updated get_spice.py to build cspice from source
+- moved most metadata to setup.cfg
+- updated ci workflows to build wheels for major platforms using cibuildwheels
+
 ## [4.0.2] - 2021-08-13
 
 ### Fixed
