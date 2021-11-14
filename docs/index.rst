@@ -7,8 +7,7 @@ SpiceyPy is a python wrapper for the `SPICE Toolkit <https://naif.jpl.nasa.gov/n
 SPICE provides access and tools to interact with  planetary and spacecraft ephemeris and ancillary engineering information. 
 Please visit the NAIF website for more details about SPICE.
 
-*IMPORTANT*: I have no current affiliation with NASA, NAIF, or JPL. The
-code is provided "as is", use at your own risk.
+*IMPORTANT*: The code is provided "as is", use at your own risk.
 
 Citing SpiceyPy
 ---------------

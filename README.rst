@@ -36,8 +36,7 @@ SpiceyPy is a python wrapper for the `SPICE Toolkit <https://naif.jpl.nasa.gov/n
 SPICE is an essential tool for scientists and engineers alike in the planetary
 science field for Solar System Geometry. Please visit the NAIF website for more details about SPICE.
 
-*IMPORTANT*: I have no current affiliation with NASA, NAIF, or JPL. The
-code is provided "as is", use at your own risk. However, the NAIF now distributes python "lessons" that use SpiceyPy as the python to spice interface.
+*IMPORTANT*: The code is provided "as is", use at your own risk. However, the NAIF now distributes python "lessons" that use SpiceyPy as the python to spice interface.
 
 Citing SpiceyPy
 ---------------
@@ -114,7 +113,7 @@ as newer versions are released.
 - OS: OS X, Linux, Windows
 - CPU: 64bit only!
 - Python 3.6, 3.7, 3.8, 3.9
-- Experimental ARM support for Linux-aarch64 & osx-arm64 via conda-forge
+- ARM support for Linux-aarch64 & osx-arm64
 
 * Support for Python 2.7 ended with version 2.3.2 January 2020 *
 

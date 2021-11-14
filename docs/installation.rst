@@ -219,7 +219,7 @@ the source code from the GitHub repo for SpiceyPy at
 To install the library, simply change into the root
 directory of the project and then run::
 
-    python setup.py install
+    pip install .
 
 The installation script will download the appropriate
 version of the SPICE toolkit for your system, and will
