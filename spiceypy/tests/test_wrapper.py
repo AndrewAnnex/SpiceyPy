@@ -42,7 +42,6 @@ from spiceypy.tests.gettestkernels import (
     cwd,
 )
 
-
 def setup_module(module):
     download_kernels()
 
@@ -62,6 +61,30 @@ def test_threading_lock():
     states = np.array(states)
     spice.kclear()
     npt.assert_array_almost_equal(states, state, decimal=5)
+
+def test_no_threading_lock():
+    nOperations = 10
+    spice.kclear()
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = spice.str2et("Dec 25, 2007")
+    ets = np.array([et]*nOperations)
+    state, ltime = spice.spkezr("Moon", et, "J2000", "NONE", "EARTH")
+    state = np.array([state]*nOperations)
+    with spice.no_threading_lock():
+        states = []
+        for et in ets:
+            states.append(spice.spkezr("Moon", ets, "J2000", "NONE", "EARTH")[0])
+        states = np.array(states)
+    spice.kclear()
+    npt.assert_array_almost_equal(states, state, decimal=5)
+
+def test_change_threading_lock():
+    spice.threading_lock_off()
+    stateOff = spice.get_threading_lock_state()
+    spice.threading_lock_on()
+    stateOn = spice.get_threading_lock_state()
+    assert stateOff == False
+    assert stateOn == True
 
 def test_appndc():
     test_cell = spice.cell_char(10, 10)
