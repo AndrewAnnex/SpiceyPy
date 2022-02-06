@@ -1505,7 +1505,7 @@ def test_dasac_dasopr_dasec_dasdc():
     handle = spice.dasopr(daspath)
     assert handle is not None
     # check that dashfn points to the correct path
-    assert spice.dashfn(handle) == daspath
+    assert str(spice.dashfn(handle)) == daspath
     # extract out the comment, say we only want 3 things out
     n, comments, done = spice.dasec(handle, bufsiz=3)
     assert n == 3

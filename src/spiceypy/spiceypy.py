@@ -27,6 +27,7 @@ from datetime import datetime, timezone
 import functools
 import ctypes
 from typing import Callable, Iterator, Iterable, Optional, Tuple, Union, Sequence
+from pathlib import Path
 
 
 import numpy
@@ -71,6 +72,7 @@ __author__ = "AndrewAnnex"
 
 ################################################################################
 OptionalInt = Optional[int]
+OptPath = Union[Path, str]
 
 _default_len_out = 256
 
@@ -1127,7 +1129,7 @@ def ckgpav(
 
 
 @spice_error_check
-def cklpf(filename: str) -> int:
+def cklpf(filename: OptPath) -> int:
     """
     Load a CK pointing file for use by the CK readers.  Return that
     file's handle, to be used by other CK routines to refer to the
@@ -1138,7 +1140,7 @@ def cklpf(filename: str) -> int:
     :param filename: Name of the CK file to be loaded.
     :return: Loaded file's handle.
     """
-    filename = stypes.string_to_char_p(filename)
+    filename = stypes.string_to_char_p(str(filename))
     handle = ctypes.c_int()
     libspice.cklpf_c(filename, ctypes.byref(handle))
     return handle.value
@@ -1166,7 +1168,7 @@ def ckobj(ck: str, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
 
 
 @spice_error_check
-def ckopn(filename: str, ifname: str, ncomch: int) -> int:
+def ckopn(filename: OptPath, ifname: OptPath, ncomch: int) -> int:
     """
     Open a new CK file, returning the handle of the opened file.
 
@@ -1177,8 +1179,8 @@ def ckopn(filename: str, ifname: str, ncomch: int) -> int:
     :param ncomch: The number of characters to reserve for comments.
     :return: The handle of the opened CK file.
     """
-    filename = stypes.string_to_char_p(filename)
-    ifname = stypes.string_to_char_p(ifname)
+    filename = stypes.string_to_char_p(str(filename))
+    ifname = stypes.string_to_char_p(str(ifname))
     ncomch = ctypes.c_int(ncomch)
     handle = ctypes.c_int()
     libspice.ckopn_c(filename, ifname, ncomch, ctypes.byref(handle))
@@ -1460,7 +1462,7 @@ def clpool() -> None:
 
 
 @spice_error_check
-def cltext(fname: str) -> None:
+def cltext(fname: OptPath) -> None:
     """
     Internal undocumented command for closing a text file opened by RDTEXT.
 
@@ -1483,8 +1485,8 @@ def cltext(fname: str) -> None:
 
     :param fname: Text file to be closed.
     """
-    fname_p = stypes.string_to_char_p(fname)
-    fname_len = ctypes.c_int(len(fname))
+    fname_p = stypes.string_to_char_p(str(fname))
+    fname_len = ctypes.c_int(len(str(fname)))
     libspice.cltext_(fname_p, fname_len)
 
 
@@ -1990,7 +1992,7 @@ def dafgsr(handle: int, recno: int, begin: int, end: int) -> Tuple[ndarray, bool
 
 
 @spice_error_check
-def dafopr(fname: str) -> int:
+def dafopr(fname: OptPath) -> int:
     """
     Open a DAF for subsequent read requests.
 
@@ -1999,14 +2001,14 @@ def dafopr(fname: str) -> int:
     :param fname: Name of DAF to be opened.
     :return: Handle assigned to DAF.
     """
-    fname = stypes.string_to_char_p(fname)
+    fname = stypes.string_to_char_p(str(fname))
     handle = ctypes.c_int()
     libspice.dafopr_c(fname, ctypes.byref(handle))
     return handle.value
 
 
 @spice_error_check
-def dafopw(fname: str) -> int:
+def dafopw(fname: OptPath) -> int:
     """
     Open a DAF for subsequent write requests.
 
@@ -2015,7 +2017,7 @@ def dafopw(fname: str) -> int:
     :param fname: Name of DAF to be opened.
     :return: Handle assigned to DAF.
     """
-    fname = stypes.string_to_char_p(fname)
+    fname = stypes.string_to_char_p(str(fname))
     handle = ctypes.c_int()
     libspice.dafopw_c(fname, ctypes.byref(handle))
     return handle.value
@@ -2229,7 +2231,7 @@ def dasec(
 
 
 @spice_error_check
-def dashfn(handle: int, lenout: int = _default_len_out) -> str:
+def dashfn(handle: int, lenout: int = _default_len_out) -> Path:
     """
     Return the name of the DAS file associated with a handle.
 
@@ -2243,11 +2245,11 @@ def dashfn(handle: int, lenout: int = _default_len_out) -> str:
     namlen = ctypes.c_int(lenout)
     fname = stypes.string_to_char_p(lenout)
     libspice.dashfn_c(handle, namlen, fname)
-    return stypes.to_python_string(fname)
+    return Path(stypes.to_python_string(fname))
 
 
 @spice_error_check
-def dasonw(fname: str, ftype: str, ifname: str, ncomch: int) -> int:
+def dasonw(fname: OptPath, ftype: str, ifname: OptPath, ncomch: int) -> int:
     """
     Internal undocumented command for creating a new DAS file
 
@@ -2257,14 +2259,14 @@ def dasonw(fname: str, ftype: str, ifname: str, ncomch: int) -> int:
     :param ncomch: amount of comment area
     :return: Handle to new DAS file
     """
-    fnamelen = ctypes.c_int(len(fname))
+    fnamelen = ctypes.c_int(len(str(fname)))
     ftypelen = ctypes.c_int(len(ftype))
-    ifnamelen = ctypes.c_int(len(ifname))
+    ifnamelen = ctypes.c_int(len(str(ifname)))
     ncomch = ctypes.c_int(ncomch)
     handle = ctypes.c_int()
-    fname = stypes.string_to_char_p(fname)
+    fname = stypes.string_to_char_p(str(fname))
     ftype = stypes.string_to_char_p(ftype)
-    ifname = stypes.string_to_char_p(ifname)
+    ifname = stypes.string_to_char_p(str(ifname))
     libspice.dasonw_(
         fname,
         ftype,
@@ -2279,7 +2281,7 @@ def dasonw(fname: str, ftype: str, ifname: str, ncomch: int) -> int:
 
 
 @spice_error_check
-def dasopr(fname: str) -> int:
+def dasopr(fname: OptPath) -> int:
     """
     Open a DAS file for reading.
 
@@ -2288,14 +2290,14 @@ def dasopr(fname: str) -> int:
     :param fname: Name of a DAS file to be opened.
     :return: Handle assigned to the opened DAS file.
     """
-    fname = stypes.string_to_char_p(fname)
+    fname = stypes.string_to_char_p(str(fname))
     handle = ctypes.c_int()
     libspice.dasopr_c(fname, ctypes.byref(handle))
     return handle.value
 
 
 @spice_error_check
-def dasopw(fname: str) -> int:
+def dasopw(fname: OptPath) -> int:
     """
     Open a DAS file for writing.
 
@@ -2303,7 +2305,7 @@ def dasopw(fname: str) -> int:
     :param fname: Name of a DAS file to be opened.
     :return: Handle assigned to the opened DAS file.
     """
-    fname = stypes.string_to_char_p(fname)
+    fname = stypes.string_to_char_p(str(fname))
     handle = ctypes.c_int(0)
     libspice.dasopw_c(fname, ctypes.byref(handle))
     return handle.value
@@ -3029,7 +3031,7 @@ def dskn02(handle: int, dladsc: SpiceDLADescr, plid: int) -> ndarray:
 
 
 @spice_error_check
-def dskobj(dsk: str) -> SpiceCell:
+def dskobj(dsk: OptPath) -> SpiceCell:
     """
     Find the set of body ID codes of all objects for which
     topographic data are provided in a specified DSK file.
@@ -3039,14 +3041,14 @@ def dskobj(dsk: str) -> SpiceCell:
     :param dsk: Name of DSK file.
     :return: Set of ID codes of objects in DSK file.
     """
-    dsk = stypes.string_to_char_p(dsk)
+    dsk = stypes.string_to_char_p(str(dsk))
     bodids = stypes.SPICEINT_CELL(10000)
     libspice.dskobj_c(dsk, ctypes.byref(bodids))
     return bodids
 
 
 @spice_error_check
-def dskopn(fname: str, ifname: str, ncomch: int) -> int:
+def dskopn(fname: OptPath, ifname: OptPath, ncomch: int) -> int:
     """
     Open a new DSK file for subsequent write operations.
 
@@ -3057,8 +3059,8 @@ def dskopn(fname: str, ifname: str, ncomch: int) -> int:
     :param ncomch: Number of comment characters to allocate.
     :return: Handle assigned to the opened DSK file.
     """
-    fname = stypes.string_to_char_p(fname)
-    ifname = stypes.string_to_char_p(ifname)
+    fname = stypes.string_to_char_p(str(fname))
+    ifname = stypes.string_to_char_p(str(ifname))
     ncomch = ctypes.c_int(ncomch)
     handle = ctypes.c_int()
     libspice.dskopn_c(fname, ifname, ncomch, ctypes.byref(handle))
@@ -4254,7 +4256,7 @@ def ekinsr(handle: int, segno: int, recno: int) -> None:
 
 
 @spice_error_check
-def eklef(fname: str) -> int:
+def eklef(fname: OptPath) -> int:
     """
     Load an EK file, making it accessible to the EK readers.
 
@@ -4263,7 +4265,7 @@ def eklef(fname: str) -> int:
     :param fname: Name of EK file to load.
     :return: File handle of loaded EK file.
     """
-    fname = stypes.string_to_char_p(fname)
+    fname = stypes.string_to_char_p(str(fname))
     handle = ctypes.c_int()
     libspice.eklef_c(fname, ctypes.byref(handle))
     return handle.value
@@ -4315,7 +4317,7 @@ def ekntab() -> int:
 
 
 @spice_error_check
-def ekopn(fname: str, ifname: str, ncomch: int) -> int:
+def ekopn(fname: OptPath, ifname: OptPath, ncomch: int) -> int:
     """
     Open a new E-kernel file and prepare the file for writing.
 
@@ -4326,8 +4328,8 @@ def ekopn(fname: str, ifname: str, ncomch: int) -> int:
     :param ncomch: The number of characters to reserve for comments.
     :return: Handle attached to new EK file.
     """
-    fname = stypes.string_to_char_p(fname)
-    ifname = stypes.string_to_char_p(ifname)
+    fname = stypes.string_to_char_p(str(fname))
+    ifname = stypes.string_to_char_p(str(ifname))
     ncomch = ctypes.c_int(ncomch)
     handle = ctypes.c_int()
     libspice.ekopn_c(fname, ifname, ncomch, ctypes.byref(handle))
@@ -4335,7 +4337,7 @@ def ekopn(fname: str, ifname: str, ncomch: int) -> int:
 
 
 @spice_error_check
-def ekopr(fname: str) -> int:
+def ekopr(fname: OptPath) -> int:
     """
     Open an existing E-kernel file for reading.
 
@@ -4344,7 +4346,7 @@ def ekopr(fname: str) -> int:
     :param fname: Name of EK file.
     :return: Handle attached to EK file.
     """
-    fname = stypes.string_to_char_p(fname)
+    fname = stypes.string_to_char_p(str(fname))
     handle = ctypes.c_int()
     libspice.ekopr_c(fname, ctypes.byref(handle))
     return handle.value
@@ -4366,7 +4368,7 @@ def ekops() -> int:
 
 
 @spice_error_check
-def ekopw(fname: str) -> int:
+def ekopw(fname: OptPath) -> int:
     """
     Open an existing E-kernel file for writing.
 
@@ -4375,7 +4377,7 @@ def ekopw(fname: str) -> int:
     :param fname: Name of EK file.
     :return: Handle attached to EK file.
     """
-    fname = stypes.string_to_char_p(fname)
+    fname = stypes.string_to_char_p(str(fname))
     handle = ctypes.c_int()
     libspice.ekopw_c(fname, ctypes.byref(handle))
     return handle.value
@@ -5187,7 +5189,7 @@ def ev2lin(et: float, geophs: Sequence[float], elems: Sequence[float]) -> ndarra
 
 
 @spice_error_check
-def exists(fname: str) -> bool:
+def exists(fname: OptPath) -> bool:
     """
     Determine whether a file exists.
 
@@ -5196,7 +5198,7 @@ def exists(fname: str) -> bool:
     :param fname: Name of the file in question.
     :return: True if the file exists, False otherwise.
     """
-    fname = stypes.string_to_char_p(fname)
+    fname = stypes.string_to_char_p(str(fname))
     return bool(libspice.exists_c(fname))
 
 
@@ -5232,7 +5234,7 @@ def failed() -> bool:
 
 
 @spice_error_check
-def fn2lun(fname: str) -> int:
+def fn2lun(fname: OptPath) -> int:
     """
     Internal undocumented command for mapping name of open file to
     its FORTRAN (F2C) logical unit.
@@ -5242,9 +5244,9 @@ def fn2lun(fname: str) -> int:
     :param fname: name of the file to be mapped to its logical unit.
     :return: the FORTRAN (F2C) logical unit associated with the filename.
     """
-    fname_p = stypes.string_to_char_p(fname)
+    fname_p = stypes.string_to_char_p(str(fname))
     unit_out = ctypes.c_int()
-    fname_len = ctypes.c_int(len(fname) + 1)
+    fname_len = ctypes.c_int(len(str(fname)) + 1)
     libspice.fn2lun_(fname_p, ctypes.byref(unit_out), fname_len)
     return unit_out.value
 
@@ -5406,7 +5408,7 @@ def ftncls(unit: int) -> None:
 
 
 @spice_error_check
-def furnsh(path: Union[str, Iterable[str]]) -> None:
+def furnsh(path: Union[OptPath, Iterable[OptPath]]) -> None:
     """
     Load one or more SPICE kernels into a program.
 
@@ -5416,9 +5418,9 @@ def furnsh(path: Union[str, Iterable[str]]) -> None:
     """
     if stypes.is_iterable(path):
         for p in path:
-            libspice.furnsh_c(stypes.string_to_char_p(p))
+            libspice.furnsh_c(stypes.string_to_char_p(str(p)))
     else:
-        path = stypes.string_to_char_p(path)
+        path = stypes.string_to_char_p(str(path))
         libspice.furnsh_c(path)
 
 
@@ -8163,7 +8165,7 @@ def lcase(instr: str, lenout: int = _default_len_out) -> str:
 
 
 @spice_error_check
-def ldpool(filename: str) -> None:
+def ldpool(filename: OptPath) -> None:
     """
     Load the variables contained in a NAIF ASCII kernel file into the
     kernel pool.
@@ -8172,7 +8174,7 @@ def ldpool(filename: str) -> None:
 
     :param filename: Name of the kernel file.
     """
-    filename = stypes.string_to_char_p(filename)
+    filename = stypes.string_to_char_p(str(filename))
     libspice.ldpool_c(filename)
 
 
@@ -9540,7 +9542,7 @@ def pckfrm(pck: str, ids: SpiceCell) -> None:
 
 
 @spice_error_check
-def pcklof(filename: str) -> int:
+def pcklof(filename: OptPath) -> int:
     """
     Load a binary PCK file for use by the readers.  Return the
     handle of the loaded file which is used by other PCK routines to
@@ -9551,14 +9553,14 @@ def pcklof(filename: str) -> int:
     :param filename: Name of the file to be loaded.
     :return: Loaded file's handle.
     """
-    filename = stypes.string_to_char_p(filename)
+    filename = stypes.string_to_char_p(str(filename))
     handle = ctypes.c_int()
     libspice.pcklof_c(filename, ctypes.byref(handle))
     return handle.value
 
 
 @spice_error_check
-def pckopn(name: str, ifname: str, ncomch: int) -> int:
+def pckopn(name: OptPath, ifname: OptPath, ncomch: int) -> int:
     """
     Create a new PCK file, returning the handle of the opened file.
 
@@ -9569,8 +9571,8 @@ def pckopn(name: str, ifname: str, ncomch: int) -> int:
     :param ncomch: The number of characters to reserve for comments.
     :return: The handle of the opened PCK file.
     """
-    name = stypes.string_to_char_p(name)
-    ifname = stypes.string_to_char_p(ifname)
+    name = stypes.string_to_char_p(str(name))
+    ifname = stypes.string_to_char_p(str(ifname))
     ncomch = ctypes.c_int(ncomch)
     handle = ctypes.c_int()
     libspice.pckopn_c(name, ifname, ncomch, ctypes.byref(handle))
@@ -12093,7 +12095,7 @@ def spkgps(targ: int, et: float, ref: str, obs: int) -> Tuple[ndarray, float]:
 
 
 @spice_error_check
-def spklef(filename: str) -> int:
+def spklef(filename: OptPath) -> int:
     """
     Load an ephemeris file for use by the readers.  Return that file's
     handle, to be used by other SPK routines to refer to the file.
@@ -12103,7 +12105,7 @@ def spklef(filename: str) -> int:
     :param filename: Name of the file to be loaded.
     :return: Loaded file's handle.
     """
-    filename = stypes.string_to_char_p(filename)
+    filename = stypes.string_to_char_p(str(filename))
     handle = ctypes.c_int()
     libspice.spklef_c(filename, ctypes.byref(handle))
     return handle.value
@@ -12164,7 +12166,7 @@ def spkobj(spk: str, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
 
 
 @spice_error_check
-def spkopa(filename: str) -> int:
+def spkopa(filename: OptPath) -> int:
     """
     Open an existing SPK file for subsequent write.
 
@@ -12173,14 +12175,14 @@ def spkopa(filename: str) -> int:
     :param filename: The name of an existing SPK file.
     :return: A handle attached to the SPK file opened to append.
     """
-    filename = stypes.string_to_char_p(filename)
+    filename = stypes.string_to_char_p(str(filename))
     handle = ctypes.c_int()
     libspice.spkopa_c(filename, ctypes.byref(handle))
     return handle.value
 
 
 @spice_error_check
-def spkopn(filename: str, ifname: str, ncomch: int) -> int:
+def spkopn(filename: OptPath, ifname: OptPath, ncomch: int) -> int:
     """
     Create a new SPK file, returning the handle of the opened file.
 
@@ -12191,8 +12193,8 @@ def spkopn(filename: str, ifname: str, ncomch: int) -> int:
     :param ncomch: The number of characters to reserve for comments.
     :return: The handle of the opened SPK file.
     """
-    filename = stypes.string_to_char_p(filename)
-    ifname = stypes.string_to_char_p(ifname)
+    filename = stypes.string_to_char_p(str(filename))
+    ifname = stypes.string_to_char_p(str(ifname))
     ncomch = ctypes.c_int(ncomch)
     handle = ctypes.c_int()
     libspice.spkopn_c(filename, ifname, ncomch, ctypes.byref(handle))
@@ -14332,7 +14334,7 @@ def twovec(
 
 
 @spice_error_check
-def txtopn(fname: str) -> int:
+def txtopn(fname: OptPath) -> int:
     """
     Internal undocumented command for opening a new text file for
     subsequent write access.
@@ -14343,9 +14345,9 @@ def txtopn(fname: str) -> int:
     :param fname: name of the new text file to be opened.
     :return: FORTRAN logical unit of opened file
     """
-    fname_p = stypes.string_to_char_p(fname)
+    fname_p = stypes.string_to_char_p(str(fname))
     unit_out = ctypes.c_int()
-    fname_len = ctypes.c_int(len(fname))
+    fname_len = ctypes.c_int(len(str(fname)))
     libspice.txtopn_(fname_p, ctypes.byref(unit_out), fname_len)
     return unit_out.value
 
@@ -14536,7 +14538,7 @@ def unitim(epoch: float, insys: str, outsys: str) -> float:
 
 
 @spice_error_check
-def unload(filename: Union[str, Iterable[str]]) -> None:
+def unload(filename: Union[OptPath, Iterable[OptPath]]) -> None:
     """
     Unload a SPICE kernel.
 
@@ -14546,9 +14548,9 @@ def unload(filename: Union[str, Iterable[str]]) -> None:
     """
     if stypes.is_iterable(filename):
         for f in filename:
-            libspice.unload_c(stypes.string_to_char_p(f))
+            libspice.unload_c(stypes.string_to_char_p(str(f)))
     else:
-        filename = stypes.string_to_char_p(filename)
+        filename = stypes.string_to_char_p(str(filename))
         libspice.unload_c(filename)
 
 
