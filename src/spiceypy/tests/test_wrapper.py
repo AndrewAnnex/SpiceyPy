@@ -4984,7 +4984,7 @@ def test_kepleq():
     k = eqel_2 * can - eqel_1 * san
     ml = eqel_3 + ((n * dt) % spice.twopi())
     eecan = spice.kepleq(ml, h, k)
-    assert pytest.approx(2.692595464274983, eecan)
+    assert 2.692595464274983 == pytest.approx(eecan)
 
 
 def test_kinfo():
@@ -5008,7 +5008,7 @@ def test_kpsolv():
             k = r * np.sin(theta)
             x = spice.kpsolv((h, k))
             fx = h * np.cos(x) + k * np.sin(x)
-            assert pytest.approx(fx, x, 1.0e-15)
+            assert fx == pytest.approx(x, 1.0e-15)
             theta = theta + 0.1
         r = r + 0.05
         pass
