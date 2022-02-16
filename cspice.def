@@ -3,6 +3,8 @@ EXPORTS			appndc_c
 				appndd_c
 				appndi_c
 				axisar_c
+				azlcpo_c
+				azlrec_c
 				b1900_c
 				b1950_c
 				badkpv_c
@@ -28,15 +30,25 @@ EXPORTS			appndc_c
 				ccifrm_c
 				cgv2el_c
 				chbder_c
+				chbigr_c
+				chbint_c
+				chbval_c
 				chkin_c
 				chkout_c
 				cidfrm_c
 				ckcls_c
 				ckcov_c
 				ckfrot_
+				ckfrot_c
+				ckfxfm_c
 				ckgp_c
 				ckgpav_c
+				ckgr02_c
+				ckgr03_c
 				cklpf_c
+				ckmeta_c
+				cknr02_c
+				cknr03_c
 				ckobj_c
 				ckopn_c
 				ckupf_c
@@ -44,6 +56,8 @@ EXPORTS			appndc_c
 				ckw02_c
 				ckw03_c
 				ckw05_c
+				clearc_c
+				cleari_c
 				clight_c
 				clpool_c
 				cltext_
@@ -72,6 +86,7 @@ EXPORTS			appndc_c
 				dafgn_c
 				dafgs_c
 				dafgsr_c
+				dafhsf_c
 				dafopr_c
 				dafopw_c
 				dafps_c
@@ -80,14 +95,30 @@ EXPORTS			appndc_c
 				dafrs_c
 				dafus_c
 				dasac_c
+				dasadc_c
+				dasadd_c
+				dasadi_c
 				dascls_c
 				dasdc_c
 				dasec_c
 				dashfn_c
-				dasopr_c
-				dasopw_c
+				dashfs_c
+				daslla_c
+				dasllc_c
 				dasonw_
+				dasonw_c
+				dasopr_c
+				dasops_c
+				dasopw_c
+				dasrdc_c
+				dasrdd_c
+				dasrdi_c
 				dasrfr_c
+				dasudc_c
+				dasudd_c
+				dasudi_c
+				daswbr_c
+				dazldr_c
 				dcyldr_c
 				deltet_c
 				det_c
@@ -96,14 +127,19 @@ EXPORTS			appndc_c
 				diff_c
 				dlabbs_c
 				dlabfs_c
+				dlabns_c
+				dlaens_c
 				dlafns_c
 				dlafps_c
+				dlaopn_c
 				dlatdr_c
+				dnearp_c
 				dp2hx_c
 				dpgrdr_c
 				dpmax_c
 				dpmin_c
 				dpr_c
+				drdazl_c
 				drdcyl_c
 				drdgeo_c
 				drdlat_c
@@ -139,6 +175,8 @@ EXPORTS			appndc_c
 				dvpool_c
 				dvsep_c
 				edlimb_c
+				ednmpt_c
+				edpnt_c 
 				edterm_c
 				ekacec_c
 				ekaced_c
@@ -196,9 +234,12 @@ EXPORTS			appndc_c
 				eul2m_c
 				eul2xf_c
 				ev2lin_
+				evsgp4_c
 				exists_c
 				expool_c
 				failed_c
+				filld_c 
+				filli_c
 				fn2lun_
 				fovray_c
 				fovtrg_c
@@ -214,6 +255,7 @@ EXPORTS			appndc_c
 				getelm_c
 				getfat_c
 				getfov_c
+				getfvn_c
 				getmsg_c
 				gfbail_c
 				gfclrh_c
@@ -244,6 +286,7 @@ EXPORTS			appndc_c
 				gipool_c
 				gnpool_c
 				halfpi_c
+				hrmesp_c
 				hrmint_c
 				hx2dp_c
 				ident_c
@@ -262,6 +305,7 @@ EXPORTS			appndc_c
 				intmin_c
 				invert_c
 				invort_c
+				invstm_c
 				irfnam_
 				irfnum_
 				irfrot_
@@ -292,7 +336,9 @@ EXPORTS			appndc_c
 				latsrf_c
 				lcase_c
 				ldpool_c
+				lgresp_c
 				lgrind_c
+				lgrint_c
 				limbpt_c
 				lmpool_c
 				lparse_c
@@ -321,6 +367,7 @@ EXPORTS			appndc_c
 				mequg_c
 				mind_c
 				mini_c
+				moved_c 
 				mtxm_c
 				mtxmg_c
 				mtxv_c
@@ -335,9 +382,11 @@ EXPORTS			appndc_c
 				ncpos_c
 				ncposr_c
 				nearpt_c
+				nextwd_c
 				npedln_c
 				npelpt_c
 				nplnpt_c
+				nthwd_c 
 				nvc2pl_c
 				nvp2pl_c
 				occult_c
@@ -384,12 +433,14 @@ EXPORTS			appndc_c
 				pxfrm2_c
 				q2m_c
 				qcktrc_c
+				qderiv_c
 				qdq2av_c
 				qxq_c
 				radrec_c
 				rav2xf_c
 				raxisa_c
 				rdtext_c
+				recazl_c
 				reccyl_c
 				recgeo_c
 				reclat_c
@@ -488,11 +539,12 @@ EXPORTS			appndc_c
 				srfcss_c
 				srfnrm_c
 				srfrec_c
-				srfxpt_c
 				srfs2c_c
 				srfscc_c
+				srfxpt_c
 				ssize_c
 				stelab_c
+				stlabx_c
 				stpool_c
 				str2et_c
 				subpnt_c
@@ -507,22 +559,27 @@ EXPORTS			appndc_c
 				swpool_c
 				sxform_c
 				szpool_c
+				tangpt_c
 				termpt_c
 				timdef_c
 				timout_c
 				tipbod_c
 				tisbod_c
 				tkfram_
+				tkfram_c
 				tkvrsn_c
+				tparch_c
 				tparse_c
 				tpictr_c
 				trace_c
 				trcdep_c
 				trcnam_c
 				trcoff_c
+				trgsep_c
 				tsetyr_c
 				twopi_c
 				twovec_c
+				twovxf_c
 				txtopn_
 				tyear_c
 				ucase_c
@@ -560,6 +617,7 @@ EXPORTS			appndc_c
 				vprjp_c
 				vprjpi_c
 				vproj_c
+				vprojg_c
 				vrel_c
 				vrelg_c
 				vrotv_c
@@ -598,6 +656,6 @@ EXPORTS			appndc_c
 				xpose6_c
 				xpose_c
 				xposeg_c
+				zzdynrot_
 				zzgetcml_c
 				zzgfsavh_c
-				zzdynrot_

@@ -6504,8 +6504,7 @@ def test_reordc():
     iorder = [3, 0, 2, 1]
     outarray = spice.reordc(iorder, 4, 5, array)
     # reordc appears to be broken...
-    with pytest.raises(AssertionError):
-        assert outarray == ["zero", "one", "two", "three"]
+    assert outarray == ["zero", "one", "two", "three"]
 
 
 def test_reordd():
@@ -9078,7 +9077,7 @@ def test_tkfram():
 
 def test_tkvrsn():
     version = spice.tkvrsn("toolkit")
-    assert version == "CSPICE_N0066"
+    assert version == "CSPICE_N0067"
 
 
 def test_tparse():
