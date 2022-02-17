@@ -99,8 +99,8 @@ cspice_dir = os.environ.get(CSPICE_SRC_DIR, os.path.join(root_dir, "cspice"))
 # and make a global tmp cspice directory
 tmp_cspice_root_dir = None
 # versions
-spice_version = "N0066"
-spice_num_v = "66"
+spice_version = "N0067"
+spice_num_v = "67"
 
 
 class GetCSPICE(object):
@@ -127,6 +127,7 @@ class GetCSPICE(object):
         # -------- ----------  -------------------------   ---------
         ("Darwin", "32bit"): ("MacIntel_OSX_AppleC_32bit", "tar.Z"),
         ("Darwin", "64bit"): ("MacIntel_OSX_AppleC_64bit", "tar.Z"),
+        ("Darwin", "64bit"): ("MacM1_OSX_clang_64bit", "tar.Z"),
         ("cygwin", "32bit"): ("PC_Cygwin_GCC_32bit", "tar.Z"),
         ("cygwin", "64bit"): ("PC_Cygwin_GCC_64bit", "tar.Z"),
         ("FreeBSD", "32bit"): ("PC_Linux_GCC_32bit", "tar.Z"),
@@ -274,22 +275,23 @@ def copy_supplements() -> None:
     pass
 
 def apply_patches() -> None:
-    cwd = os.getcwd()
-    os.chdir(cspice_dir)
-    iswin = "-windows" if host_OS == "Windows" else ""
-    patches = [
-        f"0001-patch-for-n66-dskx02.c{iswin}.patch",
-        f"0002-patch-for-n66-subpnt.c{iswin}.patch",
-    ]
-    if host_OS == "Darwin":  # todo is this only needed for M1 or is it for any macos
-        patches.append("0004_inquire_unistd.patch")
-    for p in patches:
-        try:
-            print(f"Applying Patch {p}", flush=True)
-            patch_cmd = subprocess.run(["git", "apply", "--reject", p], check=True)
-        except subprocess.CalledProcessError as cpe:
-            raise cpe
-    os.chdir(cwd)
+    if int(spice_num_v) == 66:
+        cwd = os.getcwd()
+        os.chdir(cspice_dir)
+        iswin = "-windows" if host_OS == "Windows" else ""
+        patches = [
+            f"0001-patch-for-n66-dskx02.c{iswin}.patch",
+            f"0002-patch-for-n66-subpnt.c{iswin}.patch",
+        ]
+        if host_OS == "Darwin":  # todo is this only needed for M1 or is it for any macos
+            patches.append("0004_inquire_unistd.patch")
+        for p in patches:
+            try:
+                print(f"Applying Patch {p}", flush=True)
+                patch_cmd = subprocess.run(["git", "apply", "--reject", p], check=True)
+            except subprocess.CalledProcessError as cpe:
+                raise cpe
+        os.chdir(cwd)
     pass
 
 
