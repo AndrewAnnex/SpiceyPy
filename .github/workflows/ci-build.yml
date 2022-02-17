@@ -89,7 +89,7 @@ jobs:
       - name: Download and extract the shared library for CSPICE 🌶️ 
         run: |
           mkdir -p /tmp/cspice/ 
-          wget -O - https://anaconda.org/conda-forge/cspice/66/download/linux-64/cspice-66-h516909a_1009.tar.bz2 | tar xjC /tmp/cspice/
+          wget -O - https://anaconda.org/conda-forge/cspice/67/download/linux-64/cspice-67-h7f98852_0.tar.bz2 | tar xjC /tmp/cspice/
       - name: Install SpiceyPy 🌶️ 🥧
         env:
           CSPICE_SHARED_LIB: "/tmp/cspice/lib/libcspice.so"
