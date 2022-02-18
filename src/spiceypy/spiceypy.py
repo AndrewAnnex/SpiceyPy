@@ -276,8 +276,7 @@ def cell_time(cell_size) -> SpiceCell:
 
 @spice_error_check
 def appndc(
-    item: Union[str, Iterable[str], ndarray, str_],
-    cell: Union[Cell_Char, SpiceCell],
+    item: Union[str, Iterable[str], ndarray, str_], cell: Union[Cell_Char, SpiceCell]
 ) -> None:
     """
     Append an item to a character cell.
@@ -15069,8 +15068,7 @@ def vrel(
 
 @spice_error_check
 def vrelg(
-    v1: Union[ndarray, Iterable[float]],
-    v2: Union[ndarray, Iterable[float]],
+    v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]]
 ) -> float:
     """
     Return the relative difference between two vectors of general dimension.
