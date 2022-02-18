@@ -4,6 +4,18 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [5.0.0] - 2022-02-17
+
+## Changed
+- switched to N67 CSPICE, no new wrapper functions yet
+- removed deprecated named args mentioned in 4.0.1 release notes
+
+## Removed
+- deprecation warnings for params of mtxmg, mtxvg, mxm, mxmg, mxmt, mxmtg, mxvg, vtmvg, xposeg, unormg, vaddg, vdistg, vdotg, vequg, vhatg, vminug, vnromg, vrelg, vsclg, vsepg, vsubg, vzerog
+- ncol/nrow params for: mtxmg, mtxvg, mxm, mxmg, mxmt, mxmtg, mxvg, vtmvg, xposeg
+- ndim param for: unormg, vaddg, vdistg, vdotg, vequg, vhatg, vminug, vnromg, vrelg, vsclg, vsepg, vsubg, vzerog
+
+
 ## [4.0.3] - 2021-11-14
 
 ## Added
