@@ -28,6 +28,7 @@ import pandas as pd
 import numpy as np
 import numpy.testing as npt
 import os
+import warnings
 from datetime import datetime, timezone
 
 import spiceypy.utils.callbacks
@@ -4435,7 +4436,8 @@ def test_gftfov():
 
 def test_gfudb():
     # ensure no numpy bool conversion deprication warning is raised
-    with pytest.warns(None) as warnrec:
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
         spice.kclear()
         # load kernels
         spice.furnsh(CoreKernels.testMetaKernel)
@@ -4462,7 +4464,6 @@ def test_gfudb():
         # count
         assert len(result) > 20  # true value is 28
         spice.kclear()
-    assert not warnrec
 
 
 def test_gfudb2():
@@ -5579,7 +5580,7 @@ def test_mxmt():
 def test_mxmtg():
     m1 = np.array([[1.0, 2.0, 3.0], [3.0, 2.0, 1.0]])
     m2 = np.array([[1.0, 2.0, 0.0], [2.0, 1.0, 2.0], [1.0, 2.0, 0.0], [2.0, 1.0, 2.0]])
-    mout = spice.mxmtg(m1, m2, 2, 3, 4)
+    mout = spice.mxmtg(m1, m2)
     expected = np.array([[5.0, 10.0, 5.0, 10.0], [7.0, 10.0, 7.0, 10.0]])
     assert np.array_equal(mout, expected)
 
@@ -5596,14 +5597,6 @@ def test_mxvg():
     m1 = np.array([[1.0, 1.0, 1.0], [2.0, 3.0, 4.0]])
     v2 = np.array([1.0, 2.0, 3.0])
     mout = spice.mxvg(m1, v2)
-    expected = np.array([6.0, 20.0])
-    assert np.array_equal(mout, expected)
-
-
-def test_mxvg_old_api():
-    m1 = np.array([[1.0, 1.0, 1.0], [2.0, 3.0, 4.0]])
-    v2 = np.array([1.0, 2.0, 3.0])
-    mout = spice.mxvg(m1, v2, 2, 3)
     expected = np.array([6.0, 20.0])
     assert np.array_equal(mout, expected)
 
@@ -6503,7 +6496,6 @@ def test_reordc():
     array = ["one", "three", "two", "zero"]
     iorder = [3, 0, 2, 1]
     outarray = spice.reordc(iorder, 4, 5, array)
-    # reordc appears to be broken...
     assert outarray == ["zero", "one", "two", "three"]
 
 
@@ -9332,7 +9324,7 @@ def test_unormg():
     v1 = np.array([5.0, 12.0])
     expected_vout = np.array([5.0 / 13.0, 12.0 / 13.0])
     expected_vmag = 13.0
-    vout, vmag = spice.unormg(v1, 2)
+    vout, vmag = spice.unormg(v1)
     assert vmag == expected_vmag
     assert np.array_equal(expected_vout, vout)
 
@@ -9354,7 +9346,7 @@ def test_vadd():
 def test_vaddg():
     v1 = [1.0, 2.0, 3.0]
     v2 = [4.0, 5.0, 6.0]
-    npt.assert_array_almost_equal(spice.vaddg(v1, v2, 3), [5.0, 7.0, 9.0])
+    npt.assert_array_almost_equal(spice.vaddg(v1, v2), [5.0, 7.0, 9.0])
 
 
 def test_valid():
@@ -9384,7 +9376,7 @@ def test_vdist():
 def test_vdistg():
     v1 = np.array([2.0, 3.0])
     v2 = np.array([5.0, 7.0])
-    assert spice.vdistg(v1, v2, 2) == 5.0
+    assert spice.vdistg(v1, v2) == 5.0
 
 
 def test_vdot():
@@ -9396,7 +9388,7 @@ def test_vdot():
 def test_vdotg():
     v1 = np.array([1.0, 0.0])
     v2 = np.array([2.0, 1.0])
-    assert spice.vdotg(v1, v2, 2) == 2
+    assert spice.vdotg(v1, v2) == 2
 
 
 def test_vequ():
@@ -9406,7 +9398,7 @@ def test_vequ():
 
 def test_vequg():
     v1 = np.ones(4)
-    assert np.array_equal(v1, spice.vequg(v1, 4))
+    assert np.array_equal(v1, spice.vequg(v1))
 
 
 def test_vhat():
@@ -9419,7 +9411,7 @@ def test_vhat():
 def test_vhatg():
     v1 = np.array([5.0, 12.0, 0.0, 0.0])
     expected = np.array([5 / 13.0, 12 / 13.0, 0.0, 0.0])
-    vout = spice.vhatg(v1, 4)
+    vout = spice.vhatg(v1)
     assert np.array_equal(vout, expected)
 
 
@@ -9451,7 +9443,7 @@ def test_vlcomg():
 def test_vminug():
     v1 = np.array([1.0, -2.0, 4.0, 0.0])
     expected = np.array([-1.0, 2.0, -4.0, 0.0])
-    assert np.array_equal(spice.vminug(v1, 4), expected)
+    assert np.array_equal(spice.vminug(v1), expected)
 
 
 def test_vminus():
@@ -9467,7 +9459,7 @@ def test_vnorm():
 
 def test_vnormg():
     v1 = np.array([3.0, 3.0, 3.0, 3.0])
-    assert spice.vnormg(v1, 4) == 6.0
+    assert spice.vnormg(v1) == 6.0
 
 
 def test_vpack():
@@ -9521,7 +9513,7 @@ def test_vrel():
 def test_vrelg():
     vec1 = [12.3, -4.32, 76.0, 1.87]
     vec2 = [23.0423, -11.99, -0.10, -99.1]
-    npt.assert_almost_equal(spice.vrelg(vec1, vec2, 4), 1.2408623)
+    npt.assert_almost_equal(spice.vrelg(vec1, vec2), 1.2408623)
 
 
 def test_vrotv():
@@ -9542,7 +9534,7 @@ def test_vscl():
 def test_vsclg():
     v1 = np.array([1.0, 2.0, -3.0, 4.0])
     expected = np.zeros(4)
-    assert np.array_equal(spice.vsclg(0.0, v1, 4), expected)
+    assert np.array_equal(spice.vsclg(0.0, v1), expected)
 
 
 def test_vsep():
@@ -9554,7 +9546,7 @@ def test_vsep():
 def test_vsepg():
     v1 = np.array([3.0, 0.0])
     v2 = np.array([-5.0, 0.0])
-    assert spice.vsepg(v1, v2, 2) == np.pi
+    assert spice.vsepg(v1, v2) == np.pi
 
 
 def test_vsub():
@@ -9568,7 +9560,7 @@ def test_vsubg():
     v1 = np.array([1.0, 2.0, 3.0, 4.0])
     v2 = np.array([1.0, 1.0, 1.0, 1.0])
     expected = np.array([0.0, 1.0, 2.0, 3.0])
-    assert np.array_equal(spice.vsubg(v1, v2, 4), expected)
+    assert np.array_equal(spice.vsubg(v1, v2), expected)
 
 
 def test_vtmv():
@@ -9596,7 +9588,7 @@ def test_vzero():
 
 
 def test_vzerog():
-    assert spice.vzerog(np.zeros(5), 5)
+    assert spice.vzerog(np.zeros(5))
 
 
 def test_wncard():

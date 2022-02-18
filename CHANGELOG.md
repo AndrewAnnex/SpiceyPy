@@ -4,6 +4,13 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [5.0.0] - 2022-02-??
+
+## Changed
+- switched to N67 CSPICE, no new wrapper functions yet
+- removed deprecated named args mentioned in 4.0.1 release notes
+
+
 ## [4.0.3] - 2021-11-14
 
 ## Added
