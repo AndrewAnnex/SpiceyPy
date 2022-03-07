@@ -15049,6 +15049,26 @@ def vproj(a: ndarray, b: ndarray) -> ndarray:
 
 
 @spice_error_check
+def vprojg(a: ndarray, b: ndarray) -> ndarray:
+    """
+    Find the projection of one vector onto another vector.
+    All vectors are of arbitrary dimension.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vprojg_c.html
+
+    :param a: The vector to be projected.
+    :param b: The vector onto which a is to be projected.
+    :return: The projection of a onto b.
+    """
+    ndim = len(v1)
+    a = stypes.to_double_vector(a)
+    b = stypes.to_double_vector(b)
+    vout = stypes.empty_double_vector(ndim)
+    libspice.vprojg_c(a, b, vout)
+    return stypes.c_vector_to_python(vout)
+
+
+@spice_error_check
 def vrel(
     v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]]
 ) -> float:

@@ -9502,6 +9502,19 @@ def test_vproj():
     expected = np.array([6.0, 0.0, 0.0])
     vout = spice.vproj(v1, v2)
     assert np.array_equal(expected, vout)
+    
+    
+def test_vprojg()
+    v1 = np.array([6.0, 6.0, 6.0])
+    v2 = np.array([2.0, 0.0, 0.0])
+    expected = np.array([6.0, 0.0, 0.0])
+    vout = spice.vprojg(v1, v2)
+    assert np.array_equal(expected, vout)
+    v1 = np.array([6.0, 6.0, 6.0, 0.0])
+    v2 = np.array([2.0, 0.0, 0.0, 0.0])
+    expected = np.array([6.0, 0.0, 0.0, 0.0])
+    vout = spice.vprojg(v1, v2)
+    assert np.array_equal(expected, vout)
 
 
 def test_vrel():
