@@ -31,7 +31,7 @@ from . import support_types as stypes
 from . import callbacks
 
 # capture ld_library_path
-_llp = os.environ.get('LD_LIBRARY_PATH', None)
+_llp = os.environ.get('LD_LIBRARY_PATH', '')
 # override to CWD
 os.environ['LD_LIBRARY_PATH'] = os.getcwd() 
 libspice_path = find_library("cspice")
