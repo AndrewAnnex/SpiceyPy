@@ -14242,6 +14242,56 @@ def trcoff() -> None:
     libspice.trcoff_c()
 
 
+def trgsep(
+    et: float,
+    targ1: str,
+    shape1: str,
+    frame1: str,
+    targ2: str,
+    shape2: str,
+    frame2: str,
+    obsrvr: str,
+    abcorr: str,
+) -> float:
+    """
+    Compute the angular separation in radians between two spherical
+    or point objects.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/trgsep_c.html
+
+    :param et: Ephemeris seconds past J2000 TDB.
+    :param targ1: First target body name.
+    :param shape1: First target body shape.
+    :param frame1: Reference frame of first target.
+    :param targ2: Second target body name.
+    :param shape2: First target body shape.
+    :param frame2: Reference frame of second target.
+    :param obsrvr: Observing body name.
+    :param abcorr: Aberration corrections flag.
+    :return: angular separation in radians.
+    """
+    _et = ctypes.c_double(et)
+    _targ1 = stypes.string_to_char_p(targ1)
+    _shape1 = stypes.string_to_char_p(shape1)
+    _frame1 = stypes.string_to_char_p(frame1)
+    _targ2 = stypes.string_to_char_p(targ2)
+    _shape2 = stypes.string_to_char_p(shape2)
+    _frame2 = stypes.string_to_char_p(frame2)
+    _obsrvr = stypes.string_to_char_p(obsrvr)
+    _abcorr = stypes.string_to_char_p(abcorr)
+    return libspice.trgsep_c(
+        _et,
+        _targ1,
+        _shape1,
+        _frame1,
+        _targ2,
+        _shape2,
+        _frame2,
+        _obsrvr,
+        _abcorr,
+    )
+
+
 @spice_error_check
 def tsetyr(year: int) -> None:
     """
@@ -14296,6 +14346,37 @@ def twovec(
     indexp = ctypes.c_int(indexp)
     mout = stypes.empty_double_matrix()
     libspice.twovec_c(axdef, indexa, plndef, indexp, mout)
+    return stypes.c_matrix_to_numpy(mout)
+
+
+@spice_error_check
+def twovxf(
+    axdef: Union[ndarray, Iterable[float]],
+    indexa: int,
+    plndef: Union[ndarray, Iterable[float]],
+    indexp: int,
+) -> ndarray:
+    """
+    Find the state transformation from a base frame to the
+    right-handed frame defined by two state vectors: one state
+    vector defining a specified axis and a second state vector
+    defining a specified coordinate plane.
+
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/twovxf_c.html
+
+    :param axdef: Vector defining a principal axis.
+    :param indexa: Principal axis number of axdef (X=1, Y=2, Z=3).
+    :param plndef: Vector defining (with axdef) a principal plane.
+    :param indexp: Second axis number (with indexa) of principal plane.
+    :return: Output rotation matrix.
+    """
+    _axdef = stypes.to_double_vector(axdef)
+    _indexa = ctypes.c_int(indexa)
+    _plndef = stypes.to_double_vector(plndef)
+    _indexp = ctypes.c_int(indexp)
+    mout = stypes.empty_double_matrix()
+    libspice.twovxf_c(_axdef, _indexa, _plndef, _indexp, mout)
     return stypes.c_matrix_to_numpy(mout)
 
 
@@ -15061,10 +15142,10 @@ def vprojg(a: ndarray, b: ndarray) -> ndarray:
     :return: The projection of a onto b.
     """
     ndim = len(v1)
-    a = stypes.to_double_vector(a)
-    b = stypes.to_double_vector(b)
+    _a = stypes.to_double_vector(a)
+    _b = stypes.to_double_vector(b)
     vout = stypes.empty_double_vector(ndim)
-    libspice.vprojg_c(a, b, vout)
+    libspice.vprojg_c(_a, _b, vout)
     return stypes.c_vector_to_python(vout)
 
 
