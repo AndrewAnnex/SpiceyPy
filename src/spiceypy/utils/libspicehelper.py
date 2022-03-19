@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) [2015-2021] [Andrew Annex]
+Copyright (c) [2015-2022] [Andrew Annex]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,12 +30,12 @@ import platform
 from . import support_types as stypes
 from . import callbacks
 
-#TODO: this seems to work, but verify that spiceypy's spice is loaded and not a system installed one
-os.environ['LD_LIBRARY_PATH'] = os.getcwd() 
+# TODO: this seems to work, but verify that spiceypy's spice is loaded and not a system installed one
+os.environ["LD_LIBRARY_PATH"] = os.getcwd()
 libspice_path = find_library("cspice")
 
 if not libspice_path:
-    libspice_path = os.environ.get('CSPICE_SHARED_LIB', None)
+    libspice_path = os.environ.get("CSPICE_SHARED_LIB", None)
 if not libspice_path:
     # fallback to find file relative to current path
     host_OS = platform.system()
