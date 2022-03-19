@@ -30,16 +30,24 @@ import platform
 from . import support_types as stypes
 from . import callbacks
 
-# capture ld_library_path
-_llp = os.environ.get('LD_LIBRARY_PATH', '')
-# override to CWD
-os.environ['LD_LIBRARY_PATH'] = os.getcwd() 
-libspice_path = find_library("cspice")
-# restore ld_library_path
-os.environ['LD_LIBRARY_PATH'] = _llp
 
-if not libspice_path:
-    libspice_path = os.environ.get('CSPICE_SHARED_LIB', None)
+if "CSPICE_SHARED_LIB" in os.environ.keys():
+    libspice_path = os.environ.get("CSPICE_SHARED_LIB", None)
+else:
+    # capture ld_library_path, todo windows uses PATH, but I cover that case below
+    _llp = os.environ.get("LD_LIBRARY_PATH")
+    # append CWD to ldd
+    os.environ["LD_LIBRARY_PATH"] = f"{f'{_llp}:' if _llp else ''}{os.getcwd()}"
+    # locate cspice
+    libspice_path = find_library("cspice")
+    # restore ld_library_path
+    if _llp:
+        # if it was defined before, restore it
+        os.environ["LD_LIBRARY_PATH"] = _llp
+    else:
+        # if not restore to None. Does not affect system level environment variable
+        os.environ.pop("LD_LIBRARY_PATH", None)
+# Try again on windows, todo combine with above to make it cleaner
 if not libspice_path:
     # fallback to find file relative to current path
     host_OS = platform.system()
