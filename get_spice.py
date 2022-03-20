@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) [2015-2021] [Andrew Annex]
+Copyright (c) [2015-2022] [Andrew Annex]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -274,6 +274,7 @@ def copy_supplements() -> None:
     os.chdir(cwd)
     pass
 
+
 def apply_patches() -> None:
     if int(spice_num_v) == 66:
         cwd = os.getcwd()
@@ -283,7 +284,9 @@ def apply_patches() -> None:
             f"0001-patch-for-n66-dskx02.c{iswin}.patch",
             f"0002-patch-for-n66-subpnt.c{iswin}.patch",
         ]
-        if host_OS == "Darwin":  # todo is this only needed for M1 or is it for any macos
+        if (
+            host_OS == "Darwin"
+        ):  # todo is this only needed for M1 or is it for any macos
             patches.append("0004_inquire_unistd.patch")
         for p in patches:
             try:
@@ -392,7 +395,11 @@ def main() -> None:
     cwd = os.getcwd()
     # set final destination for cspice dynamic library
     destination = os.path.join(
-        root_dir, "src", "spiceypy", "utils", "libcspice.so" if is_unix else "libcspice.dll"
+        root_dir,
+        "src",
+        "spiceypy",
+        "utils",
+        "libcspice.so" if is_unix else "libcspice.dll",
     )
     # check if the shared library already exists, if it does we are done
     if Path(destination).is_file():
