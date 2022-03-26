@@ -4,28 +4,36 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [5.0.1] - 2022-03-23
+minor update to make ld_library_path update safer
+
+### Fixed
+- override of ld_library_path is now temporary
+
+### Changed
+- updated copyrights for 2022
+
 ## [5.0.0] - 2022-02-17
 
-## Changed
+### Changed
 - switched to N67 CSPICE, no new wrapper functions yet
 - removed deprecated named args mentioned in 4.0.1 release notes
 
-## Removed
+### Removed
 - deprecation warnings for params of mtxmg, mtxvg, mxm, mxmg, mxmt, mxmtg, mxvg, vtmvg, xposeg, unormg, vaddg, vdistg, vdotg, vequg, vhatg, vminug, vnromg, vrelg, vsclg, vsepg, vsubg, vzerog
 - ncol/nrow params for: mtxmg, mtxvg, mxm, mxmg, mxmt, mxmtg, mxvg, vtmvg, xposeg
 - ndim param for: unormg, vaddg, vdistg, vdotg, vequg, vhatg, vminug, vnromg, vrelg, vsclg, vsepg, vsubg, vzerog
 
-
 ## [4.0.3] - 2021-11-14
 
-## Added
+### Added
 - changelog now rendered in docs
 - runtime override of cspice via env var or ld_library_path
 - pyproject.toml and setup.cfg
 - CSPICE N66 patches from NAIF/conda-forge feedstock
 - builds for aarch64 and macos arm64
 
-## Changed
+### Changed
 - switched to src layout
 - switched "cspice.dll/.so" to "libcspice.dll/so"
 - updated get_spice.py to build cspice from source

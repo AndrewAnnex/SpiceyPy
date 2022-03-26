@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) [2015-2021] [Andrew Annex]
+Copyright (c) [2015-2022] [Andrew Annex]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,27 +33,29 @@ from pathlib import Path
 
 passnumber = 0
 
+
 def try_get_spice():
     global passnumber
-    print('try_get_spice', passnumber)
+    print("try_get_spice", passnumber)
     if passnumber > 0:
-       print('already built libcspice')
-       return
+        print("already built libcspice")
+        return
     try:
         thisfile = Path(__file__).resolve(strict=False)
         curdir = thisfile.parent
         sys.path.append(str(curdir))
         from get_spice import main
+
         main()
-        passnumber +=1
+        passnumber += 1
     except Exception as e:
-        print('Caught file not found')
+        print("Caught file not found")
         print(e)
         pass
     except ModuleNotFoundError as mnfe:
         print("Could not import try_get_spice")
         pass
-    return 
+    return
 
 
 class SpiceyPyBinaryDistribution(Distribution):
@@ -89,7 +91,7 @@ class BuildPyCommand(build_py):
 
 cmdclass = {
     "install": InstallSpiceyPy,
-    "build_py": BuildPyCommand, 
+    "build_py": BuildPyCommand,
 }
 
 # https://stackoverflow.com/questions/45150304/how-to-force-a-python-wheel-to-be-platform-specific-when-building-it
@@ -101,6 +103,7 @@ try:
         """
         override for bdist_wheel
         """
+
         root_is_pure = False
 
         def finalize_options(self) -> None:
@@ -126,16 +129,14 @@ readme = open("README.rst", "r")
 readmetext = readme.read()
 readme.close()
 
-# todo: https://setuptools.pypa.io/en/latest/userguide/extension.html, 
+# todo: https://setuptools.pypa.io/en/latest/userguide/extension.html,
 # https://setuptools.pypa.io/en/latest/deprecated/distutils/extending.html?highlight=cmdclass#integrating-new-commands
 
 setup(
     distclass=SpiceyPyBinaryDistribution,
-    packages=find_packages('src'),
+    packages=find_packages("src"),
     package_dir={"": "src"},
     package_data={"spiceypy": ["utils/*.so", "utils/*.dylib", "utils/*.dll"]},
     include_package_data=True,
-    cmdclass=cmdclass, 
+    cmdclass=cmdclass,
 )
-
-
