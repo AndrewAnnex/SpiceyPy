@@ -5185,6 +5185,29 @@ def ev2lin(et: float, geophs: Sequence[float], elems: Sequence[float]) -> ndarra
     return stypes.c_vector_to_python(state)
 
 
+def evsgp4(et: float, geophs: Sequence[float], elems: Sequence[float]) -> ndarray:
+    """
+    Evaluate NORAD two-line element data for earth orbiting
+    spacecraft. This evaluator uses algorithms as described
+    in Vallado 2006
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/evsgp4_c.html
+
+    :param et: Epoch in seconds past ephemeris epoch J2000.
+    :param geophs: Geophysical constants
+    :param elems: Two-line element data
+    :return: Evaluated state
+    """
+    et = ctypes.c_double(et)
+    assert len(geophs) == 8
+    geophs = stypes.to_double_vector(geophs)
+    assert len(elems) == 10
+    elems = stypes.to_double_vector(elems)
+    state = stypes.empty_double_vector(6)
+    libspice.ev2lin_(ctypes.byref(et), geophs, elems, state)
+    return stypes.c_vector_to_python(state)
+
+
 @spice_error_check
 def exists(fname: str) -> bool:
     """
@@ -5599,6 +5622,51 @@ def getfov(
     room = ctypes.c_int(room)
     libspice.getfov_c(
         instid, room, shapelen, framelen, shape, framen, bsight, ctypes.byref(n), bounds
+    )
+    return (
+        stypes.to_python_string(shape),
+        stypes.to_python_string(framen),
+        stypes.c_vector_to_python(bsight),
+        n.value,
+        stypes.c_matrix_to_numpy(bounds)[0 : n.value],
+    )
+
+
+@spice_error_check
+def getfvn(
+    inst: str,
+    room: int,
+    shapelen: int = _default_len_out,
+    framelen: int = _default_len_out,
+) -> Tuple[str, str, ndarray, int, ndarray]:
+    """
+    Return the field-of-view (FOV) parameters for a specified
+    instrument. The instrument is specified by name.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/getfvn_c.html
+
+    :param inst: Name of an instrument.
+    :param room: Maximum number of vectors that can be returned.
+    :param shapelen: Space available in the string shape.
+    :param framelen: Space available in the string frame.
+    :return:
+            Instrument FOV shape,
+            Name of the frame in which FOV vectors are defined,
+            Boresight vector,
+            Number of boundary vectors returned,
+            FOV boundary vectors.
+    """
+    inst = stypes.string_to_char_p(inst)
+    shape = stypes.string_to_char_p(" " * shapelen)
+    framen = stypes.string_to_char_p(" " * framelen)
+    shapelen = ctypes.c_int(shapelen)
+    framelen = ctypes.c_int(framelen)
+    bsight = stypes.empty_double_vector(3)
+    n = ctypes.c_int()
+    bounds = stypes.empty_double_matrix(x=3, y=room)
+    room = ctypes.c_int(room)
+    libspice.getfvn_c(
+        inst, room, shapelen, framelen, shape, framen, bsight, ctypes.byref(n), bounds
     )
     return (
         stypes.to_python_string(shape),
@@ -14242,6 +14310,7 @@ def trcoff() -> None:
     libspice.trcoff_c()
 
 
+@spice_error_check
 def trgsep(
     et: float,
     targ1: str,
@@ -14375,7 +14444,7 @@ def twovxf(
     _indexa = ctypes.c_int(indexa)
     _plndef = stypes.to_double_vector(plndef)
     _indexp = ctypes.c_int(indexp)
-    mout = stypes.empty_double_matrix()
+    mout = stypes.empty_double_matrix(6, 6)
     libspice.twovxf_c(_axdef, _indexa, _plndef, _indexp, mout)
     return stypes.c_matrix_to_numpy(mout)
 
@@ -15141,11 +15210,12 @@ def vprojg(a: ndarray, b: ndarray) -> ndarray:
     :param b: The vector onto which a is to be projected.
     :return: The projection of a onto b.
     """
-    ndim = len(v1)
+    ndim = len(a)
     _a = stypes.to_double_vector(a)
     _b = stypes.to_double_vector(b)
     vout = stypes.empty_double_vector(ndim)
-    libspice.vprojg_c(_a, _b, vout)
+    ndim = ctypes.c_int(ndim)
+    libspice.vprojg_c(_a, _b, ndim, vout)
     return stypes.c_vector_to_python(vout)
 
 

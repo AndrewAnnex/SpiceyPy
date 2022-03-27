@@ -3396,6 +3396,31 @@ def test_ev2lin():
     npt.assert_array_almost_equal(expected_state_86400, state_86400)
 
 
+def test_evsgp4():
+    # LUME 1 cubesat
+    noadpn = ["J2", "J3", "J4", "KE", "QO", "SO", "ER", "AE"]
+    spice.furnsh([CoreKernels.lsk, ExtraKernels.geophKer])  # need geophyscial.ker
+    tle = [
+        "1 43908U 18111AJ  20146.60805006  .00000806  00000-0  34965-4 0  9999",
+        "2 43908  97.2676  47.2136 0020001 220.6050 139.3698 15.24999521 78544",
+    ]
+    geophs = [spice.bodvcd(399, _, 1)[1] for _ in noadpn]
+    _, elems = spice.getelm(1957, 75, tle)
+    et = spice.str2et("2020-05-26 02:25:00")
+    state = spice.evsgp4(et, geophs, elems)
+    expected_state = np.array(
+        [
+            -4644.60403398,
+            -5038.95025539,
+            -337.27141116,
+            -0.45719025,
+            0.92884817,
+            -7.55917355,
+        ]
+    )
+    npt.assert_array_almost_equal(expected_state, state)
+
+
 def test_exists():
     assert spice.exists(CoreKernels.testMetaKernel)
 
@@ -3593,11 +3618,37 @@ def test_getfov():
         kernelFile.write("INS-999004_BORESIGHT            = (  0.0,  1.0,  0.0 )\n")
         kernelFile.write("INS-999004_FOV_BOUNDARY_CORNERS = (  0.0,  0.8,  0.5,\n")
         kernelFile.write("                                     0.4,  0.8, -0.2,\n")
-        kernelFile.write("                                    -0.4,  0.8, -0.2,\n")
+        kernelFile.write("                                    -0.4,  0.8, -0.2 )\n")
         kernelFile.write("\\begintext\n")
         kernelFile.close()
     spice.furnsh(kernel)
     shape, frame, bsight, n, bounds = spice.getfov(-999004, 4, 32, 32)
+    assert shape == "POLYGON"
+    assert frame == "SC999_INST004"
+    npt.assert_array_almost_equal(bsight, [0.0, 1.0, 0.0])
+    assert n == 3
+    expected = np.array([[0.0, 0.8, 0.5], [0.4, 0.8, -0.2], [-0.4, 0.8, -0.2]])
+    npt.assert_array_almost_equal(expected, bounds)
+    cleanup_kernel(kernel)
+
+
+def test_getfvn():
+    kernel = os.path.join(cwd, "getfvn_test.ti")
+    cleanup_kernel(kernel)
+    with open(kernel, "w") as kernelFile:
+        kernelFile.write("\\begindata\n")
+        kernelFile.write("INS-999004_FOV_SHAPE            = 'POLYGON'\n")
+        kernelFile.write("INS-999004_FOV_FRAME            = 'SC999_INST004'\n")
+        kernelFile.write("INS-999004_BORESIGHT            = (  0.0,  1.0,  0.0 )\n")
+        kernelFile.write("INS-999004_FOV_BOUNDARY_CORNERS = (  0.0,  0.8,  0.5,\n")
+        kernelFile.write("                                     0.4,  0.8, -0.2,\n")
+        kernelFile.write("                                    -0.4,  0.8, -0.2)\n")
+        kernelFile.write("NAIF_BODY_CODE += ( -999004 )\n")
+        kernelFile.write("NAIF_BODY_NAME += ( 'SC999_INST004' )\n")
+        kernelFile.write("\\begintext\n")
+        kernelFile.close()
+    spice.furnsh(kernel)
+    shape, frame, bsight, n, bounds = spice.getfvn("SC999_INST004", 4, 32, 32)
     assert shape == "POLYGON"
     assert frame == "SC999_INST004"
     npt.assert_array_almost_equal(bsight, [0.0, 1.0, 0.0])
@@ -9142,6 +9193,24 @@ def teardown_test_trcoff():
     spice.reset()
 
 
+def test_trgsep():
+    spice.furnsh(
+        [CoreKernels.lsk, CoreKernels.pck, CoreKernels.spk, ExtraKernels.mro2007sub]
+    )
+    et = spice.str2et("2007-JAN-11 11:21:20.213872 (TDB)")
+    frame = ["IAU_MOON", "IAU_EARTH"]
+    targ = ["MOON", "EARTH"]
+    shape = ["POINT", "SPHERE"]
+    pointsep = spice.trgsep(
+        et, targ[0], shape[0], frame[0], targ[1], shape[0], frame[1], "SUN", "LT+S"
+    )
+    sphersep = spice.trgsep(
+        et, targ[0], shape[1], frame[0], targ[1], shape[1], frame[1], "SUN", "LT+S"
+    )
+    assert spice.dpr() * pointsep == pytest.approx(0.15729276)
+    assert spice.dpr() * sphersep == pytest.approx(0.15413221)
+
+
 def test_tsetyr():
     # Expand 2-digit year to full year, typically 4-digit
 
@@ -9185,6 +9254,32 @@ def test_twovec():
     plndef = [0.0, -1.0, 0.0]
     expected = [[1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, -1.0]]
     npt.assert_array_almost_equal(spice.twovec(axdef, 1, plndef, 2), expected)
+
+
+def test_twovxf():
+    RAJ2K = 90.3991968556
+    DECJ2K = -52.6956610556
+    PMRA = 9.93e-3
+    PMDEC = 23.24e-3
+    spice.furnsh([CoreKernels.lsk, ExtraKernels.mro2007sub, CoreKernels.spk])
+    # need bsp and mro bsp
+    et = spice.str2et("2007 SEP 30 00:00:00 TDB")
+    rpmra = spice.convrt(PMRA, "ARCSECONDS", "RADIANS")
+    rpmdec = spice.convrt(PMDEC, "ARCSECONDS", "RADIANS")
+    ra = RAJ2K * spice.rpd() + rpmra * et / spice.jyear()
+    dec = DECJ2K * spice.rpd() + rpmdec * et / spice.jyear()
+    pcano = spice.radrec(1.0, ra, dec)
+    state, lt = spice.spkezr("MRO", et, "J2000", "NONE", "SSB")
+    stcano = spice.stelab(pcano, state[3:])
+    stcano = np.array([*stcano, 0.0, 0.0, 0.0])
+    stsun, lt = spice.spkezr("SUN", et, "J2000", "CN+S", "MRO")
+    xfisc = spice.twovxf(stsun, 3, stcano, 1)
+    state, lt = spice.spkezr("EARTH", et, "J2000", "CN+S", "MRO")
+    sterth = spice.mxvg(xfisc, state)
+    expected = np.array(
+        [-16659764.322, 97343706.915, 106745539.738, 2.691, -10.345, -7.877]
+    )
+    npt.assert_array_almost_equal(sterth, expected)
 
 
 def test_tyear():
@@ -9502,9 +9597,9 @@ def test_vproj():
     expected = np.array([6.0, 0.0, 0.0])
     vout = spice.vproj(v1, v2)
     assert np.array_equal(expected, vout)
-    
-    
-def test_vprojg()
+
+
+def test_vprojg():
     v1 = np.array([6.0, 6.0, 6.0])
     v2 = np.array([2.0, 0.0, 0.0])
     expected = np.array([6.0, 0.0, 0.0])

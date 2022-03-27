@@ -719,6 +719,7 @@ libspice.eul2m_c.argtypes = [
 ]
 libspice.eul2xf_c.argtypes = [(c_double * 6), c_int, c_int, c_int, (c_double * 6) * 6]
 libspice.ev2lin_.argtypes = [c_double_p, c_double_p, c_double_p, c_double_p]
+libspice.evsgp4_c.argtypes = [c_double, c_double_p, c_double_p, c_double_p]
 libspice.exists_c.argtypes = [c_char_p]
 libspice.exists_c.restype = c_int
 libspice.expool_c.argtypes = [c_char_p, c_int_p]
@@ -772,6 +773,17 @@ libspice.getelm_c.argtypes = [c_int, c_int, c_void_p, c_double_p, c_double_p]
 libspice.getfat_c.argtypes = [c_char_p, c_int, c_int, c_char_p, c_char_p]
 libspice.getfov_c.argtypes = [
     c_int,
+    c_int,
+    c_int,
+    c_int,
+    c_char_p,
+    c_char_p,
+    (c_double * 3),
+    c_int_p,
+    POINTER(c_double * 3),
+]
+libspice.getfvn_c.argtypes = [
+    c_char_p,
     c_int,
     c_int,
     c_int,
@@ -2131,6 +2143,18 @@ libspice.trace_c.restype = c_double
 libspice.trcdep_c.argtypes = [c_int_p]
 libspice.trcnam_c.argtypes = [c_int, c_int, c_char_p]
 libspice.trcoff_c.argtypes = None
+libspice.trgsep_c.argtypes = [
+    c_double,
+    c_char_p,
+    c_char_p,
+    c_char_p,
+    c_char_p,
+    c_char_p,
+    c_char_p,
+    c_char_p,
+    c_char_p,
+]
+libspice.trgsep_c.restype = c_double
 libspice.tsetyr_c.argtypes = [c_int]
 libspice.twopi_c.restype = c_double
 libspice.twovec_c.argtypes = [
@@ -2139,6 +2163,13 @@ libspice.twovec_c.argtypes = [
     (c_double * 3),
     c_int,
     (c_double * 3) * 3,
+]
+libspice.twovxf_c.argtypes = [
+    (c_double * 6),
+    c_int,
+    (c_double * 6),
+    c_int,
+    (c_double * 6) * 6,
 ]
 libspice.txtopn_.argtypes = [c_char_p, c_int_p, c_int]
 libspice.tyear_c.restype = c_double
@@ -2221,6 +2252,7 @@ libspice.vprjpi_c.argtypes = [
     c_int_p,
 ]
 libspice.vproj_c.argtypes = [(c_double * 3), (c_double * 3), (c_double * 3)]
+libspice.vprojg_c.argtypes = [c_double_p, c_double_p, c_int, c_double_p]
 libspice.vrelg_c.argtypes = [c_double_p, c_double_p, c_int]
 libspice.vrelg_c.restype = c_double
 libspice.vrel_c.argtypes = [(c_double * 3), (c_double * 3)]
