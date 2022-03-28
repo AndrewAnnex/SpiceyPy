@@ -5198,14 +5198,14 @@ def evsgp4(et: float, geophs: Sequence[float], elems: Sequence[float]) -> ndarra
     :param elems: Two-line element data
     :return: Evaluated state
     """
-    et = ctypes.c_double(et)
+    _et = ctypes.c_double(et)
     assert len(geophs) == 8
-    geophs = stypes.to_double_vector(geophs)
+    _geophs = stypes.to_double_vector(geophs)
     assert len(elems) == 10
-    elems = stypes.to_double_vector(elems)
-    state = stypes.empty_double_vector(6)
-    libspice.ev2lin_(ctypes.byref(et), geophs, elems, state)
-    return stypes.c_vector_to_python(state)
+    _elems = stypes.to_double_vector(elems)
+    _state = stypes.empty_double_vector(6)
+    libspice.evsgp4_c(_et, _geophs, _elems, _state)
+    return stypes.c_vector_to_python(_state)
 
 
 @spice_error_check
@@ -14331,10 +14331,10 @@ def trgsep(
     :param et: Ephemeris seconds past J2000 TDB.
     :param targ1: First target body name.
     :param shape1: First target body shape.
-    :param frame1: Reference frame of first target.
+    :param frame1: Reference frame of first target (UNUSED).
     :param targ2: Second target body name.
     :param shape2: First target body shape.
-    :param frame2: Reference frame of second target.
+    :param frame2: Reference frame of second target (UNUSED).
     :param obsrvr: Observing body name.
     :param abcorr: Aberration corrections flag.
     :return: angular separation in radians.
@@ -14342,10 +14342,12 @@ def trgsep(
     _et = ctypes.c_double(et)
     _targ1 = stypes.string_to_char_p(targ1)
     _shape1 = stypes.string_to_char_p(shape1)
-    _frame1 = stypes.string_to_char_p(frame1)
+    # intentional, N67 does not support additional frames
+    _frame1 = stypes.string_to_char_p("NULL")
     _targ2 = stypes.string_to_char_p(targ2)
     _shape2 = stypes.string_to_char_p(shape2)
-    _frame2 = stypes.string_to_char_p(frame2)
+    # intentional, N67 does not support additional frames
+    _frame2 = stypes.string_to_char_p("NULL")
     _obsrvr = stypes.string_to_char_p(obsrvr)
     _abcorr = stypes.string_to_char_p(abcorr)
     return libspice.trgsep_c(
@@ -14430,7 +14432,6 @@ def twovxf(
     right-handed frame defined by two state vectors: one state
     vector defining a specified axis and a second state vector
     defining a specified coordinate plane.
-
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/twovxf_c.html
 
@@ -15211,6 +15212,7 @@ def vprojg(a: ndarray, b: ndarray) -> ndarray:
     :return: The projection of a onto b.
     """
     ndim = len(a)
+    assert ndim == len(b)
     _a = stypes.to_double_vector(a)
     _b = stypes.to_double_vector(b)
     vout = stypes.empty_double_vector(ndim)

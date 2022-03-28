@@ -9261,7 +9261,7 @@ def test_twovxf():
     DECJ2K = -52.6956610556
     PMRA = 9.93e-3
     PMDEC = 23.24e-3
-    spice.furnsh([CoreKernels.lsk, ExtraKernels.mro2007sub, CoreKernels.spk])
+    spice.furnsh([CoreKernels.lsk, ExtraKernels.mro2007sub, ExtraKernels.spk430sub])
     # need bsp and mro bsp
     et = spice.str2et("2007 SEP 30 00:00:00 TDB")
     rpmra = spice.convrt(PMRA, "ARCSECONDS", "RADIANS")
