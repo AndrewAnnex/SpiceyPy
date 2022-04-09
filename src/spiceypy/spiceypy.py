@@ -5185,6 +5185,29 @@ def ev2lin(et: float, geophs: Sequence[float], elems: Sequence[float]) -> ndarra
     return stypes.c_vector_to_python(state)
 
 
+def evsgp4(et: float, geophs: Sequence[float], elems: Sequence[float]) -> ndarray:
+    """
+    Evaluate NORAD two-line element data for earth orbiting
+    spacecraft. This evaluator uses algorithms as described
+    in Vallado 2006
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/evsgp4_c.html
+
+    :param et: Epoch in seconds past ephemeris epoch J2000.
+    :param geophs: Geophysical constants
+    :param elems: Two-line element data
+    :return: Evaluated state
+    """
+    _et = ctypes.c_double(et)
+    assert len(geophs) == 8
+    _geophs = stypes.to_double_vector(geophs)
+    assert len(elems) == 10
+    _elems = stypes.to_double_vector(elems)
+    _state = stypes.empty_double_vector(6)
+    libspice.evsgp4_c(_et, _geophs, _elems, _state)
+    return stypes.c_vector_to_python(_state)
+
+
 @spice_error_check
 def exists(fname: str) -> bool:
     """
@@ -5599,6 +5622,51 @@ def getfov(
     room = ctypes.c_int(room)
     libspice.getfov_c(
         instid, room, shapelen, framelen, shape, framen, bsight, ctypes.byref(n), bounds
+    )
+    return (
+        stypes.to_python_string(shape),
+        stypes.to_python_string(framen),
+        stypes.c_vector_to_python(bsight),
+        n.value,
+        stypes.c_matrix_to_numpy(bounds)[0 : n.value],
+    )
+
+
+@spice_error_check
+def getfvn(
+    inst: str,
+    room: int,
+    shapelen: int = _default_len_out,
+    framelen: int = _default_len_out,
+) -> Tuple[str, str, ndarray, int, ndarray]:
+    """
+    Return the field-of-view (FOV) parameters for a specified
+    instrument. The instrument is specified by name.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/getfvn_c.html
+
+    :param inst: Name of an instrument.
+    :param room: Maximum number of vectors that can be returned.
+    :param shapelen: Space available in the string shape.
+    :param framelen: Space available in the string frame.
+    :return:
+            Instrument FOV shape,
+            Name of the frame in which FOV vectors are defined,
+            Boresight vector,
+            Number of boundary vectors returned,
+            FOV boundary vectors.
+    """
+    inst = stypes.string_to_char_p(inst)
+    shape = stypes.string_to_char_p(" " * shapelen)
+    framen = stypes.string_to_char_p(" " * framelen)
+    shapelen = ctypes.c_int(shapelen)
+    framelen = ctypes.c_int(framelen)
+    bsight = stypes.empty_double_vector(3)
+    n = ctypes.c_int()
+    bounds = stypes.empty_double_matrix(x=3, y=room)
+    room = ctypes.c_int(room)
+    libspice.getfvn_c(
+        inst, room, shapelen, framelen, shape, framen, bsight, ctypes.byref(n), bounds
     )
     return (
         stypes.to_python_string(shape),
@@ -6972,6 +7040,32 @@ def halfpi() -> float:
 
 
 @spice_error_check
+def hrmesp(first: float, step: float, yvals: ndarray, x: float) -> Tuple[float, float]:
+    """
+    Evaluate, at a specified point, a Hermite interpolating polynomial
+    for a specified set of equally spaced abscissa values and
+    corresponding pairs of function and function derivative values.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/hrmesp_c.html
+
+    :param first: First abscissa value.
+    :param step: Step size.
+    :param yvals: Ordinate and derivative values.
+    :param x: Point at which to interpolate the polynomial.
+    :return: Interpolated function value and derivative at x
+    """
+    n = ctypes.c_int(int(len(yvals) // 2))
+    _first = ctypes.c_double(first)
+    _step = ctypes.c_double(step)
+    _yvals = stypes.to_double_vector(yvals)
+    _x = ctypes.c_double(x)
+    f = ctypes.c_double(0)
+    df = ctypes.c_double(0)
+    libspice.hrmesp_c(n, _first, _step, _yvals, _x, f, df)
+    return f.value, df.value
+
+
+@spice_error_check
 def hrmint(
     xvals: Sequence[float], yvals: Sequence[float], x: int
 ) -> Tuple[float, float]:
@@ -7522,6 +7616,22 @@ def invort(m: ndarray) -> ndarray:
     m = stypes.to_double_matrix(m)
     mout = stypes.empty_double_matrix()
     libspice.invort_c(m, mout)
+    return stypes.c_matrix_to_numpy(mout)
+
+
+@spice_error_check
+def invstm(mat: ndarray) -> ndarray:
+    """
+    Return the inverse of a state transformation matrix.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/invstm_c.html
+
+    :param mat: A state transformation matrix.
+    :return: The inverse of `mat'.
+    """
+    _mat = stypes.to_double_matrix(mat)
+    mout = stypes.empty_double_matrix(6, 6)
+    libspice.invstm_c(_mat, mout)
     return stypes.c_matrix_to_numpy(mout)
 
 
@@ -14243,6 +14353,59 @@ def trcoff() -> None:
 
 
 @spice_error_check
+def trgsep(
+    et: float,
+    targ1: str,
+    shape1: str,
+    frame1: str,
+    targ2: str,
+    shape2: str,
+    frame2: str,
+    obsrvr: str,
+    abcorr: str,
+) -> float:
+    """
+    Compute the angular separation in radians between two spherical
+    or point objects.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/trgsep_c.html
+
+    :param et: Ephemeris seconds past J2000 TDB.
+    :param targ1: First target body name.
+    :param shape1: First target body shape.
+    :param frame1: Reference frame of first target (UNUSED).
+    :param targ2: Second target body name.
+    :param shape2: First target body shape.
+    :param frame2: Reference frame of second target (UNUSED).
+    :param obsrvr: Observing body name.
+    :param abcorr: Aberration corrections flag.
+    :return: angular separation in radians.
+    """
+    _et = ctypes.c_double(et)
+    _targ1 = stypes.string_to_char_p(targ1)
+    _shape1 = stypes.string_to_char_p(shape1)
+    # intentional, N67 does not support additional frames
+    _frame1 = stypes.string_to_char_p("NULL")
+    _targ2 = stypes.string_to_char_p(targ2)
+    _shape2 = stypes.string_to_char_p(shape2)
+    # intentional, N67 does not support additional frames
+    _frame2 = stypes.string_to_char_p("NULL")
+    _obsrvr = stypes.string_to_char_p(obsrvr)
+    _abcorr = stypes.string_to_char_p(abcorr)
+    return libspice.trgsep_c(
+        _et,
+        _targ1,
+        _shape1,
+        _frame1,
+        _targ2,
+        _shape2,
+        _frame2,
+        _obsrvr,
+        _abcorr,
+    )
+
+
+@spice_error_check
 def tsetyr(year: int) -> None:
     """
     Set the lower bound on the 100 year range.
@@ -14296,6 +14459,36 @@ def twovec(
     indexp = ctypes.c_int(indexp)
     mout = stypes.empty_double_matrix()
     libspice.twovec_c(axdef, indexa, plndef, indexp, mout)
+    return stypes.c_matrix_to_numpy(mout)
+
+
+@spice_error_check
+def twovxf(
+    axdef: Union[ndarray, Iterable[float]],
+    indexa: int,
+    plndef: Union[ndarray, Iterable[float]],
+    indexp: int,
+) -> ndarray:
+    """
+    Find the state transformation from a base frame to the
+    right-handed frame defined by two state vectors: one state
+    vector defining a specified axis and a second state vector
+    defining a specified coordinate plane.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/twovxf_c.html
+
+    :param axdef: Vector defining a principal axis.
+    :param indexa: Principal axis number of axdef (X=1, Y=2, Z=3).
+    :param plndef: Vector defining (with axdef) a principal plane.
+    :param indexp: Second axis number (with indexa) of principal plane.
+    :return: Output rotation matrix.
+    """
+    _axdef = stypes.to_double_vector(axdef)
+    _indexa = ctypes.c_int(indexa)
+    _plndef = stypes.to_double_vector(plndef)
+    _indexp = ctypes.c_int(indexp)
+    mout = stypes.empty_double_matrix(6, 6)
+    libspice.twovxf_c(_axdef, _indexa, _plndef, _indexp, mout)
     return stypes.c_matrix_to_numpy(mout)
 
 
@@ -15045,6 +15238,28 @@ def vproj(a: ndarray, b: ndarray) -> ndarray:
     b = stypes.to_double_vector(b)
     vout = stypes.empty_double_vector(3)
     libspice.vproj_c(a, b, vout)
+    return stypes.c_vector_to_python(vout)
+
+
+@spice_error_check
+def vprojg(a: ndarray, b: ndarray) -> ndarray:
+    """
+    Find the projection of one vector onto another vector.
+    All vectors are of arbitrary dimension.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/vprojg_c.html
+
+    :param a: The vector to be projected.
+    :param b: The vector onto which a is to be projected.
+    :return: The projection of a onto b.
+    """
+    ndim = len(a)
+    assert ndim == len(b)
+    _a = stypes.to_double_vector(a)
+    _b = stypes.to_double_vector(b)
+    vout = stypes.empty_double_vector(ndim)
+    ndim = ctypes.c_int(ndim)
+    libspice.vprojg_c(_a, _b, ndim, vout)
     return stypes.c_vector_to_python(vout)
 
 
