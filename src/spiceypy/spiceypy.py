@@ -14224,7 +14224,7 @@ def tkfram(typid: int) -> Tuple[ndarray, int, bool]:
     matrix = stypes.empty_double_matrix(x=3, y=3)
     next_frame = ctypes.c_int()
     found = ctypes.c_int()
-    libspice.tkfram_c(
+    libspice.tkfram_(
         ctypes.byref(code), matrix, ctypes.byref(next_frame), ctypes.byref(found)
     )
     return stypes.c_matrix_to_numpy(matrix), next_frame.value, bool(found.value)
