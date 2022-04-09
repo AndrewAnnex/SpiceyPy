@@ -1052,6 +1052,15 @@ libspice.gnpool_c.argtypes = [c_char_p, c_int, c_int, c_int, c_int_p, c_void_p, 
 # H
 
 libspice.halfpi_c.restype = c_double
+libspice.hrmesp_c.argtypes = [
+    c_int,
+    c_double,
+    c_double,
+    c_double_p,
+    c_double,
+    c_double_p,
+    c_double_p,
+]
 libspice.hrmint_c.argtypes = [
     c_int,
     c_double_p,
@@ -1147,6 +1156,7 @@ libspice.intmax_c.restype = c_int
 libspice.intmin_c.restype = c_int
 libspice.invert_c.argtypes = [(c_double * 3) * 3, (c_double * 3) * 3]
 libspice.invort_c.argtypes = [(c_double * 3) * 3, (c_double * 3) * 3]
+libspice.invstm_c.argtypes = [(c_double * 6) * 6, (c_double * 6) * 6]
 libspice.irfnam_.argtypes = [c_int_p, c_char_p, c_int]
 libspice.irfnum_.argtypes = [c_char_p, c_int_p, c_int]
 libspice.irfrot_.argtypes = [c_int_p, c_int_p, (c_double * 3) * 3]
@@ -2133,7 +2143,7 @@ libspice.timdef_c.argtypes = [c_char_p, c_char_p, c_int, c_char_p]
 libspice.timout_c.argtypes = [c_double, c_char_p, c_int, c_char_p]
 libspice.tipbod_c.argtypes = [c_char_p, c_int, c_double, (c_double * 3) * 3]
 libspice.tisbod_c.argtypes = [c_char_p, c_int, c_double, (c_double * 6) * 6]
-libspice.tkfram_.argtypes = [c_int_p, (c_double * 3) * 3, c_int_p, c_int_p]
+libspice.tkfram_c.argtypes = [c_int_p, (c_double * 3) * 3, c_int_p, c_int_p]
 libspice.tkvrsn_c.argtypes = [c_char_p]
 libspice.tkvrsn_c.restype = c_char_p
 libspice.tparse_c.argtypes = [c_char_p, c_int, c_double_p, c_char_p]

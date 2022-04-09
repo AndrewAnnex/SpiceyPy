@@ -7040,6 +7040,32 @@ def halfpi() -> float:
 
 
 @spice_error_check
+def hrmesp(first: float, step: float, yvals: ndarray, x: float) -> Tuple[float, float]:
+    """
+    Evaluate, at a specified point, a Hermite interpolating polynomial
+    for a specified set of equally spaced abscissa values and
+    corresponding pairs of function and function derivative values.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/hrmesp_c.html
+
+    :param first: First abscissa value.
+    :param step: Step size.
+    :param yvals: Ordinate and derivative values.
+    :param x: Point at which to interpolate the polynomial.
+    :return: Interpolated function value and derivative at x
+    """
+    n = ctypes.c_int(int(len(yvals) // 2))
+    _first = ctypes.c_double(first)
+    _step = ctypes.c_double(step)
+    _yvals = stypes.to_double_vector(yvals)
+    _x = ctypes.c_double(x)
+    f = ctypes.c_double(0)
+    df = ctypes.c_double(0)
+    libspice.hrmesp_c(n, _first, _step, _yvals, _x, f, df)
+    return f.value, df.value
+
+
+@spice_error_check
 def hrmint(
     xvals: Sequence[float], yvals: Sequence[float], x: int
 ) -> Tuple[float, float]:
@@ -7590,6 +7616,22 @@ def invort(m: ndarray) -> ndarray:
     m = stypes.to_double_matrix(m)
     mout = stypes.empty_double_matrix()
     libspice.invort_c(m, mout)
+    return stypes.c_matrix_to_numpy(mout)
+
+
+@spice_error_check
+def invstm(mat: ndarray) -> ndarray:
+    """
+    Return the inverse of a state transformation matrix.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/invstm_c.html
+
+    :param mat: A state transformation matrix.
+    :return: The inverse of `mat'.
+    """
+    _mat = stypes.to_double_matrix(mat)
+    mout = stypes.empty_double_matrix(6, 6)
+    libspice.invstm_c(_mat, mout)
     return stypes.c_matrix_to_numpy(mout)
 
 
@@ -14182,7 +14224,7 @@ def tkfram(typid: int) -> Tuple[ndarray, int, bool]:
     matrix = stypes.empty_double_matrix(x=3, y=3)
     next_frame = ctypes.c_int()
     found = ctypes.c_int()
-    libspice.tkfram_(
+    libspice.tkfram_c(
         ctypes.byref(code), matrix, ctypes.byref(next_frame), ctypes.byref(found)
     )
     return stypes.c_matrix_to_numpy(matrix), next_frame.value, bool(found.value)

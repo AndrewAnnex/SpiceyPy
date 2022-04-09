@@ -4613,6 +4613,13 @@ def test_halfpi():
     assert spice.halfpi() == np.pi / 2
 
 
+def test_hrmesp():
+    yvals = [6.0, 3.0, 8.0, 11.0, 2210.0, 5115.0, 78180.0, 109395.0]
+    answer, deriv = spice.hrmesp(-1.0, 2.0, yvals, 2.0)
+    assert answer == pytest.approx(141.0)
+    assert deriv == pytest.approx(456.0)
+
+
 def test_hrmint():
     xvals = [-1.0, 0.0, 3.0, 5.0]
     yvals = [6.0, 3.0, 5.0, 0.0, 2210.0, 5115.0, 78180.0, 109395.0]
@@ -4914,6 +4921,28 @@ def test_invort():
     m = spice.ident()
     mit = spice.invort(m)
     npt.assert_array_almost_equal(m, mit)
+
+
+def test_invstm():
+    spice.furnsh(ExtraKernels.earthStnSpk)
+    spice.furnsh(ExtraKernels.earthHighPerPck)
+    spice.furnsh(ExtraKernels.earthTopoTf)
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = spice.str2et("2003 Oct 13 06:00:00")
+    mat = spice.tisbod("J2000", 3000, et)
+    invmat = spice.invstm(mat)
+    state = [
+        175625246.29100420,
+        164189388.12540060,
+        -62935198.26067264,
+        11946.73372264,
+        -12771.29732556,
+        13.84902914,
+    ]
+    istate1 = spice.mxvg(invmat, state)
+    xmat = spice.sxform("ITRF93", "J2000", et)
+    istate2 = spice.mxvg(xmat, state)
+    npt.assert_array_almost_equal(istate1, istate2)
 
 
 def test_irfnam():
@@ -9259,7 +9288,7 @@ def test_twovec():
 def test_twovxf():
     RAJ2K = 90.3991968556
     DECJ2K = -52.6956610556
-    PMRA = 9.93e-3
+    PMRA = 19.93e-3
     PMDEC = 23.24e-3
     spice.furnsh([CoreKernels.lsk, ExtraKernels.mro2007sub, ExtraKernels.spk430sub])
     # need bsp and mro bsp
@@ -9279,7 +9308,7 @@ def test_twovxf():
     expected = np.array(
         [-16659764.322, 97343706.915, 106745539.738, 2.691, -10.345, -7.877]
     )
-    npt.assert_array_almost_equal(sterth, expected)
+    npt.assert_array_almost_equal(np.around(sterth, 3), expected)
 
 
 def test_tyear():
