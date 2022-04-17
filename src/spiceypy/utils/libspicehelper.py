@@ -1498,6 +1498,14 @@ libspice.radrec_c.argtypes = [c_double, c_double, c_double, (c_double * 3)]
 libspice.rav2xf_c.argtypes = [(c_double * 3) * 3, (c_double * 3), (c_double * 6) * 6]
 libspice.raxisa_c.argtypes = [(c_double * 3) * 3, (c_double * 3), c_double_p]
 libspice.rdtext_c.argtypes = [c_char_p, c_int, c_char_p, c_int_p]
+libspice.recazl_c.argtypes = [
+    (c_double * 3),
+    c_int,
+    c_int,
+    c_double_p,
+    c_double_p,
+    c_double_p,
+]
 libspice.reccyl_c.argtypes = [(c_double * 3), c_double_p, c_double_p, c_double_p]
 libspice.recgeo_c.argtypes = [
     (c_double * 3),
@@ -2033,7 +2041,8 @@ libspice.srfxpt_c.argtypes = [
     c_int_p,
 ]
 libspice.ssize_c.argtypes = [c_int, s_cell_p]
-libspice.stelab_c.argtypes = [(c_double * 3), (c_double * 3)]
+libspice.stelab_c.argtypes = [(c_double * 3), (c_double * 3), (c_double * 3)]
+libspice.stlabx_c.argtypes = [(c_double * 3), (c_double * 3), (c_double * 3)]
 libspice.stpool_c.argtypes = [
     c_char_p,
     c_int,
@@ -2146,6 +2155,7 @@ libspice.tisbod_c.argtypes = [c_char_p, c_int, c_double, (c_double * 6) * 6]
 libspice.tkfram_.argtypes = [c_int_p, (c_double * 3) * 3, c_int_p, c_int_p]
 libspice.tkvrsn_c.argtypes = [c_char_p]
 libspice.tkvrsn_c.restype = c_char_p
+libspice.tparch_c.argtypes = [c_char_p]
 libspice.tparse_c.argtypes = [c_char_p, c_int, c_double_p, c_char_p]
 libspice.tpictr_c.argtypes = [c_char_p, c_int, c_int, c_char_p, c_int_p, c_char_p]
 libspice.trace_c.argtypes = [(c_double * 3) * 3]
