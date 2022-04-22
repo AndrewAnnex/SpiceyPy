@@ -10382,6 +10382,41 @@ def rdtext(
 
 
 @spice_error_check
+def recazl(
+    rectan: Union[ndarray, Iterable[float]], azccw: bool, elplsz: bool
+) -> Tuple[float, float, float]:
+    """
+    Convert rectangular coordinates of a point to range, azimuth and
+    elevation.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/recazl_c.html
+
+    :param rectan: Rectangular coordinates of a point.
+    :param azccw: Flag indicating how Azimuth is measured.
+    :param elplsz: Flag indicating how Elevation is measured.
+    :return:
+            Distance of the point from the origin,
+            Azimuth in radians,
+            Elevation in radians.
+    """
+    _rectan = stypes.to_double_vector(rectan)
+    _azccw = ctypes.c_int(azccw)
+    _elplsz = ctypes.c_int(elplsz)
+    _range = ctypes.c_double(0)
+    _az = ctypes.c_double(0)
+    _el = ctypes.c_double(0)
+    libspice.recazl_c(
+        _rectan,
+        _azccw,
+        _elplsz,
+        ctypes.byref(_range),
+        ctypes.byref(_az),
+        ctypes.byref(_el),
+    )
+    return _range.value, _az.value, _el.value
+
+
+@spice_error_check
 def reccyl(rectan: Union[ndarray, Iterable[float]]) -> Tuple[float, float, float]:
     """
     Convert from rectangular to cylindrical coordinates.
@@ -13517,6 +13552,28 @@ def stelab(pobj: ndarray, vobs: ndarray) -> ndarray:
 
 
 @spice_error_check
+def stlabx(pobj: ndarray, vobs: ndarray) -> ndarray:
+    """
+    Correct the position of a target for the stellar aberration
+    effect on radiation transmitted from a specified observer to
+    the target.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/stlabx_c.html
+
+    :param pobj: Position of an object with respect to the observer.
+    :param vobs:
+                Velocity of the observer with respect
+                to the Solar System barycenter.
+    :return: Corrected position of the object.
+    """
+    _pobj = stypes.to_double_vector(pobj)
+    _vobs = stypes.to_double_vector(vobs)
+    _corpos = stypes.empty_double_vector(3)
+    libspice.stlabx_c(_pobj, _vobs, _corpos)
+    return stypes.c_vector_to_python(_corpos)
+
+
+@spice_error_check
 @spice_found_exception_thrower
 def stpool(
     item: str, nth: int, contin: str, lenout: int = _default_len_out
@@ -14243,6 +14300,21 @@ def tkvrsn(item: str) -> str:
     """
     item = stypes.string_to_char_p(item)
     return stypes.to_python_string(libspice.tkvrsn_c(item))
+
+
+@spice_error_check
+def tparch(type: str) -> None:
+    """
+    Restrict the set of strings that are recognized by SPICE time
+    parsing routines to those that have standard values for all time
+    components.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tparch_c.html
+
+    :param type: String: Use "YES" to restrict time inputs.
+    """
+    _type = stypes.string_to_char_p(type)
+    libspice.tparch_c(_type)
 
 
 @spice_error_check

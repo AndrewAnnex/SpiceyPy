@@ -6480,6 +6480,77 @@ def test_rdtext():
     cleanup_kernel(xRDTEXT)
 
 
+def test_recazl():
+    d = spice.dpr()
+    npt.assert_array_almost_equal(
+        spice.recazl([0.0, 0.0, 0.0], False, False), [0.000, 0.0, 0.000], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([1.0, 0.0, 0.0], False, False), [1.000, 0.0, 0.000], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([0.0, 1.0, 0.0], False, False), [1.000, 270.0 / d, 0.000], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([0.0, 0.0, 1.0], False, False), [1.000, 0.0, -90.000 / d], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([-1.0, 0.0, 0.0], False, False), [1.000, 180.0 / d, 0.000], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([0.0, -1.0, 0.0], False, False), [1.000, 90.0 / d, 0.000], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([0.0, 0.0, -1.0], False, False), [1.000, 0.0, 90.000 / d], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([1.0, 1.0, 0.0], False, False), [1.414, 315.0 / d, 0.000], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([1.0, 0.0, 1.0], False, False), [1.414, 0.0, -45.000 / d], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([0.0, 1.0, 1.0], False, False), [1.414, 270.0 / d, -45.000 / d], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([1.0, 1.0, 1.0], False, False), [1.732, 315.0 / d, -35.264 / d], 3
+    )
+
+    npt.assert_array_almost_equal(
+        spice.recazl([0.0, 0.0, 0.0], True, True), [0.000, 0.0, 0.000], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([1.0, 0.0, 0.0], True, True), [1.000, 0.0, 0.000], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([0.0, 1.0, 0.0], True, True), [1.000, 90.0 / d, 0.000], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([0.0, 0.0, 1.0], True, True), [1.000, 0.0, 90.000 / d], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([-1.0, 0.0, 0.0], True, True), [1.000, 180.0 / d, 0.000], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([0.0, -1.0, 0.0], True, True), [1.000, 270.0 / d, 0.000], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([0.0, 0.0, -1.0], True, True), [1.000, 0.0, -90.000 / d], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([1.0, 1.0, 0.0], True, True), [1.414, 45.0 / d, 0.000], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([1.0, 0.0, 1.0], True, True), [1.414, 0.0, 45.000 / d], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([0.0, 1.0, 1.0], True, True), [1.414, 90.0 / d, 45.000 / d], 3
+    )
+    npt.assert_array_almost_equal(
+        spice.recazl([1.0, 1.0, 1.0], True, True), [1.732, 45.0 / d, 35.264 / d], 3
+    )
+
+
 def test_reccyl():
     expected1 = np.array([0.0, 0.0, 0.0])
     expected2 = np.array([1.0, 90.0 * spice.rpd(), 0.0])
@@ -8722,6 +8793,23 @@ def test_stelab():
     npt.assert_array_almost_equal(expected_cortarg, cortarg)
 
 
+def test_stlabx():
+    IDOBS = 399
+    IDTARG = 301
+    UTC = "July 4 2004"
+    FRAME = "J2000"
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = spice.str2et(UTC)
+    sobs = spice.spkssb(IDOBS, et, FRAME)
+    pos, ltime = spice.spkapo(IDTARG, et, FRAME, sobs, "XLT")
+    # note the values below won't match due to the different kernels used
+    expected_pos = [201809.933536, -260878.049826, -147716.077987]
+    npt.assert_array_almost_equal(pos, expected_pos, 1)
+    pcorr = spice.stlabx(pos, sobs[3:6])
+    expected_pcorr = [201782.730972, -260894.375627, -147724.405897]
+    npt.assert_array_almost_equal(pcorr, expected_pcorr, 1)
+
+
 def test_stpool():
     kernel = os.path.join(cwd, "stpool_t.ker")
     cleanup_kernel(kernel)
@@ -9150,6 +9238,19 @@ def test_tkfram():
 def test_tkvrsn():
     version = spice.tkvrsn("toolkit")
     assert version == "CSPICE_N0067"
+
+
+def test_tparch():
+    spice.tparch("NO")
+    spice.tparch("YES")
+    a, e = spice.tparse("FEB 34, 1993")
+    assert "The day of the month specified for the month of February was 3.40E+01." in e
+    spice.tparch("NO")
+    a, e = spice.tparse("FEB 34, 1993")
+    assert (
+        "The day of the month specified for the month of February was 3.40E+01."
+        not in e
+    )
 
 
 def test_tparse():
