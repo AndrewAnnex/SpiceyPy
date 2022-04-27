@@ -250,7 +250,9 @@ class GetCSPICE(object):
             with ZipFile(self._local, "r") as archive:
                 archive.extractall(self._root)
         else:
-            cmd = "gunzip | tar xC " + self._root
+            cmd = (
+                f"gunzip | tar {'xfC -' if host_OS == 'FreeBSD' else 'xC'} {self._root}"
+            )
             proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE)
             proc.stdin.write(self._local.read())
         self._local.close()
