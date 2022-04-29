@@ -5376,6 +5376,9 @@ def frame(x: Union[ndarray, Iterable[float]]) -> Tuple[ndarray, ndarray, ndarray
 @spice_found_exception_thrower
 def frinfo(frcode: int) -> Tuple[int, int, int, bool]:
     """
+    Retrieve the minimal attributes associated with a frame
+    needed for converting transformations to and from it.
+
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/frinfo_c.html
 
     :param frcode: the idcode for some frame.
