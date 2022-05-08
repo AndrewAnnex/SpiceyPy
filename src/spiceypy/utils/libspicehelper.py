@@ -1256,6 +1256,8 @@ libspice.latsrf_c.argtypes = [
 ]
 libspice.lcase_c.argtypes = [c_char_p, c_int, c_char_p]
 libspice.ldpool_c.argtypes = [c_char_p]
+libspice.lgresp_c.argtypes = [c_int, c_double, c_double, c_double_p, c_double]
+libspice.lgresp_c.restype = c_double
 libspice.lgrind_c.argtypes = [
     c_int,
     c_double_p,
@@ -1265,6 +1267,8 @@ libspice.lgrind_c.argtypes = [
     c_double_p,
     c_double_p,
 ]
+libspice.lgrint_c.argtypes = [c_int, c_double_p, c_double_p, c_double]
+libspice.lgrint_c.restype = c_double
 libspice.limbpt_c.argtypes = [
     c_char_p,
     c_char_p,
@@ -1489,6 +1493,7 @@ libspice.pxfrm2_c.argtypes = [
 
 libspice.q2m_c.argtypes = [c_double * 4, (c_double * 3) * 3]
 libspice.qcktrc_c.argtypes = [c_int, c_char_p]
+libspice.qderiv_c.argtypes = [c_int, c_double_p, c_double_p, c_double, c_double_p]
 libspice.qdq2av_c.argtypes = [c_double * 4, c_double * 4, c_double * 3]
 libspice.qxq_c.argtypes = [c_double * 4, c_double * 4, c_double * 4]
 
