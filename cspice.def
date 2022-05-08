@@ -57,6 +57,7 @@ EXPORTS			appndc_c
 				ckw03_c
 				ckw05_c
 				clearc_c
+				cleard_c
 				cleari_c
 				clight_c
 				clpool_c

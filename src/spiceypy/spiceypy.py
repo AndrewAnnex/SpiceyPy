@@ -8289,6 +8289,76 @@ def ldpool(filename: str) -> None:
 
 
 @spice_error_check
+def lgresp(first: float, step: float, yvals: ndarray, x: float) -> float:
+    """
+    Evaluate a Lagrange interpolating polynomial for a specified
+    set of coordinate pairs whose first components are equally
+    spaced, at a specified abscissa value.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lgresp_c.html
+
+    :param first: First abscissa value.
+    :param step: Step Size.
+    :param yvals: Ordinate Values.
+    :param x: Point at which to interpolate the polynomial.
+    :return: The function returns the value at `x' of the unique polynomial of degree n-1 that fits the points in the plane defined by `first', `step', and `yvals'.
+    """
+    n = ctypes.c_int(len(yvals))
+    _first = ctypes.c_double(first)
+    _step = ctypes.c_double(step)
+    _yvals = stypes.to_double_vector(yvals)
+    _x = ctypes.c_double(x)
+    return libspice.lgresp_c(n, _first, _step, _yvals, _x)
+
+
+@spice_error_check
+def lgrind(
+    xvals: Sequence[float], yvals: Sequence[float], x: float
+) -> Tuple[float, float]:
+    """
+    Evaluate a Lagrange interpolating polynomial for a specified
+    set of coordinate pairs, at a specified abscissa value.
+    Return the value of both polynomial and derivative.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lgrind_c.html
+
+    :param xvals: Abscissa values.
+    :param yvals: Ordinate values.
+    :param x: Point at which to interpolate the polynomial.
+    :return: Polynomial value at x, Polynomial derivative at x.
+    """
+    n = ctypes.c_int(len(xvals))
+    xvals = stypes.to_double_vector(xvals)
+    yvals = stypes.to_double_vector(yvals)
+    work = stypes.empty_double_vector(n.value * 2)
+    x = ctypes.c_double(x)
+    p = ctypes.c_double(0)
+    dp = ctypes.c_double(0)
+    libspice.lgrind_c(n, xvals, yvals, work, x, p, dp)
+    return p.value, dp.value
+
+
+@spice_error_check
+def lgrint(xvals: ndarray, yvals: ndarray, x: float) -> float:
+    """
+    Evaluate a Lagrange interpolating polynomial for a specified
+    set of coordinate pairs, at a specified abscissa value.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lgrint_c.html
+
+    :param xvals: Abscissa values.
+    :param yvals: Ordinate values.
+    :param x: Point at which to interpolate the polynomial.
+    :return: The function returns the value at `x' of the unique polynomial of degree n-1 that fits the points in the plane defined by `xvals' and `yvals'.
+    """
+    n = ctypes.c_int(len(xvals))
+    _xvals = stypes.to_double_vector(xvals)
+    _yvals = stypes.to_double_vector(yvals)
+    _x = ctypes.c_double(x)
+    return libspice.lgrint_c(n, _xvals, _yvals, _x)
+
+
+@spice_error_check
 def limbpt(
     method: str,
     target: str,
@@ -8375,33 +8445,6 @@ def limbpt(
         stypes.c_vector_to_python(epochs)[valid_points],
         stypes.c_matrix_to_numpy(tangts)[valid_points],
     )
-
-
-@spice_error_check
-def lgrind(
-    xvals: Sequence[float], yvals: Sequence[float], x: float
-) -> Tuple[float, float]:
-    """
-    Evaluate a Lagrange interpolating polynomial for a specified
-    set of coordinate pairs, at a specified abscissa value.
-    Return the value of both polynomial and derivative.
-
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lgrind_c.html
-
-    :param xvals: Abscissa values.
-    :param yvals: Ordinate values.
-    :param x: Point at which to interpolate the polynomial.
-    :return: Polynomial value at x, Polynomial derivative at x.
-    """
-    n = ctypes.c_int(len(xvals))
-    xvals = stypes.to_double_vector(xvals)
-    yvals = stypes.to_double_vector(yvals)
-    work = stypes.empty_double_vector(n.value * 2)
-    x = ctypes.c_double(x)
-    p = ctypes.c_double(0)
-    dp = ctypes.c_double(0)
-    libspice.lgrind_c(n, xvals, yvals, work, x, p, dp)
-    return p.value, dp.value
 
 
 @spice_error_check
@@ -10257,6 +10300,30 @@ def qcktrc(tracelen: int = _default_len_out) -> str:
     tracelen = ctypes.c_int(tracelen)
     libspice.qcktrc_c(tracelen, tracestr)
     return stypes.to_python_string(tracestr)
+
+
+@spice_error_check
+def qderiv(f0: ndarray, f2: ndarray, delta: float) -> ndarray:
+    """
+    Estimate the derivative of a function by finding the derivative
+    of a quadratic approximating function. This derivative estimate
+    is equivalent to that found by computing the average of forward
+    and backward differences.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/qderiv_c.html
+
+    :param f0: Function values at left endpoint.
+    :param f2: Function values at right endpoint.
+    :param delta: Separation of abscissa points.
+    :return: Derivative vector.
+    """
+    _ndim = ctypes.c_int(len(f0))
+    _f0 = stypes.to_double_vector(f0)
+    _f2 = stypes.to_double_vector(f2)
+    _delta = ctypes.c_double(delta)
+    _dfdt = stypes.empty_double_vector(_ndim)
+    libspice.qderiv_c(_ndim, _f0, _f2, _delta, _dfdt)
+    return stypes.c_vector_to_python(_dfdt)
 
 
 @spice_error_check

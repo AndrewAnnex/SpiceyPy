@@ -5257,10 +5257,23 @@ def test_ldpool():
     cleanup_kernel(kernel)
 
 
+def test_lgresp():
+    yvals = [-2.0, -8.0, 26.0, 148.0]
+    a = spice.lgresp(-1.0, 2.0, yvals, 2.0)
+    assert a == pytest.approx(1.0)
+
+
 def test_lgrind():
     p, dp = spice.lgrind([-1.0, 0.0, 1.0, 3.0], [-2.0, -7.0, -8.0, 26.0], 2.0)
     assert p == pytest.approx(1.0)
     assert dp == pytest.approx(16.0)
+
+
+def test_lgrint():
+    xvals = [-1.0, 0.0, 1.0, 3.0]
+    yvals = [-2.0, -7.0, -8.0, 26.0]
+    a = spice.lgrint(xvals, yvals, 2.0)
+    assert a == pytest.approx(1.0)
 
 
 def test_limbpt():
@@ -6356,6 +6369,14 @@ def test_qcktrc():
     spice.chkout("qcktrc")
     spice.chkout("test")
     spice.reset()
+
+
+def test_qderiv():
+    delta = 1.0e-3
+    f0 = [(2.0 - delta) ** 2.0]
+    f2 = [(2.0 + delta) ** 2.0]
+    dfdt = spice.qderiv(f0, f2, delta)
+    assert 4 - dfdt[0] < 1e-12
 
 
 def test_qdq2av():
