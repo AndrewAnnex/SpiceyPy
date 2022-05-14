@@ -518,6 +518,20 @@ libspice.dvsep_c.restype = c_double
 # E
 
 libspice.edlimb_c.argtypes = [c_double, c_double, c_double, (c_double * 3), s_elip_p]
+libspice.ednmpt_c.argtypes = [
+    c_double,
+    c_double,
+    c_double,
+    (c_double * 3),
+    (c_double * 3),
+]
+libspice.edpnt_c.argtypes = [
+    (c_double * 3),
+    c_double,
+    c_double,
+    c_double,
+    (c_double * 3),
+]
 libspice.edterm_c.argtypes = [
     c_char_p,
     c_char_p,

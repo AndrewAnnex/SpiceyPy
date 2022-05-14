@@ -3645,6 +3645,49 @@ def edlimb(
 
 
 @spice_error_check
+def ednmpt(a: float, b: float, c: float, normal: ndarray) -> ndarray:
+    """
+    Return the unique point on an ellipsoid's surface where the
+    outward normal direction is a given vector.
+
+    :param a: Length of the ellipsoid semi-axis along the X-axis.
+    :param b: Length of the ellipsoid semi-axis along the Y-axis.
+    :param c: Length of the ellipsoid semi-axis along the Z-axis.
+    :param normal: Outward normal direction.
+    :return: Point where outward normal is parallel to `normal'.
+    """
+    _a = ctypes.c_double(a)
+    _b = ctypes.c_double(b)
+    _c = ctypes.c_double(c)
+    _normal = stypes.to_double_vector(normal)
+    _o = stypes.empty_double_vector(3)
+    libspice.ednmpt_c(_a, _b, _c, _normal, _o)
+    return stypes.c_vector_to_python(_o)
+
+
+@spice_error_check
+def edpnt(p: ndarray, a: float, b: float, c: float) -> ndarray:
+    """
+    Scale a point so that it lies on the surface of a specified
+    triaxial ellipsoid that is centered at the origin and aligned
+    with the Cartesian coordinate axes.
+
+    :param p: A point in three-dimensional space.
+    :param a: Semi-axis length in the X direction.
+    :param b: Semi-axis length in the Y direction.
+    :param c: Semi-axis length in the Z direction.
+    :return: Point on ellipsoid.
+    """
+    _p = stypes.to_double_vector(p)
+    _a = ctypes.c_double(a)
+    _b = ctypes.c_double(b)
+    _c = ctypes.c_double(c)
+    _o = stypes.empty_double_vector(3)
+    libspice.edpnt_c(_p, _a, _b, _c, _o)
+    return stypes.c_vector_to_python(_o)
+
+
+@spice_error_check
 def edterm(
     trmtyp: str,
     source: str,

@@ -2313,6 +2313,18 @@ def test_edlimb():
     npt.assert_array_almost_equal(limb.semi_minor, expected_s_minor)
 
 
+def test_ednmpt():
+    point = spice.ednmpt(10.0, 5.0, 2.0, [15.0, -7.0, 3.0])
+    npt.assert_array_almost_equal(point, [9.73103203, -1.13528707, 0.07784826])
+
+
+def test_edpnt():
+    ep = spice.edpnt([1.0, 1.0, 1.0], 3.0, 2.0, 1.0)
+    npt.assert_array_almost_equal(
+        ep, [0.85714285714286, 0.85714285714286, 0.85714285714286]
+    )
+
+
 def test_edterm():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2007 FEB 3 00:00:00.000")
