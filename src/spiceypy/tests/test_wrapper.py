@@ -556,6 +556,22 @@ def test_ckfrot():
     assert ref == 1
 
 
+def test_ckfxfkm():
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(CassiniKernels.cassSclk)
+    spice.furnsh(CassiniKernels.cassCk)
+    spice.furnsh(CassiniKernels.cassIk)
+    spice.furnsh(CassiniKernels.cassFk)
+    spice.furnsh(CassiniKernels.cassPck)
+    # arbitrary time covered by test ck kernel
+    et = spice.str2et("2013-FEB-26 00:01:08.828")
+    xform, ref = spice.ckfxfm(-82000, et)
+    rot, av = spice.xf2rav(xform)
+    arc = spice.vnorm(av)
+    assert ref == -82
+    assert arc > 0
+
+
 def test_ckgp():
     spice.reset()
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -631,6 +647,13 @@ def test_cklpf():
     assert spice.exists(cklpf)
     cleanup_kernel(cklpf)
     assert not spice.exists(cklpf)
+
+
+def test_ckmeta():
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(ExtraKernels.voyagerSclk)
+    idcode = spice.ckmeta(-32000, "SCLK")
+    assert idcode == -32
 
 
 def test_ckobj():
@@ -1413,6 +1436,14 @@ def test_dafgsr():
     # Cleanup
     spice.dafcls(handle)
     spice.reset()
+
+
+def test_dafhsf():
+    handle = spice.dafopr(CoreKernels.spk)
+    nd, ni = spice.dafhsf(handle)
+    spice.dafcls(handle)
+    assert nd > 0
+    assert ni > 0
 
 
 def test_dafopr():

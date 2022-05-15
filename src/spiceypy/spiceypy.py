@@ -1214,7 +1214,7 @@ def ckfrot(inst: int, et: float) -> Tuple[ndarray, int, bool]:
 
 
 @spice_error_check
-@spice_error_check
+@spice_found_exception_thrower
 def ckfxfm(inst: int, et: float) -> Tuple[ndarray, int, bool]:
     """
     Find the state transformation matrix from a C-kernel (CK) frame
@@ -1226,14 +1226,14 @@ def ckfxfm(inst: int, et: float) -> Tuple[ndarray, int, bool]:
 
     :param inst: Frame class ID CK ID of a CK frame.
     :param et: Epoch measured in seconds past J2000 TDB.
-    :return: Transformation from CK frame to frame refFrame ID of the base referenceSPICETRUE when requested pointing is available.
+    :return: Transformation from CK frame to frame ref, Frame ID of the base reference.
     """
     _inst = ctypes.c_int(inst)
     _et = ctypes.c_double(et)
     _xform = stypes.empty_double_matrix(6, 6)
     _ref = ctypes.c_int(0)
     _found = ctypes.c_int(0)
-    libspice.ckfxfm_c(_inst, _et, _xform, _ref, _found)
+    libspice.ckfxfm_c(_inst, _et, _xform, ctypes.byref(_ref), ctypes.byref(_found))
     return (
         stypes.c_matrix_to_numpy(_xform),
         _ref.value,
@@ -1326,11 +1326,11 @@ def ckgr02(handle: int, descr: ndarray, recno: int) -> ndarray:
     :return: The pointing record.
     """
     _handle = ctypes.c_int(handle)
-    _descr = stypes.to_double_matrix(descr)
+    _descr = stypes.to_double_vector(descr)
     _recno = ctypes.c_int(recno)
-    _record = stypes.empty_double_matrix()
+    _record = stypes.empty_double_vector(10)
     libspice.ckgr02_c(_handle, _descr, _recno, _record)
-    return (stypes.c_matrix_to_numpy(_record),)
+    return stypes.c_vector_to_python(_record)
 
 
 @spice_error_check
@@ -1348,11 +1348,11 @@ def ckgr03(handle: int, descr: ndarray, recno: int) -> ndarray:
     :return: The pointing record.
     """
     _handle = ctypes.c_int(handle)
-    _descr = stypes.to_double_matrix(descr)
+    _descr = stypes.to_double_vector(descr)
     _recno = ctypes.c_int(recno)
-    _record = stypes.empty_double_matrix()
+    _record = stypes.empty_double_vector(8)
     libspice.ckgr03_c(_handle, _descr, _recno, _record)
-    return (stypes.c_matrix_to_numpy(_record),)
+    return stypes.c_vector_to_python(_record)
 
 
 @spice_error_check
@@ -1389,7 +1389,7 @@ def ckmeta(ckid: int, meta: str) -> int:
     _ckid = ctypes.c_int(ckid)
     _meta = stypes.string_to_char_p(meta)
     _idcode = ctypes.c_int(0)
-    libspice.ckmeta_c(_ckid, _meta, _idcode)
+    libspice.ckmeta_c(_ckid, _meta, ctypes.byref(_idcode))
     return _idcode.value
 
 
@@ -1407,9 +1407,9 @@ def cknr02(handle: int, descr: ndarray) -> int:
     :return: The number of records in the segment.
     """
     _handle = ctypes.c_int(handle)
-    _descr = stypes.to_double_matrix(descr)
+    _descr = stypes.to_double_vector(descr)
     _nrec = ctypes.c_int(0)
-    libspice.cknr02_c(_handle, _descr, _nrec)
+    libspice.cknr02_c(_handle, _descr, ctypes.byref(_nrec))
     return _nrec.value
 
 
@@ -1427,9 +1427,9 @@ def cknr03(handle: int, descr: ndarray) -> int:
     :return: The number of pointing instances in the segment.
     """
     _handle = ctypes.c_int(handle)
-    _descr = stypes.to_double_matrix(descr)
+    _descr = stypes.to_double_vector(descr)
     _nrec = ctypes.c_int(0)
-    libspice.cknr03_c(_handle, _descr, _nrec)
+    libspice.cknr03_c(_handle, _descr, ctypes.byref(_nrec))
     return _nrec.value
 
 
@@ -2291,7 +2291,7 @@ def dafhsf(handle: int) -> Tuple[int, int]:
     _handle = ctypes.c_int(handle)
     _nd = ctypes.c_int(0)
     _ni = ctypes.c_int(0)
-    libspice.dafhsf_c(_handle, _nd, _ni)
+    libspice.dafhsf_c(_handle, ctypes.byref(_nd), ctypes.byref(_ni))
     return _nd.value, _ni.value
 
 
@@ -2615,7 +2615,15 @@ def dashfs(handle: int) -> Tuple[int, int, int, int, int, ndarray, ndarray, ndar
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dashfs_c.html
 
     :param handle: Handle of a DAS file.
-    :return: Number of reserved records in file, Number of characters in use in reserved rec area, Number of comment records in file, Number of characters in use in comment area, Number of first free record, Array of last logical addresses for each data type, Record number of last descriptor of each data type, Word number of last descriptor of each data type.
+    :return:
+        Number of reserved records in file,
+        Number of characters in use in reserved rec area,
+        Number of comment records in file,
+        Number of characters in use in comment area,
+        Number of first free record,
+        Array of last logical addresses for each data type,
+        Record number of last descriptor of each data type,
+        Word number of last descriptor of each data type.
     """
     _handle = ctypes.c_int(handle)
     _nresvr = ctypes.c_int(0)
@@ -2686,35 +2694,23 @@ def dasllc(handle: int) -> None:
 
 
 @spice_error_check
-def dasonw(fname: str, ftype: str, ifname: str, ncomch: int) -> int:
+def dasonw(fname: str, ftype: str, ifname: str, ncomr: int) -> int:
     """
     Internal undocumented command for creating a new DAS file
 
     :param fname: filename
     :param ftype: type
     :param ifname: internal file name
-    :param ncomch: amount of comment area
+    :param ncomr: amount of comment area
     :return: Handle to new DAS file
     """
-    fnamelen = ctypes.c_int(len(fname))
-    ftypelen = ctypes.c_int(len(ftype))
-    ifnamelen = ctypes.c_int(len(ifname))
-    ncomch = ctypes.c_int(ncomch)
-    handle = ctypes.c_int()
-    fname = stypes.string_to_char_p(fname)
-    ftype = stypes.string_to_char_p(ftype)
-    ifname = stypes.string_to_char_p(ifname)
-    libspice.dasonw_c(
-        fname,
-        ftype,
-        ifname,
-        ctypes.byref(ncomch),
-        ctypes.byref(handle),
-        fnamelen,
-        ftypelen,
-        ifnamelen,
-    )
-    return handle.value
+    _ncomr = ctypes.c_int(ncomr)
+    _handle = ctypes.c_int(0)
+    _fname = stypes.string_to_char_p(fname)
+    _ftype = stypes.string_to_char_p(ftype)
+    _ifname = stypes.string_to_char_p(ifname)
+    libspice.dasonw_c(_fname, _ftype, _ifname, _ncomr, ctypes.byref(_handle))
+    return _handle.value
 
 
 @spice_error_check
