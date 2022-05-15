@@ -355,8 +355,17 @@ def axisar(axis: Union[ndarray, Iterable[float]], angle: float) -> ndarray:
 
 
 @spice_error_check
-def azlcpo(method: str, target: str, et: float, abcorr: str, azccw: bool, elplsz: bool, obspos: ndarray, obsctr: str, obsref: str) -> Tuple[
-    ndarray, float]:
+def azlcpo(
+    method: str,
+    target: str,
+    et: float,
+    abcorr: str,
+    azccw: bool,
+    elplsz: bool,
+    obspos: ndarray,
+    obsctr: str,
+    obsref: str,
+) -> Tuple[ndarray, float]:
     """
     Return the azimuth/elevation coordinates of a specified target
     relative to an "observer," where the observer has constant
@@ -367,7 +376,7 @@ def azlcpo(method: str, target: str, et: float, abcorr: str, azccw: bool, elplsz
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/azlcpo_c.html
 
     :param method: Method to obtain the surface normal vector.
-    :param target: Name of target ephemeris object. 
+    :param target: Name of target ephemeris object.
     :param et: Observation epoch.
     :param abcorr: Aberration correction.
     :param azccw: Flag indicating how azimuth is measured.
@@ -388,7 +397,19 @@ def azlcpo(method: str, target: str, et: float, abcorr: str, azccw: bool, elplsz
     _obsref = stypes.string_to_char_p(obsref)
     _azlsta = stypes.empty_double_vector(6)
     _lt = ctypes.c_double(0)
-    libspice.azlcpo_c(_method, _target, _et, _abcorr, _azccw, _elplsz, _obspos, _obsctr, _obsref, _azlsta, ctypes.byref(_lt))
+    libspice.azlcpo_c(
+        _method,
+        _target,
+        _et,
+        _abcorr,
+        _azccw,
+        _elplsz,
+        _obspos,
+        _obsctr,
+        _obsref,
+        _azlsta,
+        ctypes.byref(_lt),
+    )
     return stypes.c_vector_to_python(_azlsta), _lt.value
 
 
@@ -415,6 +436,7 @@ def azlrec(range: float, az: float, el: float, azccw: bool, elplsz: bool) -> nda
     _rectan = stypes.empty_double_vector(3)
     libspice.azlrec_c(_range, _az, _el, _azccw, _elplsz, _rectan)
     return stypes.c_vector_to_python(_rectan)
+
 
 ################################################################################
 # B
@@ -999,9 +1021,9 @@ def chbigr(degp: int, cp: ndarray, x2s: ndarray, x: float) -> Tuple[float, float
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/chbigr_c.html
 
-    :param degp: Degree of input Chebyshev expansion. 
-    :param cp: Chebyshev coefficients of input expansion. 
-    :param x2s: Transformation parameters. 
+    :param degp: Degree of input Chebyshev expansion.
+    :param cp: Chebyshev coefficients of input expansion.
+    :param x2s: Transformation parameters.
     :param x: Abscissa value of evaluation.
     :return: Input expansion evaluated at xIntegral evaluated at x.
     """
@@ -1024,9 +1046,9 @@ def chbint(cp: ndarray, degp: int, x2s: ndarray, x: float) -> Tuple[float, float
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/chbint_c.html
 
-    :param cp: degp 1 Chebyshev polynomial coefficients. 
-    :param degp: Degree of polynomial. 
-    :param x2s: Transformation parameters of polynomial. 
+    :param cp: degp 1 Chebyshev polynomial coefficients.
+    :param degp: Degree of polynomial.
+    :param x2s: Transformation parameters of polynomial.
     :param x: Value for which the polynomial is to be evaluated.
     :return: Value of the polynomial at xValue of the derivative of the polynomial at X.
     """
@@ -1048,9 +1070,9 @@ def chbval(cp: ndarray, degp: int, x2s: ndarray, x: float) -> float:
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/chbval_c.html
 
-    :param cp: degp 1 Chebyshev polynomial coefficients. 
-    :param degp: Degree of polynomial. 
-    :param x2s: Transformation parameters of polynomial. 
+    :param cp: degp 1 Chebyshev polynomial coefficients.
+    :param degp: Degree of polynomial.
+    :param x2s: Transformation parameters of polynomial.
     :param x: Value for which the polynomial is to be evaluated.
     :return: Value of the polynomial at x.
     """
@@ -1202,7 +1224,7 @@ def ckfxfm(inst: int, et: float) -> Tuple[ndarray, int, bool]:
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckfxfm_c.html
 
-    :param inst: Frame class ID CK ID of a CK frame. 
+    :param inst: Frame class ID CK ID of a CK frame.
     :param et: Epoch measured in seconds past J2000 TDB.
     :return: Transformation from CK frame to frame refFrame ID of the base referenceSPICETRUE when requested pointing is available.
     """
@@ -1212,7 +1234,11 @@ def ckfxfm(inst: int, et: float) -> Tuple[ndarray, int, bool]:
     _ref = ctypes.c_int(0)
     _found = ctypes.c_int(0)
     libspice.ckfxfm_c(_inst, _et, _xform, _ref, _found)
-    return stypes.c_matrix_to_numpy(_xform), _ref.value, bool(_found.value),
+    return (
+        stypes.c_matrix_to_numpy(_xform),
+        _ref.value,
+        bool(_found.value),
+    )
 
 
 @spice_error_check
@@ -1294,8 +1320,8 @@ def ckgr02(handle: int, descr: ndarray, recno: int) -> ndarray:
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckgr02_c.html
 
-    :param handle: The handle of the CK file containing the segment. 
-    :param descr: The segment descriptor. 
+    :param handle: The handle of the CK file containing the segment.
+    :param descr: The segment descriptor.
     :param recno: The number of the pointing record to be returned.
     :return: The pointing record.
     """
@@ -1304,7 +1330,7 @@ def ckgr02(handle: int, descr: ndarray, recno: int) -> ndarray:
     _recno = ctypes.c_int(recno)
     _record = stypes.empty_double_matrix()
     libspice.ckgr02_c(_handle, _descr, _recno, _record)
-    return stypes.c_matrix_to_numpy(_record),
+    return (stypes.c_matrix_to_numpy(_record),)
 
 
 @spice_error_check
@@ -1316,8 +1342,8 @@ def ckgr03(handle: int, descr: ndarray, recno: int) -> ndarray:
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckgr03_c.html
 
-    :param handle: The handle of the CK file containing the segment. 
-    :param descr: The segment descriptor. 
+    :param handle: The handle of the CK file containing the segment.
+    :param descr: The segment descriptor.
     :param recno: The number of the pointing instance to be returned.
     :return: The pointing record.
     """
@@ -1326,7 +1352,7 @@ def ckgr03(handle: int, descr: ndarray, recno: int) -> ndarray:
     _recno = ctypes.c_int(recno)
     _record = stypes.empty_double_matrix()
     libspice.ckgr03_c(_handle, _descr, _recno, _record)
-    return stypes.c_matrix_to_numpy(_record),
+    return (stypes.c_matrix_to_numpy(_record),)
 
 
 @spice_error_check
@@ -1356,7 +1382,7 @@ def ckmeta(ckid: int, meta: str) -> int:
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckmeta_c.html
 
-    :param ckid: The ID code for some C kernel object. 
+    :param ckid: The ID code for some C kernel object.
     :param meta: The kind of meta data requested SPK or SCLK.
     :return: The requested SCLK or spacecraft ID code.
     """
@@ -2268,6 +2294,7 @@ def dafhsf(handle: int) -> Tuple[int, int]:
     libspice.dafhsf_c(_handle, _nd, _ni)
     return _nd.value, _ni.value
 
+
 @spice_error_check
 def dafopr(fname: str) -> int:
     """
@@ -2596,12 +2623,28 @@ def dashfs(handle: int) -> Tuple[int, int, int, int, int, ndarray, ndarray, ndar
     _ncomr = ctypes.c_int(0)
     _ncomc = ctypes.c_int(0)
     _free = ctypes.c_int(0)
-    _lastla = stypes.empty_int_matrix(3, )
-    _lastrc = stypes.empty_int_matrix(3, )
-    _lastwd = stypes.empty_int_matrix(3, )
-    libspice.dashfs_c(_handle, _nresvr, _nresvc, _ncomr, _ncomc, _free, _lastla, _lastrc, _lastwd)
-    return _nresvr.value, _nresvc.value, _ncomr.value, _ncomc.value, _free.value, stypes.c_matrix_to_numpy(
-        _lastla), stypes.c_matrix_to_numpy(_lastrc), stypes.c_matrix_to_numpy(_lastwd),
+    _lastla = stypes.empty_int_matrix(
+        3,
+    )
+    _lastrc = stypes.empty_int_matrix(
+        3,
+    )
+    _lastwd = stypes.empty_int_matrix(
+        3,
+    )
+    libspice.dashfs_c(
+        _handle, _nresvr, _nresvc, _ncomr, _ncomc, _free, _lastla, _lastrc, _lastwd
+    )
+    return (
+        _nresvr.value,
+        _nresvc.value,
+        _ncomr.value,
+        _ncomc.value,
+        _free.value,
+        stypes.c_matrix_to_numpy(_lastla),
+        stypes.c_matrix_to_numpy(_lastrc),
+        stypes.c_matrix_to_numpy(_lastwd),
+    )
 
 
 @spice_error_check
@@ -2621,7 +2664,11 @@ def daslla(handle: int) -> Tuple[int, int, int]:
     _lastd = ctypes.c_int(0)
     _lasti = ctypes.c_int(0)
     libspice.daslla_c(_handle, _lastc, _lastd, _lasti)
-    return _lastc.value, _lastd.value, _lasti.value,
+    return (
+        _lastc.value,
+        _lastd.value,
+        _lasti.value,
+    )
 
 
 @spice_error_check
@@ -2632,7 +2679,7 @@ def dasllc(handle: int) -> None:
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasllc_c.html
 
-    :param handle: Handle of a DAS file to be closed. 
+    :param handle: Handle of a DAS file to be closed.
     """
     _handle = ctypes.c_int(handle)
     libspice.dasllc_c(_handle)
@@ -2716,15 +2763,17 @@ def dasopw(fname: str) -> int:
 
 
 @spice_error_check
-def dasrdc(handle: int, first: int, last: int, bpos: int, epos: int, datlen: int) -> list:
+def dasrdc(
+    handle: int, first: int, last: int, bpos: int, epos: int, datlen: int
+) -> list:
     """
     Read character data from a range of DAS logical addresses.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasrdc_c.html
 
-    :param handle: DAS file handle. 
-    :param last: Range of DAS character logical addresses. 
-    :param epos: Begin and end positions of substrings. 
+    :param handle: DAS file handle.
+    :param last: Range of DAS character logical addresses.
+    :param epos: Begin and end positions of substrings.
     :param datlen: Common length of the character arrays in data.
     :return: Data having addresses first through last.
     """
@@ -2754,7 +2803,7 @@ def dasrdd(handle: int, first: int, last: int) -> ndarray:
     _handle = ctypes.c_int(handle)
     _first = ctypes.c_int(first)
     _last = ctypes.c_int(last)
-    _data = stypes.empty_double_vector((last-first) + 1)
+    _data = stypes.empty_double_vector((last - first) + 1)
     libspice.dasrdd_c(_handle, _last, _data)
     return stypes.c_vector_to_python(_data)
 
@@ -2766,14 +2815,14 @@ def dasrdi(handle: int, first: int, last: int) -> ndarray:
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasrdi_c.html
 
-    :param handle: DAS file handle. 
+    :param handle: DAS file handle.
     :param last: Bounds of range of DAS integer logical addresses.
     :return: Data having addresses first through last.
     """
     _handle = ctypes.c_int(handle)
     _first = ctypes.c_int(first)
     _last = ctypes.c_int(last)
-    _data = stypes.empty_int_vector((last-first) + 1)
+    _data = stypes.empty_int_vector((last - first) + 1)
     libspice.dasrdi_c(_handle, _last, _data)
     return stypes.c_vector_to_python(_data)
 
@@ -2824,18 +2873,26 @@ def dasrfr(
 
 
 @spice_error_check
-def dasudc(handle: int, first: int, last: int, bpos: int, epos: int, datlen: int, data: Sequence[str]) -> None:
+def dasudc(
+    handle: int,
+    first: int,
+    last: int,
+    bpos: int,
+    epos: int,
+    datlen: int,
+    data: Sequence[str],
+) -> None:
     """
     Update character data in a specified range of DAS logical
     addresses with substrings of a character array.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasudc_c.html
 
-    :param handle: DAS file handle. 
-    :param last: Range of DAS character logical addresses. 
-    :param epos: Begin and end positions of substrings. 
-    :param datlen: Common length of the character arrays in data. 
-    :param data: Data having addresses first through last. 
+    :param handle: DAS file handle.
+    :param last: Range of DAS character logical addresses.
+    :param epos: Begin and end positions of substrings.
+    :param datlen: Common length of the character arrays in data.
+    :param data: Data having addresses first through last.
     """
     _handle = ctypes.c_int(handle)
     _first = ctypes.c_int(first)
@@ -2875,9 +2932,9 @@ def dasudi(handle: int, first: int, last: int, data: ndarray) -> None:
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasudi_c.html
 
-    :param handle: DAS file handle. 
-    :param last: Range of integer addresses to write to. 
-    :param data: An array of integers. 
+    :param handle: DAS file handle.
+    :param last: Range of integer addresses to write to.
+    :param data: An array of integers.
     """
     _handle = ctypes.c_int(handle)
     _first = ctypes.c_int(first)
@@ -3093,7 +3150,7 @@ def dlaens(handle: int) -> None:
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlaens_c.html
 
-    :param handle: Handle of open DLA file. 
+    :param handle: Handle of open DLA file.
     """
     _handle = ctypes.c_int(handle)
     libspice.dlaens_c(_handle)
@@ -3106,9 +3163,9 @@ def dlaopn(fname: str, ftype: str, ifname: str, ncomch: int) -> int:
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlaopn_c.html
 
-    :param fname: Name of a DLA file to be opened. 
-    :param ftype: Mnemonic code for type of data in the DLA file. 
-    :param ifname: Internal file name. 
+    :param fname: Name of a DLA file to be opened.
+    :param ftype: Mnemonic code for type of data in the DLA file.
+    :param ifname: Internal file name.
     :param ncomch: Number of comment characters to allocate.
     :return: Handle assigned to the opened DLA file.
     """
@@ -3188,16 +3245,18 @@ def dlatdr(x: float, y: float, z: float) -> ndarray:
 
 @spice_error_check
 @spice_found_exception_thrower
-def dnearp(state: ndarray, a: float, b: float, c: float) -> Tuple[ndarray, ndarray, bool]:
+def dnearp(
+    state: ndarray, a: float, b: float, c: float
+) -> Tuple[ndarray, ndarray, bool]:
     """
     Compute the state (position and velocity) of an ellipsoid surface
     point nearest to the position component of a specified state.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dnearp_c.html
 
-    :param state: State of an object in body fixed coordinates. 
-    :param a: Length of semi axis parallel to X axis. 
-    :param b: Length of semi axis parallel to Y axis. 
+    :param state: State of an object in body fixed coordinates.
+    :param a: Length of semi axis parallel to X axis.
+    :param b: Length of semi axis parallel to Y axis.
     :param c: Length on semi axis parallel to Z axis.
     :return: State of the nearest point on the ellipsoid, Altitude and derivative of altitude
     """
@@ -3205,11 +3264,20 @@ def dnearp(state: ndarray, a: float, b: float, c: float) -> Tuple[ndarray, ndarr
     _a = ctypes.c_double(a)
     _b = ctypes.c_double(b)
     _c = ctypes.c_double(c)
-    _dnear = stypes.empty_double_matrix(6, )
-    _dalt = stypes.empty_double_matrix(2, )
+    _dnear = stypes.empty_double_matrix(
+        6,
+    )
+    _dalt = stypes.empty_double_matrix(
+        2,
+    )
     _found = ctypes.c_int(0)
     libspice.dnearp_c(_state, _a, _b, _c, _dnear, _dalt, _found)
-    return stypes.c_vector_to_python(_dnear), stypes.c_vector_to_python(_dalt), bool(_found.value)
+    return (
+        stypes.c_vector_to_python(_dnear),
+        stypes.c_vector_to_python(_dalt),
+        bool(_found.value),
+    )
+
 
 @spice_error_check
 def dp2hx(number: float, lenout: int = _default_len_out) -> str:

@@ -159,24 +159,80 @@ def test_azlcpo():
     spice.furnsh(ExtraKernels.earthHighPerPck)
     et = spice.str2et("2003 Jan 01 00:00:00 TDB")
     obspos = [-2353.621419700, -4641.341471700, 3677.052317800]
-    azlsta, lt = spice.azlcpo("ELLIPSOID", "VENUS", et, "CN+S", False, True, obspos, "EARTH", "ITRF93")
-    npt.assert_array_almost_equal(azlsta, [89344802.82679011, 269.04481881, -25.63088321, 13.41734176,  0.00238599, -0.00339644], decimal=3)
+    azlsta, lt = spice.azlcpo(
+        "ELLIPSOID", "VENUS", et, "CN+S", False, True, obspos, "EARTH", "ITRF93"
+    )
+    npt.assert_array_almost_equal(
+        azlsta,
+        [
+            89344802.82679011,
+            269.04481881,
+            -25.63088321,
+            13.41734176,
+            0.00238599,
+            -0.00339644,
+        ],
+        decimal=3,
+    )
 
 
 def test_azlrec():
     d = spice.rpd()
-    npt.assert_array_almost_equal(spice.azlrec(0.000,   0.000*d,   0.000*d, True, True),[ 0.000,  0.000,  0.000], decimal=3)
-    npt.assert_array_almost_equal(spice.azlrec(1.000,   0.000*d,   0.000*d, True, True),[ 1.000,  0.000,  0.000], decimal=3)
-    npt.assert_array_almost_equal(spice.azlrec(1.000, 270.000*d,   0.000*d, True, True),[-0.000, -1.000,  0.000], decimal=3)
-    npt.assert_array_almost_equal(spice.azlrec(1.000,   0.000*d, -90.000*d, True, True),[ 0.000,  0.000, -1.000], decimal=3)
-    npt.assert_array_almost_equal(spice.azlrec(1.000, 180.000*d,   0.000*d, True, True),[-1.000,  0.000,  0.000], decimal=3)
-    npt.assert_array_almost_equal(spice.azlrec(1.000,  90.000*d,   0.000*d, True, True),[ 0.000,  1.000,  0.000], decimal=3)
-    npt.assert_array_almost_equal(spice.azlrec(1.000,   0.000*d,  90.000*d, True, True),[ 0.000,  0.000,  1.000], decimal=3)
-    npt.assert_array_almost_equal(spice.azlrec(1.414, 315.000*d,   0.000*d, True, True),[ 1.000, -1.000,  0.000], decimal=3)
-    npt.assert_array_almost_equal(spice.azlrec(1.414,   0.000*d, -45.000*d, True, True),[ 1.000,  0.000, -1.000], decimal=3)
-    npt.assert_array_almost_equal(spice.azlrec(1.414, 270.000*d, -45.000*d, True, True),[-0.000, -1.000, -1.000], decimal=3)
-    npt.assert_array_almost_equal(spice.azlrec(1.732, 315.000*d, -35.264*d, True, True),[ 1.000, -1.000, -1.000], decimal=3)
-
+    npt.assert_array_almost_equal(
+        spice.azlrec(0.000, 0.000 * d, 0.000 * d, True, True),
+        [0.000, 0.000, 0.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.000, 0.000 * d, 0.000 * d, True, True),
+        [1.000, 0.000, 0.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.000, 270.000 * d, 0.000 * d, True, True),
+        [-0.000, -1.000, 0.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.000, 0.000 * d, -90.000 * d, True, True),
+        [0.000, 0.000, -1.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.000, 180.000 * d, 0.000 * d, True, True),
+        [-1.000, 0.000, 0.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.000, 90.000 * d, 0.000 * d, True, True),
+        [0.000, 1.000, 0.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.000, 0.000 * d, 90.000 * d, True, True),
+        [0.000, 0.000, 1.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.414, 315.000 * d, 0.000 * d, True, True),
+        [1.000, -1.000, 0.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.414, 0.000 * d, -45.000 * d, True, True),
+        [1.000, 0.000, -1.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.414, 270.000 * d, -45.000 * d, True, True),
+        [-0.000, -1.000, -1.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.732, 315.000 * d, -35.264 * d, True, True),
+        [1.000, -1.000, -1.000],
+        decimal=3,
+    )
 
 
 def test_b1900():

@@ -75,7 +75,7 @@ libspice.appndc_c.argtypes = [c_char_p, s_cell_p]
 libspice.appndd_c.argtypes = [c_double, s_cell_p]
 libspice.appndi_c.argtypes = [c_int, s_cell_p]
 libspice.axisar_c.argtypes = [(c_double * 3), c_double, (c_double * 3) * 3]
-libspice.azlcpo_c.argtypes = [c_char_p, c_char_p, c_double, c_char_p, c_int, c_int, (c_double * 3 ), c_char_p, c_char_p, (c_double * 6), c_double_p]
+libspice.azlcpo_c.argtypes = [c_char_p, c_char_p, c_double, c_char_p, c_int, c_int, (c_double * 3), c_char_p, c_char_p, (c_double * 6), c_double_p]
 libspice.azlrec_c.argtypes = [c_double, c_double, c_double, c_int, c_int, (c_double * 3)]
 # #######################################################################################################################
 # B
