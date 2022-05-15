@@ -149,7 +149,34 @@ def test_axisar():
     axis = np.array([0.0, 0.0, 1.0])
     outmatrix = spice.axisar(axis, spice.halfpi())
     expected = np.array([[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
-    np.testing.assert_array_almost_equal(expected, outmatrix, decimal=6)
+    npt.assert_array_almost_equal(expected, outmatrix, decimal=6)
+
+
+def test_azlcpo():
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(ExtraKernels.earthTopoTf)
+    spice.furnsh(ExtraKernels.earthStnSpk)
+    spice.furnsh(ExtraKernels.earthHighPerPck)
+    et = spice.str2et("2003 Jan 01 00:00:00 TDB")
+    obspos = [-2353.621419700, -4641.341471700, 3677.052317800]
+    azlsta, lt = spice.azlcpo("ELLIPSOID", "VENUS", et, "CN+S", False, True, obspos, "EARTH", "ITRF93")
+    npt.assert_array_almost_equal(azlsta, [89344802.82679011, 269.04481881, -25.63088321, 13.41734176,  0.00238599, -0.00339644], decimal=3)
+
+
+def test_azlrec():
+    d = spice.rpd()
+    npt.assert_array_almost_equal(spice.azlrec(0.000,   0.000*d,   0.000*d, True, True),[ 0.000,  0.000,  0.000], decimal=3)
+    npt.assert_array_almost_equal(spice.azlrec(1.000,   0.000*d,   0.000*d, True, True),[ 1.000,  0.000,  0.000], decimal=3)
+    npt.assert_array_almost_equal(spice.azlrec(1.000, 270.000*d,   0.000*d, True, True),[-0.000, -1.000,  0.000], decimal=3)
+    npt.assert_array_almost_equal(spice.azlrec(1.000,   0.000*d, -90.000*d, True, True),[ 0.000,  0.000, -1.000], decimal=3)
+    npt.assert_array_almost_equal(spice.azlrec(1.000, 180.000*d,   0.000*d, True, True),[-1.000,  0.000,  0.000], decimal=3)
+    npt.assert_array_almost_equal(spice.azlrec(1.000,  90.000*d,   0.000*d, True, True),[ 0.000,  1.000,  0.000], decimal=3)
+    npt.assert_array_almost_equal(spice.azlrec(1.000,   0.000*d,  90.000*d, True, True),[ 0.000,  0.000,  1.000], decimal=3)
+    npt.assert_array_almost_equal(spice.azlrec(1.414, 315.000*d,   0.000*d, True, True),[ 1.000, -1.000,  0.000], decimal=3)
+    npt.assert_array_almost_equal(spice.azlrec(1.414,   0.000*d, -45.000*d, True, True),[ 1.000,  0.000, -1.000], decimal=3)
+    npt.assert_array_almost_equal(spice.azlrec(1.414, 270.000*d, -45.000*d, True, True),[-0.000, -1.000, -1.000], decimal=3)
+    npt.assert_array_almost_equal(spice.azlrec(1.732, 315.000*d, -35.264*d, True, True),[ 1.000, -1.000, -1.000], decimal=3)
+
 
 
 def test_b1900():
@@ -459,7 +486,7 @@ def test_ckfrot():
     spice.furnsh(CassiniKernels.cassFk)
     spice.furnsh(CassiniKernels.cassPck)
     ckid = spice.ckobj(CassiniKernels.cassCk)[0]
-    # aribtrary time covered by test ck kernel
+    # arbitrary time covered by test ck kernel
     et = spice.str2et("2013-FEB-26 00:01:08.828")
     rotation, ref = spice.ckfrot(ckid, et)
     expected = np.array(
