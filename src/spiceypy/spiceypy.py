@@ -2474,7 +2474,9 @@ def dasac(handle: int, buffer: Sequence[str]) -> None:
 
 
 @spice_error_check
-def dasadc(handle: int, n: int, epos: int, datlen: int, data: Sequence[str]) -> None:
+def dasadc(
+    handle: int, n: int, bpos: int, epos: int, datlen: int, data: Sequence[str]
+) -> None:
     """
     Add character data to a DAS file.
 
@@ -2482,16 +2484,18 @@ def dasadc(handle: int, n: int, epos: int, datlen: int, data: Sequence[str]) -> 
 
     :param handle: DAS file handle.
     :param n: Number of characters to add to file.
-    :param epos: Begin and end positions of substrings.
+    :param bpos: Begin positions of substrings.
+    :param epos: End positions of substrings.
     :param datlen: Common length of the character arrays in data.
     :param data: Array providing the set of substrings to be added.
     """
     _handle = ctypes.c_int(handle)
     _n = ctypes.c_int(n)
+    _bpos = ctypes.c_int(bpos)
     _epos = ctypes.c_int(epos)
     _datlen = ctypes.c_int(datlen)
     _data = stypes.list_to_char_array_ptr(data)
-    libspice.dasadc_c(_handle, _n, _epos, _datlen, _data)
+    libspice.dasadc_c(_handle, _n, _bpos, _epos, _datlen, _data)
 
 
 @spice_error_check
