@@ -454,6 +454,23 @@ def test_chbder():
     npt.assert_array_almost_equal([-0.340878, 0.382716, 4.288066, -1.514403], dpdxs)
 
 
+def test_chbigr():
+    p, itgrlp = spice.chbigr(5, [0.0, 3.75, 0.0, 1.875, 0.0, 0.375], [20.0, 10.0], 30.0)
+    assert p == pytest.approx(6.0)
+    assert itgrlp == pytest.approx(10.0)
+
+
+def test_chbint():
+    p, dpdx = spice.chbint([1.0, 3.0, 0.5, 1.0, 0.5, -1.0, 1.0], 6, [0.5, 3.0], 1.0)
+    assert p == pytest.approx(-0.340878, abs=1e-6)
+    assert dpdx == pytest.approx(0.382716, abs=1e-6)
+
+
+def test_chbval():
+    p = spice.chbval([1.0, 3.0, 0.5, 1.0, 0.5, -1.0, 1.0], 6, [0.5, 3.0], 1.0)
+    assert p == pytest.approx(-0.340878, abs=1e-6)
+
+
 def test_chkin():
     spice.reset()
     assert spice.trcdep() == 0
