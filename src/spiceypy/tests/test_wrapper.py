@@ -1879,6 +1879,29 @@ def test_dpr():
     assert spice.dpr() == 180.0 / np.arccos(-1.0)
 
 
+def test_dazldr_drdazl():
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(ExtraKernels.earthTopoTf)
+    spice.furnsh(ExtraKernels.earthStnSpk)
+    spice.furnsh(ExtraKernels.earthHighPerPck)
+    et = spice.str2et("2003 Oct 13 06:00:00 UTC")
+    state, lt = spice.spkezr("VENUS", et, "DSS-14_TOPO", "CN+S", "DSS-14")
+    r, az, el = spice.recazl(state[0:3], False, True)
+    jacobi = spice.dazldr(state[0], state[1], state[2], False, True)
+    azlvel = spice.mxv(jacobi, state[3:])
+    jacobi = spice.drdazl(r, az, el, False, True)
+    drectn = spice.mxv(jacobi, azlvel)
+    npt.assert_array_almost_equal(
+        drectn,
+        [
+            6166.04150307,
+            -13797.77164550,
+            -8704.32385654,
+        ],
+        decimal=3,
+    )
+
+
 def test_drdcyl():
     output = spice.drdcyl(1.0, np.deg2rad(180.0), 1.0)
     expected = [[-1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]]

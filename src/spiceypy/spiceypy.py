@@ -3264,10 +3264,10 @@ def dnearp(
     _a = ctypes.c_double(a)
     _b = ctypes.c_double(b)
     _c = ctypes.c_double(c)
-    _dnear = stypes.empty_double_matrix(
+    _dnear = stypes.empty_double_vector(
         6,
     )
-    _dalt = stypes.empty_double_matrix(
+    _dalt = stypes.empty_double_vector(
         2,
     )
     _found = ctypes.c_int(0)

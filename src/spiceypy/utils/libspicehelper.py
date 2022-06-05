@@ -415,7 +415,7 @@ libspice.dazldr_c.argtypes = [
     c_double,
     c_int,
     c_int,
-    POINTER(c_double),
+    (c_double * 3) * 3,
 ]
 libspice.dcyldr_c.argtypes = [c_double, c_double, c_double, (c_double * 3) * 3]
 libspice.deltet_c.argtypes = [c_double, c_char_p, c_double_p]
@@ -447,12 +447,12 @@ libspice.dlafns_c.argtypes = [c_int, s_dla_p, s_dla_p, c_int_p]
 libspice.dlafps_c.argtypes = [c_int, s_dla_p, s_dla_p, c_int_p]
 libspice.dlaopn_c.argtypes = [c_char_p, c_char_p, c_char_p, c_int, c_int_p]
 libspice.dnearp_c.argtypes = [
-    POINTER(c_double),
+    (c_double * 6),
     c_double,
     c_double,
     c_double,
-    POINTER(c_double),
-    POINTER(c_double),
+    (c_double * 6),
+    (c_double * 2),
     c_int_p,
 ]
 libspice.dlatdr_c.argtypes = [c_double, c_double, c_double, (c_double * 3) * 3]
@@ -477,7 +477,7 @@ libspice.drdazl_c.argtypes = [
     c_double,
     c_int,
     c_int,
-    POINTER(c_double),
+    (c_double * 3) * 3,
 ]
 libspice.drdcyl_c.argtypes = [c_double, c_double, c_double, (c_double * 3) * 3]
 libspice.drdgeo_c.argtypes = [
