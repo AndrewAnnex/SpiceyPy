@@ -643,6 +643,12 @@ def test_ckgr02():
     pass
 
 
+def test_ckgr03():
+    spice.reset()
+
+    pass
+
+
 def test_cklpf():
     spice.reset()
     cklpf = os.path.join(cwd, "cklpfkernel.bc")
@@ -1631,7 +1637,7 @@ def test_dafus():
     npt.assert_array_almost_equal(ic, [1, 0, 1, 2, 1025, 27164])
 
 
-def test_dasac_dasopr_dasec_dasdc():
+def test_dasac_dasopr_dasec_dasdc_dashfs_dasllc():
     daspath = os.path.join(cwd, "ex_dasac.das")
     cleanup_kernel(daspath)
     handle = spice.dasonw(daspath, "TEST", "ex_dasac", 140)
@@ -1666,6 +1672,14 @@ def test_dasac_dasopr_dasec_dasdc():
     assert ncomc == 18
     # close the das file
     spice.dascls(handle)
+    # test dashfs
+    handle = spice.dasopr(daspath)
+    nresvr, nresvc, ncomr, ncomc, free, lastla, lastrc, lastwd = spice.dashfs(handle)
+    assert nresvr == 0
+    assert nresvc == 0
+    assert ncomr == 140
+    assert ncomc == 18
+    spice.dasllc(handle)
     ###############################################
     # now reload the kernel and delete the commnets
     handle = spice.dasopw(daspath)

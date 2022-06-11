@@ -2635,13 +2635,13 @@ def dashfs(handle: int) -> Tuple[int, int, int, int, int, ndarray, ndarray, ndar
     _ncomr = ctypes.c_int(0)
     _ncomc = ctypes.c_int(0)
     _free = ctypes.c_int(0)
-    _lastla = stypes.empty_int_matrix(
+    _lastla = stypes.empty_int_vector(
         3,
     )
-    _lastrc = stypes.empty_int_matrix(
+    _lastrc = stypes.empty_int_vector(
         3,
     )
-    _lastwd = stypes.empty_int_matrix(
+    _lastwd = stypes.empty_int_vector(
         3,
     )
     libspice.dashfs_c(

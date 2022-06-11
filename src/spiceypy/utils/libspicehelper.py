@@ -358,9 +358,9 @@ libspice.dashfs_c.argtypes = [
     c_int_p,
     c_int_p,
     c_int_p,
-    c_int_p,
-    c_int_p,
-    c_int_p,
+    c_int * 3,
+    c_int * 3,
+    c_int * 3,
 ]
 libspice.daslla_c.argtypes = [c_int, c_int_p, c_int_p, c_int_p]
 libspice.dasllc_c.argtypes = [
