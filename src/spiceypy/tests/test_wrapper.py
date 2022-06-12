@@ -1890,6 +1890,28 @@ def test_dlabbs():
     spice.dascls(handle)
 
 
+def test_dlaopn_dlabns_dlaens_daswbr():
+    path = os.path.join(cwd, "dlaopn_dlabns_dlaens_daswbr.dla")
+    cleanup_kernel(path)
+    handle = spice.dlaopn(path, "DLA", "Example DLA file for testing", 0)
+    spice.dlabns(handle)  # start segm
+    datai = np.arange(100, dtype=int)
+    datad = np.arange(100.0, dtype=float)
+    spice.dasadi(handle, 100, datai)
+    spice.dasadd(handle, 100, datad)
+    spice.dlaens(handle)  # end the segment
+    spice.daswbr(handle)
+    spice.dasllc(handle)
+    # now read the file to check data
+    handle = spice.dasopr(path)
+    dladsc = spice.dlabfs(handle)
+    assert dladsc.isize == 100
+    assert dladsc.dsize == 100
+    spice.dascls(handle)
+    # now clean up
+    cleanup_kernel(path)
+
+
 def test_dlatdr():
     output = spice.dlatdr(1.0, 0.0, 0.0)
     expected = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
