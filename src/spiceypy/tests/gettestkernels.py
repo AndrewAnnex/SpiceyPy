@@ -103,6 +103,10 @@ class ExtraKernels(object):
     mro2007sub_md5 = "8ed34eb77b21ac611f4680806677edfb"
     spk430sub_url = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/main/de430sub.bsp"
     spk430sub_md5 = "0b49545fa316f9053f5cfbcce155becc"
+    vexboomck_url = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/main/VEX_BOOM_V01.BC"
+    vexboomck_md5 = "2f4dba65649246d72836fb3b53823c3d"
+    v02swuck_url = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/main/v02_swu_ck2.bc"
+    v02swuck_md5 = "59ef0556dfc63b55465e152f2d6f5a4"
     voyagerSclk = get_path_from_url(voyagerSclk_url)
     earthTopoTf = get_path_from_url(earthTopoTf_url)
     earthStnSpk = get_path_from_url(earthStnSpk_url)
@@ -113,6 +117,8 @@ class ExtraKernels(object):
     geophKer = get_path_from_url(geophysical_url)
     mro2007sub = get_path_from_url(mro2007sub_url)
     spk430sub = get_path_from_url(spk430sub_url)
+    vexboomck = get_path_from_url(vexboomck_url)
+    v02swuck = get_path_from_url(v02swuck_url)
 
 
 def cleanup_extra_kernels() -> None:
@@ -126,6 +132,8 @@ def cleanup_extra_kernels() -> None:
     cleanup_file(ExtraKernels.geophKer)
     cleanup_file(ExtraKernels.mro2007sub)
     cleanup_file(ExtraKernels.spk430sub)
+    cleanup_file(ExtraKernels.vexboomck)
+    cleanup_file(ExtraKernels.v02swuck)
 
 
 class CoreKernels(object):
@@ -257,6 +265,8 @@ def get_extra_test_kernels() -> None:
     get_kernel(ExtraKernels.geophysical_url, ExtraKernels.geophysical_md5)
     get_kernel(ExtraKernels.mro2007sub_url, ExtraKernels.mro2007sub_md5)
     get_kernel(ExtraKernels.spk430sub_url, ExtraKernels.spk430sub_md5)
+    get_kernel(ExtraKernels.vexboomck_url, ExtraKernels.vexboomck_md5)
+    get_kernel(ExtraKernels.v02swuck_url, ExtraKernels.v02swuck_md5)
 
 
 def get_cassini_test_kernels() -> None:

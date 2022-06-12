@@ -3146,6 +3146,19 @@ def dlabfs(handle: int) -> Tuple[SpiceDLADescr, bool]:
 
 
 @spice_error_check
+def dlabns(handle: int) -> None:
+    """
+    Begin a new segment in a DLA file.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dlabns_c.html
+
+    :param handle: Handle of open DLA file.
+    """
+    _handle = ctypes.c_int(handle)
+    libspice.dlabns_c(_handle)
+
+
+@spice_error_check
 def dlaens(handle: int) -> None:
     """
     End a new segment in a DLA file.
