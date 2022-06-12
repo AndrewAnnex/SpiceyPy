@@ -637,16 +637,40 @@ def test_ckgpav():
     assert clkout == 267832537952.0
 
 
-def test_ckgr02():
-    spice.reset()
+def test_ckgr02_cknr02():
+    handle = spice.dafopr(ExtraKernels.v02swuck)
+    spice.dafbfs(handle)
+    found = spice.daffna()
+    assert found
+    descr = spice.dafgs(n=5)
+    dc, ic = spice.dafus(descr, 2, 6)
+    assert ic[2] == 2
+    nrec = spice.cknr02(handle, descr)
+    assert nrec > 0
+    rec = spice.ckgr02(handle, descr, 1)
+    sclks = rec[0]
+    sclke = rec[1]
+    sclkr = rec[2]
+    assert sclks == pytest.approx(32380393707.000015)
+    assert sclke == pytest.approx(32380395707.000015)
+    assert sclkr == pytest.approx(0.001000)
+    spice.dascls(handle)
 
-    pass
 
-
-def test_ckgr03():
-    spice.reset()
-
-    pass
+def test_ckgr03_cknr03():
+    handle = spice.dafopr(ExtraKernels.vexboomck)
+    spice.dafbfs(handle)
+    found = spice.daffna()
+    assert found
+    descr = spice.dafgs(n=5)
+    dc, ic = spice.dafus(descr, 2, 6)
+    assert ic[2] == 3
+    nrec = spice.cknr03(handle, descr)
+    assert nrec > 0
+    rec = spice.ckgr03(handle, descr, 1)
+    sclkdp = rec[0]
+    assert sclkdp == pytest.approx(2162686.710986)
+    spice.dascls(handle)
 
 
 def test_cklpf():

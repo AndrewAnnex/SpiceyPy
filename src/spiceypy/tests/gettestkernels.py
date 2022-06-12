@@ -105,8 +105,8 @@ class ExtraKernels(object):
     spk430sub_md5 = "0b49545fa316f9053f5cfbcce155becc"
     vexboomck_url = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/main/VEX_BOOM_V01.BC"
     vexboomck_md5 = "2f4dba65649246d72836fb3b53823c3d"
-    v02swuck_url = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/main/v02_swu_ck2.bc"
-    v02swuck_md5 = "59ef0556dfc63b55465e152f2d6f5a4"
+    v02swuck_url = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/main/vo2_swu_ck2.bc"
+    v02swuck_md5 = "f59ef0556dfc63b55465e152f2d6f5a4"
     voyagerSclk = get_path_from_url(voyagerSclk_url)
     earthTopoTf = get_path_from_url(earthTopoTf_url)
     earthStnSpk = get_path_from_url(earthStnSpk_url)
