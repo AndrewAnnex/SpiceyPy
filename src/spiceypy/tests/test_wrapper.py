@@ -638,6 +638,7 @@ def test_ckgpav():
 
 
 def test_ckgr02_cknr02():
+    spice.kclear()
     spice.reset()
     handle = spice.dafopr(ExtraKernels.v02swuck)
     spice.dafbfs(handle)
@@ -655,11 +656,12 @@ def test_ckgr02_cknr02():
     assert sclks == pytest.approx(32380393707.000015)
     assert sclke == pytest.approx(32380395707.000015)
     assert sclkr == pytest.approx(0.001000)
-    spice.dascls(handle)
+    spice.dafcls(handle)
     spice.kclear()
 
 
 def test_ckgr03_cknr03():
+    spice.kclear()
     spice.reset()
     handle = spice.dafopr(ExtraKernels.vexboomck)
     spice.dafbfs(handle)
@@ -671,9 +673,10 @@ def test_ckgr03_cknr03():
     nrec = spice.cknr03(handle, descr)
     assert nrec > 0
     rec = spice.ckgr03(handle, descr, 1)
+    spice.dafcls(handle)
     sclkdp = rec[0]
     assert sclkdp == pytest.approx(2162686.710986)
-    spice.dascls(handle)
+    spice.dafcls(handle)
     spice.kclear()
 
 
@@ -1068,11 +1071,6 @@ def test_stress_ckw05():
         spice.kclear()
         spice.reset()
         test_ckw05()
-
-
-def test_cleard():
-    with pytest.raises(NotImplementedError):
-        spice.cleard()
 
 
 def test_clight():

@@ -1721,10 +1721,6 @@ def ckw05(
     )
 
 
-def cleard() -> NotImplementedError:
-    raise NotImplementedError
-
-
 @spice_error_check
 def clight() -> float:
     """
@@ -2697,19 +2693,21 @@ def dasllc(handle: int) -> None:
 @spice_error_check
 def dasonw(fname: str, ftype: str, ifname: str, ncomr: int) -> int:
     """
-    Internal undocumented command for creating a new DAS file
+    Open a new DAS file and set the file type.
 
-    :param fname: filename
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasonw_c.html
+
+    :param fname: Name of a DAS file to be opened.
     :param ftype: type
     :param ifname: internal file name
     :param ncomr: amount of comment area
     :return: Handle to new DAS file
     """
-    _ncomr = ctypes.c_int(ncomr)
-    _handle = ctypes.c_int(0)
     _fname = stypes.string_to_char_p(fname)
     _ftype = stypes.string_to_char_p(ftype)
     _ifname = stypes.string_to_char_p(ifname)
+    _ncomr = ctypes.c_int(ncomr)
+    _handle = ctypes.c_int(0)
     libspice.dasonw_c(_fname, _ftype, _ifname, _ncomr, ctypes.byref(_handle))
     return _handle.value
 
