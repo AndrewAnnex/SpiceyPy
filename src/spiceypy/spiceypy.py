@@ -2796,15 +2796,15 @@ def dasrdd(handle: int, first: int, last: int) -> ndarray:
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasrdd_c.html
 
     :param handle: DAS file handle.
-    :param first: start of range of DAS double precision logical.
-    :param last: end of range of DAS double precision logical.
+    :param first: start of range of DAS double precision.
+    :param last: end of range of DAS double precision.
     :return: Data having addresses first through last.
     """
     _handle = ctypes.c_int(handle)
     _first = ctypes.c_int(first)
     _last = ctypes.c_int(last)
     _data = stypes.empty_double_vector((last - first) + 1)
-    libspice.dasrdd_c(_handle, _last, _data)
+    libspice.dasrdd_c(_handle, _first, _last, _data)
     return stypes.c_vector_to_python(_data)
 
 
@@ -2816,14 +2816,15 @@ def dasrdi(handle: int, first: int, last: int) -> ndarray:
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasrdi_c.html
 
     :param handle: DAS file handle.
-    :param last: Bounds of range of DAS integer logical addresses.
+    :param first: start of range of DAS double precision.
+    :param last: end of range of DAS double precision.
     :return: Data having addresses first through last.
     """
     _handle = ctypes.c_int(handle)
     _first = ctypes.c_int(first)
     _last = ctypes.c_int(last)
     _data = stypes.empty_int_vector((last - first) + 1)
-    libspice.dasrdi_c(_handle, _last, _data)
+    libspice.dasrdi_c(_handle, _first, _last, _data)
     return stypes.c_vector_to_python(_data)
 
 
@@ -2933,7 +2934,8 @@ def dasudi(handle: int, first: int, last: int, data: ndarray) -> None:
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasudi_c.html
 
     :param handle: DAS file handle.
-    :param last: Range of integer addresses to write to.
+    :param first: first integer addresses to write to.
+    :param last: last integer addresses to write to.
     :param data: An array of integers.
     """
     _handle = ctypes.c_int(handle)

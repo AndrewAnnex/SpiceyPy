@@ -1910,6 +1910,38 @@ def test_dpr():
     assert spice.dpr() == 180.0 / np.arccos(-1.0)
 
 
+def test_dasudi_dasrdi():
+    daspath = os.path.join(cwd, "ex_dasudi.das")
+    cleanup_kernel(daspath)
+    handle = spice.dasonw(daspath, "TEST", "ex_dasudi", 140)
+    spice.dasadi(handle, 200, np.zeros(200, dtype=int))
+    data = np.arange(200, dtype=int)
+    spice.dasudi(handle, 1, 200, data)
+    spice.dascls(handle)
+    # load and ensure data was written
+    handle = spice.dasopr(daspath)
+    rdata = spice.dasrdi(handle, 1, 200)
+    assert rdata == pytest.approx(data)
+    spice.dascls(handle)
+    cleanup_kernel(daspath)
+
+
+def test_dasudd_dasrdd():
+    daspath = os.path.join(cwd, "ex_dasudd.das")
+    cleanup_kernel(daspath)
+    handle = spice.dasonw(daspath, "TEST", "ex_dasudd", 140)
+    spice.dasadd(handle, 200, np.zeros(200, dtype=float))
+    data = np.arange(200, dtype=float)
+    spice.dasudd(handle, 1, 200, data)
+    spice.dascls(handle)
+    # load and ensure data was written
+    handle = spice.dasopr(daspath)
+    rdata = spice.dasrdd(handle, 1, 200)
+    assert rdata == pytest.approx(data)
+    spice.dascls(handle)
+    cleanup_kernel(daspath)
+
+
 def test_dazldr_drdazl():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.earthTopoTf)
