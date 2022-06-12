@@ -2237,18 +2237,15 @@ def dafgn(lenout: int = _default_len_out) -> str:
 
 @spice_error_check
 def dafgs(n: int = 125) -> ndarray:
-    # The 125 may be a hard set,
-    # I got strange errors that occasionally happened without it
     """
     Return (get) the summary for the current array in the current DAF.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dafgs_c.html
 
-    :param n: Optional length N for result Array.
+    :param n: Optional length N for result Array, defaults to 125.
     :return: Summary for current array.
     """
     retarray = stypes.empty_double_vector(125)
-    # libspice.dafgs_c(ctypes.cast(retarray, ctypes.POINTER(ctypes.c_double)))
     libspice.dafgs_c(retarray)
     return stypes.c_vector_to_python(retarray)[0:n]
 
@@ -2306,7 +2303,7 @@ def dafopr(fname: str) -> int:
     :return: Handle assigned to DAF.
     """
     fname = stypes.string_to_char_p(fname)
-    handle = ctypes.c_int()
+    handle = ctypes.c_int(0)
     libspice.dafopr_c(fname, ctypes.byref(handle))
     return handle.value
 
@@ -2322,7 +2319,7 @@ def dafopw(fname: str) -> int:
     :return: Handle assigned to DAF.
     """
     fname = stypes.string_to_char_p(fname)
-    handle = ctypes.c_int()
+    handle = ctypes.c_int(0)
     libspice.dafopw_c(fname, ctypes.byref(handle))
     return handle.value
 

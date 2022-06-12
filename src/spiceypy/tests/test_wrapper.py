@@ -638,6 +638,7 @@ def test_ckgpav():
 
 
 def test_ckgr02_cknr02():
+    spice.reset()
     handle = spice.dafopr(ExtraKernels.v02swuck)
     spice.dafbfs(handle)
     found = spice.daffna()
@@ -655,9 +656,11 @@ def test_ckgr02_cknr02():
     assert sclke == pytest.approx(32380395707.000015)
     assert sclkr == pytest.approx(0.001000)
     spice.dascls(handle)
+    spice.kclear()
 
 
 def test_ckgr03_cknr03():
+    spice.reset()
     handle = spice.dafopr(ExtraKernels.vexboomck)
     spice.dafbfs(handle)
     found = spice.daffna()
@@ -671,6 +674,7 @@ def test_ckgr03_cknr03():
     sclkdp = rec[0]
     assert sclkdp == pytest.approx(2162686.710986)
     spice.dascls(handle)
+    spice.kclear()
 
 
 def test_cklpf():
