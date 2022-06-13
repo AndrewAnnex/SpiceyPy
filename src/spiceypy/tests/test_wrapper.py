@@ -1920,6 +1920,26 @@ def test_dlatdr():
     npt.assert_array_almost_equal(output, expected)
 
 
+def test_dnearp():
+    spice.furnsh(
+        [
+            CoreKernels.lsk,
+            CoreKernels.pck,
+            CoreKernels.spk,
+            ExtraKernels.mro2007sub,
+            ExtraKernels.marsSpk,
+            ExtraKernels.spk430sub,
+        ]
+    )
+    et = spice.str2et("2007 SEP 30 00:00:00 TDB")
+    _, radii = spice.bodvrd("MARS", "RADII", 3)
+    state, lt = spice.spkezr("MRO", et, "IAU_MARS", "NONE", "MARS")
+    dnear, dalt = spice.dnearp(state, radii[0], radii[1], radii[2])
+    shift = (dalt[1] / spice.clight()) * 20.0  # 20mhz
+    assert shift == pytest.approx(-0.0000005500991159)
+    assert spice.vnorm(dnear[3:]) == pytest.approx(3.214001, abs=1e-6)
+
+
 def test_dp2hx():
     assert spice.dp2hx(2.0e-9) == "89705F4136B4A8^-7"
     assert spice.dp2hx(1.0) == "1^1"
@@ -1956,6 +1976,32 @@ def test_dpmin():
 
 def test_dpr():
     assert spice.dpr() == 180.0 / np.arccos(-1.0)
+
+
+@pytest.mark.xfail
+def test_dasudc_dasrdc():
+    daspath = os.path.join(cwd, "ex_dasudc.das")
+    cleanup_kernel(daspath)
+    handle = spice.dasonw(daspath, "TEST", "ex_dasudc", 140)
+    idata = ["oooo", "xxxx"]
+    spice.dasadc(handle, 10, 0, 3, 4, idata)  # write initial contents
+    spice.dascls(handle)
+    # read the file
+    handle = spice.dasopr(daspath)
+    rdata = spice.dasrdc(handle, 1, 2, 0, 3, 4)
+    assert rdata == idata
+    spice.dascls(handle)
+    # update the file
+    handle = spice.dasopw(daspath)
+    fdata = ["yyyy", "xxaa"]
+    spice.dasudc(handle, 1, 4, 0, 3, 4, fdata)  # update contents
+    spice.dascls(handle)
+    # load and ensure data was written
+    handle = spice.dasopr(daspath)
+    rdata = spice.dasrdc(handle, 1, 4, 0, 3, 4)
+    assert rdata == fdata
+    spice.dascls(handle)
+    cleanup_kernel(daspath)
 
 
 def test_dasudi_dasrdi():

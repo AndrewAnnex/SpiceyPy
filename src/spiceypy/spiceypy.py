@@ -2767,8 +2767,10 @@ def dasrdc(
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasrdc_c.html
 
     :param handle: DAS file handle.
-    :param last: Range of DAS character logical addresses.
-    :param epos: Begin and end positions of substrings.
+    :param first: start range of DAS character logical addresses.
+    :param last: end range of DAS character logical addresses.
+    :param bpos: end positions of substrings.
+    :param epos: begin positions of substrings.
     :param datlen: Common length of the character arrays in data.
     :return: Data having addresses first through last.
     """
@@ -2778,8 +2780,10 @@ def dasrdc(
     _bpos = ctypes.c_int(bpos)
     _epos = ctypes.c_int(epos)
     _datlen = ctypes.c_int(datlen)
-    _data = stypes.empty_char_array(0)
-    libspice.dasrdc_c(_handle, _last, _epos, _datlen, _data)
+    _data = stypes.empty_char_array(x_len=epos + 1, y_len=last + 1)
+    libspice.dasrdc_c(
+        _handle, _first, _last, _bpos, _epos, _datlen, ctypes.byref(_data)
+    )
     return stypes.c_vector_to_python(_data)
 
 

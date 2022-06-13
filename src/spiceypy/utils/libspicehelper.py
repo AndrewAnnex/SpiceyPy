@@ -376,7 +376,7 @@ libspice.dasonw_c.argtypes = [
     c_int,
     c_int_p,
 ]
-libspice.dasrdc_c.argtypes = [c_int, c_int, c_int, c_int, c_void_p]
+libspice.dasrdc_c.argtypes = [c_int, c_int, c_int, c_int, c_int, c_int, c_void_p]
 libspice.dasrdd_c.argtypes = [c_int, c_int, c_int, c_double_p]
 libspice.dasrdi_c.argtypes = [c_int, c_int, c_int, c_int_p]
 libspice.dasrfr_c.argtypes = [
@@ -390,12 +390,7 @@ libspice.dasrfr_c.argtypes = [
     c_int_p,
     c_int_p,
 ]
-libspice.dasudc_c.argtypes = [
-    c_int,
-    c_int,
-    c_int,
-    c_int,
-]
+libspice.dasudc_c.argtypes = [c_int, c_int, c_int, c_int, c_int, c_int, c_void_p]
 libspice.dasudd_c.argtypes = [
     c_int,
     c_int,
