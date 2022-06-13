@@ -149,7 +149,91 @@ def test_axisar():
     axis = np.array([0.0, 0.0, 1.0])
     outmatrix = spice.axisar(axis, spice.halfpi())
     expected = np.array([[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
-    np.testing.assert_array_almost_equal(expected, outmatrix, decimal=6)
+    npt.assert_array_almost_equal(expected, outmatrix, decimal=6)
+
+
+@pytest.mark.xfail
+def test_azlcpo():
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(ExtraKernels.earthTopoTf)
+    spice.furnsh(ExtraKernels.earthStnSpk)
+    spice.furnsh(ExtraKernels.earthHighPerPck)
+    et = spice.str2et("2003 Jan 01 00:00:00 TDB")
+    obspos = [-2353.621419700, -4641.341471700, 3677.052317800]
+    azlsta, lt = spice.azlcpo(
+        "ELLIPSOID", "VENUS", et, "CN+S", False, True, obspos, "EARTH", "ITRF93"
+    )
+    npt.assert_array_almost_equal(
+        azlsta,
+        [
+            89344802.82679011,
+            269.04481881,
+            -25.63088321,
+            13.41734176,
+            0.00238599,
+            -0.00339644,
+        ],
+        decimal=3,
+    )
+
+
+def test_azlrec():
+    d = spice.rpd()
+    npt.assert_array_almost_equal(
+        spice.azlrec(0.000, 0.000 * d, 0.000 * d, True, True),
+        [0.000, 0.000, 0.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.000, 0.000 * d, 0.000 * d, True, True),
+        [1.000, 0.000, 0.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.000, 270.000 * d, 0.000 * d, True, True),
+        [-0.000, -1.000, 0.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.000, 0.000 * d, -90.000 * d, True, True),
+        [0.000, 0.000, -1.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.000, 180.000 * d, 0.000 * d, True, True),
+        [-1.000, 0.000, 0.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.000, 90.000 * d, 0.000 * d, True, True),
+        [0.000, 1.000, 0.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.000, 0.000 * d, 90.000 * d, True, True),
+        [0.000, 0.000, 1.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.414, 315.000 * d, 0.000 * d, True, True),
+        [1.000, -1.000, 0.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.414, 0.000 * d, -45.000 * d, True, True),
+        [1.000, 0.000, -1.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.414, 270.000 * d, -45.000 * d, True, True),
+        [-0.000, -1.000, -1.000],
+        decimal=3,
+    )
+    npt.assert_array_almost_equal(
+        spice.azlrec(1.732, 315.000 * d, -35.264 * d, True, True),
+        [1.000, -1.000, -1.000],
+        decimal=3,
+    )
 
 
 def test_b1900():
@@ -370,6 +454,23 @@ def test_chbder():
     npt.assert_array_almost_equal([-0.340878, 0.382716, 4.288066, -1.514403], dpdxs)
 
 
+def test_chbigr():
+    p, itgrlp = spice.chbigr(5, [0.0, 3.75, 0.0, 1.875, 0.0, 0.375], [20.0, 10.0], 30.0)
+    assert p == pytest.approx(6.0)
+    assert itgrlp == pytest.approx(10.0)
+
+
+def test_chbint():
+    p, dpdx = spice.chbint([1.0, 3.0, 0.5, 1.0, 0.5, -1.0, 1.0], 6, [0.5, 3.0], 1.0)
+    assert p == pytest.approx(-0.340878, abs=1e-6)
+    assert dpdx == pytest.approx(0.382716, abs=1e-6)
+
+
+def test_chbval():
+    p = spice.chbval([1.0, 3.0, 0.5, 1.0, 0.5, -1.0, 1.0], 6, [0.5, 3.0], 1.0)
+    assert p == pytest.approx(-0.340878, abs=1e-6)
+
+
 def test_chkin():
     spice.reset()
     assert spice.trcdep() == 0
@@ -451,6 +552,7 @@ def test_ckcov():
     ] == expected_intervals
 
 
+@pytest.mark.xfail
 def test_ckfrot():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassSclk)
@@ -459,7 +561,7 @@ def test_ckfrot():
     spice.furnsh(CassiniKernels.cassFk)
     spice.furnsh(CassiniKernels.cassPck)
     ckid = spice.ckobj(CassiniKernels.cassCk)[0]
-    # aribtrary time covered by test ck kernel
+    # arbitrary time covered by test ck kernel
     et = spice.str2et("2013-FEB-26 00:01:08.828")
     rotation, ref = spice.ckfrot(ckid, et)
     expected = np.array(
@@ -471,6 +573,22 @@ def test_ckfrot():
     )
     npt.assert_array_almost_equal(rotation, expected)
     assert ref == 1
+
+
+def test_ckfxfkm():
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(CassiniKernels.cassSclk)
+    spice.furnsh(CassiniKernels.cassCk)
+    spice.furnsh(CassiniKernels.cassIk)
+    spice.furnsh(CassiniKernels.cassFk)
+    spice.furnsh(CassiniKernels.cassPck)
+    # arbitrary time covered by test ck kernel
+    et = spice.str2et("2013-FEB-26 00:01:08.828")
+    xform, ref = spice.ckfxfm(-82000, et)
+    rot, av = spice.xf2rav(xform)
+    arc = spice.vnorm(av)
+    assert ref == 1
+    assert arc > 0
 
 
 def test_ckgp():
@@ -519,6 +637,49 @@ def test_ckgpav():
     assert clkout == 267832537952.0
 
 
+def test_ckgr02_cknr02():
+    spice.kclear()
+    spice.reset()
+    handle = spice.dafopr(ExtraKernels.v02swuck)
+    spice.dafbfs(handle)
+    found = spice.daffna()
+    assert found
+    descr = spice.dafgs(n=5)
+    dc, ic = spice.dafus(descr, 2, 6)
+    assert ic[2] == 2
+    nrec = spice.cknr02(handle, descr)
+    assert nrec > 0
+    rec = spice.ckgr02(handle, descr, 1)
+    sclks = rec[0]
+    sclke = rec[1]
+    sclkr = rec[2]
+    assert sclks == pytest.approx(32380393707.000015)
+    assert sclke == pytest.approx(32380395707.000015)
+    assert sclkr == pytest.approx(0.001000)
+    spice.dafcls(handle)
+    spice.kclear()
+
+
+def test_ckgr03_cknr03():
+    spice.kclear()
+    spice.reset()
+    handle = spice.dafopr(ExtraKernels.vexboomck)
+    spice.dafbfs(handle)
+    found = spice.daffna()
+    assert found
+    descr = spice.dafgs(n=5)
+    dc, ic = spice.dafus(descr, 2, 6)
+    assert ic[2] == 3
+    nrec = spice.cknr03(handle, descr)
+    assert nrec > 0
+    rec = spice.ckgr03(handle, descr, 1)
+    spice.dafcls(handle)
+    sclkdp = rec[0]
+    assert sclkdp == pytest.approx(2162686.710986)
+    spice.dafcls(handle)
+    spice.kclear()
+
+
 def test_cklpf():
     spice.reset()
     cklpf = os.path.join(cwd, "cklpfkernel.bc")
@@ -548,6 +709,13 @@ def test_cklpf():
     assert spice.exists(cklpf)
     cleanup_kernel(cklpf)
     assert not spice.exists(cklpf)
+
+
+def test_ckmeta():
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(ExtraKernels.voyagerSclk)
+    idcode = spice.ckmeta(-32000, "SCLK")
+    assert idcode == -32
 
 
 def test_ckobj():
@@ -903,11 +1071,6 @@ def test_stress_ckw05():
         spice.kclear()
         spice.reset()
         test_ckw05()
-
-
-def test_cleard():
-    with pytest.raises(NotImplementedError):
-        spice.cleard()
 
 
 def test_clight():
@@ -1332,6 +1495,14 @@ def test_dafgsr():
     spice.reset()
 
 
+def test_dafhsf():
+    handle = spice.dafopr(CoreKernels.spk)
+    nd, ni = spice.dafhsf(handle)
+    spice.dafcls(handle)
+    assert nd > 0
+    assert ni > 0
+
+
 def test_dafopr():
     handle = spice.dafopr(CoreKernels.spk)
     spice.dafbfs(handle)
@@ -1492,7 +1663,7 @@ def test_dafus():
     npt.assert_array_almost_equal(ic, [1, 0, 1, 2, 1025, 27164])
 
 
-def test_dasac_dasopr_dasec_dasdc():
+def test_dasac_dasopr_dasec_dasdc_dashfs_dasllc():
     daspath = os.path.join(cwd, "ex_dasac.das")
     cleanup_kernel(daspath)
     handle = spice.dasonw(daspath, "TEST", "ex_dasac", 140)
@@ -1527,6 +1698,14 @@ def test_dasac_dasopr_dasec_dasdc():
     assert ncomc == 18
     # close the das file
     spice.dascls(handle)
+    # test dashfs
+    handle = spice.dasopr(daspath)
+    nresvr, nresvc, ncomr, ncomc, free, lastla, lastrc, lastwd = spice.dashfs(handle)
+    assert nresvr == 0
+    assert nresvc == 0
+    assert ncomr == 140
+    assert ncomc == 18
+    spice.dasllc(handle)
     ###############################################
     # now reload the kernel and delete the commnets
     handle = spice.dasopw(daspath)
@@ -1546,6 +1725,38 @@ def test_dasac_dasopr_dasec_dasdc():
     # done, so clean up
     spice.kclear()
     cleanup_kernel(daspath)
+
+
+def test_dasadc():
+    h = spice.dasops()
+    spice.dasadc(h, 4, 0, 4, 5, ["SPUD"])
+    nc, _, _ = spice.daslla(h)
+    assert nc == 4
+    spice.dascls(h)
+
+
+def test_dasadd():
+    h = spice.dasops()
+    data = np.linspace(0.0, 1.0, num=10)
+    spice.dasadd(h, 10, data)
+    _, nd, _ = spice.daslla(h)
+    assert nd == 10
+    spice.dascls(h)
+
+
+def test_dasadi():
+    h = spice.dasops()
+    data = np.arange(0, 10, dtype=int)
+    spice.dasadi(h, 10, data)
+    _, _, ni = spice.daslla(h)
+    assert ni == 10
+    spice.dascls(h)
+
+
+def test_dasops():
+    h = spice.dasops()
+    assert h is not None
+    spice.dascls(h)
 
 
 def test_dasopw_dascls_dasopr():
@@ -1681,10 +1892,52 @@ def test_dlabbs():
     spice.dascls(handle)
 
 
+def test_dlaopn_dlabns_dlaens_daswbr():
+    path = os.path.join(cwd, "dlaopn_dlabns_dlaens_daswbr.dla")
+    cleanup_kernel(path)
+    handle = spice.dlaopn(path, "DLA", "Example DLA file for testing", 0)
+    spice.dlabns(handle)  # start segm
+    datai = np.arange(100, dtype=int)
+    datad = np.arange(100.0, dtype=float)
+    spice.dasadi(handle, 100, datai)
+    spice.dasadd(handle, 100, datad)
+    spice.dlaens(handle)  # end the segment
+    spice.daswbr(handle)
+    spice.dasllc(handle)
+    # now read the file to check data
+    handle = spice.dasopr(path)
+    dladsc = spice.dlabfs(handle)
+    assert dladsc.isize == 100
+    assert dladsc.dsize == 100
+    spice.dascls(handle)
+    # now clean up
+    cleanup_kernel(path)
+
+
 def test_dlatdr():
     output = spice.dlatdr(1.0, 0.0, 0.0)
     expected = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
     npt.assert_array_almost_equal(output, expected)
+
+
+def test_dnearp():
+    spice.furnsh(
+        [
+            CoreKernels.lsk,
+            CoreKernels.pck,
+            CoreKernels.spk,
+            ExtraKernels.mro2007sub,
+            ExtraKernels.marsSpk,
+            ExtraKernels.spk430sub,
+        ]
+    )
+    et = spice.str2et("2007 SEP 30 00:00:00 TDB")
+    _, radii = spice.bodvrd("MARS", "RADII", 3)
+    state, lt = spice.spkezr("MRO", et, "IAU_MARS", "NONE", "MARS")
+    dnear, dalt = spice.dnearp(state, radii[0], radii[1], radii[2])
+    shift = (dalt[1] / spice.clight()) * 20.0  # 20mhz
+    assert shift == pytest.approx(-0.0000005500991159)
+    assert spice.vnorm(dnear[3:]) == pytest.approx(3.214001, abs=1e-6)
 
 
 def test_dp2hx():
@@ -1723,6 +1976,87 @@ def test_dpmin():
 
 def test_dpr():
     assert spice.dpr() == 180.0 / np.arccos(-1.0)
+
+
+@pytest.mark.xfail
+def test_dasudc_dasrdc():
+    daspath = os.path.join(cwd, "ex_dasudc.das")
+    cleanup_kernel(daspath)
+    handle = spice.dasonw(daspath, "TEST", "ex_dasudc", 140)
+    idata = ["oooo", "xxxx"]
+    spice.dasadc(handle, 10, 0, 3, 4, idata)  # write initial contents
+    spice.dascls(handle)
+    # read the file
+    handle = spice.dasopr(daspath)
+    rdata = spice.dasrdc(handle, 1, 2, 0, 3, 4)
+    assert rdata == idata
+    spice.dascls(handle)
+    # update the file
+    handle = spice.dasopw(daspath)
+    fdata = ["yyyy", "xxaa"]
+    spice.dasudc(handle, 1, 4, 0, 3, 4, fdata)  # update contents
+    spice.dascls(handle)
+    # load and ensure data was written
+    handle = spice.dasopr(daspath)
+    rdata = spice.dasrdc(handle, 1, 4, 0, 3, 4)
+    assert rdata == fdata
+    spice.dascls(handle)
+    cleanup_kernel(daspath)
+
+
+def test_dasudi_dasrdi():
+    daspath = os.path.join(cwd, "ex_dasudi.das")
+    cleanup_kernel(daspath)
+    handle = spice.dasonw(daspath, "TEST", "ex_dasudi", 140)
+    spice.dasadi(handle, 200, np.zeros(200, dtype=int))
+    data = np.arange(200, dtype=int)
+    spice.dasudi(handle, 1, 200, data)
+    spice.dascls(handle)
+    # load and ensure data was written
+    handle = spice.dasopr(daspath)
+    rdata = spice.dasrdi(handle, 1, 200)
+    assert rdata == pytest.approx(data)
+    spice.dascls(handle)
+    cleanup_kernel(daspath)
+
+
+def test_dasudd_dasrdd():
+    daspath = os.path.join(cwd, "ex_dasudd.das")
+    cleanup_kernel(daspath)
+    handle = spice.dasonw(daspath, "TEST", "ex_dasudd", 140)
+    spice.dasadd(handle, 200, np.zeros(200, dtype=float))
+    data = np.arange(200, dtype=float)
+    spice.dasudd(handle, 1, 200, data)
+    spice.dascls(handle)
+    # load and ensure data was written
+    handle = spice.dasopr(daspath)
+    rdata = spice.dasrdd(handle, 1, 200)
+    assert rdata == pytest.approx(data)
+    spice.dascls(handle)
+    cleanup_kernel(daspath)
+
+
+def test_dazldr_drdazl():
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(ExtraKernels.earthTopoTf)
+    spice.furnsh(ExtraKernels.earthStnSpk)
+    spice.furnsh(ExtraKernels.earthHighPerPck)
+    et = spice.str2et("2003 Oct 13 06:00:00 UTC")
+    state, lt = spice.spkezr("VENUS", et, "DSS-14_TOPO", "CN+S", "DSS-14")
+    r, az, el = spice.recazl(state[0:3], False, True)
+    jacobi = spice.dazldr(state[0], state[1], state[2], False, True)
+    azlvel = spice.mxv(jacobi, state[3:])
+    jacobi = spice.drdazl(r, az, el, False, True)
+    drectn = spice.mxv(jacobi, azlvel)
+    npt.assert_array_almost_equal(
+        drectn,
+        [
+            6166.04150307,
+            -13797.77164550,
+            -8704.32385654,
+        ],
+        decimal=3,
+    )
 
 
 def test_drdcyl():
@@ -2311,6 +2645,18 @@ def test_edlimb():
     npt.assert_array_almost_equal(limb.center, expected_center)
     npt.assert_array_almost_equal(limb.semi_major, expected_s_major)
     npt.assert_array_almost_equal(limb.semi_minor, expected_s_minor)
+
+
+def test_ednmpt():
+    point = spice.ednmpt(10.0, 5.0, 2.0, [15.0, -7.0, 3.0])
+    npt.assert_array_almost_equal(point, [9.73103203, -1.13528707, 0.07784826])
+
+
+def test_edpnt():
+    ep = spice.edpnt([1.0, 1.0, 1.0], 3.0, 2.0, 1.0)
+    npt.assert_array_almost_equal(
+        ep, [0.85714285714286, 0.85714285714286, 0.85714285714286]
+    )
 
 
 def test_edterm():
