@@ -2487,7 +2487,9 @@ def dasadc(
     _bpos = ctypes.c_int(bpos)
     _epos = ctypes.c_int(epos)
     _datlen = ctypes.c_int(datlen)
-    _data = stypes.list_to_char_array_ptr(data)
+    sublen = epos - bpos + 1
+    r = int((n + sublen - 1) // sublen)
+    _data = stypes.list_to_char_array_ptr(data, x_len=epos + 1, y_len=r)
     libspice.dasadc_c(_handle, _n, _bpos, _epos, _datlen, _data)
 
 
@@ -2780,7 +2782,9 @@ def dasrdc(
     _bpos = ctypes.c_int(bpos)
     _epos = ctypes.c_int(epos)
     _datlen = ctypes.c_int(datlen)
-    _data = stypes.empty_char_array(x_len=epos + 1, y_len=last + 1)
+    sublen = epos - bpos + 1
+    r = int((last - first + sublen) // sublen)
+    _data = stypes.empty_char_array(x_len=epos + 1, y_len=r)
     libspice.dasrdc_c(
         _handle, _first, _last, _bpos, _epos, _datlen, ctypes.byref(_data)
     )
@@ -2890,6 +2894,7 @@ def dasudc(
 
     :param handle: DAS file handle.
     :param last: Range of DAS character logical addresses.
+    :param bpos: Begin and end positions of substrings.
     :param epos: Begin and end positions of substrings.
     :param datlen: Common length of the character arrays in data.
     :param data: Data having addresses first through last.
@@ -2900,7 +2905,9 @@ def dasudc(
     _bpos = ctypes.c_int(bpos)
     _epos = ctypes.c_int(epos)
     _datlen = ctypes.c_int(datlen)
-    _data = stypes.list_to_char_array_ptr(data)
+    sublen = epos - bpos + 1
+    r = int((last - first + sublen) // sublen)
+    _data = stypes.list_to_char_array_ptr(data, x_len=epos + 1, y_len=r)
     libspice.dasudc_c(_handle, _first, _last, _bpos, _epos, _datlen, _data)
 
 
