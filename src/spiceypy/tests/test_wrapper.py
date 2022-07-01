@@ -552,7 +552,6 @@ def test_ckcov():
     ] == expected_intervals
 
 
-@pytest.mark.xfail
 def test_ckfrot():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassSclk)
@@ -566,9 +565,9 @@ def test_ckfrot():
     rotation, ref = spice.ckfrot(ckid, et)
     expected = np.array(
         [
-            [-0.64399206, 0.48057295, 0.5952511],
-            [-0.34110294, -0.87682328, 0.33886533],
-            [0.68477954, 0.01518468, 0.72859208],
+            [-0.64399206, -0.34110294, 0.68477954],
+            [0.48057295, -0.87682328, 0.01518468],
+            [0.5952511, 0.33886533, 0.72859208],
         ]
     )
     npt.assert_array_almost_equal(rotation, expected)
@@ -1984,11 +1983,11 @@ def test_dasudc_dasrdc():
     cleanup_kernel(daspath)
     handle = spice.dasonw(daspath, "TEST", "ex_dasudc", 140)
     idata = ["oooo", "xxxx"]
-    spice.dasadc(handle, 10, 0, 3, 4, idata)  # write initial contents
+    spice.dasadc(handle, 8, 0, 3, 4, idata)  # write initial contents
     spice.dascls(handle)
     # read the file
     handle = spice.dasopr(daspath)
-    rdata = spice.dasrdc(handle, 1, 2, 0, 3, 4)
+    rdata = spice.dasrdc(handle, 1, 8, 0, 3, 4)
     assert rdata == idata
     spice.dascls(handle)
     # update the file
