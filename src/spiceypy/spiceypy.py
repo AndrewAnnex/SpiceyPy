@@ -14957,34 +14957,34 @@ def tangpt(
      Point on surface nearest to tangent point, Epoch associated with
      correction locus, Vector from observer to surface point `srfpt'.
     """
-    method = stypes.string_to_char_p(method)
-    target = stypes.string_to_char_p(target)
-    et = ctypes.c_double(et)
-    fixref = stypes.string_to_char_p(fixref)
-    abcorr = stypes.string_to_char_p(abcorr)
-    corloc = stypes.string_to_char_p(corloc)
-    obsrvr = stypes.string_to_char_p(obsrvr)
-    dref = stypes.string_to_char_p(dref)
-    dvec = stypes.to_double_vector(dvec)
+    _method = stypes.string_to_char_p(method)
+    _target = stypes.string_to_char_p(target)
+    _et = ctypes.c_double(et)
+    _fixref = stypes.string_to_char_p(fixref)
+    _abcorr = stypes.string_to_char_p(abcorr)
+    _corloc = stypes.string_to_char_p(corloc)
+    _obsrvr = stypes.string_to_char_p(obsrvr)
+    _dref = stypes.string_to_char_p(dref)
+    _dvec = stypes.to_double_vector(dvec)
     tanpt = stypes.empty_double_vector(3)
     alt = ctypes.c_double(0)
-    range = ctypes.c_double(0)
+    _range = ctypes.c_double(0)
     srfpt = stypes.empty_double_vector(3)
     trgepc = ctypes.c_double(0)
     srfvec = stypes.empty_double_vector(3)
     libspice.tangpt_c(
-        method,
-        target,
-        et,
-        fixref,
-        abcorr,
-        corloc,
-        obsrvr,
-        dref,
-        dvec,
+        _method,
+        _target,
+        _et,
+        _fixref,
+        _abcorr,
+        _corloc,
+        _obsrvr,
+        _dref,
+        _dvec,
         tanpt,
         ctypes.byref(alt),
-        ctypes.byref(range),
+        ctypes.byref(_range),
         srfpt,
         ctypes.byref(trgepc),
         srfvec
@@ -14992,7 +14992,7 @@ def tangpt(
     return (
         stypes.c_vector_to_python(tanpt),
         alt.value,
-        range.value,
+        _range.value,
         stypes.c_vector_to_python(srfpt),
         trgepc.value,
         stypes.c_vector_to_python(srfvec)
