@@ -152,28 +152,25 @@ def test_axisar():
     npt.assert_array_almost_equal(expected, outmatrix, decimal=6)
 
 
-@pytest.mark.xfail
 def test_azlcpo():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.earthTopoTf)
     spice.furnsh(ExtraKernels.earthStnSpk)
     spice.furnsh(ExtraKernels.earthHighPerPck)
-    et = spice.str2et("2003 Jan 01 00:00:00 TDB")
+    et = spice.str2et("2003 Oct 13 06:00:00 UTC")
     obspos = [-2353.621419700, -4641.341471700, 3677.052317800]
     azlsta, lt = spice.azlcpo(
         "ELLIPSOID", "VENUS", et, "CN+S", False, True, obspos, "EARTH", "ITRF93"
     )
-    npt.assert_array_almost_equal(
-        azlsta,
+    assert azlsta == pytest.approx(
         [
-            89344802.82679011,
-            269.04481881,
-            -25.63088321,
-            13.41734176,
-            0.00238599,
-            -0.00339644,
-        ],
-        decimal=3,
+            2.45721479e8,
+            5.13974044,
+            -8.54270565e-1,
+            -4.68189831,
+            7.02070016e-5,
+            -5.39579640e-5,
+        ]
     )
 
 
@@ -9497,9 +9494,15 @@ def test_szpool():
 def test_tangpt():
     spice.reset()
     spice.furnsh(
-        [CoreKernels.lsk, CoreKernels.pck, CoreKernels.spk,
-         CassiniKernels.satSpk, CassiniKernels.cassTourSpk,
-         ExtraKernels.earthHighPerPck, ExtraKernels.earthStnSpk]
+        [
+            CoreKernels.lsk,
+            CoreKernels.pck,
+            CoreKernels.spk,
+            CassiniKernels.satSpk,
+            CassiniKernels.cassTourSpk,
+            ExtraKernels.earthHighPerPck,
+            ExtraKernels.earthStnSpk,
+        ]
     )
     locus = "TANGENT POINT"
     sc = "CASSINI"
@@ -9508,17 +9511,18 @@ def test_tangpt():
     fixref = "IAU_SATURN"
     rayfrm = "J2000"
     et = spice.str2et("2013-FEB-13 11:21:20.213872 (TDB)")
-    raydir, raylt = spice.spkpos(
-        sc, et, rayfrm, "NONE", obsrvr
-    )
+    raydir, raylt = spice.spkpos(sc, et, rayfrm, "NONE", obsrvr)
     tanpt, alt, range, srfpt, trgepc, srfvec = spice.tangpt(
-        "ELLIPSOID", target, et, fixref, "NONE", locus, obsrvr,
-        rayfrm, raydir
+        "ELLIPSOID", target, et, fixref, "NONE", locus, obsrvr, rayfrm, raydir
     )
-    npt.assert_array_almost_equal(tanpt, [-113646.428171, 213634.489363, -222709.965702], decimal=5)
+    npt.assert_array_almost_equal(
+        tanpt, [-113646.428171, 213634.489363, -222709.965702], decimal=5
+    )
     assert alt == pytest.approx(271285.892825)
     assert range == pytest.approx(1425243487.098913)
-    npt.assert_array_almost_equal(srfpt, [-21455.320586, 40332.076698, -35458.506180], decimal=5)
+    npt.assert_array_almost_equal(
+        srfpt, [-21455.320586, 40332.076698, -35458.506180], decimal=5
+    )
     assert trgepc == pytest.approx(414026480.213872)
 
 

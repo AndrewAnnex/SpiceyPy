@@ -14924,6 +14924,7 @@ def szpool(name: str) -> Tuple[int, bool]:
 ################################################################################
 # T
 
+
 @spice_error_check
 def tangpt(
     method: str,
@@ -14994,7 +14995,7 @@ def tangpt(
         ctypes.byref(_range),
         srfpt,
         ctypes.byref(trgepc),
-        srfvec
+        srfvec,
     )
     return (
         stypes.c_vector_to_python(tanpt),
@@ -15002,7 +15003,7 @@ def tangpt(
         _range.value,
         stypes.c_vector_to_python(srfpt),
         trgepc.value,
-        stypes.c_vector_to_python(srfvec)
+        stypes.c_vector_to_python(srfvec),
     )
 
 
