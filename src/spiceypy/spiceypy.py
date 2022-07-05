@@ -14924,6 +14924,87 @@ def szpool(name: str) -> Tuple[int, bool]:
 ################################################################################
 # T
 
+@spice_error_check
+def tangpt(
+    method: str,
+    target: str,
+    et: float,
+    fixref: str,
+    abcorr: str,
+    corloc: str,
+    obsrvr: str,
+    dref: str,
+    dvec: Union[ndarray, Iterable[float]],
+) -> Tuple[ndarray, float, float, ndarray, float, ndarray]:
+    """
+    Compute, for a given observer, ray emanating from the observer,
+    and target, the "tangent point": the point on the ray nearest
+    to the target's surface. Also compute the point on the target's
+    surface nearest to the tangent point.
+
+    The locations of both points are optionally corrected for light
+    time and stellar aberration.
+
+    The surface shape is modeled as a triaxial ellipsoid.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tangpt_c.html
+
+    :param method: Computation method.
+    :param target: Name of target body.
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :param fixref: Body-fixed, body-centered target body frame.
+    :param abcorr: Aberration correction.
+    :param corloc: Aberration correction locus: "TANGENT POINT" or
+                   "SURFACE POINT".
+    :param obsrvr: Name of observing body.
+    :param dref: Reference frame of ray direction vector.
+    :param dvec: Ray direction vector.
+    :return: "Tangent point": point on ray nearest to surface, Altitude of
+     tangent point above surface, Distance of tangent point from observer,
+     Point on surface nearest to tangent point, Epoch associated with
+     correction locus, Vector from observer to surface point `srfpt'.
+    """
+    _method = stypes.string_to_char_p(method)
+    _target = stypes.string_to_char_p(target)
+    _et = ctypes.c_double(et)
+    _fixref = stypes.string_to_char_p(fixref)
+    _abcorr = stypes.string_to_char_p(abcorr)
+    _corloc = stypes.string_to_char_p(corloc)
+    _obsrvr = stypes.string_to_char_p(obsrvr)
+    _dref = stypes.string_to_char_p(dref)
+    _dvec = stypes.to_double_vector(dvec)
+    tanpt = stypes.empty_double_vector(3)
+    alt = ctypes.c_double(0)
+    _range = ctypes.c_double(0)
+    srfpt = stypes.empty_double_vector(3)
+    trgepc = ctypes.c_double(0)
+    srfvec = stypes.empty_double_vector(3)
+    libspice.tangpt_c(
+        _method,
+        _target,
+        _et,
+        _fixref,
+        _abcorr,
+        _corloc,
+        _obsrvr,
+        _dref,
+        _dvec,
+        tanpt,
+        ctypes.byref(alt),
+        ctypes.byref(_range),
+        srfpt,
+        ctypes.byref(trgepc),
+        srfvec
+    )
+    return (
+        stypes.c_vector_to_python(tanpt),
+        alt.value,
+        _range.value,
+        stypes.c_vector_to_python(srfpt),
+        trgepc.value,
+        stypes.c_vector_to_python(srfvec)
+    )
+
 
 @spice_error_check
 def termpt(

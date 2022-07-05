@@ -2265,7 +2265,23 @@ libspice.szpool_c.argtypes = [c_char_p, c_int_p, c_int_p]
 
 ########################################################################################################################
 # T
-
+libspice.tangpt_c.argtypes = [
+    c_char_p,
+    c_char_p,
+    c_double,
+    c_char_p,
+    c_char_p,
+    c_char_p,
+    c_char_p,
+    c_char_p,
+    (c_double * 3),
+    (c_double * 3),
+    c_double_p,
+    c_double_p,
+    (c_double * 3),
+    c_double_p,
+    (c_double * 3),
+]
 libspice.termpt_c.argtypes = [
     c_char_p,
     c_char_p,

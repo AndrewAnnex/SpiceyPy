@@ -9494,6 +9494,34 @@ def test_szpool():
     assert spice.szpool("MAXLIN") == 15000
 
 
+def test_tangpt():
+    spice.reset()
+    spice.furnsh(
+        [CoreKernels.lsk, CoreKernels.pck, CoreKernels.spk,
+         CassiniKernels.satSpk, CassiniKernels.cassTourSpk,
+         ExtraKernels.earthHighPerPck, ExtraKernels.earthStnSpk]
+    )
+    locus = "TANGENT POINT"
+    sc = "CASSINI"
+    target = "SATURN"
+    obsrvr = "DSS-14"
+    fixref = "IAU_SATURN"
+    rayfrm = "J2000"
+    et = spice.str2et("2013-FEB-13 11:21:20.213872 (TDB)")
+    raydir, raylt = spice.spkpos(
+        sc, et, rayfrm, "NONE", obsrvr
+    )
+    tanpt, alt, range, srfpt, trgepc, srfvec = spice.tangpt(
+        "ELLIPSOID", target, et, fixref, "NONE", locus, obsrvr,
+        rayfrm, raydir
+    )
+    npt.assert_array_almost_equal(tanpt, [-113646.428171, 213634.489363, -222709.965702], decimal=5)
+    assert alt == pytest.approx(271285.892825)
+    assert range == pytest.approx(1425243487.098913)
+    npt.assert_array_almost_equal(srfpt, [-21455.320586, 40332.076698, -35458.506180], decimal=5)
+    assert trgepc == pytest.approx(414026480.213872)
+
+
 def test_termpt():
     spice.reset()
     spice.furnsh(CoreKernels.spk)
