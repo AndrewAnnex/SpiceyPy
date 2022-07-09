@@ -2760,38 +2760,6 @@ def dasopw(fname: str) -> int:
 
 
 @spice_error_check
-def dasrdc(
-    handle: int, first: int, last: int, bpos: int, epos: int, datlen: int
-) -> list:
-    """
-    Read character data from a range of DAS logical addresses.
-
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasrdc_c.html
-
-    :param handle: DAS file handle.
-    :param first: start range of DAS character logical addresses.
-    :param last: end range of DAS character logical addresses.
-    :param bpos: end positions of substrings.
-    :param epos: begin positions of substrings.
-    :param datlen: Common length of the character arrays in data.
-    :return: Data having addresses first through last.
-    """
-    _handle = ctypes.c_int(handle)
-    _first = ctypes.c_int(first)
-    _last = ctypes.c_int(last)
-    _bpos = ctypes.c_int(bpos)
-    _epos = ctypes.c_int(epos)
-    _datlen = ctypes.c_int(datlen)
-    sublen = epos - bpos + 1
-    r = int((last - first + sublen) // sublen)
-    _data = stypes.empty_char_array(x_len=epos + 1, y_len=r)
-    libspice.dasrdc_c(
-        _handle, _first, _last, _bpos, _epos, _datlen, ctypes.byref(_data)
-    )
-    return stypes.c_vector_to_python(_data)
-
-
-@spice_error_check
 def dasrdd(handle: int, first: int, last: int) -> ndarray:
     """
     Read double precision data from a range of DAS logical addresses.
@@ -2874,41 +2842,6 @@ def dasrfr(
         ncomr.value,
         ncomc.value,
     )
-
-
-@spice_error_check
-def dasudc(
-    handle: int,
-    first: int,
-    last: int,
-    bpos: int,
-    epos: int,
-    datlen: int,
-    data: Sequence[str],
-) -> None:
-    """
-    Update character data in a specified range of DAS logical
-    addresses with substrings of a character array.
-
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/dasudc_c.html
-
-    :param handle: DAS file handle.
-    :param last: Range of DAS character logical addresses.
-    :param bpos: Begin and end positions of substrings.
-    :param epos: Begin and end positions of substrings.
-    :param datlen: Common length of the character arrays in data.
-    :param data: Data having addresses first through last.
-    """
-    _handle = ctypes.c_int(handle)
-    _first = ctypes.c_int(first)
-    _last = ctypes.c_int(last)
-    _bpos = ctypes.c_int(bpos)
-    _epos = ctypes.c_int(epos)
-    _datlen = ctypes.c_int(datlen)
-    sublen = epos - bpos + 1
-    r = int((last - first + sublen) // sublen)
-    _data = stypes.list_to_char_array_ptr(data, x_len=epos + 1, y_len=r)
-    libspice.dasudc_c(_handle, _first, _last, _bpos, _epos, _datlen, _data)
 
 
 @spice_error_check

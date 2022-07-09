@@ -1974,32 +1974,6 @@ def test_dpr():
     assert spice.dpr() == 180.0 / np.arccos(-1.0)
 
 
-@pytest.mark.xfail
-def test_dasudc_dasrdc():
-    daspath = os.path.join(cwd, "ex_dasudc.das")
-    cleanup_kernel(daspath)
-    handle = spice.dasonw(daspath, "TEST", "ex_dasudc", 140)
-    idata = ["oooo", "xxxx"]
-    spice.dasadc(handle, 8, 0, 3, 4, idata)  # write initial contents
-    spice.dascls(handle)
-    # read the file
-    handle = spice.dasopr(daspath)
-    rdata = spice.dasrdc(handle, 1, 8, 0, 3, 4)
-    assert rdata == idata
-    spice.dascls(handle)
-    # update the file
-    handle = spice.dasopw(daspath)
-    fdata = ["yyyy", "xxaa"]
-    spice.dasudc(handle, 1, 4, 0, 3, 4, fdata)  # update contents
-    spice.dascls(handle)
-    # load and ensure data was written
-    handle = spice.dasopr(daspath)
-    rdata = spice.dasrdc(handle, 1, 4, 0, 3, 4)
-    assert rdata == fdata
-    spice.dascls(handle)
-    cleanup_kernel(daspath)
-
-
 def test_dasudi_dasrdi():
     daspath = os.path.join(cwd, "ex_dasudi.das")
     cleanup_kernel(daspath)
