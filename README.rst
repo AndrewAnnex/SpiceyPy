@@ -110,9 +110,9 @@ If you run into issues with your system please submit an issue with details.
 Please note that support for Python minor versions are generally phased out 
 as newer versions are released. 
 
-- OS: OS X, Linux, Windows
+- OS: OS X, Linux, Windows, FreeBSD
 - CPU: 64bit only!
-- Python 3.6, 3.7, 3.8, 3.9
+- Python 3.6, 3.7, 3.8, 3.9, 3.10
 - ARM support for Linux-aarch64 & osx-arm64
 
 * Support for Python 2.7 ended with version 2.3.2 January 2020 *
