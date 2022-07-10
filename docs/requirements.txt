@@ -1,4 +1,6 @@
 numpy
 sphinx-copybutton
 sphinx_autodoc_typehints
-sphinx==3.1.2
+sphinx>=3.1.2
+myst-parser
+sphinx-copybutton
