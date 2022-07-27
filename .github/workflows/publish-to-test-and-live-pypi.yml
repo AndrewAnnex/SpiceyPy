@@ -61,7 +61,7 @@ jobs:
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1.4.1
       - name: Set up QEMU for arm64 builds
-        if: matrix.config.arch == 'aarch64' || matrix.config.arch == 'arm64' 
+        if: matrix.config.arch == 'aarch64'
         uses: docker/setup-qemu-action@v1
         with:
           platforms: all
