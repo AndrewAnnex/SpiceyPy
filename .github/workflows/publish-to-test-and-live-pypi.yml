@@ -60,6 +60,11 @@ jobs:
       - name: Setup 🔬🍦🏗️
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1.4.1
+      - name: set additional environment variables
+        if: runner.os == 'macOS' && runner.arch == 'arm64'
+        run: |
+          export CIBW_ARCHS_MACOS="arm64"
+          env | grep CIBW
       - name: Set up QEMU for arm64 builds
         if: matrix.config.arch == 'aarch64'
         uses: docker/setup-qemu-action@v1
@@ -85,6 +90,7 @@ jobs:
       - name: Build wheels for SpiceyPy 🌶️ 🥧
         timeout-minutes: 120
         run: |
+          env | grep CIBW
           python -m cibuildwheel --output-dir wheelhouse
       - name: Check dists
         run: |
