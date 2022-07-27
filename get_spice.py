@@ -125,17 +125,13 @@ class GetCSPICE(object):
     _dists = {
         # system   arch        distribution name           extension
         # -------- ----------  -------------------------   ---------
-        ("Darwin", "32bit"): ("MacIntel_OSX_AppleC_32bit", "tar.Z"),
-        ("Darwin", "64bit"): ("MacIntel_OSX_AppleC_64bit", "tar.Z"),
-        ("Darwin", "64bit"): ("MacM1_OSX_clang_64bit", "tar.Z"),
-        ("cygwin", "32bit"): ("PC_Cygwin_GCC_32bit", "tar.Z"),
-        ("cygwin", "64bit"): ("PC_Cygwin_GCC_64bit", "tar.Z"),
-        ("FreeBSD", "32bit"): ("PC_Linux_GCC_32bit", "tar.Z"),
-        ("FreeBSD", "64bit"): ("PC_Linux_GCC_64bit", "tar.Z"),
-        ("Linux", "32bit"): ("PC_Linux_GCC_32bit", "tar.Z"),
-        ("Linux", "64bit"): ("PC_Linux_GCC_64bit", "tar.Z"),
-        ("Windows", "32bit"): ("PC_Windows_VisualC_32bit", "zip"),
-        ("Windows", "64bit"): ("PC_Windows_VisualC_64bit", "zip"),
+        ("Darwin", "x86_64", "64bit"): ("MacIntel_OSX_AppleC_64bit", "tar.Z"),
+        ("Darwin", "arm64", "64bit"): ("MacM1_OSX_clang_64bit", "tar.Z"),
+        ("cygwin", "x86_64", "64bit"): ("PC_Cygwin_GCC_64bit", "tar.Z"),
+        ("FreeBSD", "x86_64", "64bit"): ("PC_Linux_GCC_64bit", "tar.Z"),
+        ("Linux", "x86_64", "64bit"): ("PC_Linux_GCC_64bit", "tar.Z"),
+        ("Linux", "aarch64", "64bit"): ("PC_Linux_GCC_64bit", "tar.Z"),
+        ("Windows", "x86_64", "64bit"): ("PC_Windows_VisualC_64bit", "zip"),
     }
 
     def __init__(self, version=spice_version, dst=None):
@@ -197,19 +193,24 @@ class GetCSPICE(object):
 
         print("Gathering information...")
         system = platform.system()
+        processor = platform.processor()
+        machine = platform.machine()
 
         # Cygwin system is CYGWIN-NT-xxx.
         system = "cygwin" if "CYGWIN" in system else system
+        cpu_bits = "64bit" if sys.maxsize > 2 ** 32 else "32bit"
 
-        processor = platform.processor()
-        machine = "64bit" if sys.maxsize > 2 ** 32 else "32bit"
-        machine2 = platform.machine()
+        if machine in ("x86", "x86_64", "AMD64", "i686"):
+            machine = "x86_64"
 
         print("SYSTEM:   ", system)
         print("PROCESSOR:", processor)
-        print("MACHINE:  ", machine, machine2)
+        print("MACHINE:  ", cpu_bits, machine)
 
-        return self._dists[(system, machine)]
+        if machine in ("i386", "x86_32") or cpu_bits == "32bit":
+            raise RuntimeError("32bit bit builds are not supported")
+
+        return self._dists[(system, machine, cpu_bits)]
 
     def _download(self):
         """Support function that encapsulates the OpenSSL transfer of the CSPICE
