@@ -88,6 +88,7 @@ CSPICE_SHARED_LIB = "CSPICE_SHARED_LIB"
 CSPICE_NO_PATCH = "CSPICE_NO_PATCH"
 
 host_OS = platform.system()
+host_arch = platform.machine()
 # Check if platform is supported
 os_supported = host_OS in ("Linux", "Darwin", "FreeBSD", "Windows")
 # Get platform is Unix-like OS or not
@@ -98,6 +99,10 @@ root_dir = str(Path(os.path.realpath(__file__)).parent)
 cspice_dir = os.environ.get(CSPICE_SRC_DIR, os.path.join(root_dir, "cspice"))
 # and make a global tmp cspice directory
 tmp_cspice_root_dir = None
+# if we need to cross compile or compile for arm64
+is_macos_arm = host_OS == "Darwin" and (
+    host_arch == "arm64" or os.environ.get("ARCHFLAGS", "") == "-arch arm64"
+)
 # versions
 spice_version = "N0067"
 spice_num_v = "67"
@@ -287,9 +292,7 @@ def apply_patches() -> None:
             f"0001-patch-for-n66-dskx02.c{iswin}.patch",
             f"0002-patch-for-n66-subpnt.c{iswin}.patch",
         ]
-        if (
-            host_OS == "Darwin"
-        ):  # todo is this only needed for M1 or is it for any macos
+        if is_macos_arm:
             patches.append("0004_inquire_unistd.patch")
         for p in patches:
             try:
@@ -342,6 +345,7 @@ def build_cspice() -> str:
     global cspice_dir, host_OS
     if is_unix:
         libname = f"libcspice.so"
+        target = "-target arm64-apple-macos11" if is_macos_arm else ""
         if host_OS == "Darwin":
             extra_flags = f"-dynamiclib -install_name @rpath/{libname}"
         else:
@@ -349,8 +353,8 @@ def build_cspice() -> str:
         destination = cspice_dir
         os.chdir(destination)
         cmds = [
-            "gcc -Iinclude -c -fPIC -O2 -ansi ./cspice/src/cspice/*.c",
-            f"gcc {extra_flags} -fPIC -O2 -lm *.o -o {libname}",
+            f"gcc {target} -Iinclude -c -fPIC -O2 -ansi ./cspice/src/cspice/*.c",
+            f"gcc {target} {extra_flags} -fPIC -O2 -lm *.o -o {libname}",
         ]
     elif host_OS == "Windows":
         destination = os.path.join(cspice_dir, "cspice", "src", "cspice")
