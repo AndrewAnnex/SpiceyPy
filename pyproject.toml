@@ -9,8 +9,8 @@ build-frontend = "build"
 before-build = "python {project}/get_spice.py"
 # Only build on CPython 3.9
 build = "cp39-*"
-# Skip 32-bit builds and pypy
-skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "pypy*", "pp*", "*-musllinux_aarch64"]
+# Skip 32-bit builds, pypy, and musllinux
+skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "pypy*", "pp*", "*-musllinux_aarch64", "*-musllinux_x86_64"]
 # other options
 build-verbosity = 2
 before-test = [

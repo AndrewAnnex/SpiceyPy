@@ -88,6 +88,7 @@ CSPICE_SHARED_LIB = "CSPICE_SHARED_LIB"
 CSPICE_NO_PATCH = "CSPICE_NO_PATCH"
 
 host_OS = platform.system()
+host_arch = platform.machine()
 # Check if platform is supported
 os_supported = host_OS in ("Linux", "Darwin", "FreeBSD", "Windows")
 # Get platform is Unix-like OS or not
@@ -98,6 +99,10 @@ root_dir = str(Path(os.path.realpath(__file__)).parent)
 cspice_dir = os.environ.get(CSPICE_SRC_DIR, os.path.join(root_dir, "cspice"))
 # and make a global tmp cspice directory
 tmp_cspice_root_dir = None
+# if we need to cross compile or compile for arm64
+is_macos_arm = host_OS == "Darwin" and (
+    host_arch == "arm64" or os.environ.get("ARCHFLAGS", "") == "-arch arm64"
+)
 # versions
 spice_version = "N0067"
 spice_num_v = "67"
@@ -125,17 +130,13 @@ class GetCSPICE(object):
     _dists = {
         # system   arch        distribution name           extension
         # -------- ----------  -------------------------   ---------
-        ("Darwin", "32bit"): ("MacIntel_OSX_AppleC_32bit", "tar.Z"),
-        ("Darwin", "64bit"): ("MacIntel_OSX_AppleC_64bit", "tar.Z"),
-        ("Darwin", "64bit"): ("MacM1_OSX_clang_64bit", "tar.Z"),
-        ("cygwin", "32bit"): ("PC_Cygwin_GCC_32bit", "tar.Z"),
-        ("cygwin", "64bit"): ("PC_Cygwin_GCC_64bit", "tar.Z"),
-        ("FreeBSD", "32bit"): ("PC_Linux_GCC_32bit", "tar.Z"),
-        ("FreeBSD", "64bit"): ("PC_Linux_GCC_64bit", "tar.Z"),
-        ("Linux", "32bit"): ("PC_Linux_GCC_32bit", "tar.Z"),
-        ("Linux", "64bit"): ("PC_Linux_GCC_64bit", "tar.Z"),
-        ("Windows", "32bit"): ("PC_Windows_VisualC_32bit", "zip"),
-        ("Windows", "64bit"): ("PC_Windows_VisualC_64bit", "zip"),
+        ("Darwin", "x86_64", "64bit"): ("MacIntel_OSX_AppleC_64bit", "tar.Z"),
+        ("Darwin", "arm64", "64bit"): ("MacM1_OSX_clang_64bit", "tar.Z"),
+        ("cygwin", "x86_64", "64bit"): ("PC_Cygwin_GCC_64bit", "tar.Z"),
+        ("FreeBSD", "x86_64", "64bit"): ("PC_Linux_GCC_64bit", "tar.Z"),
+        ("Linux", "x86_64", "64bit"): ("PC_Linux_GCC_64bit", "tar.Z"),
+        ("Linux", "aarch64", "64bit"): ("PC_Linux_GCC_64bit", "tar.Z"),
+        ("Windows", "x86_64", "64bit"): ("PC_Windows_VisualC_64bit", "zip"),
     }
 
     def __init__(self, version=spice_version, dst=None):
@@ -197,19 +198,28 @@ class GetCSPICE(object):
 
         print("Gathering information...")
         system = platform.system()
+        processor = platform.processor()
+        machine = platform.machine()
 
         # Cygwin system is CYGWIN-NT-xxx.
         system = "cygwin" if "CYGWIN" in system else system
+        cpu_bits = "64bit" if sys.maxsize > 2 ** 32 else "32bit"
 
-        processor = platform.processor()
-        machine = "64bit" if sys.maxsize > 2 ** 32 else "32bit"
-        machine2 = platform.machine()
+        if machine in ("x86", "x86_64", "AMD64", "i686"):
+            machine = "x86_64"
+
+        if is_macos_arm:
+            print("either running on apple arm64 or cross-compiling")
+            machine = "arm64"
 
         print("SYSTEM:   ", system)
         print("PROCESSOR:", processor)
-        print("MACHINE:  ", machine, machine2)
+        print("MACHINE:  ", cpu_bits, machine)
 
-        return self._dists[(system, machine)]
+        if machine in ("i386", "x86_32") or cpu_bits == "32bit":
+            raise RuntimeError("32bit bit builds are not supported")
+
+        return self._dists[(system, machine, cpu_bits)]
 
     def _download(self):
         """Support function that encapsulates the OpenSSL transfer of the CSPICE
@@ -286,9 +296,7 @@ def apply_patches() -> None:
             f"0001-patch-for-n66-dskx02.c{iswin}.patch",
             f"0002-patch-for-n66-subpnt.c{iswin}.patch",
         ]
-        if (
-            host_OS == "Darwin"
-        ):  # todo is this only needed for M1 or is it for any macos
+        if is_macos_arm:
             patches.append("0004_inquire_unistd.patch")
         for p in patches:
             try:
@@ -341,6 +349,7 @@ def build_cspice() -> str:
     global cspice_dir, host_OS
     if is_unix:
         libname = f"libcspice.so"
+        target = "-target arm64-apple-macos11" if is_macos_arm else ""
         if host_OS == "Darwin":
             extra_flags = f"-dynamiclib -install_name @rpath/{libname}"
         else:
@@ -348,8 +357,8 @@ def build_cspice() -> str:
         destination = cspice_dir
         os.chdir(destination)
         cmds = [
-            "gcc -Iinclude -c -fPIC -O2 -ansi ./cspice/src/cspice/*.c",
-            f"gcc {extra_flags} -fPIC -O2 -lm *.o -o {libname}",
+            f"gcc {target} -Iinclude -c -fPIC -O2 -ansi ./cspice/src/cspice/*.c",
+            f"gcc {target} {extra_flags} -fPIC -O2 -lm *.o -o {libname}",
         ]
     elif host_OS == "Windows":
         destination = os.path.join(cspice_dir, "cspice", "src", "cspice")
