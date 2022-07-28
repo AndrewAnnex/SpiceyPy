@@ -52,6 +52,7 @@ jobs:
           - config: {"name": "Windows", "os": "windows-latest", "arch": "AMD64"}  
     name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels for ${{ matrix.config.os }} ${{ matrix.config.arch }}
     env: 
+      CSPICE_CACHE: 0
       CIBW_ARCHS: ${{ matrix.config.arch }}
     runs-on: ${{ matrix.config.os }}
     steps:
@@ -75,7 +76,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /project/src/spiceypy/utils/libcspice.so
-          key: ${{ matrix.config.os }}-${{ matrix.config.arch }}-${{ hashFiles('get_spice.py') }}-${{ hashFiles('setup.cfg') }}
+          key: ${{ env.CSPICE_CACHE }}-${{ matrix.config.os }}-${{ matrix.config.arch }}-${{ hashFiles('get_spice.py') }}-${{ hashFiles('setup.cfg') }}
       - name: Set up Python 🐍 3.9
         uses: actions/setup-python@v2
         with:
@@ -96,6 +97,10 @@ jobs:
       - name: Check dists
         run: |
           twine check wheelhouse/*
+      - name: Unzip libcspice for aarch64 build cache
+        if: matrix.config.arch == 'aarch64'
+        run: |
+          unzip -j ./wheelhouse/spiceypy*.whl "spiceypy/utils/libcspice.so" -d "/project/src/spiceypy/utils/"
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
         uses: actions/upload-artifact@v2
         with:
