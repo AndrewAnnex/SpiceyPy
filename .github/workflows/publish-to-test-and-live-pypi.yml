@@ -97,10 +97,6 @@ jobs:
       - name: Check dists
         run: |
           twine check wheelhouse/*
-      - name: Unzip libcspice for aarch64 build cache
-        if: matrix.config.arch == 'aarch64'
-        run: |
-          unzip -j ./wheelhouse/spiceypy*.whl "spiceypy/utils/libcspice.so" -d "/project/src/spiceypy/utils/"
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
         uses: actions/upload-artifact@v2
         with:
