@@ -208,6 +208,10 @@ class GetCSPICE(object):
         if machine in ("x86", "x86_64", "AMD64", "i686"):
             machine = "x86_64"
 
+        if is_macos_arm:
+            print("either running on apple arm64 or cross-compiling")
+            machine = "arm64"
+
         print("SYSTEM:   ", system)
         print("PROCESSOR:", processor)
         print("MACHINE:  ", cpu_bits, machine)

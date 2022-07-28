@@ -61,10 +61,10 @@ jobs:
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1.4.1
       - name: set additional environment variables
-        if: runner.os == 'macOS' && runner.arch == 'arm64'
+        if: runner.name == 'macOS' && runner.arch == 'arm64'
         run: |
-          export CIBW_ARCHS_MACOS="arm64"
-          env | grep CIBW
+          echo "CIBW_ARCHS_MACOS=arm64" >> $GITHUB_ENV
+          echo "ARCHFLAGS='-arch arm64'" >> $GITHUB_ENV
       - name: Set up QEMU for arm64 builds
         if: matrix.config.arch == 'aarch64'
         uses: docker/setup-qemu-action@v1
@@ -88,8 +88,6 @@ jobs:
           python -m pip install -r ci-requirements.txt
           python -m pip install cibuildwheel==2.8.1
       - name: Build wheels for SpiceyPy 🌶️ 🥧
-        env:
-          ARCHFLAGS: ${{ '-arch ' }}${{ matrix.config.arch }}
         timeout-minutes: 120
         run: |
           env | grep CIBW
