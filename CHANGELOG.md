@@ -4,7 +4,7 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## [5.1.1] - 2022-07-28
+## [5.1.1] - 2022-07-30
 fixes macOS arm64 cross compile
 ### Fixed
 - updated get_spice.py to allow for arch override for macos arm64
