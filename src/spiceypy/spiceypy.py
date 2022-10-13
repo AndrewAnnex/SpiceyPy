@@ -34,15 +34,8 @@ from numpy import ndarray, str_
 
 from .utils import support_types as stypes
 from .utils.libspicehelper import libspice
-from . import config
-
 from .utils.exceptions import *
-
-# inject exceptions back into stypes for backwards compatibility
-stypes.SpiceyError = SpiceyError
-stypes.SpiceyPyError = SpiceyPyError
-stypes.NotFoundError = NotFoundError
-stypes.exceptions = exceptions
+from . import config
 
 from .utils.callbacks import (
     UDFUNC,
@@ -73,6 +66,20 @@ from .utils.support_types import (
     SpiceEKAttDsc,
     SpiceEKSegSum,
 )
+
+# inject exceptions back into stypes for backwards compatibility
+# cannot define these in stypes due to circular import
+stypes.SpiceyError = SpiceyError
+stypes.SpiceyPyError = SpiceyPyError
+stypes.NotFoundError = NotFoundError
+stypes.SpiceyPyIOError = SpiceyPyIOError
+stypes.SpiceyPyMemoryError = SpiceyPyMemoryError
+stypes.SpiceyPyTypeError = SpiceyPyTypeError
+stypes.SpiceyPyKeyError = SpiceyPyKeyError
+stypes.SpiceyPyIndexError = SpiceyPyIndexError
+stypes.SpiceyPyRuntimeError = SpiceyPyRuntimeError
+stypes.SpiceyPyZeroDivisionError = SpiceyPyZeroDivisionError
+stypes.SpiceyPyValueError = SpiceyPyValueError
 
 
 __author__ = "AndrewAnnex"

@@ -28,6 +28,10 @@ from spiceypy.tests.gettestkernels import cwd
 import os
 
 
+def test_tkversion():
+    assert spice.exceptions._tkversion == spice.tkvrsn("toolkit")
+
+
 def test_geterror():
     spice.setmsg("some error occured")
     spice.sigerr("error")

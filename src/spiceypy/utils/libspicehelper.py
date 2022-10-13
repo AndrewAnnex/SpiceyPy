@@ -21,11 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-__all__ = ["__tkversion", "libspice_path", "libspice"]
+__all__ = ["_tkversion", "libspice_path", "libspice"]
 from ctypes import CDLL, POINTER, c_int, c_double, c_char, c_char_p, c_void_p
 from ctypes.util import find_library
 import os
 import platform
+
+from . import support_types as stypes
+from . import callbacks
 
 if "CSPICE_SHARED_LIB" in os.environ.keys():
     libspice_path = os.environ.get("CSPICE_SHARED_LIB", None)
@@ -53,11 +56,7 @@ if not libspice_path:
 libspice = CDLL(libspice_path)
 # cache the tkversion for exceptions
 libspice.tkvrsn_c.restype = c_char_p
-__tkversion = libspice.tkvrsn_c(b"toolkit").decode("utf-8")
-
-# okay now import callbacks and stypes
-from . import support_types as stypes
-from . import callbacks
+_tkversion = libspice.tkvrsn_c(b"toolkit").decode("utf-8")
 
 s_cell_p = POINTER(stypes.SpiceCell)
 s_elip_p = POINTER(stypes.Ellipse)

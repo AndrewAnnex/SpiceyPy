@@ -23,7 +23,7 @@ SOFTWARE.
 """
 
 from typing import Union, Iterable, Type
-from .libspicehelper import __tkversion as tkversion
+from .libspicehelper import _tkversion
 
 errorformat = """
 ================================================================================
@@ -66,7 +66,7 @@ class SpiceyError(Exception):
         :param traceback: the internal spice sequence of calls leading to the routine that detected the error.
         :param found: if present
         """
-        self.tkvsn = tkversion
+        self.tkvsn = _tkversion
         self.short = short
         self.explain = explain
         self.long = long
