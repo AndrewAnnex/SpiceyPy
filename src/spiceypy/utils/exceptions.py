@@ -22,7 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from typing import Union, Iterable
+from typing import Union, Iterable, Type
+from .libspicehelper import __tkversion as tkversion
 
 errorformat = """
 ================================================================================
@@ -65,7 +66,7 @@ class SpiceyError(Exception):
         :param traceback: the internal spice sequence of calls leading to the routine that detected the error.
         :param found: if present
         """
-        self.tkvsn = "CSPICE66"
+        self.tkvsn = tkversion
         self.short = short
         self.explain = explain
         self.long = long
@@ -5140,3 +5141,37 @@ exceptions = {
     "SPICE(ZZHOLDDGETFAILED)": SpiceZZHOLDDGETFAILED,
     "SPICE(ZZHOLDNOPUT)": SpiceZZHOLDNOPUT,
 }
+
+
+def short_to_spiceypy_exception_class(short: str) -> Type[SpiceyError]:
+    """
+    Lookup the correct Spice Exception class
+
+    :param short: Spice error system short description key
+    :return: SpiceyError
+    """
+    return exceptions.get(short, SpiceyError)
+
+
+def dynamically_instantiate_spiceyerror(
+    short: str = "",
+    explain: str = "",
+    long: str = "",
+    traceback: str = "",
+    found: str = "",
+):
+    """
+    Dynamically creates a SpiceyPyException which is a subclass of SpiceyError and
+    may also be subclassed to other exceptions such as IOError and such depending on the Short description
+
+    :param short:
+    :param explain:
+    :param long:
+    :param traceback:
+    :param found:
+    :return:
+    """
+    base_exception = short_to_spiceypy_exception_class(short)
+    return base_exception(
+        short=short, explain=explain, long=long, traceback=traceback, found=found
+    )

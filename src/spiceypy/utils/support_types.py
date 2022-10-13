@@ -46,7 +46,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import collections.abc as collections_abc
 
 from array import array
-from typing import Type
 from ctypes import (
     c_char_p,
     c_int,
@@ -65,58 +64,8 @@ from ctypes import (
 import numpy
 from numpy import ctypeslib as numpc
 
-from .exceptions import (
-    SpiceyError,
-    SpiceyPyError,
-    NotFoundError,
-    SpiceyPyIOError,
-    SpiceyPyMemoryError,
-    SpiceyPyTypeError,
-    SpiceyPyKeyError,
-    SpiceyPyIndexError,
-    SpiceyPyRuntimeError,
-    SpiceyPyZeroDivisionError,
-    SpiceyPyValueError,
-    exceptions,
-)
-
-
 # Collection of supporting functions for wrapper functions
 __author__ = "AndrewAnnex"
-
-
-def short_to_spiceypy_exception_class(short: str) -> Type[SpiceyError]:
-    """
-    Lookup the correct Spice Exception class
-
-    :param short: Spice error system short description key
-    :return: SpiceyError
-    """
-    return exceptions.get(short, SpiceyError)
-
-
-def dynamically_instantiate_spiceyerror(
-    short: str = "",
-    explain: str = "",
-    long: str = "",
-    traceback: str = "",
-    found: str = "",
-):
-    """
-    Dynamically creates a SpiceyPyException which is a subclass of SpiceyError and
-    may also be subclassed to other exceptions such as IOError and such depending on the Short description
-
-    :param short:
-    :param explain:
-    :param long:
-    :param traceback:
-    :param found:
-    :return:
-    """
-    base_exception = short_to_spiceypy_exception_class(short)
-    return base_exception(
-        short=short, explain=explain, long=long, traceback=traceback, found=found
-    )
 
 
 def to_double_vector(x):

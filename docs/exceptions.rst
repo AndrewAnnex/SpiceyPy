@@ -45,7 +45,7 @@ will result in the following exception message which is also a parameter of the 
 
     ================================================================================
 
-    Toolkit version: CSPICE66
+    Toolkit version: CSPICE67
 
     SPICE(NOSUCHFILE) --
 

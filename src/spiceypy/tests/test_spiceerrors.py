@@ -50,14 +50,14 @@ def test_get_spiceypy_exceptions():
 
 
 def test_no_loaded_files_exception():
-    with pytest.raises(spice.stypes.SpiceyError):
+    with pytest.raises(spice.SpiceyError):
         spice.ckgp(0, 0, 0, "blah")
     spice.reset()
-    with pytest.raises(spice.stypes.NotFoundError):
+    with pytest.raises(spice.NotFoundError):
         spice.ckgp(0, 0, 0, "blah")
     spice.reset()
     with spice.no_found_check():
-        with pytest.raises(spice.stypes.SpiceyPyIOError):
+        with pytest.raises(spice.SpiceyPyIOError):
             spice.ckgp(0, 0, 0, "blah")
         spice.reset()
         with pytest.raises(spice.exceptions.SpiceNOLOADEDFILES):
@@ -89,7 +89,7 @@ def test_disable_found_catch():
     with spice.no_found_check():
         name, found = spice.bodc2n(-9991)
         assert not found
-    with pytest.raises(spice.stypes.SpiceyError):
+    with pytest.raises(spice.SpiceyError):
         spice.bodc2n(-9991)
     # try more hands on method
     spice.found_check_off()
@@ -130,7 +130,7 @@ def test_found_check():
     assert not found
     spice.kclear()
     with spice.found_check():
-        with pytest.raises(spice.stypes.SpiceyError):
+        with pytest.raises(spice.SpiceyError):
             name = spice.bodc2n(-9991)
     assert not spice.get_found_catch_state()
     spice.found_check_on()
@@ -139,9 +139,9 @@ def test_found_check():
 
 
 def test_multiple_founds():
-    success = spice.stypes.NotFoundError(message="test", found=(True, True))
+    success = spice.NotFoundError(message="test", found=(True, True))
     assert all(success.found)
-    failed = spice.stypes.NotFoundError(message="test", found=(True, False))
+    failed = spice.NotFoundError(message="test", found=(True, False))
     assert not all(failed.found)
     # def test_fun
     @spice.spice_found_exception_thrower
@@ -149,9 +149,9 @@ def test_multiple_founds():
         return [0, 0], [False, True]
 
     # test it
-    with pytest.raises(spice.stypes.SpiceyError):
+    with pytest.raises(spice.SpiceyError):
         test_fun()
 
     # test it
-    with pytest.raises(spice.stypes.NotFoundError):
+    with pytest.raises(spice.NotFoundError):
         test_fun()
