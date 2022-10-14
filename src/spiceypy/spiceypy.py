@@ -34,6 +34,7 @@ from numpy import ndarray, str_
 
 from .utils import support_types as stypes
 from .utils.libspicehelper import libspice
+from .utils.exceptions import *
 from . import config
 
 from .utils.callbacks import (
@@ -65,6 +66,20 @@ from .utils.support_types import (
     SpiceEKAttDsc,
     SpiceEKSegSum,
 )
+
+# inject exceptions back into stypes for backwards compatibility
+# cannot define these in stypes due to circular import
+stypes.SpiceyError = SpiceyError
+stypes.SpiceyPyError = SpiceyPyError
+stypes.NotFoundError = NotFoundError
+stypes.SpiceyPyIOError = SpiceyPyIOError
+stypes.SpiceyPyMemoryError = SpiceyPyMemoryError
+stypes.SpiceyPyTypeError = SpiceyPyTypeError
+stypes.SpiceyPyKeyError = SpiceyPyKeyError
+stypes.SpiceyPyIndexError = SpiceyPyIndexError
+stypes.SpiceyPyRuntimeError = SpiceyPyRuntimeError
+stypes.SpiceyPyZeroDivisionError = SpiceyPyZeroDivisionError
+stypes.SpiceyPyValueError = SpiceyPyValueError
 
 
 __author__ = "AndrewAnnex"
@@ -104,7 +119,7 @@ def check_for_spice_error(f: Optional[Callable]) -> None:
         long = getmsg("LONG", 1841).strip()
         traceback = qcktrc(200)
         reset()
-        raise stypes.dynamically_instantiate_spiceyerror(
+        raise dynamically_instantiate_spiceyerror(
             short=short, explain=explain, long=long, traceback=traceback
         )
 
@@ -140,12 +155,12 @@ def spice_found_exception_thrower(f: Callable) -> Callable:
         if config.catch_false_founds:
             found = res[-1]
             if isinstance(found, bool) and not found:
-                raise stypes.NotFoundError(
+                raise NotFoundError(
                     "Spice returns not found for function: {}".format(f.__name__),
                     found=found,
                 )
             elif stypes.is_iterable(found) and not all(found):
-                raise stypes.NotFoundError(
+                raise NotFoundError(
                     "Spice returns not found in a series of calls for function: {}".format(
                         f.__name__
                     ),
