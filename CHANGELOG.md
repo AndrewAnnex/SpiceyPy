@@ -4,6 +4,11 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [5.1.2] - 2022-10-14
+fix for exception error message toolkit version
+### Fixed
+- exceptions now use dynamic lookup of toolkit version for error messages
+
 ## [5.1.1] - 2022-07-30
 fixes macOS arm64 cross compile
 ### Fixed
