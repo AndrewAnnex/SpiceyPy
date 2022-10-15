@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Setup 🔬🍦🏗️
         if: ${{ matrix.os == 'windows-latest' }}
-        uses: ilammy/msvc-dev-cmd@v1.4.1
+        uses: ilammy/msvc-dev-cmd@v1.12.0
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v3
         with:
@@ -37,7 +37,7 @@ jobs:
         run: |
           echo "::set-output name=dir::$(pip cache dir)"
       - name: pip cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.pip-cache.outputs.dir }}
           key: ${{ runner.os }}-${{ matrix.python-version }}-pip-${{ hashFiles('**/ci-requirements.txt') }}
@@ -77,7 +77,7 @@ jobs:
         run: |
           echo "::set-output name=dir::$(pip cache dir)"
       - name: pip cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.pip-cache.outputs.dir }}
           key: ${{ runner.os }}-3.9-pip-${{ hashFiles('**/ci-requirements.txt') }}
@@ -123,7 +123,7 @@ jobs:
         run: |
           echo "::set-output name=dir::$(pip cache dir)"
       - name: pip cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.pip-cache.outputs.dir }}
           key: ${{ runner.os }}-3.9-pip-${{ hashFiles('**/ci-requirements.txt') }}
