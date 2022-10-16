@@ -14,9 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Python 🐍 3.9
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.9
       - name: Display Python 🐍 
@@ -38,7 +38,7 @@ jobs:
       - name: Check dists
         run: |
           twine check dist/*
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           path: dist/*.tar.gz
   build_wheels:
@@ -57,10 +57,10 @@ jobs:
     runs-on: ${{ matrix.config.os }}
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup 🔬🍦🏗️
         if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1.4.1
+        uses: ilammy/msvc-dev-cmd@v1.12.0
       - name: set additional environment variables
         if: runner.name == 'macOS' && runner.arch == 'arm64'
         run: |
@@ -68,17 +68,17 @@ jobs:
           echo "ARCHFLAGS='-arch arm64'" >> $GITHUB_ENV
       - name: Set up QEMU for arm64 builds
         if: matrix.config.arch == 'aarch64'
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v2
         with:
           platforms: all
       - name: Cache libcspice.so for aarch64 builds because they take an hour to build with qemu
         if: matrix.config.arch == 'aarch64'
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /project/src/spiceypy/utils/libcspice.so
           key: ${{ env.CSPICE_CACHE }}-${{ matrix.config.os }}-${{ matrix.config.arch }}-${{ hashFiles('get_spice.py') }}-${{ hashFiles('setup.cfg') }}
       - name: Set up Python 🐍 3.9
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.9
       - name: Display Python 🐍 Version
@@ -98,7 +98,7 @@ jobs:
         run: |
           twine check wheelhouse/*
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
   publish_to_pypi:
@@ -106,12 +106,12 @@ jobs:
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: artifact
           path: dist
       - name: Set up Python 🐍 3.9
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.9
       - name: Display Python 🐍
