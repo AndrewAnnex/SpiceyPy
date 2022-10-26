@@ -9,7 +9,7 @@ on:
     - cron: "0 4 * * 0"
 env:
   # increment to rebuild cspice manually
-  CSPICE_CACHE_NUMBER=0
+  CSPICE_CACHE_NUMBER: 0
 
 jobs:
   build:
