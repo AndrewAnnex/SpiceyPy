@@ -80,19 +80,28 @@ jobs:
           python -m pip install --upgrade pip
       - name: Get pip cache dir on mac/linux
         if: runner.os != 'Windows'
-        id: pip-cache
+        id: pip-cache-nix
         run: |
           echo "pip_cache_dir=$(pip cache dir)" >> $GITHUB_OUTPUT
-      - name: Get pip cache dir on Windows
+      - name: Get pip cache dir on windows
         if: runner.os == 'Windows'
         shell: pwsh
-        id: pip-cache
+        id: pip-cache-win
         run: |
           echo "pip_cache_dir=$(pip cache dir)" >> $env:GITHUB_OUTPUT
-      - name: Cache pip's cache dir
+      - name: Cache pip's cache dir mac/linux
+        if: runner.os != 'Windows'
         uses: actions/cache@v3
         with:
-          path: ${{ steps.pip-cache.outputs.pip_cache_dir }}
+          path: ${{ steps.pip-cache-nix.outputs.pip_cache_dir }}
+          key: ${{ runner.os }}-${{ matrix.python-version }}-test-pip-${{ hashFiles('**/ci-requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.python-version }}-test-pip-
+      - name: Cache pip's cache dir windows
+        if: runner.os == 'Windows'
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pip-cache-win.outputs.pip_cache_dir }}
           key: ${{ runner.os }}-${{ matrix.python-version }}-test-pip-${{ hashFiles('**/ci-requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-${{ matrix.python-version }}-test-pip-
