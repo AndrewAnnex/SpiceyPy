@@ -36,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: artifact-${{ matrix.os }}
-          path: ./src/spicepypy/utils/libcspice.*
+          path: ./src/spiceypy/utils/libcspice.*
   test:
     name: Test SpiceyPy 🌶️ 🥧
     needs: build
@@ -54,7 +54,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: artifact-${{ matrix.os }}
-          path: ./src/spicepypy/utils/
+          path: ./src/spiceypy/utils/
       - name: Set up Python 🐍 ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
