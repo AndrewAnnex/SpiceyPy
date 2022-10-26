@@ -7,6 +7,9 @@ on:
     branches: [ main ]
   schedule:
     - cron: "0 4 * * 0"
+env:
+  # increment to rebuild cspice manually
+  CSPICE_CACHE_NUMBER=0
 
 jobs:
   build:
@@ -19,17 +22,27 @@ jobs:
       - name: Setup 🔬🍦🏗️
         if: ${{ matrix.os == 'windows-latest' }}
         uses: ilammy/msvc-dev-cmd@v1.12.0
+      - name: Look for cached libcspice 🌶️ 📚
+        id: cache-libcspice
+        uses: actions/cache@v3
+        with:
+          path: ./src/spiceypy/utils/libcspice.*
+          key: ${{ runner.os }}-${{ env.CSPICE_CACHE_NUMBER }}-${{ hashFiles('./src/spiceypy/__init__.py') }}
       - name: Checkout 🌶️ 🥧
+        if: steps.cache-libcspice.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up Python 🐍 3.11
+        if: steps.cache-libcspice.outputs.cache-hit != 'true'
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
       - name: Display Python 🐍 version
+        if: steps.cache-libcspice.outputs.cache-hit != 'true'
         run: python -c "import sys; print(sys.version)"
       - name: Build libcspice 🌶️ 📚
+        if: steps.cache-libcspice.outputs.cache-hit != 'true'
         run: |
           python get_spice.py
       - name: Upload built 🏗️ libcspice 🌶️ 📚
@@ -67,11 +80,11 @@ jobs:
       - name: Get pip cache dir
         id: pip-cache
         run: |
-          echo "::set-output name=dir::$(pip cache dir)"
+          echo "pip_cache_dir=$(pip cache dir)" >> $GITHUB_OUTPUT
       - name: Cache pip's cache dir
         uses: actions/cache@v3
         with:
-          path: ${{ steps.pip-cache.outputs.dir }}
+          path: ${{ steps.pip-cache.outputs.pip_cache_dir }}
           key: ${{ runner.os }}-${{ matrix.python-version }}-test-pip-${{ hashFiles('**/ci-requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-${{ matrix.python-version }}-test-pip-
@@ -107,14 +120,14 @@ jobs:
       - name: Get pip cache dir
         id: pip-cache
         run: |
-          echo "::set-output name=dir::$(pip cache dir)"
-      - name: pip cache
+          echo "pip_cache_dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+      - name: Cache pip's cache dir
         uses: actions/cache@v3
         with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-3.11-pip-${{ hashFiles('**/ci-requirements.txt') }}
+          path: ${{ steps.pip-cache.outputs.pip_cache_dir }}
+          key: ${{ runner.os }}-3.11-test-pip-${{ hashFiles('**/ci-requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-3.11-pip-
+            ${{ runner.os }}-3.11-test-pip-
       - name: Install dependencies
         run: | 
           python -m pip install -U -r ci-requirements.txt
@@ -154,14 +167,14 @@ jobs:
       - name: Get pip cache dir
         id: pip-cache
         run: |
-          echo "::set-output name=dir::$(pip cache dir)"
-      - name: pip cache
+          echo "pip_cache_dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+      - name: Cache pip's cache dir
         uses: actions/cache@v3
         with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-3.11-pip-${{ hashFiles('**/ci-requirements.txt') }}
+          path: ${{ steps.pip-cache.outputs.pip_cache_dir }}
+          key: ${{ runner.os }}-3.11-test-pip-${{ hashFiles('**/ci-requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-3.11-pip-
+            ${{ runner.os }}-3.11-test-pip-
       - name: Install dependencies
         run : |
           python -m pip install -U -r ci-requirements.txt
