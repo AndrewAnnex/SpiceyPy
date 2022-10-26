@@ -27,7 +27,7 @@ jobs:
           path: ./src/spiceypy/utils/libcspice.*
           key: ${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libspice
       - name: Setup 🔬🍦🏗️
-        if: ${{ matrix.os == 'windows-latest' && steps.cache.outputs.cache-hit != 'true' }}
+        if: ${{ matrix.os == 'windows-latest' && steps.cache-libcspice.outputs.cache-hit != 'true' }}
         uses: ilammy/msvc-dev-cmd@v1.12.0
       - name: Checkout 🌶️ 🥧
         if: steps.cache-libcspice.outputs.cache-hit != 'true'
