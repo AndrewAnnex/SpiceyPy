@@ -9,6 +9,7 @@ on:
     - cron: "0 4 * * 0"
 env:
   # increment to rebuild cspice manually
+  CSPICE_VERSION: 67
   CSPICE_CACHE_NUMBER: 0
 
 jobs:
@@ -27,7 +28,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ./src/spiceypy/utils/libcspice.*
-          key: ${{ runner.os }}-${{ env.CSPICE_CACHE_NUMBER }}-${{ hashFiles('./src/spiceypy/__init__.py') }}
+          key: ${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libspice
       - name: Checkout 🌶️ 🥧
         if: steps.cache-libcspice.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
