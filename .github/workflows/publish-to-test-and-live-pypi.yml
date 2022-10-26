@@ -32,9 +32,10 @@ jobs:
       - name: Test 🧪 with coverage 📈
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy
-      - name: Upload coverage report to codecov
-        run: |
-          codecov
+      - name: Upload 🆙 coverage 📈 report to codecov 
+        uses: codecov/codecov-action@v3
+        with:
+          verbose: true
       - name: Check dists
         run: |
           twine check dist/*

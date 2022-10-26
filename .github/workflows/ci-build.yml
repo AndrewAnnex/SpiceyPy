@@ -54,8 +54,9 @@ jobs:
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy
       - name: Upload 🆙 coverage 📈 report to codecov 
-        run: |
-          codecov
+        uses: codecov/codecov-action@v3
+        with:
+          verbose: true
   test_offline_shared:
     runs-on: ubuntu-latest
     steps:
@@ -100,8 +101,9 @@ jobs:
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy
       - name: Upload 🆙 coverage 📈 report to codecov 
-        run: |
-          codecov
+        uses: codecov/codecov-action@v3
+        with:
+          verbose: true
   test_offline_cspice_install:
     runs-on: ubuntu-latest
     steps:
@@ -145,6 +147,6 @@ jobs:
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy
       - name: Upload 🆙 coverage 📈 report to codecov 
-        run: |
-          codecov
-
+        uses: codecov/codecov-action@v3
+        with:
+          verbose: true
