@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10' ]
+        python-version: [ '3.7', '3.8', '3.9', '3.10', '3.11' ]
     steps:
       - name: Setup 🔬🍦🏗️
         if: ${{ matrix.os == 'windows-latest' }}
@@ -63,10 +63,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Set up Python 🐍 3.9
+      - name: Set up Python 🐍 3.11
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: '3.11'
       - name: Display Python 🐍 version
         run: python -c "import sys; print(sys.version)"
       - name: Install pip
@@ -80,9 +80,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-3.9-pip-${{ hashFiles('**/ci-requirements.txt') }}
+          key: ${{ runner.os }}-3.11-pip-${{ hashFiles('**/ci-requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-3.9-pip-
+            ${{ runner.os }}-3.11-pip-
       - name: Install dependencies
         run: | 
           python -m pip install -U -r ci-requirements.txt
@@ -109,10 +109,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Set up Python 🐍 3.9
+      - name: Set up Python 🐍 3.11
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: '3.11'
       - name: Display Python 🐍 version
         run: python -c "import sys; print(sys.version)"
       - name: Install pip
@@ -126,9 +126,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-3.9-pip-${{ hashFiles('**/ci-requirements.txt') }}
+          key: ${{ runner.os }}-3.11-pip-${{ hashFiles('**/ci-requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-3.9-pip-
+            ${{ runner.os }}-3.11-pip-
       - name: Install dependencies
         run : |
           python -m pip install -U -r ci-requirements.txt
