@@ -286,7 +286,7 @@ def cell_time(cell_size) -> SpiceCell:
 
 
 @contextmanager
-def KernelPool(kernels: list[str]):
+def KernelPool(kernels: list):
     """
     Context manager for SPICE kernels.
 
