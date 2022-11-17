@@ -103,6 +103,6 @@ There is also an accompanying context manager for enabling the default SpiceyPy 
         name = spice.bodc2n(-9991) # will also raise an exception
 
 
-In addition, for advanced users there are two function :py:meth:`spiceypy.spiceypy.found_check_off` and :py:meth:`spiceypy.spiceypy.found_check_on`
+In addition, for advanced users there are two functions :py:meth:`spiceypy.spiceypy.found_check_off` and :py:meth:`spiceypy.spiceypy.found_check_on`
 which will disable and enable the behavior without use of the context manager. Additionally, a method :py:meth:`spiceypy.spiceypy.get_found_catch_state` allows users
 to query the current state of found flag catching setting.
