@@ -286,62 +286,38 @@ def cell_time(cell_size) -> SpiceCell:
 
 
 @contextmanager
-def KernelPool(kernels: list):
+def KernelPool(local_kernels: Iterable[str]):
     """
     Context manager for SPICE kernels.
-
     A function called within KernelPool will only have access to
     the list of kernels with which the context manager was initialized.
-
-    Previously furnished kernels are temporarily unloaded while using the
+    Previously loaded kernels are temporarily unloaded while using the
     context manager, but can still be accessed outside of it.
+    Example::
 
-    Example:
-
-    ```
         spiceypy.furnsh("A", "B")
-
         function_1()
-
         with spiceypy.KernelPool(["A", "C", "D"]):
-
             function_2()
-
         function_3()
-    ```
 
     In this example, functions 1, and 3 will have access to kernels A, and
     B; while function 2 will have access to kernels A, C, and D.
 
-    :param kernels: List of (relative or absolute) paths to individual 
+    :param kernels: List of (relative or absolute) paths to individual
     kernels and/or to meta-kernels files.
-
     """
-
     global_kernels = []
-
     for i in range(ktotal("all")):
-
         data = kdata(i, "all")
-
         if data[1] == "META" or data[2] == "":
-
             global_kernels.append(data[0])
-
-    local_kernels = kernels
-
     try:
-
         kclear()
-
         furnsh(local_kernels)
-
         yield None
-
     finally:
-
         kclear()
-
         furnsh(global_kernels)
 
 
@@ -14537,7 +14513,6 @@ if hasattr(datetime, "fromisoformat"):
 
     def fromisoformat(s):
         return datetime.fromisoformat(s + "+00:00")
-
 
 else:
 
