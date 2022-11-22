@@ -286,7 +286,7 @@ def cell_time(cell_size) -> SpiceCell:
 
 
 @contextmanager
-def KernelPool(local_kernels: Iterable[str]):
+def KernelPool(local_kernels: Union[str, Iterable[str]]):
     """
     Context manager for SPICE kernels.
     A function called within KernelPool will only have access to
@@ -304,8 +304,8 @@ def KernelPool(local_kernels: Iterable[str]):
     In this example, functions 1, and 3 will have access to kernels A, and
     B; while function 2 will have access to kernels A, C, and D.
 
-    :param kernels: List of (relative or absolute) paths to individual
-    kernels and/or to meta-kernels files.
+    :param kernels: Path, or list of paths, to individual kernels and/or to
+    meta-kernel files. Both relative, and absolute paths are accepted.
     """
     global_kernels = []
     for i in range(ktotal("all")):

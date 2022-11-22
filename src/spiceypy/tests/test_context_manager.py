@@ -15,8 +15,9 @@ write_test_meta_kernel()
 @pytest.mark.parametrize(
     ["expected_length", "kernel_list"],
     [
-        (1, [CoreKernels.lsk]),
+        (1, CoreKernels.lsk),
         (len(CoreKernels.standardKernelList) + 1, CoreKernels.testMetaKernel),
+        (2, [CoreKernels.lsk, CoreKernels.pck]),
         (
             len(CoreKernels.standardKernelList) + 2,
             [CoreKernels.lsk, CoreKernels.testMetaKernel],
@@ -25,8 +26,9 @@ write_test_meta_kernel()
 )
 def test_input_types(expected_length, kernel_list):
     """
-    Ensure that a list of kernels, a list of meta-kernel files, and a list
-    that combines both, are all valid inputs.
+    Ensure that a single kernel, a single meta-kernel, a list of kernels, a
+    list of meta-kernel files, and a list that combines both, are all valid
+    inputs.
     """
     assert spice.ktotal("all") == 0
     with spice.KernelPool(kernel_list):
@@ -85,15 +87,16 @@ def test_invalid_input():
     kernels = CoreKernels.standardKernelList + ["foo.file"]
     with pytest.raises(spice.utils.exceptions.SpiceNOSUCHFILE):
         with spice.KernelPool(kernels):
-            raise AssertionError("Expected initialization error")
+            pass
     assert spice.ktotal("all") == 0
 
 
 @pytest.mark.parametrize(
     ["expected_len", "kernel_list"],
     [
-        (1, [CoreKernels.lsk]),
+        (1, CoreKernels.lsk),
         (len(CoreKernels.standardKernelList) + 1, CoreKernels.testMetaKernel),
+        (2, [CoreKernels.lsk, CoreKernels.pck]),
         (
             len(CoreKernels.standardKernelList) + 2,
             [CoreKernels.lsk, CoreKernels.testMetaKernel],
