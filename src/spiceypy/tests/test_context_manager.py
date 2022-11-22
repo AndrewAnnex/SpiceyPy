@@ -109,10 +109,12 @@ def test_unload_if_error(expected_len, kernel_list):
     manager.
     """
     assert spice.ktotal("all") == 0
-    with pytest.raises(RuntimeError, match="Error in user code"):
+    with pytest.raises(
+        spice.utils.exceptions.SpiceyPyRuntimeError, match="Error in user code"
+    ):
         with spice.KernelPool(kernel_list):
             assert spice.ktotal("all") == expected_len
-            raise RuntimeError("Error in user code")
+            raise spice.utils.exceptions.SpiceyPyRuntimeError("Error in user code")
     assert spice.ktotal("all") == 0
 
 
