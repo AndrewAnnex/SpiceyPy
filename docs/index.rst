@@ -54,6 +54,7 @@ Contents:
    exampleone
    cells
    exceptions
+   contextmanager
    lessonindex
    documentation
 
