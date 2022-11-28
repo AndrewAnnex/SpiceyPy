@@ -1,11 +1,11 @@
 .. _KernelPool:
-The ``KernelPool`` context manager
+The :py:exc:`KernelPool` context manager
 ==================================
 
 The :py:exc:`KernelPool<spiceypy.spiceypy.KernelPool>` context manager provides a convenient way to load, and unload SPICE kernels, guaranteeing that the kernel database will still be cleared if an exception is raised.
 
 .. warning::
-    ``KernelPool`` uses :py:exc:`spice.kclear()<spiceypy.spiceypy.kclear>` to temporarily unload previously loaded kernels. Thus, any user-defined variable will be permanently deleted from the kernel pool. Check the :ref:`Compatibility with kernel-pool assignment functions<kernel_pool_assignment_functions>` section for a detailed explanation.
+    :py:exc:`KernelPool<spiceypy.spiceypy.KernelPool>` uses :py:exc:`spice.kclear()<spiceypy.spiceypy.kclear>` to temporarily unload previously loaded kernels. Thus, any user-defined variable will be permanently deleted from the kernel pool. Check the :ref:`Compatibility with kernel-pool assignment functions<kernel_pool_assignment_functions>` section for a detailed explanation.
 
 Basic usage
 -----------
