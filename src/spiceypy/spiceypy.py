@@ -289,31 +289,14 @@ def cell_time(cell_size) -> SpiceCell:
 def KernelPool(local_kernels: Union[str, Iterable[str]]):
     """
     Context manager for SPICE kernels.
-    A function called within the context manager will only have access to the 
-    list of kernels that KernelPool takes as argument (local kernels).
-    Previously loaded kernels (global kernels), are temporarily unloaded while 
-    executing code within the context manager, but can still be accessed 
-    outside of it.
-    Note: KernelPool uses the kclear function to temporarily unload global 
-    kernels. Thus, any variable added to the kernel pool using kernel pool 
-    assignment functions, such as pcpool or pipool, will not be accessible 
-    after the with statement.
-    Example::
 
-        spiceypy.furnsh("A", "B")
-        spiceypy.pipool("VAR", [10])
-        function_1()
-        with spiceypy.KernelPool(["A", "C", "D"]):
-            function_2()
-        function_3()
+    Check :ref:`The KernelPool context manager<KernelPool>` for usage information and examples.
 
-    In this example, function_1 has access to kernels A, and B, and to the 
-    variable VAR; function_2 has access to kernels A, C, and D; and function_3 
-    has access to kernels A, and B, but not to VAR.
+    .. warning::
+        Using KernelPool will delete any user-defined, kernel-pool variables. Check :ref:`Compatibility with kernel-pool assignment functions<kernel_pool_assignment_functions>` for detailed information.
 
-    :param kernels: Path, or list of paths, to individual kernels and/or to 
-    meta-kernel files. Both relative, and absolute paths are accepted, but 
-    absolute paths are preferable.
+    :param local_kernels: Path, or list of paths, to individual kernels and/or to meta-kernel files. Both relative, and absolute paths are accepted, but absolute paths are preferable.
+
     """
     global_kernels = []
     for i in range(ktotal("all")):
