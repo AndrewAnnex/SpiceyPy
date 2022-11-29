@@ -285,6 +285,33 @@ def cell_time(cell_size) -> SpiceCell:
     return stypes.SPICETIME_CELL(cell_size)
 
 
+@contextmanager
+def KernelPool(local_kernels: Union[str, Iterable[str]]):
+    """
+    Context manager for SPICE kernels.
+
+    Check :ref:`The KernelPool context manager<KernelPool>` for usage information and examples.
+
+    .. warning::
+        Using KernelPool will delete any user-defined, kernel-pool variables. Check :ref:`Compatibility with kernel-pool assignment functions<kernel_pool_assignment_functions>` for detailed information.
+
+    :param local_kernels: Path, or list of paths, to individual kernels and/or to meta-kernel files. Both relative, and absolute paths are accepted, but absolute paths are preferable.
+
+    """
+    global_kernels = []
+    for i in range(ktotal("all")):
+        data = kdata(i, "all")
+        if data[1] == "META" or data[2] == "":
+            global_kernels.append(data[0])
+    try:
+        kclear()
+        furnsh(local_kernels)
+        yield None
+    finally:
+        kclear()
+        furnsh(global_kernels)
+
+
 ################################################################################
 # A
 
@@ -14477,7 +14504,6 @@ if hasattr(datetime, "fromisoformat"):
 
     def fromisoformat(s):
         return datetime.fromisoformat(s + "+00:00")
-
 
 else:
 
