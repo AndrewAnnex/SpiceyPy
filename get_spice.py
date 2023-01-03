@@ -203,7 +203,7 @@ class GetCSPICE(object):
 
         # Cygwin system is CYGWIN-NT-xxx.
         system = "cygwin" if "CYGWIN" in system else system
-        cpu_bits = "64bit" if sys.maxsize > 2 ** 32 else "32bit"
+        cpu_bits = "64bit" if sys.maxsize > 2**32 else "32bit"
 
         if machine in ("x86", "x86_64", "AMD64", "i686"):
             machine = "x86_64"
