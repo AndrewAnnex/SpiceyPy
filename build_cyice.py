@@ -36,8 +36,9 @@ class BuildCyice(_build_py):
         if self.distribution.ext_modules == None:
             self.distribution.ext_modules = []
 
+        #todo think about calling it spiceypy.cyice? maybe that would simplify things?
         self.distribution.ext_modules.append(
             Extension('cyice', ['src/cyice/cyice.pyx', *cspice_c, *csupport_c], **ext_options)
         )
 
-        cythonize(self.distribution.ext_modules, quiet=True)
+        cythonize(self.distribution.ext_modules, quiet=True, nthreads=4)
