@@ -22,6 +22,7 @@
 
 # Cspice
 cspice/
+src/cspice/
 
 # Test meta kernels
 src/spiceypy/tests/*.txt
@@ -32,6 +33,7 @@ docs/_build
 
 # Pycharm specific things
 .idea/
+.fleet/
 
 # python things
 *.egg-info*

@@ -2,6 +2,19 @@
 requires = ["setuptools >= 46.4.0", "wheel", "Cython"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+py-modules = ["build_spiceypy", ]
+
+
+[tool.setuptools.distclass]
+distclass = "build_spiceypy.SpiceyPyBinaryDistribution"
+
+[tool.setuptools.cmdclass]
+install = "build_spiceypy.Install"
+build_py = "build_spiceypy.BuildPyCommand"
+bdist_wheel = "build_spiceypy.SpiceyPyWheelBuild"
+
+
 [tool.cibuildwheel]
 # use build instead of pip to build wheels
 build-frontend = "build"
@@ -19,3 +32,6 @@ before-test = [
 test-command = [
     "coverage run --source {package} -m pytest --pyargs {project}",
 ]
+
+
+

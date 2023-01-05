@@ -96,7 +96,7 @@ is_unix = host_OS in ("Linux", "Darwin", "FreeBSD")
 # Get current working directory
 root_dir = str(Path(os.path.realpath(__file__)).parent)
 # Make the directory path for cspice
-cspice_dir = os.environ.get(CSPICE_SRC_DIR, os.path.join(root_dir, "cspice"))
+cspice_dir = os.environ.get(CSPICE_SRC_DIR, os.path.join(root_dir, "src", "cspice"))
 # and make a global tmp cspice directory
 tmp_cspice_root_dir = None
 # if we need to cross compile or compile for arm64
@@ -391,7 +391,7 @@ def build_cspice() -> str:
     return shared_lib_path
 
 
-def main() -> None:
+def main(build: bool = True) -> None:
     """
     Main routine to build or not build cspice
     expected tmp src dir layout
@@ -401,6 +401,7 @@ def main() -> None:
                   /bin
                   /src/cspice/
                   ...
+    :param build: if true build the shared library, if false just download the source code
     :return: None
     """
     cwd = os.getcwd()
@@ -413,7 +414,7 @@ def main() -> None:
         "libcspice.so" if is_unix else "libcspice.dll",
     )
     # check if the shared library already exists, if it does we are done
-    if Path(destination).is_file():
+    if Path(destination).is_file() and build:
         print(
             "Done! shared library for cspice already exists in destination. Done!",
             flush=True,
@@ -421,7 +422,7 @@ def main() -> None:
         return
     # next see if cspice shared library is provided
     shared_library_path = os.environ.get(CSPICE_SHARED_LIB)
-    if shared_library_path is not None:
+    if shared_library_path is not None and build:
         print(f"User has provided a shared library...", flush=True)
         # todo: what if we can't read the file? we need to jump to building it... doubtful this happens
         pass  # now we don't need to do that much
@@ -437,18 +438,20 @@ def main() -> None:
             print("Apply patches", flush=True)
             apply_patches()
         # now build
-        print("Building cspice", flush=True)
-        shared_library_path = build_cspice()
-    print(f"Copying built cspice: {shared_library_path} to {destination}", flush=True)
-    # first make the directory for the destination if it doesn't exist
-    Path(destination).parent.mkdir(parents=True, exist_ok=True)
-    # okay now move shared library to dst dir
-    shutil.copyfile(shared_library_path, destination)
-    # cleanup tmp dir, windows seems to fail with this:
-    #    PermissionError: [WinError 32] The process cannot access the file because it is being used by another process
-    # if tmp_cspice_root_dir is not None:
-    #     if os.path.exists(tmp_cspice_root_dir) and os.path.isdir(tmp_cspice_root_dir):
-    #         shutil.rmtree(tmp_cspice_root_dir)
+        if build:
+            print("Building cspice", flush=True)
+            shared_library_path = build_cspice()
+    if build:
+        print(f"Copying built cspice: {shared_library_path} to {destination}", flush=True)
+        # first make the directory for the destination if it doesn't exist
+        Path(destination).parent.mkdir(parents=True, exist_ok=True)
+        # okay now move shared library to dst dir
+        shutil.copyfile(shared_library_path, destination)
+        # cleanup tmp dir, windows seems to fail with this:
+        #    PermissionError: [WinError 32] The process cannot access the file because it is being used by another process
+        # if tmp_cspice_root_dir is not None:
+        #     if os.path.exists(tmp_cspice_root_dir) and os.path.isdir(tmp_cspice_root_dir):
+        #         shutil.rmtree(tmp_cspice_root_dir)
     # and now we are done!
     os.chdir(cwd)
     print("Done!")
