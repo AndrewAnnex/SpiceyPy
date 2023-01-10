@@ -20,6 +20,11 @@
 *.ti
 *.bc
 
+# Cyice things
+src/spiceypy/cyice/cyice.html
+src/spiceypy/cyice/cyice.c
+
+
 # Cspice
 cspice/
 src/cspice/

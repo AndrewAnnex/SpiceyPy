@@ -3,42 +3,33 @@ from setuptools import Extension
 from setuptools.command.build_py import build_py as _build_py
 
 import numpy
-from Cython.Build import cythonize
-from Cython.Distutils.build_ext import new_build_ext as cython_build_ext
 
-#https://setuptools.pypa.io/en/latest/userguide/ext_modules.html
+# https://setuptools.pypa.io/en/latest/userguide/ext_modules.html
 
-# first check if cspice exists, if not download it to src/cspice
-if not Path('./src/cspice/src/').exists():
-    import get_spice
-    get_spice.main(build=False)
-
-cspice_c = list(map(str, Path('./src/cspice/src/cspice/').glob('*.c')))
-csupport_c = list(map(str, Path('./src/cspice/src/csupport/').glob('*.c')))
+cspice_c = list(map(str, Path("src/cspice/src/cspice/").glob("*.c")))
+csupport_c = list(map(str, Path("src/cspice/src/csupport/").glob("*.c")))
 
 ext_options = {
-    'language': 'c',
-    'include_dirs': ['src/cspice/include/', numpy.get_include()],
-    'define_macros': [],
-    'extra_compile_args': ["-m64", "-c", "-ansi", "-O2", "-fPIC"],
+    "include_dirs": [
+        "src/cspice/include/",
+        "src/cspice/src/cspice/",
+        "src/cspice/src/csupport/",
+    ],
+    "libraries": ["m", "src/cspice/lib/cspice.a", "src/cspice/lib/csupport.a"],
+    "library_dirs": ["/usr/local/lib", "src/spiceypy/utils"],
+    "language": "c",
+    "define_macros": [],
+    "extra_compile_args": ["-m64"],
 }
 
 cythonize_options = {"language_level": 3}
 
-
-class BuildCyice(_build_py):
-    def run(self):
-        self.run_command("build_ext")
-        return super().run()
-
-    def initialize_options(self):
-        super().initialize_options()
-        if self.distribution.ext_modules == None:
-            self.distribution.ext_modules = []
-
-        #todo think about calling it spiceypy.cyice? maybe that would simplify things?
-        self.distribution.ext_modules.append(
-            Extension('cyice', ['src/cyice/cyice.pyx', *cspice_c, *csupport_c], **ext_options)
-        )
-
-        cythonize(self.distribution.ext_modules, quiet=True, nthreads=4)
+cyice_ext = Extension(
+    name="cyice",
+    sources=[
+        "./src/spiceypy/cyice/cyice.pyx",
+        *cspice_c,
+        *csupport_c,
+    ],
+    **ext_options
+)

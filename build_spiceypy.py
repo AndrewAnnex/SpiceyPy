@@ -9,6 +9,7 @@ from pathlib import Path
 
 passnumber = 0
 
+
 def try_get_spice():
     global passnumber
     print("try_get_spice", passnumber)
@@ -42,7 +43,8 @@ class SpiceyPyBinaryDistribution(Distribution):
 
 
 class InstallSpiceyPy(install):
-    """Class that extends the install command and encapsulates the
+    """
+    Class that extends the install command and encapsulates the
     process for installing the required CSPICE distribution at the
     right place.
     """
@@ -81,4 +83,3 @@ class SpiceyPyWheelBuild(_bdist_wheel):
         python, abi, plat = super().get_tag()
         self.root_is_pure = False
         return "py3", "none", plat
-

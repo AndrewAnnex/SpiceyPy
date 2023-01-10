@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools >= 46.4.0", "wheel", "Cython"]
+requires = ["setuptools >= 46.4.0", "wheel", "numpy", "Cython"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -64,5 +64,12 @@ test-command = [
     "coverage run --source {package} -m pytest --pyargs {project}",
 ]
 
+[tool.coverage.run]
+relative_files = 'True'
 
+[tool.coverage.paths]
+source = [
+    "src/spiceypy/",
+    "work/SpiceyPy/SpiceyPy/",
+    ]
 

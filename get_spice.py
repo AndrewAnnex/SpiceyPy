@@ -112,7 +112,7 @@ class GetCSPICE(object):
     """
     Class that support the download from the NAIF FTP server of the required
     CSPICE package for the architecture used by the Python distribution that
-    invokes this module.  By default the CSPICE Toolkit version N0066 is
+    invokes this module. By default the CSPICE Toolkit version N0066 is
     downloaded and unpacked on the directory where this module is located.
 
     Arguments
@@ -442,7 +442,9 @@ def main(build: bool = True) -> None:
             print("Building cspice", flush=True)
             shared_library_path = build_cspice()
     if build:
-        print(f"Copying built cspice: {shared_library_path} to {destination}", flush=True)
+        print(
+            f"Copying built cspice: {shared_library_path} to {destination}", flush=True
+        )
         # first make the directory for the destination if it doesn't exist
         Path(destination).parent.mkdir(parents=True, exist_ok=True)
         # okay now move shared library to dst dir
