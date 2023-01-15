@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 
+import numpy
 from setuptools import setup, find_packages, Command, Extension
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
@@ -20,9 +21,13 @@ ext_options = {
     "include_dirs": [
         "src/cspice/include/",
         "src/cspice/src/cspice/",
+        numpy.get_include(),
     ],
     "libraries": ["m", "cspice"],
-    "library_dirs": ["/usr/local/lib", "src/spiceypy/utils"],
+    "library_dirs": [
+        "/usr/local/lib",
+        "src/spiceypy/utils",
+    ],
     "language": "c",
     "define_macros": [],
     "extra_compile_args": ["-m64"],
