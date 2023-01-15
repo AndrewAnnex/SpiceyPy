@@ -1,6 +1,6 @@
 # cython: language_level = 3
 # cython: embedsignature = True
-# cython: c_string_type = bytes
+# cython: c_string_type = unicode
 # cython: c_string_encoding = utf-8
 """
 main cython wrapper code
@@ -193,7 +193,7 @@ cdef extern from "SpiceUsr.h" nogil:
                         SpiceDouble * lt)
 
     cdef void spkezr_c(ConstSpiceChar * target,
-                        SpiceDouble         epoch,
+                        SpiceDouble      epoch,
                         ConstSpiceChar * frame,
                         ConstSpiceChar * abcorr,
                         ConstSpiceChar * observer,
@@ -201,17 +201,17 @@ cdef extern from "SpiceUsr.h" nogil:
                         SpiceDouble * lt)
 
 
-cpdef double b1900():
+cpdef double b1900() nogil:
     return b1900_c()
 
-cpdef double b1950():
+cpdef double b1950() nogil:
     return b1950_c()
 
 cpdef furnsh(str file):
     furnsh_c(file)
     
 cpdef spkezr(str target, double epoch, str frame, str abcorr, str observer):
-    cdef double[6] state = (0.0, 0, 0, 0, 0, 0)
+    cdef double[6] state = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
     cdef double lt = 0.0
     spkezr_c(target, epoch, frame, abcorr, observer, state, &lt)
     return state, lt
