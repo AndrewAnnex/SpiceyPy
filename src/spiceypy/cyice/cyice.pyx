@@ -1,4 +1,7 @@
 # cython: language_level = 3
+# cython: embedsignature = True
+# cython: c_string_type = bytes
+# cython: c_string_encoding = utf-8
 """
 main cython wrapper code
 
@@ -17,7 +20,7 @@ cdef extern from "Python.h":
 # todo maybe okay to just use "*" for header file
 # grab externs from SpiceZpr.h
 cdef extern from "SpiceUsr.h" nogil:
-    ctypedef int SpiceBoolean
+    ctypedef bint SpiceBoolean
     ctypedef char SpiceChar
     ctypedef long SpiceInt
     ctypedef double SpiceDouble
@@ -205,16 +208,10 @@ cpdef double b1950():
     return b1950_c()
 
 cpdef furnsh(str file):
-    py_file = file.encode('UTF-8')
-    cdef char * _file = py_file
-    furnsh_c(_file)
+    furnsh_c(file)
     
-# cpdef spkezr(target, epoch, frame, abcorr, observer):
-#     _target = _text(target)
-#     _frame = _text(frame)
-#     _abcorr = _text(abcorr)
-#     _observer = _text(observer)
-#     cdef double[6] state = (0.0, 0, 0, 0, 0, 0)
-#     cdef double lt = 0.0
-#     spkezr_c(target, epoch, frame, abcorr, observer, state, &lt)
-#     return state, lt
+cpdef spkezr(str target, double epoch, str frame, str abcorr, str observer):
+    cdef double[6] state = (0.0, 0, 0, 0, 0, 0)
+    cdef double lt = 0.0
+    spkezr_c(target, epoch, frame, abcorr, observer, state, &lt)
+    return state, lt
