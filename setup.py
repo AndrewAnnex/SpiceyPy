@@ -12,17 +12,16 @@ from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 # import numpy
 # https://setuptools.pypa.io/en/latest/userguide/ext_modules.html
 
-cspice_c = list(map(str, Path("src/cspice/src/cspice/").glob("*.c")))
-csupport_c = list(map(str, Path("src/cspice/src/csupport/").glob("*.c")))
+# I can just use the shared library!
+# cspice_c = list(map(str, Path("src/cspice/src/cspice/").glob("*.c")))
+# csupport_c = list(map(str, Path("src/cspice/src/csupport/").glob("*.c")))
 
 ext_options = {
     "include_dirs": [
         "src/cspice/include/",
         "src/cspice/src/cspice/",
     ],
-    "libraries": [
-        "m",
-    ],
+    "libraries": ["m", "cspice"],
     "library_dirs": ["/usr/local/lib", "src/spiceypy/utils"],
     "language": "c",
     "define_macros": [],
@@ -35,7 +34,7 @@ cyice_ext = Extension(
     name="spiceypy.cyice.cyice",
     sources=[
         "./src/spiceypy/cyice/cyice.pyx",
-        *cspice_c,
+        "./src/spiceypy/cyice/cyice.pxd",
     ],
     **ext_options
 )
