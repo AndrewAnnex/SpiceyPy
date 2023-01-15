@@ -63,3 +63,24 @@ def test_spkezr_vectorized():
     )
     npt.assert_allclose(lt, expected_lt)
     npt.assert_allclose(state, expected_state)
+
+
+def test_spkpos_vectorized():
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = spice.str2et(["July 4, 2003 11:00 AM PST", "July 11, 2003 11:00 AM PST"])
+    pos, lt = cyice.spkpos_vectorized("Mars", et, "J2000", "LT+S", "Earth")
+    expected_lt = [269.68988136615047324085, 251.44204326148698669385]
+    expected_pos = [
+        [
+            73822235.31053550541400909424,
+            -27127918.99847228080034255981,
+            -18741306.30148987472057342529,
+        ],
+        [
+            69682765.52989411354064941406,
+            -23090281.18098583817481994629,
+            -17127756.93968883529305458069,
+        ],
+    ]
+    npt.assert_almost_equal(lt, expected_lt)
+    npt.assert_array_almost_equal(pos, expected_pos)
