@@ -9,6 +9,8 @@ cpdefs are both, really only useful for recursion
 """
 
 # okay for some reason making a pxd file causes cython to fail
+# todo maybe okay to just use "*" for header file
+# grab externs from SpiceUsr.h
 cdef extern from "SpiceUsr.h" nogil:
     ctypedef int SpiceBoolean
     ctypedef char SpiceChar

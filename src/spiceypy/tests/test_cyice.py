@@ -1,5 +1,5 @@
 import pytest
-from spiceypy import cyice
+from spiceypy.cyice.cyice import cyice
 
 
 def test_b1900():

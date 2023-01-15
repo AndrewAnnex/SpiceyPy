@@ -2,6 +2,9 @@
 include *.patch
 # include getspice
 include get_spice.py
+# include build scripts
+include build_cyice.py
+include build_spiceypy.py
 
 # Misc
 include LICENSE
@@ -21,7 +24,3 @@ include makeDynamicSpice.bat
 # Tests
 exclude src/spiceypy/tests/exampleKernels.txt
 
-# Ensure no shared libraries are included in sdist! note I think this breaks 906a7650ba813a32e2f10a8dcf9afd946b774b67, maybe do this manually instead?
-global-exclude *.so
-global-exclude *.dylib
-global-exclude *.dll
