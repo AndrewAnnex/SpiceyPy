@@ -10,7 +10,9 @@ cdef's are not visible to python and are pure c, use for inner loops
 cpdefs are both, really only useful for recursion
 
 """
-from libc.stdlib cimport malloc, free
+from libc.stdlib cimport malloc, calloc, free
+from libc.string cimport memcpy, strlen
+from libc.stdio cimport printf
 from cython cimport boundscheck, wraparound
 import numpy as np
 cimport numpy as np
@@ -90,6 +92,9 @@ cdef extern from "SpiceUsr.h" nogil:
                        SpiceDouble         ptarg[3],
                        SpiceDouble * lt)
 
+    cdef void str2et_c(ConstSpiceChar * date,
+                       SpiceDouble * et);
+
 
 cpdef double b1900() nogil:
     return b1900_c()
@@ -97,7 +102,28 @@ cpdef double b1900() nogil:
 cpdef double b1950() nogil:
     return b1950_c()
 
-#cpdef et2utc_vectorized(double[:] et, str format_str, int prec):
+cpdef et2utc_vectorized(double[:] ets, str format_str, int prec):
+    cdef int i, n
+    n = ets.shape[0]
+    # convert the strings to pointers once
+    py_format_str = format_str.encode('utf-8')
+    cdef const char* _format_str = py_format_str
+    # create temporary char pointer 
+    cdef char* _utcstr = <char *> malloc((n+1) * sizeof(char))
+    # initialize output arrays TODO: using a unicode numpy array?
+    cdef char[:,:] results = np.zeros((n,256), dtype=np.dtype('|S256'))
+    # main loop
+    with boundscheck(False), wraparound(False):
+        for i in range(n):
+            et2utc_c(ets[i], _format_str, prec, 256, _utcstr)
+            printf('%s\n', _utcstr)
+            #memcpy(results[i], _utcstr, strlen(_utcstr)+1)
+            # _utcstr is a char pointer
+            results[i] = <bytes> _utcstr
+    # free temporary char pointer
+    free(_utcstr)
+    # return array
+    return np.asarray(results)
     
 
 cpdef furnsh(str file):
@@ -107,9 +133,9 @@ cpdef spkezr_vectorized(str target, double[:] epoch, str frame, str abcorr, str 
     # initialize c variables
     cdef double[6] state = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
     cdef double lt = 0.0
-    cdef int i,j, N
+    cdef int i,j, n
     # get the number of epochs defining the size of everything else
-    N = epoch.shape[0]
+    n = epoch.shape[0]
     # convert the strings to pointers once
     py_target   = target.encode('utf-8')
     py_frame    = frame.encode('utf-8')
@@ -120,11 +146,11 @@ cpdef spkezr_vectorized(str target, double[:] epoch, str frame, str abcorr, str 
     cdef const char* _abcorr   = py_abcorr
     cdef const char* _observer = py_observer
     # initialize output arrays
-    cdef double[:,:] states = np.zeros((N,6), dtype=np.double)
-    cdef double[:] lts = np.zeros(N, dtype=np.double)
+    cdef double[:,:] states = np.zeros((n,6), dtype=np.double)
+    cdef double[:] lts = np.zeros(n, dtype=np.double)
     # main loop
     with nogil, boundscheck(False), wraparound(False):
-        for i in range(N):
+        for i in range(n):
             spkezr_c(_target, epoch[i], _frame, _abcorr, _observer, state, &lt)
             for j in range(6):
                 states[i][j] = state[j]
@@ -136,9 +162,9 @@ cpdef spkpos_vectorized(str targ, double[:] ets, str ref, str abcorr, str obs):
     # initialize c variables
     cdef double[3] ptarg = (0.0, 0.0, 0.0)
     cdef double lt = 0.0
-    cdef int i,j, N
+    cdef int i,j, n
     # get the number of epochs defining the size of everything else
-    N = ets.shape[0]
+    n = ets.shape[0]
     # convert the strings to pointers once
     py_targ   = targ.encode('utf-8')
     py_ref    = ref.encode('utf-8')
@@ -149,11 +175,11 @@ cpdef spkpos_vectorized(str targ, double[:] ets, str ref, str abcorr, str obs):
     cdef const char* _abcorr = py_abcorr
     cdef const char* _obs    = py_obs
     # initialize output arrays
-    cdef double[:,:] ptargs = np.zeros((N,3), dtype=np.double)
-    cdef double[:] lts = np.zeros(N, dtype=np.double)
+    cdef double[:,:] ptargs = np.zeros((n,3), dtype=np.double)
+    cdef double[:] lts = np.zeros(n, dtype=np.double)
     # main loop
     with nogil, boundscheck(False), wraparound(False):
-        for i in range(N):
+        for i in range(n):
             spkpos_c(_targ, ets[i], _ref, _abcorr, _obs, ptarg, &lt)
             ptargs[i][0] = ptarg[0]
             ptargs[i][1] = ptarg[1]
@@ -161,3 +187,17 @@ cpdef spkpos_vectorized(str targ, double[:] ets, str ref, str abcorr, str obs):
             lts[i] = lt
     # return results
     return np.asarray(ptargs), np.asarray(lts)
+
+cpdef str2et_vectorized(str[:] times):
+    cdef double et
+    cdef int i, n
+    n = times.shape[0]
+    # initialize output
+    cdef double[:] ets = np.zeros(n, dtype=np.double)
+    #main loop
+    with boundscheck(False), wraparound(False):
+        for i in range(n):
+            str2et_c(times[i], &et)
+            ets[i] = et
+    # return results
+    return np.asarray(ets)

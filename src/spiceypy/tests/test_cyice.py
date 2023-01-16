@@ -45,6 +45,16 @@ def test_b1900():
     assert cyice.b1900() == 2415020.31352
 
 
+def test_et2utc_vectorized():
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = -527644192.5403653
+    output = cyice.et2utc_vectorized(np.array(3 * [et]), "J", 6)
+    assert np.array_equal(
+        output,
+        np.array(("JD 2445438.006415", "JD 2445438.006415", "JD 2445438.006415")),
+    )
+
+
 def test_spkezr_vectorized():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = np.full((100,), spice.str2et("July 4, 2003 11:00 AM PST"))
@@ -84,3 +94,12 @@ def test_spkpos_vectorized():
     ]
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(pos, expected_pos)
+
+
+def test_str2et():
+    spice.furnsh(CoreKernels.testMetaKernel)
+    date = "Thu Mar 20 12:53:29 PST 1997"
+    expected_ets = np.ones(100) * -87836728.81438904
+    dates = np.array([date] * 100)
+    ets = cyice.str2et_vectorized(dates)
+    npt.assert__array_almost_equal(ets, expected_ets)
