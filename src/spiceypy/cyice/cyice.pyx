@@ -95,6 +95,13 @@ cdef extern from "SpiceUsr.h" nogil:
     cdef void str2et_c(ConstSpiceChar * date,
                        SpiceDouble * et);
 
+cdef unicode tounicode(char* s):
+    return s.decode('UTF-8', 'strict')
+
+cdef unicode tounicode_with_length(
+        char* s, size_t length):
+    return s[:length].decode('UTF-8', 'strict')
+
 
 cpdef double b1900() nogil:
     return b1900_c()
@@ -109,21 +116,21 @@ cpdef et2utc_vectorized(double[:] ets, str format_str, int prec):
     py_format_str = format_str.encode('utf-8')
     cdef const char* _format_str = py_format_str
     # create temporary char pointer 
-    cdef char* _utcstr = <char *> malloc((n+1) * sizeof(char))
+    # todo use macro/contant for buffer size here?
+    cdef char* _utcstr = <char *> malloc((128+1) * sizeof(char))
     # initialize output arrays TODO: using a unicode numpy array?
-    cdef char[:,:] results = np.zeros((n,256), dtype=np.dtype('|S256'))
+    cdef list results = [None] * n
     # main loop
     with boundscheck(False), wraparound(False):
         for i in range(n):
-            et2utc_c(ets[i], _format_str, prec, 256, _utcstr)
-            printf('%s\n', _utcstr)
-            #memcpy(results[i], _utcstr, strlen(_utcstr)+1)
-            # _utcstr is a char pointer
-            results[i] = <bytes> _utcstr
+            et2utc_c(ets[i], _format_str, prec, 128, _utcstr)
+            # todo this will call strlen so it would be slow, would be best to 
+            #  compute length in bytes ahead of time given format and prec
+            results[i] = <unicode> _utcstr
     # free temporary char pointer
     free(_utcstr)
     # return array
-    return np.asarray(results)
+    return results
     
 
 cpdef furnsh(str file):
@@ -168,8 +175,8 @@ cpdef spkpos_vectorized(str targ, double[:] ets, str ref, str abcorr, str obs):
     # convert the strings to pointers once
     py_targ   = targ.encode('utf-8')
     py_ref    = ref.encode('utf-8')
-    py_abcorr   = abcorr.encode('utf-8')
-    py_obs = obs.encode('utf-8')
+    py_abcorr = abcorr.encode('utf-8')
+    py_obs    = obs.encode('utf-8')
     cdef const char* _targ   = py_targ
     cdef const char* _ref    = py_ref
     cdef const char* _abcorr = py_abcorr
@@ -188,16 +195,17 @@ cpdef spkpos_vectorized(str targ, double[:] ets, str ref, str abcorr, str obs):
     # return results
     return np.asarray(ptargs), np.asarray(lts)
 
-cpdef str2et_vectorized(str[:] times):
+cpdef str2et_vectorized(list times):
     cdef double et
     cdef int i, n
-    n = times.shape[0]
+    n = len(times)
     # initialize output
     cdef double[:] ets = np.zeros(n, dtype=np.double)
     #main loop
     with boundscheck(False), wraparound(False):
         for i in range(n):
-            str2et_c(times[i], &et)
+            # should this be unicode? or bytes? <unicode> seemed to work but unsure if safe
+            str2et_c(<unicode> times[i], &et)
             ets[i] = et
     # return results
     return np.asarray(ets)

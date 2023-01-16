@@ -48,10 +48,10 @@ def test_b1900():
 def test_et2utc_vectorized():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = -527644192.5403653
-    output = cyice.et2utc_vectorized(np.array(3 * [et]), "J", 6)
+    output = cyice.et2utc_vectorized(np.array([et] * 100), "J", 6)
     assert np.array_equal(
         output,
-        np.array(("JD 2445438.006415", "JD 2445438.006415", "JD 2445438.006415")),
+        np.array(["JD 2445438.006415"] * 100),
     )
 
 
@@ -100,6 +100,6 @@ def test_str2et():
     spice.furnsh(CoreKernels.testMetaKernel)
     date = "Thu Mar 20 12:53:29 PST 1997"
     expected_ets = np.ones(100) * -87836728.81438904
-    dates = np.array([date] * 100)
+    dates = [date] * 100
     ets = cyice.str2et_vectorized(dates)
-    npt.assert__array_almost_equal(ets, expected_ets)
+    npt.assert_array_almost_equal(ets, expected_ets)
