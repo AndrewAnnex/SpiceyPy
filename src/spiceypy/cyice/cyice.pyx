@@ -18,6 +18,8 @@ import numpy as np
 cimport numpy as np
 np.import_array()
 
+DEF TIMELEN = 64
+
 cdef extern from "Python.h":
     object PyString_FromStringAndSize(char *, Py_ssize_t)
     char *PyString_AsString(object)
@@ -96,12 +98,16 @@ cdef extern from "SpiceUsr.h" nogil:
                        SpiceDouble * et);
 
 cdef unicode tounicode(char* s):
-    return s.decode('UTF-8', 'strict')
+    return s.decode('utf8', 'strict')
 
 cdef unicode tounicode_with_length(
         char* s, size_t length):
-    return s[:length].decode('UTF-8', 'strict')
+    return s[:length].decode('utf8', 'strict')
 
+cdef to_char_pointer(s):
+    if isinstance(s, unicode):
+        s = (<unicode>s).encode('utf8')
+    return s
 
 cpdef double b1900() nogil:
     return b1900_c()
@@ -117,13 +123,13 @@ cpdef et2utc_vectorized(double[:] ets, str format_str, int prec):
     cdef const char* _format_str = py_format_str
     # create temporary char pointer 
     # todo use macro/contant for buffer size here?
-    cdef char* _utcstr = <char *> malloc((128+1) * sizeof(char))
+    cdef char* _utcstr = <char *> malloc((TIMELEN+1) * sizeof(char))
     # initialize output arrays TODO: using a unicode numpy array?
     cdef list results = [None] * n
     # main loop
     with boundscheck(False), wraparound(False):
         for i in range(n):
-            et2utc_c(ets[i], _format_str, prec, 128, _utcstr)
+            et2utc_c(ets[i], _format_str, prec, TIMELEN, _utcstr)
             # todo this will call strlen so it would be slow, would be best to 
             #  compute length in bytes ahead of time given format and prec
             results[i] = <unicode> _utcstr
