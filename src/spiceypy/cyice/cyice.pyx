@@ -146,7 +146,7 @@ cpdef spkezr_vectorized(str target, double[:] epoch, str frame, str abcorr, str 
     # initialize c variables
     cdef double[6] state = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
     cdef double lt = 0.0
-    cdef int i,j, n
+    cdef int i, n
     # get the number of epochs defining the size of everything else
     n = epoch.shape[0]
     # convert the strings to pointers once
@@ -165,8 +165,12 @@ cpdef spkezr_vectorized(str target, double[:] epoch, str frame, str abcorr, str 
     with nogil, boundscheck(False), wraparound(False):
         for i in range(n):
             spkezr_c(_target, epoch[i], _frame, _abcorr, _observer, state, &lt)
-            for j in range(6):
-                states[i][j] = state[j]
+            states[i][0] = state[0]
+            states[i][1] = state[1]
+            states[i][2] = state[2]
+            states[i][3] = state[3]
+            states[i][4] = state[4]
+            states[i][5] = state[5]
             lts[i] = lt
     # return results
     return np.asarray(states), np.asarray(lts)
