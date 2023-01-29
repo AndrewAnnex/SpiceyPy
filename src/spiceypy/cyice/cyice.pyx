@@ -70,11 +70,11 @@ cdef extern from "SpiceUsr.h" nogil:
     #C 
     
     #E
-    cdef void et2utc_c(SpiceDouble         et,
+    cdef void et2utc_c(SpiceDouble      et,
                        ConstSpiceChar * format,
-                       SpiceInt            prec,
-                       SpiceInt            lenout,
-                       SpiceChar * utcstr)
+                       SpiceInt         prec,
+                       SpiceInt         lenout,
+                       SpiceChar      * utcstr)
 
     #F 
     cdef void furnsh_c(ConstSpiceChar * file)
@@ -85,19 +85,19 @@ cdef extern from "SpiceUsr.h" nogil:
                        ConstSpiceChar * frame,
                        ConstSpiceChar * abcorr,
                        ConstSpiceChar * observer,
-                       SpiceDouble state[6],
-                       SpiceDouble * lt)
+                       SpiceDouble      state[6],
+                       SpiceDouble    * lt)
 
     cdef void spkpos_c(ConstSpiceChar * targ,
-                       SpiceDouble         et,
+                       SpiceDouble      et,
                        ConstSpiceChar * ref,
                        ConstSpiceChar * abcorr,
                        ConstSpiceChar * obs,
-                       SpiceDouble         ptarg[3],
-                       SpiceDouble * lt)
+                       SpiceDouble      ptarg[3],
+                       SpiceDouble    * lt)
 
     cdef void str2et_c(ConstSpiceChar * date,
-                       SpiceDouble * et);
+                       SpiceDouble    * et);
 
 cdef unicode tounicode(char* s):
     return s.decode('utf8', 'strict')
@@ -117,6 +117,8 @@ cpdef double b1900() nogil:
 cpdef double b1950() nogil:
     return b1950_c()
 
+@boundscheck(False)
+@wraparound(False)
 cpdef et2utc_v(double[:] ets, str format_str, int prec):
     cdef int i, n
     n = ets.shape[0]
@@ -129,12 +131,11 @@ cpdef et2utc_v(double[:] ets, str format_str, int prec):
     # initialize output arrays TODO: using a unicode numpy array?
     cdef list results = [None] * n
     # main loop
-    with boundscheck(False), wraparound(False):
-        for i in range(n):
-            et2utc_c(ets[i], _format_str, prec, TIMELEN, _utcstr)
-            # todo this will call strlen so it would be slow, would be best to 
-            #  compute length in bytes ahead of time given format and prec
-            results[i] = <unicode> _utcstr
+    for i in range(n):
+        et2utc_c(ets[i], _format_str, prec, TIMELEN, _utcstr)
+        # todo this will call strlen so it would be slow, would be best to 
+        #  compute length in bytes ahead of time given format and prec
+        results[i] = <unicode> _utcstr
     # free temporary char pointer
     free(_utcstr)
     # return array
@@ -144,6 +145,8 @@ cpdef et2utc_v(double[:] ets, str format_str, int prec):
 cpdef furnsh(str file):
     furnsh_c(file)
 
+@boundscheck(False)
+@wraparound(False)
 cpdef spkezr_v(str target, double[:] epoch, str frame, str abcorr, str observer):
     # initialize c variables
     cdef double[6] state = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
@@ -164,7 +167,7 @@ cpdef spkezr_v(str target, double[:] epoch, str frame, str abcorr, str observer)
     cdef double[:,:] states = np.zeros((n,6), dtype=np.double)
     cdef double[:] lts = np.zeros(n, dtype=np.double)
     # main loop
-    with nogil, boundscheck(False), wraparound(False):
+    with nogil:
         for i in range(n):
             spkezr_c(_target, epoch[i], _frame, _abcorr, _observer, state, &lt)
             states[i][0] = state[0]
@@ -176,12 +179,14 @@ cpdef spkezr_v(str target, double[:] epoch, str frame, str abcorr, str observer)
             lts[i] = lt
     # return results
     return np.asarray(states), np.asarray(lts)
-    
+
+@boundscheck(False)
+@wraparound(False)
 cpdef spkpos_v(str targ, double[:] ets, str ref, str abcorr, str obs):
     # initialize c variables
     cdef double[3] ptarg = (0.0, 0.0, 0.0)
     cdef double lt = 0.0
-    cdef int i,j, n
+    cdef int i, j, n
     # get the number of epochs defining the size of everything else
     n = ets.shape[0]
     # convert the strings to pointers once
@@ -197,7 +202,7 @@ cpdef spkpos_v(str targ, double[:] ets, str ref, str abcorr, str obs):
     cdef double[:,:] ptargs = np.zeros((n,3), dtype=np.double)
     cdef double[:] lts = np.zeros(n, dtype=np.double)
     # main loop
-    with nogil, boundscheck(False), wraparound(False):
+    with nogil:
         for i in range(n):
             spkpos_c(_targ, ets[i], _ref, _abcorr, _obs, ptarg, &lt)
             ptargs[i][0] = ptarg[0]
@@ -207,6 +212,8 @@ cpdef spkpos_v(str targ, double[:] ets, str ref, str abcorr, str obs):
     # return results
     return np.asarray(ptargs), np.asarray(lts)
 
+@boundscheck(False)
+@wraparound(False)
 cpdef str2et_v(np.ndarray times):
     cdef double et
     cdef int i, n
@@ -214,10 +221,9 @@ cpdef str2et_v(np.ndarray times):
     # initialize output
     cdef double[:] ets = np.zeros(n, dtype=np.double)
     #main loop
-    with boundscheck(False), wraparound(False):
-        for i in range(n):
-            # should this be unicode? or bytes? <unicode> seemed to work but unsure if safe
-            str2et_c(<unicode> times[i], &et)
-            ets[i] = et
+    for i in range(n):
+        # should this be unicode? or bytes? <unicode> seemed to work but unsure if safe
+        str2et_c(<unicode> times[i], &et)
+        ets[i] = et
     # return results
     return np.asarray(ets)
