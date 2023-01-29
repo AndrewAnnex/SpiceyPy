@@ -45,20 +45,20 @@ def test_b1900():
     assert cyice.b1900() == 2415020.31352
 
 
-def test_et2utc_vectorized():
+def test_et2utc_v():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = -527644192.5403653
-    output = cyice.et2utc_vectorized(np.array([et] * 100), "J", 6)
+    output = cyice.et2utc_v(np.array([et] * 100), "J", 6)
     assert np.array_equal(
         output,
         np.array(["JD 2445438.006415"] * 100),
     )
 
 
-def test_spkezr_vectorized():
+def test_spkezr_v():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = np.full((100,), spice.str2et("July 4, 2003 11:00 AM PST"))
-    state, lt = cyice.spkezr_vectorized("Mars", et, "J2000", "LT+S", "Earth")
+    state, lt = cyice.spkezr_v("Mars", et, "J2000", "LT+S", "Earth")
     expected_lt = np.full((100,), 269.6898816177049)
     expected_state = np.full(
         (100, 6),
@@ -75,10 +75,10 @@ def test_spkezr_vectorized():
     npt.assert_allclose(state, expected_state)
 
 
-def test_spkpos_vectorized():
+def test_spkpos_v():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et(["July 4, 2003 11:00 AM PST", "July 11, 2003 11:00 AM PST"])
-    pos, lt = cyice.spkpos_vectorized("Mars", et, "J2000", "LT+S", "Earth")
+    pos, lt = cyice.spkpos_v("Mars", et, "J2000", "LT+S", "Earth")
     expected_lt = [269.68988136615047324085, 251.44204326148698669385]
     expected_pos = [
         [
@@ -96,10 +96,11 @@ def test_spkpos_vectorized():
     npt.assert_array_almost_equal(pos, expected_pos)
 
 
-def test_str2et():
+def test_str2et_v():
     spice.furnsh(CoreKernels.testMetaKernel)
     date = "Thu Mar 20 12:53:29 PST 1997"
     expected_ets = np.ones(100) * -87836728.81438904
-    dates = [date] * 100
-    ets = cyice.str2et_vectorized(dates)
+    dates = np.array([date] * 100, dtype=np.string_)
+    print(dates.shape, dates.dtype, flush=True)
+    ets = cyice.str2et_v(dates)
     npt.assert_array_almost_equal(ets, expected_ets)

@@ -20,6 +20,8 @@ np.import_array()
 
 DEF TIMELEN = 64
 
+ctypedef np.double_t DOUBLE_t
+
 cdef extern from "Python.h":
     object PyString_FromStringAndSize(char *, Py_ssize_t)
     char *PyString_AsString(object)
@@ -115,7 +117,7 @@ cpdef double b1900() nogil:
 cpdef double b1950() nogil:
     return b1950_c()
 
-cpdef et2utc_vectorized(double[:] ets, str format_str, int prec):
+cpdef et2utc_v(double[:] ets, str format_str, int prec):
     cdef int i, n
     n = ets.shape[0]
     # convert the strings to pointers once
@@ -142,7 +144,7 @@ cpdef et2utc_vectorized(double[:] ets, str format_str, int prec):
 cpdef furnsh(str file):
     furnsh_c(file)
 
-cpdef spkezr_vectorized(str target, double[:] epoch, str frame, str abcorr, str observer):
+cpdef spkezr_v(str target, double[:] epoch, str frame, str abcorr, str observer):
     # initialize c variables
     cdef double[6] state = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
     cdef double lt = 0.0
@@ -175,7 +177,7 @@ cpdef spkezr_vectorized(str target, double[:] epoch, str frame, str abcorr, str 
     # return results
     return np.asarray(states), np.asarray(lts)
     
-cpdef spkpos_vectorized(str targ, double[:] ets, str ref, str abcorr, str obs):
+cpdef spkpos_v(str targ, double[:] ets, str ref, str abcorr, str obs):
     # initialize c variables
     cdef double[3] ptarg = (0.0, 0.0, 0.0)
     cdef double lt = 0.0
@@ -205,10 +207,10 @@ cpdef spkpos_vectorized(str targ, double[:] ets, str ref, str abcorr, str obs):
     # return results
     return np.asarray(ptargs), np.asarray(lts)
 
-cpdef str2et_vectorized(list times):
+cpdef str2et_v(np.ndarray times):
     cdef double et
     cdef int i, n
-    n = len(times)
+    n = times.shape[0]
     # initialize output
     cdef double[:] ets = np.zeros(n, dtype=np.double)
     #main loop
