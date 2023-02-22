@@ -141,6 +141,29 @@ cpdef et2utc_v(double[:] ets, str format_str, int prec):
     # return array
     return results
     
+    
+@boundscheck(False)
+@wraparound(False)
+cpdef et2utc_v2(double[:] ets, str format_str, int prec):
+    cdef int i, n
+    n = ets.shape[0]
+    # convert the strings to pointers once
+    py_format_str = format_str.encode('utf-8')
+    cdef const char* _format_str = py_format_str
+    # create temporary char pointer 
+    # todo use macro/contant for buffer size here?
+    cdef char[65] _utcstr
+    # initialize output arrays TODO: using a unicode numpy array?
+    cdef np.ndarray[np.object_, ndim=1] results = np.empty(n, dtype=np.dtype("S65"))
+    # main loop
+    for i in range(n):
+        et2utc_c(ets[i], _format_str, prec, TIMELEN, &_utcstr[0])
+        # todo this will call strlen so it would be slow, would be best to 
+        #  compute length in bytes ahead of time given format and prec
+        results[i] = <bytes> _utcstr
+    # return array
+    return results
+
 
 cpdef furnsh(str file):
     furnsh_c(file)
@@ -223,7 +246,7 @@ cpdef str2et_v(np.ndarray times):
     #main loop
     for i in range(n):
         # should this be unicode? or bytes? <unicode> seemed to work but unsure if safe
-        str2et_c(<unicode> times[i], &et)
+        str2et_c(times[i], &et)
         ets[i] = et
     # return results
     return np.asarray(ets)
