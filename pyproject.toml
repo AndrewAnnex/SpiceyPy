@@ -31,7 +31,7 @@ classifiers = [
 
 [project.optional-dependencies]
 tests = ['numpy>=1.17.0', 'pytest>=7.0.0', 'pandas>=0.24.0']
-dev = ['numpy>=1.17.0', 'pytest>=7.0.0', 'pandas>=0.24.0', 'coverage>=5.1.0', 'codecov>=2.1.0', 'twine>=3.3.0', 'wheel', 'build', 'black']
+dev = ['numpy>=1.17.0', 'pytest>=7.0.0', 'pandas>=0.24.0', 'coverage>=5.1.0', 'codecov>=2.1.0', 'twine>=3.3.0', 'cython', 'wheel', 'build', 'black']
 
 [project.urls]
 'Homepage'      = 'https://github.com/AndrewAnnex/SpiceyPy'

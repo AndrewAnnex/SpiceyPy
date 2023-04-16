@@ -10,7 +10,6 @@ from Cython.Distutils import build_ext
 from Cython.Build import cythonize
 from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 
-# import numpy
 # https://setuptools.pypa.io/en/latest/userguide/ext_modules.html
 
 # I can just use the shared library!
