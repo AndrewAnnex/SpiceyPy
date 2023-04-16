@@ -29,7 +29,7 @@ jobs:
             ./src/spiceypy/cyice/cyice.cpython*
           key: ${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-${{ hashFiles('get_spice.py', 'makeDynamicSpice.bat', 'cspice.def', '**/cyice.pyx') }}-libcspice-cython
       - name: Setup 🔬🍦🏗️
-        if: ${{ matrix.os == 'windows-latest' && steps.cache-libcspice-cython.outputs.cache-hit != 'true' }}
+        if: ${{ matrix.os == 'windows-latest' && steps.cache-libcspice.outputs.cache-hit != 'true' }}
         uses: ilammy/msvc-dev-cmd@v1.12.0
       - name: Checkout 🌶️ 🥧
         if: steps.cache-libcspice.outputs.cache-hit != 'true'
@@ -37,15 +37,15 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up Python 🐍 3.11
-        if: steps.cache-libcspice-cython.outputs.cache-hit != 'true'
+        if: steps.cache-libcspice.outputs.cache-hit != 'true'
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
       - name: Display Python 🐍 version
-        if: steps.cache-libcspice-cython.outputs.cache-hit != 'true'
+        if: steps.cache-libcspice.outputs.cache-hit != 'true'
         run: python -c "import sys; print(sys.version)"
       - name: Build libcspice 🌶️ 📚
-        if: steps.cache-libcspice-cython.outputs.cache-hit != 'true'
+        if: steps.cache-libcspice.outputs.cache-hit != 'true'
         env: 
           CSPICE_NO_TEMP: "YES"
         run: |
@@ -55,7 +55,7 @@ jobs:
           python setup.py build_ext -j 2 --inplace
           ls ./src/spiceypy/cyice/
       - name: Upload built 🏗️ libcspice 🌶️ 📚
-        if: steps.cache-libcspice-cython.outputs.cache-hit != 'true'
+        if: steps.cache-libcspice.outputs.cache-hit != 'true'
         uses: actions/upload-artifact@v3
         with:
           name: artifact-${{ matrix.os }}
