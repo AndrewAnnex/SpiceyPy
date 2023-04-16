@@ -65,7 +65,7 @@ test-command = [
 ]
 
 [tool.coverage.run]
-relative_files = 'True'
+relative_files = true
 
 [tool.coverage.paths]
 source = [
