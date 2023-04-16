@@ -131,7 +131,14 @@ setup(
     packages=find_packages("src"),
     package_dir={"": "src"},
     package_data={
-        "spiceypy": ["utils/*.so", "utils/*.dylib", "utils/*.dll"],
+        "spiceypy": [
+            "utils/*.so",
+            "utils/*.dylib",
+            "utils/*.dll",
+            "cyice/*.c",
+            "cyice/*.so",
+            "cyice/*.pyd",
+        ],
         "*": ["get_spice.py", "build_cyice.py", "build_spiceypy.py"],
     },
     include_package_data=True,
