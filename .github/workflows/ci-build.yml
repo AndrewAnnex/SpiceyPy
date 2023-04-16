@@ -72,7 +72,7 @@ jobs:
         python-version: [ '3.7', '3.8', '3.9', '3.10', '3.11' ]
     steps:
       - name: Setup windows msvc
-        if: ${{ matrix.os == 'windows-latest' && steps.cache-libcspice-cython.outputs.cache-hit != 'true' }}
+        if: ${{ matrix.os == 'windows-latest'}}
         uses: ilammy/msvc-dev-cmd@v1.12.0
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v3
@@ -81,7 +81,7 @@ jobs:
       - name: Download built 🏗️ libcspice 🌶️ 📚
         uses: actions/download-artifact@v3
         with:
-          name: artifact-${{ matrix.os }}
+          name: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-${{ hashFiles('get_spice.py', 'makeDynamicSpice.bat', 'cspice.def', '**/cyice.pyx') }}-libcspice-cython
           path: ./src/spiceypy/
       - name: Set up Python 🐍 ${{ matrix.python-version }}
         uses: actions/setup-python@v4
