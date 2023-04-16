@@ -22,14 +22,14 @@ ext_options = {
         "src/cspice/src/cspice/",
         numpy.get_include(),
     ],
-    "libraries": ["m", "cspice"],
+    "libraries": ["cspice"],
     "library_dirs": [
         "/usr/local/lib",
         "src/spiceypy/utils",
     ],
     "language": "c",
     "define_macros": [],
-    "extra_compile_args": ["-m64"],
+    "extra_compile_args": [],
 }
 
 cythonize_options = {"language_level": 3}
