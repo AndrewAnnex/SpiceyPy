@@ -24,7 +24,9 @@ jobs:
         id: cache-libcspice
         uses: actions/cache@v3
         with:
-          path: ./src/spiceypy/utils/libcspice.*
+          path: |
+            ./src/spiceypy/utils/libcspice.*
+            ./src/spiceypy/cyice/cyice.cpython-*
           key: ${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libspice
       - name: Setup 🔬🍦🏗️
         if: ${{ matrix.os == 'windows-latest' && steps.cache-libcspice.outputs.cache-hit != 'true' }}

@@ -7,6 +7,7 @@ include build_cyice.py
 include build_spiceypy.py
 # include cyice cython c file
 include src/spiceypy/cyice/cyice.c
+exclude src/spiceypy/cyice/cyice.html
 
 # Misc
 include LICENSE

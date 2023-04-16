@@ -45,10 +45,18 @@ def test_b1900():
     assert cyice.b1900() == 2415020.31352
 
 
+def test_cyice_b1900_benchmark(benchmark):
+    benchmark(cyice.b1900)
+
+
+def test_spiceypy_b1900_benchmark(benchmark):
+    benchmark(spice.b1900)
+
+
 def test_et2utc_v():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = -527644192.5403653
-    output = cyice.et2utc_v2(np.array([et] * 100), "J", 6)
+    output = cyice.et2utc_v(np.array([et] * 100), "J", 6)
     assert np.array_equal(
         output,
         np.array(["JD 2445438.006415"] * 100),

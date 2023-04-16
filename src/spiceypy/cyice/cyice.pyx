@@ -4,15 +4,9 @@
 # cython: c_string_encoding = utf-8
 """
 main cython wrapper code
-
-defs are visible to python
-cdef's are not visible to python and are pure c, use for inner loops
-cpdefs are both, really only useful for recursion
-
 """
 from libc.stdlib cimport malloc, calloc, free
 from libc.string cimport memcpy, strlen
-from libc.stdio cimport printf
 from cython cimport boundscheck, wraparound
 import numpy as np
 cimport numpy as np
@@ -99,18 +93,6 @@ cdef extern from "SpiceUsr.h" nogil:
     cdef void str2et_c(ConstSpiceChar * date,
                        SpiceDouble    * et);
 
-cdef unicode tounicode(char* s):
-    return s.decode('utf8', 'strict')
-
-cdef unicode tounicode_with_length(
-        char* s, size_t length):
-    return s[:length].decode('utf8', 'strict')
-
-cdef to_char_pointer(s):
-    if isinstance(s, unicode):
-        s = (<unicode>s).encode('utf8')
-    return s
-
 cpdef double b1900() nogil:
     return b1900_c()
 
@@ -138,29 +120,6 @@ cpdef et2utc_v(double[:] ets, str format_str, int prec):
         results[i] = <unicode> _utcstr
     # free temporary char pointer
     free(_utcstr)
-    # return array
-    return results
-    
-    
-@boundscheck(False)
-@wraparound(False)
-cpdef et2utc_v2(double[:] ets, str format_str, int prec):
-    cdef int i, n
-    n = ets.shape[0]
-    # convert the strings to pointers once
-    py_format_str = format_str.encode('utf-8')
-    cdef const char* _format_str = py_format_str
-    # create temporary char pointer 
-    # todo use macro/contant for buffer size here?
-    cdef char[65] _utcstr
-    # initialize output arrays TODO: using a unicode numpy array?
-    cdef np.ndarray[np.object_, ndim=1] results = np.empty(n, dtype=np.dtype("S65"))
-    # main loop
-    for i in range(n):
-        et2utc_c(ets[i], _format_str, prec, TIMELEN, &_utcstr[0])
-        # todo this will call strlen so it would be slow, would be best to 
-        #  compute length in bytes ahead of time given format and prec
-        results[i] = <bytes> _utcstr
     # return array
     return results
 
