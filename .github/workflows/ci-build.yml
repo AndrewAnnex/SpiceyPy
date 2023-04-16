@@ -27,9 +27,9 @@ jobs:
           path: |
             ./src/spiceypy/utils/libcspice.*
             ./src/spiceypy/cyice/cyice.cpython-*
-          key: ${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libspice
+          key: ${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice-cython
       - name: Setup 🔬🍦🏗️
-        if: ${{ matrix.os == 'windows-latest' && steps.cache-libcspice.outputs.cache-hit != 'true' }}
+        if: ${{ matrix.os == 'windows-latest' && steps.cache-libcspice-cython.outputs.cache-hit != 'true' }}
         uses: ilammy/msvc-dev-cmd@v1.12.0
       - name: Checkout 🌶️ 🥧
         if: steps.cache-libcspice.outputs.cache-hit != 'true'
@@ -37,15 +37,15 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up Python 🐍 3.11
-        if: steps.cache-libcspice.outputs.cache-hit != 'true'
+        if: steps.cache-libcspice-cython.outputs.cache-hit != 'true'
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
       - name: Display Python 🐍 version
-        if: steps.cache-libcspice.outputs.cache-hit != 'true'
+        if: steps.cache-libcspice-cython.outputs.cache-hit != 'true'
         run: python -c "import sys; print(sys.version)"
       - name: Build libcspice 🌶️ 📚
-        if: steps.cache-libcspice.outputs.cache-hit != 'true'
+        if: steps.cache-libcspice-cython.outputs.cache-hit != 'true'
         run: |
           python get_spice.py
       - name: Upload built 🏗️ libcspice 🌶️ 📚
