@@ -1,4 +1,5 @@
 import sys
+import platform
 from pathlib import Path
 
 import numpy
@@ -9,6 +10,12 @@ from setuptools.dist import Distribution
 from Cython.Distutils import build_ext
 from Cython.Build import cythonize
 from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+
+
+host_OS = platform.system()
+host_arch = platform.machine()
+# Get platform is Unix-like OS or not
+is_unix = host_OS in ("Linux", "Darwin", "FreeBSD")
 
 # https://setuptools.pypa.io/en/latest/userguide/ext_modules.html
 
@@ -22,7 +29,7 @@ ext_options = {
         "src/cspice/src/cspice/",
         numpy.get_include(),
     ],
-    "libraries": ["cspice"],
+    "libraries": ["cspice" if is_unix else "libcspice"],
     "library_dirs": [
         "/usr/local/lib",
         "src/spiceypy/utils",

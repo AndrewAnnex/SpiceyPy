@@ -51,6 +51,7 @@ jobs:
         run: |
           python -m pip install -r ci-requirements.txt
           python get_spice.py
+          ls ./src/spiceypy/utils/
           python setup.py build_ext -j 2 --inplace
           ls ./src/spiceypy/cyice/
       - name: Upload built 🏗️ libcspice 🌶️ 📚
