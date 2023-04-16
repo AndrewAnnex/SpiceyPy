@@ -10,7 +10,7 @@ on:
 env:
   # increment to rebuild cspice manually
   CSPICE_VERSION: 67
-  CSPICE_CACHE_NUMBER: 2
+  CSPICE_CACHE_NUMBER: 3
 
 jobs:
   build:
@@ -51,7 +51,7 @@ jobs:
         run: |
           python -m pip install -r ci-requirements.txt
           python get_spice.py
-          python setup.py build -j 2
+          python setup.py build_ext -j 2 --inplace
           ls ./src/spiceypy/cyice/ -lahtr
       - name: Upload built 🏗️ libcspice 🌶️ 📚
         uses: actions/upload-artifact@v3
