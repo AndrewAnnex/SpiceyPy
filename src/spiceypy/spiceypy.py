@@ -590,7 +590,7 @@ def bodeul(body: int, et: float) -> Tuple[float, float, float, float]:
 
 @spice_error_check
 @spice_found_exception_thrower
-def bodc2n(code: int, lenout: int = _default_len_out) -> Tuple[str, bool]:
+def bodc2n(code: int, lenout: int = _default_len_out) -> Union[Tuple[str, bool], str]:
     """
     Translate the SPICE integer code of a body into a common name
     for that body.
@@ -664,7 +664,7 @@ def bodfnd(body: int, item: str) -> bool:
 
 @spice_error_check
 @spice_found_exception_thrower
-def bodn2c(name: str) -> Tuple[int, bool]:
+def bodn2c(name: str) -> Union[Tuple[int, bool], int]:
     """
     Translate the name of a body or object to the corresponding SPICE
     integer ID code.
@@ -683,7 +683,7 @@ def bodn2c(name: str) -> Tuple[int, bool]:
 
 @spice_error_check
 @spice_found_exception_thrower
-def bods2c(name: str) -> Tuple[int, bool]:
+def bods2c(name: str) -> Union[Tuple[int, bool], int]:
     """
     Translate a string containing a body name or ID code to an integer code.
 
@@ -957,7 +957,7 @@ def card(cell: SpiceCell) -> int:
 @spice_found_exception_thrower
 def ccifrm(
     frclss: int, clssid: int, lenout: int = _default_len_out
-) -> Tuple[int, str, int, bool]:
+) -> Union[Tuple[int, str, int, bool], Tuple[int, str, int]]:
     """
     Return the frame name, frame ID, and center associated with
     a given frame class and class ID.
@@ -1155,7 +1155,7 @@ def chkout(module: str) -> None:
 
 @spice_error_check
 @spice_found_exception_thrower
-def cidfrm(cent: int, lenout: int = _default_len_out) -> Tuple[int, str, bool]:
+def cidfrm(cent: int, lenout: int = _default_len_out) -> Union[Tuple[int, str, bool], Tuple[int, str]]:
     """
     Retrieve frame ID code and name to associate with a frame center.
 
@@ -1229,7 +1229,7 @@ def ckcov(
 
 @spice_error_check
 @spice_found_exception_thrower
-def ckfrot(inst: int, et: float) -> Tuple[ndarray, int, bool]:
+def ckfrot(inst: int, et: float) -> Union[Tuple[ndarray, int, bool], Tuple[ndarray, int]]:
     """
     Find the rotation from a C-kernel Id to the native
     frame at the time requested.
@@ -1257,7 +1257,7 @@ def ckfrot(inst: int, et: float) -> Tuple[ndarray, int, bool]:
 
 @spice_error_check
 @spice_found_exception_thrower
-def ckfxfm(inst: int, et: float) -> Tuple[ndarray, int, bool]:
+def ckfxfm(inst: int, et: float) -> Union[Tuple[ndarray, int, bool], Tuple[ndarray, int]]:
     """
     Find the state transformation matrix from a C-kernel (CK) frame
     with the specified frame class ID (CK ID) to the base frame of
@@ -1287,7 +1287,7 @@ def ckfxfm(inst: int, et: float) -> Tuple[ndarray, int, bool]:
 @spice_found_exception_thrower
 def ckgp(
     inst: int, sclkdp: Union[float, int], tol: int, ref: str
-) -> Tuple[ndarray, float, bool]:
+) -> Union[Tuple[ndarray, float, bool], Tuple[ndarray, float]]:
     """
     Get pointing (attitude) for a specified spacecraft clock time.
 
@@ -1318,7 +1318,7 @@ def ckgp(
 @spice_found_exception_thrower
 def ckgpav(
     inst: int, sclkdp: Union[float, float], tol: Union[float, int], ref: str
-) -> Tuple[ndarray, ndarray, float, bool]:
+) -> Union[Tuple[ndarray, ndarray, float, bool], Tuple[ndarray, ndarray, float]]:
     """
     Get pointing (attitude) and angular velocity
     for a specified spacecraft clock time.
@@ -1840,7 +1840,7 @@ def cmprss(delim: str, n: int, instr: str, lenout: int = _default_len_out) -> st
 
 @spice_error_check
 @spice_found_exception_thrower
-def cnmfrm(cname: str, lenout: int = _default_len_out) -> Tuple[int, str, bool]:
+def cnmfrm(cname: str, lenout: int = _default_len_out) -> Union[Tuple[int, str, bool], Tuple[int, str]]:
     """
     Retrieve frame ID code and name to associate with an object.
 
@@ -2290,7 +2290,7 @@ def dafgs(n: int = 125) -> ndarray:
 
 @spice_error_check
 @spice_found_exception_thrower
-def dafgsr(handle: int, recno: int, begin: int, end: int) -> Tuple[ndarray, bool]:
+def dafgsr(handle: int, recno: int, begin: int, end: int) -> Union[Tuple[ndarray, bool], ndarray]:
     """
     Read a portion of the contents of (words in) a summary record in a DAF file.
 
@@ -3092,7 +3092,7 @@ def diff(a: SpiceCell, b: SpiceCell) -> SpiceCell:
 
 @spice_error_check
 @spice_found_exception_thrower
-def dlabbs(handle: int) -> Tuple[SpiceDLADescr, bool]:
+def dlabbs(handle: int) -> Union[Tuple[SpiceDLADescr, bool], SpiceDLADescr]:
     """
     Begin a backward segment search in a DLA file.
 
@@ -3110,7 +3110,7 @@ def dlabbs(handle: int) -> Tuple[SpiceDLADescr, bool]:
 
 @spice_error_check
 @spice_found_exception_thrower
-def dlabfs(handle: int) -> Tuple[SpiceDLADescr, bool]:
+def dlabfs(handle: int) -> Union[Tuple[SpiceDLADescr, bool], SpiceDLADescr]:
     """
     Begin a forward segment search in a DLA file.
 
@@ -3176,7 +3176,7 @@ def dlaopn(fname: str, ftype: str, ifname: str, ncomch: int) -> int:
 
 @spice_error_check
 @spice_found_exception_thrower
-def dlafns(handle: int, descr: SpiceDLADescr) -> Tuple[SpiceDLADescr, bool]:
+def dlafns(handle: int, descr: SpiceDLADescr) -> Union[Tuple[SpiceDLADescr, bool], SpiceDLADescr]:
     """
     Find the segment following a specified segment in a DLA file.
 
@@ -3198,7 +3198,7 @@ def dlafns(handle: int, descr: SpiceDLADescr) -> Tuple[SpiceDLADescr, bool]:
 
 @spice_error_check
 @spice_found_exception_thrower
-def dlafps(handle: int, descr: SpiceDLADescr) -> Tuple[SpiceDLADescr, bool]:
+def dlafps(handle: int, descr: SpiceDLADescr) -> Union[Tuple[SpiceDLADescr, bool], SpiceDLADescr]:
     """
     Find the segment preceding a specified segment in a DLA file.
 
@@ -3243,7 +3243,7 @@ def dlatdr(x: float, y: float, z: float) -> ndarray:
 @spice_found_exception_thrower
 def dnearp(
     state: ndarray, a: float, b: float, c: float
-) -> Tuple[ndarray, ndarray, bool]:
+) -> Union[Tuple[ndarray, ndarray, bool], Tuple[ndarray, ndarray]]:
     """
     Compute the state (position and velocity) of an ellipsoid surface
     point nearest to the position component of a specified state.
@@ -4040,7 +4040,10 @@ def dskxsi(
     fixref: str,
     vertex: ndarray,
     raydir: ndarray,
-) -> Tuple[ndarray, int, SpiceDLADescr, SpiceDSKDescr, ndarray, ndarray, bool]:
+) -> Union[
+    Tuple[ndarray, int, SpiceDLADescr, SpiceDSKDescr, ndarray, ndarray, bool],
+    Tuple[ndarray, int, SpiceDLADescr, SpiceDSKDescr, ndarray, ndarray],
+]:
     """
     Compute a ray-surface intercept using data provided by
     multiple loaded DSK segments. Return information about
@@ -4191,7 +4194,7 @@ def dsphdr(x: float, y: float, z: float) -> ndarray:
 
 @spice_error_check
 @spice_found_exception_thrower
-def dtpool(name: str) -> Tuple[int, str, bool]:
+def dtpool(name: str) -> Union[Tuple[int, str, bool], Tuple[int, str]]:
     """
     Return the data about a kernel pool variable.
 
@@ -4852,7 +4855,7 @@ def ekfind(query: str, lenout: int = _default_len_out) -> Tuple[int, int, str]:
 @spice_found_exception_thrower
 def ekgc(
     selidx: int, row: int, element: int, lenout: int = _default_len_out
-) -> Tuple[str, int, bool]:
+) -> Union[Tuple[int, str, bool], Tuple[int, str]]:
     """
     Return an element of an entry in a column of character type in a specified
     row.
@@ -4882,7 +4885,7 @@ def ekgc(
 
 @spice_error_check
 @spice_found_exception_thrower
-def ekgd(selidx: int, row: int, element: int) -> Tuple[float, int, bool]:
+def ekgd(selidx: int, row: int, element: int) -> Union[Tuple[float, int, bool], Tuple[float, int]]:
     """
     Return an element of an entry in a column of double precision type in a
     specified row.
@@ -4915,7 +4918,7 @@ def ekgd(selidx: int, row: int, element: int) -> Tuple[float, int, bool]:
 
 @spice_error_check
 @spice_found_exception_thrower
-def ekgi(selidx: int, row: int, element: int) -> Tuple[int, int, bool]:
+def ekgi(selidx: int, row: int, element: int) -> Union[Tuple[int, int, bool], Tuple[int, int]]:
     """
     Return an element of an entry in a column of integer type in a specified
     row.
@@ -6137,7 +6140,7 @@ def frame(x: Union[ndarray, Iterable[float]]) -> Tuple[ndarray, ndarray, ndarray
 
 @spice_error_check
 @spice_found_exception_thrower
-def frinfo(frcode: int) -> Tuple[int, int, int, bool]:
+def frinfo(frcode: int) -> Union[Tuple[int, int, int, bool], Tuple[int, int, int]]:
     """
     Retrieve the minimal attributes associated with a frame
     needed for converting transformations to and from it.
@@ -6218,7 +6221,7 @@ def furnsh(path: Union[str, Iterable[str]]) -> None:
 @spice_found_exception_thrower
 def gcpool(
     name: str, start: int, room: int, lenout: int = _default_len_out
-) -> Tuple[Iterable[str], bool]:
+) -> Union[Tuple[Iterable[str], bool], Iterable[str]]:
     """
     Return the character value of a kernel variable from the kernel pool.
 
@@ -6254,7 +6257,7 @@ def gcpool(
 
 @spice_error_check
 @spice_found_exception_thrower
-def gdpool(name: str, start: int, room: int) -> Tuple[ndarray, bool]:
+def gdpool(name: str, start: int, room: int) -> Union[Tuple[ndarray, bool], ndarray]:
     """
     Return the d.p. value of a kernel variable from the kernel pool.
 
@@ -7738,7 +7741,7 @@ def gfuds(
 
 @spice_error_check
 @spice_found_exception_thrower
-def gipool(name: str, start: int, room: int) -> Tuple[ndarray, bool]:
+def gipool(name: str, start: int, room: int) -> Union[Tuple[ndarray, bool], ndarray]:
     """
     Return the integer value of a kernel variable from the kernel pool.
 
@@ -7763,7 +7766,7 @@ def gipool(name: str, start: int, room: int) -> Tuple[ndarray, bool]:
 @spice_found_exception_thrower
 def gnpool(
     name: str, start: int, room: int, lenout: int = _default_len_out
-) -> Tuple[Iterable[str], bool]:
+) -> Union[Tuple[Iterable[str], bool], Iterable[str]]:
     """
     Return names of kernel variables matching a specified template.
 
@@ -8163,7 +8166,7 @@ def ilumin(
 
 @spice_error_check
 @spice_found_exception_thrower
-def inedpl(a: float, b: float, c: float, plane: Plane) -> Tuple[Ellipse, bool]:
+def inedpl(a: float, b: float, c: float, plane: Plane) -> Union[Tuple[Ellipse, bool], Ellipse]:
     """
     Find the intersection of a triaxial ellipsoid and a plane.
 
@@ -8682,7 +8685,7 @@ def kdata(
     fillen: int = _default_len_out,
     typlen: int = _default_len_out,
     srclen: int = _default_len_out,
-) -> Tuple[str, str, str, int, bool]:
+) -> Union[Tuple[str, str, str, int, bool], Tuple[str, str, str, int]]:
     """
     Return data for the nth kernel that is among a list of specified
     kernel types.
@@ -8753,7 +8756,7 @@ def kepleq(ml: float, h: float, k: float) -> float:
 @spice_found_exception_thrower
 def kinfo(
     file: str, typlen: int = _default_len_out, srclen: int = _default_len_out
-) -> Tuple[str, str, int, bool]:
+) -> Union[Tuple[str, str, int, bool], Tuple[str, str, int]]:
     """
     Return information about a loaded kernel specified by name.
 
@@ -8848,7 +8851,7 @@ def kxtrct(
     termlen: int = _default_len_out,
     stringlen: int = _default_len_out,
     substrlen: int = _default_len_out,
-) -> Tuple[str, str, bool]:
+) -> Union[Tuple[str, str, bool], Tuple[str, str]]:
     """
     Locate a keyword in a string and extract the substring from
     the beginning of the first word following the keyword to the
@@ -12232,7 +12235,7 @@ def sincpt(
     obsrvr: str,
     dref: str,
     dvec: ndarray,
-) -> Tuple[ndarray, float, ndarray, bool]:
+) -> Union[Tuple[ndarray, float, ndarray, bool], Tuple[ndarray, float, ndarray]]:
     """
     Given an observer and a direction vector defining a ray, compute
     the surface intercept of the ray on a target body at a specified
@@ -13243,7 +13246,7 @@ def spkpvn(handle: int, descr: ndarray, et: float) -> Tuple[int, ndarray, int]:
 
 @spice_error_check
 @spice_found_exception_thrower
-def spksfs(body: int, et: float, idlen: int) -> Tuple[int, ndarray, str, bool]:
+def spksfs(body: int, et: float, idlen: int) -> Union[Tuple[int, ndarray, str, bool], Tuple[int, ndarray, str]]:
     # spksfs has a Parameter SIDLEN,
     # sounds like an optional but is that possible?
     """
@@ -14090,7 +14093,7 @@ def spkw20(
 
 @spice_error_check
 @spice_found_exception_thrower
-def srfc2s(code: int, bodyid: int, srflen: int = _default_len_out) -> Tuple[str, bool]:
+def srfc2s(code: int, bodyid: int, srflen: int = _default_len_out) -> Union[Tuple[str, bool], str]:
     """
     Translate a surface ID code, together with a body ID code, to the
     corresponding surface name. If no such name exists, return a
@@ -14117,7 +14120,7 @@ def srfc2s(code: int, bodyid: int, srflen: int = _default_len_out) -> Tuple[str,
 
 @spice_error_check
 @spice_found_exception_thrower
-def srfcss(code: int, bodstr: str, srflen: int = _default_len_out) -> Tuple[str, bool]:
+def srfcss(code: int, bodstr: str, srflen: int = _default_len_out) -> Union[Tuple[str, bool], str]:
     """
     Translate a surface ID code, together with a body string, to the
     corresponding surface name. If no such surface name exists,
@@ -14194,7 +14197,7 @@ def srfrec(body: int, longitude: float, latitude: float) -> ndarray:
 
 @spice_error_check
 @spice_found_exception_thrower
-def srfs2c(srfstr: str, bodstr: str) -> Tuple[int, bool]:
+def srfs2c(srfstr: str, bodstr: str) -> Union[Tuple[int, bool], int]:
     """
     Translate a surface string, together with a body string, to the
     corresponding surface ID code. The input strings may contain
@@ -14216,7 +14219,7 @@ def srfs2c(srfstr: str, bodstr: str) -> Tuple[int, bool]:
 
 @spice_error_check
 @spice_found_exception_thrower
-def srfscc(srfstr: str, bodyid: int) -> Tuple[int, bool]:
+def srfscc(srfstr: str, bodyid: int) -> Union[Tuple[int, bool], int]:
     """
     Translate a surface string, together with a body ID code, to the
     corresponding surface ID code. The input surface string may
@@ -14248,7 +14251,9 @@ def srfxpt(
     dvec: ndarray,
 ) -> Union[
     Tuple[ndarray, float, float, ndarray, bool],
+    Tuple[ndarray, float, float, ndarray],
     Tuple[ndarray, ndarray, ndarray, ndarray, ndarray],
+    Tuple[ndarray, ndarray, ndarray, ndarray]
 ]:
     """
     Deprecated: This routine has been superseded by the CSPICE
@@ -14410,7 +14415,7 @@ def stlabx(pobj: ndarray, vobs: ndarray) -> ndarray:
 @spice_found_exception_thrower
 def stpool(
     item: str, nth: int, contin: str, lenout: int = _default_len_out
-) -> Tuple[str, int, bool]:
+) -> Union[Tuple[str, int, bool], Tuple[str, int]]:
     """
     Retrieve the nth string from the kernel pool variable, where the
     string may be continued across several components of the kernel pool
@@ -14769,7 +14774,7 @@ def surfpt(
     a: Union[float, float],
     b: Union[float, float],
     c: Union[float, float],
-) -> Tuple[ndarray, bool]:
+) -> Union[Tuple[ndarray, bool], ndarray]:
     """
     Determine the intersection of a line-of-sight vector with the
     surface of an ellipsoid.
@@ -14802,7 +14807,7 @@ def surfpv(
     a: float,
     b: float,
     c: float,
-) -> Tuple[ndarray, bool]:
+) -> Union[Tuple[ndarray, bool], ndarray]:
     """
     Find the state (position and velocity) of the surface intercept
     defined by a specified ray, ray velocity, and ellipsoid.
@@ -14879,7 +14884,7 @@ def sxform(instring: str, tostring: str, et: Union[float, ndarray]) -> ndarray:
 
 @spice_error_check
 @spice_found_exception_thrower
-def szpool(name: str) -> Tuple[int, bool]:
+def szpool(name: str) -> Union[Tuple[int, bool], int]:
     """
     Return the kernel pool size limitations.
 
@@ -15181,7 +15186,7 @@ def tisbod(ref: str, body: int, et: float) -> ndarray:
 
 @spice_error_check
 @spice_found_exception_thrower
-def tkfram(typid: int) -> Tuple[ndarray, int, bool]:
+def tkfram(typid: int) -> Union[Tuple[ndarray, int, bool], Tuple[ndarray, int]]:
     """
     This routine returns the rotation from the input frame
     specified by ID to the associated frame given by FRAME.
@@ -16188,7 +16193,7 @@ def vprjp(vin: Union[ndarray, Iterable[float]], plane: Plane) -> ndarray:
 @spice_found_exception_thrower
 def vprjpi(
     vin: Union[ndarray, Iterable[float]], projpl: Plane, invpl: Plane
-) -> Tuple[ndarray, bool]:
+) -> Union[Tuple[ndarray, bool], ndarray]:
     """
     Find the vector in a specified plane that maps to a specified
     vector in another plane under orthogonal projection.
