@@ -47,7 +47,7 @@ jobs:
       - name: Build libcspice 🌶️ 📚
         if: steps.cache-libcspice-cython.outputs.cache-hit != 'true'
         run: |
-          pip install numpy cython build
+          python -m pip install -r ci-requirements.txt
           python get_spice.py
           python setup.py build -j 2
       - name: Upload built 🏗️ libcspice 🌶️ 📚

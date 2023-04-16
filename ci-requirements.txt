@@ -4,6 +4,7 @@ pytest>=7.0.0
 pandas>=0.24.0
 coverage>=5.1.0
 twine>=3.3.0
+cython
 wheel
 black
 build 
