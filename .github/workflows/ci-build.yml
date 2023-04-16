@@ -27,7 +27,7 @@ jobs:
           path: |
             ./src/spiceypy/utils/libcspice.*
             ./src/spiceypy/cyice/cyice.cpython*
-          key: ${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-{{ hashFiles('get_spice.py', 'makeDynamicSpice.bat', 'cspice.def', '**/cyice.pyx') }}-libcspice-cython
+          key: ${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-${{ hashFiles('get_spice.py', 'makeDynamicSpice.bat', 'cspice.def', '**/cyice.pyx') }}-libcspice-cython
       - name: Setup 🔬🍦🏗️
         if: ${{ matrix.os == 'windows-latest' && steps.cache-libcspice-cython.outputs.cache-hit != 'true' }}
         uses: ilammy/msvc-dev-cmd@v1.12.0
