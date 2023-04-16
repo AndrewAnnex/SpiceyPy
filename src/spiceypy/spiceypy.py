@@ -1155,7 +1155,9 @@ def chkout(module: str) -> None:
 
 @spice_error_check
 @spice_found_exception_thrower
-def cidfrm(cent: int, lenout: int = _default_len_out) -> Union[Tuple[int, str, bool], Tuple[int, str]]:
+def cidfrm(
+    cent: int, lenout: int = _default_len_out
+) -> Union[Tuple[int, str, bool], Tuple[int, str]]:
     """
     Retrieve frame ID code and name to associate with a frame center.
 
@@ -1229,7 +1231,9 @@ def ckcov(
 
 @spice_error_check
 @spice_found_exception_thrower
-def ckfrot(inst: int, et: float) -> Union[Tuple[ndarray, int, bool], Tuple[ndarray, int]]:
+def ckfrot(
+    inst: int, et: float
+) -> Union[Tuple[ndarray, int, bool], Tuple[ndarray, int]]:
     """
     Find the rotation from a C-kernel Id to the native
     frame at the time requested.
@@ -1257,7 +1261,9 @@ def ckfrot(inst: int, et: float) -> Union[Tuple[ndarray, int, bool], Tuple[ndarr
 
 @spice_error_check
 @spice_found_exception_thrower
-def ckfxfm(inst: int, et: float) -> Union[Tuple[ndarray, int, bool], Tuple[ndarray, int]]:
+def ckfxfm(
+    inst: int, et: float
+) -> Union[Tuple[ndarray, int, bool], Tuple[ndarray, int]]:
     """
     Find the state transformation matrix from a C-kernel (CK) frame
     with the specified frame class ID (CK ID) to the base frame of
@@ -1840,7 +1846,9 @@ def cmprss(delim: str, n: int, instr: str, lenout: int = _default_len_out) -> st
 
 @spice_error_check
 @spice_found_exception_thrower
-def cnmfrm(cname: str, lenout: int = _default_len_out) -> Union[Tuple[int, str, bool], Tuple[int, str]]:
+def cnmfrm(
+    cname: str, lenout: int = _default_len_out
+) -> Union[Tuple[int, str, bool], Tuple[int, str]]:
     """
     Retrieve frame ID code and name to associate with an object.
 
@@ -2290,7 +2298,9 @@ def dafgs(n: int = 125) -> ndarray:
 
 @spice_error_check
 @spice_found_exception_thrower
-def dafgsr(handle: int, recno: int, begin: int, end: int) -> Union[Tuple[ndarray, bool], ndarray]:
+def dafgsr(
+    handle: int, recno: int, begin: int, end: int
+) -> Union[Tuple[ndarray, bool], ndarray]:
     """
     Read a portion of the contents of (words in) a summary record in a DAF file.
 
@@ -3176,7 +3186,9 @@ def dlaopn(fname: str, ftype: str, ifname: str, ncomch: int) -> int:
 
 @spice_error_check
 @spice_found_exception_thrower
-def dlafns(handle: int, descr: SpiceDLADescr) -> Union[Tuple[SpiceDLADescr, bool], SpiceDLADescr]:
+def dlafns(
+    handle: int, descr: SpiceDLADescr
+) -> Union[Tuple[SpiceDLADescr, bool], SpiceDLADescr]:
     """
     Find the segment following a specified segment in a DLA file.
 
@@ -3198,7 +3210,9 @@ def dlafns(handle: int, descr: SpiceDLADescr) -> Union[Tuple[SpiceDLADescr, bool
 
 @spice_error_check
 @spice_found_exception_thrower
-def dlafps(handle: int, descr: SpiceDLADescr) -> Union[Tuple[SpiceDLADescr, bool], SpiceDLADescr]:
+def dlafps(
+    handle: int, descr: SpiceDLADescr
+) -> Union[Tuple[SpiceDLADescr, bool], SpiceDLADescr]:
     """
     Find the segment preceding a specified segment in a DLA file.
 
@@ -4885,7 +4899,9 @@ def ekgc(
 
 @spice_error_check
 @spice_found_exception_thrower
-def ekgd(selidx: int, row: int, element: int) -> Union[Tuple[float, int, bool], Tuple[float, int]]:
+def ekgd(
+    selidx: int, row: int, element: int
+) -> Union[Tuple[float, int, bool], Tuple[float, int]]:
     """
     Return an element of an entry in a column of double precision type in a
     specified row.
@@ -4918,7 +4934,9 @@ def ekgd(selidx: int, row: int, element: int) -> Union[Tuple[float, int, bool], 
 
 @spice_error_check
 @spice_found_exception_thrower
-def ekgi(selidx: int, row: int, element: int) -> Union[Tuple[int, int, bool], Tuple[int, int]]:
+def ekgi(
+    selidx: int, row: int, element: int
+) -> Union[Tuple[int, int, bool], Tuple[int, int]]:
     """
     Return an element of an entry in a column of integer type in a specified
     row.
@@ -8166,7 +8184,9 @@ def ilumin(
 
 @spice_error_check
 @spice_found_exception_thrower
-def inedpl(a: float, b: float, c: float, plane: Plane) -> Union[Tuple[Ellipse, bool], Ellipse]:
+def inedpl(
+    a: float, b: float, c: float, plane: Plane
+) -> Union[Tuple[Ellipse, bool], Ellipse]:
     """
     Find the intersection of a triaxial ellipsoid and a plane.
 
@@ -13246,7 +13266,9 @@ def spkpvn(handle: int, descr: ndarray, et: float) -> Tuple[int, ndarray, int]:
 
 @spice_error_check
 @spice_found_exception_thrower
-def spksfs(body: int, et: float, idlen: int) -> Union[Tuple[int, ndarray, str, bool], Tuple[int, ndarray, str]]:
+def spksfs(
+    body: int, et: float, idlen: int
+) -> Union[Tuple[int, ndarray, str, bool], Tuple[int, ndarray, str]]:
     # spksfs has a Parameter SIDLEN,
     # sounds like an optional but is that possible?
     """
@@ -14093,7 +14115,9 @@ def spkw20(
 
 @spice_error_check
 @spice_found_exception_thrower
-def srfc2s(code: int, bodyid: int, srflen: int = _default_len_out) -> Union[Tuple[str, bool], str]:
+def srfc2s(
+    code: int, bodyid: int, srflen: int = _default_len_out
+) -> Union[Tuple[str, bool], str]:
     """
     Translate a surface ID code, together with a body ID code, to the
     corresponding surface name. If no such name exists, return a
@@ -14120,7 +14144,9 @@ def srfc2s(code: int, bodyid: int, srflen: int = _default_len_out) -> Union[Tupl
 
 @spice_error_check
 @spice_found_exception_thrower
-def srfcss(code: int, bodstr: str, srflen: int = _default_len_out) -> Union[Tuple[str, bool], str]:
+def srfcss(
+    code: int, bodstr: str, srflen: int = _default_len_out
+) -> Union[Tuple[str, bool], str]:
     """
     Translate a surface ID code, together with a body string, to the
     corresponding surface name. If no such surface name exists,
@@ -14253,7 +14279,7 @@ def srfxpt(
     Tuple[ndarray, float, float, ndarray, bool],
     Tuple[ndarray, float, float, ndarray],
     Tuple[ndarray, ndarray, ndarray, ndarray, ndarray],
-    Tuple[ndarray, ndarray, ndarray, ndarray]
+    Tuple[ndarray, ndarray, ndarray, ndarray],
 ]:
     """
     Deprecated: This routine has been superseded by the CSPICE
