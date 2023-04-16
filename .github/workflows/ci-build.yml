@@ -70,6 +70,9 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: [ '3.7', '3.8', '3.9', '3.10', '3.11' ]
     steps:
+      - name: Setup windows msvc
+        if: ${{ matrix.os == 'windows-latest' && steps.cache-libcspice-cython.outputs.cache-hit != 'true' }}
+        uses: ilammy/msvc-dev-cmd@v1.12.0
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v3
         with:
@@ -78,7 +81,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: artifact-${{ matrix.os }}
-          path: ./src/spiceypy/utils/
+          path: ./src/spiceypy/
       - name: Set up Python 🐍 ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -119,6 +122,8 @@ jobs:
         run: |
           python -m pip install -r ci-requirements.txt
       - name: Install SpiceyPy 🌶️ 🥧
+        env:
+          CSPICE_NO_TEMP: "YES"
         run: |
           python -m pip install .
       - name: Test 🧪 with coverage 📈

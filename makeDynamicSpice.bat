@@ -45,8 +45,3 @@ rem Create libcspice.dll and libcspice.lib
 rem
 link /DLL /OUT:libcspice.dll /DEF:cspice.def /IMPLIB:libcspice.lib @temp.lst >nul
 lib /DEF:cspice.def /OUT:libcspice.lib /NAME:libcspice.dll /MACHINE:x64 @temp.lst >nul
-@echo on
-rem Finished Linking Spice, makeDynamicSpice.bat completed.
-rem directory contents
-dir /p
-@echo off
