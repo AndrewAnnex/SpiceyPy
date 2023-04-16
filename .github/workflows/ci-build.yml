@@ -52,7 +52,7 @@ jobs:
           python -m pip install -r ci-requirements.txt
           python get_spice.py
           python setup.py build_ext -j 2 --inplace
-          ls ./src/spiceypy/cyice/ -lahtr
+          ls ./src/spiceypy/cyice/
       - name: Upload built 🏗️ libcspice 🌶️ 📚
         uses: actions/upload-artifact@v3
         with:
