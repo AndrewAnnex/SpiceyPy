@@ -385,7 +385,7 @@ def build_cspice() -> List[str]:
     shared_lib_path = [
         str(p.absolute())
         for p in Path(destination).glob("*.*")
-        if p.suffix in (".dll", ".66", ".dylib", ".so", ".lib")
+        if p.suffix in (".dll", ".dylib", ".so", ".lib")
     ]
     if len(shared_lib_path) < 1:
         os.chdir(cwd)
@@ -412,11 +412,9 @@ def main(build: bool = True) -> None:
     """
     cwd = os.getcwd()
     # set final destination for cspice dynamic library
+    destination_dir = os.path.join(root_dir, "src", "spiceypy", "utils")
     destination = os.path.join(
-        root_dir,
-        "src",
-        "spiceypy",
-        "utils",
+        destination_dir,
         "libcspice.so" if is_unix else "libcspice.dll",
     )
     # check if the shared library already exists, if it does we are done
@@ -451,9 +449,11 @@ def main(build: bool = True) -> None:
         # first make the directory for the destination if it doesn't exist
         Path(destination).parent.mkdir(parents=True, exist_ok=True)
         for slp in shared_library_path:
+            slp = slp.replace(".dylib", ".so")
+            destination = Path(destination_dir) / Path(slp).name
             print(f"Copying: {slp} to {destination}", flush=True)
             # okay now move shared library to dst dir
-            shutil.copyfile(slp, destination)
+            shutil.copy(slp, destination_dir)
             # cleanup tmp dir, windows seems to fail with this:
             #    PermissionError: [WinError 32] The process cannot access the file because it is being used by another process
             # if tmp_cspice_root_dir is not None:
