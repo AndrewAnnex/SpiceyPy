@@ -58,7 +58,7 @@ jobs:
         if: steps.cache-libcspice.outputs.cache-hit != 'true'
         uses: actions/upload-artifact@v3
         with:
-          name: artifact-${{ matrix.os }}
+          name: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-${{ hashFiles('get_spice.py', 'makeDynamicSpice.bat', 'cspice.def', '**/cyice.pyx') }}-libcspice-cython
           path: |
             ./src/spiceypy/utils/libcspice.*
             ./src/spiceypy/cyice/cyice.cpython*
