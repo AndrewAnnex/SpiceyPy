@@ -25,21 +25,19 @@ is_unix = host_OS in ("Linux", "Darwin", "FreeBSD")
 
 ext_options = {
     "include_dirs": [
-        "./src/cspice/include/" if is_unix else "src\\cspice\\include",
-        "./src/cspice/src/cspice/" if is_unix else "src\\cspice\\src\\cspice",
+        "./src/cspice/include/",
+        "./src/cspice/src/cspice/",
         numpy.get_include(),
     ],
     "libraries": ["cspice" if is_unix else "libcspice"],
     "library_dirs": [
         "/usr/local/lib",
-        "src/spiceypy/utils" if is_unix else "src\\spiceypy\\utils",
+        "./src/spiceypy/utils",
     ],
     "language": "c",
     "define_macros": [],
     "extra_compile_args": [],
 }
-
-cythonize_options = {"language_level": 3}
 
 cyice_ext = Extension(
     name="spiceypy.cyice.cyice",

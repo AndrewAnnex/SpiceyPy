@@ -83,6 +83,8 @@ import urllib.request
 import urllib.error
 from zipfile import ZipFile
 
+from typing import List
+
 CSPICE_SRC_DIR = "CSPICE_SRC_DIR"
 CSPICE_SHARED_LIB = "CSPICE_SHARED_LIB"
 CSPICE_NO_PATCH = "CSPICE_NO_PATCH"
@@ -346,7 +348,7 @@ def prepare_cspice() -> None:
     pass
 
 
-def build_cspice() -> str:
+def build_cspice() -> List[str]:
     """
     Builds cspice
     :return: absolute path to new compiled shared library
@@ -383,15 +385,13 @@ def build_cspice() -> str:
     shared_lib_path = [
         str(p.absolute())
         for p in Path(destination).glob("*.*")
-        if p.suffix in (".dll", ".66", ".dylib", ".so")
+        if p.suffix in (".dll", ".66", ".dylib", ".so", ".lib")
     ]
-    if len(shared_lib_path) != 1:
+    if len(shared_lib_path) < 1:
         os.chdir(cwd)
         raise RuntimeError(
             f'Could not find built shared library of SpiceyPy in {list(Path(destination).glob("*.*"))}'
         )
-    else:
-        shared_lib_path = shared_lib_path[0]
     print(shared_lib_path, flush=True)
     os.chdir(cwd)
     return shared_lib_path
@@ -448,18 +448,17 @@ def main(build: bool = True) -> None:
             print("Building cspice", flush=True)
             shared_library_path = build_cspice()
     if build:
-        print(
-            f"Copying built cspice: {shared_library_path} to {destination}", flush=True
-        )
         # first make the directory for the destination if it doesn't exist
         Path(destination).parent.mkdir(parents=True, exist_ok=True)
-        # okay now move shared library to dst dir
-        shutil.copyfile(shared_library_path, destination)
-        # cleanup tmp dir, windows seems to fail with this:
-        #    PermissionError: [WinError 32] The process cannot access the file because it is being used by another process
-        # if tmp_cspice_root_dir is not None:
-        #     if os.path.exists(tmp_cspice_root_dir) and os.path.isdir(tmp_cspice_root_dir):
-        #         shutil.rmtree(tmp_cspice_root_dir)
+        for slp in shared_library_path:
+            print(f"Copying: {slp} to {destination}", flush=True)
+            # okay now move shared library to dst dir
+            shutil.copyfile(slp, destination)
+            # cleanup tmp dir, windows seems to fail with this:
+            #    PermissionError: [WinError 32] The process cannot access the file because it is being used by another process
+            # if tmp_cspice_root_dir is not None:
+            #     if os.path.exists(tmp_cspice_root_dir) and os.path.isdir(tmp_cspice_root_dir):
+            #         shutil.rmtree(tmp_cspice_root_dir)
     # and now we are done!
     os.chdir(cwd)
     print("Done!")

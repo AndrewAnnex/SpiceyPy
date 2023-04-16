@@ -2,7 +2,7 @@
 rem
 rem    makeDynamicSpice.bat
 rem
-rem    Creates the cspice.dll when run within the src/cspice directory.
+rem    Creates the libcspice.dll when run within the src/cspice directory.
 rem    Requires Visual Studio development tools to be in the path.
 rem    Specifically cl.exe and link.exe .
 rem
@@ -41,9 +41,11 @@ dir /b *.obj > temp.lst
 rem Finished Compiling, starting to Link spice.
 @echo off
 rem
-rem Create cspice.dll
+rem Create libcspice.dll and libcspice.lib
 rem
-
 link /DLL /OUT:libcspice.dll /DEF:cspice.def /IMPLIB:libcspice.lib @temp.lst >nul
 @echo on
 rem Finished Linking Spice, makeDynamicSpice.bat completed.
+rem directory contents
+@echo off
+dir /p
