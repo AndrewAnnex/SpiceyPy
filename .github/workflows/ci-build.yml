@@ -46,7 +46,7 @@ jobs:
         run: python -c "import sys; print(sys.version)"
       - name: Build libcspice 🌶️ 📚
         if: steps.cache-libcspice-cython.outputs.cache-hit != 'true'
-        env: |
+        env: 
           CSPICE_NO_TEMP: "YES"
         run: |
           python -m pip install -r ci-requirements.txt
