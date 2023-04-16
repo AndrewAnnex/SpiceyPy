@@ -86,6 +86,7 @@ from zipfile import ZipFile
 CSPICE_SRC_DIR = "CSPICE_SRC_DIR"
 CSPICE_SHARED_LIB = "CSPICE_SHARED_LIB"
 CSPICE_NO_PATCH = "CSPICE_NO_PATCH"
+CSPICE_NO_TEMP = "CSPICE_NO_TEMP"
 
 host_OS = platform.system()
 host_arch = platform.machine()
@@ -316,9 +317,14 @@ def prepare_cspice() -> None:
     """
     cwd = os.getcwd()
     global cspice_dir, tmp_cspice_root_dir
+    no_temp = CSPICE_NO_TEMP in os.environ
     with tempfile.TemporaryDirectory(prefix="cspice_spiceypy_") as tmp_dir:
         # Trick for python <3.8, delete tmp dir so that we can write it overwrite it
-        tmp_cspice_root_dir = str((Path(tmp_dir)).absolute())
+        if not no_temp:
+            tmp_cspice_root_dir = str((Path(tmp_dir)).absolute())
+        else:
+            # we are telling get_spice.py we want to download to the root/src/cspice dir
+            tmp_cspice_root_dir = os.path.join(root_dir, "src")
     tmp_cspice_src_dir = os.path.join(tmp_cspice_root_dir, "cspice")
     if os.access(cspice_dir, os.R_OK):
         print("Found usable CSPICE src directory", flush=True)
