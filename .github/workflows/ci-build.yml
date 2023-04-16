@@ -10,7 +10,7 @@ on:
 env:
   # increment to rebuild cspice manually
   CSPICE_VERSION: 67
-  CSPICE_CACHE_NUMBER: 0
+  CSPICE_CACHE_NUMBER: 1
 
 jobs:
   build:
@@ -48,11 +48,14 @@ jobs:
         if: steps.cache-libcspice-cython.outputs.cache-hit != 'true'
         run: |
           python get_spice.py
+          python setup.py build -j 2
       - name: Upload built 🏗️ libcspice 🌶️ 📚
         uses: actions/upload-artifact@v3
         with:
           name: artifact-${{ matrix.os }}
-          path: ./src/spiceypy/utils/libcspice.*
+          path: |
+            ./src/spiceypy/utils/libcspice.*
+            ./src/spiceypy/cyice/cyice.cpython-*
   test:
     name: Test SpiceyPy 🌶️ 🥧
     needs: build
