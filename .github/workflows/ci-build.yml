@@ -78,11 +78,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Download built 🏗️ libcspice 🌶️ 📚
-        uses: actions/download-artifact@v3
-        with:
-          name: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-${{ hashFiles('get_spice.py', 'makeDynamicSpice.bat', 'cspice.def', '**/cyice.pyx') }}-libcspice-cython
-          path: ./src/spiceypy/
       - name: Set up Python 🐍 ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -126,6 +121,10 @@ jobs:
         env:
           CSPICE_NO_TEMP: "YES"
         run: |
+          python get_spice.py
+          ls ./src/spiceypy/utils/
+          python setup.py build_ext -j 2 --inplace
+          ls ./src/spiceypy/cyice/
           python -m pip install .
       - name: Test 🧪 with coverage 📈
         run: |
