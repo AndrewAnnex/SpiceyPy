@@ -119,12 +119,6 @@ class SpiceyPyWheelBuild(_bdist_wheel):
         super().finalize_options()
         self.root_is_pure = False
 
-    def get_tag(self) -> (str, str, str):
-        self.root_is_pure = False
-        python, abi, plat = super().get_tag()
-        self.root_is_pure = False
-        return "py3", "none", plat
-
 
 setup(
     distclass=SpiceyPyBinaryDistribution,
