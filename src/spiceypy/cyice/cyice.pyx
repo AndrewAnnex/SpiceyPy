@@ -16,88 +16,22 @@ DEF TIMELEN = 64
 
 ctypedef np.double_t DOUBLE_t
 
-cdef extern from "Python.h":
-    object PyString_FromStringAndSize(char *, Py_ssize_t)
-    char *PyString_AsString(object)
+from .cyice cimport *
 
-
-# okay for some reason making a pxd file causes cython to fail
-# todo maybe okay to just use "*" for header file
-# grab externs from SpiceZpr.h
-cdef extern from "SpiceUsr.h" nogil:
-    ctypedef bint SpiceBoolean
-    ctypedef char SpiceChar
-    ctypedef long SpiceInt
-    ctypedef double SpiceDouble
-    ctypedef const int ConstSpiceBool
-    ctypedef const char ConstSpiceChar
-    ctypedef const long ConstSpiceInt
-    ctypedef const double ConstSpiceDouble
-
-    # Cells
-    cdef enum SpiceCellDataType:
-        char = 0,
-        double = 1,
-        int = 2,
-        time = 3,
-        bool = 4
-
-    cdef struct _SpiceCell:
-        SpiceCellDataType dtype
-        SpiceInt           length
-        SpiceInt           size
-        SpiceInt           card
-        SpiceBoolean       isSet
-        SpiceBoolean       adjust
-        SpiceBoolean       init
-        void * base
-        void * data
-
-    ctypedef _SpiceCell SpiceCell
-    ctypedef const SpiceCell ConstSpiceCell
-
-    # start of function defs
-    cdef double b1900_c()
-
-    cdef double b1950_c()
-
-    #C 
-    
-    #E
-    cdef void et2utc_c(SpiceDouble      et,
-                       ConstSpiceChar * format,
-                       SpiceInt         prec,
-                       SpiceInt         lenout,
-                       SpiceChar      * utcstr)
-
-    #F 
-    cdef void furnsh_c(ConstSpiceChar * file)
-
-    #S
-    cdef void spkezr_c(ConstSpiceChar * target,
-                       SpiceDouble      epoch,
-                       ConstSpiceChar * frame,
-                       ConstSpiceChar * abcorr,
-                       ConstSpiceChar * observer,
-                       SpiceDouble      state[6],
-                       SpiceDouble    * lt)
-
-    cdef void spkpos_c(ConstSpiceChar * targ,
-                       SpiceDouble      et,
-                       ConstSpiceChar * ref,
-                       ConstSpiceChar * abcorr,
-                       ConstSpiceChar * obs,
-                       SpiceDouble      ptarg[3],
-                       SpiceDouble    * lt)
-
-    cdef void str2et_c(ConstSpiceChar * date,
-                       SpiceDouble    * et);
 
 cpdef double b1900() nogil:
     return b1900_c()
 
+
 cpdef double b1950() nogil:
     return b1950_c()
+
+
+cpdef str et2utc(double et, str format_str, int prec):
+    cdef char[TIMELEN+1] string 
+    et2utc_c(et, format_str, prec, TIMELEN, string)
+    return <unicode> string
+
 
 @boundscheck(False)
 @wraparound(False)
@@ -126,6 +60,55 @@ cpdef et2utc_v(double[:] ets, str format_str, int prec):
 
 cpdef furnsh(str file):
     furnsh_c(file)
+    
+    
+cpdef spkez(int target, double epoch, str ref, str abcorr, int observer):
+    cdef double[6] state = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    cdef double lt = 0.0
+    spkez_c(target, epoch, ref, abcorr, observer, state, &lt)
+    return state, lt
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef spkez_v(int target, double[:] epoch, str ref, str abcorr, int observer):
+    # initialize c variables
+    cdef double[6] state = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    cdef double lt = 0.0
+    cdef int i, n
+    # get the number of epochs defining the size of everything else
+    n = epoch.shape[0]
+    # convert the strings to pointers once
+    cdef int _target   = target
+    cdef const char* _ref    = ref
+    cdef const char* _abcorr = abcorr
+    cdef int _observer = observer
+    # initialize output arrays
+    cdef np.ndarray[dtype=np.double_t, ndim=2] states = np.zeros((n,6), dtype=np.double)
+    cdef double[:,::1] _states = states
+    cdef np.ndarray[dtype=np.double_t, ndim=1] lts = np.zeros(n, dtype=np.double)
+    cdef double[:] _lts = lts
+    # main loop
+    with nogil:
+        for i in range(n):
+            spkez_c(_target, epoch[i], _ref, _abcorr, _observer, state, &lt)
+            _states[i][0] = state[0]
+            _states[i][1] = state[1]
+            _states[i][2] = state[2]
+            _states[i][3] = state[3]
+            _states[i][4] = state[4]
+            _states[i][5] = state[5]
+            _lts[i] = lt
+    # return results
+    return states, lts
+
+    
+cpdef spkezr(str target, double epoch, str frame, str abcorr, str observer):
+    cdef double[6] state = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    cdef double lt = 0.0
+    spkezr_c(target, epoch, frame, abcorr, observer, state, &lt)
+    return state, lt
+
 
 @boundscheck(False)
 @wraparound(False)
@@ -137,30 +120,36 @@ cpdef spkezr_v(str target, double[:] epoch, str frame, str abcorr, str observer)
     # get the number of epochs defining the size of everything else
     n = epoch.shape[0]
     # convert the strings to pointers once
-    py_target   = target.encode('utf-8')
-    py_frame    = frame.encode('utf-8')
-    py_abcorr   = abcorr.encode('utf-8')
-    py_observer = observer.encode('utf-8')
-    cdef const char* _target   = py_target
-    cdef const char* _frame    = py_frame
-    cdef const char* _abcorr   = py_abcorr
-    cdef const char* _observer = py_observer
+    cdef const char* _target   = target
+    cdef const char* _frame    = frame
+    cdef const char* _abcorr   = abcorr
+    cdef const char* _observer = observer
     # initialize output arrays
-    cdef double[:,:] states = np.zeros((n,6), dtype=np.double)
-    cdef double[:] lts = np.zeros(n, dtype=np.double)
+    cdef np.ndarray[dtype=np.double_t, ndim=2] states = np.zeros((n,6), dtype=np.double)
+    cdef double[:,::1] _states = states
+    cdef np.ndarray[dtype=np.double_t, ndim=1] lts = np.zeros(n, dtype=np.double)
+    cdef double[:] _lts = lts
     # main loop
     with nogil:
         for i in range(n):
             spkezr_c(_target, epoch[i], _frame, _abcorr, _observer, state, &lt)
-            states[i][0] = state[0]
-            states[i][1] = state[1]
-            states[i][2] = state[2]
-            states[i][3] = state[3]
-            states[i][4] = state[4]
-            states[i][5] = state[5]
-            lts[i] = lt
+            _states[i][0] = state[0]
+            _states[i][1] = state[1]
+            _states[i][2] = state[2]
+            _states[i][3] = state[3]
+            _states[i][4] = state[4]
+            _states[i][5] = state[5]
+            _lts[i] = lt
     # return results
-    return np.asarray(states), np.asarray(lts)
+    return states, lts
+
+
+cpdef spkpos(str targ, double et, str ref, str abcorr, str obs):
+    cdef double[3] ptarg = (0.0, 0.0, 0.0)
+    cdef double lt = 0.0
+    spkpos_c(targ, et, ref, abcorr, obs, ptarg, &lt)
+    return ptarg, lt
+    
 
 @boundscheck(False)
 @wraparound(False)
@@ -172,27 +161,32 @@ cpdef spkpos_v(str targ, double[:] ets, str ref, str abcorr, str obs):
     # get the number of epochs defining the size of everything else
     n = ets.shape[0]
     # convert the strings to pointers once
-    py_targ   = targ.encode('utf-8')
-    py_ref    = ref.encode('utf-8')
-    py_abcorr = abcorr.encode('utf-8')
-    py_obs    = obs.encode('utf-8')
-    cdef const char* _targ   = py_targ
-    cdef const char* _ref    = py_ref
-    cdef const char* _abcorr = py_abcorr
-    cdef const char* _obs    = py_obs
+    cdef const char* _targ   = targ
+    cdef const char* _ref    = ref
+    cdef const char* _abcorr = abcorr
+    cdef const char* _obs    = obs
     # initialize output arrays
-    cdef double[:,:] ptargs = np.zeros((n,3), dtype=np.double)
-    cdef double[:] lts = np.zeros(n, dtype=np.double)
+    cdef np.ndarray[dtype=np.double_t, ndim=2] ptargs = np.zeros((n,3), dtype=np.double)
+    cdef double[:,::1] _ptargs = ptargs
+    cdef np.ndarray[dtype=np.double_t, ndim=1] lts = np.zeros(n, dtype=np.double)
+    cdef double[:] _lts = lts
     # main loop
     with nogil:
         for i in range(n):
             spkpos_c(_targ, ets[i], _ref, _abcorr, _obs, ptarg, &lt)
-            ptargs[i][0] = ptarg[0]
-            ptargs[i][1] = ptarg[1]
-            ptargs[i][2] = ptarg[2]
-            lts[i] = lt
+            _ptargs[i][0] = ptarg[0]
+            _ptargs[i][1] = ptarg[1]
+            _ptargs[i][2] = ptarg[2]
+            _lts[i] = lt
     # return results
-    return np.asarray(ptargs), np.asarray(lts)
+    return ptargs, lts
+
+
+cpdef double str2et(str time):
+    cdef double et
+    str2et_c(time, &et)
+    return et
+    
 
 @boundscheck(False)
 @wraparound(False)
@@ -201,11 +195,34 @@ cpdef str2et_v(np.ndarray times):
     cdef int i, n
     n = times.shape[0]
     # initialize output
-    cdef double[:] ets = np.zeros(n, dtype=np.double)
+    cdef np.ndarray[dtype=np.double_t, ndim=1] ets = np.zeros(n, dtype=np.double)
+    cdef double[:] _ets = ets
     #main loop
     for i in range(n):
         # should this be unicode? or bytes? <unicode> seemed to work but unsure if safe
         str2et_c(times[i], &et)
-        ets[i] = et
+        _ets[i] = et
     # return results
-    return np.asarray(ets)
+    return ets
+
+
+cpdef double utc2et(str utcstr):
+    cdef double et
+    utc2et_c(utcstr, &et)
+    return et
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef utc2et_v(np.ndarray utcstr):
+    cdef double et
+    cdef int i, n
+    n = utcstr.shape[0]
+    cdef np.ndarray[dtype=np.double_t, ndim=1] ets = np.zeros(n, dtype=np.double)
+    cdef double[:] _ets = ets
+    
+    for i in range(n):
+        utc2et_c(utcstr[i], &et)
+        _ets[i] = et
+
+    return ets

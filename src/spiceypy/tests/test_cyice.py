@@ -45,11 +45,11 @@ def test_b1900():
     assert cyice.b1900() == 2415020.31352
 
 
-def test_cyice_b1900_benchmark(benchmark):
+def test_b1900_cyice_benchmark(benchmark):
     benchmark(cyice.b1900)
 
 
-def test_spiceypy_b1900_benchmark(benchmark):
+def test_b1900_spiceypy_benchmark(benchmark):
     benchmark(spice.b1900)
 
 
@@ -61,6 +61,28 @@ def test_et2utc_v():
         output,
         np.array(["JD 2445438.006415"] * 100),
     )
+
+
+def test_et2utc_cyice_benchmark(benchmark):
+    spice.furnsh(CoreKernels.testMetaKernel)
+    benchmark(cyice.et2utc, -527644192.5403653, "J", 6)
+
+
+def test_et2utc_spiceypy_benchmark(benchmark):
+    spice.furnsh(CoreKernels.testMetaKernel)
+    benchmark(spice.et2utc, -527644192.5403653, "J", 6)
+
+
+def test_spkez_cyice_benchmark(benchmark):
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = cyice.str2et("July 4, 2003 11:00 AM PST")
+    benchmark(cyice.spkez, 499, et, "J2000", "LT+S", 399)
+
+
+def test_spkez_spiceypy_benchmark(benchmark):
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = spice.str2et("July 4, 2003 11:00 AM PST")
+    benchmark(spice.spkez, 499, et, "J2000", "LT+S", 399)
 
 
 def test_spkezr_v():
@@ -81,6 +103,18 @@ def test_spkezr_v():
     )
     npt.assert_allclose(lt, expected_lt)
     npt.assert_allclose(state, expected_state)
+
+
+def test_spkezr_cyice_benchmark(benchmark):
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = spice.str2et("July 4, 2003 11:00 AM PST")
+    benchmark(cyice.spkezr, "Mars", et, "J2000", "LT+S", "Earth")
+
+
+def test_spkezr_spiceypy_benchmark(benchmark):
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = spice.str2et("July 4, 2003 11:00 AM PST")
+    benchmark(spice.spkezr, "Mars", et, "J2000", "LT+S", "Earth")
 
 
 def test_spkpos_v():
@@ -104,6 +138,18 @@ def test_spkpos_v():
     npt.assert_array_almost_equal(pos, expected_pos)
 
 
+def test_spkpos_cyice_benchmark(benchmark):
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = spice.str2et("July 4, 2003 11:00 AM PST")
+    benchmark(cyice.spkpos, "Mars", et, "J2000", "LT+S", "Earth")
+
+
+def test_spkpos_spiceypy_benchmark(benchmark):
+    spice.furnsh(CoreKernels.testMetaKernel)
+    et = spice.str2et("July 4, 2003 11:00 AM PST")
+    benchmark(spice.spkpos, "Mars", et, "J2000", "LT+S", "Earth")
+
+
 def test_str2et_v():
     spice.furnsh(CoreKernels.testMetaKernel)
     date = "Thu Mar 20 12:53:29 PST 1997"
@@ -112,3 +158,23 @@ def test_str2et_v():
     print(dates.shape, dates.dtype, flush=True)
     ets = cyice.str2et_v(dates)
     npt.assert_array_almost_equal(ets, expected_ets)
+
+
+def test_str2et_cyice_benchmark(benchmark):
+    spice.furnsh(CoreKernels.testMetaKernel)
+    benchmark(cyice.str2et, "Thu Mar 20 12:53:29 PST 1997")
+
+
+def test_str2et_spiceypy_benchmark(benchmark):
+    spice.furnsh(CoreKernels.testMetaKernel)
+    benchmark(spice.str2et, "Thu Mar 20 12:53:29 PST 1997")
+
+
+def test_utc2et_cyice_benchmark(benchmark):
+    spice.furnsh(CoreKernels.testMetaKernel)
+    benchmark(cyice.utc2et, "December 1, 2004 15:04:11")
+
+
+def test_utc2et_spiceypy_benchmark(benchmark):
+    spice.furnsh(CoreKernels.testMetaKernel)
+    benchmark(spice.utc2et, "December 1, 2004 15:04:11")
