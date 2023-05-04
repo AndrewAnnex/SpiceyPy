@@ -182,8 +182,10 @@ jobs:
           ls ./src/
           ls ./src/spiceypy/utils/
           python setup.py build_ext -j 2 --inplace
+          python -m build --wheel
           ls ./src/spiceypy/cyice/
-          python -m pip install .
+          ls ./dist/
+          python -m pip install dist/*.whl --user
       - name: Test 🧪 with coverage 📈
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy
