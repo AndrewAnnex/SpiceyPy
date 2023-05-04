@@ -89,6 +89,7 @@ CSPICE_SRC_DIR = "CSPICE_SRC_DIR"
 CSPICE_SHARED_LIB = "CSPICE_SHARED_LIB"
 CSPICE_NO_PATCH = "CSPICE_NO_PATCH"
 CSPICE_NO_TEMP = "CSPICE_NO_TEMP"
+CSPICE_NO_BUILD = "CSPICE_NO_BUILD"
 
 host_OS = platform.system()
 host_arch = platform.machine()
@@ -410,6 +411,7 @@ def main(build: bool = True) -> None:
     :param build: if true build the shared library, if false just download the source code
     :return: None
     """
+    build = os.environ.get(CSPICE_NO_BUILD) is None  # if false (var is set) don't build
     cwd = os.getcwd()
     # set final destination for cspice dynamic library
     destination_dir = os.path.join(root_dir, "src", "spiceypy", "utils")
