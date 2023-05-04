@@ -56,7 +56,7 @@ jobs:
         if: steps.cache-libcspice.outputs.cache-hit != 'true'
         uses: actions/upload-artifact@v3
         with:
-          name: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-${{ hashFiles('get_spice.py', 'makeDynamicSpice.bat', 'cspice.def', '**/cyice.pyx') }}-libcspice-cython
+          name: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}
           path: |
             ./src/spiceypy/utils/libcspice.*
             ./src/cspice/
@@ -79,7 +79,7 @@ jobs:
       - name: Download built 🏗️ libcspice 🌶️ 📚
         uses: actions/download-artifact@v3
         with:
-          name: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-${{ hashFiles('get_spice.py', 'makeDynamicSpice.bat', 'cspice.def', '**/cyice.pyx') }}-libcspice-cython
+          name: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}
           path: |
             ./src/
       - name: Set up Python 🐍 ${{ matrix.python-version }}
@@ -126,11 +126,14 @@ jobs:
           CSPICE_NO_TEMP: "YES"
           CSPICE_NO_BUILD: "YES"
         run: |
+          python get_spice.py
           ls ./src/
           ls ./src/spiceypy/utils/
           python setup.py build_ext -j 2 --inplace
+          python -m build --wheel
           ls ./src/spiceypy/cyice/
-          python -m pip install .
+          ls ./dist/
+          python -m pip install dist/*.whl --user
       - name: Test 🧪 with coverage 📈
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy
