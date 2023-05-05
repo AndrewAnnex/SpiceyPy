@@ -10,7 +10,7 @@ on:
 env:
   # increment to rebuild cspice manually
   CSPICE_VERSION: 67
-  CSPICE_CACHE_NUMBER: 3
+  CSPICE_CACHE_NUMBER: 4
 
 jobs:
   build:
@@ -31,7 +31,8 @@ jobs:
         with:
           path: |
             ./src/spiceypy/utils/libcspice.*
-          key: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}
+            ./src/cspice/
+          key: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
       - name: Setup 🔬🍦🏗️
         if: ${{ matrix.os == 'windows-latest' && steps.cache-libcspice.outputs.cache-hit != 'true' }}
         uses: ilammy/msvc-dev-cmd@v1.12.0
@@ -55,7 +56,7 @@ jobs:
         if: steps.cache-libcspice.outputs.cache-hit != 'true'
         uses: actions/upload-artifact@v3
         with:
-          name: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}
+          name: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
           path: |
             ./src/spiceypy/utils/libcspice.*
             ./src/cspice/
@@ -78,7 +79,7 @@ jobs:
       - name: Download built 🏗️ libcspice 🌶️ 📚
         uses: actions/download-artifact@v3
         with:
-          name: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}
+          name: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
           path: |
             ./src/
       - name: Set up Python 🐍 ${{ matrix.python-version }}
