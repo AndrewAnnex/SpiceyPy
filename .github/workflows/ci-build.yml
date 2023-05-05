@@ -126,7 +126,6 @@ jobs:
           CSPICE_NO_TEMP: "YES"
           CSPICE_NO_BUILD: "YES"
         run: |
-          python get_spice.py
           ls ./src/
           ls ./src/spiceypy/utils/
           python setup.py build_ext -j 2 --inplace
