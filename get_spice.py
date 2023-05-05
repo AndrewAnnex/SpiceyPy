@@ -441,6 +441,7 @@ def main(build: bool = True) -> None:
         return
     # next see if cspice shared library is provided
     shared_library_path = os.environ.get(CSPICE_SHARED_LIB)
+    print(f"Did user provide shared library path?: {shared_library_path}")
     if shared_library_path is not None and build:
         print(f"User has provided a shared library...", flush=True)
         # todo: what if we can't read the file? we need to jump to building it... doubtful this happens
@@ -463,6 +464,9 @@ def main(build: bool = True) -> None:
     # okay at this point we have to either have built cspice or have had a shared library provided, but I may not have built cspice
     # so copy the shared library path, but if I didn't build I had to have had it provided, if not provided we just build (or not) without moving
     if shared_library_path is not None or build:
+        if isinstance(shared_library_path, str):
+            shared_library_path = [shared_library_path]
+            print(f"Had to update SLP to a list: {shared_library_path}")
         # first make the directory for the destination if it doesn't exist
         Path(destination).parent.mkdir(parents=True, exist_ok=True)
         for slp in shared_library_path:
