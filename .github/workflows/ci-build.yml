@@ -161,7 +161,7 @@ jobs:
           CSPICE_NO_BUILD: "YES"
           SYSTEM_VERSION_COMPAT: 0
         run: |
-          python -m pip install spiceypy --find-links=./dist --user
+          python -m pip install .
       - name: Test 🧪 with coverage 📈
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy
