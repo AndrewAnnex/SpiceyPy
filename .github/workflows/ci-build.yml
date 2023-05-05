@@ -10,7 +10,7 @@ on:
 env:
   # increment to rebuild cspice manually
   CSPICE_VERSION: 67
-  CSPICE_CACHE_NUMBER: 4
+  CSPICE_CACHE_NUMBER: 5
 
 jobs:
   build:
