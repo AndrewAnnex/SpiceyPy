@@ -132,6 +132,7 @@ setup(
             "utils/*.so",
             "utils/*.dylib",
             "utils/*.dll",
+            "utils/*.lib",
             "cyice/*.c",
             "cyice/*.so",
             "cyice/*.pyd",
