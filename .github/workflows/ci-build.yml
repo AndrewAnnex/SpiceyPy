@@ -10,7 +10,7 @@ on:
 env:
   # increment to rebuild cspice manually
   CSPICE_VERSION: 67
-  CSPICE_CACHE_NUMBER: 5
+  CSPICE_CACHE_NUMBER: 7
 
 jobs:
   build:
@@ -79,13 +79,14 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Download built 🏗️ libcspice 🌶️ 📚
-        uses: actions/download-artifact@v3
+        id: cache-libcspice
+        uses: actions/cache@v3
         with:
-          name: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
           path: |
             ./src/spiceypy/utils/libcspice.*
             ./src/cspice/include
             ./src/cspice/src/cspice
+          key: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
       - name: Verify cache 
         run: |
           echo "check src dir \n"
