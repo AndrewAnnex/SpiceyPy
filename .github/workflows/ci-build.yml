@@ -31,7 +31,8 @@ jobs:
         with:
           path: |
             ./src/spiceypy/utils/libcspice.*
-            ./src/cspice/
+            ./src/cspice/include
+            ./src/cspice/src/cspice
           key: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
       - name: Setup 🔬🍦🏗️
         if: ${{ matrix.os == 'windows-latest' && steps.cache-libcspice.outputs.cache-hit != 'true' }}
@@ -59,7 +60,8 @@ jobs:
           name: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
           path: |
             ./src/spiceypy/utils/libcspice.*
-            ./src/cspice/
+            ./src/cspice/include
+            ./src/cspice/src/cspice
   test:
     name: Test SpiceyPy 🌶️ 🥧
     needs: build
@@ -81,7 +83,9 @@ jobs:
         with:
           name: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
           path: |
-            ./src/
+            ./src/spiceypy/utils/libcspice.*
+            ./src/cspice/include
+            ./src/cspice/src/cspice
       - name: Set up Python 🐍 ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -187,7 +191,7 @@ jobs:
           python -m build --wheel
           ls ./src/spiceypy/cyice/
           ls ./dist/
-          python -m pip install dist/*.whl --user
+          python -m pip install spiceypy --find-links=./dist --user
       - name: Test 🧪 with coverage 📈
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy
