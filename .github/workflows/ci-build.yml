@@ -25,17 +25,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Verify cache
-        run: |
-          echo "check src dir \n"
-          ls ./src
-          echo "check cspice dir \n"
-          ls ./src/cspice
-          ls ./src/cspice/include/
-          ls ./src/cspice/src/cspice/
-          echo "check for libcspice \n"
-          ls ./src/spiceypy/utils/
-          echo "done"
       - name: Look for cached libcspice 🌶️ 📚
         id: cache-libcspice
         uses: actions/cache@v3
@@ -45,17 +34,6 @@ jobs:
             ./src/cspice/include
             ./src/cspice/src/cspice
           key: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
-      - name: Verify cache
-        run: |
-          echo "check src dir \n"
-          ls ./src
-          echo "check cspice dir \n"
-          ls ./src/cspice
-          ls ./src/cspice/include/
-          ls ./src/cspice/src/cspice/
-          echo "check for libcspice \n"
-          ls ./src/spiceypy/utils/
-          echo "done"
       - name: Setup 🔬🍦🏗️
         if: ${{ matrix.os == 'windows-latest' && steps.cache-libcspice.outputs.cache-hit != 'true' }}
         uses: ilammy/msvc-dev-cmd@v1.12.0
@@ -75,6 +53,8 @@ jobs:
           python -m pip install -r ci-requirements.txt
           python get_spice.py
           ls ./src/spiceypy/utils/
+          ls ./src
+          ls ./src/cspice
       - name: Upload built 🏗️ libcspice 🌶️ 📚
         if: steps.cache-libcspice.outputs.cache-hit != 'true'
         uses: actions/upload-artifact@v3
