@@ -329,8 +329,13 @@ def prepare_cspice() -> None:
             # we are telling get_spice.py we want to download to the root/src/cspice dir
             tmp_cspice_root_dir = os.path.join(root_dir, "src")
     tmp_cspice_src_dir = os.path.join(tmp_cspice_root_dir, "cspice")
-    if os.access(cspice_dir, os.R_OK):
-        print("Found usable CSPICE src directory", flush=True)
+    if tmp_cspice_src_dir == cspice_dir:
+        print("CSPICE src dir already in place, moving on")
+    elif os.access(cspice_dir, os.R_OK):
+        print(
+            f"Found usable CSPICE src directory {cspice_dir} {tmp_cspice_src_dir}",
+            flush=True,
+        )
         # newer shutil.copytree has a flag for this that negates need for this
         shutil.copytree(
             cspice_dir + "/",
@@ -365,9 +370,12 @@ def build_cspice() -> List[str]:
             extra_flags = f"-shared -Wl,-soname,{libname}"
         destination = cspice_dir
         os.chdir(destination)
+        print(f"Running CSPICE compilation in {destination}")
         cmds = [
             f"gcc {target} -Iinclude -c -fPIC -O2 -ansi ./cspice/src/cspice/*.c",
             f"gcc {target} {extra_flags} -fPIC -O2 -lm *.o -o {libname}",
+            "rm ./*.o",
+            "rm ./*.patch",
         ]
     elif host_OS == "Windows":
         destination = os.path.join(cspice_dir, "cspice", "src", "cspice")
