@@ -96,7 +96,7 @@ jobs:
           echo "check cspice dir \n"
           ls ./src/cspice
           ls ./src/cspice/include/
-          ls ./src/cspice/src/cspice/
+          ls ./src/cspice/src/
           echo "check for libcspice \n"
           ls ./src/spiceypy/utils/
           echo "done"
@@ -143,10 +143,11 @@ jobs:
         env:
           CSPICE_NO_TEMP: "YES"
           CSPICE_NO_BUILD: "YES"
+          SYSTEM_VERSION_COMPAT: 0
         run: |
           ls ./src/
           ls ./src/cspice/include/
-          ls ./src/cspice/src/cspice/
+          ls ./src/cspice/src/
           ls ./src/spiceypy/utils/
           echo "\n\n\n"
           python setup.py build_ext -j 2 --inplace
@@ -158,8 +159,9 @@ jobs:
         env:
           CSPICE_NO_TEMP: "YES"
           CSPICE_NO_BUILD: "YES"
+          SYSTEM_VERSION_COMPAT: 0
         run: |
-          python -m pip install dist/*.whl --user
+          python -m pip install spiceypy --find-links=./dist --user
       - name: Test 🧪 with coverage 📈
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy
@@ -214,7 +216,7 @@ jobs:
           python -m build --wheel
           ls ./src/spiceypy/cyice/
           ls ./dist/
-          python -m pip install spiceypy --find-links=./dist --user
+          python -m pip install . --user
       - name: Test 🧪 with coverage 📈
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy

@@ -416,6 +416,11 @@ def main(build: bool = True) -> None:
                   /bin
                   /src/cspice/
                   ...
+    to keep track of the scenarios:
+    1. User has no cspice locally and need to build and compile
+    2. User has prebuilt wheel and doesn't need cspice source (not true for cython, source is always needed)
+    3. User has local src copy and doesn't need to compile (likely cython only)
+
     :param build: if true build the shared library, if false just download the source code
     :return: None
     """
@@ -451,8 +456,8 @@ def main(build: bool = True) -> None:
         if CSPICE_NO_PATCH not in os.environ:
             print("Apply patches", flush=True)
             apply_patches()
-        # now build
-        if build:
+        # now build, but not if you have the shared library path around
+        if build and shared_library_path is None:
             print("Building cspice", flush=True)
             shared_library_path = build_cspice()
     if build:
