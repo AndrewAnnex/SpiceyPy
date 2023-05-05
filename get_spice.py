@@ -329,8 +329,8 @@ def prepare_cspice() -> None:
             # we are telling get_spice.py we want to download to the root/src/cspice dir
             tmp_cspice_root_dir = os.path.join(root_dir, "src")
     tmp_cspice_src_dir = os.path.join(tmp_cspice_root_dir, "cspice")
-    if tmp_cspice_src_dir == cspice_dir:
-        print("CSPICE src dir already in place, moving on")
+    if tmp_cspice_src_dir == cspice_dir and os.path.exists(cspice_dir):
+        print(f"CSPICE src dir already in place {cspice_dir}, moving on")
     elif os.access(cspice_dir, os.R_OK):
         print(
             f"Found usable CSPICE src directory {cspice_dir} {tmp_cspice_src_dir}",
