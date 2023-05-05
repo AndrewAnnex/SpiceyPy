@@ -460,7 +460,9 @@ def main(build: bool = True) -> None:
         if build and shared_library_path is None:
             print("Building cspice", flush=True)
             shared_library_path = build_cspice()
-    if build:
+    # okay at this point we have to either have built cspice or have had a shared library provided, but I may not have built cspice
+    # so copy the shared library path, but if I didn't build I had to have had it provided, if not provided we just build (or not) without moving
+    if shared_library_path is not None or build:
         # first make the directory for the destination if it doesn't exist
         Path(destination).parent.mkdir(parents=True, exist_ok=True)
         for slp in shared_library_path:
