@@ -73,6 +73,24 @@ def test_et2utc_spiceypy_benchmark(benchmark):
     benchmark(spice.et2utc, -527644192.5403653, "J", 6)
 
 
+def test_etcal_cyice_benchmark(benchmark):
+    benchmark(cyice.etcal, 0.0)
+
+
+def test_etcal_v_cyice_benchmark(benchmark):
+    data = np.arange(1000.0, dtype=float)
+    benchmark(cyice.etcal_v, data)
+
+
+def test_etcal_spiceypy_benchmark(benchmark):
+    benchmark(spice.etcal, 0.0)
+
+
+def test_etcal_v_spiceypy_benchmark(benchmark):
+    data = np.arange(1000.0, dtype=float)
+    benchmark(spice.etcal, data)
+
+
 def test_spkez_cyice_benchmark(benchmark):
     spice.furnsh(CoreKernels.testMetaKernel)
     et = cyice.str2et("July 4, 2003 11:00 AM PST")
@@ -168,6 +186,36 @@ def test_str2et_cyice_benchmark(benchmark):
 def test_str2et_spiceypy_benchmark(benchmark):
     spice.furnsh(CoreKernels.testMetaKernel)
     benchmark(spice.str2et, "Thu Mar 20 12:53:29 PST 1997")
+
+
+def test_sxform_cyice_benchmark(benchmark):
+    spice.furnsh(CoreKernels.testMetaKernel)
+    utc1 = "January 1, 1990"
+    et = spice.str2et(utc1)
+    benchmark(cyice.sxform, "IAU_EARTH", "J2000", et)
+
+
+def test_sxform_spiceypy_benchmark(benchmark):
+    spice.furnsh(CoreKernels.testMetaKernel)
+    utc1 = "January 1, 1990"
+    et = spice.str2et(utc1)
+    benchmark(spice.sxform, "IAU_EARTH", "J2000", et)
+
+
+def test_sxform_v_cyice_benchmark(benchmark):
+    spice.furnsh(CoreKernels.testMetaKernel)
+    utc1 = "January 1, 1990"
+    et = spice.str2et(utc1)
+    ets = np.repeat(et, 1000)
+    benchmark(cyice.sxform_v, "IAU_EARTH", "J2000", ets)
+
+
+def test_sxform_v_spiceypy_benchmark(benchmark):
+    spice.furnsh(CoreKernels.testMetaKernel)
+    utc1 = "January 1, 1990"
+    et = spice.str2et(utc1)
+    ets = np.repeat(et, 1000)
+    benchmark(spice.sxform, "IAU_EARTH", "J2000", ets)
 
 
 def test_utc2et_cyice_benchmark(benchmark):

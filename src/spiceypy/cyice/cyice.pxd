@@ -43,15 +43,15 @@ cdef extern from "SpiceUsr.h" nogil:
     #C 
 
     #E
-    cdef void etcal_c(SpiceDouble   et,
-                      SpiceInt      callen,
-                      SpiceChar   * calstr)
-    
     cdef void et2utc_c(SpiceDouble      et,
                        ConstSpiceChar * format,
                        SpiceInt         prec,
                        SpiceInt         lenout,
                        SpiceChar * utcstr)
+    
+    cdef void etcal_c(SpiceDouble   et,
+                      SpiceInt      callen,
+                      SpiceChar   * calstr)
 
     #F 
     cdef void furnsh_c(ConstSpiceChar * file)
@@ -82,7 +82,12 @@ cdef extern from "SpiceUsr.h" nogil:
                        SpiceDouble * lt)
 
     cdef void str2et_c(ConstSpiceChar * date,
-                       SpiceDouble * et);
+                       SpiceDouble * et)
+
+    cdef void sxform_c(ConstSpiceChar * fromstring,
+                       ConstSpiceChar * tostring,
+                       SpiceDouble      et,
+                       SpiceDouble      xform[6][6])
     
     # U
     cdef void utc2et_c(ConstSpiceChar * utcstr, SpiceDouble * et)

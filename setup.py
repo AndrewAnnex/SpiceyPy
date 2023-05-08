@@ -136,6 +136,8 @@ setup(
             "cyice/*.c",
             "cyice/*.so",
             "cyice/*.pyd",
+            "cyice/*.pyx",
+            "cyice/*.pxd",
         ],
         "*": ["get_spice.py", "build_cyice.py", "build_spiceypy.py"],
     },

@@ -58,6 +58,25 @@ cpdef et2utc_v(double[:] ets, str format_str, int prec):
     return results
 
 
+cpdef str etcal(double et):
+    cdef char[49] string
+    etcal_c(et, 49, string)
+    return <unicode> string
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef etcal_v(double[:] ets):
+    cdef int i, n
+    n = ets.shape[0]
+    cdef char[49] string
+    cdef list results = [None] * n
+    for i in range(n):
+        etcal_c(ets[i], 49, string)
+        results[i] = <unicode> string
+    return results
+
+
 cpdef furnsh(str file):
     furnsh_c(file)
     
@@ -204,6 +223,26 @@ cpdef str2et_v(np.ndarray times):
         _ets[i] = et
     # return results
     return ets
+
+
+cpdef sxform(str fromstring, str tostring, double et):
+    cdef double[6][6] tform 
+    sxform_c(fromstring, tostring, et, tform)
+    return np.asarray(<np.double_t[:6, :6]> tform)
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef sxform_v(str fromstring, str tostring, double[:] ets):
+    cdef double[6][6] tform
+    cdef size_t i, n
+    n = ets.shape[0]
+    cdef np.ndarray[dtype=np.double_t, ndim=3] xform = np.zeros((n, 6, 6), dtype=np.double)
+    cdef double[:,:,::1] _xform = xform
+    for i in range(n):
+        sxform_c(fromstring, tostring, ets[i], tform)
+        _xform[i,:,:] = tform
+    return xform
 
 
 cpdef double utc2et(str utcstr):
