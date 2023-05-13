@@ -122,25 +122,30 @@ def test_failed_spiceypy_benchmark(benchmark):
 
 
 def test_getmsg_cyice_benchmark(benchmark):
+    cyice.reset()
     spice.sigerr("test error")
     benchmark(cyice.getmsg, "SHORT", 200)
     cyice.reset()
 
 
 def test_getmsg_spiceypy_benchmark(benchmark):
+    spice.reset()
     spice.sigerr("test error")
     benchmark(spice.getmsg, "SHORT", 200)
     spice.reset()
 
 
 def test_qcktrc():
+    cyice.reset()
     spice.chkin("test")
     spice.chkin("qcktrc")
     trace = cyice.qcktrc(40)
     assert trace == "test --> qcktrc"
+    cyice.reset()
 
 
 def test_qcktrc_cyice_benchmark(benchmark):
+    cyice.reset()
     spice.chkin("test")
     spice.chkin("qcktrc")
     benchmark(cyice.qcktrc, 40)
@@ -148,6 +153,7 @@ def test_qcktrc_cyice_benchmark(benchmark):
 
 
 def test_qcktrc_spiceypy_benchmark(benchmark):
+    spice.reset()
     spice.chkin("test")
     spice.chkin("qcktrc")
     benchmark(spice.qcktrc, 40)
