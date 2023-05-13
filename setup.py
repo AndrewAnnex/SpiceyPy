@@ -154,5 +154,5 @@ setup(
         bdist_wheel=SpiceyPyWheelBuild,
         build_ext=build_ext,
     ),
-    ext_modules=cythonize([cyice_ext], annotate=True, nthreads=4),
+    ext_modules=cythonize([get_cyice_extension()], annotate=True, nthreads=4),
 )
