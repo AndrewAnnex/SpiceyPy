@@ -53,6 +53,28 @@ def test_b1900_spiceypy_benchmark(benchmark):
     benchmark(spice.b1900)
 
 
+def test_convrt():
+    assert cyice.convrt(300.0, "statute_miles", "km") == 482.80320
+
+
+def test_convrt_cyice_benchmark(benchmark):
+    benchmark(cyice.convrt, 1.0, "parsecs", "lightyears")
+
+
+def test_convrt_spiceypy_benchmark(benchmark):
+    benchmark(spice.convrt, 1.0, "parsecs", "lightyears")
+
+
+def test_convrt_cyice_v_benchmark(benchmark):
+    data = np.arange(0, 1000.0, dtype=float)
+    benchmark(cyice.convrt_v, data, "parsecs", "lightyears")
+
+
+def test_convrt_spiceypy_v_benchmark(benchmark):
+    data = np.arange(0, 1000.0, dtype=float)
+    benchmark(spice.convrt, data, "parsecs", "lightyears")
+
+
 def test_et2utc_v():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = -527644192.5403653
@@ -89,6 +111,55 @@ def test_etcal_spiceypy_benchmark(benchmark):
 def test_etcal_v_spiceypy_benchmark(benchmark):
     data = np.arange(1000.0, dtype=float)
     benchmark(spice.etcal, data)
+
+
+def test_failed_cyice_benchmark(benchmark):
+    benchmark(cyice.failed)
+
+
+def test_failed_spiceypy_benchmark(benchmark):
+    benchmark(spice.failed)
+
+
+def test_getmsg_cyice_benchmark(benchmark):
+    spice.sigerr("test error")
+    benchmark(cyice.getmsg, "SHORT", 200)
+    cyice.reset()
+
+
+def test_getmsg_spiceypy_benchmark(benchmark):
+    spice.sigerr("test error")
+    benchmark(spice.getmsg, "SHORT", 200)
+    spice.reset()
+
+
+def test_qcktrc():
+    spice.chkin("test")
+    spice.chkin("qcktrc")
+    trace = cyice.qcktrc(40)
+    assert trace == "test --> qcktrc"
+
+
+def test_qcktrc_cyice_benchmark(benchmark):
+    spice.chkin("test")
+    spice.chkin("qcktrc")
+    benchmark(cyice.qcktrc, 40)
+    cyice.reset()
+
+
+def test_qcktrc_spiceypy_benchmark(benchmark):
+    spice.chkin("test")
+    spice.chkin("qcktrc")
+    benchmark(spice.qcktrc, 40)
+    spice.reset()
+
+
+def test_reset_cyice_benchmark(benchmark):
+    benchmark(cyice.reset)
+
+
+def test_reset_spiceypy_benchmark(benchmark):
+    benchmark(spice.reset)
 
 
 def test_spkez_cyice_benchmark(benchmark):
@@ -186,6 +257,35 @@ def test_str2et_cyice_benchmark(benchmark):
 def test_str2et_spiceypy_benchmark(benchmark):
     spice.furnsh(CoreKernels.testMetaKernel)
     benchmark(spice.str2et, "Thu Mar 20 12:53:29 PST 1997")
+
+
+def test_sxform():
+    spice.furnsh(CoreKernels.testMetaKernel)
+    lon = 118.25 * spice.rpd()
+    lat = 34.05 * spice.rpd()
+    alt = 0.0
+    utc = "January 1, 1990"
+    et = spice.str2et(utc)
+    len, abc = spice.bodvrd("EARTH", "RADII", 3)
+    equatr = abc[0]
+    polar = abc[2]
+    f = (equatr - polar) / equatr
+    estate = spice.georec(lon, lat, alt, equatr, f)
+    estate = np.append(estate, [0.0, 0.0, 0.0])
+    xform = cyice.sxform("IAU_EARTH", "J2000", et)
+    jstate = np.dot(xform, estate)
+    expected = np.array(
+        [
+            -4131.45969,
+            -3308.36805,
+            3547.02462,
+            0.241249619,
+            -0.301019201,
+            0.000234215666,
+        ]
+    )
+    with pytest.raises(AssertionError):
+        npt.assert_array_almost_equal(jstate, expected, decimal=4)
 
 
 def test_sxform_cyice_benchmark(benchmark):

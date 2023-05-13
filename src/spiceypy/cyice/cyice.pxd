@@ -36,25 +36,42 @@ cdef extern from "SpiceUsr.h" nogil:
     ctypedef const SpiceCell ConstSpiceCell
 
     # start of function defs
-    cdef double b1900_c()
+    cdef SpiceDouble b1900_c()
 
-    cdef double b1950_c()
+    cdef SpiceDouble b1950_c()
 
     #C 
+    cdef void convrt_c(SpiceDouble      x,
+                       ConstSpiceChar * inunit,
+                       ConstSpiceChar * outunit,
+                       SpiceDouble    * y)
 
     #E
     cdef void et2utc_c(SpiceDouble      et,
                        ConstSpiceChar * format,
                        SpiceInt         prec,
                        SpiceInt         lenout,
-                       SpiceChar * utcstr)
+                       SpiceChar      * utcstr)
     
     cdef void etcal_c(SpiceDouble   et,
                       SpiceInt      callen,
                       SpiceChar   * calstr)
 
     #F 
+    cdef SpiceBoolean failed_c()
+    
     cdef void furnsh_c(ConstSpiceChar * file)
+    
+    #G
+    cdef void getmsg_c(ConstSpiceChar * option,
+                       SpiceInt         msglen,
+                       SpiceChar      * msg)
+    #Q
+    cdef void qcktrc_c(SpiceInt         tracelen,
+                       SpiceChar      * trace)
+    
+    #R
+    cdef void reset_c()
 
     #S
     cdef void spkez_c(SpiceInt         target,
@@ -63,7 +80,7 @@ cdef extern from "SpiceUsr.h" nogil:
                       ConstSpiceChar * abcorr,
                       SpiceInt         observer,
                       SpiceDouble      state[6],
-                      SpiceDouble * lt)
+                      SpiceDouble    * lt)
     
     cdef void spkezr_c(ConstSpiceChar * target,
                        SpiceDouble      epoch,
@@ -71,7 +88,7 @@ cdef extern from "SpiceUsr.h" nogil:
                        ConstSpiceChar * abcorr,
                        ConstSpiceChar * observer,
                        SpiceDouble      state[6],
-                       SpiceDouble * lt)
+                       SpiceDouble    * lt)
 
     cdef void spkpos_c(ConstSpiceChar * targ,
                        SpiceDouble      et,

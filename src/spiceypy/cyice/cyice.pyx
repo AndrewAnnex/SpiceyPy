@@ -27,6 +27,31 @@ cpdef double b1950() nogil:
     return b1950_c()
 
 
+cpdef double convrt(double x, str inunit, str outunit):
+    cdef double out
+    cdef const char * _inunit = inunit
+    cdef const char * _outunit = outunit
+    convrt_c(x, _inunit, _outunit, &out)
+    return out
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef convrt_v(double[:] x, str inunit, str outunit):
+    cdef int i, n
+    n = x.shape[0]
+    cdef const char * _inunit = inunit
+    cdef const char * _outunit = outunit
+    cdef np.ndarray[dtype=np.double_t, ndim=1] outs = np.zeros(n, dtype=np.double)
+    cdef double[:] _outs = outs
+    cdef double out = 0.0
+    # main loop
+    for i in range(n):
+        convrt_c(x[n], _inunit, _outunit, &out)
+        _outs[i] = out
+    return outs
+
+
 cpdef str et2utc(double et, str format_str, int prec):
     cdef char[TIMELEN+1] string 
     et2utc_c(et, format_str, prec, TIMELEN, string)
@@ -77,8 +102,33 @@ cpdef etcal_v(double[:] ets):
     return results
 
 
-cpdef furnsh(str file):
+cpdef int failed() nogil:
+    return failed_c()
+
+
+cpdef void furnsh(str file):
     furnsh_c(file)
+    
+    
+cpdef str getmsg(str option, int msglen):
+    cdef const char * _option = option
+    cdef char* _msgstr = <char *> malloc((msglen) * sizeof(char))
+    getmsg_c(_option, msglen, _msgstr)
+    pymsg = <unicode> _msgstr
+    free(_msgstr)
+    return pymsg
+
+
+cpdef str qcktrc(int tracelen):
+    cdef char * _tracestr = <char *> malloc((tracelen) * sizeof(char))
+    qcktrc_c(tracelen, _tracestr)
+    pytracestr = <unicode> _tracestr
+    free(_tracestr)
+    return pytracestr
+
+
+cpdef void reset() nogil:
+    reset_c()
     
     
 cpdef spkez(int target, double epoch, str ref, str abcorr, int observer):
