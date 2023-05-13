@@ -24,32 +24,6 @@ is_unix = host_OS in ("Linux", "Darwin", "FreeBSD")
 # cspice_c = list(map(str, Path("src/cspice/src/cspice/").glob("*.c")))
 # csupport_c = list(map(str, Path("src/cspice/src/csupport/").glob("*.c")))
 
-cspice_dir = os.environ.get("CSPICE_SRC_DIR", "./src/cspice/")
-
-ext_options = {
-    "include_dirs": [
-        f"{cspice_dir}include/",
-        f"{cspice_dir}/src/cspice/",
-        numpy.get_include(),
-    ],
-    "libraries": ["cspice" if is_unix else "libcspice"],
-    "library_dirs": [
-        "/usr/local/lib",
-        "./src/spiceypy/utils",
-    ],
-    "language": "c",
-    "define_macros": [],
-    "extra_compile_args": [],
-}
-
-cyice_ext = Extension(
-    name="spiceypy.cyice.cyice",
-    sources=[
-        "./src/spiceypy/cyice/cyice.pyx",
-        "./src/spiceypy/cyice/cyice.pxd",
-    ],
-    **ext_options,
-)
 
 passnumber = 0
 
@@ -78,6 +52,36 @@ def try_get_spice():
     return
 
 
+def get_cyice_extension(default_path: str = "./src/cspice/"):
+    cspice_dir = os.environ.get("CSPICE_SRC_DIR", default_path)
+
+    ext_options = {
+        "include_dirs": [
+            f"{cspice_dir}include/",
+            f"{cspice_dir}/src/cspice/",
+            numpy.get_include(),
+        ],
+        "libraries": ["cspice" if is_unix else "libcspice"],
+        "library_dirs": [
+            "/usr/local/lib",
+            "./src/spiceypy/utils",
+        ],
+        "language": "c",
+        "define_macros": [],
+        "extra_compile_args": [],
+    }
+
+    cyice_ext = Extension(
+        name="spiceypy.cyice.cyice",
+        sources=[
+            "./src/spiceypy/cyice/cyice.pyx",
+            "./src/spiceypy/cyice/cyice.pxd",
+        ],
+        **ext_options,
+    )
+    return cyice_ext
+
+
 class SpiceyPyBinaryDistribution(Distribution):
     def is_pure(self):
         return False
@@ -99,6 +103,7 @@ class InstallSpiceyPy(install):
 
     def run(self):
         try_get_spice()
+        self.run_command("build_ext")
         return super().run()
 
 
@@ -107,6 +112,7 @@ class BuildPyCommand(build_py):
 
     def run(self):
         try_get_spice()
+        self.run_command("build_ext")
         return super().run()
 
 

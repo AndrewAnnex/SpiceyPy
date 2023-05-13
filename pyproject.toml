@@ -50,7 +50,10 @@ readme = {file = "README.rst"}
 # use build instead of pip to build wheels
 build-frontend = "build"
 # build libcspice inside cibuildwheel before running python build steps
-before-build = "python {project}/get_spice.py"
+before-build = """
+python {project}/get_spice.py
+python {project}/setup.py build_ext -j 2 --inplace
+"""
 # Only build on CPython 3.11
 build = "cp311-*"
 # Skip 32-bit builds, pypy, and musllinux
