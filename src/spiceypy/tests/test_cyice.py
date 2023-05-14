@@ -149,6 +149,8 @@ def test_qcktrc_cyice_benchmark(benchmark):
     spice.chkin("test")
     spice.chkin("qcktrc")
     benchmark(cyice.qcktrc, 40)
+    spice.chkout("qcktrc")
+    spice.chkout("test")
     cyice.reset()
 
 
@@ -157,6 +159,8 @@ def test_qcktrc_spiceypy_benchmark(benchmark):
     spice.chkin("test")
     spice.chkin("qcktrc")
     benchmark(spice.qcktrc, 40)
+    spice.chkout("qcktrc")
+    spice.chkout("test")
     spice.reset()
 
 

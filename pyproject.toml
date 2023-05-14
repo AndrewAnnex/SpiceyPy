@@ -1,5 +1,10 @@
 [build-system]
-requires = ["setuptools >= 46.4.0", "wheel", "numpy", "cython"]
+requires = [
+    "setuptools >= 46.4.0",
+    "wheel",
+    "Cython",
+    "oldest-supported-numpy",
+]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -49,11 +54,14 @@ readme = {file = "README.rst"}
 [tool.cibuildwheel]
 # use build instead of pip to build wheels
 build-frontend = "build"
+# environment vairables for building wheels
+environment = { CSPICE_NO_TEMP = 'YES' }
 # build libcspice inside cibuildwheel before running python build steps
-before-build = """
-python {project}/get_spice.py
-python {project}/setup.py build_ext -j 2 --inplace
-"""
+before-build = [
+    "python -m pip install oldest-supported-numpy",
+    "python {project}/get_spice.py",
+    "python {project}/setup.py build_ext -j 2 --inplace",
+]
 # Only build on CPython 3.11
 build = "cp311-*"
 # Skip 32-bit builds, pypy, and musllinux
