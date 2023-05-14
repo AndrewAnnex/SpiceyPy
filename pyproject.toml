@@ -55,7 +55,7 @@ readme = {file = "README.rst"}
 # use build instead of pip to build wheels
 build-frontend = "build"
 # environment vairables for building wheels
-environment = { CSPICE_NO_TEMP = 'YES' }
+environment = { CSPICE_NO_TEMP = 'YES', LD_LIBRARY_PATH = 'src/spiceypy/utils/' }
 # build libcspice inside cibuildwheel before running python build steps
 before-build = [
     "python -m pip install oldest-supported-numpy Cython wheel setuptools",
