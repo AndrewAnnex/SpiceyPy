@@ -58,7 +58,7 @@ build-frontend = "build"
 environment = { CSPICE_NO_TEMP = 'YES' }
 # build libcspice inside cibuildwheel before running python build steps
 before-build = [
-    "python -m pip install oldest-supported-numpy",
+    "python -m pip install oldest-supported-numpy Cython wheel setuptools",
     "python {project}/get_spice.py",
     "python {project}/setup.py build_ext -j 2 --inplace",
 ]
