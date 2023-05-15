@@ -68,12 +68,14 @@ build = "cp311-*"
 skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "pypy*", "pp*", "*-musllinux_aarch64", "*-musllinux_x86_64"]
 # other options
 build-verbosity = 2
+repair-wheel-command = ""
 before-test = [
     "pip install -r ci-requirements.txt"
 ]
 test-command = [
     "coverage run --source {package} -m pytest --pyargs {project}",
 ]
+
 
 [tool.coverage.run]
 relative_files = true

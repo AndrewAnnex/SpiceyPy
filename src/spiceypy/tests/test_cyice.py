@@ -141,6 +141,8 @@ def test_qcktrc():
     spice.chkin("qcktrc")
     trace = cyice.qcktrc(40)
     assert trace == "test --> qcktrc"
+    spice.chkout("qcktrc")
+    spice.chkout("test")
     cyice.reset()
 
 
