@@ -1,0 +1,75 @@
+cff-version: 1.2.0
+title: 'SpiceyPy: a Pythonic Wrapper for the SPICE Toolkit'
+message: If you are publishing work that uses SpiceyPy, please cite SpiceyPy and the SPICE toolkit.
+type: software
+authors:
+  - given-names: Andrew M.
+    family-names: Annex
+    affiliation: Johns Hopkins University
+    orcid: 'https://orcid.org/0000-0002-0253-2313'
+    email: annex@jhu.edu
+  - given-names: Ben
+    family-names: Pearson
+  - given-names: Benoît
+    family-names: Seignovert
+    affiliation: Jet Propulsion Laboratory, California Institute of Technology
+    orcid: 'https://orcid.org/0000-0001-6533-275X'
+  - given-names: Brian T.
+    family-names: Carcich
+    affiliation: 'Latchmoor Services, LLC'
+    orcid: 'https://orcid.org/0000-0001-9211-6526'
+  - given-names: Helge
+    family-names: Eichhorn
+    affiliation: Planetary Transportation Systems GmbH
+    orcid: 'https://orcid.org/0000-0003-0303-5199'
+  - given-names: Jesse A.
+    family-names: Mapel
+    affiliation: USGS Astrogeology Science Center
+    orcid: 'https://orcid.org/0000-0001-5756-0373'
+  - given-names: Johan Lauritz Freiherr
+    name-particle: von
+    family-names: Forstner
+    affiliation: Institute of Experimental and Applied Physics, University of Kiel
+    orcid: 'https://orcid.org/0000-0002-1390-4776'
+  - given-names: Jonathan
+    family-names: McAuliffe
+    affiliation: DLR Gesellschaft für Raumfahrtanwendungen (GfR) mbH
+  - given-names: Jorge Diaz
+    name-particle: del
+    family-names: Rio
+    affiliation: ODC Space
+  - given-names: Kristin L.
+    family-names: Berry
+    affiliation: USGS Astrogeology Science Center
+    orcid: 'https://orcid.org/0000-0001-9757-9706'
+  - given-names: K.-Michael
+    family-names: Aye
+    affiliation: Laboratory for Atmospheric and Space Physics, University of Colorado
+    orcid: 'https://orcid.org/0000-0002-4088-1928'
+  - given-names: Marcel
+    family-names: Stefko
+    affiliation: ETH Zurich
+    orcid: 'https://orcid.org/0000-0002-7736-2611'
+  - given-names: Miguel
+    name-particle: de
+    family-names: Val-Borro
+    affiliation: Planetary Science Institute
+    orcid: 'https://orcid.org/0000-0002-0455-9384'
+  - given-names: Shankar
+    family-names: Kulumani
+    affiliation: Collins Aerospace
+    orcid: 'https://orcid.org/0000-0002-7822-0471'
+  - given-names: Shin-ya
+    family-names: Murakami
+    affiliation: GFD Dennou Club
+    orcid: 'https://orcid.org/0000-0002-7137-4849'
+identifiers:
+  - type: doi
+    value: 10.21105/joss.02050
+    description: JOSS publication
+  - type: doi
+    value: 10.5281/zenodo.593914
+    description: Zenodo archive
+repository-code: 'https://github.com/AndrewAnnex/SpiceyPy'
+url: 'https://spiceypy.readthedocs.io/'
+license: MIT
