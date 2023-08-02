@@ -7369,7 +7369,7 @@ def test_sphcyl():
 
 def test_sphlat():
     result = np.array(spice.sphlat(1.0, spice.pi(), spice.halfpi()))
-    expected = np.array([0.0, spice.halfpi(), -1.0])
+    expected = np.array([1.0, spice.halfpi(), -spice.halfpi()])
     npt.assert_array_almost_equal(result, expected)
 
 
