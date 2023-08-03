@@ -12369,7 +12369,7 @@ def sphlat(r: float, colat: float, lons: float) -> Tuple[float, float, float]:
     radius = ctypes.c_double()
     lon = ctypes.c_double()
     lat = ctypes.c_double()
-    libspice.sphcyl_c(
+    libspice.sphlat_c(
         r, colat, lons, ctypes.byref(radius), ctypes.byref(lon), ctypes.byref(lat)
     )
     return radius.value, lon.value, lat.value
