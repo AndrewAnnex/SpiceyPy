@@ -15201,7 +15201,7 @@ def tkfram(typid: int) -> Union[Tuple[ndarray, int, bool], Tuple[ndarray, int]]:
     next_frame = ctypes.c_int()
     found = ctypes.c_int()
     libspice.tkfram_c(
-        ctypes.byref(code), matrix, ctypes.byref(next_frame), ctypes.byref(found)
+        code, matrix, ctypes.byref(next_frame), ctypes.byref(found)
     )
     return stypes.c_matrix_to_numpy(matrix), next_frame.value, bool(found.value)
 
