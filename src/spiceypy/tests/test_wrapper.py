@@ -9602,7 +9602,7 @@ def test_tkfram():
             [0.00000000e00, 1.00000000e00, -0.00000000e00],
             [1.00000000e00, 0.00000000e00, 6.12323400e-17],
         ]
-    )
+    ).T
     npt.assert_array_almost_equal(rotation, expected)
     assert nextFrame == -82000
 
@@ -10544,7 +10544,7 @@ def test_zzdynrot():
             [-0.5895359, 0.53692566, 0.60345527],
             [0.44614992, -0.40633546, 0.79739685],
         ]
-    )
+    ).T
     npt.assert_array_almost_equal(rotation, expected)
     assert frame == 1
 

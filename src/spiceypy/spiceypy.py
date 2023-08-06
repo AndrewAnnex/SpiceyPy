@@ -15200,7 +15200,7 @@ def tkfram(typid: int) -> Union[Tuple[ndarray, int, bool], Tuple[ndarray, int]]:
     matrix = stypes.empty_double_matrix(x=3, y=3)
     next_frame = ctypes.c_int()
     found = ctypes.c_int()
-    libspice.tkfram_(
+    libspice.tkfram_c(
         ctypes.byref(code), matrix, ctypes.byref(next_frame), ctypes.byref(found)
     )
     return stypes.c_matrix_to_numpy(matrix), next_frame.value, bool(found.value)
@@ -17055,4 +17055,5 @@ def zzdynrot(typid: int, center: int, et: float) -> Tuple[ndarray, int]:
         matrix,
         ctypes.byref(next_frame),
     )
-    return stypes.c_matrix_to_numpy(matrix), next_frame.value
+    # make sure to transpose to get back into c order from fortran ordering
+    return stypes.c_matrix_to_numpy(matrix).T, next_frame.value
