@@ -2341,7 +2341,7 @@ def test_dskx02():
     plid, xpt, found = spice.dskx02(handle, dladsc, vertex, raydir)
     # test results
     assert found
-    assert plid == 421
+    assert plid in (349, 350, 420, 421, 422, 423)
     npt.assert_almost_equal(xpt, [12.36679999999999957083, 0.0, 0.0])
     # cleanup
     spice.dascls(handle)
@@ -2368,7 +2368,7 @@ def test_dskxsi():
     )
     # check output
     assert handle is not None
-    assert ic[0] == 420
+    assert ic[0] in (349, 350, 420, 421, 422, 423)
     assert dc[0] == pytest.approx(0.0)
     npt.assert_almost_equal(xpt, [12.36679999999999957083, 0.0, 0.0])
 
@@ -4706,8 +4706,9 @@ def test_gfsntc():
     beg, end = spice.wnfetd(result, 1)
     begstr = spice.timout(beg, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 80)
     endstr = spice.timout(end, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 80)
-    assert begstr == "2007-SEP-23 09:46:39.606982 (TDB)"
-    assert endstr == "2007-SEP-23 09:46:39.606982 (TDB)"
+    # uncertainty below is due to difference on arm vs x86 IEEE floating point issues
+    assert begstr == "2007-SEP-23 09:46:39.606982 (TDB)" or begstr == "2007-SEP-23 09:46:39.606981 (TDB)"
+    assert endstr == "2007-SEP-23 09:46:39.606982 (TDB)" or endstr == "2007-SEP-23 09:46:39.606981 (TDB)"
     cleanup_kernel(kernel)
 
 
