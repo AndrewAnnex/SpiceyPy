@@ -83,9 +83,13 @@ import urllib.request
 import urllib.error
 from zipfile import ZipFile
 
+from typing import List
+
 CSPICE_SRC_DIR = "CSPICE_SRC_DIR"
 CSPICE_SHARED_LIB = "CSPICE_SHARED_LIB"
 CSPICE_NO_PATCH = "CSPICE_NO_PATCH"
+CSPICE_NO_TEMP = "CSPICE_NO_TEMP"
+CSPICE_NO_BUILD = "CSPICE_NO_BUILD"
 
 host_OS = platform.system()
 host_arch = platform.machine()
@@ -96,7 +100,7 @@ is_unix = host_OS in ("Linux", "Darwin", "FreeBSD")
 # Get current working directory
 root_dir = str(Path(os.path.realpath(__file__)).parent)
 # Make the directory path for cspice
-cspice_dir = os.environ.get(CSPICE_SRC_DIR, os.path.join(root_dir, "cspice"))
+cspice_dir = os.environ.get(CSPICE_SRC_DIR, os.path.join(root_dir, "src", "cspice"))
 # and make a global tmp cspice directory
 tmp_cspice_root_dir = None
 # if we need to cross compile or compile for arm64
@@ -112,7 +116,7 @@ class GetCSPICE(object):
     """
     Class that support the download from the NAIF FTP server of the required
     CSPICE package for the architecture used by the Python distribution that
-    invokes this module.  By default the CSPICE Toolkit version N0066 is
+    invokes this module. By default the CSPICE Toolkit version N0066 is
     downloaded and unpacked on the directory where this module is located.
 
     Arguments
@@ -203,7 +207,7 @@ class GetCSPICE(object):
 
         # Cygwin system is CYGWIN-NT-xxx.
         system = "cygwin" if "CYGWIN" in system else system
-        cpu_bits = "64bit" if sys.maxsize > 2 ** 32 else "32bit"
+        cpu_bits = "64bit" if sys.maxsize > 2**32 else "32bit"
 
         if machine in ("x86", "x86_64", "AMD64", "i686"):
             machine = "x86_64"
@@ -316,12 +320,22 @@ def prepare_cspice() -> None:
     """
     cwd = os.getcwd()
     global cspice_dir, tmp_cspice_root_dir
+    no_temp = CSPICE_NO_TEMP in os.environ
     with tempfile.TemporaryDirectory(prefix="cspice_spiceypy_") as tmp_dir:
         # Trick for python <3.8, delete tmp dir so that we can write it overwrite it
-        tmp_cspice_root_dir = str((Path(tmp_dir)).absolute())
+        if not no_temp:
+            tmp_cspice_root_dir = str((Path(tmp_dir)).absolute())
+        else:
+            # we are telling get_spice.py we want to download to the root/src/cspice dir
+            tmp_cspice_root_dir = os.path.join(root_dir, "src")
     tmp_cspice_src_dir = os.path.join(tmp_cspice_root_dir, "cspice")
-    if os.access(cspice_dir, os.R_OK):
-        print("Found usable CSPICE src directory", flush=True)
+    if tmp_cspice_src_dir == cspice_dir and os.path.exists(cspice_dir):
+        print(f"CSPICE src dir already in place {cspice_dir}, moving on")
+    elif os.access(cspice_dir, os.R_OK):
+        print(
+            f"Found usable CSPICE src directory {cspice_dir} {tmp_cspice_src_dir}",
+            flush=True,
+        )
         # newer shutil.copytree has a flag for this that negates need for this
         shutil.copytree(
             cspice_dir + "/",
@@ -340,7 +354,7 @@ def prepare_cspice() -> None:
     pass
 
 
-def build_cspice() -> str:
+def build_cspice() -> List[str]:
     """
     Builds cspice
     :return: absolute path to new compiled shared library
@@ -356,9 +370,12 @@ def build_cspice() -> str:
             extra_flags = f"-shared -Wl,-soname,{libname}"
         destination = cspice_dir
         os.chdir(destination)
+        print(f"Running CSPICE compilation in {destination}")
         cmds = [
             f"gcc {target} -Iinclude -c -fPIC -O2 -ansi ./cspice/src/cspice/*.c",
             f"gcc {target} {extra_flags} -fPIC -O2 -lm *.o -o {libname}",
+            "rm ./*.o",
+            "rm ./*.patch",
         ]
     elif host_OS == "Windows":
         destination = os.path.join(cspice_dir, "cspice", "src", "cspice")
@@ -377,21 +394,19 @@ def build_cspice() -> str:
     shared_lib_path = [
         str(p.absolute())
         for p in Path(destination).glob("*.*")
-        if p.suffix in (".dll", ".66", ".dylib", ".so")
+        if p.suffix in (".dll", ".dylib", ".so", ".lib")
     ]
-    if len(shared_lib_path) != 1:
+    if len(shared_lib_path) < 1:
         os.chdir(cwd)
         raise RuntimeError(
             f'Could not find built shared library of SpiceyPy in {list(Path(destination).glob("*.*"))}'
         )
-    else:
-        shared_lib_path = shared_lib_path[0]
     print(shared_lib_path, flush=True)
     os.chdir(cwd)
     return shared_lib_path
 
 
-def main() -> None:
+def main(build: bool = True) -> None:
     """
     Main routine to build or not build cspice
     expected tmp src dir layout
@@ -401,19 +416,24 @@ def main() -> None:
                   /bin
                   /src/cspice/
                   ...
+    to keep track of the scenarios:
+    1. User has no cspice locally and need to build and compile
+    2. User has prebuilt wheel and doesn't need cspice source (not true for cython, source is always needed)
+    3. User has local src copy and doesn't need to compile (likely cython only)
+
+    :param build: if true build the shared library, if false just download the source code
     :return: None
     """
+    build = os.environ.get(CSPICE_NO_BUILD) is None  # if false (var is set) don't build
     cwd = os.getcwd()
     # set final destination for cspice dynamic library
+    destination_dir = os.path.join(root_dir, "src", "spiceypy", "utils")
     destination = os.path.join(
-        root_dir,
-        "src",
-        "spiceypy",
-        "utils",
+        destination_dir,
         "libcspice.so" if is_unix else "libcspice.dll",
     )
     # check if the shared library already exists, if it does we are done
-    if Path(destination).is_file():
+    if Path(destination).is_file() and build:
         print(
             "Done! shared library for cspice already exists in destination. Done!",
             flush=True,
@@ -421,7 +441,8 @@ def main() -> None:
         return
     # next see if cspice shared library is provided
     shared_library_path = os.environ.get(CSPICE_SHARED_LIB)
-    if shared_library_path is not None:
+    print(f"Did user provide shared library path?: {shared_library_path}")
+    if shared_library_path is not None and build:
         print(f"User has provided a shared library...", flush=True)
         # todo: what if we can't read the file? we need to jump to building it... doubtful this happens
         pass  # now we don't need to do that much
@@ -436,19 +457,29 @@ def main() -> None:
         if CSPICE_NO_PATCH not in os.environ:
             print("Apply patches", flush=True)
             apply_patches()
-        # now build
-        print("Building cspice", flush=True)
-        shared_library_path = build_cspice()
-    print(f"Copying built cspice: {shared_library_path} to {destination}", flush=True)
-    # first make the directory for the destination if it doesn't exist
-    Path(destination).parent.mkdir(parents=True, exist_ok=True)
-    # okay now move shared library to dst dir
-    shutil.copyfile(shared_library_path, destination)
-    # cleanup tmp dir, windows seems to fail with this:
-    #    PermissionError: [WinError 32] The process cannot access the file because it is being used by another process
-    # if tmp_cspice_root_dir is not None:
-    #     if os.path.exists(tmp_cspice_root_dir) and os.path.isdir(tmp_cspice_root_dir):
-    #         shutil.rmtree(tmp_cspice_root_dir)
+        # now build, but not if you have the shared library path around
+        if build and shared_library_path is None:
+            print("Building cspice", flush=True)
+            shared_library_path = build_cspice()
+    # okay at this point we have to either have built cspice or have had a shared library provided, but I may not have built cspice
+    # so copy the shared library path, but if I didn't build I had to have had it provided, if not provided we just build (or not) without moving
+    if shared_library_path is not None or build:
+        if isinstance(shared_library_path, str):
+            shared_library_path = [shared_library_path]
+            print(f"Had to update SLP to a list: {shared_library_path}")
+        # first make the directory for the destination if it doesn't exist
+        Path(destination).parent.mkdir(parents=True, exist_ok=True)
+        for slp in shared_library_path:
+            slp = slp.replace(".dylib", ".so")
+            destination = Path(destination_dir) / Path(slp).name
+            print(f"Copying: {slp} to {destination}", flush=True)
+            # okay now move shared library to dst dir
+            shutil.copy(slp, destination_dir)
+            # cleanup tmp dir, windows seems to fail with this:
+            #    PermissionError: [WinError 32] The process cannot access the file because it is being used by another process
+            # if tmp_cspice_root_dir is not None:
+            #     if os.path.exists(tmp_cspice_root_dir) and os.path.isdir(tmp_cspice_root_dir):
+            #         shutil.rmtree(tmp_cspice_root_dir)
     # and now we are done!
     os.chdir(cwd)
     print("Done!")
