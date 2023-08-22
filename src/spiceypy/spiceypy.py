@@ -14506,12 +14506,9 @@ def datetime2et(dt: Union[Iterable[datetime], datetime]) -> Union[ndarray, float
 
 
 if hasattr(datetime, "fromisoformat"):
-
     def fromisoformat(s):
         return datetime.fromisoformat(s + "+00:00")
-
 else:
-
     def fromisoformat(s):
         return datetime.strptime(s, "%Y-%m-%dT%H:%M:%S.%f").replace(tzinfo=timezone.utc)
 
