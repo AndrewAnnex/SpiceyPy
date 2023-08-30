@@ -8,7 +8,9 @@ dependencies:
   - python=3.11
   - numpy==1.25.2
   - myst-parser==2.0.0
+  - sphinx>=7.2.4
   - sphinx-copybutton==0.5.2
   - sphinx-autodoc-typehints==1.24.0
+  - readthedocs-sphinx-ext
   - pip
 
