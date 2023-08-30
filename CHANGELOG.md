@@ -25,6 +25,7 @@ Fixed several major typos and fortran array ordering issues in tkfram, zzdynrot 
 - codecov as a dependency in dev
 
 ### Fixed
+- fixed zzdynrot and tkfram return matrix element ordering
 - typo in exceptions.rst #459
 - fixed test test_sphlat
 - fixed sphlat to use correct libspice function call
