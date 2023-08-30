@@ -4,6 +4,12 @@
 
 build:
   image: stable
+  tools:
+    python: "mambaforge-22.9"
+
+# use a conda environment
+conda:
+  environment: docs/environment.yml
 
 # Required
 version: 2
@@ -18,12 +24,3 @@ formats:
   - epub
   - pdf
 
-# use a conda environment
-conda:
-  environment: docs/environment.yml
-
-python:
-   version: 3.11
-   install:
-     - method: pip
-       path: .
