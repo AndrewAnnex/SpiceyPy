@@ -6022,8 +6022,7 @@ def failed() -> bool:
 @spice_error_check
 def fn2lun(fname: str) -> int:
     """
-    Internal undocumented command for mapping name of open file to
-    its FORTRAN (F2C) logical unit.
+    Map the name of an open file to its associated FORTRAN (F2C) logical unit.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/fn2lun.html
 
@@ -17040,6 +17039,11 @@ def zzdynrot(typid: int, center: int, et: float) -> Tuple[ndarray, int]:
     :param et: Epoch measured in seconds past J2000
     :return:  Rotation matrix from the input frame to the returned associated frame, id for the associated frame
     """
+    warnings.warn(
+            f'zzdynrot is a "private routine" for spice. Users should avoid using it. It may disappear in future releases after v6.0.0',
+            DeprecationWarning,
+            stacklevel=2,
+        )
     typid = ctypes.c_int(typid)
     center = ctypes.c_int(center)
     et = ctypes.c_double(et)
