@@ -2,6 +2,9 @@
 # Read the Docs configuration file
 # See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
 
+# Required
+version: 2
+
 build:
   os: ubuntu-22.04
   tools:
@@ -11,8 +14,6 @@ build:
 conda:
   environment: docs/environment.yml
 
-# Required
-version: 2
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
@@ -24,3 +25,7 @@ formats:
   - epub
   - pdf
 
+python:
+  install:
+    - method: pip
+      path: .
