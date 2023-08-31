@@ -4,7 +4,7 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## [6.0.0] - 2023-08-30
+## [6.0.0] - 2023-08-31
 Fixed several major typos and fortran array ordering issues in tkfram, zzdynrot as well as failing tests on arm64 macos. 
 ### Added
 - SpiceNOTENOUGHDATA2 exception #466
