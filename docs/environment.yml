@@ -9,7 +9,8 @@ dependencies:
   - numpy==1.25.2
   - myst-parser==2.0.0
   - docutils==0.20.1
-  - sphinx
+  - graphviz
+  - sphinx==7.2.6
   - sphinx-copybutton
   - sphinx-autodoc-typehints
   - recommonmark
@@ -17,4 +18,5 @@ dependencies:
   - pip:
     - readthedocs-sphinx-ext>=2.2.2
     - sphinx-rtd-theme==2.0.0rc2
-
+variables:
+  CONDA_APPEND_CORE_REQUIREMENTS: False
