@@ -5,12 +5,15 @@ channels:
   - nodefaults
 
 dependencies:
-  - python=3.11
-  - numpy
-  - sphinx>=3.1.2
-  - myst-parser
+  - python=3.10
+  - numpy==1.25.2
+  - myst-parser==2.0.0
+  - docutils
+  - graphviz
+  - sphinx<=7.0.0
   - sphinx-copybutton
+  - sphinx-autodoc-typehints
+  - recommonmark
   - pip
-  - pip:
-    - sphinx_autodoc_typehints
-
+variables:
+  CONDA_APPEND_CORE_REQUIREMENTS: False
