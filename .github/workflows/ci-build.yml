@@ -22,21 +22,21 @@ jobs:
     steps:
       - name: Look for cached libcspice 🌶️ 📚
         id: cache-libcspice
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./src/spiceypy/utils/libcspice.*
           key: ${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
       - name: Setup 🔬🍦🏗️
         if: ${{ matrix.os == 'windows-latest' && steps.cache-libcspice.outputs.cache-hit != 'true' }}
-        uses: ilammy/msvc-dev-cmd@v1.12.0
+        uses: ilammy/msvc-dev-cmd@v1.13.0
       - name: Checkout 🌶️ 🥧
         if: steps.cache-libcspice.outputs.cache-hit != 'true'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up Python 🐍 3.11
         if: steps.cache-libcspice.outputs.cache-hit != 'true'
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - name: Display Python 🐍 version
@@ -47,7 +47,7 @@ jobs:
         run: |
           python get_spice.py
       - name: Upload built 🏗️ libcspice 🌶️ 📚
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: artifact-${{ matrix.os }}
           path: ./src/spiceypy/utils/libcspice.*
@@ -61,16 +61,16 @@ jobs:
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12' ]
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Download built 🏗️ libcspice 🌶️ 📚
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: artifact-${{ matrix.os }}
           path: ./src/spiceypy/utils/
       - name: Set up Python 🐍 ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           check-latest: true
@@ -92,7 +92,7 @@ jobs:
           echo "pip_cache_dir=$(pip cache dir)" >> $env:GITHUB_OUTPUT
       - name: Cache pip's cache dir mac/linux
         if: runner.os != 'Windows'
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.pip-cache-nix.outputs.pip_cache_dir }}
           key: ${{ runner.os }}-${{ matrix.python-version }}-test-pip-${{ hashFiles('**/ci-requirements.txt') }}
@@ -100,7 +100,7 @@ jobs:
             ${{ runner.os }}-${{ matrix.python-version }}-test-pip-
       - name: Cache pip's cache dir windows
         if: runner.os == 'Windows'
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.pip-cache-win.outputs.pip_cache_dir }}
           key: ${{ runner.os }}-${{ matrix.python-version }}-test-pip-${{ hashFiles('**/ci-requirements.txt') }}
@@ -123,11 +123,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up Python 🐍 3.11
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - name: Display Python 🐍 version
@@ -140,7 +140,7 @@ jobs:
         run: |
           echo "pip_cache_dir=$(pip cache dir)" >> $GITHUB_OUTPUT
       - name: Cache pip's cache dir
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.pip-cache.outputs.pip_cache_dir }}
           key: ${{ runner.os }}-3.11-test-pip-${{ hashFiles('**/ci-requirements.txt') }}
@@ -170,11 +170,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up Python 🐍 3.11
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - name: Display Python 🐍 version
@@ -187,7 +187,7 @@ jobs:
         run: |
           echo "pip_cache_dir=$(pip cache dir)" >> $GITHUB_OUTPUT
       - name: Cache pip's cache dir
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.pip-cache.outputs.pip_cache_dir }}
           key: ${{ runner.os }}-3.11-test-pip-${{ hashFiles('**/ci-requirements.txt') }}

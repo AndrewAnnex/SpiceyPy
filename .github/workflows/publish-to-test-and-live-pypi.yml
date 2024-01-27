@@ -14,9 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up Python 🐍 3.11
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - name: Display Python 🐍 
@@ -39,7 +39,7 @@ jobs:
       - name: Check dists
         run: |
           twine check dist/*
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           path: dist/*.tar.gz
   build_wheels:
@@ -58,10 +58,10 @@ jobs:
     runs-on: ${{ matrix.config.os }}
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup 🔬🍦🏗️
         if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1.12.0
+        uses: ilammy/msvc-dev-cmd@v1.13.0
       - name: set additional environment variables
         if: runner.name == 'macOS' && runner.arch == 'arm64'
         run: |
@@ -69,17 +69,17 @@ jobs:
           echo "ARCHFLAGS='-arch arm64'" >> $GITHUB_ENV
       - name: Set up QEMU for arm64 builds
         if: matrix.config.arch == 'aarch64'
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
         with:
           platforms: all
       - name: Cache libcspice.so for aarch64 builds because they take an hour to build with qemu
         if: matrix.config.arch == 'aarch64'
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /project/src/spiceypy/utils/libcspice.so
           key: ${{ env.CSPICE_CACHE }}-${{ matrix.config.os }}-${{ matrix.config.arch }}-${{ hashFiles('get_spice.py') }}-${{ hashFiles('setup.cfg') }}
       - name: Set up Python 🐍 3.11
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - name: Display Python 🐍 Version
@@ -88,7 +88,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r ci-requirements.txt
-          python -m pip install cibuildwheel==2.15.0
+          python -m pip install cibuildwheel==2.16.3
       - name: Build wheels for SpiceyPy 🌶️ 🥧
         timeout-minutes: 120
         run: |
@@ -99,20 +99,22 @@ jobs:
         run: |
           twine check wheelhouse/*
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
+          name: artifact-${{ env.CSPICE_CACHE }}-${{ matrix.config.os }}-${{ matrix.config.arch }}-${{ hashFiles('get_spice.py') }}-${{ hashFiles('setup.cfg') }}
           path: ./wheelhouse/*.whl
   publish_to_pypi:
     name: Publish SpiceyPy 🌶️ 🥧 Python 🐍 distributions 📦 to PyPI and TestPyPI
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: artifact
+          name: artifact-*
+          merge-multiple: true
           path: dist
       - name: Set up Python 🐍 3.11
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - name: Display Python 🐍
