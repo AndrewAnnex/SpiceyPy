@@ -89,6 +89,11 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r ci-requirements.txt
           python -m pip install cibuildwheel==2.16.4
+      - name: See if libcspice.so is available from cache
+        if: matrix.config.arch == 'aarch64'
+        run: |
+          pwd
+          ls src/spiceypy/utils -lahtr
       - name: Build wheels for SpiceyPy 🌶️ 🥧
         timeout-minutes: 120
         run: |
