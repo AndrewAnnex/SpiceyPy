@@ -95,6 +95,12 @@ jobs:
           env | grep CIBW
           env | grep ARCH
           python -m cibuildwheel --output-dir wheelhouse
+      - name: Extract libcspice.so for aarch64 builds
+        if: matrix.config.arch == 'aarch64'
+        run: |
+          ls -lahtr 
+          ls wheelhouse/*
+          unzip -o wheelhouse/spiceypy-\*.whl 'spiceypy/utils/libcspice.so' -d /project/src/
       - name: Check dists
         run: |
           twine check wheelhouse/*
