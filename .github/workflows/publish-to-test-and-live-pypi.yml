@@ -76,7 +76,7 @@ jobs:
         if: matrix.config.arch == 'aarch64'
         uses: actions/cache@v4
         with:
-          path: /project/src/spiceypy/utils/libcspice.so
+          path: ./src/spiceypy/utils/libcspice.so
           key: ${{ env.CSPICE_CACHE }}-${{ matrix.config.os }}-${{ matrix.config.arch }}-${{ hashFiles('get_spice.py') }}-${{ hashFiles('setup.cfg') }}
       - name: Set up Python 🐍 3.11
         uses: actions/setup-python@v5
@@ -98,9 +98,13 @@ jobs:
       - name: Extract libcspice.so for aarch64 builds
         if: matrix.config.arch == 'aarch64'
         run: |
+          pwd
           ls -lahtr 
+          ls src/ -lahtr
+          ls src/spiceypy/ -lahtr
+          ls src/spiceypy/utils -lahtr
           ls wheelhouse/*
-          unzip -o wheelhouse/spiceypy-\*.whl 'spiceypy/utils/libcspice.so' -d /project/src/
+          unzip -o wheelhouse/spiceypy-\*.whl 'spiceypy/utils/libcspice.so' -d src/
       - name: Check dists
         run: |
           twine check wheelhouse/*
