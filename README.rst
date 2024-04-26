@@ -3,11 +3,11 @@ SpiceyPy
 
 SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N66), written using ctypes.
 
-+------------------------+-------------------+--------+-----------------+------------+--------------+
-| Continuous Integration | Code Coverage     | Docs   | Chat            |  Citation  |  Code Style  |
-+========================+===================+========+=================+============+==============+
-| |Github Build Status|  | |Coverage Status| | |Docs| | |Join the chat| | |JOSS|     |  |Black|     |
-+------------------------+-------------------+--------+-----------------+------------+--------------+
++------------------------+-------------------+--------+------------+--------------+
+| Continuous Integration | Code Coverage     | Docs   |  Citation  |  Code Style  |
++========================+===================+========+============+==============+
+| |Github Build Status|  | |Coverage Status| | |Docs| | |JOSS|     |  |Black|     |
++------------------------+-------------------+--------+------------+--------------+
 
 .. |Github Build Status| image:: https://img.shields.io/github/actions/workflow/status/AndrewAnnex/SpiceyPy/ci-build.yml?branch=main
    :alt: Github - Build Status
@@ -18,9 +18,6 @@ SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N66), written using c
 .. |Docs| image:: https://img.shields.io/readthedocs/spiceypy/main
    :alt: Readthedocs - Documentation
    :target: http://spiceypy.readthedocs.org/en/main/
-.. |Join the chat| image:: https://img.shields.io/gitter/room/andrewannex/spiceypy
-   :alt: Gitter - Chat room
-   :target: https://gitter.im/AndrewAnnex/SpiceyPy
 .. |JOSS| image:: https://joss.theoj.org/papers/98136d30bea9982ad160d251e2039fee/status.svg
    :alt: Citation Information: Journal of Open Source Software
    :target: https://joss.theoj.org/papers/98136d30bea9982ad160d251e2039fee
