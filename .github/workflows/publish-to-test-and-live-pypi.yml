@@ -48,12 +48,12 @@ jobs:
         include:
           - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "x86_64"}
           - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "aarch64"}
-          - config: {"name": "macOS", "os": "macos-latest", "arch": "x86_64"}
-          - config: {"name": "macOS", "os": "macos-latest", "arch": "arm64"}
+          - config: {"name": "macOS", "os": "macos-14", "arch": "x86_64"}
+          - config: {"name": "macOS", "os": "macos-14", "arch": "arm64"}
           - config: {"name": "Windows", "os": "windows-latest", "arch": "AMD64"}  
     name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels for ${{ matrix.config.os }} ${{ matrix.config.arch }}
     env: 
-      CSPICE_CACHE: 0
+      CSPICE_CACHE: 1
       CIBW_ARCHS: ${{ matrix.config.arch }}
     runs-on: ${{ matrix.config.os }}
     steps:
