@@ -100,7 +100,7 @@ please consider contributing to the project by citing me using the zenodo DOI ab
 Known Working Environments:
 ---------------------------
 
-SpicyPy is compatible with modern Linux, Mac, and Windows
+SpiceyPy is compatible with modern Linux, Mac, and Windows
 environments. Since the package is a wrapper, any environment not
 supported by the NAIF is similarly not supported by SpiceyPy.
 If you run into issues with your system please submit an issue with details. 
