@@ -93,16 +93,28 @@ host_arch = platform.machine()
 os_supported = host_OS in ("Linux", "Darwin", "FreeBSD", "Windows")
 # Get platform is Unix-like OS or not
 is_unix = host_OS in ("Linux", "Darwin", "FreeBSD")
+is_macos = host_OS == "Darwin"
 # Get current working directory
 root_dir = str(Path(os.path.realpath(__file__)).parent)
 # Make the directory path for cspice
 cspice_dir = os.environ.get(CSPICE_SRC_DIR, os.path.join(root_dir, "cspice"))
 # and make a global tmp cspice directory
 tmp_cspice_root_dir = None
+# macos builds can occur on x86 or arm64 machines.
+# but we need to support cross compilation either way 
+# so be a little pedantic here
+requested_arch_x86 = os.environ.get("ARCHFLAGS", "") == "-arch x86_64"
+requested_arch_arm = os.environ.get("ARCHFLAGS", "") == "-arch arm64"
+# if both are false and on macos do something
+if is_macos and (not requested_arch_arm and not requested_arch_x86):
+    # default to building arm on macos
+    requested_arch_arm = True
+build_macos_x86 = is_macos and (('x86' in host_arch) or requested_arch_x86) and not requested_arch_arm
+build_macos_arm = is_macos and ((host_arch == 'arm64') or requested_arch_arm) and not requested_arch_x86
+# if host arch is x86 it will go to x86 build
+# if however archflags was set explicitly to not be arm64 we need cross compile
 # if we need to cross compile or compile for arm64
-is_macos_arm = host_OS == "Darwin" and (
-    host_arch == "arm64" or os.environ.get("ARCHFLAGS", "") == "-arch arm64"
-)
+is_macos_arm = build_macos_arm 
 # versions
 spice_version = "N0067"
 spice_num_v = "67"
@@ -209,7 +221,6 @@ class GetCSPICE(object):
             machine = "x86_64"
 
         if is_macos_arm:
-            print("either running on apple arm64 or cross-compiling")
             machine = "arm64"
 
         print("SYSTEM:   ", system)
@@ -349,8 +360,9 @@ def build_cspice() -> str:
     global cspice_dir, host_OS
     if is_unix:
         libname = f"libcspice.so"
-        target = "-target arm64-apple-macos11" if is_macos_arm else ""
+        target = ""
         if host_OS == "Darwin":
+            target = "-target arm64-apple-macos11" if build_macos_arm else "-target x86_64-apple-macos10.9"
             extra_flags = f"-dynamiclib -install_name @rpath/{libname}"
         else:
             extra_flags = f"-shared -Wl,-soname,{libname}"

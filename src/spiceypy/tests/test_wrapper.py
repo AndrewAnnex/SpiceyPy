@@ -6751,10 +6751,9 @@ def test_raxisa():
 
 
 def test_rdtext():
-    import datetime
-
+    from datetime import datetime, timezone
     # Create ISO UTC datetime string using current time
-    utcnow = datetime.datetime.utcnow().isoformat()
+    utcnow = datetime.now(timezone.utc).isoformat()
     spice.reset()
     # Create temporary filenames
     RDTEXT = os.path.join(cwd, "ex_rdtext.txt")

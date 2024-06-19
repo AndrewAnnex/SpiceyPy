@@ -15,26 +15,29 @@ jobs:
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v4
-      - name: Set up Python 🐍 3.11
+      - name: Set up Python 🐍 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
       - name: Display Python 🐍 
         run: python -c "import sys; print(sys.version)"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r ci-requirements.txt
+          python -m pip install -r test-requirements.txt
+          python -m pip install build coverage>=5.1.0 twine>=3.3.0
       - name: Build 🛠️ sdist source and Install SpiceyPy 🌶️ 🥧
         run: |
           python -m build --sdist
-          pip install dist/*.tar.gz --user
+          echo "Running Pip install from sdist"
+          python -m pip install dist/*.tar.gz --user
       - name: Test 🧪 with coverage 📈
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy
       - name: Upload 🆙 coverage 📈 report to codecov 
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
+          fail_ci_if_error: false
           verbose: true
       - name: Check dists
         run: |
@@ -62,11 +65,16 @@ jobs:
       - name: Setup 🔬🍦🏗️
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1.13.0
-      - name: set additional environment variables
-        if: runner.name == 'macOS' && runner.arch == 'arm64'
+      - name: set additional environment variables for macOS arm
+        if: runner.name == 'macOS' && matrix.config.arch == 'arm64'
         run: |
           echo "CIBW_ARCHS_MACOS=arm64" >> $GITHUB_ENV
           echo "ARCHFLAGS='-arch arm64'" >> $GITHUB_ENV
+      - name: set additional environment variables for macOS x86
+        if: runner.name == 'macOS' && matrix.config.arch == 'x86_64'
+        run: |
+          echo "CIBW_ARCHS_MACOS=x86_64" >> $GITHUB_ENV
+          echo "ARCHFLAGS='-arch x86_64'" >> $GITHUB_ENV
       - name: Set up QEMU for arm64 builds
         if: matrix.config.arch == 'aarch64'
         uses: docker/setup-qemu-action@v3
@@ -78,17 +86,17 @@ jobs:
         with:
           path: ./src/spiceypy/utils/libcspice.so
           key: ${{ env.CSPICE_CACHE }}-${{ matrix.config.os }}-${{ matrix.config.arch }}-${{ hashFiles('get_spice.py') }}-${{ hashFiles('setup.cfg') }}
-      - name: Set up Python 🐍 3.11
+      - name: Set up Python 🐍 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
       - name: Display Python 🐍 Version
         run: python -c "import sys; print(sys.version)"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r ci-requirements.txt
-          python -m pip install cibuildwheel==2.16.4
+          python -m pip install cibuildwheel==2.19.1
       - name: See if libcspice.so is available from cache
         if: matrix.config.arch == 'aarch64'
         run: |
@@ -128,10 +136,10 @@ jobs:
           pattern: artifact-*
           merge-multiple: true
           path: dist
-      - name: Set up Python 🐍 3.11
+      - name: Set up Python 🐍 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
       - name: Display Python 🐍
         run: python -c "import sys; print(sys.version)"
       - name: Install dependencies
