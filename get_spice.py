@@ -362,7 +362,7 @@ def build_cspice() -> str:
         libname = f"libcspice.so"
         target = ""
         if host_OS == "Darwin":
-            target = "-target arm64-apple-macos11" if build_macos_arm else "-target x86_64-apple-macos11"
+            target = "-target arm64-apple-macos11" if build_macos_arm else "-target x86_64-apple-macos10.9"
             extra_flags = f"-dynamiclib -install_name @rpath/{libname}"
         else:
             extra_flags = f"-shared -Wl,-soname,{libname}"
