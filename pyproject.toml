@@ -7,8 +7,8 @@ build-backend = "setuptools.build_meta"
 build-frontend = "build"
 # build libcspice inside cibuildwheel before running python build steps
 before-build = "python {project}/get_spice.py"
-# Only build on CPython 3.11
-build = "cp311-*"
+# Only build on CPython 3.12
+build = "cp312-*"
 # Skip 32-bit builds, pypy, and musllinux
 skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "pypy*", "pp*", "*-musllinux_aarch64", "*-musllinux_x86_64"]
 # other options
