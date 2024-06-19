@@ -65,11 +65,16 @@ jobs:
       - name: Setup 🔬🍦🏗️
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1.13.0
-      - name: set additional environment variables
-        if: runner.name == 'macOS' && runner.arch == 'arm64'
+      - name: set additional environment variables for macOS arm
+        if: runner.name == 'macOS' && matrix.config.arch == 'arm64'
         run: |
           echo "CIBW_ARCHS_MACOS=arm64" >> $GITHUB_ENV
           echo "ARCHFLAGS='-arch arm64'" >> $GITHUB_ENV
+      - name: set additional environment variables for macOS x86
+        if: runner.name == 'macOS' && matrix.config.arch == 'x86_64'
+        run: |
+          echo "CIBW_ARCHS_MACOS=x86_64" >> $GITHUB_ENV
+          echo "ARCHFLAGS='-arch x86_64'" >> $GITHUB_ENV
       - name: Set up QEMU for arm64 builds
         if: matrix.config.arch == 'aarch64'
         uses: docker/setup-qemu-action@v3

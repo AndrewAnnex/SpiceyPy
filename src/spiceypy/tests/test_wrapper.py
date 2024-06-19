@@ -6754,7 +6754,7 @@ def test_rdtext():
     import datetime
 
     # Create ISO UTC datetime string using current time
-    utcnow = datetime.datetime.utcnow().isoformat()
+    utcnow = datetime.datetime.now(datetime.UTC).isoformat()
     spice.reset()
     # Create temporary filenames
     RDTEXT = os.path.join(cwd, "ex_rdtext.txt")
