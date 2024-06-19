@@ -118,7 +118,7 @@ jobs:
       - name: Upload 🆙 coverage 📈 report to codecov 
         uses: codecov/codecov-action@v4
         with:
-          use_oidc: true
+          fail_ci_if_error: false
           verbose: true
   test_offline_shared:
     runs-on: ubuntu-latest
@@ -166,7 +166,7 @@ jobs:
       - name: Upload 🆙 coverage 📈 report to codecov 
         uses: codecov/codecov-action@v4
         with:
-          use_oidc: true
+          fail_ci_if_error: false
           verbose: true
   test_offline_cspice_install:
     runs-on: ubuntu-latest
@@ -213,5 +213,5 @@ jobs:
       - name: Upload 🆙 coverage 📈 report to codecov 
         uses: codecov/codecov-action@v4
         with:
-          use_oidc: true
+          fail_ci_if_error: false
           verbose: true

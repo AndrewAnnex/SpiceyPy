@@ -25,7 +25,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r test-requirements.txt
-          python -m pip install coverage>=5.1.0 twine>=3.3.0
+          python -m pip install build coverage>=5.1.0 twine>=3.3.0
       - name: Build 🛠️ sdist source and Install SpiceyPy 🌶️ 🥧
         run: |
           python -m build --sdist
@@ -37,7 +37,7 @@ jobs:
       - name: Upload 🆙 coverage 📈 report to codecov 
         uses: codecov/codecov-action@v4
         with:
-          use_oidc: true
+          fail_ci_if_error: false
           verbose: true
       - name: Check dists
         run: |
