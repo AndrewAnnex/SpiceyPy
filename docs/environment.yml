@@ -13,6 +13,7 @@ dependencies:
   - sphinx<=7.0.0
   - sphinx-copybutton
   - sphinx-autodoc-typehints
+  - sphinx_rtd_theme
   - recommonmark
   - pip
 variables:
