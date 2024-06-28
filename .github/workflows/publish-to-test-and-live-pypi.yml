@@ -12,6 +12,9 @@ jobs:
   build_sdist:
     name: Make SpiceyPy 🌶️ 🥧 Python 🐍 source distribution
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v4
@@ -39,6 +42,7 @@ jobs:
         with:
           fail_ci_if_error: false
           verbose: true
+          use_oidc: true
       - name: Check dists
         run: |
           twine check dist/*
@@ -130,6 +134,9 @@ jobs:
     name: Publish SpiceyPy 🌶️ 🥧 Python 🐍 distributions 📦 to PyPI and TestPyPI
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/download-artifact@v4
         with:
