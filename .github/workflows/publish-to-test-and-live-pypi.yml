@@ -18,10 +18,10 @@ jobs:
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v4
-      - name: Set up Python 🐍 3.12
+      - name: Set up Python 🐍 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
       - name: Display Python 🐍 
         run: python -c "import sys; print(sys.version)"
       - name: Install dependencies
@@ -90,17 +90,17 @@ jobs:
         with:
           path: ./src/spiceypy/utils/libcspice.so
           key: ${{ env.CSPICE_CACHE }}-${{ matrix.config.os }}-${{ matrix.config.arch }}-${{ hashFiles('get_spice.py') }}-${{ hashFiles('setup.cfg') }}
-      - name: Set up Python 🐍 3.12
+      - name: Set up Python 🐍 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
       - name: Display Python 🐍 Version
         run: python -c "import sys; print(sys.version)"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r ci-requirements.txt
-          python -m pip install cibuildwheel==2.19.1
+          python -m pip install cibuildwheel==2.21.3
       - name: See if libcspice.so is available from cache
         if: matrix.config.arch == 'aarch64'
         run: |
@@ -143,10 +143,10 @@ jobs:
           pattern: artifact-*
           merge-multiple: true
           path: dist
-      - name: Set up Python 🐍 3.12
+      - name: Set up Python 🐍 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
       - name: Display Python 🐍
         run: python -c "import sys; print(sys.version)"
       - name: Install dependencies
