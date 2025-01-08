@@ -4,13 +4,13 @@ SCLK Required Reading
    
                                                                       
 Abstract                                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                   
 | The SCLK system is the component of SPICE concerned with spacecraft 
   clock correlation data.                                             
                                                           
 Introduction                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                   
 | The spacecraft clock is the onboard time-keeping mechanism that     
   triggers most spacecraft events, such as shuttering of a camera.    
@@ -26,7 +26,7 @@ time systems, such as Ephemeris Time (ET) and Universal Time
 Coordinated (UTC).                                                    
                                                           
 References                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
                                                                       
 #. SFOC SIS \``SFOC-2-SYS-Any-TimeForms,'' 02/06/90.            
@@ -34,14 +34,14 @@ References
                                                 
                                                                       
 Support for New Missions                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | The suite of SCLK functions has been designed to easily accommodate 
   future missions. A later section describes how the system might be  
   easily expanded to incorporate new spacecraft clocks.               
                                                           
 Detection of Non-native Text Files                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | Starting with the N0057 release of the SPICE Toolkit (March, 2004)  
   the SPICE data loading mechanism detects and prohibits loading text 
@@ -53,14 +53,14 @@ Detection of Non-native Text Files
   that 132 bytes or have the first line longer that 132 characters.   
                                                           
 The Basics                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                   
 | In this section, we present a minimal subset of facts about the     
   CSPICE SCLK system that you can get by with and still use the       
   system successfully.                                                
                                                           
 SCLK rates                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | Most of the complexity of dealing with SCLK time values arises from 
   the fact that the rate at which any spacecraft clock runs varies    
@@ -75,7 +75,7 @@ you should be aware that it exists; it may be a cause of
 discrepancies between results produced by different sets of software. 
                                                           
 SCLK kernels                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | SCLK files conform to a flexible format called \``NAIF text         
   kernel'' format. The SPICE file identification word provided by     
@@ -110,7 +110,7 @@ Details concerning the kernel pool are covered in the KERNEL required
 reading document, `kernel.req <../req/kernel.html>`__.                
                                                           
 Partitions, briefly                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | The lifetime of each mission is divided into intervals called       
   \``partitions.'' Partitions are time intervals during which the     
@@ -144,7 +144,7 @@ be interpreted unambiguously.
                          
                                                                       
 Converting between SCLK strings and ET or UTC             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | The time known as \``spacecraft event time'' (SCET) is usually UTC. 
   You must verify that this is the case for your spacecraft.          
@@ -194,7 +194,7 @@ The inverse conversion is performed by the code fragment
                                                 
                                                                       
 Using encoded SCLK                                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | The CSPICE C kernel (CK) system tags CK data with SCLK times.       
   Within the CK system, these time tags are encoded as double         
@@ -257,7 +257,7 @@ All of the concepts used in this section are discussed in greater
 detail in the following sections of this document.                    
                                                           
 Encoded SCLK                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                   
 | The fundamental representation of SCLK in the CSPICE system is a    
   double precision numeric encoding of each multi-component count.    
@@ -299,7 +299,7 @@ Later chapters describing clock types give complete details on clock
 string formats for spacecraft clocks supported by the CSPICE Toolkit. 
                                                           
 Ticks                                                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | The units of encoded SCLK are \``ticks since spacecraft clock       
   start,'' where a \``tick'' is defined to be the shortest time       
@@ -338,7 +338,7 @@ Conversion of spacecraft clock strings to ticks always produces
 integral tick values.                                                 
                                                           
 Partitions                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | One desirable feature of encoded SCLK is that it increases          
   continuously throughout the course of the mission. Unfortunately,   
@@ -411,7 +411,7 @@ the function `scpart_c <../cspice/scpart_c.html>`__:
                                                 
                                                                       
 SCLK Conversion Functions                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                   
 | In order to correlate data obtained from different components of    
   the CSPICE system, for example pointing and ephemeris data, it is   
@@ -459,7 +459,7 @@ delta SCLK to ticks )
                                                 
                                                                       
 Distinguishing Between Different Clocks                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                   
 | The algorithms used to encode and decode SCLK, and convert between  
   SCLK and other time systems are not necessarily the same for each   
@@ -471,7 +471,7 @@ High-level differences are managed in the code itself through
 handled using parameters in a SCLK kernel.                            
                                                           
 Clock Types                                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | A clock type is a general clock description that may encompass      
   several separate spacecraft clocks. Each clock type is identified   
@@ -501,7 +501,7 @@ SCLK functions determine the clock type for a particular spacecraft
 from the SCLK kernel file (described in the next section).            
                                                           
 Clock type-specific functions                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | Each clock type is supported in the encoding and decoding process   
   by the function sccc_c, where cc is the number of the clock type.   
@@ -530,7 +530,7 @@ functions:
                                                 
                                                                       
 Spacecraft-Specific Parameters                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | Once the clock type has been determined, SCLK functions need        
   parameters that uniquely distinguish each spacecraft within the     
@@ -542,7 +542,7 @@ Spacecraft-Specific Parameters
   the SCLK kernel file at run-time (see below).                       
                                                           
 The SCLK Kernel File                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                   
 | NAIF SCLK kernel files supply CSPICE SCLK conversion functions with 
   information required to convert between SCLK values and other       
@@ -576,7 +576,7 @@ below.
                          
                                                                       
 Partition boundaries                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | The tick values for the beginning and end of each partition are     
   given by:                                                           
@@ -605,7 +605,7 @@ that are closed on the left and open on the right.
                          
                                                                       
 Clock type assignment                                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | If --ss is the NAIF ID code of a spacecraft, the associated clock   
   type for that spacecraft is given by the assignment                 
@@ -623,7 +623,7 @@ conflicts. (We don't expect this feature to be used much, if at all,
 but it's there should you need it.)                                   
                                                           
 Clock type-specific parameters                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | Each spacecraft clock type has its own set of parameters that the   
   CSPICE SCLK functions require in order to convert SCLK values of    
@@ -632,7 +632,7 @@ Clock type-specific parameters
   the chapter \``SCLK01.''                                            
                                                           
 Expanding the system: What NAIF must do                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                   
 | Accommodating new spacecraft clocks may involve no code changes to  
   the SCLK subroutines whatsoever.                                    
@@ -682,7 +682,7 @@ to use the SCLK conversion functions, you won't have to re-learn just
 because a new spacecraft clock has been introduced.                   
                                                           
 An Example Using SCLK Functions                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                   
 | The following example shows how some of the SCLK functions might be 
   used in a typical application program. This one reads pointing data 
@@ -855,7 +855,7 @@ The output from this program looks like this:
                                                 
                                                                       
 SCLK01                                                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                   
 | This chapter describes the type 1 SCLK format and conversion        
   algorithms in detail. Also, the SCLK formats for supported          
@@ -863,7 +863,7 @@ SCLK01
   described.                                                          
                                                           
 Conforming spacecraft clocks                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                   
 | The following spacecraft have SCLK formats that conform to the type 
   1 specification:                                                    
@@ -892,7 +892,7 @@ spacecraft.
                          
                                                                       
 Type 1 SCLK format                                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                   
 | The first standard NAIF spacecraft clock data type has two          
   components: a format defining the set of acceptable spacecraft      
@@ -993,7 +993,7 @@ indicates a count of 9; in the latter, 90.
                          
                                                                       
 Galileo SCLK format                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | An example of a valid time string (without a partition number) for  
   the Galileo spacecraft clock is:                                    
@@ -1021,7 +1021,7 @@ The maximum time value that the Galileo spacecraft clock can
 represent (16777214:90:9:7) is approximately 32 years.                
                                                           
 Mars Global Surveyor SCLK format                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | An example of a valid time string (without a partition number) for  
   the Mars Global Surveyor spacecraft clock is:                       
@@ -1046,7 +1046,7 @@ The maximum time value that the Mars Global Surveyor spacecraft clock
 can represent (4294967295.255) is approximately 136 years.            
                                                           
 Voyager SCLK clock format                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | An example of a valid time string (without a partition number) for  
   both the Voyager 1 and Voyager 2 spacecraft clocks is:              
@@ -1076,7 +1076,7 @@ The maximum time value that the Voyager 1 and Voyager 2 spacecraft
 clocks can represent (65535:59:800) is approximately six years.       
                                                           
 Type 1 SCLK conversion                                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                   
 | CSPICE contains functions that convert between type 1 clock strings 
   and the following representations of time:                          
@@ -1094,7 +1094,7 @@ Julian Date, conversion between SCLK strings and any other time
 system supported by CSPICE requires at most two function calls.       
                                                           
 Conversion algorithms                                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | For every type 1 spacecraft clock, encoded SCLK values are          
   converted to ephemeris time (TDB) as follows: first, encoded SCLK   
@@ -1219,7 +1219,7 @@ be loaded via the kernel pool. See the section \``The spacecraft
 clock kernel file'' below for details.                                
                                                           
 Type 1 SCLK functions                                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                   
 | Type 1 SCLK functions are normally called by the higher-level SCLK  
   functions `scencd_c <../cspice/scencd_c.html>`__,                   
@@ -1254,7 +1254,7 @@ to share data. These functions should not be called directly.
                          
                                                                       
 The type 1 SCLK kernel file                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                   
 | Before any CSPICE functions that make use of type 1 SCLK values can 
   be used, a SCLK kernel file must be loaded into the kernel pool.    
@@ -1286,7 +1286,7 @@ CSPICE SCLK functions:
                          
                                                                       
 Kernel ID assignment                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | Each SCLK kernel must assign a identifier to the kernel variable    
                                                                       
@@ -1305,7 +1305,7 @@ identifiers for these kernels should be distinct.
                          
                                                                       
 Parallel time system code assignment                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | If --ss is the NAIF ID code of a spacecraft, this ID is associated  
   with a parallel time system by the assignment                       
@@ -1329,7 +1329,7 @@ assumed to be barycentric dynamical time.
                          
                                                                       
 SCLK type assignment                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | If --ss is the NAIF ID code of a spacecraft, this ID is associated  
   with a SCLK type by the assignment                                  
@@ -1344,7 +1344,7 @@ the SCLK variable names, there will be no naming conflicts.
                          
                                                                       
 Format constant assignments                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | All of the format constants start with the string                   
                                                                       
@@ -1413,7 +1413,7 @@ For Galileo, the code assignment would be:
                                                 
                                                                       
 Time coefficients                                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | The data that define the mapping between SCLK and the parallel time 
   system are called \``time coefficients.'' This name is used because 
@@ -1454,7 +1454,7 @@ the most significant field is the \``sclk_secs count.''
                          
                                                                       
 Partition boundaries                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | In order to convert between SCLK strings and their encoded form of  
   ticks since spacecraft clock start, it is necessary to know the     
@@ -1471,7 +1471,7 @@ containing one element per partition.
                          
                                                                       
 Sample SCLK kernels                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | The following is a sample SCLK kernel for Galileo:                  
                                                                       
@@ -1651,42 +1651,42 @@ and should not be construed as a correct specification.
                                                 
                                                                       
 Appendix: Document Revision History                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                  
                          
                                                                       
 May 27, 2010                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | Minor edit to eliminate typo.                                       
                                                           
 April 1, 2009                                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | Added a note about the SPICE file identification word for SCLK      
   files.                                                              
                                                           
 March 02, 2008                                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | Updated discussion of type 1 conversion algorithm to clarify role   
   of parallel time system. Updated discussion of SCLK string formats  
   to indicate support for 4-digit partition numbers.                  
                                                           
 December 21, 2004                                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | Added note regarding detection of non-native text files. Replaced   
   `ldpool_c <../cspice/ldpool_c.html>`__ with                         
   `furnsh_c <../cspice/furnsh_c.html>`__.                             
                                                           
 February 2, 2004                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | Performed a spell-check on text.                                    
                                                           
 April 12, 1999                                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | The document differs from the previous version of April 20, 1992 in 
   that it documents the new capability of the SCLK software to        

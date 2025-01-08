@@ -1,17 +1,17 @@
 .. _planesreq:
-=======================
+
 Planes Required Reading
 =======================
 
                                                                 
 Abstract                                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                   
  | CSPICE contains a substantial set of subroutines that solve common  
    mathematical problems involving planes.                             
                                                                
 Introduction                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                   
  | In CSPICE, the \`plane' is a data representation describing planes  
    in three-dimensional space. The purpose of the plane data type is   
@@ -20,7 +20,7 @@ Introduction
    facilitate conversion between different representations of planes.  
                                                                
 References                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                             
                                                                        
 #. \`Calculus, Vol. II'. Tom Apostol. John Wiley and Sons,      
@@ -32,7 +32,7 @@ References
                                                 
                                                                        
 Plane Data Type Description                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                   
  | NAIF defines a SPICE plane using a unit vector N, normal to the     
    plane, and a scalar constant C. Let                                 
@@ -75,12 +75,12 @@ Plane Data Type Description
                                 
                                                                        
 Plane routines                                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                              
                                 
                                                                        
 Constructing planes                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                             
  | The CSPICE routines that create SPICE planes from various forms of  
    data that define geometric planes:                                  
@@ -118,8 +118,7 @@ Constructing planes
  You can convert any of the following representations of planes to a   
  SPICE plane:                                                          
                                                                        
- **A normal vector                                                     
- and a constant**                                                      
+ **A normal vector and a constant**                                                      
     If N is a normal vector and C is a constant, then the plane is the 
     set of points X such that                                          
                                                                        
@@ -127,8 +126,7 @@ Constructing planes
                                                                        
                                   < X, N > = C.                        
                                                                        
- **A normal vector                                                     
- and a point**                                                         
+ **A normal vector and a point**                                                         
     If P is a point in the plane and N is a normal vector, then the    
     plane is the set of points X such that                             
                                                                        
@@ -136,8 +134,7 @@ Constructing planes
                                                                        
                                   < X - P,  N > = 0.                   
                                                                        
- **A point and two                                                     
- spanning vectors**                                                    
+ **A point and two spanning vectors**                                                    
     If P is a point in the plane and V1 and V2 are two linearly        
     independent but not necessarily orthogonal vectors, then the plane 
     is the set of points                                               
@@ -154,7 +151,7 @@ Constructing planes
                                 
                                                                        
 Construct a plane from a normal vector and constant       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                             
  | Let \`n' represent a vector normal to a plane, and \`c', a scalar   
    constant.                                                           
@@ -177,7 +174,7 @@ Construct a plane from a normal vector and constant
                                                 
                                                                        
 Construct a plane from a normal vector and a point        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                             
  | Let \`n' represent a vector normal to a plane, and \`p', a point on 
    the plane.                                                          
@@ -200,7 +197,7 @@ Construct a plane from a normal vector and a point
                                                 
                                                                        
 Construct a plane from a point and spanning vectors       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                             
  | Let \`p' represent a point on a plane, \`v1' and \`v2', two vectors 
    in the plane.                                                       
@@ -225,7 +222,7 @@ Construct a plane from a point and spanning vectors
                                                 
                                                                        
 Access plane data elements                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                             
  | You can \`take planes apart' as well as put them together. Any      
    SPICE plane, regardless of which routine created it, can be         
@@ -309,12 +306,12 @@ Access plane data elements
  the input planes' validity.                                           
                                                                
 Examples                                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                              
                                 
                                                                        
 Converting between representations of planes              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                             
  | The CSPICE plane routines can also be used as a convenient way to   
    convert one representation of a plane to another. For example,      
@@ -330,7 +327,7 @@ Converting between representations of planes
                                                 
                                                                        
 Translating planes                                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                             
  | A \`translation' T is a vector space mapping defined by the         
    relation                                                            
@@ -359,7 +356,7 @@ Translating planes
                                 
                                                                        
 Applying linear transformations to planes                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                             
  | Suppose we have a normal vector N and constant C defining a plane,  
    and we wish to apply a non-singular linear transformation T to the  
@@ -438,7 +435,7 @@ Applying linear transformations to planes
                                                 
                                                                        
 Finding the limb of an ellipsoid                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                             
  | This problem is somewhat artificial, because the SPICE routine      
    `edlimb_c <../cspice/edlimb_c.html>`__ already solves this problem. 
@@ -522,14 +519,14 @@ Finding the limb of an ellipsoid
                                                 
                                                                        
 Header examples                                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                             
  | The headers of the plane routines (see                              
    `planes.req <../req/planes.html>`__) list additional ellipse usage  
    examples.                                                           
                                                                
 Use of ellipses with planes                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                             
  | The nature of geometry problems involving planes often includes use 
    of the SPICE ellipse data type. The example code listed in the      
@@ -538,23 +535,23 @@ Use of ellipses with planes
    solved using both the ellipse and plane data type.                  
                                                                
 Summary of routines                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                   
  | The following table summarizes the CSPICE plane routines.           
                                                                        
  ::                                                                    
                                                                        
-       inedpl_c             Intersection of ellipsoid and plane        
-       inelpl_c             Intersection of ellipse and plane          
-       inrypl_c             Intersection of ray and plane              
-       nvc2pl_c             Normal vector and constant to plane        
-       nvp2pl_c             Normal vector and point to plane           
-       pjelpl_c             Project ellipse onto plane                 
-       pl2nvc_c             Plane to normal vector and constant)       
-       pl2nvp_c             Plane to normal vector and point           
-       pl2psv_c             Plane to point and spanning vectors        
-       psv2pl_c             Point and spanning vectors to plane        
-       vprjp_c              Vector projection onto plane               
-       vprjpi_c             Vector projection onto plane, inverted     
+       inedpl            Intersection of ellipsoid and plane        
+       inelpl            Intersection of ellipse and plane          
+       inrypl            Intersection of ray and plane              
+       nvc2pl            Normal vector and constant to plane        
+       nvp2pl            Normal vector and point to plane           
+       pjelpl            Project ellipse onto plane                 
+       pl2nvc            Plane to normal vector and constant      
+       pl2nvp            Plane to normal vector and point           
+       pl2psv            Plane to point and spanning vectors        
+       psv2pl            Point and spanning vectors to plane        
+       vprjp             Vector projection onto plane               
+       vprjpi            Vector projection onto plane, inverted     
                                                                        
 

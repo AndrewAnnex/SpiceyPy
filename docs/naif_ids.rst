@@ -3,7 +3,7 @@ NAIF Integer ID codes
 =====================
                                                                  
 Abstract                                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The NAIF IDS Required Reading lists all default body ID-name        
   mappings for the SPICE toolkits and a description of functionality  
@@ -11,7 +11,7 @@ Abstract
                                                                       
                                         
 Introduction                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | SPICE system kernels and routines refer to ephemeris objects,       
   reference frames, and instruments by integer codes, usually         
@@ -50,21 +50,21 @@ or other spacecraft for which ID-name mappings are registered. (Here
 an actuality, or was contemplated.) Three cases exist.                
                                                                       
 #. This document and ID-to-name mapping software include both   
-  past and current ID-name mappings for cases where both the old and  
-  the new ID assignments are for spacecraft registered within SPICE.  
-  The last mentioned ID-to-name mapping in this document is the one   
-  that will be used in SPICE software to effect ID-to-name            
-  translations within SPICE-based code.                               
+   past and current ID-name mappings for cases where both the old and  
+   the new ID assignments are for spacecraft registered within SPICE.  
+   The last mentioned ID-to-name mapping in this document is the one   
+   that will be used in SPICE software to effect ID-to-name            
+   translations within SPICE-based code.                               
                                                                       
 #. This document and ID-to-name mapping software contain only a 
-  mapping for the current use of a given ID if prior uses involved    
-  spacecraft never registered with SPICE (e.g. many non-planetary     
-  missions).                                                          
+   mapping for the current use of a given ID if prior uses involved    
+   spacecraft never registered with SPICE (e.g. many non-planetary     
+   missions).                                                          
                                                                       
 #. This document and ID-to-name mapping software contain only a 
-  mapping for a prior use of a given ID if that prior use was for a   
-  spacecraft registered within SPICE and current use of the ID is for 
-  a spacecraft not registered within SPICE.                           
+   mapping for a prior use of a given ID if that prior use was for a   
+   spacecraft registered within SPICE and current use of the ID is for 
+   a spacecraft not registered within SPICE.                           
                                                                       
 For spacecraft the ID-to-name mapping may be a one-to-many mapping,   
 allowing two or more names for a spacecraft to exist for a single     
@@ -79,7 +79,7 @@ needing ID codes. As a result, the current system is a bit eclectic.
                                                                       
                                         
 Use of Code-to-Name/Name-to-Code Mappings from SPICE      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Software exists within the SPICE system that allows a user to       
   easily map between an integer code and the object name that code    
@@ -129,7 +129,7 @@ The boolean \`found' has value true if a mapping look-up succeeded,
 false otherwise.                                                      
                                         
 Use of an External Mapping Definition Kernel              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                 
 | If necessary, a user may elect to load additional name-ID pairs for 
   access by SPICE software. These pairs may be new definitions, or    
@@ -157,19 +157,19 @@ corresponding index of NAIF_BODY_NAME.
 If an external ID kernel is used, be aware of several rules:          
                                                                       
 #. All ID codes MUST be listed in the kernel variable           
-  NAIF_BODY_CODE, and all names MUST be listed in the kernel variable 
-  NAIF_BODY_NAME.                                                     
+   NAIF_BODY_CODE, and all names MUST be listed in the kernel variable 
+   NAIF_BODY_NAME.                                                     
                                                                       
 #. The CSPICE system can access 14983 external name-ID pairs    
-  defined via a text kernel. CSPICE signals an error when the number  
-  of assignments exceeds 14983.                                       
+   defined via a text kernel. CSPICE signals an error when the number  
+   of assignments exceeds 14983.                                       
                                                                       
 #. Names must be no longer than 36 characters. SPICE truncates  
-  characters beyond 36th without signaling an error.                  
+   characters beyond 36th without signaling an error.                  
                                                                       
 #. You may assign an ID code to multiple names. A               
-  `bodc2n_c <../cspice/bodc2n_c.html>`__ call returns the last name   
-  assigned; a last in, first out situation.                           
+   `bodc2n_c <../cspice/bodc2n_c.html>`__ call returns the last name   
+   assigned; a last in, first out situation.                           
                                                                       
 Since NAIF_BODY_CODE and NAIF_BODY_NAME are kernel variables, use of  
 the "+=" notation in the previous example means the values are        
@@ -190,7 +190,7 @@ kernel variable.
                                                                       
                                         
 Masking                                                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                 
 | As of release N53, the SPICE Toolkit provides the user the          
   functionality to override or mask any name/ID mapping. Use a        
@@ -386,7 +386,7 @@ boddef_c assignments persist unless explicitly overridden.
                                                                       
                                         
 NAIF Object ID numbers                                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | In theory, a unique integer can be assigned to each body in the     
   solar system, including interplanetary spacecraft. SPICE uses       
@@ -395,17 +395,17 @@ NAIF Object ID numbers
                                                                       
 #. Space                                                        
                                                                       
-- ```` Integer codes are smaller than alphanumeric names.             
+- Integer codes are smaller than alphanumeric names.             
                                                                       
 #. Uniqueness                                                   
                                                                       
-- ```` The names of some satellites conflict with the names of some   
+- The names of some satellites conflict with the names of some   
   asteroids and comets. Also, some satellites are commonly referred   
   to by names other than those approved by the IAU.                   
                                                                       
 #. Context                                                      
                                                                       
-- ```` The type of a body (barycenter, planet, satellite, comet,      
+- The type of a body (barycenter, planet, satellite, comet,      
   asteroid, or spacecraft) and the system to which it belongs (Earth, 
   Mars, Jupiter, Saturn, Uranus, Neptune, or Pluto) can be recovered  
   algorithmically from the integer code assigned to a body. This is   
@@ -414,7 +414,7 @@ NAIF Object ID numbers
                                                 
                                                                       
 Barycenters                                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                 
 | The smallest positive codes are reserved for the Sun and planetary  
   barycenters:                                                        
@@ -457,7 +457,7 @@ pole axis, etc. Use the planet ID when referring to a planet or any
 property of that planet.                                              
                                         
 Planets and Satellites                                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                 
 | Planets have ID codes of the form P99, where P is 1, ..., 9 (the    
   planetary ID); a planet is always considered to be the 99th         
@@ -656,7 +656,7 @@ this rule.)
                                                 
                                                                       
 Spacecraft                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                 
 | THE SPICE convention uses negative integers as spacecraft ID codes. 
   The code assigned to interplanetary spacecraft is normally the      
@@ -943,7 +943,7 @@ The current SPICE vehicle code assignments:
                                                 
                                                                       
 Earth Orbiting Spacecraft.                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                 
 | If an Earth orbiting spacecraft lacks a DSN identification code,    
   the NAIF ID is derived from the tracking ID assigned to it by NORAD 
@@ -957,7 +957,7 @@ For example, NORAD assigned the code 15427 to the NOAA 9 spacecraft.
 This code corresponds to the NAIF ID -115427.                         
                                         
 Comet Shoemaker Levy 9                                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                 
 | In July, 1992 Comet Shoemaker Levy 9 passed close enough to the     
   planet Jupiter that it was torn apart by gravitational tidal        
@@ -1011,7 +1011,7 @@ fragments P2 and Q1.
                                                 
                                                                       
 Comets                                                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                 
 | ID codes for periodic comets begin at 1000001 and indefinitely      
   continue in sequence. (The current numbering scheme assumes no need 
@@ -1180,7 +1180,7 @@ which accounts for its inclusion in this list.
                                                 
                                                                       
 Asteroids                                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                 
 | According to the original schema, NAIF ID codes for permanently     
   numbered asteroids registered in the JPL Solar System Dynamics      
@@ -1309,7 +1309,7 @@ codes for these asteroids were determined using an older numbering
 convention now abandoned by the SPICE system.                         
                                         
 Ground Stations.                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                 
 | The SPICE system accommodates ephemerides for tracking stations and 
   landed spacecraft. Currently five earth tracking station sites are  
@@ -1367,7 +1367,7 @@ The following NAIF ID codes are assigned.
                                                 
                                                                       
 Inertial and Non-inertial Reference Frames                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                 
 | Please refer to the Frames Required Reading document,               
   `frames.req <../req/frames.html>`__, for detailed information on    
@@ -1375,7 +1375,7 @@ Inertial and Non-inertial Reference Frames
                                                                       
                                         
 Spacecraft Clocks.                                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The ID code used to identify the on-board clock of a spacecraft     
   (spacecraft clock or SCLK) in SPICE software is the same as the ID  
@@ -1392,7 +1392,7 @@ Spacecraft Clocks.
                                                                       
                                         
 Instruments                                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | With regards to a spacecraft, the term \``instrument'' means a      
   science instrument or vehicle structure to which the concept of     
@@ -1412,19 +1412,19 @@ This allows for 1000 instrument assignments on board a spacecraft. An
 application of the instrument ID concept applied to the Voyager 2     
 vehicle (ID -32):                                                     
                                                                       
-- ```` -32000 -> Instrument Scan Platform                             
+- -32000 -> Instrument Scan Platform                             
                                                                       
-- ```` -32001 -> ISSNA (Imaging science narrow angle camera)          
+- -32001 -> ISSNA (Imaging science narrow angle camera)          
                                                                       
-- ```` -32002 -> ISSWA (Imaging science wide angle camera)            
+- -32002 -> ISSWA (Imaging science wide angle camera)            
                                                                       
-- ```` -32003 -> PPS (Photopolarimeter)                               
+- -32003 -> PPS (Photopolarimeter)                               
                                                                       
-- ```` -32004 -> UVSAG (Ultraviolet Spectrometer, Airglow port)       
+- -32004 -> UVSAG (Ultraviolet Spectrometer, Airglow port)       
                                                                       
-- ```` -32005 -> UVSOCC (Ultraviolet Spectrometer, Occultation port)  
+- -32005 -> UVSOCC (Ultraviolet Spectrometer, Occultation port)  
                                                                       
-- ```` -32006 -> IRIS (Infrared Interferometer Spectrometer and       
+- -32006 -> IRIS (Infrared Interferometer Spectrometer and       
   Radiometer)                                                         
                                                                       
 Use SPICE text kernels (usually Instrument or Frames kernels) to      

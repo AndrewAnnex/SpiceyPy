@@ -4,7 +4,7 @@ Reference Frames
 
                                                       
 Abstract                                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | The frames subsystem specifies the relationships of various kinds   
   of reference frames supported by SPICE. This facilitates            
@@ -13,7 +13,7 @@ Abstract
                                      
                                                                       
 Purpose                                                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | This document describes how reference frames are treated within     
   SPICE. The document includes a general discussion of reference      
@@ -24,7 +24,7 @@ Purpose
                                      
                                                                       
 Intended Audience                                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | This document addresses the needs of several groups of users. Users 
   looking for a basic discussion of reference frames and a list of    
@@ -41,14 +41,14 @@ SPICE System'' and \``An Introduction to SPICE.''
                                      
                                                                       
 Using Frames                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 |                                                                     
                                                                       
                                                  
                                                                       
 Frame Functions in CSPICE                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | The SPICE frame subsystem facilitates \``behind-the-scenes'' frame  
   transformations. This allows you to concentrate on questions more   
@@ -59,7 +59,7 @@ Frame Functions in CSPICE
                                      
                                                                       
 Frame Transformation Functions                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Several user-level CSPICE functions require that the user supply    
   the name of a reference frame as one of the inputs to the function. 
@@ -105,7 +105,7 @@ vectors.
                                      
                                                                       
 Frame Information Functions                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The CSPICE frame subsystem contains a set of functions that enable  
   applications to retrieve information about frames known to CSPICE,  
@@ -153,7 +153,7 @@ information on frame specification parameters.
                                      
                                                                       
 Frames Supported in SPICE                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | In both cases -- with the functions requiring specification of a    
   reference frame as one of the inputs (for example                   
@@ -183,7 +183,7 @@ software. Among these frames are:
   the appendix \``built in Inertial Reference Frames'' of this        
   document.                                                           
                                                                       
-- ```` The ICRF is a special case. See the section titled \``ICRF vs  
+- The ICRF is a special case. See the section titled \``ICRF vs  
   J2000'' below.                                                      
                                                                       
 - body-fixed frames based on IAU rotation models provided in   
@@ -245,7 +245,7 @@ follows:
                                                  
                                                                       
 ICRF vs J2000                                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | The International Celestial Reference System (ICRS) defines         
   coordinate axes that are closely aligned with those of the J2000    
@@ -330,7 +330,7 @@ output frame.
                                      
                                                                       
 Kernels Needed For Computing Frame Transformations        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | In many cases data needed to compute transformation of one frame    
   relative to another is stored in SPICE kernels: PCK, CK, FK, and    
@@ -379,7 +379,7 @@ interest are required by most applications.
                                      
                                                                       
 Creating a Frame Kernel                                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | To create a frame kernel you will need to understand the SPICE text 
   kernel file format described in detail in the Kernel Required       
@@ -393,7 +393,7 @@ You will also need to understand the concept of a frame class.
                                      
                                                                       
 Frame Classes                                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | The method by which a frame is related to some other frame is a     
   function of the \``class'' of the frame. You describe the class of  
@@ -401,53 +401,51 @@ Frame Classes
   reference frame classes are enumerated below.                       
                                                                       
 #. Inertial frames. These frames do not rotate with respect to  
-  the star background. They are the frames in which Newton's laws of  
-  motion apply. The class number associated with inertial frames is   
-  1.                                                                  
+   the star background. They are the frames in which Newton's laws of  
+   motion apply. The class number associated with inertial frames is 1.                                                                  
                                                                       
 #. PCK (body-fixed) frames. PCK frames are reference frames     
-  whose orientation with respect to inertial frames is supplied       
-  through either binary or text PCK files. To determine a             
-  transformation to or from a PCK frame, you must load a PCK file     
-  that describes the orientation of the frame with respect to one of  
-  the inertial frames \``built into'' SPICE. The class number         
-  associated with PCK frames is 2.                                    
+   whose orientation with respect to inertial frames is supplied       
+   through either binary or text PCK files. To determine a             
+   transformation to or from a PCK frame, you must load a PCK file     
+   that describes the orientation of the frame with respect to one of  
+   the inertial frames \``built into'' SPICE. The class number         
+   associated with PCK frames is 2.                                    
                                                                       
 #. CK frames. CK frames are reference frames whose orientation  
-  with respect to some other reference frame is supplied via a SPICE  
-  C-kernel. The other reference frame may be any of the four classes  
-  of frames described here. C-kernels use spacecraft clock \``ticks'' 
-  as their basic time unit. Consequently you need to load a           
-  spacecraft clock kernel appropriate for the C-kernel to determine   
-  the transformation from or to a C-kernel frame. In addition you     
-  will need to load a PCK, CK, or TK frame kernel if the \``other''   
-  frame belongs to one of these classes. The class number associated  
-  with CK frames is 3.                                                
+   with respect to some other reference frame is supplied via a SPICE  
+   C-kernel. The other reference frame may be any of the four classes  
+   of frames described here. C-kernels use spacecraft clock \``ticks'' 
+   as their basic time unit. Consequently you need to load a           
+   spacecraft clock kernel appropriate for the C-kernel to determine   
+   the transformation from or to a C-kernel frame. In addition you     
+   will need to load a PCK, CK, or TK frame kernel if the \``other''   
+   frame belongs to one of these classes. The class number associated  
+   with CK frames is 3.                                                
                                                                       
 #. Fixed offset frames. These frames are also called Text       
-  Kernel (TK) frames because they have a constant orientation with    
-  respect to some other reference frame and this orientation is       
-  included in the frame definition provided in a SPICE text kernel.   
-  They may be defined relative to a frame of any of the other classes 
-  of reference frames. The class number associated with TK frames is  
-  4.                                                                  
+   Kernel (TK) frames because they have a constant orientation with    
+   respect to some other reference frame and this orientation is       
+   included in the frame definition provided in a SPICE text kernel.   
+   They may be defined relative to a frame of any of the other classes 
+   of reference frames. The class number associated with TK frames is 4.                                                                  
                                                                       
 #. Dynamic frames. These are time-dependent reference frames    
-  defined via parameters or formulas specified in a frame kernel. The 
-  class number associated with dynamic frames is 5.                   
+   defined via parameters or formulas specified in a frame kernel. The 
+   class number associated with dynamic frames is 5.                   
                                                                       
 #. Switch frames. These are time-dependent frames that choose   
-  at run time other frames with which to align their orientation.     
-  Switch frames \``switch'' the base frames they align with as a      
-  function of time, using a prioritized list of base frames and       
-  optional, associated time bounds; this list is provided as part of  
-  the switch frame definition stored in a text kernel. The class      
-  number associated with switch frames is 6.                          
+   at run time other frames with which to align their orientation.     
+   Switch frames \``switch'' the base frames they align with as a      
+   function of time, using a prioritized list of base frames and       
+   optional, associated time bounds; this list is provided as part of  
+   the switch frame definition stored in a text kernel. The class      
+   number associated with switch frames is 6.                          
                                                                       
                                                  
                                                                       
 Specifying a New Frame                                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | In addition to the data/model needed to specify the orientation of  
   a frame with respect to some other reference frame, you must tell   
@@ -463,7 +461,7 @@ Specifying a New Frame
 #. the SPK ID code or name for the frame center,                
                                                                       
 #. the internal ID code used by the class (CLASS_ID) to refer   
-  to the frame.                                                       
+   to the frame.                                                       
                                                                       
 The rules for selecting these items are given in the next section,    
 but for the moment let's assume that the rules have been obeyed and   
@@ -496,14 +494,14 @@ kernels.
                                      
                                                                       
 Guidelines for Frame Specification                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 |                                                                     
                                                                       
                                                  
                                                                       
 Selecting a Name                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The name chosen for a frame must not exceed 26 characters taken     
   from the set including uppercase letters, numbers, underscore, and  
@@ -522,7 +520,7 @@ Selecting a Name
                                      
                                                                       
 Selecting a Frame ID                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | What you choose for a frame ID depends upon the class of the frame. 
                                                                       
@@ -554,7 +552,7 @@ without consultation with NAIF, select an integer in the range from
                                      
                                                                       
 Selecting the Class                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | This is usually the easiest part of specifying a frame. Presumably  
   you know how the orientation of the frame with respect to some      
@@ -565,7 +563,7 @@ Selecting the Class
                                      
                                                                       
 Selecting the Center                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | A frame is used to specify the orientation of some object. The      
   frame consists of a set of coordinate axes relative to some point   
@@ -592,7 +590,7 @@ a TK or CK frame associated with it.
                                      
                                                                       
 Selecting a Class ID                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | A frame's \``CLASS_ID'' is an integer used internally by CSPICE     
   software. It is the integer code used by the CSPICE reference frame 
@@ -617,7 +615,7 @@ match the frame ID.
                                      
                                                                       
 Frame IDs Reserved for Public Use                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The range 1400000 to 2000000 has been set aside by NAIF as ranges   
   of Frame IDs that can be used freely by SPICE users without fear of 
@@ -629,7 +627,7 @@ Frame IDs Reserved for Public Use
                                      
                                                                       
 Why have a Frame ID and a Class ID?                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | When the CSPICE software receives a request to compute a frame      
   transformation, it first translates the name of the frame to the    
@@ -657,7 +655,7 @@ can be carried out.
                                      
                                                                       
 Putting the Pieces Together                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | Once you've determined the name, ID code, center, class and class   
   ID of your frame, you create the frame specification by filling in  
@@ -698,7 +696,7 @@ kernel containing your frame specification is contained in the file
                                                  
                                                                       
 Connecting an Object to its Body-fixed Frame              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | Every extended object has both a position and orientation in space. 
   The SPICE ephemeris subsystem (SPK) allows you to specify the       
@@ -751,7 +749,7 @@ Body-Fixed Reference Frames'' appendix of this document.
                                      
                                                                       
 The rest of the frame information                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | The information supplied in the frame specification tells the SPICE 
   system where to look for a particular frame model. However, the     
@@ -763,7 +761,7 @@ The rest of the frame information
                                      
                                                                       
 Inertial Frames                                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | Inertial frames are \``built into'' the SPICE system via the        
   routine chgirf\_. Only the frames defined in that routine are       
@@ -779,7 +777,7 @@ on how to create a frame alias using a TK frame.
                                      
                                                                       
 PCK Frames                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | If you specify a PCK frame, you will need to load either a text or  
   binary PCK file for the body with which the frame is associated.    
@@ -789,7 +787,7 @@ PCK Frames
                                      
                                                                       
 CK Frames                                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | If a frame is defined as a CK frame, you will need both a C-kernel  
   for the structure identified by the FRAME\_..._CLASS_ID variable    
@@ -800,7 +798,7 @@ CK Frames
                                      
                                                                       
 SCLK and SPK ID codes                                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | For many C-kernels, the spacecraft clock and spacecraft ID codes    
   can be determined by performing an integer division of the C-kernel 
@@ -842,7 +840,7 @@ CK\_..._SPK variable definitions for the 'WALDO' frame.
                                                  
                                                                       
 TK Frames                                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | The relationship between a constant offset Text Kernel (TK) frame   
   and the frame it is offset from is given via a text kernel that can 
@@ -874,14 +872,14 @@ specification information described above. This rotation data can be
 provided in any of three ways:                                        
                                                                       
 #. as a 3 by 3 matrix, M, that converts vectors from the TK     
-  frame to the RELATIVE frame by left multiplication                  
+   frame to the RELATIVE frame by left multiplication                  
                                                                       
 ::                                                                    
                                                                       
                   V_relative = M * V_tkframe                          
                                                                       
 #. as a set of 3 Euler angles and axes that can be used to      
-  produce M                                                           
+   produce M                                                           
                                                                       
 #. as a SPICE-style quaternion representing M.                  
                                                                       
@@ -912,7 +910,7 @@ one of the following sets of kernel pool variables.
                                      
                                                                       
 Defining a TK Frame Using a Matrix                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | If you've chosen to define the rotation using a matrix, supply the  
   matrix using the kernel pool variable assignment below:             
@@ -955,7 +953,7 @@ would supply the following information in a text kernel.
                                                  
                                                                       
 Defining a TK Frame Using Euler Angles                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | If you've chosen to define a TK frame as a sequence of three Euler  
   angle rotations about specified coordinate axes, you need to supply 
@@ -966,8 +964,8 @@ Defining a TK Frame Using Euler Angles
 #. The axes about which the Euler rotations are performed;      
                                                                       
 #. The units associated with the three Euler angles. The        
-  recognized units are: 'DEGREES', 'RADIANS', 'ARCSECONDS',           
-  'ARCMINUTES' 'HOURANGLE', 'MINUTEANGLE', 'SECONDANGLE'.             
+   recognized units are: 'DEGREES', 'RADIANS', 'ARCSECONDS',           
+   'ARCMINUTES' 'HOURANGLE', 'MINUTEANGLE', 'SECONDANGLE'.             
                                                                       
 This information is supplied to the SPICE system using the kernel     
 pool variables shown below.                                           
@@ -1071,7 +1069,7 @@ this topocentric frame.
                                      
                                                                       
 Defining a TK Frame Using a SPICE-style Quaternion        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | If you've chosen to define a TK frame using a SPICE-style           
   quaternion, supply the quaternion using the kernel pool variable    
@@ -1098,7 +1096,7 @@ White Paper'' available from NAIF.
                                      
                                                                       
 Gaining Flexibility via TK Frames                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | The use of non-inertial frames gives you an easy means of creating  
   ephemerides for points on the surface of a body such as the Earth,  
@@ -1154,7 +1152,7 @@ limiting how various kernels can be used.
                                      
                                                                       
 Dynamic Frames                                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | In CSPICE documentation, the term \``dynamic frame'' designates a   
   time-dependent reference frame defined via a frame kernel.          
@@ -1189,7 +1187,7 @@ popular dynamic frames.
                                      
                                                                       
 Parameterized Dynamic Frame Families                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | The \``family'' to which a parameterized dynamic frame belongs      
   indicates the underlying mathematical formula by which the frame is 
@@ -1230,7 +1228,7 @@ Parameterized Dynamic Frame Families
                                                  
                                                                       
 Notation                                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | A lower case letter \`x' is used to designate the cross product     
   operator, as in                                                     
@@ -1265,7 +1263,7 @@ Examples are:
                                                  
                                                                       
 Required Keywords for Parameterized Dynamic Frames        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | All parameterized dynamic frame kernel definitions contain the      
   assignments shown here:                                             
@@ -1330,14 +1328,14 @@ family to which a dynamic frame belongs. These are discussed below.
                                      
                                                                       
 Conditional Keywords for Parameterized Dynamic Frames     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 |                                                                     
                                                                       
                                                  
                                                                       
 Rotation State                                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | A parameterized dynamic frame definition can specify a frame's      
   \``rotation state'' as \``rotating'' or \``inertial.'' Rotating     
@@ -1420,7 +1418,7 @@ frame cannot be frozen; these options are mutually exclusive.
                                      
                                                                       
 Freeze Epoch                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | A parameterized dynamic frame definition can specify a frame as     
   \``frozen'' at a particular epoch. The rotation between a frozen    
@@ -1497,7 +1495,7 @@ cannot be specified; these options are mutually exclusive.
                                      
                                                                       
 Two-Vector Frames                                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | Two-vector frames use two user-specified, non-parallel vectors to   
   define the mutually orthogonal axes of a right-handed reference     
@@ -1594,11 +1592,11 @@ elements of two-vector frame specifications.
                                      
                                                                       
 Defining a Two-Vector Frame in a Frame Kernel             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                                                   
                                                                       
 Kernel Availability                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | In the following discussion, for brevity, we will use the term      
   \``computable'' to describe frames whose definitions are known to   
@@ -1616,7 +1614,7 @@ containing rotational elements for TITAN has been loaded.
                                      
                                                                       
 Specifying the Base Frame                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | When a two-vector frame F is defined with a base frame F_BASE, and  
   when the necessary kernels are loaded, the transformation between F 
@@ -1659,7 +1657,7 @@ Vectors'' and \``Velocity Vectors'' for details.
                                      
                                                                       
 Specifying the Frame Family                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Definitions of two-vector frames include the frame family           
   specification:                                                      
@@ -1673,7 +1671,7 @@ secondary vectors and relate these vectors to the frame's axes.
                                      
                                                                       
 Specifying the Rotation state or Freeze Epoch             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | These specifications are optional for two-vector frames. See the    
   section above titled \``Conditional Keywords for Parameterized      
@@ -1682,7 +1680,7 @@ Specifying the Rotation state or Freeze Epoch
                                      
                                                                       
 Specifying the Angular Separation Tolerance               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | This specification applies only to two-vector frames and is         
   optional. To diagnose near-degenerate geometry, specifically cases  
@@ -1704,7 +1702,7 @@ separation tolerance, CSPICE uses a default value of one milliradian.
                                      
                                                                       
 Frame Axis Labels                                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The primary defining vector is associated with a frame axis via the 
   assignment                                                          
@@ -1742,7 +1740,7 @@ implied or explicit sign.
                                      
                                                                       
 Vector Specifications                                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | The vectors used to define a two-vector frame are specified by      
   geometric means. Each defining vector may be any of:                
@@ -1780,7 +1778,7 @@ of keywords described below.
                                      
                                                                       
 Observer-Target Position Vectors                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | An observer-target position vector is simply the position of one    
   ephemeris object relative to another. These vectors are defined by  
@@ -1822,7 +1820,7 @@ Definition Examples.''
                                      
                                                                       
 Target Near point Vectors                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Target near point vectors point from an observer to the closest     
   point on an extended target body to the observer.                   
@@ -1860,7 +1858,7 @@ Orbiting Spacecraft'' in the appendix \``Frame Definition Examples.''
                                      
                                                                       
 Observer-Target Velocity Vectors                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | An observer-target velocity vector is the velocity portion of the   
   state of one ephemeris object relative to another. These vectors    
@@ -1926,7 +1924,7 @@ Definition Examples.''
                                      
                                                                       
 Constant Vectors                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Constant vectors are defined by specifying a reference frame and a  
   vector expressed relative to that frame. Optionally, aberration     
@@ -2050,7 +2048,7 @@ appendix \``Frame Definition Examples.''
                                      
                                                                       
 Mean Equator and Equinox of Date Frames                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | Mean Equator and Equinox of Date Frames are defined for a solar     
   system body (for example, a planet) using mathematical models of    
@@ -2079,17 +2077,14 @@ precession model for the earth.
                                                                       
                                      
                                                                       
-Defining a Mean Equator and Equinox of Date Frame in a    
-   Frame Kernel                                                       
-   :name                                                              
-: defining-a-mean-equator-and-equinox-of-date-frame-in-a-frame-kernel 
+Defining a Mean Equator and Equinox of Date Frame in a Frame Kernel                                                       
                                                                     
 |                                                                     
                                                                       
                                                  
                                                                       
 Specifying the Base Frame                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The base frame of a mean equator and equinox of date frame is a     
   function of the precession model. For the 1976 IAU earth precession 
@@ -2103,7 +2098,7 @@ Specifying the Base Frame
                                                  
                                                                       
 Specifying the Frame Family                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | A mean equator and equinox of date frame is identified by frame     
   family specification:                                               
@@ -2115,7 +2110,7 @@ Specifying the Frame Family
                                                  
                                                                       
 Specifying the Precession Model                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The 1976 IAU precession model is \``selected'' via the assignment:  
                                                                       
@@ -2126,7 +2121,7 @@ Specifying the Precession Model
                                                  
                                                                       
 Specifying a Rotation State or Freeze Epoch               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Although mean equator and equinox of date frames are, strictly      
   speaking, non-inertial, their time variation may be very slow. In   
@@ -2154,7 +2149,7 @@ Frames'' in the appendix \``Frame Definition Examples.''
                                      
                                                                       
 True Equator and Equinox of Date Frames                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | True Equator and Equinox of Date Frames may be viewed as a          
   refinement of mean equator and equinox of date frames. The term     
@@ -2170,10 +2165,7 @@ True Equator and Equinox of Date Frames
                                                                       
                                      
                                                                       
-Defining a True Equator and Equinox of Date Frame in a    
-   Frame Kernel                                                       
-   :name                                                              
-: defining-a-true-equator-and-equinox-of-date-frame-in-a-frame-kernel 
+Defining a True Equator and Equinox of Date Frame in a Frame Kernel                                                                                                             
                                                                     
 | True Equator and Equinox of date frame definitions are nearly       
   identical to those for mean of date frames (see above): the only    
@@ -2183,7 +2175,7 @@ Defining a True Equator and Equinox of Date Frame in a
                                      
                                                                       
 Specifying the Base Frame                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The base frame of a true equator and equinox of date frame is a     
   function of the precession model. For the 1976 IAU earth precession 
@@ -2197,7 +2189,7 @@ Specifying the Base Frame
                                                  
                                                                       
 Specifying the Frame Family                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | A true equator and equinox of date frame is identified by frame     
   family specification:                                               
@@ -2209,7 +2201,7 @@ Specifying the Frame Family
                                                  
                                                                       
 Specifying the Precession Model                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Currently CSPICE supports only one precession model: the 1976 IAU   
   precession model for the earth.                                     
@@ -2223,7 +2215,7 @@ The 1976 IAU precession model is \``selected'' via the assignment:
                                                  
                                                                       
 Specifying the Nutation Model                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The choice of nutation model is specified by the assignment:        
                                                                       
@@ -2241,7 +2233,7 @@ form:
                                                  
                                                                       
 Specifying a Rotation State or Freeze Epoch               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Although true equator and equinox of date frames are, strictly      
   speaking, non-inertial, their time variation may be very slow. In   
@@ -2269,7 +2261,7 @@ Frames'' in the appendix \``Frame Definition Examples.''
                                      
                                                                       
 Mean Ecliptic and Equinox of Date Frames                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | Mean Ecliptic and Equinox of Date Frames are closely related to     
   mean equator and equinox of date frames: for a given body, the      
@@ -2288,10 +2280,8 @@ axes are evaluated at a specified epoch.
                                                                       
                                      
                                                                       
-Defining a Mean Ecliptic and Equinox of Date Frame in a   
-   Frame Kernel                                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- defining-a-mean-ecliptic-and-equinox-of-date-frame-in-a-frame-kernel 
+Defining a Mean Ecliptic and Equinox of Date Frame in a Frame Kernel                                                       
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | Mean Ecliptic and Equinox of date frame definitions are nearly      
   identical to those for mean of date frames (see above): the only    
@@ -2301,7 +2291,7 @@ Defining a Mean Ecliptic and Equinox of Date Frame in a
                                      
                                                                       
 Specifying the Base Frame                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The base frame of a mean ecliptic and equinox of date frame is a    
   function of the precession model. For the 1976 IAU earth precession 
@@ -2315,7 +2305,7 @@ Specifying the Base Frame
                                                  
                                                                       
 Specifying the Frame Family                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | A mean ecliptic and equinox of date frame is identified by frame    
   family specification:                                               
@@ -2327,7 +2317,7 @@ Specifying the Frame Family
                                                  
                                                                       
 Specifying the Precession Model                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Currently CSPICE supports only one precession model: the 1976 IAU   
   precession model for the earth.                                     
@@ -2341,7 +2331,7 @@ The 1976 IAU precession model is \``selected'' via the assignment:
                                                  
                                                                       
 Specifying the Mean Obliquity Model                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The choice of mean obliquity model is specified by the assignment:  
                                                                       
@@ -2359,7 +2349,7 @@ has the form:
                                                  
                                                                       
 Specifying a Rotation State or Freeze Epoch               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Although mean ecliptic and equinox of date frames are, strictly     
   speaking, non-inertial, their time variation may be very slow. In   
@@ -2387,7 +2377,7 @@ Frames'' in the appendix \``Frame Definition Examples.''
                                      
                                                                       
 Euler Frames                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | An Euler frame is defined by a sequence of rotation axes and        
   corresponding time-dependent Euler angles. Each angle is defined by 
@@ -2465,13 +2455,13 @@ The base frame can be constructed from the Euler frame via a sequence
 of Euler angle rotations as follows:                                  
                                                                       
 #. Rotate the axes of the Euler frame by angle_3 about the axis 
-  indexed by axindx_3.                                                
+   indexed by axindx_3.                                                
                                                                       
 #. Rotate the axes of the frame resulting from the first        
-  rotation by angle_2 about the axis indexed by axindx_2.             
+   rotation by angle_2 about the axis indexed by axindx_2.             
                                                                       
 #. Rotate the axes of the frame resulting from the second       
-  rotation by angle_1 about the axis indexed by axindx_1.             
+   rotation by angle_1 about the axis indexed by axindx_1.             
                                                                       
 The resulting set of axes are those of the base frame.                
 The rotation angles are defined as follows: letting t0 represent the  
@@ -2509,14 +2499,14 @@ left.
                                      
                                                                       
 Defining an Euler Frame in a Frame Kernel                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 |                                                                     
                                                                       
                                                  
                                                                       
 Specifying the Base Frame                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The base frame of an Euler frame is specified via the assignment:   
                                                                       
@@ -2527,7 +2517,7 @@ Specifying the Base Frame
                                                  
                                                                       
 Specifying the Frame Family                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | An Euler frame is identified by frame family specification:         
                                                                       
@@ -2538,7 +2528,7 @@ Specifying the Frame Family
                                                  
                                                                       
 Specifying the Epoch                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The zero epoch for the independent variable of the polynomials is   
   defined using the SPICE text kernel calendar ephemeris time syntax. 
@@ -2561,7 +2551,7 @@ further information.
                                      
                                                                       
 Specifying the Euler Angles                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Euler angles are specified by an axis sequence, a set of polynomial 
   coefficients, and associated units. The axes are specified by an    
@@ -2623,7 +2613,7 @@ Examples.''
                                      
                                                                       
 Product Frames                                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | Product frames may be thought of as a generalization of TK frames.  
   The orientation of a product frame relative to a specified base     
@@ -2689,14 +2679,14 @@ require a level of recursion in order to evaluate their orientation.
                                      
                                                                       
 Defining a Product Frame in a Frame Kernel                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 |                                                                     
                                                                       
                                                  
                                                                       
 Specifying the Base Frame                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The base frame of a product frame is specified via the assignment:  
                                                                       
@@ -2707,7 +2697,7 @@ Specifying the Base Frame
                                                  
                                                                       
 Specifying the Frame Family                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | A product frame is identified by frame family specification:        
                                                                       
@@ -2718,7 +2708,7 @@ Specifying the Frame Family
                                                  
                                                                       
 Specifying the Factors                                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The factor transformations are specified by the kernel variable     
   assignments                                                         
@@ -2743,14 +2733,14 @@ right-to-left order: the factor defined by the frames indexed by
                                      
                                                                       
 Dynamic Frame Implementation Considerations               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 |                                                                     
                                                                       
                                                  
                                                                       
 Introduction                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | This chapter discusses issues affecting implementation of dynamic   
   frames:                                                             
@@ -2771,14 +2761,14 @@ could be changed in a future version of the CSPICE Toolkit.
                                      
                                                                       
 Simulated Recursion                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 |                                                                     
                                                                       
                                                  
                                                                       
 The Need for Recursion in the CSPICE Frame Subsystem      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | In the following discussion, we'll use the graph notation below to  
   indicate that function A calls function B:                          
@@ -2816,7 +2806,7 @@ of the frame subsystem.
                                      
                                                                       
 Implementation of Limited Simulated Recursion             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | SPICELIB solves the recursion problem by providing renamed          
   duplicates of routines that must be called recursively. For         
@@ -2847,7 +2837,7 @@ we'll omit the qualifier \``simulated.''
                                      
                                                                       
 Limits on Recursion in Frame Definitions                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | We say a reference frame is \``evaluated'' when the transformation  
   from the frame to its base frame is computed for some epoch. A      
@@ -2892,7 +2882,7 @@ equinox of date frame.
                                      
                                                                       
 Frame Derivative Accuracy                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | Transformation of state vectors between frames F1 and F2 via a      
   time-dependent rotation R(t) requires the derivative with respect   
@@ -2928,7 +2918,7 @@ Frame Derivative Accuracy
                                                  
                                                                       
 Degenerate Geometry                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | Two-vector frame definitions can suffer from singularities: the     
   defining vectors may, in some cases, become extremely close to      
@@ -2949,7 +2939,7 @@ details.
                                      
                                                                       
 Efficiency Concerns                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | In many cases, when recursion is required by a frame evaluation,    
   that evaluation requires a relatively large amount of computation.  
@@ -2968,7 +2958,7 @@ non-dynamic, non-inertial frames to dynamic frames.
                                      
                                                                       
 Switch Frames                                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | Switch frames choose at run time other frames, called \``base       
   frames,'' with which to align their orientation. Switch frames      
@@ -3023,7 +3013,7 @@ frame are those of the selected base frame.
                                      
                                                                       
 Specifying Switch Frames                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | As with other frame classes, switch frames require a frame name,    
   frame ID code, frame class ID code, and center. It is recommended   
@@ -3041,7 +3031,7 @@ Specifying Switch Frames
                                                  
                                                                       
 The Base Frame List                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The next part of the specification is the prioritized base frame    
   list:                                                               
@@ -3070,7 +3060,7 @@ intervals.
                                      
                                                                       
 Time Intervals Associated with Base Frames                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Optional time intervals associated with base frames are specified   
   by two kernel variables, respectively containing start and stop     
@@ -3126,7 +3116,7 @@ readability.
                                      
                                                                       
 Binary Search                                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | To improve efficiency of base frame selection for a given switch    
   frame and request time, the switch frame subsystem may perform a    
@@ -3154,7 +3144,7 @@ case the preceding interval will be checked for data availability.
                                      
                                                                       
 Switch Frame Connections                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | Connections between switch frames and other frames are made by the  
   CSPICE functions frmget_c and rotget_c. If either of these          
@@ -3188,7 +3178,7 @@ Switch Frame Connections
                                                  
                                                                       
 Switch Frame Buffering                                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | The switch frame subsystem buffers switch frame specifications in a 
   form suitable for efficient use. Expensive operations such as       
@@ -3211,14 +3201,14 @@ in future versions of CSPICE.
                                                  
                                                                       
 Appendix. \``Built in'' Inertial Reference Frames         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 |                                                                     
                                                                       
                                                  
                                                                       
 Complete List of \``Built in'' Inertial Reference Frames  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | SPICE software includes the definitions of several inertial         
   reference frames. The numeric IDs and names of the inertial frames  
@@ -3416,7 +3406,7 @@ Complete List of \``Built in'' Inertial Reference Frames
                                                  
                                                                       
 Inertial Reference Frame References                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
                                                                       
 ::                                                                    
@@ -3450,7 +3440,7 @@ Inertial Reference Frame References
                                                  
                                                                       
 Low Level Inertial Reference Frame Functions              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | You may obtain the rotation between any two \``built in'' inertial  
   frames using the CSPICE function irfrot_c and supplying the IDs for 
@@ -3492,7 +3482,7 @@ This example shows how to find the name corresponding to ID 11:
 Appendix. \``Built in'' PCK-Based IAU Body-Fixed          
    Reference Frames                                                   
                                                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | SPICE software includes the definitions of body-fixed frames for    
   all natural bodies -- planets, satellites, and some asteroids --    
@@ -3625,7 +3615,7 @@ Appendix. \``Built in'' PCK-Based IAU Body-Fixed
                                                  
                                                                       
 Appendix. High Precision Earth Fixed Frames               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | In addition to the text PCK based IAU body-fixed frame for Earth,   
   'IAU_EARTH', these two body-fixed frames for Earth are also         
@@ -3648,9 +3638,8 @@ via TK Frames'' for a discussion of the use of TK frames.
                                                                       
                                      
                                                                       
-Appendix. Frame Identifiers Reserved for Earth Fixed      
-   Frames                                                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Appendix. Frame Identifiers Reserved for Earth Fixed Frames                                                             
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | NAIF has set aside a range of frame ID codes for Earth fixed frames 
   to be added in the future when/if additional high precision Earth   
@@ -3701,7 +3690,7 @@ with the specified frame ID.
                                      
                                                                       
 Appendix. Frame Definition Examples                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | Below are examples that you can modify to create frame              
   specifications for similar situations.                              
@@ -3709,7 +3698,7 @@ Appendix. Frame Definition Examples
                                      
                                                                       
 Inertial Frames                                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | Inertial (class 1) frames cannot be defined in frame kernels; in    
   particular, built-in definitions of class 1 frames cannot be        
@@ -3721,7 +3710,7 @@ creating aliases using TK frames.
                                      
                                                                       
 PCK Frames                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | This definition shows how you create a frame definition for the     
   asteroid Eros. Note we also define which frame is associated with   
@@ -3744,7 +3733,7 @@ PCK Frames
                                                  
                                                                       
 CK Frames                                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | This definition shows how you create a frame definition for the MGS 
   spacecraft. Note this frame definition includes the appropriate     
@@ -3771,14 +3760,14 @@ CK Frames
                                                  
                                                                       
 TK frames                                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | Examples of different uses of TK frames are shown below.            
                                                                       
                                      
                                                                       
 TK frame --- Alias                                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | This example shows how you can make up an alias for a frame using a 
   TK frame. Note we make the reference frame to associate with Mars   
@@ -3813,7 +3802,7 @@ TK frame --- Alias
                                                  
                                                                       
 TK frame --- Topographic                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | This example shows how you could create a topographic frame for the 
   DSN Station DSS-17.                                                 
@@ -3869,7 +3858,7 @@ TK frame --- Topographic
                                                  
                                                                       
 TK frame --- Instrument                                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | This example shows how you could create a TK frame for the Medium   
   Resolution Imager (MRI) instrument on-board the Deep Impact Flyby   
@@ -3913,27 +3902,27 @@ transformation from the MRI frame to the spacecraft frame.
                                                  
                                                                       
 Examples of Two-Vector Parameterized Dynamic Frames       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 |                                                                     
                                                                       
                                                  
                                                                       
 Geocentric Solar Ecliptic (GSE) Frame                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Definition of the Geocentric Solar Ecliptic frame:                  
                                                                       
-- ```` All vectors are geometric: no aberration corrections are used. 
+- All vectors are geometric: no aberration corrections are used. 
                                                                       
-- ```` The position of the sun relative to the earth is the primary   
+- The position of the sun relative to the earth is the primary   
   vector: the X axis points from the earth to the sun.                
                                                                       
-- ```` The inertially referenced velocity of the sun relative to the  
+- The inertially referenced velocity of the sun relative to the  
   earth is the secondary vector: the Y axis is the component of this  
   velocity vector orthogonal to the X axis.                           
                                                                       
-- ```` The Z axis is X cross Y, completing the right-handed reference 
+- The Z axis is X cross Y, completing the right-handed reference 
   frame.                                                              
                                                                       
 The GSE frame can be defined using the following assignments, where   
@@ -3963,16 +3952,16 @@ The GSE frame can be defined using the following assignments, where
                                                  
                                                                       
 Geocentric Solar Magnetospheric (GSM) Frame               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Definition of the Geocentric Solar Magnetospheric frame:            
                                                                       
-- ```` All vectors are geometric: no aberration corrections are used. 
+- All vectors are geometric: no aberration corrections are used. 
                                                                       
-- ```` The position of the sun relative to the earth is the primary   
+- The position of the sun relative to the earth is the primary   
   vector: the X axis points from the earth to the sun.                
                                                                       
-- ```` The earth's geomagnetic centered north dipole vector is        
+- The earth's geomagnetic centered north dipole vector is        
   secondary: the Z axis is the component of this vector orthogonal to 
   the X axis. For the purpose of this definition, we treat the dipole 
   vector as constant in the IAU_EARTH body-fixed frame. Note that in  
@@ -3980,7 +3969,7 @@ Geocentric Solar Magnetospheric (GSM) Frame
   dipole is actually time-varying; the values shown here may be       
   unsuitable for your application.                                    
                                                                       
-- ```` The Y axis direction is the cross product of the Z-axis and    
+- The Y axis direction is the cross product of the Z-axis and    
   the X-axis.                                                         
                                                                       
 The GSM frame can be defined using the following assignments, where   
@@ -4011,20 +4000,20 @@ The GSM frame can be defined using the following assignments, where
                                                  
                                                                       
 Mercury Solar Equatorial (MSEQ) Frame                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Definition of the Mercury Solar Equatorial Frame:                   
                                                                       
-- ```` All vectors are geometric: no aberration corrections are used. 
+- All vectors are geometric: no aberration corrections are used. 
                                                                       
-- ```` The sun's north spin axis direction is primary: the Z axis of  
+- The sun's north spin axis direction is primary: the Z axis of  
   the MSEQ frame is aligned with this spin axis.                      
                                                                       
-- ```` The position of the Sun relative to Mercury is secondary: the  
+- The position of the Sun relative to Mercury is secondary: the  
   Y axis is aligned with the component of this position orthogonal to 
   the Z axis.                                                         
                                                                       
-- ```` The X axis direction is the cross product of the Y axis and Z  
+- The X axis direction is the cross product of the Y axis and Z  
   axis.                                                               
                                                                       
 All vectors are geometric: no aberration corrections are used.        
@@ -4055,19 +4044,19 @@ The MSEQ frame can be defined using the following assignments, where
                                                  
                                                                       
 Example: Nadir Frame for Mars Orbiting Spacecraft         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Definition of the nadir frame:                                      
                                                                       
-- ```` All vectors are geometric: no aberration corrections are used. 
+- All vectors are geometric: no aberration corrections are used. 
                                                                       
-- ```` The Z axis points from the spacecraft to the closest point on  
+- The Z axis points from the spacecraft to the closest point on  
   Mars.                                                               
                                                                       
-- ```` The component of inertially referenced spacecraft velocity     
+- The component of inertially referenced spacecraft velocity     
   vector orthogonal to Z is aligned with the -X axis.                 
                                                                       
-- ```` The Y axis is the cross product of the Z axis and the X axis.  
+- The Y axis is the cross product of the Z axis and the X axis.  
                                                                       
 This nadir frame can be defined using the following assignments,      
 where                                                                 
@@ -4110,7 +4099,7 @@ where
                                                  
                                                                       
 Example: Roll-Celestial Spacecraft Frame                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | There are a variety of roll-celestial frames in use. This example   
   may not match frame definitions used for any specific flight        
@@ -4119,10 +4108,10 @@ Example: Roll-Celestial Spacecraft Frame
                                                                       
 Definition of the roll-celestial frame:                               
                                                                       
-- ```` The Z axis points from the spacecraft to the earth. This       
+- The Z axis points from the spacecraft to the earth. This       
   vector is geometric (uncorrected).                                  
                                                                       
-- ```` The component of an inertially referenced star direction       
+- The component of an inertially referenced star direction       
   vector orthogonal to the Z axis is the X axis. The star direction   
   is provided by a specified star catalog in the form of right        
   ascension and declination relative to the J2000 frame. If           
@@ -4130,7 +4119,7 @@ Definition of the roll-celestial frame:
   motion and parallax. This star direction vector is corrected for    
   stellar aberration using the spacecraft as the observer.            
                                                                       
-- ```` The Y axis is the cross product of the Z axis and the X axis.  
+- The Y axis is the cross product of the Z axis and the X axis.  
                                                                       
 This roll-celestial frame can be defined using the following          
 assignments, where                                                    
@@ -4176,14 +4165,14 @@ assignments, where
                                                  
                                                                       
 Examples of Mean Equator and Equinox of Date Frames       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 |                                                                     
                                                                       
                                                  
                                                                       
 Earth Mean Equator and Equinox of Date Frames             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Definition of a non-inertial Earth Mean Equator and Equinox of Date 
   frame using 1976 IAU precession model. Here <frame_name> must be    
@@ -4239,13 +4228,13 @@ inertial frame B1950 to round-off level:
                                                  
                                                                       
 Examples of True Equator and Equinox of Date Frames       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | Definition of the Earth True Equator and Equinox of Date frame:     
                                                                       
-- ```` The earth precession model is the 1976 IAU model.              
+- The earth precession model is the 1976 IAU model.              
                                                                       
-- ```` The earth nutation model is the 1980 IAU model.                
+- The earth nutation model is the 1980 IAU model.                
                                                                       
 Here <frame_name> must be replaced by a string containing the name of 
 the frame, and <frame_ID> must be replaced by an integer ID code:     
@@ -4300,13 +4289,13 @@ Definition for the frozen version of the above frame, where the
                                                  
                                                                       
 Example of a Mean Ecliptic and Equinox of Date Frame      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | Definition of the Earth Mean Ecliptic and Equinox of Date frame:    
                                                                       
-- ```` The earth precession model is the 1976 IAU model.              
+- The earth precession model is the 1976 IAU model.              
                                                                       
-- ```` The earth mean obliquity model is the 1980 IAU model.          
+- The earth mean obliquity model is the 1980 IAU model.          
                                                                       
 Here <frame_name> must be replaced by a string containing the name of 
 the frame, and <frame_ID> must be replaced by an integer ID code:     
@@ -4361,7 +4350,7 @@ Definition for the frozen version of the above frame, where the
                                                  
                                                                       
 Example of an Euler Frame                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | As an example, we construct an Euler frame called IAU_MARS_EULER.   
   Frame IAU_MARS_EULER is mathematically identical to the PCK frame   
@@ -4447,14 +4436,14 @@ Then our frame definition is:
                                                  
                                                                       
 Examples of Product Frames                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 |                                                                     
                                                                       
                                                  
                                                                       
 IAU_EARTH Frame, Augmented with Nutation Model            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The example shown here is not realistic; it is provided only to     
   show how to create a product frame specification.                   
@@ -4548,7 +4537,7 @@ as a source of accurate Earth orientation data.
                                      
                                                                       
 Dog-Leg Frame for Saturn                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | A \``Dog-Leg'' frame for Saturn is a realistic application of       
   product frames. The specification of this frame is quite complex.   
@@ -4557,14 +4546,14 @@ Dog-Leg Frame for Saturn
                                      
                                                                       
 Examples of Switch Frames                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
 | In the examples below, all frame names and ID codes are fictitious. 
                                                                       
                                      
                                                                       
 Switch Frame Using Reconstructed and Predict CKs          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | In this example, a switch frame uses distinct CK base frames for    
   reconstructed and predicted data. The two CK frames use different   
@@ -4648,7 +4637,7 @@ would be -123601 and -123602 respectively. Using those IDs in the
                                      
                                                                       
 Switch Frame Using CK and Dynamic Frames                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | This switch frame uses CK frames for reconstructed and predicted    
   data as in the previous example, and it uses dynamic frames         
@@ -4728,7 +4717,7 @@ define the interval start times using the assignment
                                                  
                                                                       
 Predicted Attitude Profile for Observation Planning       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | In this example, a sequence of base frames provides nominal         
   predicted pointing, over a short time period, for a spacecraft      

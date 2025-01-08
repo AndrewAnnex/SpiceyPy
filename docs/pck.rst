@@ -4,7 +4,7 @@ PCK Required Reading
                                                                         
                                                                        
 Abstract                                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                                                                                                    
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                                                                                                    
  | The Planetary Constants Kernel (PCK) subsystem provides             
    cartographic and physical constants data for Solar System bodies.   
    CSPICE software uses these data when determining observation        
@@ -12,12 +12,12 @@ Abstract
    natural satellites, comets, and asteroids.                          
                                                                
 Intended Audience                                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
  | This document is recommended reading for all users of PCK files.    
                                                                                                                                                                       
 References                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
                                                                        
 #. KERNEL Required Reading                                      
@@ -56,7 +56,7 @@ References
                                                  
                                                                        
 Introduction                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                
  | The functionality of the PCK subsystem is supplied by data files    
    called \``PCK files'' (or PCKs) and by CSPICE subroutines that can  
@@ -79,7 +79,7 @@ Introduction
  the kernel data.                                                      
                                                                
 Body Codes                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | NAIF software uses a system of integer codes to conveniently        
    represent celestial bodies, locations such as barycenters, Lagrange 
@@ -109,7 +109,7 @@ Body Codes
                          P  is  1, ..., 9                              
                      and NN is 01, ... 98                              
                                                                        
- - ```` or                                                             
+ - or                                                             
                                                                        
  ::                                                                    
                                                                        
@@ -121,13 +121,12 @@ Body Codes
                                                                        
                   Codes with X = 5 are provisional.                    
                                                                        
- - ```` For example, the code for the Earth's moon (moon 1 of body     
-   1)   is 301, and the code for Ganymede (moon 3 of body 599) is 503. 
+ - For example, the code for the Earth's moon (moon 1 of body 1) is 301, and the code for Ganymede (moon 3 of body 599) is 503. 
                                                                        
                                                  
                                                                        
 Epochs and Reference Frames                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | Some constants that frequently appear in PCK files are associated   
    with a particular epoch and with a particular reference frame. For  
@@ -152,7 +151,7 @@ Epochs and Reference Frames
  described in detail in `frames.req <../req/frames.html>`__.           
                                                                
 Planetocentric Coordinates                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | The body-fixed \``Planetocentric'' coordinate system referred to in 
    this document is defined for solar system bodies as follows:        
@@ -175,7 +174,7 @@ Planetocentric Coordinates
                                  
                                                                        
 Using the PCK System: Overview                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
  | This section describes how PCK files and software are used in       
    application programs.                                               
@@ -234,7 +233,7 @@ Using the PCK System: Overview
  analog to the kernel pool for binary PCK files.                       
                                                                
 Orientation Models used by PCK Software                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
  | The orientation models used by CSPICE PCK access routines all       
    express the direction of the pole and location of the prime         
@@ -274,7 +273,7 @@ Orientation Models used by PCK Software
  ephemeris centuries for motion of the pole.                           
                                                                
 The Two Formats of PCK files                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
  | There are two general forms for PCK files, text and binary files.   
    Text files are ASCII and can be created and modified with an        
@@ -289,7 +288,7 @@ The Two Formats of PCK files
    physical data associated with a body.                               
                                                                
 Detection of Non-native Text Files                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | The various platforms supported by CSPICE use different end-of-line 
    (EOL) indicators in text files:                                     
@@ -311,7 +310,7 @@ Detection of Non-native Text Files
  capability to read non-native text files.                             
                                                                
 DAF Run-Time Binary File Format Translation               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | As of the CSPICE N0052 release (January, 2002), supported platforms 
    are able to read DAF-based binary files (SPK, CK and binary PCK)    
@@ -323,7 +322,7 @@ DAF Run-Time Binary File Format Translation
    `convert.ug <../ug/convert.html>`__, for details.                   
                                                                
 NAIF Text Kernel Format                                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
  | Text PCK files express data as \``assignments''; in text PCKs,      
    values are associated with name strings using a \``keyword =        
@@ -394,7 +393,8 @@ NAIF Text Kernel Format
                                                                        
        NAME = VALUE                                                    
                                                                        
- or                                                                    
+ or     
+
  ::                                                                    
                                                                        
        NAME = ( VALUE1, VALUE2, ... )                                  
@@ -436,7 +436,7 @@ NAIF Text Kernel Format
  associated with a given name can be retrieved at any time.            
                                                                
 Text PCK Contents                                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
  | Other than the limitations imposed by the PCK file formats, no      
    absolute restrictions exist on the names or values of the variables 
@@ -498,7 +498,7 @@ Text PCK Contents
                                                  
                                                                        
 Reference Ellipsoid Orientation Offsets                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | If you examine a PCK file produced by NAIF, you'll see an           
    additional symbol grouped with the ones listed above; it is         
@@ -533,7 +533,7 @@ Reference Ellipsoid Orientation Offsets
  desired ellipsoid orientation.                                        
                                                                
 Text PCK Kernel Variable Names                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | Text PCK variables recognized by CSPICE PCK access routines have    
    names that follow a simple pattern: variables related to a body     
@@ -560,20 +560,16 @@ Text PCK Kernel Variable Names
  PCK access routines.                                                  
                                  
                                                                        
-Restrictions on the Availability of Orientation Models in 
-    Text PCK Kernels                                                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- ictions-on-the-availability-of-orientation-models-in-text-pck-kernels 
+Restrictions on the Availability of Orientation Models in Text PCK Kernels                                                   
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | Orientation models usable by CSPICE's text PCK access routines are  
    not available for all solar system bodies. For example, Saturn's    
    moon Hyperion is \``tumbling'' and does not admit a description of  
    its motion by the sort of models used in text PCKs.                 
                                                                
-Models for the Sun, Planets, and some Minor Bodies in     
-    Text PCK Kernels                                                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  models-for-the-sun-planets-and-some-minor-bodies-in-text-pck-kernels 
+Models for the Sun, Planets, and some Minor Bodies in Text PCK Kernels                                                   
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | For the Sun, planets, and minor bodies, the expressions used in     
    text PCK files for the north pole direction and prime meridian      
@@ -633,7 +629,7 @@ Models for the Sun, Planets, and some Minor Bodies in
                                  
                                                                        
 Models for Satellites in Text PCK Kernels                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | Orientation models for natural satellites of planets are a little   
    more complicated; in addition to polynomial terms, the RA, DEC, and 
@@ -735,7 +731,7 @@ Models for Satellites in Text PCK Kernels
                                  
                                                                        
 Shape models in Text PCK Kernels                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | CSPICE contains a number of geometry routines that make use of      
    triaxial ellipsoidal models of extended solar system bodies.        
@@ -762,9 +758,8 @@ Shape models in Text PCK Kernels
  Spheroids and spheres are obtained when two or all three radii are    
  equal.                                                                
                                                                
-Summary of PCK Variables used in Text PCK Kernels by      
-    CSPICE                                                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Summary of PCK Variables used in Text PCK Kernels by CSPICE                                                             
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | In order to compute transformations for the Sun, a planet, or an    
    asteroid (say body number ppp), the PCK access routines require     
@@ -803,7 +798,7 @@ Summary of PCK Variables used in Text PCK Kernels by
                                                  
                                                                        
 Creating and Modifying Text PCKs                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
  | The text PCK file format allows NAIF Toolkit users to easily modify 
    existing text PCKs and to create their own files containing values  
@@ -876,7 +871,7 @@ Creating and Modifying Text PCKs
  planetary system must have the same degree.                           
                                                                
 Binary PCK Kernel Format                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
  | The binary PCK file format is built upon the SPICE DAF (Double      
    precision Array File) architecture. Readers who are not familiar    
@@ -892,7 +887,7 @@ Binary PCK Kernel Format
    files.                                                              
                                                                
 Segments--The Fundamental PCK Building Blocks             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | A binary PCK file contains one or more \`segments'. Each segment    
    contains data sufficient to compute the axes of a body-fixed        
@@ -917,7 +912,7 @@ Segments--The Fundamental PCK Building Blocks
    document `frames.req <../req/frames.html>`__ for further            
    information on frame class IDs.                                     
                                                                        
- - ```` Some older SPICE documentation refers to this ID code as as a  
+ - Some older SPICE documentation refers to this ID code as as a  
    \``body'' ID code.                                                  
                                                                        
 #. The NAIF integer code for the inertial reference frame.      
@@ -936,7 +931,7 @@ Segments--The Fundamental PCK Building Blocks
                                  
                                                                        
 The Comment Area                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | Preceding the \`segments', the Comment Area provides space in a     
    binary PCK file for storing additional textual information besides  
@@ -955,7 +950,7 @@ The Comment Area
  transfer format and back to binary again.                             
                                                                
 Binary PCK Data Types                                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | The third integer component of the descriptor---the code for the    
    representation, or \`data type'---is the key to the binary PCK      
@@ -968,7 +963,7 @@ Binary PCK Data Types
    programs that use the higher level readers.                         
                                                                
 Supported Data Types                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | Three representations, or data types, are currently supported by    
    the binary PCK routines in CSPICE. They are:                        
@@ -984,7 +979,7 @@ Supported Data Types
                                                  
                                                                        
 Type 2: Chebyshev (Angles only)                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | These are sets of Chebyshev polynomial coefficients for the Euler   
    angles, defining as a function of time the right ascension (RA) and 
@@ -1067,7 +1062,7 @@ Type 2: Chebyshev (Angles only)
  and the domain of Chebyshev polynomials (from -1 to 1 ).              
                                                                
 Type 3: Chebyshev (Angles and their derivatives)          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | A type 03 PCK segment consists of coefficient sets for fixed order  
    Chebyshev polynomials over consecutive time intervals, where the    
@@ -1128,7 +1123,7 @@ Type 3: Chebyshev (Angles and their derivatives)
  The type 3 data type is seldom used.                                  
                                                                
 Type 20: Chebyshev (Only angular derivatives)             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | PCK data type 20 contains Chebyshev polynomial coefficients for a   
    specified set of Euler angle rates of a body-fixed, body-centered   
@@ -1282,7 +1277,7 @@ Type 20: Chebyshev (Only angular derivatives)
                                  
                                                                        
 Creating Binary PCKs                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
  | NAIF creates most binary PCKs. Normally, binary PCK files should be 
    obtained from NAIF.                                                 
@@ -1383,12 +1378,12 @@ Creating Binary PCKs
                                                  
                                                                        
 PCK Software                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
  | This section describes the proper use of the CSPICE PCK software.   
                                                                
 Getting PCK Data into Your Program                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
  | Because loading PCK files is usually time-consuming, it is good     
    programming practice to have applications load PCK files during     
@@ -1406,7 +1401,7 @@ Getting PCK Data into Your Program
  spends on the rest of its data processing.                            
                                                                
 Loading Text PCK Kernels                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | As earlier mentioned, in order to use text PCK files in an          
    application, the data in the files must be read into memory. This   
@@ -1446,7 +1441,7 @@ Loading Text PCK Kernels
  files takes precedence.                                               
                                                                
 Loading Binary PCK Kernels                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | The routine `furnsh_c <../cspice/furnsh_c.html>`__ maintains a      
    database of loaded binary PCK files. The calling program indicates  
@@ -1468,7 +1463,7 @@ Loading Binary PCK Kernels
  Binary PCK files take precedence over text PCK files.                 
                                                                
 Unloading Binary PCK Kernels                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | It is possible, though unlikely, that a program would need to make  
    use of many binary PCK files in the course of a single execution.   
@@ -1486,7 +1481,7 @@ Unloading Binary PCK Kernels
                                                  
                                                                        
 Binary PCK Coverage Summary Routines                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
  | CSPICE includes two functions for obtaining information about the   
    contents of a binary PCK file from within an application.           
@@ -1509,7 +1504,7 @@ Binary PCK Coverage Summary Routines
  those routines.                                                       
                                                                
 Access Routines                                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
  | CSPICE contains two basic categories of PCK access routines: those  
    that return PCK data directly, and those that return quantities     
@@ -1525,7 +1520,7 @@ Access Routines
  been loaded, these routines will signal run-time errors when called.  
                                                                
 High-Level PCK Data Access                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | To obtain the matrix that transforms 3-vectors from a specified     
    reference frame to another frame, at a specified ephemeris time,    
@@ -1618,7 +1613,7 @@ High-Level PCK Data Access
                                  
                                                                        
 Low-Level PCK Data Access                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
  | WARNING: These low-level access routines for text PCK files only    
    search the text kernel pool for these values. Values found in       
@@ -1726,7 +1721,7 @@ Low-Level PCK Data Access
                                                  
                                                                        
 Appendix A --- Summary of PCK Routines                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
                                                                        
  ::                                                                    
@@ -1764,11 +1759,9 @@ Appendix A --- Summary of PCK Routines
                                                                        
                                                  
                                                                        
-Appendix B --- Epoch and Frame Specifications in Text PCK 
-    Kernels                                                            
-    :na                                                                
- me: appendix-b-----epoch-and-frame-specifications-in-text-pck-kernels 
-                                                              
+Appendix B --- Epoch and Frame Specifications in Text PCK Kernels                                                            
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
  | The constants used in PCK files to define an orientation model for  
    a specified body are assumed by default to define a time-dependent  
    rotation R(t) that converts vectors from J2000 coordinates to       
@@ -1821,7 +1814,7 @@ Appendix B --- Epoch and Frame Specifications in Text PCK
  `frames.req <../req/frames.html>`__, for a list of the inertial       
  reference frames and the corresponding frame IDs.                     
  For example, to use constants referenced to the FK4 frame (frame ID   
- 3) for the asteroid Gaspra (ID code = 9511010), the PCK file          
+ 1) for the asteroid Gaspra (ID code = 9511010), the PCK file          
  containing the constants should include one of the assignments        
                                                                        
  ::                                                                    
@@ -1875,62 +1868,3 @@ Appendix B --- Epoch and Frame Specifications in Text PCK
  would be ignored by the PCK reader routines; you cannot assign a      
  frame or epoch using the ID code of a planet or satellite.            
                                  
-                                                                       
-Appendix C --- Revision History                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                                      
-                                 
-                                                                       
-2021 DEC 24 by N.J. Bachman                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                                                    
- | Added documentation of shortened kernel variable names for          
-   alternative PCK base frames or JED epochs.                          
-                                                                       
- Added documentation of extended nutation precession angle polynomial  
- capability.                                                           
-                                                                       
- Deleted summary of calling sequences.                                 
-                                                                       
- Updated summary of PCK routines.                                      
-                                                                       
- Added subsection discussing possible offsets of reference ellipsoid   
- axes from the corresponding PCK frame, and handling this situation    
- via TK frames.                                                        
-                                                                       
- Added description of nutation precession angle coefficient units.     
-                                                                       
- Changed description of segment descriptor ID from \``body ID'' to     
- \``frame class ID.'' Changed names of arguments in calling sequence   
- documentation to match.                                               
-                                                                       
- Updated description of PCK ID word to say this string must start in   
- the leftmost column.                                                  
-                                                                       
- Removed unnecessary parentheses from kernel variable assignment       
- examples.                                                             
-                                                               
-2013 JAN 22 by E. D. Wright, C. H. Acton                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                                                    
- | Corrections and updates to properly describe PCK binary Type 2 and  
-   PCK binary Type 3 data segments. Added information concerning PCK   
-   binary type 20 data segments.                                       
-                                                                       
- Eliminated Examples section.                                          
-                                                                       
- Corrections to text eliminating typos in the code call examples.      
-                                                                       
- Update to document structure to include Revision History.             
-                                                                       
- The document now includes description of Icy, and Mice PCK APIs.      
-                                                               
-2010 JUN 03 by B. V. Semenov.                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                                                    
- | Previous edits.                                                     
-                                                               
-Original version K.R. Gehringer, K. S. Zukor              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                                                    
------------------------------------------------------------------------

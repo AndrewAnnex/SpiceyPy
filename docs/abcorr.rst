@@ -205,7 +205,7 @@ SPICE Aberration Identifiers (also called Flags)
 Common Correction Applications                            
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                         
                                                                        
- --------------                                                        
+                                     
                                                                        
  |                                                                     
  | Below, we indicate the aberration corrections to use for some       
@@ -252,7 +252,7 @@ Common Correction Applications
 Computation of Corrections                                
 ^^^^^^^^^^^^^^^^^^^^^^^^^^                                 
                                                                        
- --------------                                                        
+                                     
                                                                        
  |                                                                     
  | Below, we discuss in more detail how the aberration corrections are 
@@ -452,7 +452,7 @@ Computation of Corrections
  .. rubric:: Precision of light time corrections                       
     :name: precision-of-light-time-corrections                         
                                                                        
- --------------                                                        
+                                     
                                                                        
  |                                                                     
  | Let:                                                                
@@ -595,7 +595,7 @@ Computation of Corrections
  .. rubric:: Relativistic Corrections                                  
     :name: relativistic-corrections                                    
                                                                        
- --------------                                                        
+                                     
                                                                        
  |                                                                     
  | SPICE aberration correction routines do not attempt to perform      

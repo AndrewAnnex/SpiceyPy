@@ -5,7 +5,7 @@ SPK Required Reading
                                                 
                                                                       
 Abstract                                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
                                                               
@@ -13,7 +13,7 @@ Abstract
   data.                                                               
                                                 
 Purpose                                                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The purpose of this document is to describe the SPICE Toolkit       
   software provided in the software library CSPICE, (C SPICE library) 
@@ -22,58 +22,58 @@ Purpose
   S-kernel and ephemeris portion of the P-kernel.                     
                                                 
 Intended Audience                                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | This document is intended for all users of SPK (ephemeris) kernel   
   files.                                                              
                                                 
 References                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | All references are to NAIF documents. The notation [Dn] refers to   
   NAIF document number.                                               
                                                                       
 #. [349] Frames Required Reading                                
-  (`frames.req <../req/frames.html>`__)                               
+   (`frames.req <../req/frames.html>`__)                               
                                                                       
 #. [174] CK Required Reading (`ck.req <../req/ck.html>`__)      
                                                                       
 #. [254] PCK Required Reading (`pck.req <../req/pck.html>`__)   
                                                                       
 #. [222] Spacecraft Clock Time Required Reading                 
-  (`sclk.req <../req/sclk.html>`__)                                   
+   (`sclk.req <../req/sclk.html>`__)                                   
                                                                       
 #. [218] KERNEL Required Reading                                
-  (`kernel.req <../req/kernel.html>`__)                               
+   (`kernel.req <../req/kernel.html>`__)                               
                                                                       
 #. [219] NAIF IDS Required Reading                              
-  (`naif_ids.req <../req/naif_ids.html>`__)                           
+   (`naif_ids.req <../req/naif_ids.html>`__)                           
                                                                       
 #. [163] JPL Internal Memorandum on Modified Difference Array   
-  polynomials; F. Krogh                                               
+   polynomials; F. Krogh                                               
                                                                       
 #. [164] Precession Matrix Based on IAU (1976) System of        
-  Astronomical Constants; E. M. Standish; Astronomy and Astrophysics  
-  73, 282-284 (1979)                                                  
+   Astronomical Constants; E. M. Standish; Astronomy and Astrophysics  
+   73, 282-284 (1979)                                                  
                                                                       
 #. [165] Orientation of the JPL Ephemerides, DE200/LE200, to    
-  the Dynamical Equinox of J2000; E. M. Standish; Astronomy and       
-  Astrophysics 114, 297-302 (1982)                                    
+   the Dynamical Equinox of J2000; E. M. Standish; Astronomy and       
+   Astrophysics 114, 297-302 (1982)                                    
                                                                       
 #. [166] The JPL Asteroid and Comet Database (as Implemented   
-  by NAIF); a collection of papers and memos; assembled by I.         
-  Underwood; 11 Dec 1989                                              
+   by NAIF); a collection of papers and memos; assembled by I.         
+   Underwood; 11 Dec 1989                                              
                                                                       
 #. [167] Double Precision Array Files (DAF) - Required         
-  Reading; latest version (`daf.req <../req/daf.html>`__)             
+   Reading; latest version (`daf.req <../req/daf.html>`__)             
                                                                       
 #. [212] COMMNT User's Guide                                   
-  (`commnt.ug <../ug/commnt.html>`__)                                 
+   (`commnt.ug <../ug/commnt.html>`__)                                 
                                                                       
                                                 
                                                                       
 DAF Run-Time Binary File Format Translation               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Starting with the N0052 release of the SPICE Toolkit (January,      
   1)    certain supported platforms are able to read DAF-based binary 
@@ -86,7 +86,7 @@ DAF Run-Time Binary File Format Translation
   `convert.ug <../ug/convert.html>`__, for details.                   
                                                 
 Detection of Non-native Text Files                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Starting with the N0057 release of the SPICE Toolkit (March, 2004)  
   the SPICE data loading mechanism detects and prohibits loading text 
@@ -98,7 +98,7 @@ Detection of Non-native Text Files
   than 132 bytes or have the first line longer than 132 characters.   
                                                 
 If you're in a hurry                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
                                                               
@@ -110,7 +110,7 @@ If you're in a hurry
   are given in plain lower case.                                      
                                                 
 High Level Functions                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Loading/Unloading an SPK file                                       
                                                                       
@@ -183,7 +183,7 @@ Loading/Unloading C-kernels (see CK Required Reading,
                                                 
                                                                       
 Foundation Functions                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The functions listed in this section are the real \``work horses''  
   of the SPK and related systems. Not all of the functions in this    
@@ -235,7 +235,7 @@ Classifying frames (see Frames Required Reading,
                                                 
                                                                       
 Utility Programs                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Examining SPK files                                                 
                                                                       
@@ -255,7 +255,7 @@ Converting to and from transfer format
                                                 
                                                                       
 Introduction                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
                                                               
@@ -361,7 +361,7 @@ position or velocity of one object as seen from another.
                          
                                                                       
 SPK Files                                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
                                                               
@@ -389,7 +389,7 @@ the case of SPICE either big-endian or little-endian (NAIF no longer
 supports DEC platforms).                                              
                                                 
 Use of SPK files between computers                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | NAIF extended the DAF capability in SPICE Toolkit delivery N0052 to 
   allow reading of both big-endian and little-endian binary DAF files 
@@ -429,7 +429,7 @@ CSPICE (and by extension Icy and Mice) uses the same binary kernels
 as does SPICELIB.                                                     
                                                 
 Examining SPK files                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Since SPK files are binary files, you can't just open them with     
   your favorite text editor to determine which ephemeris objects are  
@@ -446,7 +446,7 @@ summary, you'll probably find BRIEF to be a better tool for examining
 the contents of an SPK file.                                          
                                                 
 Meta Data in the SPK file                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | SPICE kernels may contain \``meta'' data that describe the          
   contents, intended use, accuracy, etc. of the kernel. This meta     
@@ -477,7 +477,7 @@ COMMNT User's Guide, `commnt.ug <../ug/commnt.html>`__, [212] for
 details on the use of COMMNT).                                        
                                                 
 Terminology                                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Throughout this document we shall be using terms such as reference  
   frame, state, ephemeris time, etc. We include a brief review of     
@@ -553,7 +553,7 @@ Terminology
                                                 
                                                                       
 The SPK Family of Functions                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
                                                               
@@ -609,7 +609,7 @@ SPK readers are available to perform the following functions.
                                                 
                                                                       
 Computing States                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | `spkezr_c <../cspice/spkezr_c.html>`__ is the most powerful of the  
   SPK readers. It determines the apparent, true, or geometric state   
@@ -691,10 +691,9 @@ To compute geometric states, specify no correction: \`NONE'.
 In all cases, the one-way light-time from the target to the observer  
 is returned along with the state.                                     
                                                 
-Computing States using Constant-Velocity or               
-   Constant-Position Objects                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-computing-states-using-constant-velocity-or-constant-position-objects 
+Computing States using Constant-Velocity or Constant-Position Objects                                          
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
                                                               
 | Objects such as tracking stations, rover or spacecraft components,  
   or fixed surface points can be treated by the SPK subsystem as      
@@ -742,7 +741,7 @@ objects---these functions require SPK data for all ephemeris objects
 participating in the computations they perform.                       
                                                 
 The Computation of Light Time                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The light time corrected position component of a state vector       
   returned by the SPK system is the 3-vector difference               
@@ -805,7 +804,7 @@ solar system barycenter and C is the speed of light.
                          
                                                                       
 Precision of Light Time Computations                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Let's examine the error we make if we use LT_2 as an approximation  
   for LT. This is an analysis of precision; we'll ignore errors in    
@@ -880,7 +879,7 @@ we suggest you consult the astronomical almanac (page B36) for a
 discussion of how to carry out these corrections.                     
                                                 
 Light Time Corrected Non-Inertial States                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | When we observe a distant object, we don't see it as it is at the   
   moment of observation. We see it as it was when the photons we have 
@@ -914,29 +913,29 @@ computed by a function call similar to this:
 computing states.                                                     
                                                                       
 #. When no corrections are requested from                       
-  `spkezr_c <../cspice/spkezr_c.html>`__ (ABCORR = 'NONE'), the state 
-  of the target is determined at the request time ET and is           
-  represented in the specified reference frame as it is oriented at   
-  time ET.                                                            
+   `spkezr_c <../cspice/spkezr_c.html>`__ (ABCORR = 'NONE'), the state 
+   of the target is determined at the request time ET and is           
+   represented in the specified reference frame as it is oriented at   
+   time ET.                                                            
                                                                       
 #. When light time corrections are requested from               
-  `spkezr_c <../cspice/spkezr_c.html>`__ (ABCORR = 'LT'), two light   
-  times are determined: LT_F the light time to the center of the      
-  specified reference frame, and LT_T the light time to the target.   
-  The state of the target is given as it was at ET - LT_T in the      
-  frame as it was oriented at ET - LT_F.                              
+   `spkezr_c <../cspice/spkezr_c.html>`__ (ABCORR = 'LT'), two light   
+   times are determined: LT_F the light time to the center of the      
+   specified reference frame, and LT_T the light time to the target.   
+   The state of the target is given as it was at ET - LT_T in the      
+   frame as it was oriented at ET - LT_F.                              
                                                                       
 #. When light time and stellar aberrations are requested from   
-  `spkezr_c <../cspice/spkezr_c.html>`__ (ABCORR = 'LT+S'), both LT_F 
-  and LT_T are again computed. The state of the target at ET - LT_T   
-  is corrected for stellar aberration and represented in the          
-  reference frame as it was oriented at ET - LT_F.                    
+   `spkezr_c <../cspice/spkezr_c.html>`__ (ABCORR = 'LT+S'), both LT_F 
+   and LT_T are again computed. The state of the target at ET - LT_T   
+   is corrected for stellar aberration and represented in the          
+   reference frame as it was oriented at ET - LT_F.                    
                                                                       
 #. Light-time corrected velocities are computed taking into     
-  account the rate of change of light time both between observer and  
-  target and between observer and the center of the non-inertial      
-  frame. The rate of change of the target frame's orientation is      
-  accounted for as well.                                              
+   account the rate of change of light time both between observer and  
+   target and between observer and the center of the non-inertial      
+   frame. The rate of change of the target frame's orientation is      
+   accounted for as well.                                              
                                                                       
 In the actual implementation of                                       
 `spkezr_c <../cspice/spkezr_c.html>`__ a few short cuts are taken.    
@@ -949,7 +948,7 @@ redundant computations.
                          
                                                                       
 An example                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Here we illustrate how you could use                                
   `spkezr_c <../cspice/spkezr_c.html>`__ together with other CSPICE   
@@ -1031,7 +1030,7 @@ the point and the Earth.
                                                 
                                                                       
 Integer ID Codes Used in SPK                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Low level SPK software uses integer codes to identify ephemeris     
   objects, reference frames and data representation, etc. At low      
@@ -1073,9 +1072,8 @@ Consult the NAIF IDS Required Reading file,
 codes recognized by the SPICE Toolkit software.                       
                          
                                                                       
-`spkez_c <../cspice/spkez_c.html>`__ and                  
-   `spkgeo_c <../cspice/spkgeo_c.html>`__                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+`spkez_c <../cspice/spkez_c.html>`__ and `spkgeo_c <../cspice/spkgeo_c.html>`__                             
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | `spkezr_c <../cspice/spkezr_c.html>`__ relies upon two lower level  
   functions that may be useful under certain circumstances.           
@@ -1120,7 +1118,7 @@ be marginally faster than calling
                          
                                                                       
 Loading Files                                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Note that `spkezr_c <../cspice/spkezr_c.html>`__,                   
   `spkez_c <../cspice/spkez_c.html>`__ and                            
@@ -1184,7 +1182,7 @@ or from the following set:
                                                 
                                                                       
 Data Precedence                                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | An SPK file may contain any number of segments. A single file may   
   contain overlapping segments: segments containing data for the same 
@@ -1194,7 +1192,7 @@ Data Precedence
   effect, several loaded files become equivalent to one large file.   
                                                 
 Unloading Files                                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The number of SPK files that may be loaded at any one time is       
   limited but very large -- up to 5000 total for all loaded SPK, CK,  
@@ -1224,7 +1222,7 @@ is equivalent to the following (shorter) sequence:
                                                 
                                                                       
 Getting Coverage Summary                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The CSPICE includes two functions for obtaining information about   
   the contents of an SPK file from within an application.             
@@ -1246,7 +1244,7 @@ Refer to the headers of `spkobj_c <../cspice/spkobj_c.html>`__ and
 those routines.                                                       
                                                 
 Loading Auxiliary Files                                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Prior to the inclusion of non-inertial frames in the SPK system,    
   the states of objects computed by the SPK system required only that 
@@ -1283,14 +1281,14 @@ frames see the recommended reading file
                                                                       
 Inertial frames                                                       
                                                                       
-- ```` Inertial frames are built into the SPICE system. You don't     
+- Inertial frames are built into the SPICE system. You don't     
   need to do anything to make their definitions available to your     
   program. Inertial frames have NAIF ID codes whose values are in the 
   range from 1 to 10000.                                              
                                                                       
 PCK frames                                                            
                                                                       
-- ```` PCK frames are bodyfixed frames. The orientation of a PCK      
+- PCK frames are bodyfixed frames. The orientation of a PCK      
   frame is always expressed relative to an inertial frame. The        
   relationship between a PCK frame and its associated inertial frame  
   is provided by a PCK kernel. PCK frames have ID codes between 10000 
@@ -1303,13 +1301,13 @@ PCK frames
                                                                       
                furnsh ( <file> );                                   
                                                                       
-- ```` To unload a binary PCK file                                    
+- To unload a binary PCK file                                    
                                                                       
 ::                                                                    
                                                                       
                unload ( <file> );                                   
                                                                       
-- ```` Text based PCK files are loaded via the function               
+- Text based PCK files are loaded via the function               
   `furnsh_c <../cspice/furnsh_c.html>`__.                             
                                                                       
 ::                                                                    
@@ -1318,14 +1316,14 @@ PCK frames
                                                                       
 CK Frames                                                             
                                                                       
-- ```` CK frames are frames that are defined relative to a spacecraft 
+- CK frames are frames that are defined relative to a spacecraft 
   structure. The orientation of the structure is provided through a   
   binary SPICE kernel called a C-kernel. The ID codes for C-kernel    
   frames are negative and usually less than -999. A C-kernel frame    
   may be defined relative to any other kind of frame. (Most existing  
   C-kernels are defined relative to inertial frames.)                 
                                                                       
-- ```` C-kernels are loaded and unloaded using the same loader        
+- C-kernels are loaded and unloaded using the same loader        
   functions as used to load and unload SPK kernels. To load a         
   C-kernel                                                            
                                                                       
@@ -1333,13 +1331,13 @@ CK Frames
                                                                       
                furnsh ( <file> );                                   
                                                                       
-- ```` To unload a C-kernel                                           
+- To unload a C-kernel                                           
                                                                       
 ::                                                                    
                                                                       
                unload ( <file> );                                   
                                                                       
-- ```` The times used to represent C-kernels are spacecraft clock     
+- The times used to represent C-kernels are spacecraft clock     
   times---not ET. The relationship between ET and spacecraft clock    
   times is stored in a SPICE text kernel called a spacecraft clock    
   kernel---usually abbreviated as SCLK (ess-clock) kernel. To         
@@ -1354,7 +1352,7 @@ CK Frames
                                                                       
 TK Frames                                                             
                                                                       
-- ```` TK frames (short for Text Kernel frames) are frames that are   
+- TK frames (short for Text Kernel frames) are frames that are   
   defined via a SPICE text kernel. These frames can be transformed to 
   another reference frame via a constant rotation matrix. Typical     
   examples are topocentric frames and instrument frames. TK frames    
@@ -1366,7 +1364,7 @@ TK Frames
                                                                       
 Dynamic Frames                                                        
                                                                       
-- ```` Dynamic frames, like TK frames, are defined via a SPICE text   
+- Dynamic frames, like TK frames, are defined via a SPICE text   
   kernel. A dynamic frame has time-varying rotation relative to its   
   base frame. A dynamic frame can be defined by two time-varying      
   vectors, by a set of precession, nutation, and obliquity models, or 
@@ -1398,7 +1396,7 @@ frames in the SPK system, we have relieved you of some of the tasks
 associated with non-inertial frames.                                  
                                                 
 SPK File Structure                                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
                                                               
@@ -1406,7 +1404,7 @@ SPK File Structure
   \``comment'' area. These components are described below.            
                                                 
 Segments--The Fundamental SPK Building Blocks             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | An SPK file contains one or more \``segments.'' Each segment        
   contains ephemeris data sufficient to compute the geometric state   
@@ -1430,12 +1428,12 @@ numbers. The summary for the array, called a \`descriptor', has two
 double precision components:                                          
                                                                       
 #. The initial epoch of the interval for which ephemeris data   
-  are contained in the segment, given in ephemeris seconds past       
-  Julian year 2000.                                                   
+   are contained in the segment, given in ephemeris seconds past       
+   Julian year 2000.                                                   
                                                                       
 #. The final epoch of the interval for which ephemeris data are 
-  contained in the segment, given in ephemeris seconds past Julian    
-  year 2000.                                                          
+   contained in the segment, given in ephemeris seconds past Julian    
+   year 2000.                                                          
                                                                       
 The descriptor has six integer components:                            
                                                                       
@@ -1460,7 +1458,7 @@ the name of the object whose position is recorded in the segment.
                          
                                                                       
 Segment Order and Priority                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Segments within an SPK file need not be ordered according to time;  
   segments covering (that is, providing data for) a later time period 
@@ -1484,7 +1482,7 @@ different central bodies, the lower priority segment would be
 invisible to the SPK system.                                          
                                                 
 The Comment Area                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Preceding the \`segments', the Comment Area provides space in the   
   SPK file for storing textual information besides what is written in 
@@ -1511,7 +1509,7 @@ The SPC functions and their functions are described in detail in the
 SPC Required Reading, `spc.req <../req/spc.html>`__.                  
                                                 
 SPK Data Types                                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The fourth integer component of the descriptor---the code for the   
   representation, or \`data type'---is the key to the SPK format.     
@@ -1540,7 +1538,7 @@ The data types currently supported by CSPICE software are listed
 under \``Supported Data Types'' later in this document.               
                                                 
 Primitive States                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
                                                               
@@ -1605,12 +1603,12 @@ database for bodies it already knows about.
                          
                                                                       
 Examples of Using SPK Readers                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
                                                 
 Example 1: Computing Latitude and Longitude               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The next several sections present sample programs to show how the   
   SPK readers can be used to compute state vectors, and how those     
@@ -1768,7 +1766,7 @@ the ray from the center of the target to the observer. )
                                                 
                                                                       
 Example 2: Occultation or Transit                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The second example determines epochs if one target body             
   (spacecraft, planet, or satellite) is occulted by or in transit     
@@ -1993,7 +1991,7 @@ Toolkit.
                          
                                                                       
 Supported Data Types                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
                                                               
@@ -2002,44 +2000,41 @@ Supported Data Types
                                                                       
 #. Modified Difference Arrays.                                  
                                                                       
-- ```` Created by the JPL Orbit Determination Program (ODP), these    
+- Created by the JPL Orbit Determination Program (ODP), these    
   are used primarily for spacecraft ephemerides.                      
                                                                       
 #. Chebyshev polynomials (position only).                       
                                                                       
-- ```` These are sets of coefficients for the x, y, and z components  
+- These are sets of coefficients for the x, y, and z components  
   of the body position. The velocity of the body is obtained by       
   differentiation. This data type is normally used for planet         
   barycenters, and for satellites whose orbits are integrated.        
                                                                       
 #. Chebyshev polynomials (position and velocity).               
                                                                       
-- ```` These are sets of coefficients for the x, y, and z components  
+- These are sets of coefficients for the x, y, and z components  
   of the body position, and for the corresponding components of the   
   velocity. This data type is normally used for satellites whose      
   orbits are computed directly from theories.                         
                                                                       
-#. Reserved for future use (TRW elements for TDRS and Space     
-  Telescope).                                                         
+#. Reserved for future use (TRW elements for TDRS and Space Telescope).                                                         
                                                                       
 #. Discrete states (two body propagation).                      
                                                                       
-- ```` This data type contains discrete state vectors. A state is     
+- This data type contains discrete state vectors. A state is     
   obtained for a specified epoch by propagating the state vectors to  
   that epoch according to the laws of two body motion and then taking 
   a weighted average of the resulting states. Normally, this data     
   type is used for comets and asteroids, whose ephemerides are        
   integrated from an initial state or set of osculating elements.     
                                                                       
-#. Reserved for future use (Analytic Model for Phobos and       
-  Deimos).                                                            
+#. Reserved for future use (Analytic Model for Phobos and Deimos).                                                            
                                                                       
-#. Reserved for future use (Precessing Classical                
-  Elements---used by STScI).                                          
+#. Reserved for future use (Precessing Classical Elements---used by STScI).                                          
                                                                       
 #. Equally spaced discrete states (Lagrange interpolation)      
                                                                       
-- ```` This data type contains discrete state vectors whose time tags 
+- This data type contains discrete state vectors whose time tags 
   are separated by a constant step size. A state is obtained for a    
   specified epoch by finding a set of states \`centered' at that      
   epoch and using Lagrange interpolation on each component of the     
@@ -2047,14 +2042,14 @@ Supported Data Types
                                                                       
 #. Unequally spaced discrete states (Lagrange interpolation)    
                                                                       
-- ```` This data type contains discrete state vectors whose time tags 
+- This data type contains discrete state vectors whose time tags 
   may be unequally spaced. A state is obtained for a specified epoch  
   by finding a set of states \`centered' at that epoch and using      
   Lagrange interpolation on each component of the states.             
                                                                       
 #. Space Command Two-line Elements                             
                                                                       
-- ```` This data type contains Space Command two-line element         
+- This data type contains Space Command two-line element         
   representations for objects in Earth orbit (formally called NORAD   
   two-line elements).                                                 
                                                                       
@@ -2064,27 +2059,25 @@ Supported Data Types
                                                                       
 #. Hermite Interpolation Non-uniform Spacing.                  
                                                                       
-#. Chebyshev polynomials non-uniform spacing (position and     
-  velocity).                                                          
+#. Chebyshev polynomials non-uniform spacing (position and velocity).                                                          
                                                                       
-- ```` This data type contains Chebyshev polynomial coefficients for  
+- This data type contains Chebyshev polynomial coefficients for  
   the position and velocity of an object. Unlike SPK Types 2 and 3,   
   the time intervals to which polynomial coefficient sets apply do    
   not have uniform duration.                                          
                                                                       
 #. Precessing conic propagation.                               
                                                                       
-- ```` This data type allows for first order precession of the line   
+- This data type allows for first order precession of the line   
   of apsides and regression of the line of nodes due to the effects   
   of the J2 coefficient in the harmonic expansion of the              
   gravitational potential of an oblate spheroid.                      
                                                                       
-#. Reserved for future use (Elements for European Space        
-  Agency's ISO spacecraft).                                           
+#. Reserved for future use (Elements for European Space Agency's ISO spacecraft).                                           
                                                                       
 #. Equinoctial Elements                                        
                                                                       
-- ```` This data type represents the motion of an object about        
+- This data type represents the motion of an object about        
   another using equinoctial elements. It provides for precession of   
   the line of apsides and regression of the line of nodes. Unlike     
   Type 15, the mean motion, regression of the nodes and precession of 
@@ -2093,14 +2086,14 @@ Supported Data Types
                                                                       
 #. ESOC/DDID Hermite/Lagrange Interpolation                    
                                                                       
-- ```` This data type has been provided to support accurate           
+- This data type has been provided to support accurate           
   duplication within the SPK system of spacecraft ephemerides used by 
   the European Space Agency (ESA) on the Mars Express, Rosetta,       
   SMART-1, and Venus express missions.                                
                                                                       
 #. ESOC/DDID Piecewise Interpolation                           
                                                                       
-- ```` SPK type 19 is an enhanced version of SPK type 18. Type 19     
+- SPK type 19 is an enhanced version of SPK type 18. Type 19     
   enables creation of SPK files representing the same ephemerides     
   that can be represented using type 18, but containing far fewer     
   segments. Data from multiple type 18 segments can be stored in a    
@@ -2108,7 +2101,7 @@ Supported Data Types
                                                                       
 #. Chebyshev (velocity only)                                   
                                                                       
-- ```` SPK data type 20 contains Chebyshev polynomial coefficients    
+- SPK data type 20 contains Chebyshev polynomial coefficients    
   for the velocity of a body, relative to its center of motion, as a  
   function of time. The position of the body is obtained by           
   integrating the velocity using a specified integration constant.    
@@ -2118,7 +2111,7 @@ Supported Data Types
                                                                       
 #. Extended Modified Difference Arrays                         
                                                                       
-- ```` SPK data type 21 contains extended Modified Difference Arrays  
+- SPK data type 21 contains extended Modified Difference Arrays  
   (MDA), also called \``difference lines.'' These data structures use 
   the same mathematical trajectory representation as SPK data type 1, 
   but type 21 allows use of larger, higher-degree MDAs.               
@@ -2130,7 +2123,7 @@ structures (for the non-reserved types) are described below.
                          
                                                                       
 Type 1: Modified Difference Arrays                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The first SPK data type contains Modified Difference Arrays (MDA),  
   sometimes called \`difference lines'. This data type is normally    
@@ -2208,7 +2201,7 @@ The index of the record corresponding to a particular epoch is the
 index of the first epoch not less than the target epoch.              
                                                 
 Type 2: Chebyshev (position only)                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The second SPK data type contains Chebyshev polynomial coefficients 
   for the position of the body as a function of time. Normally, this  
@@ -2252,14 +2245,11 @@ A four-number \`directory' at the end of the segment contains the
 information needed to determine the location of the record            
 corresponding to a particular epoch.                                  
                                                                       
-#. INIT is the initial epoch of the first record, given in      
-  ephemeris seconds past J2000.                                       
+#. INIT is the initial epoch of the first record, given in ephemeris seconds past J2000.                                       
                                                                       
-#. INTLEN is the length of the interval covered by each record, 
-  in seconds.                                                         
+#. INTLEN is the length of the interval covered by each record, in seconds.                                                         
                                                                       
-#. RSIZE is the total size of (number of array elements in)     
-  each record.                                                        
+#. RSIZE is the total size of (number of array elements in) each record.                                                        
                                                                       
 #. N is the number of records contained in the segment.         
                                                                       
@@ -2301,7 +2291,7 @@ arguments and an example of its usage.
                          
                                                                       
 Type 3: Chebyshev (position and velocity)                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The third SPK data type contains Chebyshev polynomial coefficients  
   for the position and velocity of the body as a function of time.    
@@ -2354,7 +2344,7 @@ arguments and an example of its usage.
                          
                                                                       
 Type 5: Discrete states (two body propagation)            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The fifth standard SPK data type contains discrete state vectors. A 
   state is obtained from a Type 5 segment for any epoch that is       
@@ -2472,7 +2462,7 @@ arguments and an example of its usage.
                          
                                                                       
 Type 8: Lagrange Interpolation --- Equal Time Steps       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The eighth SPK data type represents a continuous ephemeris using a  
   discrete set of states and a Lagrange interpolation method. The     
@@ -2593,7 +2583,7 @@ header of the function provides a complete description of the input
 arguments and an example of its usage.                                
                                                 
 Type 9: Lagrange Interpolation --- Unequal Time Steps     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The ninth SPK data type represents a continuous ephemeris using a   
   discrete set of states and a Lagrange interpolation method. The     
@@ -2705,7 +2695,7 @@ header of the function provides a complete description of the input
 arguments and an example of its usage.                                
                                                 
 Type 10: Space Command Two-Line Elements                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The SPK data Type 10 uses the SPICE concept of a generic segment to 
   store a collection of packets each of which models the trajectory   
@@ -2722,25 +2712,23 @@ generic segments here.
                                                                       
 A generic SPK segment contains several logical data partitions:       
                                                                       
-#. A partition for constant values to be associated with each   
-  data packet in the segment.                                         
+#. A partition for constant values to be associated with each data packet in the segment.                                         
                                                                       
 #. A partition for the data packets.                            
                                                                       
 #. A partition for epochs.                                      
                                                                       
-#. A partition for a packet directory, if the segment contains  
-  variable sized packets.                                             
+#. A partition for a packet directory, if the segment contains variable sized packets.                                             
                                                                       
 #. A partition for an epoch directory.                          
                                                                       
 #. A reserved partition that is not currently used. This        
-  partition is only for the use of the NAIF group at the Jet          
-  Propulsion Laboratory (JPL).                                        
+   partition is only for the use of the NAIF group at the Jet          
+   Propulsion Laboratory (JPL).                                        
                                                                       
 #. A partition for the meta data which describes the locations  
-  and sizes of other partitions as well as providing some additional  
-  descriptive information about the generic segment.                  
+   and sizes of other partitions as well as providing some additional  
+   descriptive information about the generic segment.                  
                                                                       
 ::                                                                    
                                                                       
@@ -2850,7 +2838,7 @@ the function `spkw10_c <../cspice/spkw10_c.html>`__ to write a Type
 10 generic segment.                                                   
                                                 
 Type 12: Hermite Interpolation --- Equal Time Steps       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The twelfth SPK data type represents a continuous ephemeris using a 
   discrete set of states and a sliding window Hermite interpolation   
@@ -2990,7 +2978,7 @@ header of the subroutine provides a complete description of the input
 arguments and an example of its usage.                                
                                                 
 Type 13: Hermite Interpolation --- Unequal Time Steps     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The thirteenth SPK data type represents a continuous ephemeris      
   using a discrete set of states and a sliding window Hermite         
@@ -3109,7 +3097,7 @@ header of the subroutine provides a complete description of the input
 arguments and an example of its usage.                                
                                                 
 Type 14: Chebyshev Polynomials --- Unequal Time Steps     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The SPK data Type 14 uses the SPICE concept of a generic segment to 
   store a collection of packets each of which models the trajectory   
@@ -3131,24 +3119,24 @@ segments here.
 A generic SPK segment contains several logical data partitions:       
                                                                       
 #. A partition for constant values to be associated with each   
-  data packet in the segment.                                         
+   data packet in the segment.                                         
                                                                       
 #. A partition for the data packets.                            
                                                                       
 #. A partition for epochs.                                      
                                                                       
 #. A partition for a packet directory, if the segment contains  
-  variable sized packets.                                             
+   variable sized packets.                                             
                                                                       
 #. A partition for an epoch directory.                          
                                                                       
 #. A reserved partition that is not currently used. This        
-  partition is only for the use of the NAIF group at the Jet          
-  Propulsion Laboratory (JPL).                                        
+   partition is only for the use of the NAIF group at the Jet          
+   Propulsion Laboratory (JPL).                                        
                                                                       
 #. A partition for the meta data which describes the locations  
-  and sizes of other partitions as well as providing some additional  
-  descriptive information about the generic segment.                  
+   and sizes of other partitions as well as providing some additional  
+   descriptive information about the generic segment.                  
                                                                       
 ::                                                                    
                                                                       
@@ -3238,7 +3226,7 @@ Type 14 segments should be created using the functions
 is discussed in `spk14b_c <../cspice/spk14b_c.html>`__.               
                                                 
 Type 15: Precessing Conic Propagation                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The SPK data Type 15 represents a continuous ephemeris using a      
   compact analytic model. The object is modeled as orbiting a central 
@@ -3299,7 +3287,7 @@ header of the function provides a complete description of the input
 arguments and an example of its usage.                                
                                                 
 Type 17: Equinoctial Elements                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | The SPK data Type 17 represents a continuous ephemeris using a      
   compact analytic model. The object is following an elliptic orbit   
@@ -3347,7 +3335,7 @@ arguments and an example of its usage.
                          
                                                                       
 Type 18: ESOC/DDID Hermite/Lagrange Interpolation         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | SPK type 18 has been provided to support accurate duplication       
   within the SPK system of spacecraft ephemerides used by the         
@@ -3366,7 +3354,7 @@ Currently SPK type 18 supports two subtypes:
                                                                       
 #. Subtype 0                                                    
                                                                       
-- ```` Separate sliding-window Hermite interpolation of position and  
+- Separate sliding-window Hermite interpolation of position and  
   velocity. The ephemeris is represented by a series of 12-element    
   \``packets'' and associated time tags. The time tags may be         
   unequally spaced. Each packet contains three Cartesian position     
@@ -3381,7 +3369,7 @@ Currently SPK type 18 supports two subtypes:
                                                                       
 #. Subtype 1                                                    
                                                                       
-- ```` Separate sliding-window Lagrange interpolation of position and 
+- Separate sliding-window Lagrange interpolation of position and 
   velocity. The ephemeris is represented by a series of 6-element     
   \``packets'' and associated time tags. The time tags may be         
   unequally spaced. Each packet contains three Cartesian position     
@@ -3498,7 +3486,7 @@ header of the subroutine provides a complete description of the input
 arguments and an example of its usage.                                
                                                 
 Type 19: ESOC/DDID Piecewise Interpolation                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | As with SPK type 18, SPK type 19 has been provided to support       
   accurate duplication by the SPK system of spacecraft ephemerides    
@@ -3589,7 +3577,7 @@ Currently SPK type 19 supports three subtypes:
                                                                       
 #. Subtype 0                                                    
                                                                       
-- ```` Separate sliding-window Hermite interpolation of position and  
+- Separate sliding-window Hermite interpolation of position and  
   velocity. The ephemeris is represented by a series of 12-element    
   \``packets'' and associated time tags. The time tags may be         
   unequally spaced. Each packet contains three Cartesian position     
@@ -3602,18 +3590,18 @@ Currently SPK type 19 supports three subtypes:
   principle independent. The same interpolation degree is used for    
   each position and velocity component.                               
                                                                       
-- ```` The interpolation degree of a subtype 0 mini-segment must be   
+- The interpolation degree of a subtype 0 mini-segment must be   
   equivalent to 3 mod 4, that is, it must be in the set               
                                                                       
 ::                                                                    
                                                                       
                { 3, 7, 11, ..., MAXDEG }                              
                                                                       
-- ```` where MAXDEG is the maximum supported degree.                  
+- where MAXDEG is the maximum supported degree.                  
                                                                       
 #. Subtype 1                                                    
                                                                       
-- ```` Separate sliding-window Lagrange interpolation of position and 
+- Separate sliding-window Lagrange interpolation of position and 
   velocity. The ephemeris is represented by a series of 6-element     
   \``packets'' and associated time tags. The time tags may be         
   unequally spaced. Each packet contains three Cartesian position     
@@ -3623,27 +3611,27 @@ Currently SPK type 19 supports three subtypes:
   principle independent. The same interpolation degree is used for    
   each position and velocity component.                               
                                                                       
-- ```` The interpolation degree of a subtype 1 mini-segment must be   
+- The interpolation degree of a subtype 1 mini-segment must be   
   odd and must be in the range 1:MAXDEG, where MAXDEG is the maximum  
   supported degree.                                                   
                                                                       
 #. Subtype 2                                                    
                                                                       
-- ```` Sliding-window Hermite interpolation of position and velocity. 
+- Sliding-window Hermite interpolation of position and velocity. 
   The ephemeris is represented by a series of 6-element \``packets''  
   and associated time tags. The time tags may be unequally spaced.    
   Each packet contains three Cartesian position components and three  
   velocity components. The position components and velocity           
   components are interpolated together.                               
                                                                       
-- ```` The interpolation degree of a subtype 2 mini-segment must be   
+- The interpolation degree of a subtype 2 mini-segment must be   
   equivalent to 3 mod 4, that is, it must be in the set               
                                                                       
 ::                                                                    
                                                                       
                { 3, 7, 11, ..., MAXDEG }                              
                                                                       
-- ```` where MAXDEG is the maximum supported degree.                  
+- where MAXDEG is the maximum supported degree.                  
                                                                       
 The sliding-window interpolation technique used by this data type     
 works as follows: for any request epoch, the data type's state        
@@ -3843,7 +3831,7 @@ provides a complete description of the input arguments and an example
 of its usage.                                                         
                                                 
 Type 20: Chebyshev (velocity only)                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | SPK data type 20 contains Chebyshev polynomial coefficients for the 
   velocity of a body, relative to its center of motion, as a function 
@@ -3897,32 +3885,32 @@ corresponding to a particular epoch and to determine the units
 associated with the data:                                             
                                                                       
 #. DSCALE is the distance scale used for both position and      
-  velocity; DSCALE has units of km. For example, if the distance      
-  units are AU, then DSCALE is the value of the AU in km.             
+   velocity; DSCALE has units of km. For example, if the distance      
+   units are AU, then DSCALE is the value of the AU in km.             
                                                                       
 #. TSCALE is the time scale used for velocity; TSCALE has units 
-  of TDB seconds. For example, if the time units of the velocity data 
-  are TDB Julian days, then TSCALE is 86400.                          
+   of TDB seconds. For example, if the time units of the velocity data 
+   are TDB Julian days, then TSCALE is 86400.                          
                                                                       
 #. INITJD is the integer part of the TDB Julian date of the     
-  initial epoch of the first record. INITJD has units of Julian days. 
-  INITJD may be less than, equal to, or greater than the initial      
-  epoch.                                                              
+   initial epoch of the first record. INITJD has units of Julian days. 
+   INITJD may be less than, equal to, or greater than the initial      
+   epoch.                                                              
                                                                       
 #. INITFR is the fractional part of the TDB Julian date of the  
-  initial epoch of the first record. INITFR has units of Julian days. 
-  INITFR has magnitude strictly less than 1 day. The sum INITJD +     
-  INITFR equals the TDB Julian date of the initial epoch of the first 
-  record.                                                             
+   initial epoch of the first record. INITFR has units of Julian days. 
+   INITFR has magnitude strictly less than 1 day. The sum INITJD +     
+   INITFR equals the TDB Julian date of the initial epoch of the first 
+   record.                                                             
                                                                       
 #. INTLEN is the length of the interval covered by each record, 
-  in TDB Julian days.                                                 
+   in TDB Julian days.                                                 
                                                                       
 #. RSIZE is the total size of (number of array elements in)     
-  each record. The same number of coefficients is always used for     
-  each component, and all records are the same size. RSIZE is 3 +     
-  3*(DEGP+1), where DEGP is the common degree of the Chebyshev        
-  expansions for each velocity component.                             
+   each record. The same number of coefficients is always used for     
+   each component, and all records are the same size. RSIZE is 3 +     
+   3*(DEGP+1), where DEGP is the common degree of the Chebyshev        
+   expansions for each velocity component.                             
                                                                       
 #. N is the number of records contained in the segment.         
                                                                       
@@ -3988,7 +3976,7 @@ header of the function provides a complete description of the input
 arguments and an example of its usage.                                
                                                 
 Type 21: Extended Modified Difference Arrays              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | SPK data type 21 contains extended Modified Difference Arrays       
   (MDA), also called \``difference lines.'' These data structures use 
@@ -4082,12 +4070,12 @@ epoch is the index of the first epoch in the segment's epoch list not
 less than the specified epoch.                                        
                                                 
 Appendix A --- Summary of SP-kernel Functions             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
                                                 
 Summary of Mnemonics                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
                                                               
@@ -4212,7 +4200,7 @@ alphabetical order.
                                                 
                                                                       
 Summary of Calling Sequences                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
                                                               
@@ -4430,7 +4418,7 @@ To write new or append segments to SPK files:
                                                 
                                                                       
 Appendix B --- A Template for SPK Comments                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
                                                               
@@ -4460,7 +4448,7 @@ this task NAIF has devised a \``template'' that you may wish to use
 as a starting point when creating the comments for an SPK file.       
                                                 
 Constraints                                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
                                                               
@@ -4470,19 +4458,19 @@ Constraints
   126).                                                               
                                                 
 The Basic Template                                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
                                                               
 | Here's one way to create the comments for an SPK file.              
                                                 
 Objects in the Ephemeris                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | List the names and NAIF ID codes for the objects in the file.       
                                                 
 Approximate Time Coverage                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Provide a summary of the time for which states are available for    
   the objects in the file. If you use UTC times in this summary and   
@@ -4493,7 +4481,7 @@ Approximate Time Coverage
   if it extends years into the future.                                
                                                 
 Status                                                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Provide the \``status'' of the ephemeris. Tell the user why this    
   ephemeris was created and for whom it is intended. For example, if  
@@ -4506,7 +4494,7 @@ Status
   suitable?                                                           
                                                 
 Pedigree                                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Provide a production summary for the ephemeris. Tell when the       
   ephemeris was produced (the system time stamp may not port if the   
@@ -4520,7 +4508,7 @@ Pedigree
   better chance of fixing the problem.                                
                                                 
 Usage                                                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Provide information the user will need to effectively use the       
   ephemeris. Tell the user what other SPICE kernels are needed to use 
@@ -4534,21 +4522,21 @@ Usage
   which of these kernels the user should use with your SPK file.      
                                                 
 Accuracy                                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | If possible give some estimate as to the accuracy of your SPK file. 
   Use numbers. Words such as \``this is the best available'' do not   
   convey how much you know about the ephemeris.                       
                                                 
 Special Notes                                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Provide a description of any special properties of this ephemeris.  
   For example, if some observation seems to be in conflict with this  
   ephemeris you should probably point this out.                       
                                                 
 References                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | List any references that may be relevant to the understanding of    
   the ephemeris. For example, if the ephemeris is based upon          

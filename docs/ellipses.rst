@@ -4,7 +4,7 @@ Ellipses and Ellipsoids Required Reading
                                             
                                                                       
 Abstract                                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                                                                                                                
 | CSPICE contains a substantial set of subroutines that solve common  
   mathematical problems involving ellipses and triaxial ellipsoids.   
@@ -15,7 +15,7 @@ Abstract
                                 
                                                                       
 Introduction                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The \`ellipse' is a structured data type used in CSPICE to          
   represent ellipses in three-dimensional space. SPICE ellipses exist 
@@ -33,7 +33,7 @@ Ellipses are also used in modeling orbits and planetary rings.
                                                                                                     
                                                                       
 References                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
                                                                       
 #. \`Report of the IAU/IAG/COSPAR Working Group on Cartographic Coordinates and Rotational Elements of the Planets and Satellites: 2009', December 4, 2010.                                            
@@ -47,7 +47,7 @@ References
                                                 
                                                                       
 Ellipse Data Type Description                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                    
                                                         
 | The following representation of an ellipse is used throughout       
@@ -123,12 +123,12 @@ to ellipse) and accessed using `el2cgv_c <../cspice/el2cgv_c.html>`__
                                 
                                                                       
 Ellipse and ellipsoid routines                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
                                 
                                                                       
 Constructing ellipses                                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Let \`center', \`v1', and \`v2' be a center vector and two          
   generating vectors for an ellipse.                                  
@@ -170,7 +170,7 @@ to
                                                 
                                                                       
 Access to ellipse data elements                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Let \`ellips' be a SPICE ellipse. To produce the center and two     
   generating vectors for \`ellips', we can make the call              
@@ -191,7 +191,7 @@ to the ellipse itself; \`v2' is an analogous vector of minimum norm.
                                                                       
 `cgv2el_c <../cspice/cgv2el_c.html>`__ and                
    `el2cgv_c <../cspice/el2cgv_c.html>`__ are not inverses            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Because the routine `el2cgv_c <../cspice/el2cgv_c.html>`__ always   
   returns semi-axes as generating vectors, if \`v1' and \`v2' are not 
@@ -215,7 +215,7 @@ define the same ellipse as the input center and generating vectors.
                                 
                                                                       
 Triaxial ellipsoid routines                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                                                                        
                                                         
 | The CSPICE routines used to perform geometric calculations          
@@ -245,7 +245,7 @@ Triaxial ellipsoid routines
                                                 
                                                                       
 Ellipse routines                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                                                                         
                                                         
 | The CSPICE routines used to perform geometric calculations          
@@ -266,11 +266,11 @@ Ellipse routines
                                                 
                                                                       
 Examples                                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                                       
                                                                       
 Finding the \`limb angle' of an instrument boresight      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | If we want to find the angle of a ray above the limb of an          
   ellipsoid, where the angle is measured in a plane containing the    
@@ -340,7 +340,7 @@ separations we've computed.
                                                 
                                                                       
 Header examples                                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The headers of the ellipse and ellipsoid routines list additional   
   usage examples.                                                     
@@ -348,7 +348,7 @@ Header examples
                                 
                                                                       
 Use of ellipses with planes                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The nature of geometry problems involving planes often includes use 
   of the SPICE ellipse data type. The example code listed in the      
@@ -359,7 +359,7 @@ Use of ellipses with planes
                                 
                                                                       
 Summary of routines                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         
 |                                                                     
 | The following table summarizes the SPICE ellipse and ellipsoid      
@@ -387,10 +387,10 @@ Summary of routines
                                                 
                                                                       
 Appendix A: Mathematical notes                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^     
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^     
                                                                       
 Defining an ellipse parametrically                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                    
                                                         
 | Our aim is to show that the set of points                           
@@ -599,7 +599,7 @@ conclude they're positive.
                                 
                                                                       
 Solving intersection problems                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                  
                                                         
 | There is one problem solving technique used in SPICE ellipse and    

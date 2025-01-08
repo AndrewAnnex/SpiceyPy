@@ -3,37 +3,37 @@ C-Kernel Required Reading
 =========================
                                                                       
 Abstract                                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | The C-kernel (CK) system is the component of SPICE concerned with   
   attitude of spacecraft structures or instruments.                   
                                             
                                                                       
 References                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | All references are to NAIF documents. The notation [Dn] refers to   
   NAIF document number.                                               
                                                                       
-#. [167] Double Precision Array Files Required Reading          
-  (`daf.req <../req/daf.html>`__)                                     
+#. [167] Double Precision Array Files Required Reading 
+    (`daf.req <../req/daf.html>`__)                                     
                                                                       
 #. [349] FRAMES Required Reading                                
-  (`frames.req <../req/frames.html>`__).                              
+    (`frames.req <../req/frames.html>`__).                              
                                                                       
 #. [222] Spacecraft Clock Time Required Reading                 
-  (`sclk.req <../req/sclk.html>`__)                                   
+    (`sclk.req <../req/sclk.html>`__)                                   
                                                                       
 #. [214] Rotations Required Reading                             
-  (`rotation.req <../req/rotation.html>`__)                           
+    (`rotation.req <../req/rotation.html>`__)                           
                                                                       
 #. [211] SPC Required Reading: Comments in SPK and CK Files     
-  (`spc.req <../req/spc.html>`__)                                     
+    (`spc.req <../req/spc.html>`__)                                     
                                                                       
                                                 
                                                                       
 DAF Run-Time Binary File Format Translation               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | Starting with the N0052 release of the SPICE Toolkit (January,      
   1)    certain supported platforms are able to read DAF-based binary 
@@ -47,7 +47,7 @@ DAF Run-Time Binary File Format Translation
                                             
                                                                       
 Detection of Non-native Text Files                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | Starting with the N0057 release of the SPICE Toolkit (March, 2004)  
   the SPICE data loading mechanism detects and prohibits loading text 
@@ -60,7 +60,7 @@ Detection of Non-native Text Files
                                             
                                                                       
 Introduction                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | In the SPICE system, pointing data for science instruments are      
   stored in the C-kernel, the \``C'' in SPICE. The pointing of an     
@@ -90,7 +90,7 @@ CK functions presented in this document is included as Appendix A.
                                             
                                                                       
 Preliminaries                                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | In this chapter we discuss four concepts that are essential to      
   using the C-kernel: specification of spacecraft and instruments,    
@@ -98,7 +98,7 @@ Preliminaries
                                             
                                                                       
 Specifying Spacecraft and Instruments                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | C-kernel files and software use integer codes to refer to           
   instruments and the spacecraft on which they are mounted. You will  
@@ -156,7 +156,7 @@ offset angles obtained from the I-kernel.
                                             
                                                                       
 C-Matrices                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | A C-matrix is a 3x3 matrix that transforms Cartesian coordinates    
   referenced to a \``base frame'' to coordinates in an                
@@ -202,7 +202,7 @@ other CSPICE functions.
                                             
                                                                       
 Angular Velocity Vectors                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | In the C-kernel an angular velocity vector is a vector with respect 
   to a base frame whose direction gives the right-handed axis about   
@@ -223,7 +223,7 @@ C-matrix.
                                             
                                                                       
 Spacecraft Clock Time                                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | Each piece of data within the C-kernel is associated with a         
   spacecraft clock time (SCLK). This is because the spacecraft clock  
@@ -246,7 +246,7 @@ of the functions presented require a clock time as an input argument.
                                             
                                                                       
 Encoded SCLK                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Encoded SCLK values may be discrete or continuous.                  
                                                                       
@@ -300,7 +300,7 @@ To convert continuous encoded SCLK to ET, use
                                                 
                                                                       
 Ticks and Partitions                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The units of encoded SCLK are \``ticks since clock start at         
   launch,'' where a \``tick'' is defined to be the shortest time      
@@ -324,7 +324,7 @@ string.
                                             
                                                                       
 SCLK and other time systems                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | CSPICE contains functions that convert between both the encoded and 
   character form of spacecraft clock time and two other time systems. 
@@ -344,7 +344,7 @@ spacecraft clock time conversions.
                                             
                                                                       
 The SCLK kernel file                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Before calling any of the SCLK conversion functions mentioned       
   above, you have to load the contents of the SCLK kernel file into   
@@ -363,7 +363,7 @@ pool if you are going to convert between ET and UTC.
                                             
                                                                       
 Basics                                                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | This chapter will present the easiest way to use C-kernel software  
   to obtain pointing data from a CK file for a particular instrument. 
@@ -382,7 +382,7 @@ program.
                                             
                                                                       
 The CK File Reader `ckgp_c <../cspice/ckgp_c.html>`__     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | Below is a code fragment illustrating the use of the C-kernel file  
   reader `ckgp_c <../cspice/ckgp_c.html>`__ (Get Pointing). The       
@@ -464,7 +464,7 @@ document.
                                                 
                                                                       
 `furnsh_c <../cspice/furnsh_c.html>`__                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | `furnsh_c <../cspice/furnsh_c.html>`__ loads the kernel pool with   
   the contents of the specified text kernel file, which, in this case 
@@ -490,9 +490,8 @@ program. Among other things, the lower level routines called by
 appropriate options, relieving you of that responsibility.            
 |                                                         
                                                                       
-`scencd_c <../cspice/scencd_c.html>`__ and                
-   `sce2c_c <../cspice/sce2c_c.html>`__                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+`scencd_c <../cspice/scencd_c.html>`__ and `sce2c_c <../cspice/sce2c_c.html>`__                               
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | `scencd_c <../cspice/scencd_c.html>`__ encodes a character          
   representation of spacecraft clock time such as                     
@@ -509,7 +508,7 @@ You must use encoded SCLK when calling CK reader functions.
                                             
                                                                       
 `sctiks_c <../cspice/sctiks_c.html>`__                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | `sctiks_c <../cspice/sctiks_c.html>`__ converts a clock string      
   without partition number to units of \``ticks,'' which are the      
@@ -527,7 +526,7 @@ fifty-five minutes - a length of time).
                                             
                                                                       
 `ckgp_c <../cspice/ckgp_c.html>`__                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | `ckgp_c <../cspice/ckgp_c.html>`__ looks through files loaded by    
   `furnsh_c <../cspice/furnsh_c.html>`__ to find the data needed to   
@@ -580,7 +579,7 @@ Outputs are:
                                                 
                                                                       
 The CK File Reader `ckgpav_c <../cspice/ckgpav_c.html>`__ 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | `ckgpav_c <../cspice/ckgpav_c.html>`__ (Get Pointing and Angular    
   Velocity) is almost identical to                                    
@@ -609,7 +608,7 @@ of this document.
                                             
                                                                       
 Multiple Files and the C-kernel                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | There will probably be occasions when you will want to access       
   pointing that is contained in more than one CK file. For instance,  
@@ -711,7 +710,7 @@ looking through a file, then, you need to unload it, with
                                                 
                                                                       
 CK Coverage Summary Routines                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | The CSPICE includes two functions for obtaining information about   
   the contents of a CK file from within an application.               
@@ -734,7 +733,7 @@ routines.
                                             
                                                                       
 Details                                                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | In the previous chapter, we introduced the two CK readers,          
   `ckgp_c <../cspice/ckgp_c.html>`__ and                              
@@ -749,7 +748,7 @@ files and segments to obtain the data that they need.
                                             
                                                                       
 File Structure and Implementation                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | Each C-kernel file is made up of a number of \``segments.'' A       
   segment is a set of logical records containing double precision     
@@ -777,7 +776,7 @@ information about the data contained inside.
                                             
                                                                       
 Segment Descriptors                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The C-kernel reader functions begin addressing the question, \``Can 
   the request for pointing be satisfied by this segment?'' by looking 
@@ -810,8 +809,7 @@ Each segment descriptor contains two double precision components
       ICD(6)  |  End   Address |                                      
               ------------------                                      
                                                                       
-**DCD(1),                                                             
-DCD(2)**                                                              
+**DCD(1),DCD(2)**                                                              
    The initial and final encoded spacecraft clock times for the       
    segment.                                                           
                                                                       
@@ -837,8 +835,7 @@ DCD(2)**
    the segment contains pointing data only. If ICD(4) = 1, then the   
    segment contains angular velocity data as well.                    
                                                                       
-**ICD(5),                                                             
-ICD(6)**                                                              
+**ICD(5),ICD(6)**                                                              
    Initial and final addresses of the segment data within the file.   
    Users will typically not want or need to know about these          
    addresses. They tell the readers where to go within a file to get  
@@ -855,7 +852,7 @@ individual components.
                                             
                                                                       
 Segment Identifiers                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The idea behind a segment identifier is to provide a character      
   field which allows a user to determine the exact origin of the      
@@ -883,7 +880,7 @@ the details about the source of the data.
                                             
                                                                       
 Comment Area                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | In addition to segment identifiers, every binary CK file has a      
   \``Comment Area'' for storing free-format textual information about 
@@ -910,7 +907,7 @@ SPC Required Reading, `spc.req <../req/spc.html>`__.
                                             
                                                                       
 A CK file is a DAF                                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Each CK file is one implementation of a NAIF construct called a     
   Double Precision Array File (DAF). DAFs are described in detail in  
@@ -928,7 +925,7 @@ functions certainly will.
                                             
                                                                       
 SPICE File Identification Word in CK Files                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The SPICE file identification word occupying the first eight bytes  
   of a properly created binary CK file is \``DAF/CK ''. For more      
@@ -937,7 +934,7 @@ SPICE File Identification Word in CK Files
                                             
                                                                       
 How the CK Readers Work                                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | There are basically two steps to reading data from the C-kernel:    
   locating the segment applicable to the request made, and evaluating 
@@ -948,7 +945,7 @@ How the CK Readers Work
                                             
                                                                       
 The General Search Algorithm                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The CK readers search through files loaded by                       
   `furnsh_c <../cspice/furnsh_c.html>`__ to satisfy a pointing        
@@ -1103,9 +1100,8 @@ The next few sections will go into greater detail about how
 `ckgpav_c <../cspice/ckgpav_c.html>`__ search through segments.       
                                             
                                                                       
-The Difference Between `ckgp_c <../cspice/ckgp_c.html>`__ 
-   and `ckgpav_c <../cspice/ckgpav_c.html>`__                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The Difference Between `ckgp_c <../cspice/ckgp_c.html>`__ and `ckgpav_c <../cspice/ckgpav_c.html>`__                         
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The only significant difference between the search algorithms of    
   `ckgp_c <../cspice/ckgp_c.html>`__ and                              
@@ -1135,7 +1131,7 @@ with and without angular velocity data in the same file.
                                             
                                                                       
 Locating the Applicable Segment                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Within `ckgp_c <../cspice/ckgp_c.html>`__ and                       
   `ckgpav_c <../cspice/ckgpav_c.html>`__, finding the right segment   
@@ -1178,7 +1174,7 @@ buffer by changing the parameter STSIZE in ckbsr\_.
                                             
                                                                       
 Looking at Descriptors                                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The descriptor and handle returned by cksns\_ are used by other CK  
   functions to locate and evaluate the pointing records. In order to  
@@ -1188,7 +1184,7 @@ Looking at Descriptors
                                             
                                                                       
 Evaluating the Records --- the Reader ckpfs\_             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | After locating an appropriate segment via cksns\_,                  
   `ckgp_c <../cspice/ckgp_c.html>`__ and                              
@@ -1216,7 +1212,7 @@ that same base frame.
                                             
                                                                       
 Transforming the Results                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The final task performed by `ckgp_c <../cspice/ckgp_c.html>`__ and  
   `ckgpav_c <../cspice/ckgpav_c.html>`__ is to transform the returned 
@@ -1269,7 +1265,7 @@ are in the frame \`refseg'.
 |                                                         
                                                                       
 Data Types                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | The C-kernel framework for providing pointing data has been         
   designed for flexibility. Different methods of storing and          
@@ -1329,7 +1325,7 @@ are described in detail in the sections that follow.
                                             
                                                                       
 Data Type 1                                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | The following method of storing and evaluating discrete pointing    
   and angular rate values defines C-kernel data type 1.               
@@ -1439,7 +1435,7 @@ closest to the input time.
                                             
                                                                       
 Type 1 functions                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | There are several CK functions that support data type 1. Their      
   names and functions are:                                            
@@ -1463,7 +1459,7 @@ Type 1 functions
                                                 
                                                                       
 Data Type 2                                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | The following method of storing and evaluating continuous pointing  
   data for a spacecraft structure defines C-kernel data type 2.       
@@ -1479,21 +1475,20 @@ A type 2 CK segment contains the following information for each
 interval:                                                             
                                                                       
 #. The encoded spacecraft clock START and STOP times for the    
-  interval.                                                           
+    interval.                                                           
                                                                       
 #. The quaternion representing the C-matrix associated with the 
-  start time of the interval.                                         
+    start time of the interval.                                         
                                                                       
 #. The constant angular velocity vector, in radians per second, 
-  for the interval.                                                   
+    for the interval.                                                   
                                                                       
 #. A factor which relates seconds and encoded SCLK ticks. This  
-  is necessary to convert the difference between the requested and    
-  interval start times from SCLK to seconds.                          
+    is necessary to convert the difference between the requested and    
+    interval start times from SCLK to seconds.                          
                                                                       
 The orientation of a spacecraft structure may be determined from the  
-above information at any time that is within the bounds of one of the 
-intervals.                                                            
+above information at any time that is within the bounds of one of the intervals.                                                            
 Every type 2 segment is organized into four parts.                    
                                                                       
 ::                                                                    
@@ -1606,7 +1601,7 @@ groups of 100 or less.
 |                                                         
                                                                       
 Type 2 functions                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | There are several CK functions that support data type 2. Their      
   names and functions are:                                            
@@ -1630,7 +1625,7 @@ Type 2 functions
                                                 
                                                                       
 Data Type 3                                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | The following method of storing and evaluating discrete pointing    
   data for a spacecraft structure defines C-kernel data type 3.       
@@ -1859,23 +1854,23 @@ complete description of the inputs required to write a segment.
                                             
                                                                       
 Linear Interpolation Algorithm                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The linear interpolation performed between adjacent pointing        
   instances by the CK software is defined by the following algorithm: 
                                                                       
 #. Let t be the time for which pointing is desired and let      
-  CMAT1 and CMAT2 be C-matrices associated with times t1 and t2 such  
-  that:                                                               
+   CMAT1 and CMAT2 be C-matrices associated with times t1 and t2 such  
+   that:                                                               
                                                                       
 ::                                                                    
                                                                       
                               t1 <= t <= t2,  where t1 < t2.          
                                                                       
 #. Assume that the spacecraft frame rotates about a fixed axis  
-  at a constant angular rate from time t1 to time t2. Then the        
-  rotation axis and angle can be derived from the rotation matrix     
-  ROT12 where:                                                        
+   at a constant angular rate from time t1 to time t2. Then the        
+   rotation axis and angle can be derived from the rotation matrix     
+   ROT12 where:                                                        
                                                                       
 ::                                                                    
                                                                       
@@ -1887,12 +1882,12 @@ Linear Interpolation Algorithm
                               ROT12   =  CMAT2    *   CMAT1           
                                                                       
 #. Obtain the axis and angle of the rotation from the matrix    
-  ROT12. Let the axis vector of the rotation be AXIS and the rotation 
-  angle be ANGLE.                                                     
+   ROT12. Let the axis vector of the rotation be AXIS and the rotation 
+   angle be ANGLE.                                                     
                                                                       
 #. To obtain pointing information at time t, rotate the         
-  spacecraft frame about the vector AXIS from its orientation at time 
-  t1 by the angle THETA where:                                        
+   spacecraft frame about the vector AXIS from its orientation at time 
+   t1 by the angle THETA where:                                        
                                                                       
 ::                                                                    
                                                                       
@@ -1901,8 +1896,8 @@ Linear Interpolation Algorithm
                                                    ( t2 - t1 )        
                                                                       
 #. Thus if ROT1t is the matrix that rotates vectors by the      
-  angle THETA about the vector AXIS, then the desired C-matrix is     
-  given by:                                                           
+   angle THETA about the vector AXIS, then the desired C-matrix is     
+   given by:                                                           
                                                                       
 ::                                                                    
                                                                       
@@ -1914,8 +1909,8 @@ Linear Interpolation Algorithm
                               CMAT  =  CMAT1   *   ROT1t              
                                                                       
 #. The angular velocity is treated independently of the         
-  C-matrix. If it is requested, then the AV at time t is the weighted 
-  average of the angular velocity vectors at time t1 and time t2:     
+   C-matrix. If it is requested, then the AV at time t is the weighted 
+   average of the angular velocity vectors at time t1 and time t2:     
                                                                       
 ::                                                                    
                                                                       
@@ -1931,7 +1926,7 @@ Linear Interpolation Algorithm
                                                 
                                                                       
 Type 3 functions                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | There are several CK functions that support data type 3. Their      
   names and function are:                                             
@@ -1955,7 +1950,7 @@ Type 3 functions
                                                 
                                                                       
 Data Type 4                                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | The following method of storing and evaluating continuous pointing  
   data for a spacecraft structure defines C-kernel data Type 4.       
@@ -2042,24 +2037,24 @@ generic segments here.
 A generic CK segment contains several logical data partitions:        
                                                                       
 #. A partition for constant values to be associated with each   
-  data packet in the segment.                                         
+   data packet in the segment.                                         
                                                                       
 #. A partition for the data packets.                            
                                                                       
 #. A partition for packet coverage begin times.                 
                                                                       
 #. A partition for a packet directory, if the segment contains  
-  variable sized packets.                                             
+   variable sized packets.                                             
                                                                       
 #. A partition for a packet coverage begin time directory.      
                                                                       
 #. A reserved partition that is not currently used. This        
-  partition is only for the use of the NAIF group at the Jet          
-  Propulsion Laboratory (JPL).                                        
+   partition is only for the use of the NAIF group at the Jet          
+   Propulsion Laboratory (JPL).                                        
                                                                       
 #. A partition for the metadata which describes the locations   
-  and sizes of other partitions as well as providing some additional  
-  descriptive information about the generic segment.                  
+   and sizes of other partitions as well as providing some additional  
+   descriptive information about the generic segment.                  
                                                                       
 ::                                                                    
                                                                       
@@ -2164,7 +2159,7 @@ ckw04b\_, ckw04a\_ and ckw04e\_, provided in the CSPICE.
                                             
                                                                       
 CK Type 4 pointing evaluation algorithm                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The CSPICE function chbval\_ is used to evaluate individual         
   quaternion and angular rate components from the corresponding       
@@ -2173,7 +2168,7 @@ CK Type 4 pointing evaluation algorithm
                                             
                                                                       
 Type 4 functions                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | There are several CK functions that support data Type 4. Their      
   names and functions are:                                            
@@ -2203,7 +2198,7 @@ Type 4 functions
                                                 
                                                                       
 Data Type 5                                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | CK type 5 has been provided to support accurate duplication within  
   the CK system of spacecraft attitude data used by the European      
@@ -2228,7 +2223,7 @@ The CK type 5 subtypes are as follows:
                                                                       
 #. Subtype 0:                                                   
                                                                       
-- ```` Sliding-window Hermite interpolation of quaternions and        
+- Sliding-window Hermite interpolation of quaternions and        
   quaternion derivatives. Attitude and angular velocity are           
   represented by a series of 8-element \``packets'' and associated    
   time tags. The time tags may be unequally spaced. Each packet       
@@ -2243,7 +2238,7 @@ The CK type 5 subtypes are as follows:
                                                                       
 #. Subtype 1:                                                   
                                                                       
-- ```` Sliding-window Lagrange interpolation of quaternions. Attitude 
+- Sliding-window Lagrange interpolation of quaternions. Attitude 
   is represented by a series of 4-element \``packets'' and associated 
   time tags. The time tags may be unequally spaced. Each packet       
   contains four quaternion components. A quaternion representing      
@@ -2254,14 +2249,14 @@ The CK type 5 subtypes are as follows:
   unitized. The same interpolation degree is used for each quaternion 
   component.                                                          
                                                                       
-- ```` Angular velocity is obtained by first forming the time         
+- Angular velocity is obtained by first forming the time         
   derivative of the quaternion using the derivatives of the           
   interpolating polynomials, then combining the quaternion and its    
   derivative to obtain angular velocity.                              
                                                                       
 #. Subtype 2:                                                   
                                                                       
-- ```` Sliding-window Hermite interpolation of quaternions and        
+- Sliding-window Hermite interpolation of quaternions and        
   angular velocity. Attitude and angular velocity are represented by  
   a series of 14-element \``packets'' and associated time tags. The   
   time tags may be unequally spaced. Each packet contains four        
@@ -2281,7 +2276,7 @@ The CK type 5 subtypes are as follows:
                                                                       
 #. Subtype 3:                                                   
                                                                       
-- ```` Sliding-window Lagrange interpolation of quaternions and       
+- Sliding-window Lagrange interpolation of quaternions and       
   angular velocity. Attitude and angular velocity are represented by  
   a series of 7-element \``packets'' and associated time tags. The    
   time tags may be unequally spaced. Each packet contains four        
@@ -2555,7 +2550,7 @@ for a complete description of the inputs required to write a segment.
 |                                                         
                                                                       
 Type 5 functions                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | There are several CK functions that support data type 5. Their      
   names and functions are:                                            
@@ -2579,7 +2574,7 @@ Type 5 functions
                                                 
                                                                       
 Type 6: ESOC/DDID Piecewise Interpolation                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | CK type 6 has been provided to support accurate duplication by the  
   SPICE CK subsystem of spacecraft attitude data used by the European 
@@ -2608,7 +2603,7 @@ segment, as long as the type 5 segments satisfy certain restrictions:
                                                 
                                                                       
 Terminology                                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | In this section of the document, \``pointing'' is a synonym for     
   \``attitude'' or \``orientation.''                                  
@@ -2628,7 +2623,7 @@ Mini-segment time coverage bounds are also called \``boundaries.''
                                             
                                                                       
 Mini-segments                                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Within a type 6 segment, each set of data corresponding to a type 5 
   segment is called a \``mini-segment.'' A type 6 segment contains    
@@ -2776,7 +2771,7 @@ if the flag is "false," pointing will be selected from interval n.
 |                                                         
                                                                       
 Type 6 subtypes                                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Because of the possibility of evolution of the mathematical         
   representations of attitude used by ESA, CK type 6 is designed to   
@@ -2789,7 +2784,7 @@ Currently CK type 6 supports four subtypes:
                                                                       
 - Subtype 0:                                                   
                                                                       
-- ```` Sliding-window Hermite interpolation of quaternions and        
+- Sliding-window Hermite interpolation of quaternions and        
   quaternion derivatives. Attitude and angular velocity are           
   represented by a sequence of 8-element \``packets'' and associated  
   time tags. The time tags may be unequally spaced. Each packet       
@@ -2805,7 +2800,7 @@ Currently CK type 6 supports four subtypes:
                                                                       
 - Subtype 1:                                                   
                                                                       
-- ```` Sliding-window Lagrange interpolation of quaternions. Attitude 
+- Sliding-window Lagrange interpolation of quaternions. Attitude 
   is represented by a sequence of 4-element \``packets'' and          
   associated time tags. The time tags may be unequally spaced. Each   
   packet contains four quaternion components. A quaternion            
@@ -2816,13 +2811,13 @@ Currently CK type 6 supports four subtypes:
   quaternion is then unitized. The same interpolation degree is used  
   for each quaternion component.                                      
                                                                       
-- ```` Angular velocity is computed from the unit-length quaternion   
+- Angular velocity is computed from the unit-length quaternion   
   and its time derivative. The derivative is computed using the       
   derivatives of the interpolating polynomials.                       
                                                                       
 - Subtype 2:                                                   
                                                                       
-- ```` Sliding-window Hermite interpolation of quaternions and        
+- Sliding-window Hermite interpolation of quaternions and        
   angular velocity. Attitude and angular velocity are represented by  
   a sequence of 14-element \``packets'' and associated time tags. The 
   time tags may be unequally spaced. Each packet contains four        
@@ -2842,7 +2837,7 @@ Currently CK type 6 supports four subtypes:
                                                                       
 - Subtype 3:                                                   
                                                                       
-- ```` Sliding-window Lagrange interpolation of quaternions and       
+- Sliding-window Lagrange interpolation of quaternions and       
   angular velocity. Attitude and angular velocity are represented by  
   a sequence of 7-element \``packets'' and associated time tags. The  
   time tags may be unequally spaced. Each packet contains four        
@@ -2888,7 +2883,7 @@ is the nominal window size.
                                             
                                                                       
 Restrictions on type 6 data                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | All data used in type 6 segments must be suitable for use by the    
   interpolation algorithms associated with the subtypes selected by   
@@ -2917,7 +2912,7 @@ the matrices must be close to each other.
                                             
                                                                       
 Type 6 segment structure                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Below we first describe the overall type 6 segment structure, then  
   we cover the mini-segment structure.                                
@@ -3102,7 +3097,7 @@ input arguments and an example of its usage.
                                             
                                                                       
 Use of non-zero tolerance                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | As with other CK types, type 6 segments can provide data for        
   request times outside of their interpolation intervals if a         
@@ -3141,7 +3136,7 @@ segments.
                                             
                                                                       
 Type 6 functions                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | There are several CK functions that support data type 6. Their      
   names and functions are:                                            
@@ -3170,11 +3165,11 @@ Type 6 functions
                                                 
                                                                       
 Appendix A --- Summary of C-kernel Functions              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                     
                                                                       
 Summary of Mnemonics                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | Each C-kernel function name consists of a mnemonic which translates 
   into a short description of the function's purpose. Those beginning 
@@ -3271,7 +3266,7 @@ Summary of Mnemonics
                                                 
                                                                       
 Summary of Calling Sequences                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
                                                                       
 ::                                                                    
@@ -3425,7 +3420,7 @@ Summary of Calling Sequences
                                                 
                                                                       
 Appendix B --- Example Program PLANET_POINT               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | The following program shows how C-kernel functions fit together     
   with other CSPICE routines to solve a typical problem requiring     
@@ -3790,7 +3785,7 @@ library.
                                                 
                                                                       
 Appendix C --- An Example of Writing a Type 1 CK Segment  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | The following example shows how one might write a program to create 
   or add to a C-kernel file.                                          
@@ -3936,7 +3931,7 @@ creating a new file.
                                                 
                                                                       
 Appendix D --- An Example of Writing a Type 2 CK Segment  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | This example program creates a single type 2 segment of predict     
   pointing for the scan platform of the Galileo spacecraft.           
@@ -4158,7 +4153,7 @@ SCLK for use in the C-kernel.
                                                 
                                                                       
 Appendix E --- An Example of Writing a Type 3 CK Segment  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
 | The following example program shows how one might write a type 3    
   C-kernel segment to a new file.                                     
@@ -4562,24 +4557,24 @@ planetary constants kernel files are fictitious.
                                                 
                                                                       
 Appendix G: Document Revision History                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                     
                                                                       
 February 13, 2014                                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Added documentation of CK type 6.                                   
                                             
                                                                       
 April 1, 2009                                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Added a note about the SPICE file identification word for CK        
   kernels.                                                            
                                             
                                                                       
 November 17, 2005                                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Abstract was added.                                                 
                                                                       
@@ -4594,7 +4589,7 @@ C examples showing incorrect calling sequences for
                                             
                                                                       
 December 21, 2004                                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Replaced references and examples of lower level CK                  
   loading/unloading functions with                                    
@@ -4603,13 +4598,13 @@ December 21, 2004
                                             
                                                                       
 February 2, 2004                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Performed a spell-check on text.                                    
                                             
                                                                       
 September 04, 2002                                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Added a discussion of CK type 05.                                   
                                                                       
@@ -4618,7 +4613,7 @@ translation capability now present in the SPICE Toolkit.
                                             
                                                                       
 February 15, 2000                                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | This February 2000 version of the document differs from the         
   previous version of October 1999 in the following areas:            
@@ -4628,14 +4623,14 @@ Type 4--was added to the document.
                                             
                                                                       
 October 14, 1999                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | This is the initial release of the CSPICE edition of the CK         
   "Required Reading" document.                                        
                                             
                                                                       
 Overview of the October 14, 1999 revision                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The SPICE system has been extended to include CSPICE---a version of 
   the NAIF Toolkit software coded in the ANSI C programming language. 
@@ -4686,4 +4681,3 @@ here but for which wrappers are not yet implemented are:
                                                                       
       Portions of the DAF family of functions                         
       The SPC family of functions                                     
-----------------------------------------------------------------------

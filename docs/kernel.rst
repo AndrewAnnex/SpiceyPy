@@ -5,7 +5,7 @@ SPICE Kernel Required Reading
                                                 
                                                                       
 Abstract                                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
 
@@ -14,7 +14,7 @@ Abstract
 
                                                          
 Document Outline                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
 
@@ -60,7 +60,7 @@ Appendix E provides the revision history of this document.
 
                                                          
 Introduction to Kernels                                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
 
@@ -74,7 +74,7 @@ Within each architecture there are several kernel types.
 
                                                          
 Kernel Types                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | The SPICE text kernels are:                                         
                                                                       
@@ -108,7 +108,7 @@ The SPICE binary kernels are:
                                                 
                                                                       
 Text Kernels and the Kernel Pool                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | Text kernels are used where the amount of data being stored is      
   relatively small, and where easy human readability and revision are 
@@ -136,7 +136,7 @@ details.
 
                                                          
 Binary Kernels                                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | Binary kernels store large data sets of primarily non-ASCII data,   
   using either the DAF or DAS format (see the technical reference     
@@ -174,13 +174,13 @@ refer to the tutorial named \``Porting Kernels'' for details.
 
                                                          
 SPICE Kernel Type Identification and Kernel Naming        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
 
                                                          
 SPICE Kernel Type Identification                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | Most SPICE users don't need to know about kernel type               
   identification, but since this aspect of kernels is used later on   
@@ -281,7 +281,7 @@ the identifier.
 
                                                          
 Recommendations on Kernel File Naming                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | CSPICE places a few restrictions on kernel file names beyond those  
   imposed by your operating system:                                   
@@ -325,7 +325,7 @@ name extensions, shown below.
                .tsc   text SCLK                                       
                                                
 Binary Kernel Specifications                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
 
@@ -338,7 +338,7 @@ Binary Kernel Specifications
 
                                                          
 Text Kernel Specifications and Interfaces                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
 
@@ -350,7 +350,7 @@ Text Kernel Specifications and Interfaces
 
                                                          
 Text Kernel Specifications                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
 
@@ -496,7 +496,7 @@ Each variable assignment consists of three components:
                                                 
                                                                       
 Variable Name Rules                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | A variable name can include any printable character except:         
                                                                       
@@ -526,7 +526,7 @@ last character.
 
                                                          
 Assignment Rules                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | Direct assignments supersede previous assignments, whereas          
   incremental assignments append the specified values to the set      
@@ -549,7 +549,7 @@ has the same effect as the single assignment
                                                 
                                                                       
 Variable Value Rules                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | Values may be scalar (a single item) or vectors (two or more        
   items). A value may be a number, a string, or a special form of a   
@@ -651,7 +651,7 @@ reject it.
 |                                                                     
                                                          
 Additional Text Kernel Syntax Rules                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | Line Length                                                         
                                                                       
@@ -709,7 +709,7 @@ strings from the kernel pool. See the discussion below under
 
                                                          
 Maximum Numbers of Variables and Variable Values          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | All variable values from all text kernels loaded into your program  
   are stored in the kernel pool. There are upper bounds on the total  
@@ -719,7 +719,7 @@ See Appendix D for the numeric values of these limits.
 
                                                          
 Treatment of Invalid Text Kernels                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | If during a call to `furnsh_c <../cspice/furnsh_c.html>`__, an      
   error is detected in a text kernel, CSPICE will signal an error. By 
@@ -745,7 +745,7 @@ performing computations with data that were not planned to be used.
 
                                                          
 Additional Meta-kernel Specifications                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | A meta-kernel (also known as a \``FURNSH kernel'') is a special     
   instance of a text kernel. Its use has been discussed earlier in    
@@ -764,7 +764,7 @@ Additional Meta-kernel Specifications
                                                                       
 Text Kernel Interfaces - Fetching Data from the Kernel    
    Pool                                                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
 
@@ -866,7 +866,7 @@ For the function `stpool_c <../cspice/stpool_c.html>`__
                                                 
                                                                       
 Informational Functions                                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | Four routines are provided for retrieving general information about 
   the contents of the kernel pool.                                    
@@ -892,7 +892,7 @@ code headers.
 |                                                                     
                                                          
 Section 5 -- Kernel Management                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
 
@@ -903,7 +903,7 @@ Section 5 -- Kernel Management
 
                                                          
 Loading Kernels                                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | For the SPICE system to use kernels, they must be made known to the 
   system and opened at run time. This activity is called \``loading'' 
@@ -1008,7 +1008,7 @@ kernels to be loaded as input arguments to
                                                                       
                                                
 Kernel Priority                                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | It is fairly common that two kernels of the same type - for example 
   two SPKs - to have \``competing data.'' \``Competing'' means that   
@@ -1031,7 +1031,7 @@ higher priority.
 
                                                          
 Path Symbols in Meta-kernels                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | Inside a meta-kernel it is sometimes necessary to qualify kernel    
   names with their path names. To reduce both typing and the need to  
@@ -1093,7 +1093,7 @@ interface.
 
                                                          
 Specifying Kernels Using Relative Paths                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | When a kernel is specified with a relative path, this path should   
   be valid at the time when `furnsh_c <../cspice/furnsh_c.html>`__ is 
@@ -1114,7 +1114,7 @@ specify kernels using absolute paths.
 
                                                          
 Keeping Track of Loaded Kernels                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | The KEEPER subsystem maintains a database of the load operations    
   that `furnsh_c <../cspice/furnsh_c.html>`__ has performed during a  
@@ -1136,7 +1136,7 @@ below under \``Finding Out What's Loaded.''
 
                                                          
 Reloading Kernels                                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | Reloading an already loaded kernel creates another (duplicate)      
   entry in the database of loaded kernels, and thus decreases the     
@@ -1148,7 +1148,7 @@ Reloading Kernels
 
                                                          
 Changing Kernel Priority                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | The recommended method of increasing the priority of a loaded       
   binary kernel, or of a meta-kernel containing binary kernels, is to 
@@ -1159,7 +1159,7 @@ Changing Kernel Priority
 
                                                          
 Load Limits                                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | `furnsh_c <../cspice/furnsh_c.html>`__ can currently keep track of  
   up to 5000 kernels. The list of loaded kernels may contain multiple 
@@ -1175,7 +1175,7 @@ is currently set to a total of 5000 DAF kernels.
 
                                                          
 Finding Out What's Loaded                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | CSPICE-based applications may need to determine at run time which   
   files have been loaded. Applications may need to find the DAF or    
@@ -1279,7 +1279,7 @@ about a kernel whose name is already known.
                                                                       
                                                
 Unloading Kernels                                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | CSPICE-based applications may need to remove loaded kernels.        
   Possible reasons for this are:                                      
@@ -1322,7 +1322,7 @@ by the meta-kernel.
 |                                                                     
                                                          
 Loading of Non-native Text and Binary Kernels             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | The various platforms supported by CSPICE use different end-of-line 
   (EOL) indicators in text files:                                     
@@ -1357,7 +1357,7 @@ file format. See the \``Convert User's Guide'' for details.
 
                                                          
 Manipulating Kernel Pool Contents                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | The main way one adds to or changes the contents of the kernel pool 
   is by \``loading'' a SPICE text kernel using the function           
@@ -1461,7 +1461,7 @@ details regarding their use.
 |                                                                     
                                                          
 Detecting Changes in the Kernel Pool Using Watchers       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | Since loading SPICE text kernels often happens only at program      
   initialization, a function that relies on data in the kernel pool   
@@ -1484,13 +1484,13 @@ use.
 |                                                                     
                                                          
 Appendix A -- Discussion of Competing Data                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
 
                                                          
 Binary Kernels                                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
 
@@ -1499,7 +1499,7 @@ Binary Kernels
 
                                                          
 SPKs                                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | For SPKs, a segment contains data of a single SPK type, providing   
   ephemeris for a single target measured relative to a single center  
@@ -1534,7 +1534,7 @@ delivery is produced.
 
                                                          
 CKs                                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | For CKs, a segment contains data of a single CK type providing the  
   orientation of a reference frame associated with one object or      
@@ -1579,7 +1579,7 @@ delivery is prepared.
 
                                                          
 Binary PCKs                                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | For binary PCKs, a segment contains data of a single binary PCK     
   type providing orientation of a reference frame associated with a   
@@ -1603,7 +1603,7 @@ text PCK.
 
                                                          
 Text Kernels                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
 
@@ -1621,13 +1621,13 @@ one containing competing data.
 
                                                          
 Appendix B -- Glossary of Terms                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
 
                                                          
 Agent                                                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | A string associated with a list of kernel variables to be watched   
   for updates. The string can be passed to the update checking        
@@ -1640,7 +1640,7 @@ to its associated value(s).
 
                                                          
 Assignment                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | What appears inside data blocks of a text kernel. Each assignment   
   consists of three parts: a variable (also called variable name), an 
@@ -1658,14 +1658,14 @@ corresponding left hand sides. See \``direct assignment'' and
 
                                                          
 Continued string                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | A string value composed of two or more pieces--called               
   elements--each of which is no longer than 80 characters.            
 
                                                          
 Control words                                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | Markers indicating the start of data or comment blocks,             
   specifically                                                        
@@ -1678,7 +1678,7 @@ Control words
                                                 
                                                                       
 Direct assignment                                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | A text kernel assignment, made using the \``='' operator. When a    
   direct assignment is processed during text kernel loading, it       
@@ -1687,7 +1687,7 @@ Direct assignment
 
                                                          
 Element                                                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | Within the kernel pool the length of a string value is limited to   
   80 characters. A string value that is longer than 80 characters may 
@@ -1698,7 +1698,7 @@ Element
 
                                                          
 Incremental assignment                                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | A text kernel assignment made using the \``+='' operator. When an   
   incremental assignment is processed during text kernel loading, it  
@@ -1711,7 +1711,7 @@ Incremental assignment
 
                                                          
 Keeper (subsystem)                                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | The SPICE subsystem used to keep track of (manage) loaded kernel    
   files. In this sense it is also involved with the unloading of      
@@ -1719,21 +1719,21 @@ Keeper (subsystem)
 
                                                          
 Kernel pool (sometimes just called \``the pool'')         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | A specially managed area of program memory where data from text     
   kernel assignment statements are stored.                            
 
                                                          
 Kernel variable                                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | Often a synonym for \``variable name,'' but may refer to the        
   combination of a variable name and its associated values.           
 
                                                          
 Meta-kernel (also known as \``FURNSH kernel'')            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | A special kind of text kernel, used to name a collection of kernels 
   that are to be loaded into a user's application at run-time. May    
@@ -1741,7 +1741,7 @@ Meta-kernel (also known as \``FURNSH kernel'')
 
                                                          
 Operator                                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | Within SPICE text kernels, an operator is either \``='' or the      
   sequence of \``+'' and \``='', written as \``+=''. The former is    
@@ -1750,7 +1750,7 @@ Operator
 
                                                          
 Principal data                                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | This term occurs only within this document. It is used to refer to  
   the \``elemental'' data contained in a kernel, as opposed to        
@@ -1763,7 +1763,7 @@ Principal data
 
                                                          
 Value                                                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | That which appears on the right-hand side of an assignment. May be  
   a single value or a vector of values.                               
@@ -1772,7 +1772,7 @@ variable name = value(s)
 
                                                          
 Variable name                                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | That which appears on the left-hand side of an assignment.          
                                                                       
@@ -1780,13 +1780,13 @@ variable name = value(s)
 
                                                          
 Vector value                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | Two or more values associated with a single variable name.          
 
                                                          
 Appendix C -- Summary of Routines                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
 
@@ -1823,7 +1823,7 @@ Appendix C -- Summary of Routines
                                                                       
                                                
 Appendix D -- Summary of Key Text Kernel Parameter Values 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 
 
