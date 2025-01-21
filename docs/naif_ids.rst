@@ -1,6 +1,9 @@
 =====================
 NAIF Integer ID codes
 =====================
+
+This required reading document is reproduced from the original NAIF
+document available at `https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/naif_ids.html <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/naif_ids.html>`_ 
                                                                  
 Abstract                                                  
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

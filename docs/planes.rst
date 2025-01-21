@@ -3,6 +3,8 @@
 Planes Required Reading
 =======================
 
+This required reading document is reproduced from the original NAIF
+document available at `https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/planes.html <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/planes.html>`_ 
                                                                 
 Abstract                                                  
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
