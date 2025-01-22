@@ -763,8 +763,7 @@ Additional Meta-kernel Specifications
                                                                       
                                                 
                                                                       
-Text Kernel Interfaces - Fetching Data from the Kernel    
-   Pool                                                               
+Text Kernel Interfaces - Fetching Data from the Kernel Pool                                                               
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                       
 

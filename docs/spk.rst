@@ -349,12 +349,9 @@ capabilities:
                                                                       
 #. Insert ephemeris data from some source into an SPK file.     
                                                                       
-#. Make the ephemeris data in one or more SPK files available   
-  to a user's program.                                                
+#. Make the ephemeris data in one or more SPK files available to a user's program.                                                
                                                                       
-#. Return the apparent, true, or geometric state (position and  
-  velocity) of one ephemeris object as seen from another in some      
-  convenient reference frame.                                         
+#. Return the apparent, true, or geometric state (position and velocity) of one ephemeris object as seen from another in some convenient reference frame.                                         
                                                                       
 The SPK software allows you to ignore the potential ephemeris         
 complexity associated with the a mission such as Galileo and allows   
@@ -591,22 +588,15 @@ All C functions, including those whose names do not begin with
 \`SPK', are from CSPICE or the standard ANSI C library.               
 SPK readers are available to perform the following functions.         
                                                                       
-#. Determine the apparent, true, or geometric state of a body   
-  with respect to another body relative to a user specified reference 
-  frame.                                                              
+#. Determine the apparent, true, or geometric state of a body with respect to another body relative to a user specified reference frame.                                                              
                                                                       
-#. Determine the apparent, true, or geometric state of a body   
-  with respect to an observer having a user-supplied state.           
+#. Determine the apparent, true, or geometric state of a body with respect to an observer having a user-supplied state.           
                                                                       
-#. Determine the geometric state of a body with respect to the  
-  solar system barycenter.                                            
+#. Determine the geometric state of a body with respect to the solar system barycenter.                                            
                                                                       
-#. Determine the geometric state of a target body with respect  
-  to its center of motion for a particular segment.                   
+#. Determine the geometric state of a target body with respect to its center of motion for a particular segment.                   
                                                                       
-#. Determine, from a list of SPK files supplied by the calling  
-  program, the files and segments needed to fulfill a request for the 
-  state of a particular body.                                         
+#. Determine, from a list of SPK files supplied by the calling program, the files and segments needed to fulfill a request for the state of a particular body.                                         
                                                                       
                                                 
                                                                       
@@ -1445,8 +1435,7 @@ The descriptor has six integer components:
                                                                       
 #. The NAIF integer code for the reference frame.               
                                                                       
-#. The integer code for the representation (type of ephemeris   
-  data).                                                              
+#. The integer code for the representation (type of ephemeris data).                                                              
                                                                       
 #. The initial address of the array.                            
                                                                       
