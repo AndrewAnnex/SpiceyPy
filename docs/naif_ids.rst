@@ -23,12 +23,12 @@ Introduction
 The reference frame ID-name mappings routines constitute a subsystem  
 separate from the body ID-name mapping routines. Please refer to the  
 Frames Required Reading document                                      
-(`frames.req <../req/frames.html>`__) for specific information.       
+(`frames <../frames.html>`__) for specific information.       
                                                                       
 Likewise, the surface ID-name mappings routines constitute a          
 subsystem separate from the body ID-name mapping routines. Please     
 refer to the DSK Required Reading document                            
-(`dsk.req <../req/dsk.html>`__) for specific information.             
+(`dsk.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/dsk.html>`__) for specific information.             
                                                                       
 An ephemeris object is any object that may have ephemeris or          
 trajectory data such as a planet, natural satellite, tracking         
@@ -88,33 +88,33 @@ Use of Code-to-Name/Name-to-Code Mappings from SPICE
   easily map between an integer code and the object name that code    
   represents or vice-versa.                                           
                                                                       
-`bodc2n_c <../cspice/bodc2n_c.html>`__ performs the integer code to   
+:py:meth:`~spiceypy.spiceypy.bodc2n` performs the integer code to   
 name mapping; input a code, the routine returns the corresponding     
 name:                                                                 
                                                                       
 ::                                                                    
                                                                       
-         bodc2n_c( code, lenout, &name, &found );                     
+         bodc2n( code, lenout, &name, &found );                     
                                                                       
          Where ``lenout'' defines the maximum string length for name. 
                                                                       
-`bodn2c_c <../cspice/bodn2c_c.html>`__ performs the name to integer   
+:py:meth:`~spiceypy.spiceypy.bodn2c` performs the name to integer   
 code mapping; input a name, the routine returns the corresponding ID  
 code:                                                                 
 ::                                                                    
                                                                       
-         bodn2c_c( name, &code, &found );                             
+         bodn2c( name, &code, &found );                             
                                                                       
-`boddef_c <../cspice/boddef_c.html>`__ performs a run-time assignment 
+:py:meth:`~spiceypy.spiceypy.boddef_c` performs a run-time assignment 
 of a name/code mapping for later translation by                       
-`bodc2n_c <../cspice/bodc2n_c.html>`__ and                            
-`bodn2c_c <../cspice/bodn2c_c.html>`__:                               
+:py:meth:`~spiceypy.spiceypy.bodc2n` and                            
+:py:meth:`~spiceypy.spiceypy.bodn2c`:                               
 ::                                                                    
                                                                       
-         boddef_c( name, code );                                      
+         boddef( name, code );                                      
                                                                       
 with \`name' defining the character string associated with integer    
-\`code'. When using `bodn2c_c <../cspice/bodn2c_c.html>`__, the       
+\`code'. When using :py:meth:`~spiceypy.spiceypy.bodn2c`, the       
 \`name' look-up is case insensitive, left justified, and space        
 compressed (multiple spaces between words reduced to one) format.     
 Spaces between words are significant.                                 
@@ -153,7 +153,7 @@ Create new name-ID pairs With a text kernel such as
          NAIF_BODY_NAME  += ( 'LARRY', 'MOE', 'CURLEY', 'SHEMP' )     
                                                                       
 Load the kernel as usual with a                                       
-`furnsh_c <../cspice/furnsh_c.html>`__ call. The names defined in     
+:py:meth:`~spiceypy.spiceypy.furnsh` call. The names defined in     
 NAIF_BODY_NAME map to the corresponding index of NAIF_BODY_CODE, i.e. 
 LARRY->22, MOE->23, etc, and the IDs in NAIF_BODY_CODE map to the     
 corresponding index of NAIF_BODY_NAME.                                
@@ -171,7 +171,7 @@ If an external ID kernel is used, be aware of several rules:
    characters beyond 36th without signaling an error.                  
                                                                       
 #. You may assign an ID code to multiple names. A               
-   `bodc2n_c <../cspice/bodc2n_c.html>`__ call returns the last name   
+   :py:meth:`~spiceypy.spiceypy.bodc2n` call returns the last name   
    assigned; a last in, first out situation.                           
                                                                       
 Since NAIF_BODY_CODE and NAIF_BODY_NAME are kernel variables, use of  
@@ -197,7 +197,7 @@ Masking
                                                                 
 | As of release N53, the SPICE Toolkit provides the user the          
   functionality to override or mask any name/ID mapping. Use a        
-  `boddef_c <../cspice/boddef_c.html>`__ call or define               
+  :py:meth:`~spiceypy.spiceypy.boddef` call or define               
   NAIF_BODY_NAME, NAIF_BODY_CODE assignments from a text kernel to    
   perform a masking operations. Simplistically, the mask              
   functionality provides the user the option of mapping multiple      
@@ -206,7 +206,7 @@ Masking
 Name/ID assignments function within a precedence hierarchy, so a      
 lower precedence operation cannot affect previous assignments created 
 by an operation of higher precedence. Kernel pool definitions have    
-the highest precedence, `boddef_c <../cspice/boddef_c.html>`__        
+the highest precedence, :py:meth:`~spiceypy.spiceypy.boddef`        
 definitions next, and finally the default definitions. The order of   
 assignments is significant.                                           
                                                                       
@@ -231,24 +231,24 @@ assignments is significant.
                                                                       
 Example 1:                                                            
 Assign the name 'x' (lower case) to ID 1000 with                      
-`boddef_c <../cspice/boddef_c.html>`__:                               
+:py:meth:`~spiceypy.spiceypy.boddef`:                               
                                                                       
 ::                                                                    
                                                                       
-         boddef_c( "x", 1000 );                                       
+         boddef( "x", 1000 );                                       
                                                                       
-A call to `bodc2n_c <../cspice/bodc2n_c.html>`__ with 1000 as the     
+A call to :py:meth:`~spiceypy.spiceypy.bodc2n` with 1000 as the     
 input ID:                                                             
 ::                                                                    
                                                                       
-         bodc2n_c( 1000, lenout, &name, &found );                     
+         bodc2n( 1000, lenout, &name, &found );                     
                                                                       
-returns the name 'x'. The `bodn2c_c <../cspice/bodn2c_c.html>`__      
+returns the name 'x'. The :py:meth:`~spiceypy.spiceypy.bodn2c`      
 calls:                                                                
 ::                                                                    
                                                                       
-         bodn2c_c( "x", &code, &found );                              
-         bodn2c_c( "X", &code, &found );                              
+         bodn2c( "x", &code, &found );                              
+         bodn2c( "X", &code, &found );                              
                                                                       
 both return the ID as 1000. Note the case insensitivity of the name   
 input.                                                                
@@ -257,86 +257,86 @@ Now a demo of simple masking functionality. Assign a new name to ID
                                                                       
 ::                                                                    
                                                                       
-         boddef_c( "Y", 1000 );                                       
+         boddef( "Y", 1000 );                                       
                                                                       
-so the `bodn2c_c <../cspice/bodn2c_c.html>`__ call                    
+so the :py:meth:`~spiceypy.spiceypy.bodn2c` call                    
 ::                                                                    
                                                                       
-         bodn2c_c( "Y", &code, &found );                              
+         bodn2c( "Y", &code, &found );                              
                                                                       
 returns an ID of 1000. In a similar manner, the                       
-`bodc2n_c <../cspice/bodc2n_c.html>`__ call:                          
+:py:meth:`~spiceypy.spiceypy.bodc2n` call:                          
 ::                                                                    
                                                                       
-         bodc2n_c( 1000, lenout, &name, &found );                     
+         bodc2n( 1000, lenout, &name, &found );                     
                                                                       
 returns the name 'Y'. Still, the code assigned to 'x' persists within 
 CSPICE as the call:                                                   
 ::                                                                    
                                                                       
-         bodn2c_c( "x", &code, &found );                              
+         bodn2c( "x", &code, &found );                              
                                                                       
 also returns ID 1000. If we reassign 'Y' to a different ID:           
 ::                                                                    
                                                                       
-         boddef_c( "Y", 1001 );                                       
+         boddef( "Y", 1001 );                                       
                                                                       
-then make a `bodc2n_c <../cspice/bodc2n_c.html>`__ call with 1000 as  
+then make a :py:meth:`~spiceypy.spiceypy.bodc2n` call with 1000 as  
 the input ID:                                                         
 ::                                                                    
                                                                       
-         bodc2n_c( 1000, lenout, &name, &found );                     
+         bodc2n( 1000, lenout, &name, &found );                     
                                                                       
 the routine returns the name 'x'. We assigned an ID to 'x', masked it 
 with another name, then demasked it by reassigning the masking name,  
 'Y'.                                                                  
-If a `boddef_c <../cspice/boddef_c.html>`__ assigns an existing name  
+If a :py:meth:`~spiceypy.spiceypy.boddef` assigns an existing name  
 to an existing code, that assignment takes precedence.                
                                                                       
 Example 2:                                                            
                                                                       
 ::                                                                    
                                                                       
-         bodn2c_c( "THEBE", &code, &found );                          
+         bodn2c( "THEBE", &code, &found );                          
                                                                       
 returns a code value 514. Likewise                                    
 ::                                                                    
                                                                       
-         bodc2n_c( 514, &name, &found );                              
+         bodc2n( 514, &name, &found );                              
                                                                       
 returns a name of 'THEBE'. Yet the name '1979J2' also maps to code    
 514, but with lower precedence.                                       
-The `boddef_c <../cspice/boddef_c.html>`__ call:                      
+The :py:meth:`~spiceypy.spiceypy.boddef` call:                      
                                                                       
 ::                                                                    
                                                                       
-         boddef_c( "1979J2", 514 );                                   
+         boddef( "1979J2", 514 );                                   
                                                                       
 places the '1979J2' <-> 514 mapping at the top of the precedence      
 list, so:                                                             
 ::                                                                    
                                                                       
-         bodc2n_c( 514, &name, &found );                              
+         bodc2n( 514, &name, &found );                              
                                                                       
 returns the name '1979J2'. Note, 'THEBE' still resolves to 514.       
 In those cases where a kernel pool assignment overrides a             
-`boddef_c <../cspice/boddef_c.html>`__, the                           
-`boddef_c <../cspice/boddef_c.html>`__ mapping 'reappears' when an    
-unload_c, kclear_c or `clpool_c <../cspice/clpool_c.html>`__ call     
+:py:meth:`~spiceypy.spiceypy.boddef`, the                           
+:py:meth:`~spiceypy.spiceypy.boddef` mapping 'reappears' when an    
+unload_c, kclear_c or :py:meth:`~spiceypy.spiceypy.clpool` call     
 clears the kernel pool mappings.                                      
                                                                       
 Example 3:                                                            
                                                                       
-Execute a `boddef_c <../cspice/boddef_c.html>`__ call:                
+Execute a :py:meth:`~spiceypy.spiceypy.boddef` call:                
                                                                       
 ::                                                                    
                                                                       
-         boddef_c( "vehicle2", -1010 );                               
+         boddef( "vehicle2", -1010 );                               
                                                                       
-A `bodc2n_c <../cspice/bodc2n_c.html>`__ call:                        
+A :py:meth:`~spiceypy.spiceypy.bodc2n` call:                        
 ::                                                                    
                                                                       
-         bodc2n_c( -1010, lenout, &name, &found );                    
+         bodc2n( -1010, lenout, &name, &found );                    
                                                                       
 returns the name 'vehicle2' as expected. If you then load the name/ID 
 kernel body.ker:                                                      
@@ -349,18 +349,18 @@ kernel body.ker:
                                                                       
          \begintext                                                   
                                                                       
-with `furnsh_c <../cspice/furnsh_c.html>`__:                          
+with :py:meth:`~spiceypy.spiceypy.furnsh`:                          
 ::                                                                    
                                                                       
-         furnsh_c( "body.ker" );                                      
+         furnsh( "body.ker" );                                      
                                                                       
-the `bodc2n_c <../cspice/bodc2n_c.html>`__ call:                      
+the :py:meth:`~spiceypy.spiceypy.bodc2n` call:                      
 ::                                                                    
                                                                       
-         bodc2n_c( -1010, lenout, &name, &found );                    
+         bodc2n( -1010, lenout, &name, &found );                    
                                                                       
 returns 'vehicle1' since the kernel assignment take precedence over   
-the `boddef_c <../cspice/boddef_c.html>`__ assignment.                
+the :py:meth:`~spiceypy.spiceypy.boddef` assignment.                
 The name/ID map state:                                                
                                                                       
 ::                                                                    
@@ -372,19 +372,19 @@ The name/ID map state:
 Now, unload the body kernel:                                          
 ::                                                                    
                                                                       
-         unload_c( "body.ker" );                                      
+         unload( "body.ker" );                                      
                                                                       
-The `boddef_c <../cspice/boddef_c.html>`__ assignment resumes highest 
+The :py:meth:`~spiceypy.spiceypy.boddef` assignment resumes highest 
 precedence.                                                           
 ::                                                                    
                                                                       
-         bodc2n_c( -1010, lenout, &name, &found );                    
+         bodc2n( -1010, lenout, &name, &found );                    
                                                                       
 The call returns 'vehicle2' for the name.                             
-CAUTION: Please understand a `clpool_c <../cspice/clpool_c.html>`__   
-or `kclear_c <../cspice/kclear_c.html>`__ call deletes all mapping    
+CAUTION: Please understand a :py:meth:`~spiceypy.spiceypy.clpool`   
+or :py:meth:`~spiceypy.spiceypy.kclear` call deletes all mapping    
 assignments defined through the kernel pool. No similar clear         
-functionality exists to clear `boddef_c <../cspice/boddef_c.html>`__. 
+functionality exists to clear :py:meth:`~spiceypy.spiceypy.boddef`. 
 boddef_c assignments persist unless explicitly overridden.            
                                                                       
                                         

@@ -205,11 +205,11 @@ characters, the identifier is padded on the right to eight characters
 using blanks (e.g. \``DAF/SPK '', \``DAS/EK ''). The correct          
 identifier is written to a binary kernel automatically when the       
 kernel is created by calling the kernel type specific \``open new     
-file'' function -- `spkopn_c <../cspice/spkopn_c.html>`__ for SPK     
-files, `ckopn_c <../cspice/ckopn_c.html>`__ for CK files, etc. If a   
+file'' function -- :py:meth:`~spiceypy.spiceypy.spkopn` for SPK     
+files, :py:meth:`~spiceypy.spiceypy.ckopn` for CK files, etc. If a   
 binary kernel is created by calling an architecture specific \``open  
 new file'' function -- dafonw_c for DAF files,                        
-`dasonw_c <../cspice/dasonw_c.html>`__ for DAS files, etc., -- it is  
+:py:meth:`~spiceypy.spiceypy.dasonw` for DAS files, etc., -- it is  
 the caller's responsibility to specify the correct kernel type in the 
 corresponding input argument of these functions to make sure the      
 correct kernel type identifier is written into the kernel.            
@@ -271,12 +271,12 @@ identifier. In these kernels one would find:
               NAIF/DAF                                                
               NAIF/DAS                                                
                                                                       
-The Toolkit includes the `getfat_c <../cspice/getfat_c.html>`__       
+The Toolkit includes the :py:meth:`~spiceypy.spiceypy.getfat`       
 function to retrieve the kernel file architecture and kernel type     
 encapsulated in the SPICE kernel type identifier.                     
 A text kernel not having a kernel type identifier can, in fact, be    
 processed by high-level functions, and by low-level functions other   
-than `getfat_c <../cspice/getfat_c.html>`__ that use text kernel      
+than :py:meth:`~spiceypy.spiceypy.getfat` that use text kernel      
 data. However, NAIF strongly recommends kernel creators to provide    
 the identifier.                                                       
 
@@ -702,11 +702,11 @@ assignment to be treated as the two strings
 Everything between the single quotes, including white space and the   
 continuation marker, counts towards the limit of 80 characters in the 
 length of each string element.                                        
-The CSPICE function `stpool_c <../cspice/stpool_c.html>`__, and ONLY  
+The CSPICE function :py:meth:`~spiceypy.spiceypy.stpool`, and ONLY  
 that function, provides the capability of retrieving continued        
 strings from the kernel pool. See the discussion below under          
 \``Fetching Data from the Kernel Pool'' or the header of              
-`stpool_c <../cspice/stpool_c.html>`__ for further information.       
+:py:meth:`~spiceypy.spiceypy.stpool` for further information.       
 
                                                          
 Maximum Numbers of Variables and Variable Values          
@@ -722,13 +722,13 @@ See Appendix D for the numeric values of these limits.
 Treatment of Invalid Text Kernels                         
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-| If during a call to `furnsh_c <../cspice/furnsh_c.html>`__, an      
+| If during a call to :py:meth:`~spiceypy.spiceypy.furnsh`, an      
   error is detected in a text kernel, CSPICE will signal an error. By 
   default, a diagnostic message will be displayed to standard output  
   and the program will terminate.                                     
                                                                       
 If the CSPICE error handling subsystem is in RETURN mode,             
-`furnsh_c <../cspice/furnsh_c.html>`__ will return control to the     
+:py:meth:`~spiceypy.spiceypy.furnsh` will return control to the     
 calling program. RETURN mode is typically used in interactive         
 programs.                                                             
                                                                       
@@ -778,13 +778,13 @@ Text Kernel Interfaces - Fetching Data from the Kernel
 The values of variables stored in the kernel pool may be retrieved    
 using the functions:                                                  
                                                                       
-`gcpool_c <../cspice/gcpool_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.gcpool`                                
    Used to fetch character data from the kernel pool.                 
                                                                       
-`gdpool_c <../cspice/gdpool_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.gdpool`                                
    Used to fetch double precision data from the kernel pool.          
                                                                       
-`gipool_c <../cspice/gipool_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.gipool`                                
    Used to fetch integer data from the kernel pool. Within the kernel 
    pool all numeric data are stored as double precision values. This  
    interface is provided as a convenience so that users may insert    
@@ -793,12 +793,12 @@ using the functions:
    integers.                                                          
                                                                       
    Non-integer, numeric kernel variable values retrieved by calling   
-   `gipool_c <../cspice/gipool_c.html>`__ are rounded by gipool_c to  
+   :py:meth:`~spiceypy.spiceypy.gipool` are rounded by gipool_c to  
    the nearest integer. Kernel creators must ensure that values to be 
-   read using `gipool_c <../cspice/gipool_c.html>`__ are within the   
+   read using :py:meth:`~spiceypy.spiceypy.gipool` are within the   
    range representable by integers.                                   
                                                                       
-`stpool_c <../cspice/stpool_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.stpool`                                
    Used to fetch continued strings from the kernel pool.              
                                                                       
 The calling sequences are shown below.                                
@@ -834,17 +834,17 @@ The meanings of the arguments are as follows:
 **\`values'**                                                         
    is the output array of values associated with \`name'. The data    
    type of \`values' depends upon the routine: for                    
-   `gcpool_c <../cspice/gcpool_c.html>`__, \`values' is an array of   
-   strings; for `gdpool_c <../cspice/gdpool_c.html>`__, \`values' is  
+   :py:meth:`~spiceypy.spiceypy.gcpool`, \`values' is an array of   
+   strings; for :py:meth:`~spiceypy.spiceypy.gdpool`, \`values' is  
    an array of double precision numbers, for                          
-   `gipool_c <../cspice/gipool_c.html>`__, \`values' is an array of   
+   :py:meth:`~spiceypy.spiceypy.gipool`, \`values' is an array of   
    integers.                                                          
                                                                       
 **\`found'**                                                          
    indicates whether or not the requested data are available in the   
    kernel pool.                                                       
                                                                       
-For the function `stpool_c <../cspice/stpool_c.html>`__               
+For the function :py:meth:`~spiceypy.spiceypy.stpool`               
                                                                       
 **\`nth'**                                                            
    is the index (the number) of the string to fetch. The range for    
@@ -872,19 +872,19 @@ Informational Functions
 | Four routines are provided for retrieving general information about 
   the contents of the kernel pool.                                    
                                                                       
-`dtpool_c <../cspice/dtpool_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.dtpool`                                
    Returns information about the existence, dimension and type of a   
    specified kernel pool variable.                                    
                                                                       
-`expool_c <../cspice/expool_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.expool`                                
    Returns information on the existence of a numeric kernel pool      
    variable.                                                          
                                                                       
-`gnpool_c <../cspice/gnpool_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.gnpool`                                
    Allows retrieval of names of kernel pool variables that match a    
    string pattern.                                                    
                                                                       
-`szpool_c <../cspice/szpool_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.szpool`                                
    Returns information about the size of various structures used in   
    the implementation of the kernel pool.                             
                                                                       
@@ -911,9 +911,9 @@ Loading Kernels
   kernels. SPICE provides a simple interface for this purpose.        
                                                                       
 The principal kernel loading function is named                        
-`furnsh_c <../cspice/furnsh_c.html>`__ (pronounced \``furnish''). A   
+:py:meth:`~spiceypy.spiceypy.furnsh` (pronounced \``furnish''). A   
 kernel database stores the existence information for any kernel (text 
-or binary) loaded by `furnsh_c <../cspice/furnsh_c.html>`__. The      
+or binary) loaded by :py:meth:`~spiceypy.spiceypy.furnsh`. The      
 subsystem provides a set of functions that enable an application to   
 find the names and attributes of kernels stored in the database.      
                                                                       
@@ -921,16 +921,16 @@ Early versions of CSPICE loaded kernels using functions specific to
 each kernel type. Code written for the binary kernels also supported  
 a kernel unload facility. CSPICE continues to support the original    
 kernel loaders and unloaders, but anyone writing new code should use  
-the `furnsh_c <../cspice/furnsh_c.html>`__ function instead of the    
+the :py:meth:`~spiceypy.spiceypy.furnsh` function instead of the    
 kernel-specific functions.                                            
                                                                       
 NAIF recommends loading multiple kernels using a \``meta-kernel''     
 rather than by executing multiple calls to                            
-`furnsh_c <../cspice/furnsh_c.html>`__. (\``Meta-kernels'' are        
+:py:meth:`~spiceypy.spiceypy.furnsh`. (\``Meta-kernels'' are        
 sometimes called \``furnsh kernels.'') A meta-kernel is a SPICE text  
 kernel that lists the names of the kernels to load. At run time, the  
 user's application supplies the name of the meta-kernel as an input   
-argument to `furnsh_c <../cspice/furnsh_c.html>`__. For example,      
+argument to :py:meth:`~spiceypy.spiceypy.furnsh`. For example,      
 instead of loading kernels using the code fragment:                   
                                                                       
 ::                                                                    
@@ -982,7 +982,7 @@ easily change the set of kernels to be loaded without modifying his
 source code.                                                          
 While far less robust, it is also possible to provide the names of    
 kernels to be loaded as input arguments to                            
-`furnsh_c <../cspice/furnsh_c.html>`__. For example, one may write    
+:py:meth:`~spiceypy.spiceypy.furnsh`. For example, one may write    
                                                                       
 ::                                                                    
                                                                       
@@ -1020,9 +1020,9 @@ Kernel Priority
   have some overlap in time. When two or more kernels contain         
   competing data a kernel loaded later has higher priority than       
   kernel(s) loaded earlier. This is true whether using separate calls 
-  to `furnsh_c <../cspice/furnsh_c.html>`__ for each kernel to be     
+  to :py:meth:`~spiceypy.spiceypy.furnsh` for each kernel to be     
   loaded, or a single call to furnsh_c with a list of kernels to be   
-  loaded, or a call to `furnsh_c <../cspice/furnsh_c.html>`__ that    
+  loaded, or a call to :py:meth:`~spiceypy.spiceypy.furnsh` that    
   loads a meta-kernel. See Appendix A for a more complete discussion  
   on competing data.                                                  
                                                                       
@@ -1097,7 +1097,7 @@ Specifying Kernels Using Relative Paths
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | When a kernel is specified with a relative path, this path should   
-  be valid at the time when `furnsh_c <../cspice/furnsh_c.html>`__ is 
+  be valid at the time when :py:meth:`~spiceypy.spiceypy.furnsh` is 
   called and stay valid for the rest of the application run. This is  
   required because SPICE stores kernel names as provided by the       
   caller and uses them to open and close binary kernels as needed by  
@@ -1107,7 +1107,7 @@ Specifying Kernels Using Relative Paths
   should stay loaded when a particular text kernel is unloaded.       
                                                                       
 Changing the working directory from within an application during an   
-application run after calling `furnsh_c <../cspice/furnsh_c.html>`__  
+application run after calling :py:meth:`~spiceypy.spiceypy.furnsh`  
 to load kernels specified using relative paths is likely to           
 invalidate stored paths and prevent open/close and unload operations  
 mentioned above. A simple workaround when this is needed is to        
@@ -1118,21 +1118,21 @@ Keeping Track of Loaded Kernels
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | The KEEPER subsystem maintains a database of the load operations    
-  that `furnsh_c <../cspice/furnsh_c.html>`__ has performed during a  
+  that :py:meth:`~spiceypy.spiceypy.furnsh` has performed during a  
   program run. This is implemented using data structures of fixed     
   size, so there is a limit on the maximum number of loaded kernels   
   that the KEEPER subsystem can accommodate.                          
                                                                       
-When a kernel is loaded using `furnsh_c <../cspice/furnsh_c.html>`__, 
+When a kernel is loaded using :py:meth:`~spiceypy.spiceypy.furnsh`, 
 a new entry is created in the database of loaded kernels, whether or  
 not the kernel is already loaded.                                     
                                                                       
 All load and unload operations (see the discussion of                 
-`unload_c <../cspice/unload_c.html>`__ below) affect the list of      
+:py:meth:`~spiceypy.spiceypy.unload` below) affect the list of      
 loaded kernels and therefore affect the results returned by the       
-functions `ktotal_c <../cspice/ktotal_c.html>`__,                     
-`kdata_c <../cspice/kdata_c.html>`__, and                             
-`kinfo_c <../cspice/kinfo_c.html>`__, all of which are discussed      
+functions :py:meth:`~spiceypy.spiceypy.ktotal`,                     
+:py:meth:`~spiceypy.spiceypy.kdata`, and                             
+:py:meth:`~spiceypy.spiceypy.kinfo`, all of which are discussed      
 below under \``Finding Out What's Loaded.''                           
 
                                                          
@@ -1142,7 +1142,7 @@ Reloading Kernels
 | Reloading an already loaded kernel creates another (duplicate)      
   entry in the database of loaded kernels, and thus decreases the     
   available space in that list.                                       
-  `furnsh_c <../cspice/furnsh_c.html>`__'s treatment of reloaded      
+  :py:meth:`~spiceypy.spiceypy.furnsh`'s treatment of reloaded      
   kernels is thus slightly different from that performed by the       
   CSPICE low-level kernel loaders, which handle a reload operation by 
   first unloading the kernel in question, then loading it.            
@@ -1153,20 +1153,20 @@ Changing Kernel Priority
 
 | The recommended method of increasing the priority of a loaded       
   binary kernel, or of a meta-kernel containing binary kernels, is to 
-  unload it using `unload_c <../cspice/unload_c.html>`__ (see below), 
-  then reload it using `furnsh_c <../cspice/furnsh_c.html>`__. This   
+  unload it using :py:meth:`~spiceypy.spiceypy.unload` (see below), 
+  then reload it using :py:meth:`~spiceypy.spiceypy.furnsh`. This   
   technique helps reduce clutter in                                   
-  `furnsh_c <../cspice/furnsh_c.html>`__'s kernel list.               
+  :py:meth:`~spiceypy.spiceypy.furnsh`'s kernel list.               
 
                                                          
 Load Limits                                               
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-| `furnsh_c <../cspice/furnsh_c.html>`__ can currently keep track of  
+| :py:meth:`~spiceypy.spiceypy.furnsh` can currently keep track of  
   up to 5000 kernels. The list of loaded kernels may contain multiple 
   entries for a given kernel, so the number of distinct loaded        
   kernels would be smaller if some have been reloaded. Unloading      
-  kernels using `unload_c <../cspice/unload_c.html>`__ frees room in  
+  kernels using :py:meth:`~spiceypy.spiceypy.unload` frees room in  
   the kernel list, so there is no limit on the total number of load   
   and corresponding unload operations performed in a program run.     
                                                                       
@@ -1190,9 +1190,9 @@ the kernel type (text or one of SPK, CK, DSK, PCK, or EK), the
 kernel's DAF or DAS handle if applicable, and the name of the         
 meta-kernel used to load the kernel, if applicable.                   
                                                                       
-The function `ktotal_c <../cspice/ktotal_c.html>`__ returns the count 
+The function :py:meth:`~spiceypy.spiceypy.ktotal` returns the count 
 of loaded kernels having their types on a caller-supplied list of one 
-or more types. The function `kdata_c <../cspice/kdata_c.html>`__      
+or more types. The function :py:meth:`~spiceypy.spiceypy.kdata`      
 returns information on the nth kernel of the set having the types     
 named in the list. The two functions are normally used together. The  
 following example shows how an application could retrieve summary     
@@ -1268,9 +1268,9 @@ In this example, \`filtyp' is a string indicating the type of kernel.
 applicable. \`found' indicates whether a kernel having the specified  
 type and index was found.                                             
 CSPICE also contains the function                                     
-`kinfo_c <../cspice/kinfo_c.html>`__ that returns summary information 
+:py:meth:`~spiceypy.spiceypy.kinfo` that returns summary information 
 about a kernel whose name is already known.                           
-`kinfo_c <../cspice/kinfo_c.html>`__ is called as follows:            
+:py:meth:`~spiceypy.spiceypy.kinfo` is called as follows:            
                                                                       
 ::                                                                    
                                                                       
@@ -1291,11 +1291,11 @@ Unloading Kernels
                                                                       
 - to change the set of kernel data visible to CSPICE           
                                                                       
-The function `unload_c <../cspice/unload_c.html>`__ acts as an        
-inverse to `furnsh_c <../cspice/furnsh_c.html>`__: passing a kernel   
-name to `unload_c <../cspice/unload_c.html>`__ undoes the effect of   
+The function :py:meth:`~spiceypy.spiceypy.unload` acts as an        
+inverse to :py:meth:`~spiceypy.spiceypy.furnsh`: passing a kernel   
+name to :py:meth:`~spiceypy.spiceypy.unload` undoes the effect of   
 the previous load operation performed on that kernel using            
-`furnsh_c <../cspice/furnsh_c.html>`__. For binary kernels that have  
+:py:meth:`~spiceypy.spiceypy.furnsh`. For binary kernels that have  
 been loaded just once, the meaning of this is simple: the kernel is   
 closed and the database referring to the file is adjusted to reflect  
 the absence of the kernel.                                            
@@ -1305,11 +1305,11 @@ reloading the other text kernels not designated for removal.
 Note that unloading text kernels has the side effect of wiping out    
 any kernel variables and associated values that had been entered in   
 the kernel pool using any of the kernel pool assignment functions,    
-such as `pcpool_c <../cspice/pcpool_c.html>`__. It is important to    
+such as :py:meth:`~spiceypy.spiceypy.pcpool`. It is important to    
 consider whether this side effect is acceptable when writing code     
 that may unload text kernels or meta-kernels.                         
                                                                       
-Call `unload_c <../cspice/unload_c.html>`__ as follows:               
+Call :py:meth:`~spiceypy.spiceypy.unload` as follows:               
                                                                       
 ::                                                                    
                                                                       
@@ -1340,11 +1340,11 @@ Loading of Non-native Text and Binary Kernels
       Mac OS X                      <LF>                              
                                                                       
 As of CSPICE version N0059, the CSPICE text kernel loader             
-`furnsh_c <../cspice/furnsh_c.html>`__ (and the deprecated loader     
-`ldpool_c <../cspice/ldpool_c.html>`__) can read and parse non-native 
+:py:meth:`~spiceypy.spiceypy.furnsh` (and the deprecated loader     
+:py:meth:`~spiceypy.spiceypy.ldpool`) can read and parse non-native 
 text files. (Caution: the FORTRAN SPICELIB text kernel readers do not 
 include this capability.)                                             
-The CSPICE text file reader, `rdtext_c <../cspice/rdtext_c.html>`__,  
+The CSPICE text file reader, :py:meth:`~spiceypy.spiceypy.rdtext`,  
 does not possess the capability to read non-native text files.        
                                                                       
 Starting with the version N0052 release of the SPICE Toolkit          
@@ -1362,50 +1362,50 @@ Manipulating Kernel Pool Contents
 
 | The main way one adds to or changes the contents of the kernel pool 
   is by \``loading'' a SPICE text kernel using the function           
-  `furnsh_c <../cspice/furnsh_c.html>`__. However, the kernel         
+  :py:meth:`~spiceypy.spiceypy.furnsh`. However, the kernel         
   subsystem also provides several other functions that allow one to   
   change the contents of the kernel pool.                             
                                                                       
-`clpool_c <../cspice/clpool_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.clpool`                                
    Clears (initializes) the kernel pool, deleting all the variables   
    in the pool.                                                       
                                                                       
-`kclear_c <../cspice/kclear_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.kclear`                                
    Clears (empties) the kernel pool, the kernel database (same effect 
    as unloading all kernels), and re-initializes the subsystem. Use   
-   of `kclear_c <../cspice/kclear_c.html>`__ also clears programmatic 
+   of :py:meth:`~spiceypy.spiceypy.kclear` also clears programmatic 
    kernel pool assignments from the \``put-pool'' routines, e.g.      
-   `pipool_c <../cspice/pipool_c.html>`__,                            
-   `pdpool_c <../cspice/pdpool_c.html>`__,                            
-   `pcpool_c <../cspice/pcpool_c.html>`__.                            
+   :py:meth:`~spiceypy.spiceypy.pipool`,                            
+   :py:meth:`~spiceypy.spiceypy.pdpool`,                            
+   :py:meth:`~spiceypy.spiceypy.pcpool`.                            
                                                                       
-`dvpool_c <../cspice/dvpool_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.dvpool`                                
    Deletes a specific variable from the kernel pool.                  
                                                                       
-`lmpool_c <../cspice/lmpool_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.lmpool`                                
    Similar in effect to loading a text kernel using                   
-   `furnsh_c <../cspice/furnsh_c.html>`__, but the data being loaded  
+   :py:meth:`~spiceypy.spiceypy.furnsh`, but the data being loaded  
    into the pool come from an array of strings instead of a text      
    kernel.                                                            
                                                                       
-`pcpool_c <../cspice/pcpool_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.pcpool`                                
    Programmatically inserts a single character variable and its       
    associated values into the kernel pool. The assignment is direct   
    (the values replace any previously existing set of values          
    associated with the variable.)                                     
                                                                       
-`pdpool_c <../cspice/pdpool_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.pdpool`                                
    Programmatically inserts a single double precision variable and    
    its associated values into the kernel pool. The assignment is      
    direct.                                                            
                                                                       
-`pipool_c <../cspice/pipool_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.pipool`                                
    Programmatically inserts a single integer variable and its         
    associated values into the kernel pool. The assignment is direct.  
                                                                       
 The following code fragment shows how the data provided in a          
 leapseconds kernel (LSK) could be loaded using                        
-`lmpool_c <../cspice/lmpool_c.html>`__.                               
+:py:meth:`~spiceypy.spiceypy.lmpool`.                               
 ::                                                                    
                                                                       
                                                                       
@@ -1471,12 +1471,12 @@ Detecting Changes in the Kernel Pool Using Watchers
   pool. Two functions are available that allow a quick test to see    
   whether kernel pool variables have been updated.                    
                                                                       
-`swpool_c <../cspice/swpool_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.swpool`                                
    Sets up a watcher on a a list of variables so that a specified     
    agent can be notified when any variables on the list have been     
    updated.                                                           
                                                                       
-`cvpool_c <../cspice/cvpool_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.cvpool`                                
    Indicates whether or not any of an agent's variables have been     
    updated since the last time the agent checked with the pool.       
                                                                       
@@ -1632,7 +1632,7 @@ Agent
 
 | A string associated with a list of kernel variables to be watched   
   for updates. The string can be passed to the update checking        
-  function `cvpool_c <../cspice/cvpool_c.html>`__ to determine        
+  function :py:meth:`~spiceypy.spiceypy.cvpool` to determine        
   whether any of the variables on the list have been updated.         
                                                                       
 Often the string is the name of a function that needs to be informed  

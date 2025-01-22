@@ -564,7 +564,7 @@ The SPK Family of Functions
   begins with the letters \`spk', followed by a two- or               
   three-character mnemonic. For example, the function that returns    
   the state of one body with respect to another is named              
-  `spkezr_c <../cspice/spkezr_c.html>`__, pronounced \`S-P-K-easier'. 
+  :py:meth:`~spiceypy.spiceypy.spkezr`, pronounced \`S-P-K-easier'. 
   A complete list of mnemonics, translations, and calling sequences   
   can be found at the end of this document.                           
                                                                       
@@ -613,7 +613,7 @@ SPK readers are available to perform the following functions.
 Computing States                                          
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
-| `spkezr_c <../cspice/spkezr_c.html>`__ is the most powerful of the  
+| :py:meth:`~spiceypy.spiceypy.spkezr` is the most powerful of the  
   SPK readers. It determines the apparent, true, or geometric state   
   of one body (the target) as seen by a second body (the observer)    
   relative to a user specified reference frame.                       
@@ -654,13 +654,13 @@ Julian Ephemeris Date 2447751.8293,
                                                                       
              "voyager-2", state, &lt              ); { Easier state } 
                                                                       
-where the function `j2000_c <../cspice/j2000_c.html>`__ returns the   
+where the function :py:meth:`~spiceypy.spiceypy.j2000` returns the   
 epoch of the J2000 frame (Julian Ephemeris Date 2451545.0) and the    
 function `spd_c <../cspice/spd_c.html>`__ returns the number of       
 seconds per Julian day (86400.0).                                     
 The ephemeris data in an SPK file may be referenced to a number of    
 different reference frames. States returned by                        
-`spkezr_c <../cspice/spkezr_c.html>`__ do not have to be referenced   
+:py:meth:`~spiceypy.spiceypy.spkezr` do not have to be referenced   
 to any of these \``native'' frames. The user can specify that states  
 are to be returned in any of the frames recognized by the frame       
 subsystem. For example, to determine the state of Triton as seen from 
@@ -673,7 +673,7 @@ Voyager-2, referenced to the J2000 ecliptic reference frame,
                                                                       
               &lt                                 ); { Easier state } 
                                                                       
-`spkezr_c <../cspice/spkezr_c.html>`__ returns apparent, true, or     
+:py:meth:`~spiceypy.spiceypy.spkezr` returns apparent, true, or     
 geometric states depending on the value of the aberration correction  
 type flag \`aberr'.                                                   
 Apparent states are corrected for planetary aberration, which is the  
@@ -684,7 +684,7 @@ light-time only. Geometric states are uncorrected.
                                                                       
 Instead of using the potentially confusing terms \`true' and          
 \`geometric' to specify the type of state to be returned,             
-`spkezr_c <../cspice/spkezr_c.html>`__ requires the specific          
+:py:meth:`~spiceypy.spiceypy.spkezr` requires the specific          
 corrections to be named. To compute apparent states, specify          
 correction for both light-time and stellar aberration: \`LT+S'. To    
 compute true states, specify correction for light-time only: \`LT'.   
@@ -702,7 +702,7 @@ Computing States using Constant-Velocity or Constant-Position Objects
   ephemeris objects just as easily as bodies such as planets and      
   natural satellites. For example, using an SPK file for the          
   geocentric location of a tracking station enables                   
-  `spkezr_c <../cspice/spkezr_c.html>`__ to compute states of targets 
+  :py:meth:`~spiceypy.spiceypy.spkezr` to compute states of targets 
   relative to the tracking station, providing all needed kernel data  
   have been loaded.                                                   
                                                                       
@@ -732,13 +732,13 @@ constant-position object.
 States computed by SPK functions for constant-velocity or             
 constant-position objects optionally can be corrected for light time  
 and stellar aberration, just as is done by                            
-`spkezr_c <../cspice/spkezr_c.html>`__.                               
+:py:meth:`~spiceypy.spiceypy.spkezr`.                               
                                                                       
 A limitation of representing objects using constant velocities or     
 positions, instead of creating SPK files to provide the ephemerides   
 of those objects, is that high-level CSPICE geometry routines such as 
-`sincpt_c <../cspice/sincpt_c.html>`__ or                             
-`subpt_c <../cspice/subpt_c.html>`__ cannot work with such            
+:py:meth:`~spiceypy.spiceypy.sincpt` or                             
+:py:meth:`~spiceypy.spiceypy.subpt` cannot work with such            
 objects---these functions require SPK data for all ephemeris objects  
 participating in the computations they perform.                       
                                                 
@@ -824,7 +824,7 @@ using option \`LT' is less than 1 millisecond.
                                                                       
 For this reason, CSPICE uses LT_2 to approximate LT when you request  
 a light time corrected state by setting the aberration correction     
-argument in `spkezr_c <../cspice/spkezr_c.html>`__ to any of \`LT',   
+argument in :py:meth:`~spiceypy.spiceypy.spkezr` to any of \`LT',   
 \`XLT', \`LT+S', \`XLT+S'.                                            
                                                                       
 The maximum error in the light time corrected target-SSB position     
@@ -847,14 +847,14 @@ the spacecraft Mars Reconnaissance Orbiter and Mars Express, the
 position error for the one-iteration light time correction, applied   
 to the spacecraft-to-Mars center vector, is approximately 2 cm.       
                                                                       
-You can make `spkezr_c <../cspice/spkezr_c.html>`__ (and other        
+You can make :py:meth:`~spiceypy.spiceypy.spkezr` (and other        
 applicable SPK functions) compute a better approximation to LT and    
 compute more accurate light-time corrected states by commanding that  
 it compute a \``converged Newtonian'' value for LT. To do this set    
 the light time portion of the aberration correction specification to  
 \`CN' (the possible such aberration correction specifications         
 are`CN', \`XCN', \`CN+S', or \`XCN+S').                               
-`spkezr_c <../cspice/spkezr_c.html>`__ will then return a converged   
+:py:meth:`~spiceypy.spiceypy.spkezr` will then return a converged   
 value, usually equal to LT_4, as the approximation for light time;    
 the returned state will be converged as well. Then the maximum error  
 in LT_4 is less than                                                  
@@ -902,7 +902,7 @@ the balloon LT_T. The light time corrected state of the balloon
 relative to the Mars bodyfixed frame is the location of the balloon   
 at ET - LT_T in the bodyfixed frame of Mars as oriented at ET - LT_F. 
                                                                       
-`spkezr_c <../cspice/spkezr_c.html>`__ carries out all of these       
+:py:meth:`~spiceypy.spiceypy.spkezr` carries out all of these       
 computations automatically. In this case the computation would be     
 computed by a function call similar to this:                          
                                                                       
@@ -911,24 +911,24 @@ computed by a function call similar to this:
       spkezr ( "mars_balloon",  <et>,  "iau_mars", "lt",            
                  "earth",         state, &lt              );          
                                                                       
-`spkezr_c <../cspice/spkezr_c.html>`__ uses the following rules when  
+:py:meth:`~spiceypy.spiceypy.spkezr` uses the following rules when  
 computing states.                                                     
                                                                       
 #. When no corrections are requested from                       
-   `spkezr_c <../cspice/spkezr_c.html>`__ (ABCORR = 'NONE'), the state 
+   :py:meth:`~spiceypy.spiceypy.spkezr` (ABCORR = 'NONE'), the state 
    of the target is determined at the request time ET and is           
    represented in the specified reference frame as it is oriented at   
    time ET.                                                            
                                                                       
 #. When light time corrections are requested from               
-   `spkezr_c <../cspice/spkezr_c.html>`__ (ABCORR = 'LT'), two light   
+   :py:meth:`~spiceypy.spiceypy.spkezr` (ABCORR = 'LT'), two light   
    times are determined: LT_F the light time to the center of the      
    specified reference frame, and LT_T the light time to the target.   
    The state of the target is given as it was at ET - LT_T in the      
    frame as it was oriented at ET - LT_F.                              
                                                                       
 #. When light time and stellar aberrations are requested from   
-   `spkezr_c <../cspice/spkezr_c.html>`__ (ABCORR = 'LT+S'), both LT_F 
+   :py:meth:`~spiceypy.spiceypy.spkezr` (ABCORR = 'LT+S'), both LT_F 
    and LT_T are again computed. The state of the target at ET - LT_T   
    is corrected for stellar aberration and represented in the          
    reference frame as it was oriented at ET - LT_F.                    
@@ -940,7 +940,7 @@ computing states.
    accounted for as well.                                              
                                                                       
 In the actual implementation of                                       
-`spkezr_c <../cspice/spkezr_c.html>`__ a few short cuts are taken.    
+:py:meth:`~spiceypy.spiceypy.spkezr` a few short cuts are taken.    
 When light time requested states relative to an inertial frame are    
 requested, the orientation of the frame is not corrected for light    
 time. The orientation of an inertial frame at ET - LT_F is the same   
@@ -953,18 +953,18 @@ An example
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
 | Here we illustrate how you could use                                
-  `spkezr_c <../cspice/spkezr_c.html>`__ together with other CSPICE   
+  :py:meth:`~spiceypy.spiceypy.spkezr` together with other CSPICE   
   functions to determine if at a particular epoch ET the Mars Global  
   Surveyor spacecraft is occulted by Mars.                            
                                                                       
 We will need the lengths of the axes of the triaxial ellipsoid that   
 is used to model the surface of Mars. Either of the CSPICE functions  
-`bodvcd_c <../cspice/bodvcd_c.html>`__ or                             
-`bodvrd_c <../cspice/bodvrd_c.html>`__ will retrieve this information 
-from a loaded PCK file. `bodvrd_c <../cspice/bodvrd_c.html>`__ uses   
-the name of the body, while `bodvcd_c <../cspice/bodvcd_c.html>`__    
+:py:meth:`~spiceypy.spiceypy.bodvcd` or                             
+:py:meth:`~spiceypy.spiceypy.bodvrd` will retrieve this information 
+from a loaded PCK file. :py:meth:`~spiceypy.spiceypy.bodvrd` uses   
+the name of the body, while :py:meth:`~spiceypy.spiceypy.bodvcd`    
 uses the NAIF ID code for Mars (499) to retrieve the lengths of the   
-axes. We may call `bodvcd_c <../cspice/bodvcd_c.html>`__ as shown:    
+axes. We may call :py:meth:`~spiceypy.spiceypy.bodvcd` as shown:    
                                                                       
 ::                                                                    
                                                                       
@@ -988,14 +988,14 @@ MGS relative to Earth in the Mars bodyfixed frame.
 Compute the apparent position of the Earth relative to Mars in the    
 apparent Mars bodyfixed frame. This means simply negating the         
 components of \`marsst'. The CSPICE function                          
-`vminus_c <../cspice/vminus_c.html>`__ carries out this task.         
+:py:meth:`~spiceypy.spiceypy.vminus` carries out this task.         
 ::                                                                    
                                                                       
       vminus ( marsst, estate );                                    
                                                                       
 Determine if the line of sight from Earth to MGS intersects the       
 surface of Mars. The CSPICE function                                  
-`surfpt_c <../cspice/surfpt_c.html>`__ will find this intersection    
+:py:meth:`~spiceypy.spiceypy.surfpt` will find this intersection    
 point if it exists.                                                   
 ::                                                                    
                                                                       
@@ -1004,9 +1004,9 @@ point if it exists.
 Finally, if a point of intersection was found, was it between the     
 Earth and the MGS spacecraft. To find out we can compare the          
 distances between the intersection point and the spacecraft. The      
-CSPICE function `vnorm_c <../cspice/vnorm_c.html>`__ computes the     
+CSPICE function :py:meth:`~spiceypy.spiceypy.vnorm` computes the     
 length of the vector from Earth to MGS. The function                  
-`vdist_c <../cspice/vdist_c.html>`__ computes the distance between    
+:py:meth:`~spiceypy.spiceypy.vdist` computes the distance between    
 the point and the Earth.                                              
 ::                                                                    
                                                                       
@@ -1050,7 +1050,7 @@ introduction of new ephemeris objects, the name translation software
 will be unable to find a name associated with an ID code. To retrieve 
 states for such an object you will need to use the integer code for   
 the object in question. If you are using                              
-`spkezr_c <../cspice/spkezr_c.html>`__, you can supply this integer   
+:py:meth:`~spiceypy.spiceypy.spkezr`, you can supply this integer   
 code as a quoted string. For example the following two function calls 
 will both return the state of TRITON as seen from Voyager-2. (The     
 NAIF integer code for TRITON is 801; the NAIF integer code for        
@@ -1074,16 +1074,16 @@ Consult the NAIF IDS Required Reading file,
 codes recognized by the SPICE Toolkit software.                       
                          
                                                                       
-`spkez_c <../cspice/spkez_c.html>`__ and `spkgeo_c <../cspice/spkgeo_c.html>`__                             
+:py:meth:`~spiceypy.spiceypy.spkez`                             
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
-| `spkezr_c <../cspice/spkezr_c.html>`__ relies upon two lower level  
+| :py:meth:`~spiceypy.spiceypy.spkezr` relies upon two lower level  
   functions that may be useful under certain circumstances.           
                                                                       
-The function `spkez_c <../cspice/spkez_c.html>`__ performs the same   
-functions as `spkezr_c <../cspice/spkezr_c.html>`__. The only         
+The function :py:meth:`~spiceypy.spiceypy.spkez` performs the same   
+functions as :py:meth:`~spiceypy.spiceypy.spkezr`. The only         
 difference is the means by which objects are specified.               
-`spkez_c <../cspice/spkez_c.html>`__ requires that the target and     
+:py:meth:`~spiceypy.spiceypy.spkez` requires that the target and     
 observing bodies be specified using the NAIF integer ID codes for     
 those bodies.                                                         
                                                                       
@@ -1095,12 +1095,12 @@ those bodies.
                                                                       
 The NAIF-ID codes for ephemeris objects are listed in the NAIF_IDS    
 required reading file, `naif_ids.req <../req/naif_ids.html>`__.       
-`spkez_c <../cspice/spkez_c.html>`__ is useful in those situations    
+:py:meth:`~spiceypy.spiceypy.spkez` is useful in those situations    
 when you have ID codes for objects stored as integers. There is also  
 a modest efficiency gain when using integer ID codes instead of       
 character strings to specify targets and observers.                   
                                                                       
-The function `spkgeo_c <../cspice/spkgeo_c.html>`__ returns only      
+The function :py:meth:`~spiceypy.spiceypy.spkgeo` returns only      
 geometric (uncorrected) states. The following two function calls are  
 equivalent.                                                           
                                                                       
@@ -1113,23 +1113,23 @@ equivalent.
                                                                       
               state,      &lt                     ); {SPK Geometric } 
                                                                       
-`spkgeo_c <../cspice/spkgeo_c.html>`__ involves slightly less         
-overhead than does `spkez_c <../cspice/spkez_c.html>`__ and thus may  
+:py:meth:`~spiceypy.spiceypy.spkgeo` involves slightly less         
+overhead than does :py:meth:`~spiceypy.spiceypy.spkez` and thus may  
 be marginally faster than calling                                     
-`spkez_c <../cspice/spkez_c.html>`__.                                 
+:py:meth:`~spiceypy.spiceypy.spkez`.                                 
                          
                                                                       
 Loading Files                                             
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                               
-| Note that `spkezr_c <../cspice/spkezr_c.html>`__,                   
-  `spkez_c <../cspice/spkez_c.html>`__ and                            
-  `spkgeo_c <../cspice/spkgeo_c.html>`__ do not require the name of   
+| Note that :py:meth:`~spiceypy.spiceypy.spkezr`,                   
+  :py:meth:`~spiceypy.spiceypy.spkez` and                            
+  :py:meth:`~spiceypy.spiceypy.spkgeo` do not require the name of   
   an SPK file as input. These functions rely on the lower level       
   routine in the SPK subsystem to maintain a database of ephemeris    
   files. Your application program indicates which files are to be     
   used by passing their names to function                             
-  `furnsh_c <../cspice/furnsh_c.html>`__ -- \``generic loader'' that  
+  :py:meth:`~spiceypy.spiceypy.furnsh` -- \``generic loader'' that  
   can be used to load SPICE kernel files of any type.                 
                                                                       
 ::                                                                    
@@ -1140,7 +1140,7 @@ Loading Files
       }                                                               
                                                                       
 In general, a state returned by                                       
-`spkezr_c <../cspice/spkezr_c.html>`__ is built from several more     
+:py:meth:`~spiceypy.spiceypy.spkezr` is built from several more     
 primitive states. Consider the following diagram, which shows some of 
 the states that might be needed to determine the state of the Galileo 
 spacecraft as seen from Earth:                                        
@@ -1202,7 +1202,7 @@ Unloading Files
   your application program may need to unload some SPK files to make  
   room for others or to remove a particular SPK from the set of       
   loaded data. An SPK file may be unloaded by supplying its name to   
-  function `unload_c <../cspice/unload_c.html>`__ -- \``generic       
+  function :py:meth:`~spiceypy.spiceypy.unload` -- \``generic       
   unloader'' that can be used to unload SPICE kernel of any type. The 
   sequence of statements shown below,                                 
                                                                       
@@ -1229,20 +1229,20 @@ Getting Coverage Summary
 | The CSPICE includes two functions for obtaining information about   
   the contents of an SPK file from within an application.             
                                                                       
-The `spkobj_c <../cspice/spkobj_c.html>`__ function provides an API   
+The :py:meth:`~spiceypy.spiceypy.spkobj` function provides an API   
 via which an application can find the set of bodies for which a       
 specified SPK file contains data. The body IDs are returned in a      
 SPICE \``set'' data structure (see `sets.req <../req/sets.html>`__).  
                                                                       
-The `spkcov_c <../cspice/spkcov_c.html>`__ function provides an API   
+The :py:meth:`~spiceypy.spiceypy.spkcov` function provides an API   
 via which an application can find the time periods for which a        
 specified SPK file provides data for an body of interest. The         
 coverage information is a set of disjoint time intervals returned in  
 a SPICE \``window'' data structure (see                               
 `windows.req <../req/windows.html>`__).                               
                                                                       
-Refer to the headers of `spkobj_c <../cspice/spkobj_c.html>`__ and    
-`spkcov_c <../cspice/spkcov_c.html>`__ for details on the use of      
+Refer to the headers of :py:meth:`~spiceypy.spiceypy.spkobj` and    
+:py:meth:`~spiceypy.spiceypy.spkcov` for details on the use of      
 those routines.                                                       
                                                 
 Loading Auxiliary Files                                   
@@ -1310,7 +1310,7 @@ PCK frames
                unload ( <file> );                                   
                                                                       
 - Text based PCK files are loaded via the function               
-  `furnsh_c <../cspice/furnsh_c.html>`__.                             
+  :py:meth:`~spiceypy.spiceypy.furnsh`.                             
                                                                       
 ::                                                                    
                                                                       
@@ -1346,7 +1346,7 @@ CK Frames
   retrieve states relative to a CK frame you need to make the         
   relationship between ET and the spacecraft clock available to your  
   program by loading the appropriate SCLK kernel. SCLK kernels are    
-  loaded via the function `furnsh_c <../cspice/furnsh_c.html>`__.     
+  loaded via the function :py:meth:`~spiceypy.spiceypy.furnsh`.     
                                                                       
 ::                                                                    
                                                                       
@@ -1358,7 +1358,7 @@ TK Frames
   defined via a SPICE text kernel. These frames can be transformed to 
   another reference frame via a constant rotation matrix. Typical     
   examples are topocentric frames and instrument frames. TK frames    
-  are loaded via the function `furnsh_c <../cspice/furnsh_c.html>`__. 
+  are loaded via the function :py:meth:`~spiceypy.spiceypy.furnsh`. 
                                                                       
 ::                                                                    
                                                                       
@@ -1373,7 +1373,7 @@ Dynamic Frames
   by a set of Euler angles. Typical examples are the geocentric solar 
   ecliptic frame or the Earth true equator and true equinox of date   
   frame. Dynamic frames are loaded via the function                   
-  `furnsh_c <../cspice/furnsh_c.html>`__.                             
+  :py:meth:`~spiceypy.spiceypy.furnsh`.                             
                                                                       
 ::                                                                    
                                                                       
@@ -1523,16 +1523,16 @@ be computed---that the type of data used to represent the ephemeris
 becomes important.                                                    
                                                                       
 Because this step is isolated within a single low-level reader,       
-`spkpvn_c <../cspice/spkpvn_c.html>`__, new data types can be added   
+:py:meth:`~spiceypy.spiceypy.spkpvn`, new data types can be added   
 to the SPK format without affecting application programs that use the 
-higher level readers. `spkpvn_c <../cspice/spkpvn_c.html>`__ is       
+higher level readers. :py:meth:`~spiceypy.spiceypy.spkpvn` is       
 designed so that the changes required to implement a new data type    
 are minimal.                                                          
                                                                       
 There are no real limits on the possible representations that can be  
 used for ephemeris data. Users with access to data suitable for       
 creating an ephemeris may choose to invent their own representations, 
-adapting `spkpvn_c <../cspice/spkpvn_c.html>`__ accordingly. (We      
+adapting :py:meth:`~spiceypy.spiceypy.spkpvn` accordingly. (We      
 recommend that you consult with NAIF prior to implementing a new data 
 type.)                                                                
                                                                       
@@ -1546,7 +1546,7 @@ Primitive States
                                                               
 | At the lowest level, it is possible to compute states without       
   combining them at all. Given the handle and descriptor for a        
-  particular segment, function `spkpvn_c <../cspice/spkpvn_c.html>`__ 
+  particular segment, function :py:meth:`~spiceypy.spiceypy.spkpvn` 
   returns a state from that segment directly.                         
                                                                       
 ::                                                                    
@@ -1558,7 +1558,7 @@ Primitive States
                  state,                                               
                  center   );  { Position, velocity, native frame }    
                                                                       
-`spkpvn_c <../cspice/spkpvn_c.html>`__ is the most basic SPK reader.  
+:py:meth:`~spiceypy.spiceypy.spkpvn` is the most basic SPK reader.  
 It returns states relative to the frame in which they are stored in   
 the SPK file. It does not rotate or combine them: it returns a state  
 relative to the center whose integer code is stored in the descriptor 
@@ -1569,22 +1569,22 @@ The user is also responsible for using DAF functions to determine the
 particular file and segment from which each state is to be computed.  
                                                                       
 Note that to use the state returned by                                
-`spkpvn_c <../cspice/spkpvn_c.html>`__ in any frame other than the    
+:py:meth:`~spiceypy.spiceypy.spkpvn` in any frame other than the    
 \``native frame'' of the segment, you must convert the state to the   
 frame of interest.                                                    
                                                                       
 If files have been loaded by previous calls to                        
-`furnsh_c <../cspice/furnsh_c.html>`__, it is possible to use the     
+:py:meth:`~spiceypy.spiceypy.furnsh`, it is possible to use the     
 same segments that would normally be used by                          
-`spkezr_c <../cspice/spkezr_c.html>`__,                               
-`spkez_c <../cspice/spkez_c.html>`__, spkssb_c, and                   
-`spkgeo_c <../cspice/spkgeo_c.html>`__. Function                      
-`spksfs_c <../cspice/spksfs_c.html>`__ selects, from the database of  
+:py:meth:`~spiceypy.spiceypy.spkezr`,                               
+:py:meth:`~spiceypy.spiceypy.spkez`, spkssb_c, and                   
+:py:meth:`~spiceypy.spiceypy.spkgeo`. Function                      
+:py:meth:`~spiceypy.spiceypy.spksfs` selects, from the database of  
 loaded files, the file handle and segment descriptor for the segment  
 best suited to the request. If two segments from different files are  
-suitable, `spksfs_c <../cspice/spksfs_c.html>`__ selects the one from 
+suitable, :py:meth:`~spiceypy.spiceypy.spksfs` selects the one from 
 the file that was loaded later. If two segments from the same file    
-are suitable, `spksfs_c <../cspice/spksfs_c.html>`__ selects the one  
+are suitable, :py:meth:`~spiceypy.spiceypy.spksfs` selects the one  
 that is stored later in the file. The call                            
                                                                       
 ::                                                                    
@@ -1599,7 +1599,7 @@ that is stored later in the file. The call
                                                                       
 returns the handle, descriptor, and segment name for the latest       
 segment containing data for Triton at the specified epoch.            
-`spksfs_c <../cspice/spksfs_c.html>`__ maintains a buffer of segment  
+:py:meth:`~spiceypy.spiceypy.spksfs` maintains a buffer of segment  
 descriptors and segment names, so it doesn't waste time searching the 
 database for bodies it already knows about.                           
                          
@@ -2284,7 +2284,7 @@ polynomial is
       ( RSIZE - 2 ) / 3 - 1                                           
                                                                       
 To facilitate the creation of Type 2 segments, a segment writing      
-function called `spkw02_c <../cspice/spkw02_c.html>`__ has been       
+function called :py:meth:`~spiceypy.spiceypy.spkw02` has been       
 provided. This function takes as input arguments the handle of an SPK 
 file that is open for writing, the information needed to construct    
 the segment descriptor, and the data to be stored in the segment. The 
@@ -2337,7 +2337,7 @@ polynomial is
       ( RSIZE - 2 ) / 6 - 1                                           
                                                                       
 To facilitate the creation of Type 3 segments, a segment writing      
-function called `spkw03_c <../cspice/spkw03_c.html>`__ has been       
+function called :py:meth:`~spiceypy.spiceypy.spkw03` has been       
 provided. This function takes as input arguments the handle of an SPK 
 file that is open for writing, the information needed to construct    
 the segment descriptor, and the data to be stored in the segment. The 
@@ -2455,7 +2455,7 @@ states in the segment. Thus, the complete segment looks like this:
       +--------------------+                                          
                                                                       
 To facilitate the creation of Type 5 segments, a segment writing      
-function called `spkw05_c <../cspice/spkw05_c.html>`__ has been       
+function called :py:meth:`~spiceypy.spiceypy.spkw05` has been       
 provided. This function takes as input arguments the handle of an SPK 
 file that is open for writing, the information needed to construct    
 the segment descriptor, and the data to be stored in the segment. The 
@@ -2577,7 +2577,7 @@ selected for interpolation still has size N, and includes either the
 first or last state of the segment.                                   
                                                                       
 To facilitate the creation of Type 8 segments, a segment writing      
-function called `spkw08_c <../cspice/spkw08_c.html>`__ has been       
+function called :py:meth:`~spiceypy.spiceypy.spkw08` has been       
 provided. This function takes as input arguments the handle of an SPK 
 file that is open for writing, the information needed to construct    
 the segment descriptor, and the data to be stored in the segment. The 
@@ -2689,7 +2689,7 @@ locate the correct set of states to interpolate by a direct
 computation.                                                          
                                                                       
 To facilitate the creation of Type 9 segments, a segment writing      
-function called `spkw09_c <../cspice/spkw09_c.html>`__ has been       
+function called :py:meth:`~spiceypy.spiceypy.spkw09` has been       
 provided. This function takes as input arguments the handle of an SPK 
 file that is open for writing, the information needed to construct    
 the segment descriptor, and the data to be stored in the segment. The 
@@ -2836,7 +2836,7 @@ The \``packet directory'' is empty.
                                                                       
 Access to the data should be made via the SPK Type 10                 
 reader---spkr10\_ or via the SPICELIB generic segment functions. Use  
-the function `spkw10_c <../cspice/spkw10_c.html>`__ to write a Type   
+the function :py:meth:`~spiceypy.spiceypy.spkw10` to write a Type   
 10 generic segment.                                                   
                                                 
 Type 12: Hermite Interpolation --- Equal Time Steps       
@@ -2972,7 +2972,7 @@ selected for interpolation still has size S, and includes either the
 first or last state of the segment.                                   
                                                                       
 To facilitate the creation of type 12 segments, a segment writing     
-routine called `spkw12_c <../cspice/spkw12_c.html>`__ has been        
+routine called :py:meth:`~spiceypy.spiceypy.spkw12` has been        
 provided. This routine takes as input arguments the handle of an SPK  
 file that is open for writing, the information needed to construct    
 the segment descriptor, and the data to be stored in the segment. The 
@@ -3091,7 +3091,7 @@ time tags to find appropriates states to interpolate, while the type
 direct computation.                                                   
                                                                       
 To facilitate the creation of type 13 segments, a segment writing     
-routine called `spkw13_c <../cspice/spkw13_c.html>`__ has been        
+routine called :py:meth:`~spiceypy.spiceypy.spkw13` has been        
 provided. This routine takes as input arguments the handle of an SPK  
 file that is open for writing, the information needed to construct    
 the segment descriptor, and the data to be stored in the segment. The 
@@ -3222,10 +3222,10 @@ Access to the data should be made via the CSPICE generic segment
 functions.                                                            
                                                                       
 Type 14 segments should be created using the functions                
-`spk14b_c <../cspice/spk14b_c.html>`__,                               
-`spk14a_c <../cspice/spk14a_c.html>`__, and                           
-`spk14e_c <../cspice/spk14e_c.html>`__. The usage of these functions  
-is discussed in `spk14b_c <../cspice/spk14b_c.html>`__.               
+:py:meth:`~spiceypy.spiceypy.spk14b`,                               
+:py:meth:`~spiceypy.spiceypy.spk14a`, and                           
+:py:meth:`~spiceypy.spiceypy.spk14e`. The usage of these functions  
+is discussed in :py:meth:`~spiceypy.spiceypy.spk14b`.               
                                                 
 Type 15: Precessing Conic Propagation                     
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -3281,7 +3281,7 @@ The effects of the J2 term are not applied if the eccentricity is
 greater than or equal to 1.                                           
                                                                       
 To facilitate the creation of Type 15 segments, a segment writing     
-function called `spkw15_c <../cspice/spkw15_c.html>`__ has been       
+function called :py:meth:`~spiceypy.spiceypy.spkw15` has been       
 provided. This function takes as input arguments the handle of an SPK 
 file that is open for writing, the information needed to construct    
 the segment descriptor, and the data to be stored in the segment. The 
@@ -3328,7 +3328,7 @@ Type 17 SPK segments have the structure shown below:
                 +----------------------------------+                  
                                                                       
 To facilitate the creation of Type 17 segments, a segment writing     
-function called `spkw17_c <../cspice/spkw17_c.html>`__ has been       
+function called :py:meth:`~spiceypy.spiceypy.spkw17` has been       
 provided. This function takes as input arguments the handle of an SPK 
 file that is open for writing, the information needed to construct    
 the segment descriptor, and the data to be stored in the segment. The 
@@ -3480,7 +3480,7 @@ then only
 directory entries are stored, and in particular, if there are only    
 100 states in the segment, there are no directories.                  
 To facilitate the creation of type 18 segments, a segment writing     
-routine called `spkw18_c <../cspice/spkw18_c.html>`__ has been        
+routine called :py:meth:`~spiceypy.spiceypy.spkw18` has been        
 provided. This routine takes as input arguments the handle of an SPK  
 file that is open for writing, the information needed to construct    
 the segment descriptor, and the data to be stored in the segment. The 
@@ -3970,7 +3970,7 @@ given by
 The function spke20\_ contains the algorithm used to construct a      
 state from a particular logical record.                               
 To facilitate the creation of Type 20 segments, a segment writing     
-function called `spkw20_c <../cspice/spkw20_c.html>`__ has been       
+function called :py:meth:`~spiceypy.spiceypy.spkw20` has been       
 provided. This function takes as input arguments the handle of an SPK 
 file that is open for writing, the information needed to construct    
 the segment descriptor, and the data to be stored in the segment. The 
@@ -4086,7 +4086,7 @@ Summary of Mnemonics
   begins with the letters \``spk'', followed by a two- or             
   three-character mnemonic. For example, the function that returns    
   the state of one body with respect to another is named              
-  `spkez_c <../cspice/spkez_c.html>`__, pronounced \`S-P-K-E-Z'.      
+  :py:meth:`~spiceypy.spiceypy.spkez`, pronounced \`S-P-K-E-Z'.      
                                                                       
 Many of the lower-level CSPICE functions have SPICELIB counterparts   
 implemented in Fortran as entry points of another function.           

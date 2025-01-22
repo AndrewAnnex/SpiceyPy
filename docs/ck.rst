@@ -220,7 +220,7 @@ their images.
                                                                       
 CK files are capable of storing angular velocity data for             
 instruments, although the presence of such data is optional. The CK   
-reader `ckgpav_c <../cspice/ckgpav_c.html>`__ (Get Pointing and       
+reader :py:meth:`~spiceypy.spiceypy.ckgpav` (Get Pointing and       
 Angular Velocity) returns an angular velocity vector in addition to a 
 C-matrix.                                                             
                                             
@@ -264,13 +264,13 @@ continuous unless otherwise specified.
                                                                       
 To convert from a character string representation of SCLK to its      
 double precision encoding, use the function                           
-`scencd_c <../cspice/scencd_c.html>`__ (Encode SCLK):                 
+:py:meth:`~spiceypy.spiceypy.scencd` (Encode SCLK):                 
                                                                       
 ::                                                                    
                                                                       
       scencd_c ( sc, sclkch, &sclkdp );                               
                                                                       
-Use `scdecd_c <../cspice/scdecd_c.html>`__ (Decode SCLK) to recover   
+Use :py:meth:`~spiceypy.spiceypy.scdecd` (Decode SCLK) to recover   
 the character representation from its double precision encoding.      
 ::                                                                    
                                                                       
@@ -288,14 +288,14 @@ Reading, `sclk.req <../req/sclk.html>`__, indicates the expected
 clock string formats for each mission.                                
                                                                       
 To convert from ET to continuous encoded SCLK, use                    
-`sce2c_c <../cspice/sce2c_c.html>`__ (ET to continuous SCLK):         
+:py:meth:`~spiceypy.spiceypy.sce2c` (ET to continuous SCLK):         
                                                                       
 ::                                                                    
                                                                       
       sce2c_c ( sc, sclkch, &sclkdp );                                
                                                                       
 To convert continuous encoded SCLK to ET, use                         
-`sct2e_c <../cspice/sct2e_c.html>`__ (Ticks to ET):                   
+:py:meth:`~spiceypy.spiceypy.sct2e` (Ticks to ET):                   
 ::                                                                    
                                                                       
       sct2e_c ( sc, sclkdp, &et );                                    
@@ -321,7 +321,7 @@ the rest of the clock count with a \``/''. The partition number
 uniquely separates a count from identical counts in other partitions. 
                                                                       
 The presence of the partition number is not required. If it is        
-missing, `scencd_c <../cspice/scencd_c.html>`__ will assume the       
+missing, :py:meth:`~spiceypy.spiceypy.scencd` will assume the       
 partition to be the earliest possible one containing the clock        
 string.                                                               
                                             
@@ -352,7 +352,7 @@ The SCLK kernel file
 | Before calling any of the SCLK conversion functions mentioned       
   above, you have to load the contents of the SCLK kernel file into   
   the kernel pool, using the function                                 
-  `furnsh_c <../cspice/furnsh_c.html>`__.                             
+  :py:meth:`~spiceypy.spiceypy.furnsh`.                             
                                                                       
 The SCLK kernel file contains spacecraft specific parameters needed   
 to perform the conversions. Included are such things as clock format  
@@ -466,19 +466,19 @@ document.
                                                                       
                                                 
                                                                       
-`furnsh_c <../cspice/furnsh_c.html>`__                    
+:py:meth:`~spiceypy.spiceypy.furnsh`                    
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
-| `furnsh_c <../cspice/furnsh_c.html>`__ loads the kernel pool with   
+| :py:meth:`~spiceypy.spiceypy.furnsh` loads the kernel pool with   
   the contents of the specified text kernel file, which, in this case 
   is the SCLK kernel file.                                            
                                                                       
-`scencd_c <../cspice/scencd_c.html>`__ (below) and                    
-`scdecd_c <../cspice/scdecd_c.html>`__ require the contents of the    
+:py:meth:`~spiceypy.spiceypy.scencd` (below) and                    
+:py:meth:`~spiceypy.spiceypy.scdecd` require the contents of the    
 SCLK kernel file in order to properly encode and decode clock values. 
 (See section on Spacecraft Clock Time).                               
                                                                       
-`furnsh_c <../cspice/furnsh_c.html>`__ also loads a CK file for       
+:py:meth:`~spiceypy.spiceypy.furnsh` also loads a CK file for       
 processing by other CK functions. It takes as input the name of the   
 C-kernel file to be used, in this example                             
                                                                       
@@ -489,14 +489,14 @@ C-kernel file to be used, in this example
 Once loaded, a file is ready for any number of reads, so it needs to  
 be loaded only once, typically in the initialization section of your  
 program. Among other things, the lower level routines called by       
-`furnsh_c <../cspice/furnsh_c.html>`__ open the file with all the     
+:py:meth:`~spiceypy.spiceypy.furnsh` open the file with all the     
 appropriate options, relieving you of that responsibility.            
 |                                                         
                                                                       
-`scencd_c <../cspice/scencd_c.html>`__ and `sce2c_c <../cspice/sce2c_c.html>`__                               
+:py:meth:`~spiceypy.spiceypy.scencd`                               
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
-| `scencd_c <../cspice/scencd_c.html>`__ encodes a character          
+| :py:meth:`~spiceypy.spiceypy.scencd` encodes a character          
   representation of spacecraft clock time such as                     
                                                                       
 ::                                                                    
@@ -504,25 +504,25 @@ appropriate options, relieving you of that responsibility.
       "3/20556:17:768"                                                
                                                                       
 into a double precision number (sclkdp). The value returned by        
-`scencd_c <../cspice/scencd_c.html>`__ is a discrete tick count. When 
+:py:meth:`~spiceypy.spiceypy.scencd` is a discrete tick count. When 
 starting with an ET value, a continuous tick count may be obtained by 
-calling `sce2c_c <../cspice/sce2c_c.html>`__.                         
+calling :py:meth:`~spiceypy.spiceypy.sce2c`.                         
 You must use encoded SCLK when calling CK reader functions.           
                                             
                                                                       
-`sctiks_c <../cspice/sctiks_c.html>`__                    
+:py:meth:`~spiceypy.spiceypy.sctiks`                    
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
-| `sctiks_c <../cspice/sctiks_c.html>`__ converts a clock string      
+| :py:meth:`~spiceypy.spiceypy.sctiks` converts a clock string      
   without partition number to units of \``ticks,'' which are the      
   units of encoded SCLK returned by                                   
-  `scencd_c <../cspice/scencd_c.html>`__.                             
+  :py:meth:`~spiceypy.spiceypy.scencd`.                             
                                                                       
-The distinction between `scencd_c <../cspice/scencd_c.html>`__ and    
-`sctiks_c <../cspice/sctiks_c.html>`__ is important. The result of    
-calling `scencd_c <../cspice/scencd_c.html>`__ is a relative          
+The distinction between :py:meth:`~spiceypy.spiceypy.scencd` and    
+:py:meth:`~spiceypy.spiceypy.sctiks` is important. The result of    
+calling :py:meth:`~spiceypy.spiceypy.scencd` is a relative          
 measurement: ticks since the start of the clock at launch. The result 
-of calling `sctiks_c <../cspice/sctiks_c.html>`__ is an absolute      
+of calling :py:meth:`~spiceypy.spiceypy.sctiks` is an absolute      
 measurement: ticks. It's like the difference between the times 3:55   
 p.m. (a specific time of the day) and 3:55 (three hours and           
 fifty-five minutes - a length of time).                               
@@ -532,7 +532,7 @@ fifty-five minutes - a length of time).
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | `ckgp_c <../cspice/ckgp_c.html>`__ looks through files loaded by    
-  `furnsh_c <../cspice/furnsh_c.html>`__ to find the data needed to   
+  :py:meth:`~spiceypy.spiceypy.furnsh` to find the data needed to   
   compute the C-matrix for a specified spacecraft instrument at a     
   particular time. It uses the following inputs and outputs.          
                                                                       
@@ -581,15 +581,15 @@ Outputs are:
                                                                       
                                                 
                                                                       
-The CK File Reader `ckgpav_c <../cspice/ckgpav_c.html>`__ 
+The CK File Reader :py:meth:`~spiceypy.spiceypy.ckgpav` 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                 
-| `ckgpav_c <../cspice/ckgpav_c.html>`__ (Get Pointing and Angular    
+| :py:meth:`~spiceypy.spiceypy.ckgpav` (Get Pointing and Angular    
   Velocity) is almost identical to                                    
   `ckgp_c <../cspice/ckgp_c.html>`__, except that it returns an       
   angular velocity vector in addition to a C-matrix.                  
                                                                       
-The calling sequence for `ckgpav_c <../cspice/ckgpav_c.html>`__ is:   
+The calling sequence for :py:meth:`~spiceypy.spiceypy.ckgpav` is:   
                                                                       
 ::                                                                    
                                                                       
@@ -601,10 +601,10 @@ reference frame \`ref'.
 All of the other arguments are identical to those of                  
 `ckgp_c <../cspice/ckgp_c.html>`__. And, just as with                 
 `ckgp_c <../cspice/ckgp_c.html>`__, you must load a CK file by        
-calling `furnsh_c <../cspice/furnsh_c.html>`__ before calling         
-`ckgpav_c <../cspice/ckgpav_c.html>`__.                               
+calling :py:meth:`~spiceypy.spiceypy.furnsh` before calling         
+:py:meth:`~spiceypy.spiceypy.ckgpav`.                               
                                                                       
-The behavior of `ckgpav_c <../cspice/ckgpav_c.html>`__ is, however,   
+The behavior of :py:meth:`~spiceypy.spiceypy.ckgpav` is, however,   
 slightly different from that of `ckgp_c <../cspice/ckgp_c.html>`__,   
 and these differences will be explained in the \``Details'' chapter   
 of this document.                                                     
@@ -625,7 +625,7 @@ without having to run your application on each file separately.
 C-kernel software allows you to do this through the file loading and  
 unloading process.                                                    
                                                                       
-The file loading function `furnsh_c <../cspice/furnsh_c.html>`__ was  
+The file loading function :py:meth:`~spiceypy.spiceypy.furnsh` was  
 introduced in the last section. It was mentioned that you have to     
 load the CK file before you try to access it, that you have to load   
 it only once during program execution, and that in subsequent calls   
@@ -677,10 +677,10 @@ searched first.
 If, on the other hand, you want to be explicit about which file to    
 search, you need a way of telling C-kernel software to stop looking   
 in one file, and start looking in another.                            
-`furnsh_c <../cspice/furnsh_c.html>`__ accomplishes the latter by     
+:py:meth:`~spiceypy.spiceypy.furnsh` accomplishes the latter by     
 loading a file for processing. To tell C-kernel software to stop      
 looking through a file, then, you need to unload it, with             
-`unload_c <../cspice/unload_c.html>`__ :                              
+:py:meth:`~spiceypy.spiceypy.unload` :                              
                                                                       
 ::                                                                    
                                                                       
@@ -718,20 +718,20 @@ CK Coverage Summary Routines
 | The CSPICE includes two functions for obtaining information about   
   the contents of a CK file from within an application.               
                                                                       
-The `ckobj_c <../cspice/ckobj_c.html>`__ function provides an API via 
+The :py:meth:`~spiceypy.spiceypy.ckobj` function provides an API via 
 which an application can find the set of instruments for which a      
 specified CK file contains data. The instrument IDs are returned in a 
 SPICE \``set'' data structure (see `sets.req <../req/sets.html>`__).  
                                                                       
-The `ckcov_c <../cspice/ckcov_c.html>`__ function provides an API via 
+The :py:meth:`~spiceypy.spiceypy.ckcov` function provides an API via 
 which an application can find the time periods for which a specified  
 CK file provides data for an instrument of interest. The coverage     
 information is a set of disjoint time intervals returned in a SPICE   
 \``window'' data structure (see                                       
 `windows.req <../req/windows.html>`__).                               
                                                                       
-Refer to the headers of `ckobj_c <../cspice/ckobj_c.html>`__ and      
-`ckcov_c <../cspice/ckcov_c.html>`__ for details on the use of those  
+Refer to the headers of :py:meth:`~spiceypy.spiceypy.ckobj` and      
+:py:meth:`~spiceypy.spiceypy.ckcov` for details on the use of those  
 routines.                                                             
                                             
                                                                       
@@ -740,13 +740,13 @@ Details
                                                 
 | In the previous chapter, we introduced the two CK readers,          
   `ckgp_c <../cspice/ckgp_c.html>`__ and                              
-  `ckgpav_c <../cspice/ckgpav_c.html>`__, which return C-matrices and 
+  :py:meth:`~spiceypy.spiceypy.ckgpav`, which return C-matrices and 
   angular velocity vectors from CK files.                             
                                                                       
 In this chapter we introduce the concept of a CK file segment, and    
 explain how these segments are organized into CK files. We then show  
 exactly how `ckgp_c <../cspice/ckgp_c.html>`__ and                    
-`ckgpav_c <../cspice/ckgpav_c.html>`__ go about searching through     
+:py:meth:`~spiceypy.spiceypy.ckgpav` go about searching through     
 files and segments to obtain the data that they need.                 
                                             
                                                                       
@@ -944,14 +944,14 @@ How the CK Readers Work
   the data contained inside the segment to return the C-matrix and    
   angular velocity vector. In this section you'll see how these steps 
   are implemented by `ckgp_c <../cspice/ckgp_c.html>`__ and           
-  `ckgpav_c <../cspice/ckgpav_c.html>`__.                             
+  :py:meth:`~spiceypy.spiceypy.ckgpav`.                             
                                             
                                                                       
 The General Search Algorithm                              
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The CK readers search through files loaded by                       
-  `furnsh_c <../cspice/furnsh_c.html>`__ to satisfy a pointing        
+  :py:meth:`~spiceypy.spiceypy.furnsh` to satisfy a pointing        
   request. The files are searched in the reverse order from which     
   they were loaded. Thus the last-loaded file is searched first, then 
   the second to last, and so forth. The contents of individual files  
@@ -1100,33 +1100,33 @@ obtaining data from such CKs using a zero tolerance is often not
 possible due to time round off.                                       
 The next few sections will go into greater detail about how           
 `ckgp_c <../cspice/ckgp_c.html>`__ and                                
-`ckgpav_c <../cspice/ckgpav_c.html>`__ search through segments.       
+:py:meth:`~spiceypy.spiceypy.ckgpav` search through segments.       
                                             
                                                                       
-The Difference Between `ckgp_c <../cspice/ckgp_c.html>`__ and `ckgpav_c <../cspice/ckgpav_c.html>`__                         
+The Difference Between `ckgp_c <../cspice/ckgp_c.html>`__ and :py:meth:`~spiceypy.spiceypy.ckgpav`                         
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The only significant difference between the search algorithms of    
   `ckgp_c <../cspice/ckgp_c.html>`__ and                              
-  `ckgpav_c <../cspice/ckgpav_c.html>`__ is in which segments they    
+  :py:meth:`~spiceypy.spiceypy.ckgpav` is in which segments they    
   search through to satisfy a request for pointing data. Recall that  
   segments in a CK file only optionally contain angular velocity      
   data. Since `ckgp_c <../cspice/ckgp_c.html>`__ does not return an   
   angular velocity vector, it is free to consider all segments when   
   satisfying a request, because all segments will contain the data    
   for constructing C-matrices.                                        
-  `ckgpav_c <../cspice/ckgpav_c.html>`__, on the other hand, will     
+  :py:meth:`~spiceypy.spiceypy.ckgpav`, on the other hand, will     
   consider only those segments which also contain angular velocity    
   data.                                                               
                                                                       
 Because of this difference, it is possible that on the exact same set 
 of inputs, `ckgp_c <../cspice/ckgp_c.html>`__ and                     
-`ckgpav_c <../cspice/ckgpav_c.html>`__ could return different values  
+:py:meth:`~spiceypy.spiceypy.ckgpav` could return different values  
 for the C-matrix. This could occur if a CK file contained two         
 segments covering the same time period for the same instrument, one   
 with angular rates and one without.                                   
 `ckgp_c <../cspice/ckgp_c.html>`__ might use the C-matrix only        
-segment, whereas `ckgpav_c <../cspice/ckgpav_c.html>`__ would ignore  
+segment, whereas :py:meth:`~spiceypy.spiceypy.ckgpav` would ignore  
 that segment and use the one containing angular velocity data.        
                                                                       
 To avoid this situation, NAIF advises users not to place segments     
@@ -1137,7 +1137,7 @@ Locating the Applicable Segment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | Within `ckgp_c <../cspice/ckgp_c.html>`__ and                       
-  `ckgpav_c <../cspice/ckgpav_c.html>`__, finding the right segment   
+  :py:meth:`~spiceypy.spiceypy.ckgpav`, finding the right segment   
   is the job of ckbss\_ (Begin a Search for a Segment), and cksns\_   
   (Select the Next Segment).                                          
                                                                       
@@ -1183,7 +1183,7 @@ Looking at Descriptors
   functions to locate and evaluate the pointing records. In order to  
   do so, those functions have to unpack a descriptor into its double  
   precision and integer parts, using the DAF function                 
-  `dafus_c <../cspice/dafus_c.html>`__ (Unpack Summary).              
+  :py:meth:`~spiceypy.spiceypy.dafus` (Unpack Summary).              
                                             
                                                                       
 Evaluating the Records --- the Reader ckpfs\_             
@@ -1191,7 +1191,7 @@ Evaluating the Records --- the Reader ckpfs\_
                                                         
 | After locating an appropriate segment via cksns\_,                  
   `ckgp_c <../cspice/ckgp_c.html>`__ and                              
-  `ckgpav_c <../cspice/ckgpav_c.html>`__ evaluate pointing records    
+  :py:meth:`~spiceypy.spiceypy.ckgpav` evaluate pointing records    
   with a call to ckpfs\_ (Pointing From Segment), a low level CK      
   reader.                                                             
                                                                       
@@ -1204,7 +1204,7 @@ vector for the time in the segment closest to \`sclkdp' and within
 \`tol' ticks of it. If ckpfs\_ can't locate a time close enough in    
 the segment, then \`found' is set to false. (If \`found' is false,    
 then `ckgp_c <../cspice/ckgp_c.html>`__ and                           
-`ckgpav_c <../cspice/ckgpav_c.html>`__ will try another segment by    
+:py:meth:`~spiceypy.spiceypy.ckgpav` will try another segment by    
 calling cksns\_ again, then ckpfs\_ again, and so on.)                
                                                                       
 The output data are referenced to the base frame indicated by the     
@@ -1218,7 +1218,7 @@ Transforming the Results
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                         
 | The final task performed by `ckgp_c <../cspice/ckgp_c.html>`__ and  
-  `ckgpav_c <../cspice/ckgpav_c.html>`__ is to transform the returned 
+  :py:meth:`~spiceypy.spiceypy.ckgpav` is to transform the returned 
   data from their stored reference frame to that requested by the     
   calling program.                                                    
                                                                       
@@ -1443,7 +1443,7 @@ Type 1 functions
 | There are several CK functions that support data type 1. Their      
   names and functions are:                                            
                                                                       
-`ckw01_c <../cspice/ckw01_c.html>`__                                  
+:py:meth:`~spiceypy.spiceypy.ckw01`                                  
    writes a type 1 segment to a file.                                 
                                                                       
 **ckr01\_**                                                           
@@ -1609,7 +1609,7 @@ Type 2 functions
 | There are several CK functions that support data type 2. Their      
   names and functions are:                                            
                                                                       
-`ckw02_c <../cspice/ckw02_c.html>`__                                  
+:py:meth:`~spiceypy.spiceypy.ckw02`                                  
    writes a type 2 segment to a file.                                 
                                                                       
 **ckr02\_**                                                           
@@ -1852,7 +1852,7 @@ functions necessary to write a type 3 segment to a C-kernel. However,
 the creator of the segment is responsible for determining whether or  
 not it is valid to interpolate between adjacent pointing instances,   
 and thus how they should be partitioned into intervals. See the       
-header of the function `ckw03_c <../cspice/ckw03_c.html>`__ for a     
+header of the function :py:meth:`~spiceypy.spiceypy.ckw03` for a     
 complete description of the inputs required to write a segment.       
                                             
                                                                       
@@ -1934,7 +1934,7 @@ Type 3 functions
 | There are several CK functions that support data type 3. Their      
   names and function are:                                             
                                                                       
-`ckw03_c <../cspice/ckw03_c.html>`__                                  
+:py:meth:`~spiceypy.spiceypy.ckw03`                                  
    writes a type 3 segment to a file.                                 
                                                                       
 **ckr03\_**                                                           
@@ -2548,7 +2548,7 @@ functions necessary to write a type 5 segment to a C-kernel. However,
 the creator of the segment is responsible for determining whether or  
 not it is valid to interpolate between contiguous ranges of pointing  
 instances, and thus how they should be partitioned into intervals.    
-See the header of the function `ckw05_c <../cspice/ckw05_c.html>`__   
+See the header of the function :py:meth:`~spiceypy.spiceypy.ckw05`   
 for a complete description of the inputs required to write a segment. 
 |                                                         
                                                                       
@@ -2558,7 +2558,7 @@ Type 5 functions
 | There are several CK functions that support data type 5. Their      
   names and functions are:                                            
                                                                       
-`ckw05_c <../cspice/ckw05_c.html>`__                                  
+:py:meth:`~spiceypy.spiceypy.ckw05`                                  
    writes a type 5 segment to a file.                                 
                                                                       
 **ckr05\_**                                                           
@@ -4582,13 +4582,13 @@ November 17, 2005
 | Abstract was added.                                                 
                                                                       
 Calls/references to the deprecated routine                            
-`bodvar_c <../cspice/bodvar_c.html>`__ were replaced with             
-calls/referenes to `bodvcd_c <../cspice/bodvcd_c.html>`__.            
-`bodvrd_c <../cspice/bodvrd_c.html>`__ is mentioned as another        
-routine superseding `bodvar_c <../cspice/bodvar_c.html>`__.           
+:py:meth:`~spiceypy.spiceypy.bodvar` were replaced with             
+calls/referenes to :py:meth:`~spiceypy.spiceypy.bodvcd`.            
+:py:meth:`~spiceypy.spiceypy.bodvrd` is mentioned as another        
+routine superseding :py:meth:`~spiceypy.spiceypy.bodvar`.           
                                                                       
 C examples showing incorrect calling sequences for                    
-`prompt_c <../cspice/prompt_c.html>`__ were corrected.                
+:py:meth:`~spiceypy.spiceypy.prompt` were corrected.                
                                             
                                                                       
 December 21, 2004                                         
@@ -4597,7 +4597,7 @@ December 21, 2004
 | Replaced references and examples of lower level CK                  
   loading/unloading functions with                                    
   `furnsh_c                                                           
- <../cspice/furnsh_c.html>`__/`unload_c <../cspice/unload_c.html>`__. 
+ <../cspice/furnsh_c.html>`__/:py:meth:`~spiceypy.spiceypy.unload`. 
                                             
                                                                       
 February 2, 2004                                          

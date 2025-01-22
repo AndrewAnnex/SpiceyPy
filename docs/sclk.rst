@@ -177,7 +177,7 @@ where
    is an ET time.                                                     
                                                                       
 **\`pictur'**                                                         
-   is a format picture for `timout_c <../cspice/timout_c.html>`__.    
+   is a format picture for :py:meth:`~spiceypy.spiceypy.timout`.    
                                                                       
 **\`lenout'**                                                         
    is the output string length.                                       
@@ -204,7 +204,7 @@ Using encoded SCLK
   encoded SCLK time tags to the CK reader functions.                  
                                                                       
 You can obtain encoded SCLK values from SCLK strings via the function 
-`scencd_c <../cspice/scencd_c.html>`__. The code fragment             
+:py:meth:`~spiceypy.spiceypy.scencd`. The code fragment             
                                                                       
 ::                                                                    
                                                                       
@@ -220,7 +220,7 @@ fragment
       scdecd ( sc, sclkdp, lenout, clkstr );                        
                                                                       
 You can obtain continuous encoded SCLK values from ET via the         
-function `sce2c_c <../cspice/sce2c_c.html>`__. The code fragment      
+function :py:meth:`~spiceypy.spiceypy.sce2c`. The code fragment      
 ::                                                                    
                                                                       
       sce2c ( sc, et, &sclkdp );                                    
@@ -229,11 +229,11 @@ encodes the ephemeris time ET as the double precision value
 \`sclkdp'. SCLKDP need not be integral; even though non-integral tick 
 values do not represent SCLK readings, they are permitted to avoid    
 truncation error when representing ET as encoded SCLK.                
-A parallel routine `sce2t_c <../cspice/sce2t_c.html>`__ converts ET   
+A parallel routine :py:meth:`~spiceypy.spiceypy.sce2t` converts ET   
 to encoded SCLK, rounding the result to the nearest integral tick.    
                                                                       
 The inverse conversion is provided by the routine                     
-`sct2e_c <../cspice/sct2e_c.html>`__, which is called as follows:     
+:py:meth:`~spiceypy.spiceypy.sct2e`, which is called as follows:     
                                                                       
 ::                                                                    
                                                                       
@@ -252,7 +252,7 @@ The code fragment
       sctiks ( sc, clkstr, &ticks );                                
                                                                       
 produces an encoded tolerance value.                                  
-`sctiks_c <../cspice/sctiks_c.html>`__ takes SCLK strings WITHOUT     
+:py:meth:`~spiceypy.spiceypy.sctiks` takes SCLK strings WITHOUT     
 partition numbers as inputs; this is because the strings indicate a   
 delta time rather than an absolute time.                              
 All of the concepts used in this section are discussed in greater     
@@ -279,13 +279,13 @@ associated with pointing data in the C-kernel. Encoded SCLK is the
 basis by which conversions are made from SCLK to other time systems.  
 To convert a character representation of an SCLK count \`sclkch' to   
 its double precision encoding \`sclkdp', use the function             
-`scencd_c <../cspice/scencd_c.html>`__ (Encode SCLK):                 
+:py:meth:`~spiceypy.spiceypy.scencd` (Encode SCLK):                 
                                                                       
 ::                                                                    
                                                                       
       scencd ( sc, sclkch, &sclkdp );                               
                                                                       
-The function `scdecd_c <../cspice/scdecd_c.html>`__ (Decode SCLK)     
+The function :py:meth:`~spiceypy.spiceypy.scdecd` (Decode SCLK)     
 recovers the character representation of spacecraft clock from its    
 double precision encoding.                                            
 ::                                                                    
@@ -334,7 +334,7 @@ In addition to representing spacecraft clock readings, ticks can be
 used to represent arbitrary epochs. In order to minimize              
 discretization error, \``continuous'' (non-integral) tick values are  
 supported: ephemeris times may be converted to non-integral ticks via 
-the function `sce2c_c <../cspice/sce2c_c.html>`__.                    
+the function :py:meth:`~spiceypy.spiceypy.sce2c`.                    
                                                                       
 Conversion of spacecraft clock strings to ticks always produces       
 integral tick values.                                                 
@@ -365,19 +365,19 @@ the count falls in, and compute the number of ticks since clock start
 79550).                                                               
                                                                       
 When you pass a SCLK string to                                        
-`scencd_c <../cspice/scencd_c.html>`__, it is normally prefixed with  
+:py:meth:`~spiceypy.spiceypy.scencd`, it is normally prefixed with  
 a number indicating the partition in which the count falls. Sample    
 SCLK strings for Voyager 2, including partition numbers, are given in 
 an example program later in this document.                            
                                                                       
 The presence of the partition number is not always required. If it is 
-missing, `scencd_c <../cspice/scencd_c.html>`__ will assume the       
+missing, :py:meth:`~spiceypy.spiceypy.scencd` will assume the       
 partition to be the earliest one possible that contains the clock     
 string being encoded. It's good practice to always include the        
 partition number in SCLK strings.                                     
                                                                       
 To convert to ticks since clock start,                                
-`scencd_c <../cspice/scencd_c.html>`__ processes the partition        
+:py:meth:`~spiceypy.spiceypy.scencd` processes the partition        
 number. It has to know how many ticks were in all preceding           
 partitions, and what the start and stop clock values were for each.   
 This information is stored in a SCLK kernel file for that spacecraft. 
@@ -388,16 +388,16 @@ missions. The responsible mission operations team must update the
 SCLK kernel file to include new partitions as they occur.             
                                                                       
 In converting encoded SCLK back to an equivalent clock string,        
-`scdecd_c <../cspice/scdecd_c.html>`__ must also use the SCLK kernel  
+:py:meth:`~spiceypy.spiceypy.scdecd` must also use the SCLK kernel  
 file. Note, however, that you only have to load the SCLK kernel file  
 once in your program, no matter how many calls to                     
-`scencd_c <../cspice/scencd_c.html>`__ and                            
-`scdecd_c <../cspice/scdecd_c.html>`__ are made afterwards. See the   
+:py:meth:`~spiceypy.spiceypy.scencd` and                            
+:py:meth:`~spiceypy.spiceypy.scdecd` are made afterwards. See the   
 KERNEL required reading file, `kernel.req <../req/kernel.html>`__,    
 for information about \``loading'' miscellaneous kernel files into    
 the kernel pool.                                                      
                                                                       
-`scdecd_c <../cspice/scdecd_c.html>`__ always returns a clock string  
+:py:meth:`~spiceypy.spiceypy.scdecd` always returns a clock string  
 prefixed by a partition number and the '/' character, for example     
                                                                       
 ::                                                                    
@@ -405,7 +405,7 @@ prefixed by a partition number and the '/' character, for example
       2/2000:83:12                                                    
                                                                       
 If you want to read partition start and stop times for yourself, use  
-the function `scpart_c <../cspice/scpart_c.html>`__:                  
+the function :py:meth:`~spiceypy.spiceypy.scpart`:                  
 ::                                                                    
                                                                       
       scpart ( sc, nparts, pstart, pstop );                         
@@ -426,24 +426,24 @@ CSPICE contains the following functions to convert between encoded
 and character SCLK, ET and UTC. Note that the names of the functions  
 involving SCLK are all prefixed with \`sc', for Spacecraft Clock.     
                                                                       
-`et2utc_c <../cspice/et2utc_c.html>`__ (et, format, prec, lenout,     
+:py:meth:`~spiceypy.spiceypy.et2utc` (et, format, prec, lenout,     
 utc) (Convert ET to a utc string)                                     
                                                                       
-`utc2et_c <../cspice/utc2et_c.html>`__ (utc, et) (Convert a utc       
+:py:meth:`~spiceypy.spiceypy.utc2et` (utc, et) (Convert a utc       
 string to ET)                                                         
-`scencd_c <../cspice/scencd_c.html>`__ (sc, sclkch, sclkdp) (Encode   
+:py:meth:`~spiceypy.spiceypy.scencd` (sc, sclkch, sclkdp) (Encode   
 SCLK)                                                                 
-`scdecd_c <../cspice/scdecd_c.html>`__ (sc, sclkdp, lenout, sclkch)   
+:py:meth:`~spiceypy.spiceypy.scdecd` (sc, sclkdp, lenout, sclkch)   
 (Decode SCLK)                                                         
-`sct2e_c <../cspice/sct2e_c.html>`__ (sc, sclkdp, et) (Convert        
+:py:meth:`~spiceypy.spiceypy.sct2e` (sc, sclkdp, et) (Convert        
 encoded SCLK ticks to ET)                                             
-`scs2e_c <../cspice/scs2e_c.html>`__ (sc, sclkch, et) (Convert SCLK   
+:py:meth:`~spiceypy.spiceypy.scs2e` (sc, sclkch, et) (Convert SCLK   
 string to ET)                                                         
-`sce2c_c <../cspice/sce2c_c.html>`__ (sc, et, sclkdp) (Convert ET to  
+:py:meth:`~spiceypy.spiceypy.sce2c` (sc, et, sclkdp) (Convert ET to  
 continuous ticks)                                                     
-`sce2t_c <../cspice/sce2t_c.html>`__ (sc, et, sclkdp) (Convert ET to  
+:py:meth:`~spiceypy.spiceypy.sce2t` (sc, et, sclkdp) (Convert ET to  
 encoded SCLK ticks)                                                   
-`sce2s_c <../cspice/sce2s_c.html>`__ (sc, et, lenout, sclkch)         
+:py:meth:`~spiceypy.spiceypy.sce2s` (sc, et, lenout, sclkch)         
 (Convert ET to SCLK string)                                           
 It takes at most two function calls to convert between any two of the 
 four representations.                                                 
@@ -453,10 +453,10 @@ partition numbers that represent time increments rather than total
 time since clock start. Such strings are encoded as tick counts. The  
 functions are:                                                        
                                                                       
-`sctiks_c <../cspice/sctiks_c.html>`__ ( sc, clkstr, ticks ) (Convert 
+:py:meth:`~spiceypy.spiceypy.sctiks` ( sc, clkstr, ticks ) (Convert 
 delta SCLK to ticks )                                                 
                                                                       
-`scfmt_c <../cspice/scfmt_c.html>`__ (sc, ticks, lenout, clkstr)      
+:py:meth:`~spiceypy.spiceypy.scfmt` (sc, ticks, lenout, clkstr)      
 (Convert ticks to delta SCLK)                                         
                                                 
                                                                       
@@ -516,12 +516,12 @@ type cc)
 type cc)                                                              
 sctkcc\_ and scfmcc\_ do not process any partition information; that  
 work is handled at a higher level by                                  
-`scencd_c <../cspice/scencd_c.html>`__ and                            
-`scdecd_c <../cspice/scdecd_c.html>`__, and is the same for all       
+:py:meth:`~spiceypy.spiceypy.scencd` and                            
+:py:meth:`~spiceypy.spiceypy.scdecd`, and is the same for all       
 spacecraft clocks.                                                    
 sctkcc\_ and scfmcc\_ are called by                                   
-`sctiks_c <../cspice/sctiks_c.html>`__ and                            
-`scfmt_c <../cspice/scfmt_c.html>`__, respectively.                   
+:py:meth:`~spiceypy.spiceypy.sctiks` and                            
+:py:meth:`~spiceypy.spiceypy.scfmt`, respectively.                   
                                                                       
 Each clock type is supported in the time conversion process by two    
 functions:                                                            
@@ -554,7 +554,7 @@ The SCLK Kernel File
 Before calling any of the functions to encode or decode SCLK, or      
 convert between SCLK and other time systems, an application program   
 must load the contents of the SCLK kernel file into the kernel pool,  
-using the function `furnsh_c <../cspice/furnsh_c.html>`__ (load       
+using the function :py:meth:`~spiceypy.spiceypy.furnsh` (load       
 pool):                                                                
                                                                       
 ::                                                                    
@@ -1224,12 +1224,12 @@ Type 1 SCLK functions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                   
 | Type 1 SCLK functions are normally called by the higher-level SCLK  
-  functions `scencd_c <../cspice/scencd_c.html>`__,                   
-  `scdecd_c <../cspice/scdecd_c.html>`__, scs2e_c, sct2e_c,           
-  `sce2c_c <../cspice/sce2c_c.html>`__,                               
-  `sce2t_c <../cspice/sce2t_c.html>`__,                               
-  `sce2s_c <../cspice/sce2s_c.html>`__, sctiks_c, and                 
-  `scfmt_c <../cspice/scfmt_c.html>`__; you should not need to call   
+  functions :py:meth:`~spiceypy.spiceypy.scencd`,                   
+  :py:meth:`~spiceypy.spiceypy.scdecd`, scs2e_c, sct2e_c,           
+  :py:meth:`~spiceypy.spiceypy.sce2c`,                               
+  :py:meth:`~spiceypy.spiceypy.sce2t`,                               
+  :py:meth:`~spiceypy.spiceypy.sce2s`, sctiks_c, and                 
+  :py:meth:`~spiceypy.spiceypy.scfmt`; you should not need to call   
   these functions directly, though direct calls to these functions    
   are not prohibited.                                                 
                                                                       
@@ -1679,8 +1679,8 @@ December 21, 2004
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | Added note regarding detection of non-native text files. Replaced   
-  `ldpool_c <../cspice/ldpool_c.html>`__ with                         
-  `furnsh_c <../cspice/furnsh_c.html>`__.                             
+  :py:meth:`~spiceypy.spiceypy.ldpool` with                         
+  :py:meth:`~spiceypy.spiceypy.furnsh`.                             
                                                           
 February 2, 2004                                          
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

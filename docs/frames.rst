@@ -66,7 +66,7 @@ Frame Transformation Functions
 | Several user-level CSPICE functions require that the user supply    
   the name of a reference frame as one of the inputs to the function. 
   The most important of these is the function                         
-  `spkezr_c <../cspice/spkezr_c.html>`__. This function returns the   
+  :py:meth:`~spiceypy.spiceypy.spkezr`. This function returns the   
   state (Cartesian position and velocity) of one object relative to   
   another in a user specified reference frame. The choice of          
   reference frame often makes a big difference in the usefulness of a 
@@ -76,12 +76,12 @@ Frame Transformation Functions
   other reference frame.                                              
                                                                       
 The two user-level interface functions that deal solely with frame    
-transformations are `sxform_c <../cspice/sxform_c.html>`__ and        
-`pxform_c <../cspice/pxform_c.html>`__. sxform_c supports             
+transformations are :py:meth:`~spiceypy.spiceypy.sxform` and        
+:py:meth:`~spiceypy.spiceypy.pxform`. sxform_c supports             
 transformations of Cartesian state vectors (6 components) between     
-reference frames while `pxform_c <../cspice/pxform_c.html>`__         
+reference frames while :py:meth:`~spiceypy.spiceypy.pxform`         
 supports transformations of Cartesian position vectors (3             
-components). `pxform_c <../cspice/pxform_c.html>`__ may be used when  
+components). :py:meth:`~spiceypy.spiceypy.pxform` may be used when  
 only position information is needed, or when the derivatives required 
 for a state transformation are unavailable, for example when one      
 frame is defined by a C-kernel that lacks angular velocity data.      
@@ -93,13 +93,13 @@ The calling sequences for these functions are
          sxform ( from, to, et, xform  );                           
          pxform ( from, to, et, rotate );                           
                                                                       
-The output of `sxform_c <../cspice/sxform_c.html>`__, \`xform', is a  
+The output of :py:meth:`~spiceypy.spiceypy.sxform`, \`xform', is a  
 6 by 6 matrix used to transform state vectors relative to a reference 
 frame, the name of which is specified by the \`from' input argument,  
 to states relative to another reference frame, the name of which is   
 specified by the \`to' input argument, at the epoch \`et' (specified  
 in seconds past J2000).                                               
-The output of `pxform_c <../cspice/pxform_c.html>`__, \`rotate', is a 
+The output of :py:meth:`~spiceypy.spiceypy.pxform`, \`rotate', is a 
 3 by 3 transformation matrix equivalent to the upper left 3x3 block   
 of \`xform'. This matrix transforms position as opposed to state      
 vectors.                                                              
@@ -113,25 +113,25 @@ Frame Information Functions
   applications to retrieve information about frames known to CSPICE,  
   whether they are built-in or specified by means of frame kernels:   
                                                                       
-`frmnam_c <../cspice/frmnam_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.frmnam`                                
    Convert frame ID code to frame name.                               
                                                                       
-`namfrm_c <../cspice/namfrm_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.namfrm`                                
    Convert frame name to frame ID code.                               
                                                                       
-`frinfo_c <../cspice/frinfo_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.frinfo`                                
    Return frame specification parameters: frame center, frame class,  
    and frame class ID.                                                
                                                                       
-`cidfrm_c <../cspice/cidfrm_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.cidfrm`                                
    Map body ID code to the default frame centered on the specified    
    body. Both frame name and ID are returned.                         
                                                                       
-`cnmfrm_c <../cspice/cnmfrm_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.cnmfrm`                                
    Map body name to the default frame centered on the specified body. 
    Both frame name and ID are returned.                               
                                                                       
-`ccifrm_c <../cspice/ccifrm_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.ccifrm`                                
    Map frame class and class ID to frame specification parameters:    
    frame ID code, frame name and frame center are returned.           
                                                                       
@@ -159,10 +159,10 @@ Frames Supported in SPICE
                                                                     
 | In both cases -- with the functions requiring specification of a    
   reference frame as one of the inputs (for example                   
-  `spkezr_c <../cspice/spkezr_c.html>`__), and with the functions     
+  :py:meth:`~spiceypy.spiceypy.spkezr`), and with the functions     
   computing transformation between two reference frames               
-  (`sxform_c <../cspice/sxform_c.html>`__ and                         
-  `pxform_c <../cspice/pxform_c.html>`__) -- you specify the frame or 
+  (:py:meth:`~spiceypy.spiceypy.sxform` and                         
+  :py:meth:`~spiceypy.spiceypy.pxform`) -- you specify the frame or 
   frames of interest using a character string that contains the name  
   of the reference frame.                                             
                                                                       
@@ -237,8 +237,8 @@ Frames Kernel (FK) file but they can also be provided in the
 Instrument Kernels (IK) or any other text kernels. In order to make   
 frame definitions from the text kernels available to SPICE, these     
 kernels need to be loaded via a call to                               
-`furnsh_c <../cspice/furnsh_c.html>`__. For example, to load an FK    
-named \``myframe.tf'', call `furnsh_c <../cspice/furnsh_c.html>`__ as 
+:py:meth:`~spiceypy.spiceypy.furnsh`. For example, to load an FK    
+named \``myframe.tf'', call :py:meth:`~spiceypy.spiceypy.furnsh` as 
 follows:                                                              
 ::                                                                    
                                                                       
@@ -291,26 +291,26 @@ data from the J2000 frame to the ICRF (or later version), if the
 vectors or orientation data are computed using SPICE kernels created  
 from the data sources listed above. For example:                      
                                                                       
-- A call to `spkezr_c <../cspice/spkezr_c.html>`__ with the    
+- A call to :py:meth:`~spiceypy.spiceypy.spkezr` with the    
   input frame name J2000 will return a state vector referenced to the 
   ICRF, if the SPK data are from a JPL planetary ephemeris SPK, or    
   from any other SPK in which data are referenced to the ICRF and     
   labeled as referenced to the J2000 frame.                           
                                                                       
-- A call to `pxform_c <../cspice/pxform_c.html>`__ with the    
+- A call to :py:meth:`~spiceypy.spiceypy.pxform` with the    
   input \``from'' frame name J2000 and input \``to'' frame name       
   ITRF93 will return a 3x3 matrix that transforms position vectors    
   from the ICRF to the ITRF93 terrestrial frame, if the Earth         
   orientation data are provided by a NAIF high-precision, binary      
   Earth PCK.                                                          
                                                                       
-- A call to `pxform_c <../cspice/pxform_c.html>`__ with the    
+- A call to :py:meth:`~spiceypy.spiceypy.pxform` with the    
   input \``from'' frame name J2000 and input \``to'' frame name       
   IAU_MARS will return a 3x3 matrix that transforms position vectors  
   from the ICRF to the Mars body-fixed, body-centered IAU_MARS frame, 
   if the orientation data are provided by a NAIF generic text PCK.    
                                                                       
-- A call to `pxform_c <../cspice/pxform_c.html>`__ with the    
+- A call to :py:meth:`~spiceypy.spiceypy.pxform` with the    
   input \``from'' frame name J2000 and an input \``to'' CK frame name 
   will return a 3x3 matrix that transforms position vectors from the  
   ICRF to the specified CK frame, if the CK data used by this call    
@@ -688,7 +688,7 @@ The example we used for the frame 'WALDO' illustrates this.
 Once you've completed the frame specification you tell the SPICE      
 system about the frame by \``loading'' the frame kernel that contains 
 it. As with all text kernels, you load it via the routine             
-`furnsh_c <../cspice/furnsh_c.html>`__. For example if the frame      
+:py:meth:`~spiceypy.spiceypy.furnsh`. For example if the frame      
 kernel containing your frame specification is contained in the file   
 \``myframe.tf'' you load the kernel via the call                      
 ::                                                                    
@@ -847,7 +847,7 @@ TK Frames
 | The relationship between a constant offset Text Kernel (TK) frame   
   and the frame it is offset from is given via a text kernel that can 
   be loaded via the kernel pool routine                               
-  `furnsh_c <../cspice/furnsh_c.html>`__. The first five kernel pool  
+  :py:meth:`~spiceypy.spiceypy.furnsh`. The first five kernel pool  
   variables required for TK frame specification are the same as for   
   any other frame defined via a text kernel:                          
                                                                       
@@ -1469,7 +1469,7 @@ Literal examples include
       @2005-MAR-07/3:10:39.221                                        
                                                                       
 Note that unlike time strings supported by the CSPICE function        
-`str2et_c <../cspice/str2et_c.html>`__, time system tokens such as    
+:py:meth:`~spiceypy.spiceypy.str2et`, time system tokens such as    
 ::                                                                    
                                                                       
       UTC                                                             
@@ -1792,7 +1792,7 @@ Observer-Target Position Vectors
                                                                       
 The observer and target are specified by name or ID code. The         
 aberration correction may be any value accepted by                    
-`spkezr_c <../cspice/spkezr_c.html>`__.                               
+:py:meth:`~spiceypy.spiceypy.spkezr`.                               
                                                                       
 The frame kernel assignments used to define an observer-target        
 position vector are:                                                  
@@ -1833,7 +1833,7 @@ vectors, the frame and epoch are not specified in the frame kernel.
                                                                       
 The observer and target are specified by name or ID code. Aberration  
 corrections may be any supported by the CSPICE function               
-`subpt_c <../cspice/subpt_c.html>`__. Light time corrections are      
+:py:meth:`~spiceypy.spiceypy.subpt`. Light time corrections are      
 applied both to the observer- target center vector and to the         
 rotation of the target body. The stellar aberration correction, if    
 specified, is applied to the observer-target center vector.           
@@ -1876,7 +1876,7 @@ When the velocity frame is non-inertial and aberration corrections
 are used, the epoch at which the velocity frame is evaluated will be  
 adjusted by the one-way light time between the observer and the       
 frame's center---just as is done by                                   
-`spkezr_c <../cspice/spkezr_c.html>`__ (see the header of that        
+:py:meth:`~spiceypy.spiceypy.spkezr` (see the header of that        
 function for details).                                                
                                                                       
 The reason the velocity frame specification is crucial is that,       
@@ -1894,7 +1894,7 @@ undefined.
                                                                       
 The observer and target defining the velocity vector are specified by 
 name or ID code. The aberration correction may be any value accepted  
-by `spkezr_c <../cspice/spkezr_c.html>`__. The velocity frame may be  
+by :py:meth:`~spiceypy.spiceypy.spkezr`. The velocity frame may be  
 any computable by CSPICE, including a dynamic frame, as long as the   
 transformation between the velocity frame and the J2000 frame doesn't 
 require multiple levels of simulated recursion (see the discussion of 
@@ -1936,7 +1936,7 @@ The coordinates of a constant vector may be specified in any of the
 rectangular, latitudinal, or RA/DEC (right ascension and declination) 
 systems. If the coordinates are angular, the associated angular units 
 must be specified; any angular units supported by the CSPICE function 
-`convrt_c <../cspice/convrt_c.html>`__ may be used.                   
+:py:meth:`~spiceypy.spiceypy.convrt` may be used.                   
                                                                       
 All constant vectors require the frame kernel assignments             
                                                                       
@@ -1978,7 +1978,7 @@ the frame kernel assignments
       FRAME_<frame_ID>_<vec_ID>_LATITUDE  = <latitude>                
                                                                       
 where <angular_units> designates one of the units supported by the    
-CSPICE function `convrt_c <../cspice/convrt_c.html>`__. The set of    
+CSPICE function :py:meth:`~spiceypy.spiceypy.convrt`. The set of    
 supported units includes                                              
 ::                                                                    
                                                                       
@@ -2005,10 +2005,10 @@ Light time corrections adjust the orientation of the constant
 vector's frame for the one-way light time between the center of the   
 frame and a specified observer. The application to the frame of light 
 time correction is identical to that performed by the CSPICE function 
-`spkezr_c <../cspice/spkezr_c.html>`__ when it is asked to compute a  
+:py:meth:`~spiceypy.spiceypy.spkezr` when it is asked to compute a  
 light-time corrected state relative to a non-inertial reference       
 frame. Supported light time corrections are any of those supported by 
-`spkezr_c <../cspice/spkezr_c.html>`__ that don't include stellar     
+:py:meth:`~spiceypy.spiceypy.spkezr` that don't include stellar     
 aberration correction.                                                
                                                                       
 The user may also correct the constant vector for stellar aberration; 
@@ -2027,7 +2027,7 @@ are
 In the application above, one would correct the apparent              
 observer-star direction by selecting the 'S' option. See the          
 discussion in the header of the CSPICE function                       
-`spkezr_c <../cspice/spkezr_c.html>`__ for a description of the       
+:py:meth:`~spiceypy.spiceypy.spkezr` for a description of the       
 \``reception'' and \``transmission'' aberration correction cases.     
 When aberration corrections are desired, the observer and the         
 correction are specified by the frame kernel assignments              
@@ -2491,7 +2491,7 @@ be the polynomial coefficients for the ith angle, we have
                                                                       
 See the Rotation Required Reading,                                    
 `rotation.req <../req/rotation.html>`__, or the header of the CSPICE  
-function `eul2m_c <../cspice/eul2m_c.html>`__ for details concerning  
+function :py:meth:`~spiceypy.spiceypy.eul2m` for details concerning  
 definition of rotations via Euler angles. Note however that the       
 referenced document and source code use a different convention for    
 labeling Euler angles and their rotation axes: here the elements of   
@@ -2601,7 +2601,7 @@ Angular units are specified by the frame kernel assignment
       FRAME_<frame_ID>_UNITS     = <angular_units>                    
                                                                       
 where <angular_units> designates one of the units supported by the    
-CSPICE function `convrt_c <../cspice/convrt_c.html>`__. The set of    
+CSPICE function :py:meth:`~spiceypy.spiceypy.convrt`. The set of    
 supported units includes                                              
 ::                                                                    
                                                                       
@@ -3097,7 +3097,7 @@ format.'' For example:
       @2021-DEC-31/12:01:09.183907                                    
                                                                       
 Times provided as single-quoted strings must be accepted by the       
-CSPICE function `str2et_c <../cspice/str2et_c.html>`__. A leapseconds 
+CSPICE function :py:meth:`~spiceypy.spiceypy.str2et`. A leapseconds 
 kernel must be loaded in order to use such time strings.              
 Numeric values are interpreted as seconds past J2000 TDB. Times in    
 text kernel time format are interpreted as TDB calendar dates. Use of 
@@ -4702,7 +4702,7 @@ times are interpreted as TDB calendar dates.
       \begintext                                                      
                                                                       
 Time strings recognized by the CSPICE function                        
-`str2et_c <../cspice/str2et_c.html>`__ also may be used. We could     
+:py:meth:`~spiceypy.spiceypy.str2et` also may be used. We could     
 define the interval start times using the assignment                  
 ::                                                                    
                                                                       

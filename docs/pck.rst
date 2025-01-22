@@ -86,7 +86,7 @@ Body Codes
  | NAIF software uses a system of integer codes to conveniently        
    represent celestial bodies, locations such as barycenters, Lagrange 
    points, and spacecraft. The NAIF IDS Required Reading document,     
-   `naif_ids.req <../req/naif_ids.html>`__, describes this system in   
+   `naif_ids <../naif_ids.html>`__, describes this system in   
    detail.                                                             
                                                                        
  In this document, the following features of the code system will be   
@@ -196,7 +196,7 @@ Using the PCK System: Overview
  for this step.                                                        
  Step 2 is referred to as \``loading'' a PCK file. Text PCK files are  
  loaded by calling the CSPICE subroutine                               
- `furnsh_c <../cspice/furnsh_c.html>`__ and supplying the name of the  
+ :py:meth:`~spiceypy.spiceypy.furnsh` and supplying the name of the  
  PCK file to load as the input argument or by loading a meta kernel    
  that lists the PCK. All data in a text PCK file is read into memory   
  when the file is loaded by an application program at run-time. Load   
@@ -230,7 +230,7 @@ Using the PCK System: Overview
                                                                        
  The data structure used by CSPICE to maintain associations of text    
  kernel variable names and values is called the \``kernel pool.'' Data 
- loaded into memory via `furnsh_c <../cspice/furnsh_c.html>`__ is      
+ loaded into memory via :py:meth:`~spiceypy.spiceypy.furnsh` is      
  referred to as \``being present in the kernel pool.'' There is no     
  analog to the kernel pool for binary PCK files.                       
                                                                
@@ -304,11 +304,11 @@ Detection of Non-native Text Files
        Mac OS X, Linux, Unix        <LF>                               
                                                                        
  As of CSPICE N0059, the CSPICE text kernel loaders,                   
- `furnsh_c <../cspice/furnsh_c.html>`__ and                            
- `ldpool_c <../cspice/ldpool_c.html>`__, can read and parse non-native 
+ :py:meth:`~spiceypy.spiceypy.furnsh` and                            
+ :py:meth:`~spiceypy.spiceypy.ldpool`, can read and parse non-native 
  text files. The FORTRAN SPICELIB does not include this capability.    
  Please be aware the CSPICE text file reader,                          
- `rdtext_c <../cspice/rdtext_c.html>`__, does not possess the          
+ :py:meth:`~spiceypy.spiceypy.rdtext`, does not possess the          
  capability to read non-native text files.                             
                                                                
 DAF Run-Time Binary File Format Translation               
@@ -449,12 +449,12 @@ Text PCK Contents
    are examples of data appropriate for inclusion in PCKs.             
                                                                        
  CSPICE includes a set of routines                                     
- (`gipool_c <../cspice/gipool_c.html>`__,                              
- `gdpool_c <../cspice/gdpool_c.html>`__, gipool_c) for general access  
+ (:py:meth:`~spiceypy.spiceypy.gipool`,                              
+ :py:meth:`~spiceypy.spiceypy.gdpool`, gipool_c) for general access  
  to text PCK defined data. Another set                                 
- (`bodvrd_c <../cspice/bodvrd_c.html>`__,                              
- `bodvcd_c <../cspice/bodvcd_c.html>`__, sxform_c,                     
- `pxform_c <../cspice/pxform_c.html>`__) recognizes and uses           
+ (:py:meth:`~spiceypy.spiceypy.bodvrd`,                              
+ :py:meth:`~spiceypy.spiceypy.bodvcd`, sxform_c,                     
+ :py:meth:`~spiceypy.spiceypy.pxform`) recognizes and uses           
  particular PCK data to return body constants or the matrices to       
  transform position or state vectors between reference frames.         
                                                                        
@@ -1306,9 +1306,9 @@ Creating Binary PCKs
                                                                        
 #. Close the file.                                              
                                                                        
- The subroutine `pckopn_c <../cspice/pckopn_c.html>`__ is used to open 
+ The subroutine :py:meth:`~spiceypy.spiceypy.pckopn` is used to open 
  a new binary PCK file. Below is an example of a call to               
- `pckopn_c <../cspice/pckopn_c.html>`__. \``name'' is the name of the  
+ :py:meth:`~spiceypy.spiceypy.pckopn`. \``name'' is the name of the  
  file to be opened, \``ifname'' is the internal file name, \``handle'' 
  is the handle of the opened SPK file. We use \``i'' for the number of 
  records to reserve for comments.                                      
@@ -1319,14 +1319,14 @@ Creating Binary PCKs
  The method for beginning the segment, adding data to the segment and  
  closing the segment differs with the PCK type.                        
  For type 2, CSPICE includes a segment writing routine called          
- `pckw02_c <../cspice/pckw02_c.html>`__. This routine takes as input   
+ :py:meth:`~spiceypy.spiceypy.pckw02`. This routine takes as input   
  arguments the handle of an PCK file that is open for writing, the     
  information needed to construct the segment descriptor, and the data  
  to be stored in the segment. The header of the subroutine provides a  
  complete description of the input arguments and an example of its     
  usage.                                                                
                                                                        
- An example of a call to `pckw02_c <../cspice/pckw02_c.html>`__:       
+ An example of a call to :py:meth:`~spiceypy.spiceypy.pckw02`:       
                                                                        
  ::                                                                    
                                                                        
@@ -1372,7 +1372,7 @@ Creating Binary PCKs
                                                                        
  When a user finishes writing segments of any type to a binary PCK,    
  the PCK must be closed with the subroutine                            
- `pckcls_c <../cspice/pckcls_c.html>`__.                               
+ :py:meth:`~spiceypy.spiceypy.pckcls`.                               
  ::                                                                    
                                                                        
        pckcls_c( handle );                                             
@@ -1408,18 +1408,18 @@ Loading Text PCK Kernels
  | As earlier mentioned, in order to use text PCK files in an          
    application, the data in the files must be read into memory. This   
    is accomplished by calling the CSPICE routine                       
-   `furnsh_c <../cspice/furnsh_c.html>`__. The name of the text PCK    
+   :py:meth:`~spiceypy.spiceypy.furnsh`. The name of the text PCK    
    file to load is supplied as an input to                             
-   `furnsh_c <../cspice/furnsh_c.html>`__, for example:                
+   :py:meth:`~spiceypy.spiceypy.furnsh`, for example:                
                                                                        
  ::                                                                    
                                                                        
        furnsh_c ( "example_pck.tcp" );                                 
                                                                        
- File names supplied to `furnsh_c <../cspice/furnsh_c.html>`__ will    
+ File names supplied to :py:meth:`~spiceypy.spiceypy.furnsh` will    
  generally be system-dependent. It is good programming practice to not 
  use hard-coded file names in calls to                                 
- `furnsh_c <../cspice/furnsh_c.html>`__. Instead, applications should  
+ :py:meth:`~spiceypy.spiceypy.furnsh`. Instead, applications should  
  obtain kernel file names by one of the following methods:             
                                                                        
  - Reading the kernel file names from a meta-kernel, a file     
@@ -1445,10 +1445,10 @@ Loading Text PCK Kernels
 Loading Binary PCK Kernels                                
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                                     
- | The routine `furnsh_c <../cspice/furnsh_c.html>`__ maintains a      
+ | The routine :py:meth:`~spiceypy.spiceypy.furnsh` maintains a      
    database of loaded binary PCK files. The calling program indicates  
    which files are to be used by passing their names to                
-   `furnsh_c <../cspice/furnsh_c.html>`__.                             
+   :py:meth:`~spiceypy.spiceypy.furnsh`.                             
                                                                        
  ::                                                                    
                                                                        
@@ -1473,7 +1473,7 @@ Unloading Binary PCK Kernels
    at any one time is limited, so such a program might need to unload  
    some PCK files to make room for others. A binary PCK file may be    
    unloaded by supplying its name to subroutine                        
-   `unload_c <../cspice/unload_c.html>`__. The call to this subroutine 
+   :py:meth:`~spiceypy.spiceypy.unload`. The call to this subroutine 
    is shown below,                                                     
                                                                        
  ::                                                                    
@@ -1488,21 +1488,21 @@ Binary PCK Coverage Summary Routines
  | CSPICE includes two functions for obtaining information about the   
    contents of a binary PCK file from within an application.           
                                                                        
- The `pckfrm_c <../cspice/pckfrm_c.html>`__ function provides an API   
+ The :py:meth:`~spiceypy.spiceypy.pckfrm` function provides an API   
  via which an application can find the set of reference frames for     
  which a specified binary PCK file contains data. The reference frame  
  class ID codes are returned in a SPICE \``set'' data structure (see   
  `sets.req <../req/sets.html>`__).                                     
                                                                        
- The `pckcov_c <../cspice/pckcov_c.html>`__ function provides an API   
+ The :py:meth:`~spiceypy.spiceypy.pckcov` function provides an API   
  via which an application can find the time periods for which a        
  specified binary PCK file provides data for a reference frame of      
  interest. The coverage information is a set of disjoint time          
  intervals returned in a SPICE \``window'' data structure (see         
  `windows.req <../req/windows.html>`__).                               
                                                                        
- Refer to the headers of `pckfrm_c <../cspice/pckfrm_c.html>`__ and    
- `pckcov_c <../cspice/pckcov_c.html>`__ for details on the use of      
+ Refer to the headers of :py:meth:`~spiceypy.spiceypy.pckfrm` and    
+ :py:meth:`~spiceypy.spiceypy.pckcov` for details on the use of      
  those routines.                                                       
                                                                
 Access Routines                                           
@@ -1526,14 +1526,14 @@ High-Level PCK Data Access
                                                                     
  | To obtain the matrix that transforms 3-vectors from a specified     
    reference frame to another frame, at a specified ephemeris time,    
-   use the routine `pxform_c <../cspice/pxform_c.html>`__. The calling 
+   use the routine :py:meth:`~spiceypy.spiceypy.pxform`. The calling 
    sequence is                                                         
                                                                        
  ::                                                                    
                                                                        
        pxform_c ( from, to,  et,  rotate );                            
                                                                        
- In the argument list for `pxform_c <../cspice/pxform_c.html>`__:      
+ In the argument list for :py:meth:`~spiceypy.spiceypy.pxform`:      
                                                                        
  **\`from'**                                                           
     is the name of a reference frame in which a position vector is     
@@ -1555,7 +1555,7 @@ High-Level PCK Data Access
  The fundamental quantities defined by PCK orientation models are      
  actually Euler angles, not matrices. These Euler angles, which we     
  call \``RA, DEC, and W,'' are related to the transformation operator  
- returned from `pxform_c <../cspice/pxform_c.html>`__ by the equation  
+ returned from :py:meth:`~spiceypy.spiceypy.pxform` by the equation  
  ::                                                                    
                                                                        
        rotate = [ W ]   [ Pi/2 - DEC ]   [ Pi/2 + RA ]                 
@@ -1595,9 +1595,9 @@ High-Level PCK Data Access
  (see Duxbury 1979). CSPICE software does not currently make use of    
  \``lambda''.                                                          
  CSPICE provides a routine analogous to                                
- `pxform_c <../cspice/pxform_c.html>`__ that returns the matrix to     
+ :py:meth:`~spiceypy.spiceypy.pxform` that returns the matrix to     
  transform state vectors between reference frames for a particular     
- time. This routine is called `sxform_c <../cspice/sxform_c.html>`__;  
+ time. This routine is called :py:meth:`~spiceypy.spiceypy.sxform`;  
  the calling sequence being                                            
                                                                        
  ::                                                                    
@@ -1606,7 +1606,7 @@ High-Level PCK Data Access
                                                                        
  The input arguments \``from'', \``to'', and \``et'' have the same     
  meanings as in the argument list of                                   
- `pxform_c <../cspice/pxform_c.html>`__. The output argument           
+ :py:meth:`~spiceypy.spiceypy.pxform`. The output argument           
  \``rotate'' is the 6x6 matrix required to transform state vectors     
  from inertial to body-fixed coordinates. Left multiplication of a     
  state vector by \``rotate'' will transform it from the frame          
@@ -1624,17 +1624,17 @@ Low-Level PCK Data Access
    values found in text PCK kernels. Therefore, if binary kernels have 
    been loaded, values returned by these low level routines may not be 
    the same values used by higher level routines like                  
-   `sxform_c <../cspice/sxform_c.html>`__ and                          
-   `pxform_c <../cspice/pxform_c.html>`__. We recommend the user who   
+   :py:meth:`~spiceypy.spiceypy.sxform` and                          
+   :py:meth:`~spiceypy.spiceypy.pxform`. We recommend the user who   
    loads binary PCKs NOT USE these low-level routines!                 
                                                                        
  The lowest-level CSPICE PCK access routines are                       
- `gipool_c <../cspice/gipool_c.html>`__,                               
- `gdpool_c <../cspice/gdpool_c.html>`__ and                            
- `gcpool_c <../cspice/gcpool_c.html>`__. These are general-purpose     
+ :py:meth:`~spiceypy.spiceypy.gipool`,                               
+ :py:meth:`~spiceypy.spiceypy.gdpool` and                            
+ :py:meth:`~spiceypy.spiceypy.gcpool`. These are general-purpose     
  routines for retrieving any text kernel data by data type (integer,   
  double precision, and character string, respectively) loaded via      
- `furnsh_c <../cspice/furnsh_c.html>`__. The calling sequences for the 
+ :py:meth:`~spiceypy.spiceypy.furnsh`. The calling sequences for the 
  routines:                                                             
                                                                        
  ::                                                                    
@@ -1673,9 +1673,9 @@ Low-Level PCK Data Access
     is a logical flag indicating whether the kernel variable           
     designated by name was actually loaded.                            
                                                                        
- The `gipool_c <../cspice/gipool_c.html>`__,                           
- `gdpool_c <../cspice/gdpool_c.html>`__, and                           
- `gcpool_c <../cspice/gcpool_c.html>`__ set is frequently used by      
+ The :py:meth:`~spiceypy.spiceypy.gipool`,                           
+ :py:meth:`~spiceypy.spiceypy.gdpool`, and                           
+ :py:meth:`~spiceypy.spiceypy.gcpool` set is frequently used by      
  other CSPICE routines; however, CSPICE users will usually find it     
  more convenient to use the PCK access routines that return double     
  precision body constants, e.g radius, RA/DEC of the spin axis, the GM 
@@ -1688,27 +1688,27 @@ Low-Level PCK Data Access
                                                                        
        BODYnnn_<item name>                                             
                                                                        
- `bodvrd_c <../cspice/bodvrd_c.html>`__ and                            
- `bodvcd_c <../cspice/bodvcd_c.html>`__ retrieve the values of such    
+ :py:meth:`~spiceypy.spiceypy.bodvrd` and                            
+ :py:meth:`~spiceypy.spiceypy.bodvcd` retrieve the values of such    
  variables from the kernel pool;                                       
- `bodvrd_c <../cspice/bodvrd_c.html>`__ accepts as inputs the body     
+ :py:meth:`~spiceypy.spiceypy.bodvrd` accepts as inputs the body     
  name and a string making up the portion of the item's name following  
  the prefix:                                                           
  ::                                                                    
                                                                        
        bodvrd_c ( bodynm, item, maxn, &dim, values );                  
                                                                        
- `bodvcd_c <../cspice/bodvcd_c.html>`__ functions in the same manner   
- as `bodvrd_c <../cspice/bodvrd_c.html>`__ except bodvcd_c accepts as  
+ :py:meth:`~spiceypy.spiceypy.bodvcd` functions in the same manner   
+ as :py:meth:`~spiceypy.spiceypy.bodvrd` except bodvcd_c accepts as  
  inputs the body NAIF ID and the string, \``item'', as described for   
- `bodvrd_c <../cspice/bodvrd_c.html>`__:                               
+ :py:meth:`~spiceypy.spiceypy.bodvrd`:                               
  ::                                                                    
                                                                        
        bodvcd_c ( bodyid, item, maxn, &dim, values );                  
                                                                        
  It is possible to test whether a kernel variable has been loaded by   
  calling the CSPICE logical function                                   
- `bodfnd_c <../cspice/bodfnd_c.html>`__, as long as the variables in   
+ :py:meth:`~spiceypy.spiceypy.bodfnd`, as long as the variables in   
  question follow the CSPICE naming convention. The calling sequence is 
  ::                                                                    
                                                                        
