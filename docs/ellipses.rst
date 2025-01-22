@@ -1,63 +1,61 @@
-========================================
+****************************************
 Ellipses and Ellipsoids Required Reading
-========================================
+****************************************
 
 This required reading document is reproduced from the original NAIF
 document available at `https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/ellipses.html <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/ellipses.html>`_                                             
                                                                       
 Abstract                                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+========
                                                                                                                                                                
-| CSPICE contains a substantial set of subroutines that solve common  
+| SPICE contains a substantial set of subroutines that solve common  
   mathematical problems involving ellipses and triaxial ellipsoids.   
   This required reading file documents those routines, gives examples 
   of their use, and presents some of the mathematical background      
   required to understand the routines.                                
-                                                                      
-                                
-                                                                      
+                                                                       
 Introduction                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------
                                                         
-| The \`ellipse' is a structured data type used in CSPICE to          
+| The 'ellipse' is a structured data type used in SPICE to          
   represent ellipses in three-dimensional space. SPICE ellipses exist 
   to simplify calling sequences of routines that output or accept as  
   input data that defines ellipses.                                   
                                                                       
 Ellipses turn up frequently in the sort of science analysis problems  
-CSPICE is designed to help solve. The shapes of extended              
+SPICE is designed to help solve. The shapes of extended              
 bodies--planets, satellites, and the Sun--are frequently modeled by   
 triaxial ellipsoids. The IAU has defined such models for the Sun, all 
 of the planets, and most of their satellites, in the IAU/IAG/COSPAR   
-working group report [1]. Many geometry problems involving triaxial   
-ellipsoids give rise to ellipses as \`mathematical byproducts'.       
+working group report IAU_IAG_COSPAR_. Many geometry problems involving triaxial   
+ellipsoids give rise to ellipses as 'mathematical byproducts'.       
 Ellipses are also used in modeling orbits and planetary rings.        
                                                                                                     
                                                                       
 References                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                                        
-                                                                      
-#. \`Report of the IAU/IAG/COSPAR Working Group on Cartographic Coordinates and Rotational Elements of the Planets and Satellites: 2009', December 4, 2010.                                            
-                                                                      
-#. \`Calculus, Vol. II'. Tom Apostol. John Wiley and Sons,
+^^^^^^^^^^
 
-   * See Chapter 5, \`Eigenvalues of Operators Acting on Euclidean Spaces'.                                                            
+.. _IAU_IAG_COSPAR:
+
+#. 'Report of the IAU/IAG/COSPAR Working Group on Cartographic Coordinates and Rotational Elements of the Planets and Satellites: 2009', December 4, 2010.                                            
                                                                       
-#. Planes required reading  ( :ref:`planesreq` ).                              
+#. 'Calculus, Vol. II'. Tom Apostol. John Wiley and Sons,
+
+   * See Chapter 5, 'Eigenvalues of Operators Acting on Euclidean Spaces'.                                                            
+                                                                      
+#. Planes required reading  (`planes <../planes.html>`__).                                
                                                                       
                                                 
                                                                       
 Ellipse Data Type Description                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=============================
                                                    
                                                         
 | The following representation of an ellipse is used throughout       
   SPICE, and in particular by the ellipse access routines: An ellipse 
   is the set of points                                                
                                                                       
-::                                                                    
-                                                                      
+::                                                                                                               
                                                                       
      ellipse = CENTER    +    cos(theta) * V1    +    sin(theta) * V2 
                                                                       
@@ -70,8 +68,8 @@ The set of points "ellipse" is an ellipse (see Appendix A:
 Mathematical notes). The ellipse defined by this parametric           
 representation is non-degenerate if and only if V1 and V2 are         
 linearly independent.                                                 
-We call CENTER the \`center' of the ellipse, and we refer to V1 and   
-V2 as \`generating vectors'. Note that an ellipse centered at the     
+We call CENTER the 'center' of the ellipse, and we refer to V1 and   
+V2 as 'generating vectors'. Note that an ellipse centered at the     
 coordinate origin (0, 0, 0,) is completely specified by its           
 generating vectors. Further mention of the center or generating       
 vectors for a particular ellipse, means vectors that play the role of 
@@ -113,286 +111,292 @@ the fields
                                                                       
          SpiceDouble      center    [3];                              
          SpiceDouble      semiMajor [3];                              
-         SpiceDouble      semiMinor [3];                              
+         SpiceDouble      semiMinor [3];       
+
+In SpiceyPy, this structure is defined by :py:class:`spiceypy.utils.support_types.Ellipse`,
+although users are encouraged not to directly interact with this object and to instead use the spice routines described below for creating and using them.                      
                                                                       
 The fields are set and accessed by a small set of access routines     
 provided for that purpose. Do not access the fields in any other way. 
 The elements of SPICE ellipses are set using                          
-`cgv2el_c <../cspice/cgv2el_c.html>`__ (center and generating vectors 
-to ellipse) and accessed using `el2cgv_c <../cspice/el2cgv_c.html>`__ 
+:py:meth:`~spiceypy.spiceypy.cgv2el` (center and generating vectors 
+to ellipse) and accessed using :py:meth:`~spiceypy.spiceypy.el2cgv`
 (ellipse to center and generating vectors).                           
                                                                       
                                 
                                                                       
 Ellipse and ellipsoid routines                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+==============================
                                                                     
                                 
                                                                       
 Constructing ellipses                                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------
                                                         
-| Let \`center', \`v1', and \`v2' be a center vector and two          
+| Let 'center', 'v1', and 'v2' be a center vector and two          
   generating vectors for an ellipse.                                  
                                                                       
-Let \`center', \`v1', \`v2', and \`ellips' be declared by:            
+Let 'center', 'v1', and 'v2' be declared with assigned values:            
                                                                       
-::                                                                    
+.. code-block:: python  
+
+      import numpy as np                                                                
+                                                                                                      
+      center = np.array([ -1.0, 1.0, -1.0 ])                                
+      v1     = np.array([  1.0, 1.0, 1.0  ])                                
+      v2     = np.array([  1.0, -1.0, 1.0 ])                                
                                                                       
-      SpiceEllipse         ellips;                                    
-      SpiceDouble          center [3];                                
-      SpiceDouble          v1     [3];                                
-      SpiceDouble          v2     [3];                                
+After 'center', 'v1', and 'v2' have been assigned values, you can  
+construct a SPICE ellipse using :py:meth:`~spiceypy.spiceypy.cgv2el`: 
+                             
+.. code-block:: python
+
+      import spiceypy                                                                     
                                                                       
-After \`center', \`v1', and \`v2' have been assigned values, you can  
-construct a SPICE ellipse using                                       
-`cgv2el_c <../cspice/cgv2el_c.html>`__:                               
-::                                                                    
+      ellipse = spiceypy.cgv2el( center, v1, v2 )                          
                                                                       
-      cgv2el_c ( center, v1, v2,  &ellips );                          
-                                                                      
-This call produces the SPICE ellipse \`ellips', which represents the  
-same mathematical ellipse as do \`center', \`v1', and \`v2'.          
+This call produces the SPICE ellipse 'ellips', which represents the  
+same mathematical ellipse as do 'center', 'v1', and 'v2'.          
 The generating vectors need not be linearly independent. If they are  
 not, the resulting ellipse will be degenerate. Specifically, if the   
 generating vectors are both zero, the ellipse will be the single      
-point represented by \`center', and if just one of the semi-axis      
+point represented by 'center', and if just one of the semi-axis      
 vectors (call it V) is non-zero, the ellipse will be the line segment 
 extending from                                                        
                                                                       
-::                                                                    
+ ::                                                                    
                                                                       
       CENTER - V                                                      
                                                                       
-to                                                                    
-::                                                                    
+ to 
+
+ ::                                                                    
                                                                       
       CENTER + V                                                      
                                                                       
                                                 
                                                                       
 Access to ellipse data elements                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------
                                                         
-| Let \`ellips' be a SPICE ellipse. To produce the center and two     
-  generating vectors for \`ellips', we can make the call              
+| Let 'ellips' be a SPICE ellipse. To produce the center and two     
+  generating vectors for 'ellips', we can make the call              
                                                                       
-::                                                                    
+.. code-block:: python                                                                  
                                                                       
-      el2cgv_c ( &ellips, center, v1, v2 );                           
+      center,  v1,  v2  = spiceypy.el2cgv( ellips )                            
                                                                       
-On output, \`v1' will be a semi-major axis vector for the ellipse     
-represented by \`ellips', and \`v2' will be a semi-minor axis vector. 
+On output, 'v1' will be a semi-major axis vector for the ellipse     
+represented by 'ellips', and 'v2' will be a semi-minor axis vector. 
 Semi-axis vectors are never unique; if X is a semi-axis vector; then  
 so is -X.                                                             
-\`v1' is a vector of maximum norm extending from the ellipse's center 
-to the ellipse itself; \`v2' is an analogous vector of minimum norm.  
-\`v1' and V2 are orthogonal vectors.                                  
+'v1' is a vector of maximum norm extending from the ellipse's center 
+to the ellipse itself; 'v2' is an analogous vector of minimum norm.  
+'v1' and V2 are orthogonal vectors.                                  
                                                                       
-                                
-                                                                      
-`cgv2el_c <../cspice/cgv2el_c.html>`__ and                
-   `el2cgv_c <../cspice/el2cgv_c.html>`__ are not inverses            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                                        
-| Because the routine `el2cgv_c <../cspice/el2cgv_c.html>`__ always   
-  returns semi-axes as generating vectors, if \`v1' and \`v2' are not 
-  semi-axes on input to `cgv2el_c <../cspice/cgv2el_c.html>`__, the   
+                                                             
+:py:meth:`~spiceypy.spiceypy.cgv2el` and :py:meth:`~spiceypy.spiceypy.el2cgv` are not inverses            
+----------------------------------------------------------------------------------------------
+
+| Because the routine :py:meth:`~spiceypy.spiceypy.el2cgv` always   
+  returns semi-axes as generating vectors, if 'v1' and 'v2' are not 
+  semi-axes on input to :py:meth:`~spiceypy.spiceypy.cgv2el`, the   
   sequence of calls                                                   
                                                                       
 ::                                                                    
                                                                       
-      cgv2el_c ( center, v1, v2,  &ellips );                          
-      el2cgv_c ( &ellips,  center,  v1,  v2 );                        
+      ellips = spiceypy.cgv2el( center, v1, v2 )                          
+      center,  v1,  v2  = spiceypy.el2cgv( ellips )                        
                                                                       
-will certainly modify \`v1' and \`v2'. Even if \`v1' and \`v2' are    
+will certainly modify 'v1' and 'v2'. Even if 'v1' and 'v2' are    
 semi-axes to start out with, because of the non-uniqueness of         
 semi-axes, one or both of these vectors could be negated on output    
-from `el2cgv_c <../cspice/el2cgv_c.html>`__.                          
-There is a sense in which `cgv2el_c <../cspice/cgv2el_c.html>`__ and  
-`el2cgv_c <../cspice/el2cgv_c.html>`__ are inverses, though: the      
+from :py:meth:`~spiceypy.spiceypy.el2cgv`.                          
+There is a sense in which :py:meth:`~spiceypy.spiceypy.cgv2el` and  
+:py:meth:`~spiceypy.spiceypy.el2cgv` are inverses, though: the      
 above sequence of calls returns a center and generating vectors that  
 define the same ellipse as the input center and generating vectors.   
                                                                       
-                                
-                                                                      
+                                                                                    
 Triaxial ellipsoid routines                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------
                                                                                                                        
                                                         
-| The CSPICE routines used to perform geometric calculations          
-  involving ellipsoids:                                               
-                                                                      
-`edlimb_c <../cspice/edlimb_c.html>`__                                
+| The routines used to perform geometric calculations  involving ellipsoids:                                               
+                                                        
+:py:meth:`~spiceypy.spiceypy.edlimb`                             
    Ellipsoid limb                                                     
                                                                       
-`inedpl_c <../cspice/inedpl_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.inedpl`                                
    Intersection of ellipsoid and plane                                
                                                                       
-`nearpt_c <../cspice/nearpt_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.nearpt`                             
    Nearest point on ellipsoid to point                                
                                                                       
-`npedln_c <../cspice/npedln_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.npedln`                                
    Nearest point on ellipsoid to line                                 
                                                                       
-`sincpt_c <../cspice/sincpt_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.sincpt`                               
    Surface intercept                                                  
                                                                       
-`surfnm_c <../cspice/surfnm_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.surfnm`                             
    Surface normal on ellipsoid                                        
                                                                       
-`surfpt_c <../cspice/surfpt_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.surfpt`                           
    Surface intercept point on ellipsoid                               
-                                                                      
-                                                
+                 
                                                                       
 Ellipse routines                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------
                                                                                                                         
                                                         
 | The CSPICE routines used to perform geometric calculations          
   involving ellipses:                                                 
                                                                       
-`inelpl_c <../cspice/inelpl_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.inelpl`                            
    Intersection of ellipse and plane                                  
                                                                       
-`npelpt_c <../cspice/npelpt_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.npelpt`                           
    Nearest point on ellipse to point                                  
                                                                       
-`pjelpl_c <../cspice/pjelpl_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.pjelpl`                             
    Projection of ellipse onto plane                                   
                                                                       
-`saelgv_c <../cspice/saelgv_c.html>`__                                
+:py:meth:`~spiceypy.spiceypy.saelgv`                               
    Semi-axes of ellipse from generating vectors                       
                                                                       
-                                                
-                                                                      
+                                                     
 Examples                                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=========
                                                                                       
                                                                       
-Finding the \`limb angle' of an instrument boresight      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Finding the 'limb angle' of an instrument boresight 
+----------------------------------------------------
                                                         
 | If we want to find the angle of a ray above the limb of an          
   ellipsoid, where the angle is measured in a plane containing the    
-  ray and a \`down' vector, we can follow the procedure given below.  
+  ray and a 'down' vector, we can follow the procedure given below.  
   We assume the ray does not intersect the ellipsoid. Name the result 
-  \`angle'.                                                           
+  'angle'.                                                           
                                                                       
 We assume that all vectors are given in body-fixed coordinates.       
                                                                       
-- \`observ' is the body-center to observer vector.             
+- 'observ' is the body-center to observer vector.             
                                                                       
-- \`raydir' is the boresight ray's direction vector in         
+- 'raydir' is the boresight ray's direction vector in         
   body-fixed coordinates.                                             
                                                                       
-- \`limb' is an ellipse, the result of the limb calculation.   
+- 'limb' is an ellipse, the result of the limb calculation.   
                                                                       
-Find the limb of the ellipsoid as seen from the point \`observ'. Here 
-\`a', \`b', and \`c' are the lengths of the semi-axes of the          
+Find the limb of the ellipsoid as seen from the point 'observ'. Here 
+'a', 'b', and 'c' are the lengths of the semi-axes of the          
 ellipsoid.                                                            
-::                                                                    
+                                                                    
+.. code-block:: python 
+
+      limb = spiceypy.edlimb( a, b, c, observ )                            
                                                                       
-      edlimb_c ( a, b, c, observ, &limb );                            
-                                                                      
-The ray direction vector is \`raydir', so the ray is the set of       
+The ray direction vector is 'raydir', so the ray is the set of       
 points                                                                
 ::                                                                    
                                                                       
-      OBSERV  +  t * RAYDIR                                           
+      OBSERV + t * RAYDIR                                           
                                                                       
 where t is any non-negative real number.                              
-The \`down' vector is just - \`observ'. The vectors OBSERV and RAYDIR 
+The 'down' vector is just - 'observ'. The vectors OBSERV and RAYDIR 
 are spanning vectors for the plane we're interested in. We can use    
-`psv2pl_c <../cspice/psv2pl_c.html>`__ to represent this plane by a   
+:py:meth:`~spiceypy.spiceypy.psv2pl` to represent this plane by a   
 SPICELIB plane.                                                       
                                                                       
-::                                                                    
+.. code-block:: python                                                                  
                                                                       
-      psv2pl_c ( observ, observ, raydir, &plane );                    
+      plane = spiceypy.psv2pl( observ, observ, raydir )                    
                                                                       
-Find the intersection of the plane defined by \`observ' and \`raydir' 
+Find the intersection of the plane defined by 'observ' and 'raydir' 
 with the limb.                                                        
-::                                                                    
+
+.. code-block:: python                                                                  
                                                                       
-      inelpl_c ( limb, &plane, nxpts, xpt1, xpt2 );                   
+      nxpts, xpt1, xpt2 = spiceypy.inelpl( limb, plane )                   
                                                                       
-We always expect two intersection points, if \`down' is valid. If     
-\`nxpts' has value less-than two, the user must respond to the error  
+We always expect two intersection points, if 'down' is valid. If     
+'nxpts' has value less-than two, the user must respond to the error  
 condition.                                                            
-Form the vectors from \`observ' to the intersection points. Find the  
+Form the vectors from 'observ' to the intersection points. Find the  
 angular separation between the boresight ray and each vector from     
-\`observ' to the intersection points.                                 
+'observ' to the intersection points.                                 
                                                                       
-::                                                                    
+.. code-block:: python                                                            
                                                                       
-      vsub_c ( xpt1, observ, vec1 );                                  
-      vsub_c ( xpt2, observ, vec2 );                                  
+      vec1 = spiceypy.vsub( xpt1, observ )                                  
+      vec2 = spiceypy.vsub( xpt2, observ )                                
                                                                       
-      sep1 = vsep_c ( vec1, raydir );                                 
-      sep2 = vsep_c ( vec2, raydir );                                 
+      sep1 = spiceypy.vsep( vec1, raydir )                                 
+      sep2 = spiceypy.vsep( vec2, raydir )                                
                                                                       
 The angular separation we're after is the minimum of the two          
-separations we've computed.                                           
-::                                                                    
+separations we've computed.                                                                                                                   
+
+.. code-block:: python                                                                    
                                                                       
-      angle = mind_c ( 2, sep1, sep2 );                               
-                                                                      
-                                                
-                                                                      
-Header examples                                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                                        
-| The headers of the ellipse and ellipsoid routines list additional   
-  usage examples.                                                     
-                                                                      
+      angle = min(sep1, sep2)                               
+                                                                                                                                                                            
                                 
                                                                       
 Use of ellipses with planes                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------
                                                         
 | The nature of geometry problems involving planes often includes use 
-  of the SPICE ellipse data type. The example code listed in the      
-  headers of the routines `inelpl_c <../cspice/inelpl_c.html>`__ and  
-  `pjelpl_c <../cspice/pjelpl_c.html>`__ show examples of problems    
-  solved using both the ellipse and plane data type.                  
+  of the SPICE ellipse data type. The example C code listed in the      
+  headers of the routines `inelpl_c <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/inelpl_c.html>`__ and  
+  `pjelpl_c <.https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pjelpl_c.html>`__ show examples of problems    
+  solved using both the ellipse and plane data type that can be converted into the equivalent python by readers.                  
                                                                       
                                 
                                                                       
 Summary of routines                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        
+===================
 |                                                                     
 | The following table summarizes the SPICE ellipse and ellipsoid      
   routines.                                                           
-                                                                      
-::                                                                    
-                                                                      
-      cgv2el_c             Center and generating vectors to ellipse   
-      edlimb_c             Ellipsoid limb                             
-      edterm_c             Ellipsoid terminator                       
-      el2cgv_c             Ellipse to center and generating vectors   
-      inedpl_c             Intersection of ellipsoid and plane        
-      inelpl_c             Intersection of ellipse and plane          
-      nearpt_c             Nearest point on ellipsoid to point        
-      npedln_c             Nearest point on ellipsoid to line         
-      npelpt_c             Nearest point on ellipse to point          
-      pjelpl_c             Projection of ellipse onto plane           
-                                                                      
-    saelgv_c             Semi-axes of ellipse from generating vectors 
-      sincpt_c             Surface intercept                          
-      surfnm_c             Surface normal on ellipsoid                
-      surfpt_c             Surface intercept point on ellipsoid       
-      surfpv_c             Surface point and velocity                 
-                                                                      
-                                                
-                                                                      
+                                                            
+:py:meth:`~spiceypy.spiceypy.cgv2el`  
+      Center and generating vectors to ellipse   
+:py:meth:`~spiceypy.spiceypy.edlimb`  
+      Ellipsoid limb                             
+:py:meth:`~spiceypy.spiceypy.edterm`  
+      Ellipsoid terminator                       
+:py:meth:`~spiceypy.spiceypy.el2cgv`  
+      Ellipse to center and generating vectors   
+:py:meth:`~spiceypy.spiceypy.inedpl`  
+      Intersection of ellipsoid and plane        
+:py:meth:`~spiceypy.spiceypy.inelpl`  
+      Intersection of ellipse and plane          
+:py:meth:`~spiceypy.spiceypy.nearpt`  
+      Nearest point on ellipsoid to point        
+:py:meth:`~spiceypy.spiceypy.npedln`  
+      Nearest point on ellipsoid to line         
+:py:meth:`~spiceypy.spiceypy.npelpt`  
+      Nearest point on ellipse to point          
+:py:meth:`~spiceypy.spiceypy.pjelpl`  
+      Projection of ellipse onto plane                                                                           
+:py:meth:`~spiceypy.spiceypy.saelgv`  
+      Semi-axes of ellipse from generating vectors 
+:py:meth:`~spiceypy.spiceypy.sincpt`  
+      Surface intercept                          
+:py:meth:`~spiceypy.spiceypy.surfnm`  
+      Surface normal on ellipsoid                
+:py:meth:`~spiceypy.spiceypy.surfpt`  
+      Surface intercept point on ellipsoid       
+:py:meth:`~spiceypy.spiceypy.surfpv` 
+      Surface point and velocity                 
+
+
 Appendix A: Mathematical notes                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^     
+==============================    
                                                                       
 Defining an ellipse parametrically                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------------
                                    
                                                         
 | Our aim is to show that the set of points                           
@@ -601,12 +605,12 @@ conclude they're positive.
                                 
                                                                       
 Solving intersection problems                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------
                                                  
                                                         
 | There is one problem solving technique used in SPICE ellipse and    
   ellipsoid routines that is so useful that it deserves special       
-  mention: using a \`distortion map' to solve intersection problems.  
+  mention: using a 'distortion map' to solve intersection problems.  
                                                                       
 The distortion map (as it is referred to in CSPICE routines) is       
 simply a linear transformation that maps an ellipsoid to the unit     
@@ -633,7 +637,7 @@ The same is true of the inverse of the distortion map.
 The utility of these facts is that frequently it's easier to find the 
 intersection of the images under the distortion map of two sets than  
 it is to find the intersection of the original two sets. Having found 
-the intersection of the \`distorted' sets, we apply the inverse       
+the intersection of the 'distorted' sets, we apply the inverse       
 distortion map to arrive at the intersection of the original sets.    
 Some examples:                                                        
                                                                       
@@ -654,7 +658,7 @@ Some examples:
   intersection (when the intersection is non-trivial), and the        
   ellipse of intersection of the original plane and ellipsoid         
   results. This procedure is used in the CSPICE routine               
-  `inedpl_c <../cspice/inedpl_c.html>`__.                             
+  `inedpl_c <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/inedpl_c.html>`__.                             
                                                                       
 - To find the image under gnomonic projection onto a plane     
   (camera projection) of an ellipsoid, given a focal point, we must   
@@ -663,7 +667,7 @@ Some examples:
   ellipsoid, plane, and focal point, the problem is transformed into  
   that of finding the intersection of the transformed plane with the  
   cone generated by a unit sphere and the transformed focal point.    
-  This \`transformed' problem is much easier to solve. The resulting  
+  This 'transformed' problem is much easier to solve. The resulting  
   intersection ellipse is then mapped back to the original            
   intersection ellipse by the inverse distortion mapping.             
                                                                       
