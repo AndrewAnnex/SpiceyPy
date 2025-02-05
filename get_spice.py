@@ -103,8 +103,8 @@ tmp_cspice_root_dir = None
 # macos builds can occur on x86 or arm64 machines.
 # but we need to support cross compilation either way 
 # so be a little pedantic here
-requested_arch_x86 = os.environ.get("ARCHFLAGS", "") == "-arch x86_64"
-requested_arch_arm = os.environ.get("ARCHFLAGS", "") == "-arch arm64"
+requested_arch_x86 = os.environ.get("ARCHFLAGS", "").strip("'\"") == "-arch x86_64"
+requested_arch_arm = os.environ.get("ARCHFLAGS", "").strip("'\"") == "-arch arm64"
 # if both are false and on macos do something
 if is_macos and (not requested_arch_arm and not requested_arch_x86):
     # default to building arm on macos
@@ -118,6 +118,14 @@ is_macos_arm = build_macos_arm
 # versions
 spice_version = "N0067"
 spice_num_v = "67"
+
+if is_macos:
+    print(f"On macOS {host_OS}, host arch {host_arch}")
+    print(f"requested_arch_x86: {requested_arch_x86}")
+    print(f"requested_arch_arm: {requested_arch_arm}")
+    print(f"build_macox_x86: {build_macos_x86}")
+    print(f"build_macos_arm: {build_macos_arm}")
+    print(f"is_macos_arm: {is_macos_arm}")
 
 
 class GetCSPICE(object):
