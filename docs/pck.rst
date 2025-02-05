@@ -292,7 +292,7 @@ The Two Formats of PCK files
    physical data associated with a body.
 
 Detection of Non-native Text Files
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------------
 
  | The various platforms supported by CSPICE use different end-of-line
    (EOL) indicators in text files:
@@ -314,7 +314,7 @@ Please be aware the CSPICE text file reader,
 capability to read non-native text files.
 
 DAF Run-Time Binary File Format Translation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------------------
 
  | As of the CSPICE N0052 release (January, 2002), supported platforms
    are able to read DAF-based binary files (SPK, CK and binary PCK)
