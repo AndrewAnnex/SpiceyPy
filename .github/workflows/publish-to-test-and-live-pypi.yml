@@ -67,20 +67,20 @@ jobs:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v4
       - name: Setup 🔬🍦🏗️
-        if: runner.os == 'Windows'
+        if: matrix.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1.13.0
       - name: set additional environment variables for macOS arm
-        if: runner.name == 'macOS' && matrix.config.arch == 'arm64'
+        if: matrix.os == 'macos-14' && matrix.config.arch == 'arm64'
         run: |
           echo "CIBW_ARCHS_MACOS=arm64" >> $GITHUB_ENV
           echo "ARCHFLAGS='-arch arm64'" >> $GITHUB_ENV
       - name: set additional environment variables for macOS x86
-        if: runner.name == 'macOS' && matrix.config.arch == 'x86_64'
+        if: matrix.os == 'macos-14' && matrix.config.arch == 'x86_64'
         run: |
           echo "CIBW_ARCHS_MACOS=x86_64" >> $GITHUB_ENV
           echo "ARCHFLAGS='-arch x86_64'" >> $GITHUB_ENV
       - name: set additional environment variables for linux aarch64
-        if: runner.name == 'Linux' && matrix.config.arch == 'aarch64'
+        if: matrix.os == 'ubuntu-22.04-arm' && matrix.config.arch == 'aarch64'
         run: |
           echo "CIBW_ARCHS_LINUX=aarch64" >> $GITHUB_ENV
           echo "ARCHFLAGS='-arch aarch64'" >> $GITHUB_ENV
@@ -95,27 +95,12 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r ci-requirements.txt
           python -m pip install cibuildwheel==2.22.0
-      - name: See if libcspice.so is available from cache
-        if: matrix.config.arch == 'aarch64'
-        run: |
-          pwd
-          ls src/spiceypy/utils -lahtr
       - name: Build wheels for SpiceyPy 🌶️ 🥧
         timeout-minutes: 120
         run: |
           env | grep CIBW
           env | grep ARCH
           python -m cibuildwheel --output-dir wheelhouse
-      - name: Extract libcspice.so for aarch64 builds
-        if: matrix.config.arch == 'aarch64'
-        run: |
-          pwd
-          ls -lahtr 
-          ls src/ -lahtr
-          ls src/spiceypy/ -lahtr
-          ls src/spiceypy/utils -lahtr
-          ls wheelhouse/*
-          unzip -o wheelhouse/spiceypy-\*.whl 'spiceypy/utils/libcspice.so' -d src/
       - name: Check dists
         run: |
           twine check wheelhouse/*
