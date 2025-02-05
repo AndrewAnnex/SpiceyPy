@@ -1,49 +1,49 @@
-=====================
+*********************
 SCLK Required Reading
-=====================
+*********************
    
 This required reading document is reproduced from the original NAIF
 document available at `https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/sclk.html <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/sclk.html>`_ 
                                                                       
 Abstract                                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+========
                                                   
 | The SCLK system is the component of SPICE concerned with spacecraft 
   clock correlation data.                                             
                                                           
 Introduction                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+============
                                                   
 | The spacecraft clock is the onboard time-keeping mechanism that     
   triggers most spacecraft events, such as shuttering of a camera.    
   Since telemetry data are downlinked with this clock's time attached 
-  to it, spacecraft clock time (SCLK--pronounced \``s-clock'') is the 
+  to it, spacecraft clock time (SCLK is pronounced `s-clock`) is the 
   fundamental time measurement for referencing many spacecraft        
   activities.                                                         
                                                                       
 It is natural, then, that SCLK have an important role in the CSPICE   
 system. In fact, all C-kernel pointing data are referenced to SCLK.   
-CSPICE contains functions to convert between SCLK and other standard  
+SPICE contains functions to convert between SCLK and other standard  
 time systems, such as Ephemeris Time (ET) and Universal Time          
 Coordinated (UTC).                                                    
                                                           
 References                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------
                                                        
                                                                       
-#. SFOC SIS \``SFOC-2-SYS-Any-TimeForms,'' 02/06/90.            
+#. SFOC SIS `SFOC-2-SYS-Any-TimeForms,` 02/06/90.            
                                                                       
                                                 
                                                                       
 Support for New Missions                                  
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
                                                        
 | The suite of SCLK functions has been designed to easily accommodate 
   future missions. A later section describes how the system might be  
   easily expanded to incorporate new spacecraft clocks.               
                                                           
 Detection of Non-native Text Files                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------
                                                        
 | Starting with the N0057 release of the SPICE Toolkit (March, 2004)  
   the SPICE data loading mechanism detects and prohibits loading text 
@@ -55,14 +55,14 @@ Detection of Non-native Text Files
   that 132 bytes or have the first line longer that 132 characters.   
                                                           
 The Basics                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+===========
                                                   
 | In this section, we present a minimal subset of facts about the     
-  CSPICE SCLK system that you can get by with and still use the       
+  SPICE SCLK system that you can get by with and still use the       
   system successfully.                                                
                                                           
 SCLK rates                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------
                                                        
 | Most of the complexity of dealing with SCLK time values arises from 
   the fact that the rate at which any spacecraft clock runs varies    
@@ -77,21 +77,21 @@ you should be aware that it exists; it may be a cause of
 discrepancies between results produced by different sets of software. 
                                                           
 SCLK kernels                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------
                                                        
-| SCLK files conform to a flexible format called \``NAIF text         
-  kernel'' format. The SPICE file identification word provided by     
-  itself on the first line of a text SCLK file is \``KPL/SCLK''. Both 
+| SCLK files conform to a flexible format called `NAIF text         
+  kernel` format. The SPICE file identification word provided by     
+  itself on the first line of a text SCLK file is `KPL/SCLK`. Both 
   the NAIF text kernel format and SPICE file identification word are  
   described in detail in the Kernel Required Reading document,        
-  `kernel.req <../req/kernel.html>`__.                                
+  `kernel <../kernel.html>`__.                                
                                                                       
 To use any of the SCLK conversion functions, your program must first  
 load a SCLK kernel file. The code fragment                            
                                                                       
 ::                                                                    
                                                                       
-      furnsh ( <name of the SCLK kernel file goes here> );          
+      furnsh ( <path to the SCLK kernel file goes here> )          
                                                                       
 accomplishes this. You must supply the actual name of the kernel file 
 you want to load.                                                     
@@ -101,43 +101,43 @@ an SCLK and a leapseconds kernel be loaded. The code fragment
                                                                       
 ::                                                                    
                                                                       
-      furnsh ( <name of the LEAPSECONDS kernel file goes here> );   
+      furnsh ( <path to the LEAPSECONDS kernel file goes here> )   
                                                                       
 loads a leapseconds kernel. Leapseconds kernels are described in the  
-TIME required reading document, `time.req <../req/time.html>`__.      
+TIME required reading document, `time.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/time.html>`__.      
 Normally, you will load these kernels at just one point in your       
 application program, prior to using any time conversion functions.    
                                                                       
 Details concerning the kernel pool are covered in the KERNEL required 
-reading document, `kernel.req <../req/kernel.html>`__.                
+reading document, `kernel <..kernel.html>`__.                
                                                           
 Partitions, briefly                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------
                                                        
 | The lifetime of each mission is divided into intervals called       
-  \``partitions.'' Partitions are time intervals during which the     
+  \`partitions.` Partitions are time intervals during which the     
   spacecraft clock advances continuously. Every time that a           
   discontinuity in a spacecraft clock's readout values occurs, a new  
   partition is started. Discontinuities may consist of positive       
-  jumps, in which the spacecraft clock's readout \``skips'' ahead, or 
+  jumps, in which the spacecraft clock's readout `skips` ahead, or 
   negative jumps, in which the spacecraft clock regresses.            
                                                                       
 The fact that a spacecraft clock may regress raises the possibility   
 that the clock may give the same reading at two or more different     
-times. For this reason, SCLK strings in CSPICE are prefaced with      
+times. For this reason, SCLK strings in SPICE are prefaced with      
 partition numbers.                                                    
                                                                       
 The partition number is a positive integer followed by a forward      
 slash, for example                                                    
                                                                       
-::                                                                    
+.. code-block:: text                                                                  
                                                                       
       4 /                                                             
                                                                       
 Any number of blanks are allowed on either side of the slash.         
 An example of a Galileo SCLK string with a partition number is        
                                                                       
-::                                                                    
+.. code-block:: text                                                                  
                                                                       
       1/100007:76:1                                                   
                                                                       
@@ -146,57 +146,52 @@ be interpreted unambiguously.
                          
                                                                       
 Converting between SCLK strings and ET or UTC             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------------------------
                                                        
-| The time known as \``spacecraft event time'' (SCET) is usually UTC. 
+| The time known as `spacecraft event time` (SCET) is usually UTC. 
   You must verify that this is the case for your spacecraft.          
                                                                       
 To convert a SCLK string to a double precision ET value, you can use  
 the function call                                                     
                                                                       
-::                                                                    
-                                                                      
-      scs2e ( sc, clkstr, &et  );                                   
+.. code-block:: python
+
+      from spiceypy import *                                                           
+      et = scs2e( sc, clkstr )                                   
                                                                       
 To convert a SCLK string to a UTC string, you can use the code        
 fragment                                                              
-::                                                                    
+
+.. code-block:: python                                                                   
                                                                       
-      scs2e_c  ( sc, clkstr,         &et );                           
-      timout ( et, pictur, lenout, utc );                           
+      et = scs2e( sc, clkstr )                           
+      utc = timout( et, pictur )                           
                                                                       
 where                                                                 
                                                                       
-**\`sc'**                                                             
-   is the NAIF spacecraft ID code for your spacecraft.                
-                                                                      
-**\`clkstr'**                                                         
-   is a SCLK string.                                                  
-                                                                      
-**\`et'**                                                             
-   is an ET time.                                                     
-                                                                      
-**\`pictur'**                                                         
-   is a format picture for :py:meth:`~spiceypy.spiceypy.timout`.    
-                                                                      
-**\`lenout'**                                                         
-   is the output string length.                                       
-                                                                      
-**\`utc'**                                                            
-   is the UTC time equivalent to SCLK.                                
+**sc**                                                            
+    is the NAIF spacecraft ID code for your spacecraft.                                                                                   
+**clkstr**                                                         
+    is a SCLK string.                                                                                                                      
+**et**                                                            
+    is an ET time.                                                                                                                      
+**pictur**                                                        
+    is a format picture for :py:meth:`~spiceypy.spiceypy.timout`.                                                                                                                                                                        
+**utc**                                                         
+    is the UTC time equivalent to SCLK.                                
                                                                       
 See these functions for details concerning their arguments.           
 The inverse conversion is performed by the code fragment              
                                                                       
-::                                                                    
+.. code-block:: python
                                                                       
-      str2et ( utc, &et                );                           
-      sce2s_c  ( sc,  et, lenout, clkstr );                           
+      et = str2et( utc )                           
+      clkstr = sce2s( sc,  et )                           
                                                                       
                                                 
                                                                       
 Using encoded SCLK                                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------
                                                        
 | The CSPICE C kernel (CK) system tags CK data with SCLK times.       
   Within the CK system, these time tags are encoded as double         
@@ -206,27 +201,28 @@ Using encoded SCLK
 You can obtain encoded SCLK values from SCLK strings via the function 
 :py:meth:`~spiceypy.spiceypy.scencd`. The code fragment             
                                                                       
-::                                                                    
+.. code-block:: python                                                                    
                                                                       
-      scencd ( sc, clkstr, &sclkdp );                               
+      sclkdp = scencd( sc, clkstr )                               
                                                                       
 encodes the SCLK string \`clkstr' as the double precision value       
 \`sclkdp'.                                                            
 Encoded SCLK values can be converted to strings using the code        
 fragment                                                              
                                                                       
-::                                                                    
+.. code-block:: python                                                                   
                                                                       
-      scdecd ( sc, sclkdp, lenout, clkstr );                        
+      clkstr = scdecd( sc, sclkdp )                        
                                                                       
 You can obtain continuous encoded SCLK values from ET via the         
-function :py:meth:`~spiceypy.spiceypy.sce2c`. The code fragment      
-::                                                                    
+function :py:meth:`~spiceypy.spiceypy.sce2c`. The code fragment 
+
+.. code-block:: python                                                                    
                                                                       
-      sce2c ( sc, et, &sclkdp );                                    
+      clkdp = sce2c ( sc, et )                                    
                                                                       
 encodes the ephemeris time ET as the double precision value           
-\`sclkdp'. SCLKDP need not be integral; even though non-integral tick 
+`sclkdp`. SCLKDP need not be integral; even though non-integral tick 
 values do not represent SCLK readings, they are permitted to avoid    
 truncation error when representing ET as encoded SCLK.                
 A parallel routine :py:meth:`~spiceypy.spiceypy.sce2t` converts ET   
@@ -235,21 +231,21 @@ to encoded SCLK, rounding the result to the nearest integral tick.
 The inverse conversion is provided by the routine                     
 :py:meth:`~spiceypy.spiceypy.sct2e`, which is called as follows:     
                                                                       
-::                                                                    
+.. code-block:: python                                                                   
                                                                       
-      sct2e ( sc, sclkdp, &et );                                    
+      et = sct2e ( sc, sclkdp )                                    
                                                                       
 SCT2E handles integral or continuous tick values as inputs.           
-There is a special function that is used for encoding \``tolerance''  
+There is a special function that is used for encoding `tolerance`  
 values for the CK readers. (See the CK Required Reading,              
-`ck.req <../req/ck.html>`__, document for a discussion of the CK      
+`ck <../ck.html>`__, document for a discussion of the CK      
 readers.)                                                             
                                                                       
 The code fragment                                                     
                                                                       
-::                                                                    
+.. code-block:: python                                                                   
                                                                       
-      sctiks ( sc, clkstr, &ticks );                                
+      ticks = sctiks( sc, clkstr )                                
                                                                       
 produces an encoded tolerance value.                                  
 :py:meth:`~spiceypy.spiceypy.sctiks` takes SCLK strings WITHOUT     
@@ -259,7 +255,7 @@ All of the concepts used in this section are discussed in greater
 detail in the following sections of this document.                    
                                                           
 Encoded SCLK                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+============
                                                   
 | The fundamental representation of SCLK in the CSPICE system is a    
   double precision numeric encoding of each multi-component count.    
@@ -277,22 +273,23 @@ Encoded SCLK
 For these reasons, encoded SCLK is the time representation that is    
 associated with pointing data in the C-kernel. Encoded SCLK is the    
 basis by which conversions are made from SCLK to other time systems.  
-To convert a character representation of an SCLK count \`sclkch' to   
-its double precision encoding \`sclkdp', use the function             
+To convert a character representation of an SCLK count `sclkch` to   
+its double precision encoding `sclkdp`, use the function             
 :py:meth:`~spiceypy.spiceypy.scencd` (Encode SCLK):                 
                                                                       
-::                                                                    
+.. code-block:: python                                                                   
                                                                       
-      scencd ( sc, sclkch, &sclkdp );                               
+      sclkdp = scencd( sc, sclkch )                               
                                                                       
 The function :py:meth:`~spiceypy.spiceypy.scdecd` (Decode SCLK)     
 recovers the character representation of spacecraft clock from its    
 double precision encoding.                                            
-::                                                                    
+
+.. code-block:: python                                                                  
                                                                       
-      scdecd ( sc, sclkdp, lenout, sclkch );                        
+      sclkch = scdecd( sc, sclkdp )                        
                                                                       
-The first argument to both functions, \`sc', is the NAIF integer ID   
+The first argument to both functions, `sc`, is the NAIF integer ID   
 for the spacecraft whose clock count is being encoded or decoded (for 
 example, --32 for Voyager 2). Each spacecraft may have a different    
 format for its clock counts, so the encoding scheme may be different  
@@ -301,22 +298,23 @@ Later chapters describing clock types give complete details on clock
 string formats for spacecraft clocks supported by the CSPICE Toolkit. 
                                                           
 Ticks                                                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------
                                                        
-| The units of encoded SCLK are \``ticks since spacecraft clock       
-  start,'' where a \``tick'' is defined to be the shortest time       
+| The units of encoded SCLK are `ticks since spacecraft clock       
+  start`, where a `tick` is defined to be the shortest time       
   increment expressible by a particular spacecraft's clock.           
                                                                       
 An analogy can be drawn with a standard wall clock, showing hours,    
 minutes, and seconds. One tick for a wall clock would be one second.  
 And a wall clock time of                                              
                                                                       
-::                                                                    
+.. code-block:: text                                                                  
                                                                       
       10:05:50                                                        
                                                                       
-would represent                                                       
-::                                                                    
+would represent     
+
+.. code-block:: text                                                                   
                                                                       
       10(3600) + 5(60) + 50 = 36350                                   
                                                                       
@@ -332,7 +330,7 @@ milliseconds.
                                                                       
 In addition to representing spacecraft clock readings, ticks can be   
 used to represent arbitrary epochs. In order to minimize              
-discretization error, \``continuous'' (non-integral) tick values are  
+discretization error, `continuous` (non-integral) tick values are  
 supported: ephemeris times may be converted to non-integral ticks via 
 the function :py:meth:`~spiceypy.spiceypy.sce2c`.                    
                                                                       
@@ -340,7 +338,7 @@ Conversion of spacecraft clock strings to ticks always produces
 integral tick values.                                                 
                                                           
 Partitions                                                
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------
                                                        
 | One desirable feature of encoded SCLK is that it increases          
   continuously throughout the course of the mission. Unfortunately,   
@@ -355,8 +353,8 @@ when encoding and decoding SCLK.
                                                                       
 To continue our analogy, say our wall clock was being used to keep    
 time throughout an entire day. Then 10:05:50 is ambiguous, because we 
-don't know if it falls in the morning or evening \``partition.'' So   
-we append the indicators \``a.m.''\\ or \``p.m.''\\ to be clear.      
+don't know if it falls in the morning or evening `partition.` So   
+we append the indicators `a.m.` or `p.m.` to be clear.      
                                                                       
 We handle SCLK similarly. Instead of just converting a clock count to 
 ticks (10:05:50 to 36350), we take into account the partition that    
@@ -394,13 +392,13 @@ once in your program, no matter how many calls to
 :py:meth:`~spiceypy.spiceypy.scencd` and                            
 :py:meth:`~spiceypy.spiceypy.scdecd` are made afterwards. See the   
 KERNEL required reading file, `kernel.req <../req/kernel.html>`__,    
-for information about \``loading'' miscellaneous kernel files into    
+for information about `loading` miscellaneous kernel files into    
 the kernel pool.                                                      
                                                                       
 :py:meth:`~spiceypy.spiceypy.scdecd` always returns a clock string  
 prefixed by a partition number and the '/' character, for example     
                                                                       
-::                                                                    
+.. code-block:: text                                                                   
                                                                       
       2/2000:83:12                                                    
                                                                       
@@ -408,60 +406,68 @@ If you want to read partition start and stop times for yourself, use
 the function :py:meth:`~spiceypy.spiceypy.scpart`:                  
 ::                                                                    
                                                                       
-      scpart ( sc, nparts, pstart, pstop );                         
+      nparts, pstart, pstop = scpart( sc )                         
                                                                       
                                                 
                                                                       
 SCLK Conversion Functions                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+==========================
                                                   
 | In order to correlate data obtained from different components of    
   the CSPICE system, for example pointing and ephemeris data, it is   
   necessary to be able to convert between SCLK time and               
   representations of time in other systems, such as UTC and ephemeris 
-  time (also referred to as \``ET,'' \``barycentric dynamical time,'' 
-  and \``TDB'').                                                      
+  time (also referred to as `ET,` `barycentric dynamical time,` 
+  and `TDB`).                                                      
                                                                       
 CSPICE contains the following functions to convert between encoded    
 and character SCLK, ET and UTC. Note that the names of the functions  
-involving SCLK are all prefixed with \`sc', for Spacecraft Clock.     
+involving SCLK are all prefixed with `sc`, for Spacecraft Clock.     
                                                                       
-:py:meth:`~spiceypy.spiceypy.et2utc` (et, format, prec, lenout,     
-utc) (Convert ET to a utc string)                                     
+:py:meth:`~spiceypy.spiceypy.et2utc` 
+      Convert ET to a utc string                                     
                                                                       
-:py:meth:`~spiceypy.spiceypy.utc2et` (utc, et) (Convert a utc       
-string to ET)                                                         
-:py:meth:`~spiceypy.spiceypy.scencd` (sc, sclkch, sclkdp) (Encode   
-SCLK)                                                                 
-:py:meth:`~spiceypy.spiceypy.scdecd` (sc, sclkdp, lenout, sclkch)   
-(Decode SCLK)                                                         
-:py:meth:`~spiceypy.spiceypy.sct2e` (sc, sclkdp, et) (Convert        
-encoded SCLK ticks to ET)                                             
-:py:meth:`~spiceypy.spiceypy.scs2e` (sc, sclkch, et) (Convert SCLK   
-string to ET)                                                         
-:py:meth:`~spiceypy.spiceypy.sce2c` (sc, et, sclkdp) (Convert ET to  
-continuous ticks)                                                     
-:py:meth:`~spiceypy.spiceypy.sce2t` (sc, et, sclkdp) (Convert ET to  
-encoded SCLK ticks)                                                   
-:py:meth:`~spiceypy.spiceypy.sce2s` (sc, et, lenout, sclkch)         
-(Convert ET to SCLK string)                                           
+:py:meth:`~spiceypy.spiceypy.utc2et` 
+      Convert a utc string to ET   
+
+:py:meth:`~spiceypy.spiceypy.scencd` 
+      Encode SCLK
+                                                                 
+:py:meth:`~spiceypy.spiceypy.scdecd` 
+      Decode SCLK         
+
+:py:meth:`~spiceypy.spiceypy.sct2e`  
+      Convert encoded SCLK ticks to ET
+
+:py:meth:`~spiceypy.spiceypy.scs2e` 
+      Convert SCLK string to ET
+
+:py:meth:`~spiceypy.spiceypy.sce2c` 
+      Convert ET to continuous ticks       
+
+:py:meth:`~spiceypy.spiceypy.sce2t` 
+      Convert ET to encoded SCLK ticks    
+
+:py:meth:`~spiceypy.spiceypy.sce2s`      
+      Convert ET to SCLK string
+                                           
 It takes at most two function calls to convert between any two of the 
 four representations.                                                 
 CSPICE also contains two functions that can encode and decode         
-relative, or \``delta'' SCLK times. These are SCLK strings without    
+relative, or `delta` SCLK times. These are SCLK strings without    
 partition numbers that represent time increments rather than total    
 time since clock start. Such strings are encoded as tick counts. The  
 functions are:                                                        
                                                                       
-:py:meth:`~spiceypy.spiceypy.sctiks` ( sc, clkstr, ticks ) (Convert 
-delta SCLK to ticks )                                                 
+:py:meth:`~spiceypy.spiceypy.sctiks` 
+      Convert delta SCLK to ticks                                                  
                                                                       
-:py:meth:`~spiceypy.spiceypy.scfmt` (sc, ticks, lenout, clkstr)      
-(Convert ticks to delta SCLK)                                         
+:py:meth:`~spiceypy.spiceypy.scfmt`      
+      Convert ticks to delta SCLK                                        
                                                 
                                                                       
 Distinguishing Between Different Clocks                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=======================================
                                                   
 | The algorithms used to encode and decode SCLK, and convert between  
   SCLK and other time systems are not necessarily the same for each   
@@ -469,11 +475,11 @@ Distinguishing Between Different Clocks
                                                                       
 The differences are handled by the SCLK software at two levels:       
 High-level differences are managed in the code itself through         
-\``clock types.'' More detailed spacecraft-specific differences are   
+`clock types.` More detailed spacecraft-specific differences are   
 handled using parameters in a SCLK kernel.                            
                                                           
 Clock Types                                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------
                                                        
 | A clock type is a general clock description that may encompass      
   several separate spacecraft clocks. Each clock type is identified   
@@ -489,13 +495,13 @@ ephemeris or UTC seconds past J2000.
 For example, a type 1 clock consists of some number of cascading      
 integer counters. An individual counter can increment only when the   
 immediately preceding counter reaches its maximum expression and      
-\``rolls over.'' Our wall clock is an example: the counters are       
+`rolls over.` Our wall clock is an example: the counters are       
 hours, minutes and seconds. One tick for a type 1 clock is defined to 
 be the value of the least-significant component increment. Clock type 
 1 uses a piecewise-linear interpolation process to convert between    
 SCLK and other time systems.                                          
                                                                       
-The chapter \``SLCK01'' describes clock type 1 in detail. It includes 
+The chapter `SLCK01` describes clock type 1 in detail. It includes 
 the specific SCLK string formats for each of the type 1 spacecraft    
 clocks supported by the CSPICE Toolkit.                               
                                                                       
@@ -503,17 +509,18 @@ SCLK functions determine the clock type for a particular spacecraft
 from the SCLK kernel file (described in the next section).            
                                                           
 Clock type-specific functions                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------
                                                        
 | Each clock type is supported in the encoding and decoding process   
   by the function sccc_c, where cc is the number of the clock type.   
   sccc_c contains two entry points:                                   
                                                                       
-**sctkcc\_** (sc, clkstr, ticks, len_clkstr ) (SCLK string to ticks,  
-type cc)                                                              
+**sctkcc\_**  
+      SCLK string to ticks, type cc                                                              
                                                                       
-**scfmcc\_** (sc, ticks, clkstr, len_clkstr) (Ticks to SCLK string,   
-type cc)                                                              
+**scfmcc\_** 
+      Ticks to SCLK string, type cc
+
 sctkcc\_ and scfmcc\_ do not process any partition information; that  
 work is handled at a higher level by                                  
 :py:meth:`~spiceypy.spiceypy.scencd` and                            
@@ -526,25 +533,37 @@ sctkcc\_ and scfmcc\_ are called by
 Each clock type is supported in the time conversion process by two    
 functions:                                                            
                                                                       
-**sctecc\_** (sc, sclkdp, et) (Encoded SCLK ticks to ET, type cc)     
+**sctecc\_** 
+      Encoded SCLK ticks to ET, type cc     
                                                                       
-**sceccc\_** (sc, et, sclkdp) (ET to continuous ticks, type cc)       
+**sceccc\_** 
+      ET to continuous ticks, type cc
+
+
+.. important:: 
+   NOTE all functions postfixed by "_" mentioned above are
+   Fortan-SPICE functions unavailable in SpiceyPy 
+   as the NAIF does not officially support these with "_c" function
+   wrappers within the CSPICE API. 
+   If these functions are necessary for your work 
+   please contact the NAIF to request that they be added to 
+   the CSPICE API
                                                 
                                                                       
 Spacecraft-Specific Parameters                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------
                                                        
 | Once the clock type has been determined, SCLK functions need        
   parameters that uniquely distinguish each spacecraft within the     
   same SCLK type. For instance, for type 1, they need to know: How    
   many components make up this particular clock? What are the modulus 
   values for each of the components? What are the coefficients        
-  defining the mapping from SCLK to a \``parallel'' time system, such 
+  defining the mapping from SCLK to a `parallel` time system, such 
   as ET? Spacecraft-specific parameters such as these are read from   
   the SCLK kernel file at run-time (see below).                       
                                                           
 The SCLK Kernel File                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=====================
                                                   
 | NAIF SCLK kernel files supply CSPICE SCLK conversion functions with 
   information required to convert between SCLK values and other       
@@ -559,7 +578,7 @@ pool):
                                                                       
 ::                                                                    
                                                                       
-      furnsh ( "name_of_SCLK_kernel_file" );                        
+      furnsh( "path_to_SCLK_kernel_file" )                        
                                                                       
 An application must also load the leapseconds kernel file if there    
 are any conversions to be performed between ET and UTC. This is       
@@ -568,7 +587,7 @@ The SCLK kernel file you use should contain values for the particular
 spacecraft you are dealing with. The variables expected to be found   
 in the file are all prefixed with the string                          
                                                                       
-::                                                                    
+.. code-block:: text                                                                   
                                                                       
       SCLK_                                                           
                                                                       
@@ -578,12 +597,12 @@ below.
                          
                                                                       
 Partition boundaries                                      
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------
                                                        
 | The tick values for the beginning and end of each partition are     
   given by:                                                           
                                                                       
-::                                                                    
+.. code-block:: text                                                                     
                                                                       
       SCLK_PARTITION_START_ss = ( .....                               
                                   .....                               
@@ -597,22 +616,22 @@ Partition boundaries
                                                                       
 where --ss is the spacecraft ID code. These variables are arrays      
 containing one element per partition. The nth element of              
-::                                                                    
+.. code-block:: text                                                                   
                                                                       
       SCLK_PARTITITION_END_ss                                         
                                                                       
-is considered to be the \``first tick'' of the (n+1)st partition.     
+is considered to be the `first tick` of the (n+1)st partition.     
 Mathematically speaking, partitions may be thought of as intervals    
 that are closed on the left and open on the right.                    
                          
                                                                       
 Clock type assignment                                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------
                                                        
 | If --ss is the NAIF ID code of a spacecraft, the associated clock   
   type for that spacecraft is given by the assignment                 
                                                                       
-::                                                                    
+.. code-block:: text                                                                     
                                                                       
       SCLK_DATA_TYPE_ss = ( cc )                                      
                                                                       
@@ -625,16 +644,16 @@ conflicts. (We don't expect this feature to be used much, if at all,
 but it's there should you need it.)                                   
                                                           
 Clock type-specific parameters                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------
                                                        
 | Each spacecraft clock type has its own set of parameters that the   
   CSPICE SCLK functions require in order to convert SCLK values of    
   that type. A complete list and description of these parameters, and 
   their variable names for the kernel pool, is given for type 1 in    
-  the chapter \``SCLK01.''                                            
+  the chapter `SCLK01.`                                            
                                                           
 Expanding the system: What NAIF must do                   
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+========================================
                                                   
 | Accommodating new spacecraft clocks may involve no code changes to  
   the SCLK subroutines whatsoever.                                    
@@ -643,7 +662,7 @@ If a new clock fits into the framework of clock type 1, then the
 clock can be accommodated simply by producing a new kernel file for   
 that spacecraft clock. For the new clock, a new set of kernel         
 variables corresponding to those described above, and those in the    
-chapter \``SCLK01,'' could be added to an existing SCLK kernel file.  
+chapter `SCLK01,` could be added to an existing SCLK kernel file.  
 Alternatively, an entirely new SCLK kernel file containing the new    
 parameters could be created --- this is the more likely approach.     
 Once this is done, all existing SCLK functions will function, without 
@@ -653,7 +672,7 @@ If a new clock does not fit into the clock type 1 framework, then
 NAIF will design a new clock type. This will involve writing new      
 versions of the four clock type-specific functions described earlier: 
                                                                       
-::                                                                    
+.. code-block:: text                                                                      
                                                                       
       sctkcc_                                                         
       scfmcc_                                                         
@@ -664,16 +683,14 @@ where cc is the new clock type number.
 New cases will have to be added to the code of the following          
 higher-level SCxxx conversion functions to call the new,              
 type-specific functions:                                              
-                                                                      
-::                                                                    
-                                                                      
-      scfmt_c                                                         
-      sctiks_c                                                        
-      sct2e_c                                                         
-      scs2e_c                                                         
-      sce2c_c                                                         
-      sce2t_c                                                         
-      sce2s_c                                                         
+                                                                                                                           
+* :py:meth:`~spiceypy.spiceypy.scfmt`                                                         
+* :py:meth:`~spiceypy.spiceypy.sctiks`                                                        
+* :py:meth:`~spiceypy.spiceypy.sct2e`                                                        
+* :py:meth:`~spiceypy.spiceypy.scs2e`                                                         
+* :py:meth:`~spiceypy.spiceypy.sce2c`                                                        
+* :py:meth:`~spiceypy.spiceypy.sce2t`                                                        
+* :py:meth:`~spiceypy.spiceypy.sce2s`                                                      
                                                                       
 It will probably be necessary to design new SCLK kernel file          
 variables to accommodate the new type, and augment the standard       
@@ -684,7 +701,7 @@ to use the SCLK conversion functions, you won't have to re-learn just
 because a new spacecraft clock has been introduced.                   
                                                           
 An Example Using SCLK Functions                           
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+===============================
                                                   
 | The following example shows how some of the SCLK functions might be 
   used in a typical application program. This one reads pointing data 
@@ -694,145 +711,79 @@ An Example Using SCLK Functions
   input times from some external source, such as a file or through    
   interactive user input.                                             
                                                                       
-::                                                                    
-                                                                      
-      /*                                                              
-         Request pointing from a C-kernel file for a sequence of      
-         pictures obtained from the Voyager 2 narrow angle camera.    
-         Use an array of character spacecraft clock counts as input.  
-                                                                      
-         Decode the output clock counts and print the input and       
-         output clock strings. Also print the equivalent UTC time     
-         for each output clock time.                                  
-                                                                      
-         Note that the SCLK kernel file must contain VGR 2 clock      
-         information.                                                 
-      */                                                              
-                                                                      
-                                                                      
-      #include <stdio.h>                                              
-      #include "SpiceUsr.h"                                           
-                                                                      
-      void main()                                                     
-      {                                                               
-                                                                      
-         /*                                                           
-         Local constants:                                             
-         */                                                           
-         #define      NPICS     4                                     
-         #define      TIMLEN    25                                    
-         #define      LINLEN    80                                    
-                                                                      
-         /*                                                           
-         Names of C kernel and SCLK kernels:                          
-         */                                                           
-         #define      CK        "VGR2NA.BC"                           
-         #define      SCLKKER   "SCLK.KER"                            
-         #define      LSK       "LSK.KER"                             
-                                                                      
-         /*                                                           
-         The instrument we want pointing for is the Voyager 2         
-         narrow angle camera.  The reference frame we want is         
-         J2000. The spacecraft is Voyager 2.                          
-         */                                                           
-         #define      INST      -32001                                
-         #define      REF       "J2000"                               
-         #define      SC        -32                                   
-                                                                      
-                                                                      
-         /*                                                           
-         Local static variables:                                      
-         */                                                           
-         static SpiceChar        clktol  [ TIMLEN ]  =  "0:01:001";   
-                                                                      
-         static SpiceChar        sclkin  [ NPICS ] [ TIMLEN ]  =      
-                                 {                                    
-                                    "2/20538:39:768",                 
-                                    "2/20543:21:768",                 
-                                    "2/20550:37",                     
-                                    "2/20564:19"                      
-                                 };                                   
-                                                                      
-         /*                                                           
-         Local automatic variables:                                   
-         */                                                           
-         SpiceBoolean            found;                               
-                                                                      
-         SpiceChar               sclkout [ TIMLEN ];                  
-         SpiceChar               utc     [ TIMLEN ];                  
-                                                                      
-         SpiceDouble             cmat [3][3];                         
-         SpiceDouble             et;                                  
-         SpiceDouble             timein;                              
-         SpiceDouble             timeout;                             
-         SpiceDouble             tol;                                 
-                                                                      
-         SpiceInt                i;                                   
-         SpiceInt                sc;                                  
-                                                                      
-                                                                      
-         /*                                                           
-         Load the appropriate files. We need                          
-                                                                      
-         1) A CK file containing pointing data.                       
-         2) The SCLK kernel file, for the SCLK conversion functions.  
-         3) A leapseconds kernel, for ET-UTC conversions.             
-         */                                                           
-                                                                      
-         furnsh ( CK,     );                                        
-         furnsh ( SCLKKER );                                        
-         furnsh ( LSK     );                                        
-                                                                      
-                                                                      
-         /*                                                           
-         Convert the tolerance string to ticks.                       
-         */                                                           
-         sctiks ( SC, clktol, &tol );                               
-                                                                      
-         for ( i = 0;  i < NPICS;  i++ )                              
-         {                                                            
-            scencd ( SC, sclkin[i], &timein );                      
-                                                                      
-            ckgp_c   ( INST,  timein, tol, REF, cmat, &timeout,       
-                       &found                                  );     
-                                                                      
-            scdecd ( SC, timeout, TIMLEN, sclkout     );            
-            sct2e_c  ( SC, timeout, &et                 );            
-            et2utc ( et, "D",     3,      TIMLEN, utc );            
-                                                                      
-                                                                      
-            if ( found )                                              
-            {                                                         
-               printf ( "\n"                                          
-                        "Input  s/c clock count: %s\n"                
-                        "Output s/c clock count: %s\n"                
-                        "Output UTC:             %s\n"                
-                        "Output C-Matrix:        \n"                  
-                        "\n"                                          
-                        "%f\t %f\t %f\t\n"                            
-                        "%f\t %f\t %f\t\n"                            
-                        "%f\t %f\t %f\t\n"                            
-                        "\n",                                         
-                                                                      
-                        sclkin[i],                                    
-                        sclkout,                                      
-                        utc,                                          
-                        cmat[0][0], cmat[0][1], cmat[0][2],           
-                        cmat[1][0], cmat[1][1], cmat[1][2],           
-                        cmat[2][0], cmat[2][1], cmat[2][2]   );       
-            }                                                         
-            else                                                      
-            {                                                         
-               printf ( "\n"                                          
-                        "Input  s/c clock count: %s\n"                
-                        "No pointing found.\n",                       
-                        sclkin[i]                     );              
-            }                                                         
-         }                                                            
-      }                                                               
-                                                                      
-The output from this program looks like this:                         
-::                                                                    
+.. code-block:: python
+   :linenos:
+
+   #!/usr/bin/env python                                                                
+   """                                                            
+   Request pointing from a C-kernel file for a sequence of      
+   pictures obtained from the Voyager 2 narrow angle camera.    
+   Use an array of character spacecraft clock counts as input.  
+                                                                
+   Decode the output clock counts and print the input and       
+   output clock strings. Also print the equivalent UTC time     
+   for each output clock time.                                  
+                                                                
+   Note that the SCLK kernel file must contain VGR 2 clock      
+   information.                                                 
+   """                                                             
+   import spiceypy as spice
+
+   def main():
+       # Instrument, reference frame, and spacecraft ID.
+       INST = -32001   # Voyager 2 narrow angle camera.
+       REF  = "J2000"
+       SC   = -32     # Spacecraft clock ID for Voyager 2.
+
+       # Clock tolerance string and array of input spacecraft clock counts.
+       clktol = "0:01:001"
+       sclkin = [
+           "2/20538:39:768",
+           "2/20543:21:768",
+           "2/20550:37",
+           "2/20564:19"
+       ]
+
+       # Load the required kernels.
+       spice.furnsh("VGR2NA.BC")
+       spice.furnsh("SCLK.KER")
+       spice.furnsh("LSK.KER")
+
+       # Convert the tolerance string to ticks.
+       tol = spice.sctiks(SC, clktol)
+
+       # Process each clock count.
+       for clock in sclkin:
+           # Convert the input spacecraft clock string to ticks.
+           timein = spice.scencd(SC, clock)
+           # Retrieve the pointing information.
+           # spice.ckgp returns a tuple: (cmat, clkout)
+           cmat, timeout = spice.ckgp(INST, timein, tol, REF)
+           # Decode the output clock count into a string.
+           sclkout = spice.scdecd(SC, timeout)
+           # Convert the output spacecraft clock ticks to ephemeris time.
+           et = spice.sct2e(SC, timeout)
+           # Convert the ephemeris time to a UTC string.
+           utc = spice.et2utc(et, "D", 3)
+           # Print the results.
+           print(f"\nInput  s/c clock count: {clock}")
+           print(f"Output s/c clock count: {sclkout}")
+           print(f"Output UTC:             {utc}")
+           print("Output C-Matrix:")
+           for row in cmat:
+               # Format each element in the row as a floating point number.
+               print("\t".join(f"{elem:f}" for elem in row))
+           print()
+
+       # (Optional) Unload the kernels when done.
+       spice.kclear()
+
+   if __name__ == '__main__':
+       main()
+                                                     
+The output from this program looks like this: 
+                        
+.. code-block:: text                                                                     
                                                                       
       Input  s/c clock count:  2 / 20538:39:768                       
       Output s/c clock count:  2/20538.39.768                         
@@ -855,9 +806,9 @@ The output from this program looks like this:
       Output C-Matrix:  <fourth C-matrix>                             
                                                                       
                                                 
-                                                                      
+                                                                     
 SCLK01                                                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+======
                                                   
 | This chapter describes the type 1 SCLK format and conversion        
   algorithms in detail. Also, the SCLK formats for supported          
@@ -865,7 +816,7 @@ SCLK01
   described.                                                          
                                                           
 Conforming spacecraft clocks                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------
                                                   
 | The following spacecraft have SCLK formats that conform to the type 
   1 specification:                                                    
@@ -894,7 +845,7 @@ spacecraft.
                          
                                                                       
 Type 1 SCLK format                                        
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------
                                                   
 | The first standard NAIF spacecraft clock data type has two          
   components: a format defining the set of acceptable spacecraft      
@@ -903,12 +854,13 @@ Type 1 SCLK format
                                                                       
 Type 1 SCLK strings have the form                                     
                                                                       
-::                                                                    
+.. code-block:: text                                                                    
                                                                       
       pppp/<time string>                                              
                                                                       
-where pppp is a partition number between 1 and 9999 inclusive, and    
-::                                                                    
+where pppp is a partition number between 1 and 9999 inclusive, and
+
+.. code-block:: text                                                                    
                                                                       
       <time string>                                                   
                                                                       
@@ -919,17 +871,17 @@ in the first partition in which the specified clock count occurred.
 It's good practice to always include the partition number.            
 An example of a type 1 SCLK string (for Galileo) is                   
                                                                       
-::                                                                    
+.. code-block:: text                                                                    
                                                                       
       3 / 10110007:09:6:1                                             
                                                                       
-The number \``3'' is the partition number, the slash is a delimiter,  
-and the rest of the string is a \``time string.'' With this example   
+The number `3` is the partition number, the slash is a delimiter,  
+and the rest of the string is a `time string.` With this example   
 in hand, we're ready to define the type 1 SCLK format.                
 The partition number is a positive integer followed by a forward      
 slash, for example                                                    
                                                                       
-::                                                                    
+.. code-block:: text                                                                    
                                                                       
       4 /                                                             
                                                                       
@@ -937,7 +889,7 @@ Zero or more blanks are allowed on either side of the slash.
 A type 1 SCLK time string consists of a series of one or more fields, 
 each of which contains an integer. All fields but the leftmost are    
 optional. The fields of a time string represent modular counts of     
-time units. (A \``mod n'' count increments from zero to n-1, and then 
+time units. (A `mod n` count increments from zero to n-1, and then 
 cycles back to zero.) The values for a given field may be offset by   
 some fixed integer, so that they range from m to m+n, where m is      
 non-negative. The moduli of the various fields are not necessarily    
@@ -947,20 +899,22 @@ left.
                                                                       
 For each field but the first, values may exceed the modulus for the   
 field. For example, the modulus of the fourth field of a Galileo SCLK 
-string is 8, but the digit \``9'' is allowed in that field. So        
+string is 8, but the digit `9` is allowed in that field. So        
                                                                       
-::                                                                    
+.. code-block:: text                                                                    
                                                                       
       0:0:0:9                                                         
                                                                       
-is a valid Galileo SCLK string and represents the same time as        
-::                                                                    
+is a valid Galileo SCLK string and represents the same time as   
+
+.. code-block:: text                                                                    
                                                                       
       0:0:1:1                                                         
                                                                       
 On input to CSPICE functions, the fields of a type 1 SCLK string may  
-be separated by any of the delimiter characters                       
-::                                                                    
+be separated by any of the delimiter characters           
+
+.. code-block:: text                                                                     
                                                                       
       -  .  ,  :  <blank>                                             
                                                                       
@@ -968,8 +922,9 @@ Consecutive non-blank delimiters containing no intervening digits are
 treated as if they delimit zero values, consecutive blanks are        
 treated as a single blank, while blanks preceding or following a      
 non-blank delimiter are ignored, as illustrated by this list of       
-eqivalent Galileo SCLK strings:                                       
-::                                                                    
+eqivalent Galileo SCLK strings:             
+
+.. code-block:: text                                                                     
                                                                       
       00000001:00:3:4                                                 
       1:0:3:4                                                         
@@ -984,7 +939,7 @@ those defined by a parameter in the SCLK kernel, described later.
 Note that all fields in time strings represent integers, not decimal  
 fractions. So, the strings                                            
                                                                       
-::                                                                    
+.. code-block:: text                                                                    
                                                                       
       11000687:9                                                      
                                                                       
@@ -995,18 +950,19 @@ indicates a count of 9; in the latter, 90.
                          
                                                                       
 Galileo SCLK format                                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
                                                        
 | An example of a valid time string (without a partition number) for  
   the Galileo spacecraft clock is:                                    
                                                                       
-::                                                                    
+.. code-block:: text                                                                   
                                                                       
       16777214:90:9:7                                                 
                                                                       
 Numbering the fields from left to right, the time units and moduli of 
 the fields are:                                                       
-::                                                                    
+
+.. code-block:: text                                                                    
                                                                       
          Field              Time unit              Modulus            
          -----     ---------------------------     --------           
@@ -1015,51 +971,53 @@ the fields are:
            3          1/15  sec.  ( 66 2/3 ms)           10           
            4          1/120 sec.  (  8 1/3 ms)            8           
                                                                       
-Fields 1--4 are known as: \``Real time image count'' (RIM), \``mod 91 
-count,'' \``mod 10 count'' or \``real time interrupt count'' (RTI),   
-and \``mod 8 count.'' The values in all fields normally range from    
+Fields 1--4 are known as: `Real time image count` (RIM), `mod 91 
+count,` `mod 10 count` or `real time interrupt count` (RTI),   
+and `mod 8 count.` The values in all fields normally range from    
 zero to the modulus of the field, minus one.                          
 The maximum time value that the Galileo spacecraft clock can          
 represent (16777214:90:9:7) is approximately 32 years.                
                                                           
 Mars Global Surveyor SCLK format                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | An example of a valid time string (without a partition number) for  
   the Mars Global Surveyor spacecraft clock is:                       
                                                                       
-::                                                                    
+.. code-block:: text                                                                     
                                                                       
       4294967295.255                                                  
                                                                       
 Numbering the fields from left to right, the time units and moduli of 
 the fields are:                                                       
-::                                                                    
+
+.. code-block:: text                                                                    
                                                                       
          Field           Time unit                Modulus             
          -----     ----------------------       ----------            
            1       approximately 1 sec.         4294967296            
            2       1/256 sec.                   256                   
                                                                       
-Field 1 is known as the \``sclk_secs count.'' Field 2 is known as the 
-\``sclk_fine word.'' The values in the first and second fields        
+Field 1 is known as the `sclk_secs count.` Field 2 is known as the 
+`sclk_fine word.` The values in the first and second fields        
 normally range from zero to the modulus of the field, minus 1.        
 The maximum time value that the Mars Global Surveyor spacecraft clock 
 can represent (4294967295.255) is approximately 136 years.            
                                                           
 Voyager SCLK clock format                                 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | An example of a valid time string (without a partition number) for  
   both the Voyager 1 and Voyager 2 spacecraft clocks is:              
                                                                       
-::                                                                    
+.. code-block:: text 
                                                                       
       65535.59.800                                                    
                                                                       
 Numbering the fields from left to right, the time units and moduli of 
 the fields are:                                                       
-::                                                                    
+
+.. code-block:: text                                                                    
                                                                       
          Field        Time unit              Modulus                  
          -----     ------------------       ---------                 
@@ -1067,20 +1025,20 @@ the fields are:
            2           48    sec.                60                   
            3            0.06 sec.               800                   
                                                                       
-Fields 1--3 are known as: \``Mod 16 count'' (actually mod 2**16),     
-\``mod 60 count,'' and \``mod 800 count.'' The values in the first    
+Fields 1--3 are known as: `Mod 16 count` (actually mod 2**16),     
+`mod 60 count,` and `mod 800 count.` The values in the first    
 and second fields normally range from zero to the modulus of the      
 field, minus 1. The range of the third field is from 1 to 800. The    
-\``offset'' for the third field is 1, so values in this field         
+`offset` for the third field is 1, so values in this field         
 normally range from 1 to 800 rather than from 0 to 799; values above  
 800 are allowed and treated as described above.                       
 The maximum time value that the Voyager 1 and Voyager 2 spacecraft    
 clocks can represent (65535:59:800) is approximately six years.       
                                                           
 Type 1 SCLK conversion                                    
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------
                                                   
-| CSPICE contains functions that convert between type 1 clock strings 
+| SPICE contains functions that convert between type 1 clock strings 
   and the following representations of time:                          
                                                                       
 - ET (TDB)                                                     
@@ -1088,12 +1046,12 @@ Type 1 SCLK conversion
 - encoded SCLK                                                 
                                                                       
 The functions that carry out these conversions are described above in 
-the chapter \``SCLK Conversion Functions.''                           
-Since CSPICE also contains functions that convert between any of a    
+the chapter `SCLK Conversion Functions.`                           
+Since SPICE also contains functions that convert between any of a    
 variety of standard time systems, including ET, UTC, Terrestrial      
 Dynamical Time (TDT), TAI, TDB Julian date, TDT Julian Date, and UTC  
 Julian Date, conversion between SCLK strings and any other time       
-system supported by CSPICE requires at most two function calls.       
+system supported by SPICE requires at most two function calls.       
                                                           
 Conversion algorithms                                     
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1105,8 +1063,8 @@ Conversion algorithms
   values from this system are mapped to TDB.                          
                                                                       
 The standard time system used for the conversion is referred to here  
-and in the CSPICE SCLK functions as the \``parallel'' time system.    
-Normally, the CSPICE Toolkit will use only one parallel time system   
+and in the SPICE SCLK functions as the `parallel` time system.    
+Normally, the SPICE Toolkit will use only one parallel time system   
 for any given spacecraft clock.                                       
                                                                       
 Conversion from TDB to encoded SCLK follows the reverse path: first,  
@@ -1118,13 +1076,13 @@ For each type 1 spacecraft clock, encoded SCLK is related to the
 parallel time system for that clock by a piecewise linear function.   
 The function is defined by a set of pairs of encoded SCLK values and  
 corresponding values in the parallel time system, and by a set of     
-\``rate'' values that apply to the intervals between the pairs of     
-time values. The rate values give the rate at which \``parallel       
-time'' increases with respect to encoded SCLK time during the         
+`rate` values that apply to the intervals between the pairs of     
+time values. The rate values give the rate at which `parallel       
+time` increases with respect to encoded SCLK time during the         
 interval over which the rate applies. The rates in a type 1 SCLK      
 kernel have units of                                                  
                                                                       
-::                                                                    
+.. code-block:: text                                                                   
                                                                       
        parallel time system units                                     
       ----------------------------                                    
@@ -1134,10 +1092,10 @@ The units of the currently supported parallel time systems TDT and
 TDB are seconds measured in those respective systems. So clock rates  
 may be TDT or TDB seconds per most significant clock count. For       
 example, for the GLL orbiter spacecraft clock, the rate unit is       
-\``TDB seconds per RIM.''                                             
+`TDB seconds per RIM.`                                             
 The specific method by which pairs of time values and rates are used  
 to map encoded SCLK to parallel time values is explained in detail    
-below. In the following discussion we'll use the name \``PARSYS'' to  
+below. In the following discussion we'll use the name `PARSYS` to  
 refer to the parallel time system. We'll use the name MSF to indicate 
 the number of ticks per most significant SCLK field.                  
                                                                       
@@ -1146,7 +1104,7 @@ set of ordered triples of encoded SCLK values (in units of ticks
 since spacecraft clock start), their equivalents in PARSYS time, and  
 the rates corresponding to each pair of times:                        
                                                                       
-::                                                                    
+.. code-block:: text                                                                  
                                                                       
       ( s/c_clock(1),  parsys(1),  rate(1) )                          
                         .                                             
@@ -1155,41 +1113,46 @@ the rates corresponding to each pair of times:
       ( s/c_clock(n),  parsys(n),  rate(n) )                          
                                                                       
 The mapping of SCLK values to PARSYS times is carried out as follows: 
-If the sclk time \``clock'' satisfies                                 
-::                                                                    
+If the sclk time `clock` satisfies                                 
+
+.. code-block:: text                                                                  
                                                                       
       sclk(i)  <  clock  <  sclk(i+1)                                 
                -                                                      
                                                                       
 then the corresponding PARSYS time is                                 
-::                                                                    
-                                                                      
+
+.. code-block:: text 
+
       parsys(i)  +    ( rate(i)/MSF )  *  ( clock - sclk(i) )         
                                                                       
-If                                                                    
-::                                                                    
+If 
+
+.. code-block:: text                                                                    
                                                                       
       clock  >  clock(n)                                              
              -                                                        
                                                                       
 the formula still applies, with i = n.                                
 To convert PARSYS time values to SCLK, we use an analogous method. If 
-\``time'' is the value to be converted, and                           
+`time` is the value to be converted, and                           
                                                                       
-::                                                                    
+.. code-block:: text                                                                     
                                                                       
       parsys(i)  <  time  <  parsys(i+1)                              
                  _                                                    
                                                                       
 then the corresponding continuous encoded SCLK value is               
-::                                                                    
+
+.. code-block:: text                                                                    
                                                                       
                       time -  parsys(i)                               
       sclk(i)    +    ----------------                                
                         rate(i)/MSF                                   
                                                                       
 If                                                                    
-::                                                                    
+
+.. code-block:: text                                                                    
                                                                       
       time >  parsys(n)                                               
            -                                                          
@@ -1202,7 +1165,7 @@ When the function described by the pairs of time values and rates is
 continuous, then all rates except for the last one are redundant,     
 since                                                                 
                                                                       
-::                                                                    
+.. code-block:: text                                                                    
                                                                       
                        parsys(i+1) -  parsys(i)                       
       rate(i)/MSF  =   ------------------------                       
@@ -1217,15 +1180,17 @@ non-continuous mappings is provided in case it is needed to implement
 the mapping provided by a flight project.                             
 In order for CSPICE SCLK conversion functions to work, the            
 information represented by the ordered triples described above must   
-be loaded via the kernel pool. See the section \``The spacecraft      
-clock kernel file'' below for details.                                
+be loaded via the kernel pool. See the section `The spacecraft      
+clock kernel file` below for details.                                
                                                           
 Type 1 SCLK functions                                     
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------
                                                   
 | Type 1 SCLK functions are normally called by the higher-level SCLK  
   functions :py:meth:`~spiceypy.spiceypy.scencd`,                   
-  :py:meth:`~spiceypy.spiceypy.scdecd`, scs2e_c, sct2e_c,           
+  :py:meth:`~spiceypy.spiceypy.scdecd`, 
+  :py:meth:`~spiceypy.spiceypy.scs2e`, 
+  :py:meth:`~spiceypy.spiceypy.sct2e`,           
   :py:meth:`~spiceypy.spiceypy.sce2c`,                               
   :py:meth:`~spiceypy.spiceypy.sce2t`,                               
   :py:meth:`~spiceypy.spiceypy.sce2s`, sctiks_c, and                 
@@ -1235,28 +1200,50 @@ Type 1 SCLK functions
                                                                       
 The type 1 SCLK functions are                                         
                                                                       
-**scfm01\_** (sc, ticks, clkstr, len_clkstr) (Convert ticks to a type 
-1 SCLK string)                                                        
+**scfm01\_** 
+      Convert ticks to a type 1 SCLK string                                                        
                                                                       
-**sctk01\_** (sc, clkstr, ticks, len_clkstr) (Convert a type 1 SCLK   
-string to ticks)                                                      
-**scec01\_** (sc, et, sclkdp) (ET to continuous ticks, type 1)        
-**scet01\_** (sc, et, sclkdp) (Convert ET to ticks, type 1)           
-**scte01\_** (sc, sclkdp, et) (Convert ticks to ET, type 1)           
-**scld01\_** (name, sc, maxnv, n, dval) (SCLK look up of double       
-precision data, type 1)                                               
-**scli01\_** (name, sc, maxnv, n, ival) (SCLK look up of integer      
-data, type 1)                                                         
-**sclu01\_** (name, sc, maxnv, n, ival, dval) (SCLK lookup, type 1)   
-**sc01\_** (sc, clkstr, ticks, sclkdp, et, len_clkstr) (SCLK          
-conversion, type 1)                                                   
-The last two functions sc01\_ and sclu01\_ are \``umbrella''          
+**sctk01\_** 
+      Convert a type 1 SCLK string to ticks      
+
+**scec01\_** 
+      ET to continuous ticks, type 1 
+
+**scet01\_** 
+      Convert ET to ticks, type 1   
+
+**scte01\_** 
+      Convert ticks to ET, type 1        
+
+**scld01\_** 
+      SCLK look up of double precision data, type 1  
+
+**scli01\_** 
+      SCLK look up of integer data, type 1 
+                                                            
+**sclu01\_** 
+      SCLK lookup, type 1
+
+**sc01\_** 
+      SCLK conversion, type 1
+
+The last two functions sc01\_ and sclu01\_ are `umbrella`          
 functions which exist for the purpose of allowing their entry points  
 to share data. These functions should not be called directly.         
                          
-                                                                      
+
+.. important:: 
+   NOTE all functions postfixed by "_" mentioned above are
+   Fortan-SPICE functions unavailable in SpiceyPy 
+   as the NAIF does not officially support these with "_c" function
+   wrappers within the CSPICE API. 
+   If these functions are necessary for your work 
+   please contact the NAIF to request that they be added to 
+   the CSPICE API
+                           
+
 The type 1 SCLK kernel file                               
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------
                                                   
 | Before any CSPICE functions that make use of type 1 SCLK values can 
   be used, a SCLK kernel file must be loaded into the kernel pool.    
@@ -1272,18 +1259,20 @@ The type 1 SCLK kernel file
                                                                       
 Variables that are used for all clock types have names that start     
 with the string                                                       
-::                                                                    
+
+.. code-block:: text                                                                     
                                                                       
       SCLK_                                                           
                                                                       
 Variables that are applicable only to type 1 spacecraft clocks start  
 with the string                                                       
-::                                                                    
+
+.. code-block:: text                                                                    
                                                                       
       SCLK01_                                                         
                                                                       
 An SCLK kernel file makes the following assignments for each          
-spacecraft whose clock values are to be treated as \``type 1'' by the 
+spacecraft whose clock values are to be treated as `type 1` by the 
 CSPICE SCLK functions:                                                
                          
                                                                       
@@ -1292,13 +1281,14 @@ Kernel ID assignment
                                                        
 | Each SCLK kernel must assign a identifier to the kernel variable    
                                                                       
-::                                                                    
+.. code-block:: text                                                                     
                                                                       
       SCLK_KERNEL_ID                                                  
                                                                       
 This identifier is normally a UTC time string, preceded by the        
 character '@', for example,                                           
-::                                                                    
+
+.. code-block:: text                                                                  
                                                                       
       @04-SEP-1990                                                    
                                                                       
@@ -1312,7 +1302,7 @@ Parallel time system code assignment
 | If --ss is the NAIF ID code of a spacecraft, this ID is associated  
   with a parallel time system by the assignment                       
                                                                       
-::                                                                    
+.. code-block:: text                                                                    
                                                                       
       SCLK01_TIME_SYSTEM_ss  = ( nnn )                                
                                                                       
@@ -1336,7 +1326,7 @@ SCLK type assignment
 | If --ss is the NAIF ID code of a spacecraft, this ID is associated  
   with a SCLK type by the assignment                                  
                                                                       
-::                                                                    
+.. code-block:: text                                                                    
                                                                       
       SCLK_DATA_TYPE_ss = ( 1 )                                       
                                                                       
@@ -1350,13 +1340,14 @@ Format constant assignments
                                                        
 | All of the format constants start with the string                   
                                                                       
-::                                                                    
+.. code-block:: text                                                                   
                                                                       
       SCLK01                                                          
                                                                       
 and end with the string                                               
-::                                                                    
-                                                                      
+
+.. code-block:: text 
+
       _ss                                                             
                                                                       
 where --ss is the NAIF mission ID code. This allows the type 1 SCLK   
@@ -1364,7 +1355,7 @@ functions to find the correct constants for each mission ID
 associated with the first SCLK data type.                             
 The format constants that must be assigned are                        
                                                                       
-::                                                                    
+.. code-block:: text                                                                     
                                                                       
       SCLK01_N_FIELDS_ss                                              
       SCLK01_MODULI_ss                                                
@@ -1376,24 +1367,27 @@ format of type 1 SCLK strings. The values shown apply to the Galileo
 SCLK format.                                                          
 Number of fields:                                                     
                                                                       
-::                                                                    
+.. code-block:: text                                                                     
                                                                       
       SCLK01_N_FIELDS_77  =  ( 4 )                                    
                                                                       
 Modulus of each field:                                                
-::                                                                    
+
+.. code-block:: text                                                                     
                                                                       
       SCLK01_MODULI_77  =  ( 16777215 91 10 8 )                       
                                                                       
 Offsets for field values. Offsets are listed for each field in        
 left-to-right order:                                                  
-::                                                                    
+
+.. code-block:: text                                                                     
                                                                       
       SCLK01_OFFSETS_77 = ( 0 0 0 0 )                                 
                                                                       
 Code for delimiter to be used in output strings. The codes and        
 corresponding delimiters are:                                         
-::                                                                    
+
+.. code-block:: text                                                                    
                                                                       
       Code          Delimiter                                         
                                                                       
@@ -1408,7 +1402,8 @@ corresponding delimiters are:
         5             <space>                                         
                                                                       
 For Galileo, the code assignment would be:                            
-::                                                                    
+
+.. code-block:: text                                                                    
                                                                       
       SCLK01_OUTPUT_DELIM_77 = ( 2 )                                  
                                                                       
@@ -1418,14 +1413,14 @@ Time coefficients
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                                        
 | The data that define the mapping between SCLK and the parallel time 
-  system are called \``time coefficients.'' This name is used because 
+  system are called `time coefficients.` This name is used because 
   the data are coefficients of linear polynomials; as a set, they     
   define a piecewise linear function that maps SCLK to the parallel   
   time system.                                                        
                                                                       
 The time coefficients are assigned to the variable                    
                                                                       
-::                                                                    
+.. code-block:: text                                                                    
                                                                       
       SCLK01_COEFFICIENTS_ss                                          
                                                                       
@@ -1435,24 +1430,26 @@ rates. The SCLK values are expressed in total ticks since clock
 start. The parallel time values may be expressed in a variety of      
 units. The rate values have units that depend on the units used for   
 the parallel time values: if we call these units                      
-::                                                                    
+
+.. code-block:: text                                                                    
                                                                       
       PARALLEL_TIME_UNITS                                             
                                                                       
 then the rate units are                                               
-::                                                                    
+
+.. code-block:: text                                                                     
                                                                       
          PARALLEL_TIME_UNITS                                          
       ----------------------------                                    
       most significant clock count                                    
                                                                       
-The term most \``significant clock count'' shown in the denominator   
+The term most `significant clock count` shown in the denominator   
 refers to the length of time associated with one count of the most    
 significant (leftmost) field of the formatted spacecraft clock        
 string. For example, for Voyager 2, the most significant field of a   
-formatted SCLK string is the \``mod 16'' field. For Galileo, the most 
-significant field is the \``RIM count.'' For Mars Global Surveyor,    
-the most significant field is the \``sclk_secs count.''               
+formatted SCLK string is the `mod 16` field. For Galileo, the most 
+significant field is the `RIM count.` For Mars Global Surveyor,    
+the most significant field is the `sclk_secs count.`               
                          
                                                                       
 Partition boundaries                                      
@@ -1463,7 +1460,7 @@ Partition boundaries
   initial and final SCLK readouts for each partition. These values    
   are given by:                                                       
                                                                       
-::                                                                    
+.. code-block:: text                                                                   
                                                                       
       PARTITION_START_ss                                              
       PARTITION_END_ss                                                
@@ -1477,7 +1474,7 @@ Sample SCLK kernels
                                                        
 | The following is a sample SCLK kernel for Galileo:                  
                                                                       
-::                                                                    
+.. code-block:: text                                                                    
                                                                       
       KPL/SCLK                                                        
                                                                       
@@ -1543,14 +1540,16 @@ Sample SCLK kernels
                                                                       
 Below is a sample SCLK kernel file for Mars Global Surveyor. Note     
 that the text prior to the first                                      
-::                                                                    
+
+.. code-block:: text                                                                    
                                                                       
       \begindata                                                      
                                                                       
 directive is treated as a group of comment lines by the SPICELIB      
 kernel readers. The labels shown in this comment area are examples    
 and should not be construed as a correct specification.               
-::                                                                    
+
+.. code-block:: text                                                                    
                                                                       
       KPL/SCLK                                                        
                                                                       
@@ -1593,7 +1592,7 @@ and should not be construed as a correct specification.
                                                                       
                                                                       
    1. SCLK Required Reading file (sclk.req), NAIF document number 222 
-         2. MAKCLK User's Guide, NAIF document number 267             
+         1. MAKCLK User's Guide, NAIF document number 267             
                                                                       
                                                                       
       Inquiries                                                       
@@ -1650,51 +1649,3 @@ and should not be construed as a correct specification.
      1.7567130624000E+10  -3.0888654078000E+07  9.9999989100000E-01 ) 
       \begintext                                                      
                                                                       
-                                                
-                                                                      
-Appendix: Document Revision History                       
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                                                 
-                         
-                                                                      
-May 27, 2010                                              
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                                       
-| Minor edit to eliminate typo.                                       
-                                                          
-April 1, 2009                                             
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                                       
-| Added a note about the SPICE file identification word for SCLK      
-  files.                                                              
-                                                          
-March 02, 2008                                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                                       
-| Updated discussion of type 1 conversion algorithm to clarify role   
-  of parallel time system. Updated discussion of SCLK string formats  
-  to indicate support for 4-digit partition numbers.                  
-                                                          
-December 21, 2004                                         
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                                       
-| Added note regarding detection of non-native text files. Replaced   
-  :py:meth:`~spiceypy.spiceypy.ldpool` with                         
-  :py:meth:`~spiceypy.spiceypy.furnsh`.                             
-                                                          
-February 2, 2004                                          
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                                       
-| Performed a spell-check on text.                                    
-                                                          
-April 12, 1999                                            
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                                       
-| The document differs from the previous version of April 20, 1992 in 
-  that it documents the new capability of the SCLK software to        
-  convert between ET and continuous ticks. Examples involving Mars    
-  Observer have been updated to refer to Mars Global Surveyor. The    
-  quotation style has been changed from British to American. The      
-  program example showing use of the SCLK system together with the CK 
-  reader CKGP has been corrected. Miscellaneous minor changes of      
-  wording have been made throughout the text.                         

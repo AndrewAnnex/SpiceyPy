@@ -1,12 +1,12 @@
-=====================
+*********************
 NAIF Integer ID codes
-=====================
+*********************
 
 This required reading document is reproduced from the original NAIF
 document available at `https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/naif_ids.html <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/naif_ids.html>`_
 
 Abstract
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+========
 
 | The NAIF IDS Required Reading lists all default body ID-name
   mappings for the SPICE toolkits and a description of functionality
@@ -14,7 +14,7 @@ Abstract
 
 
 Introduction
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+============
 
 | SPICE system kernels and routines refer to ephemeris objects,
   reference frames, and instruments by integer codes, usually
@@ -82,7 +82,7 @@ needing ID codes. As a result, the current system is a bit eclectic.
 
 
 Use of Code-to-Name/Name-to-Code Mappings from SPICE
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+====================================================
 
 | Software exists within the SPICE system that allows a user to
   easily map between an integer code and the object name that code
@@ -94,16 +94,17 @@ name:
 
 ::
 
-         bodc2n( code, lenout, &name, &found );
+         from spiceypy import *
+         bodc2n( code )
 
-         Where ``lenout'' defines the maximum string length for name.
+
 
 :py:meth:`~spiceypy.spiceypy.bodn2c` performs the name to integer
 code mapping; input a name, the routine returns the corresponding ID
 code:
 ::
 
-         bodn2c( name, &code, &found );
+         bodn2c( name )
 
 :py:meth:`~spiceypy.spiceypy.boddef_c` performs a run-time assignment
 of a name/code mapping for later translation by
@@ -111,28 +112,32 @@ of a name/code mapping for later translation by
 :py:meth:`~spiceypy.spiceypy.bodn2c`:
 ::
 
-         boddef( name, code );
+         boddef( name, code )
 
 with \`name' defining the character string associated with integer
 \`code'. When using :py:meth:`~spiceypy.spiceypy.bodn2c`, the
 \`name' look-up is case insensitive, left justified, and space
 compressed (multiple spaces between words reduced to one) format.
 Spaces between words are significant.
-::
 
-         These strings are equivalent:
-            'EARTH', '  Earth ', 'earth  '
-         As well as:
-            'Solar System Barycenter', 'SOLAR  System  barycenter'
-         but
-            'SolarSystemBarycenter'
-         is not due to the lack of spaces between words.
+.. attention::
+   These strings are equivalent:
+      'EARTH', '  Earth ', 'earth  '
+   As well as:
+      'Solar System Barycenter', 'SOLAR  System  barycenter'
+   but:
+      'SolarSystemBarycenter'
 
-The boolean \`found' has value true if a mapping look-up succeeded,
-false otherwise.
+   is not due to the lack of spaces between words.
+
+
+SpiceyPy by default does not return `found` boolean variables for functions from CSPICE functions
+and instead raises a :py:exc:`NotFoundError` when the flag is `False`. This behavior can be configured
+or disabled as described in `Exceptions in SpiceyPy <../exceptions.html>`__.
+
 
 Use of an External Mapping Definition Kernel
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------------------
 
 | If necessary, a user may elect to load additional name-ID pairs for
   access by SPICE software. These pairs may be new definitions, or
@@ -140,7 +145,7 @@ Use of an External Mapping Definition Kernel
 
 Create new name-ID pairs With a text kernel such as
 
-::
+.. code-block:: text
 
          \begintext
 
@@ -178,7 +183,7 @@ Since NAIF_BODY_CODE and NAIF_BODY_NAME are kernel variables, use of
 the "+=" notation in the previous example means the values are
 appended to the mapping set present in memory. For example, the
 block:
-::
+.. code-block:: text
 
          \begindata
 
@@ -193,7 +198,7 @@ kernel variable.
 
 
 Masking
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------
 
 | As of release N53, the SPICE Toolkit provides the user the
   functionality to override or mask any name/ID mapping. Use a
@@ -210,24 +215,23 @@ the highest precedence, :py:meth:`~spiceypy.spiceypy.boddef`
 definitions next, and finally the default definitions. The order of
 assignments is significant.
 
-::
+.. code-block:: text
 
-                                       Highest precedence
+  Highest precedence
 
+  (1) Kernel pool final assignment
 
-                                     (1) Kernel pool final assignment
+  (2) Kernel pool initial assignment
 
-                                (2) Kernel pool initial assignment
+  (3) A ``boddef'' call final assignment
 
-                          (3) A ``boddef'' call final assignment
+  (4) A ``boddef'' call initial assignment
 
-                    (4) A ``boddef'' call initial assignment
+  (5) The default mappings final assignment
 
-              (5) The default mappings final assignment
+  (6) The default mappings initial assignment
 
-        (6) The default mappings initial assignment
-
-        Lowest precedence
+  Lowest precedence
 
 Example 1:
 Assign the name 'x' (lower case) to ID 1000 with
@@ -235,20 +239,20 @@ Assign the name 'x' (lower case) to ID 1000 with
 
 ::
 
-         boddef( "x", 1000 );
+         boddef( "x", 1000 )
 
 A call to :py:meth:`~spiceypy.spiceypy.bodc2n` with 1000 as the
 input ID:
 ::
 
-         bodc2n( 1000, lenout, &name, &found );
+        name = bodc2n( 1000 )
 
 returns the name 'x'. The :py:meth:`~spiceypy.spiceypy.bodn2c`
 calls:
 ::
 
-         bodn2c( "x", &code, &found );
-         bodn2c( "X", &code, &found );
+         bodn2c( "x" )
+         bodn2c( "X" )
 
 both return the ID as 1000. Note the case insensitivity of the name
 input.
@@ -257,35 +261,35 @@ Now a demo of simple masking functionality. Assign a new name to ID
 
 ::
 
-         boddef( "Y", 1000 );
+         boddef( "Y", 1000 )
 
 so the :py:meth:`~spiceypy.spiceypy.bodn2c` call
 ::
 
-         bodn2c( "Y", &code, &found );
+         bodn2c( "Y" )
 
 returns an ID of 1000. In a similar manner, the
 :py:meth:`~spiceypy.spiceypy.bodc2n` call:
 ::
 
-         bodc2n( 1000, lenout, &name, &found );
+         bodc2n( 1000 )
 
 returns the name 'Y'. Still, the code assigned to 'x' persists within
-CSPICE as the call:
+SPICE as the call:
 ::
 
-         bodn2c( "x", &code, &found );
+         bodn2c( "x" )
 
 also returns ID 1000. If we reassign 'Y' to a different ID:
 ::
 
-         boddef( "Y", 1001 );
+         boddef( "Y", 1001 )
 
 then make a :py:meth:`~spiceypy.spiceypy.bodc2n` call with 1000 as
 the input ID:
 ::
 
-         bodc2n( 1000, lenout, &name, &found );
+         bodc2n( 1000 )
 
 the routine returns the name 'x'. We assigned an ID to 'x', masked it
 with another name, then demasked it by reassigning the masking name,
@@ -297,12 +301,12 @@ Example 2:
 
 ::
 
-         bodn2c( "THEBE", &code, &found );
+         bodn2c( "THEBE" )
 
 returns a code value 514. Likewise
 ::
 
-         bodc2n( 514, &name, &found );
+         bodc2n( 514 )
 
 returns a name of 'THEBE'. Yet the name '1979J2' also maps to code
 514, but with lower precedence.
@@ -310,19 +314,19 @@ The :py:meth:`~spiceypy.spiceypy.boddef` call:
 
 ::
 
-         boddef( "1979J2", 514 );
+         boddef( "1979J2", 514 )
 
 places the '1979J2' <-> 514 mapping at the top of the precedence
 list, so:
 ::
 
-         bodc2n( 514, &name, &found );
+         bodc2n( 514 )
 
 returns the name '1979J2'. Note, 'THEBE' still resolves to 514.
 In those cases where a kernel pool assignment overrides a
 :py:meth:`~spiceypy.spiceypy.boddef`, the
 :py:meth:`~spiceypy.spiceypy.boddef` mapping 'reappears' when an
-unload_c, kclear_c or :py:meth:`~spiceypy.spiceypy.clpool` call
+:py:meth:`~spiceypy.spiceypy.unload`, :py:meth:`~spiceypy.spiceypy.kclear` or :py:meth:`~spiceypy.spiceypy.clpool` call
 clears the kernel pool mappings.
 
 Example 3:
@@ -331,12 +335,12 @@ Execute a :py:meth:`~spiceypy.spiceypy.boddef` call:
 
 ::
 
-         boddef( "vehicle2", -1010 );
+         boddef( "vehicle2", -1010 )
 
 A :py:meth:`~spiceypy.spiceypy.bodc2n` call:
 ::
 
-         bodc2n( -1010, lenout, &name, &found );
+         bodc2n( -1010 )
 
 returns the name 'vehicle2' as expected. If you then load the name/ID
 kernel body.ker:
@@ -352,18 +356,18 @@ kernel body.ker:
 with :py:meth:`~spiceypy.spiceypy.furnsh`:
 ::
 
-         furnsh( "body.ker" );
+         furnsh( "body.ker" )
 
 the :py:meth:`~spiceypy.spiceypy.bodc2n` call:
 ::
 
-         bodc2n( -1010, lenout, &name, &found );
+         bodc2n( -1010 )
 
 returns 'vehicle1' since the kernel assignment take precedence over
 the :py:meth:`~spiceypy.spiceypy.boddef` assignment.
 The name/ID map state:
 
-::
+.. code-block:: text
 
           -1010    -> vehicle1
           vehicle1 -> -1010
@@ -372,24 +376,24 @@ The name/ID map state:
 Now, unload the body kernel:
 ::
 
-         unload( "body.ker" );
+         unload( "body.ker" )
 
 The :py:meth:`~spiceypy.spiceypy.boddef` assignment resumes highest
 precedence.
 ::
 
-         bodc2n( -1010, lenout, &name, &found );
+         bodc2n( -1010 )
 
 The call returns 'vehicle2' for the name.
 CAUTION: Please understand a :py:meth:`~spiceypy.spiceypy.clpool`
 or :py:meth:`~spiceypy.spiceypy.kclear` call deletes all mapping
 assignments defined through the kernel pool. No similar clear
 functionality exists to clear :py:meth:`~spiceypy.spiceypy.boddef`.
-boddef_c assignments persist unless explicitly overridden.
+:py:meth:`~spiceypy.spiceypy.boddef` assignments persist unless explicitly overridden.
 
 
 NAIF Object ID numbers
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+======================
 
 | In theory, a unique integer can be assigned to each body in the
   solar system, including interplanetary spacecraft. SPICE uses
@@ -397,32 +401,27 @@ NAIF Object ID numbers
   three reasons.
 
 #. Space
-
-- Integer codes are smaller than alphanumeric names.
-
+    * Integer codes are smaller than alphanumeric names.
 #. Uniqueness
-
-- The names of some satellites conflict with the names of some
-  asteroids and comets. Also, some satellites are commonly referred
-  to by names other than those approved by the IAU.
-
+    * The names of some satellites conflict with the names of some
+      asteroids and comets. Also, some satellites are commonly referred
+      to by names other than those approved by the IAU.
 #. Context
-
-- The type of a body (barycenter, planet, satellite, comet,
-  asteroid, or spacecraft) and the system to which it belongs (Earth,
-  Mars, Jupiter, Saturn, Uranus, Neptune, or Pluto) can be recovered
-  algorithmically from the integer code assigned to a body. This is
-  not generally true for names.
+    * The type of a body (barycenter, planet, satellite, comet,
+      asteroid, or spacecraft) and the system to which it belongs (Earth,
+      Mars, Jupiter, Saturn, Uranus, Neptune, or Pluto) can be recovered
+      algorithmically from the integer code assigned to a body. This is
+      not generally true for names.
 
 
 
 Barycenters
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------
 
 | The smallest positive codes are reserved for the Sun and planetary
   barycenters:
 
-::
+.. code-block:: text
 
          NAIF ID     NAME
          ________    ____________________
@@ -460,14 +459,14 @@ pole axis, etc. Use the planet ID when referring to a planet or any
 property of that planet.
 
 Planets and Satellites
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------
 
 | Planets have ID codes of the form P99, where P is 1, ..., 9 (the
-  planetary ID); a planet is always considered to be the 99th
+  planetary ID) a planet is always considered to be the 99th
   satellite of its own barycenter, e.g. Jupiter is body number 599.
   Natural satellites have ID codes of the form
 
-::
+.. code-block:: text
 
               PNN, where
 
@@ -475,7 +474,8 @@ Planets and Satellites
                  and NN is 01, ... 98
 
 or
-::
+
+.. code-block:: text
 
               PXNNN, where
 
@@ -486,9 +486,10 @@ or
 Codes with X = 5 are provisional.
 
 e.g. Ananke, the 12th satellite of Jupiter (JXII), is body number
-1.   (Note the fragments of comet Shoemaker Levy 9 are exceptions to
-this rule.)
-::
+
+.. note:: Note the fragments of comet Shoemaker Levy 9 are exceptions to this rule.
+
+.. code-block:: text
 
          NAIF ID     NAME                    IAU NUMBER
          ________    ____________________    __________
@@ -659,7 +660,7 @@ this rule.)
 
 
 Spacecraft
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------
 
 | THE SPICE convention uses negative integers as spacecraft ID codes.
   The code assigned to interplanetary spacecraft is normally the
@@ -669,7 +670,7 @@ Spacecraft
 
 The current SPICE vehicle code assignments:
 
-::
+.. code-block:: text
 
          NAIF ID     NAME
          ________    ____________________
@@ -946,13 +947,13 @@ The current SPICE vehicle code assignments:
 
 
 Earth Orbiting Spacecraft.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------
 
 | If an Earth orbiting spacecraft lacks a DSN identification code,
   the NAIF ID is derived from the tracking ID assigned to it by NORAD
   via:
 
-::
+.. code-block:: text
 
          NAIF ID = -100000 - NORAD ID code
 
@@ -960,7 +961,7 @@ For example, NORAD assigned the code 15427 to the NOAA 9 spacecraft.
 This code corresponds to the NAIF ID -115427.
 
 Comet Shoemaker Levy 9
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------
 
 | In July, 1992 Comet Shoemaker Levy 9 passed close enough to the
   planet Jupiter that it was torn apart by gravitational tidal
@@ -978,10 +979,11 @@ Comet Shoemaker Levy 9
   on. Fragment A was the first of the fragments to collide with
   Jupiter; fragment W was the last to collide with Jupiter.
 
-The original fragments P and Q subdivided further creating the
-fragments P2 and Q1.
+.. note::
+   The original fragments P and Q subdivided further creating the
+   fragments P2 and Q1.
 
-::
+.. code-block:: text
 
 
         NAIF ID     NAME                    SHOEMAKER-LEVY 9 FRAGMENT
@@ -1014,7 +1016,7 @@ fragments P2 and Q1.
 
 
 Comets
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------
 
 | ID codes for periodic comets begin at 1000001 and indefinitely
   continue in sequence. (The current numbering scheme assumes no need
@@ -1027,19 +1029,18 @@ Comets
   the NAIF ID code for any named periodic comet, and vice-versa, by
   using a webpage managed by JPL's Solar System Dynamics Group:
 
-::
-
       http://ssd.jpl.nasa.gov/sbdb.cgi
 
-Note that the partial listing shown below has an alphabetic ordering
-through ID 1000111, after which new ID codes were assigned in the
-order of discovery.
-Finally, note that Comet Shoemaker Levy 9 is included in this list
-(ID code 1000130) though it is no longer a comet, periodic or
-otherwise. It was an identified periodic comet prior to its breakup,
-which accounts for its inclusion in this list.
+.. note::
+   Note that the partial listing shown below has an alphabetic ordering
+   through ID 1000111, after which new ID codes were assigned in the
+   order of discovery.
+   Finally, note that Comet Shoemaker Levy 9 is included in this list
+   (ID code 1000130) though it is no longer a comet, periodic or
+   otherwise. It was an identified periodic comet prior to its breakup,
+   which accounts for its inclusion in this list.
 
-::
+.. code-block:: text
 
          NAIF ID     NAME
          ________    ____________________
@@ -1183,14 +1184,14 @@ which accounts for its inclusion in this list.
 
 
 Asteroids
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------
 
 | According to the original schema, NAIF ID codes for permanently
   numbered asteroids registered in the JPL Solar System Dynamics
   (SSD) Group database are 7-digit numbers determined using the
   algorithm
 
-::
+.. code-block:: text
 
          NAIF ID code = 2000000 + Permanent Asteroid Number
 
@@ -1199,7 +1200,7 @@ asteroids.
 For newly discovered asteroids with provisional numbers SSD
 internally uses 7-digit numbers determined via the algorithm
 
-::
+.. code-block:: text
 
          NAIF ID code = 3000000 + Provisional Asteroid Number
 
@@ -1217,12 +1218,13 @@ have 8-digit NAIF ID codes with the original 7-digit IDs still
 allowed to be used. Such asteroids are assigned NAIF ID codes using
 the algorithm
 
-::
+.. code-block:: text
 
          NAIF ID code = 20000000 + Permanent Asteroid Number
 
 limited to the 20000001 to 49999999 range and allowing up to 30
 million asteroids.
+
 For asteroid systems with two or more bodies the 8-digit NAIF ID code
 represents the barycenter. Individual satellites have a prepended
 number 1 through 8, while the primary body uses the \``last
@@ -1237,7 +1239,7 @@ For newly discovered singular asteroids and asteroid system
 barycenters with provisional numbers NAIF ID codes are also 8-digit
 numbers determined via the algorithm:
 
-::
+.. code-block:: text
 
          NAIF ID code = 50000000 + Provisional Asteroid Number
 
@@ -1245,6 +1247,7 @@ limited to the 50000001 to 99999999 range and allowing up to 50
 million asteroids, with the same prefix rule used to derive the
 9-digit IDs for the primary and satellite bodies in multi-body
 systems.
+
 For example, asteroid Yeomans (2956) has NAIF ID number 2002956
 according to the original schema and NAIF ID number 20002956
 according to the extended schema, while asteroids Didymos (65803) and
@@ -1258,11 +1261,9 @@ the most commonly requested asteroids. One may look up the NAIF ID
 code for any named asteroid, or vice-versa, by using a webpage
 managed by JPL's Solar System Dynamics Group:
 
-::
-
       http://ssd.jpl.nasa.gov/sbdb.cgi
 
-::
+.. code-block:: text
 
          NAIF ID     NAME
          ________    ____________________
@@ -1306,13 +1307,14 @@ managed by JPL's Solar System Dynamics Group:
        920003548     'EURYBATES'
        920065803     'DIDYMOS'
 
-There are three exceptions to the rule---asteroids Gaspra, Ida and
-Ida's satellite Dactyl, visited by the Galileo spacecraft. The ID
-codes for these asteroids were determined using an older numbering
-convention now abandoned by the SPICE system.
+.. attention::
+   There are three exceptions to the rule---asteroids Gaspra, Ida and
+   Ida's satellite Dactyl, visited by the Galileo spacecraft. The ID
+   codes for these asteroids were determined using an older numbering
+   convention now abandoned by the SPICE system.
 
 Ground Stations.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------
 
 | The SPICE system accommodates ephemerides for tracking stations and
   landed spacecraft. Currently five earth tracking station sites are
@@ -1323,7 +1325,7 @@ Ground Stations.
 
 The following NAIF ID codes are assigned.
 
-::
+.. code-block:: text
 
          NAIF ID     NAME
          ________    ____________________
@@ -1370,15 +1372,15 @@ The following NAIF ID codes are assigned.
 
 
 Inertial and Non-inertial Reference Frames
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------------------
 
 | Please refer to the Frames Required Reading document,
-  `frames.req <../req/frames.html>`__, for detailed information on
+  `frames <..frames.html>`__, for detailed information on
   the implementation of reference frames in the SPICE system.
 
 
 Spacecraft Clocks.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+====================
 
 | The ID code used to identify the on-board clock of a spacecraft
   (spacecraft clock or SCLK) in SPICE software is the same as the ID
@@ -1395,19 +1397,19 @@ Spacecraft Clocks.
 
 
 Instruments
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+============
 
-| With regards to a spacecraft, the term \``instrument'' means a
+| With regards to a spacecraft, the term `instrument` means a
   science instrument or vehicle structure to which the concept of
   orientation is applicable.
 
 NAIF, in cooperation with the science teams from each flight project,
 assigns ID codes to a vehicle instrument. The instruments are simply
-enumerated via some project convention to arrive at an ''instrument
-number.'' The NAIF ID code for an instrument derives from the
+enumerated via some project convention to arrive at an 'instrument
+number.' The NAIF ID code for an instrument derives from the
 instrument number via the function:
 
-::
+.. code-block:: text
 
          NAIF instrument code = (s/c code)*(1000) - instrument number
 
@@ -1415,21 +1417,22 @@ This allows for 1000 instrument assignments on board a spacecraft. An
 application of the instrument ID concept applied to the Voyager 2
 vehicle (ID -32):
 
-- -32000 -> Instrument Scan Platform
+.. code-block:: text
 
-- -32001 -> ISSNA (Imaging science narrow angle camera)
+    -32000 -> Instrument Scan Platform
 
-- -32002 -> ISSWA (Imaging science wide angle camera)
+    -32001 -> ISSNA (Imaging science narrow angle camera)
 
-- -32003 -> PPS (Photopolarimeter)
+    -32002 -> ISSWA (Imaging science wide angle camera)
 
-- -32004 -> UVSAG (Ultraviolet Spectrometer, Airglow port)
+    -32003 -> PPS (Photopolarimeter)
 
-- -32005 -> UVSOCC (Ultraviolet Spectrometer, Occultation port)
+    -32004 -> UVSAG (Ultraviolet Spectrometer, Airglow port)
 
-- -32006 -> IRIS (Infrared Interferometer Spectrometer and
-  Radiometer)
+    -32005 -> UVSOCC (Ultraviolet Spectrometer, Occultation port)
+
+    -32006 -> IRIS (Infrared Interferometer Spectrometer and Radiometer)
 
 Use SPICE text kernels (usually Instrument or Frames kernels) to
 define the instrument name/ID mappings.
-----------------------------------------------------------------------
+
