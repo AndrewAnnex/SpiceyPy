@@ -67,20 +67,20 @@ jobs:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v4
       - name: Setup 🔬🍦🏗️
-        if: matrix.config.os == 'windows-latest'
+        if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1.13.0
       - name: set additional environment variables for macOS arm
-        if: matrix.config.os == 'macos-14' && matrix.config.arch == 'arm64'
+        if: runner.os == 'macOS' && matrix.config.arch == 'arm64'
         run: |
           echo "CIBW_ARCHS_MACOS=arm64" >> $GITHUB_ENV
           echo "ARCHFLAGS='-arch arm64'" >> $GITHUB_ENV
       - name: set additional environment variables for macOS x86
-        if: matrix.config.os == 'macos-14' && matrix.config.arch == 'x86_64'
+        if: runner.os == 'macOS' && matrix.config.arch == 'x86_64'
         run: |
           echo "CIBW_ARCHS_MACOS=x86_64" >> $GITHUB_ENV
           echo "ARCHFLAGS='-arch x86_64'" >> $GITHUB_ENV
       - name: set additional environment variables for linux aarch64
-        if: matrix.config.os == 'ubuntu-22.04-arm' && matrix.config.arch == 'aarch64'
+        if: runner.os == 'Linux' && matrix.config.arch == 'aarch64'
         run: |
           echo "CIBW_ARCHS_LINUX=aarch64" >> $GITHUB_ENV
           echo "ARCHFLAGS='-arch aarch64'" >> $GITHUB_ENV
