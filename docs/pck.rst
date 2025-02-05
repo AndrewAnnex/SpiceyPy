@@ -345,7 +345,7 @@ NAIF Text Kernel Format
  leftmost column, is `KPL/PCK`. Both the NAIF text kernel format
  and SPICE file identification word are described in detail in the
  Kernel Required Reading document,
- `kernel.req <../req/kernel.html>`__. For the reader's convenience, an
+ `kernel.req <../kernel.html>`__. For the reader's convenience, an
  overview of the NAIF text kernel format is provided here.
 
  NAIF text kernels are, first of all, ASCII files. As such, they are
