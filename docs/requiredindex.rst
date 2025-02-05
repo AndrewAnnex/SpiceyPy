@@ -10,7 +10,7 @@ for additional material naifrequired_.
 Contents:
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 0
 
    abcorr 
    ck 
