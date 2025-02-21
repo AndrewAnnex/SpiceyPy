@@ -1370,7 +1370,7 @@ treated as time-dependent. For such a frame F, the call
 
 .. code-block:: python
 
-      xform = sxform ( "F", "J2000", t )
+      xform = sxform( "F", "J2000", t )
 
 yields a 6x6 state transformation matrix `xform` having the
 structure

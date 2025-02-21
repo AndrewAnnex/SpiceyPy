@@ -91,7 +91,7 @@ load a SCLK kernel file. The code fragment
 
 ::
 
-      furnsh ( <path to the SCLK kernel file goes here> )
+      furnsh( <path to the SCLK kernel file goes here> )
 
 accomplishes this. You must supply the actual name of the kernel file
 you want to load.
@@ -101,7 +101,7 @@ an SCLK and a leapseconds kernel be loaded. The code fragment
 
 ::
 
-      furnsh ( <path to the LEAPSECONDS kernel file goes here> )
+      furnsh( <path to the LEAPSECONDS kernel file goes here> )
 
 loads a leapseconds kernel. Leapseconds kernels are described in the
 TIME required reading document, `time.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/time.html>`__.
@@ -109,13 +109,13 @@ Normally, you will load these kernels at just one point in your
 application program, prior to using any time conversion functions.
 
 Details concerning the kernel pool are covered in the KERNEL required
-reading document, `kernel <..kernel.html>`__.
+reading document, `kernel <../kernel.html>`__.
 
 Partitions, briefly
 -------------------
 
 | The lifetime of each mission is divided into intervals called
-  \`partitions.` Partitions are time intervals during which the
+  `partitions.` Partitions are time intervals during which the
   spacecraft clock advances continuously. Every time that a
   discontinuity in a spacecraft clock's readout values occurs, a new
   partition is started. Discontinuities may consist of positive
@@ -205,8 +205,8 @@ You can obtain encoded SCLK values from SCLK strings via the function
 
       sclkdp = scencd( sc, clkstr )
 
-encodes the SCLK string \`clkstr' as the double precision value
-\`sclkdp'.
+encodes the SCLK string `clkstr' as the double precision value
+`sclkdp'.
 Encoded SCLK values can be converted to strings using the code
 fragment
 
@@ -219,7 +219,7 @@ function :py:meth:`~spiceypy.spiceypy.sce2c`. The code fragment
 
 .. code-block:: python
 
-      clkdp = sce2c ( sc, et )
+      clkdp = sce2c( sc, et )
 
 encodes the ephemeris time ET as the double precision value
 `sclkdp`. SCLKDP need not be integral; even though non-integral tick
@@ -233,7 +233,7 @@ The inverse conversion is provided by the routine
 
 .. code-block:: python
 
-      et = sct2e ( sc, sclkdp )
+      et = sct2e( sc, sclkdp )
 
 SCT2E handles integral or continuous tick values as inputs.
 There is a special function that is used for encoding `tolerance`

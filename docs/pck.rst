@@ -1337,7 +1337,7 @@ Creating Binary PCKs
 
  .. code-block:: text
 
-       pckopn_c ( file, ifname, i, &handle );
+       pckopn( file, ifname, i, &handle );
 
  The method for beginning the segment, adding data to the segment and
  closing the segment differs with the PCK type.
@@ -1353,8 +1353,8 @@ Creating Binary PCKs
 
  ::
 
-       pckw02_c ( handle, clssid, frame,  first, last, segid,
-                  intlen, n,      polydg, cdata, btime       );
+       pckw02( handle, clssid, frame,  first, last, segid,
+                  intlen, n,      polydg, cdata, btime       )
 
  For type 3, there are three subroutines used in creating a binary PCK
  file. They are pck03b\_, which begins a type 3 segment, PCK03A, which
@@ -1396,6 +1396,7 @@ Creating Binary PCKs
  When a user finishes writing segments of any type to a binary PCK,
  the PCK must be closed with the subroutine
  :py:meth:`~spiceypy.spiceypy.pckcls`.
+
  ::
 
        pckcls_c( handle );
@@ -1667,7 +1668,7 @@ Low-Level PCK Data Access
 
        vals = gcpool( name, start, room )
        vals = gdpool( name, start, room )
-       vals =gipool( name, start, room )
+       vals = gipool( name, start, room )
 
  The meanings of the arguments are follows:
 
@@ -1752,7 +1753,7 @@ Appendix A --- Summary of PCK Routines
 
  .. code-block:: text
 
-       bodeul  ( Return Euler angles for a body )
+       bodeul ( Return Euler angles for a body )
        bodfnd ( Find values from the kernel pool )
        bodvcd ( Return d.p. values from the kernel pool )
        bodvrd ( Return d.p. values from the kernel pool )
