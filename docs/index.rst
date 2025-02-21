@@ -46,7 +46,7 @@ function, more detailed explanations are deferred to the NAIF via those links.
 Contents:
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
 
    citation
    installation
@@ -55,6 +55,7 @@ Contents:
    cells
    exceptions
    contextmanager
+   requiredindex
    lessonindex
    documentation
 
