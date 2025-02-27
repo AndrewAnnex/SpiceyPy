@@ -19,7 +19,7 @@ Overview
 This workbook contains lessons to demonstrate use of the less celebrated
 SpiceyPy routines.
 
-::
+.. code-block:: text
 
        1.   Kernel Management with the Kernel Subsystem
 
@@ -43,7 +43,7 @@ This section lists SPICE documents referred to in this lesson.
 The following SPICE tutorials serve as references for the discussions in
 this lesson:
 
-::
+.. code-block:: text
 
       Name              Lesson steps/functions it describes
       ----------------  -----------------------------------------------
@@ -72,7 +72,7 @@ The Required Reading documents are provided with the Toolkit and are
 located under the "cspice/doc" directory in the CSPICE Toolkit
 installation tree.
 
-::
+.. code-block:: text
 
       Name             Lesson steps/functions that it describes
       ---------------  -----------------------------------------
@@ -123,7 +123,7 @@ Kernels Used
 
 The following kernels are used in examples provided in this lesson:
 
-::
+.. code-block:: text
 
       #  FILE NAME    TYPE DESCRIPTION
       -- ------------ ---- ------------------------------------------------
@@ -146,7 +146,7 @@ are suggested for usage in each of the exercises in this lesson. (You
 may wish to not look at this list unless/until you "get stuck" while
 working on your own.)
 
-::
+.. code-block:: text
 
       CHAPTER EXERCISE   FUNCTIONS        NON-VOID         KERNELS
       ------- ---------  ---------------  ---------------  ----------
@@ -210,7 +210,7 @@ depending on your choice of development language but provides the same
 information with regards to SPICE operation. The sources for a user
 needing information concerning SPICE are:
 
-::
+.. code-block:: text
 
        --   Required Readings and Users Guides
 
@@ -313,7 +313,7 @@ information incorporated in a comment block known as the “header.”
 
 A header consists of several marked sections:
 
-::
+.. code-block:: text
 
        --   Procedure: Routine name and one line expansion of the routine's
             name.
@@ -437,7 +437,7 @@ comment information to be ignored by the subsystem.
 
 Things to know:
 
-::
+.. code-block:: text
 
        1.   The \begindata tag marks the start of a data definition block.
             The subsystem processes all text following this marker as SPICE
@@ -475,7 +475,7 @@ Text kernel format
 
 Scalar assignments.
 
-::
+.. code-block:: text
 
          VAR_NAME_DP  = 1.234
          VAR_NAME_INT = 1234
@@ -485,7 +485,7 @@ Please note the use of a single quote in string assignments.
 
 Vector assignments. Vectors must contain the same type data.
 
-::
+.. code-block:: text
 
          VEC_NAME_DP  = ( 1.234   , 45.678  , 901234.5 )
          VEC_NAME_INT = ( 1234    , 456     , 789      )
@@ -503,7 +503,7 @@ Vector assignments. Vectors must contain the same type data.
 
 Time assignments.
 
-::
+.. code-block:: text
 
          TIME_VAL = @31-JAN-2003-12:34:56.798
          TIME_VEC = ( @01-DEC-2004, @15-MAR-2004 )
@@ -545,7 +545,7 @@ First, create a meta text kernel:
 You can use two versions of a meta kernel with code examples (kpool.tm)
 in this lesson. Either a kernel with explicit path information:
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -560,7 +560,7 @@ in this lesson. Either a kernel with explicit path information:
 … or a more generic meta kernel using the PATH_VALUES/PATH_SYMBOLS
 functionality to declare path names as variables:
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -593,7 +593,7 @@ functionality to declare path names as variables:
 
 Now the solution source code:
 
-::
+.. code-block:: python
 
       from __future__ import print_function
 
@@ -617,7 +617,7 @@ Now the solution source code:
           spiceypy.furnsh( META )
 
 
-          count = spiceypy.ktotal( 'ALL' );
+          count = spiceypy.ktotal( 'ALL' )
           print( 'Kernel count after load:        {0}\n'.format(count))
 
 
@@ -640,7 +640,7 @@ Now the solution source code:
           # Unload one kernel then check the count.
           #
           spiceypy.unload( 'kernels/spk/de405s.bsp')
-          count = spiceypy.ktotal( 'ALL' );
+          count = spiceypy.ktotal( 'ALL' )
 
           #
           # The subsystem should report one less kernel.
@@ -657,7 +657,7 @@ Now the solution source code:
           #
           # Check the count; spiceypy should return a count of zero.
           #
-          count = spiceypy.ktotal( 'ALL');
+          count = spiceypy.ktotal( 'ALL')
           print( 'Kernel count after meta unload: {0}'.format(count))
 
 
@@ -680,7 +680,7 @@ mechanism that loaded the kernel. The source either identifies a meta
 kernel, or contains an empty string. An empty source string indicates a
 direct load of the kernel with a spiceypy.furnsh call.
 
-::
+.. code-block:: text
 
       Kernel count after load:        4
 
@@ -727,7 +727,7 @@ pool.
 For the code examples, use this generic text kernel (kervar.tm)
 containing PCK-type data, kernels to load, and example time strings:
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -801,7 +801,7 @@ routines.
 Code Solution
 ^^^^^^^^^^^^^
 
-::
+.. code-block:: python
 
       from __future__ import print_function
 
@@ -946,7 +946,7 @@ variable, and the variable type. Within the spiceypy.dtpool loop, a
 second loop outputs the contents of the data variable using
 spiceypy.gcpool or spiceypy.gdpool.
 
-::
+.. code-block:: text
 
       Number variables matching template: 6
 
@@ -1008,7 +1008,7 @@ representation.
 Related Routines
 ^^^^^^^^^^^^^^^^^
 
-::
+.. code-block:: text
 
        --   spiceypy.gipool retrieves integer values from the kernel
             subsystem.
@@ -1043,7 +1043,7 @@ rectangular, cylindrical, and spherical systems.
 Code Solution
 ^^^^^^^^^^^^^
 
-::
+.. code-block:: python
 
       from __future__ import print_function
       from builtins import input
@@ -1195,21 +1195,21 @@ Run the code example
 Input “Feb 3 2002 TDB” to calculate the Moon's position. (the 'TDB' tag
 indicates a Barycentric Dynamical Time value).
 
-::
+.. code-block:: text
 
       Time of interest: Feb 3 2002 TDB
 
 Examine the Moon position in the J2000 inertial frame, display the time
 and frame:
 
-::
+.. code-block:: text
 
        Time : Feb 3 2002 TDB
         Inertial Frame: J2000
 
 Convert the Moon Cartesian coordinates to right ascension declination.
 
-::
+.. code-block:: text
 
          Range/Ra/Dec
           Range:        369340.815193
@@ -1221,7 +1221,7 @@ right ascension though they represent a measure of the same quantity.
 The RA/DEC system measures RA in the interval [0,2Pi). Latitudinal
 coordinates measures longitude in the interval (-Pi,Pi].
 
-::
+.. code-block:: text
 
          Latitudinal
           Rad  :        369340.815193
@@ -1235,7 +1235,7 @@ from the positive Z axis. Latitude is the angle between the position
 vector and the x-y (equatorial) plane with positive angle defined as
 toward the positive Z direction
 
-::
+.. code-block:: text
 
          Spherical
           Rad  :        369340.815193
@@ -1245,13 +1245,13 @@ toward the positive Z direction
 The same position look-up in a body fixed (non-inertial) frame,
 IAU_EARTH.
 
-::
+.. code-block:: text
 
         Non-inertial Frame: IAU_EARTH
 
 Latitudinal coordinates return the geocentric latitude.
 
-::
+.. code-block:: text
 
          Latitudinal
           Rad  :        369340.815193
@@ -1260,7 +1260,7 @@ Latitudinal coordinates return the geocentric latitude.
 
 Spherical.
 
-::
+.. code-block:: text
 
          Spherical
           Rad  :        369340.815193
@@ -1269,7 +1269,7 @@ Spherical.
 
 Geodetic. The cartographic lat/lon.
 
-::
+.. code-block:: text
 
          Geodetic
           Rad  :        362962.836755
@@ -1281,7 +1281,7 @@ Geodetic. The cartographic lat/lon.
 Related Routines
 ^^^^^^^^^^^^^^^^^
 
-::
+.. code-block:: text
 
        --   spiceypy.latrec, latitudinal to rectangular
 
@@ -1334,7 +1334,7 @@ Code Solution
 Caution: Be sure to assign sufficient string lengths for time
 formats/pictures.
 
-::
+.. code-block:: python
 
       from __future__ import print_function
 
@@ -1450,7 +1450,7 @@ formats/pictures.
 
 Run the code example
 
-::
+.. code-block:: text
 
       Original time string     : Mar 15, 2003 12:34:56.789 AM PST
       Corresponding ET         :     100989360.974561
@@ -1492,7 +1492,7 @@ respond in an appropriate manner.
 Code Solution
 ^^^^^^^^^^^^^
 
-::
+.. code-block:: python
 
       from __future__ import print_function
       from builtins import input
@@ -1596,7 +1596,7 @@ the velocity of the body in kilometers per second, and the 'LT' marker
 identifies the one-way light time between the bodies at the requested
 evaluation time.
 
-::
+.. code-block:: text
 
       Target: Moon
       R :       -291584.616595       -266693.402359         -76095.64756
@@ -1645,7 +1645,7 @@ time 2000 JAN 01 12:00:00.000 (the requested time, ephemeris time zero).
 
 Try another look-up, this time for “Casper”
 
-::
+.. code-block:: text
 
       Target: Casper
 
@@ -1673,7 +1673,7 @@ information on a body named 'Casper.'
 
 Another look-up, this time, “Venus”.
 
-::
+.. code-block:: text
 
       Target: Venus
       R :     -80970027.540532    -139655772.573898      -53860125.95820
@@ -1713,14 +1713,14 @@ describing a collection of zero or more intervals.
 We define an interval, 'i', as all double precision values bounded by
 and including an ordered pair of numbers,
 
-::
+.. code-block:: text
 
          [ a , b ]
             i   i
 
 where
 
-::
+.. code-block:: text
 
          a    <   b
           i   -    i
@@ -1729,7 +1729,7 @@ The intervals within a window are both ordered and disjoint. That is,
 the beginning of each interval is greater than the end of the previous
 interval:
 
-::
+.. code-block:: text
 
          b  <  a
           i     i+1
@@ -1742,7 +1742,7 @@ set of a number of time intervals.
 Code Solution
 ^^^^^^^^^^^^^
 
-::
+.. code-block:: python
 
       from __future__ import print_function
 
@@ -1889,14 +1889,14 @@ The output window has the name \`sched' (schedule).
 Output the amount of data held in \`sched' compared to the maximum
 possible amount.
 
-::
+.. code-block:: text
 
       Number data values in sched :  6
 
 List the time intervals for which a line of sight exists during the time
 of a proper phase angle.
 
-::
+.. code-block:: text
 
       Time intervals meeting defined criterion.
        0   2003 JAN 02 00:03:30.000   2003 JAN 02 04:43:29.000
@@ -1906,7 +1906,7 @@ of a proper phase angle.
 Finally, an analysis of the \`sched' data. The measure of an interval
 [a,b] (a <= b) equals b-a. Real values output in units of seconds.
 
-::
+.. code-block:: text
 
       Summary of sched window
 
@@ -1922,7 +1922,7 @@ Finally, an analysis of the \`sched' data. The measure of an interval
 Related Routines
 ^^^^^^^^^^^^^^^^^^
 
-::
+.. code-block:: text
 
        --   spiceypy.wncomd determines the compliment of a window with
             respect to a defined interval.
@@ -1982,7 +1982,7 @@ often used in astrodynamics, time calculations, and geometry.
 Code Solution
 ^^^^^^^^^^^^^
 
-::
+.. code-block:: python
 
       from __future__ import print_function
       from builtins import input
@@ -2089,7 +2089,7 @@ Run a few conversions through the application to ensure it works. The
 intro banner gives us the Toolkit version against which the application
 was linked:
 
-::
+.. code-block:: text
 
       Convert demo program compiled against CSPICE Toolkit CSPICE_N0066
       From Units : klicks
@@ -2124,7 +2124,7 @@ calculate some rudimentary values.
 Code Solution
 ^^^^^^^^^^^^^
 
-::
+.. code-block:: python
 
       from __future__ import print_function
 
@@ -2235,7 +2235,7 @@ Run the code example
 Related Routines
 ^^^^^^^^^^^^^^^^^^
 
-::
+.. code-block:: text
 
        --   spiceypy.b1900 : Julian Date of the epoch Besselian Date 1900.0
 

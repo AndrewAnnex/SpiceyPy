@@ -685,8 +685,8 @@ The :py:meth:`~spiceypy.spiceypy.ckcov` function provides an API via
 which an application can find the time periods for which a specified
 CK file provides data for an instrument of interest. The coverage
 information is a set of disjoint time intervals returned in a SPICE
-"window" data structure (see
-`windows.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/windows.html>`__).
+"window" data structure (see `other stuff tutorial <../other_stuff.html>`__ and
+`windows.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/windows.html>`__)
 
 Refer to the headers of :py:meth:`~spiceypy.spiceypy.ckobj` and
 :py:meth:`~spiceypy.spiceypy.ckcov` for details on the use of those

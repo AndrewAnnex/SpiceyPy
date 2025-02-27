@@ -1522,7 +1522,7 @@ Binary PCK Coverage Summary Routines
  via which an application can find the time periods for which a
  specified binary PCK file provides data for a reference frame of
  interest. The coverage information is a set of disjoint time
- intervals returned in a SPICE `window` data structure (see
+ intervals returned in a SPICE `window` data structure (see `other stuff tutorial <../other_stuff.html>`__ and
  `windows.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/windows.html>`__).
 
  Refer to the headers of :py:meth:`~spiceypy.spiceypy.pckfrm` and
