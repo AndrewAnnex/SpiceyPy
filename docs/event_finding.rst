@@ -33,7 +33,7 @@ Toolkit installation tree.
 The following SPICE tutorials serve as references for the discussions in
 this lesson:
 
-::
+.. code-block:: text
 
       Name              Lesson steps/functions it describes
       ----------------  -----------------------------------------------
@@ -49,7 +49,7 @@ this lesson:
 These tutorials are available from the NAIF ftp server at JPL:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-::
+.. code-block:: text
 
       https://naif.jpl.nasa.gov/naif/tutorials.html
 
@@ -64,7 +64,7 @@ The Required Reading documents are provided with the Toolkit and are
 located under the "cspice/doc" directory in the CSPICE Toolkit
 installation tree.
 
-::
+.. code-block:: text
 
       Name             Lesson steps/functions that it describes
       ---------------  -----------------------------------------
@@ -101,14 +101,14 @@ built-in Python help system.
 
 For example, the Python help function
 
-::
+.. code-block:: python
 
       >>> import spiceypy
       >>> help(spiceypy.str2et)
 
 describes of the str2et function's parameters, while the document
 
-::
+.. code-block:: text
 
       https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/str2et_c.html
 
@@ -119,7 +119,7 @@ Kernels Used
 
 The following kernels are used in examples provided in this lesson:
 
-::
+.. code-block:: text
 
       #  FILE NAME                      TYPE DESCRIPTION
       -- ------------------------------ ---- ------------------------------
@@ -139,7 +139,7 @@ The following kernels are used in examples provided in this lesson:
 These SPICE kernels are included in the lesson package available from
 the NAIF server at JPL:
 
-::
+.. code-block:: text
 
       https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/Lessons/
 
@@ -151,7 +151,7 @@ are suggested for usage in each of the exercises in this lesson. (You
 may wish to not look at this list unless/until you "get stuck" while
 working on your own.)
 
-::
+.. code-block:: text
 
       CHAPTER EXERCISE   FUNCTIONS        NON-VOID         KERNELS
       ------- ---------  ---------------  ---------------  ----------
@@ -188,7 +188,7 @@ Task Statement
 Write a program that finds the set of time intervals, within the time
 range
 
-::
+.. code-block:: text
 
       2004 MAY 2 TDB
       2004 MAY 6 TDB
@@ -224,7 +224,7 @@ A possible solution could consist of the following steps:
 
 Preparation:
 
-::
+.. code-block:: text
 
        1.   Decide what SPICE kernels are necessary. Use the SPICE summary
             tool BRIEF to examine the coverage of the binary kernels and
@@ -239,7 +239,7 @@ Preparation:
 
 Next, write a program that performs the following steps:
 
-::
+.. code-block:: text
 
        1.   Use spiceypy.furnsh to load the meta-kernel.
 
@@ -285,7 +285,7 @@ Solution Meta-Kernel
 The meta-kernel we created for the solution to this exercise is named
 'viewpr.tm'. Its contents follow:
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -331,7 +331,7 @@ Solution Code
 
 The example program below shows one possible solution.
 
-::
+.. code-block:: python
 
       #
       # Solution viewpr
@@ -548,7 +548,7 @@ host platform's arithmetic implementation.
 
 Execute the program. The output is:
 
-::
+.. code-block:: text
 
       Inputs for target visibility search:
 
@@ -589,7 +589,7 @@ Task Statement
 Extend the program of the previous chapter to find times when the MEX
 orbiter is:
 
-::
+.. code-block:: text
 
        --   Above the elevation limit in the DSS-14_TOPO topocentric
             reference frame.
@@ -630,7 +630,7 @@ Solution steps
 
 A possible solution would consist of the following steps:
 
-::
+.. code-block:: text
 
        1.   Use the meta-kernel from the previous chapter as the starting
             point. Add more kernels to it as needed.
@@ -686,7 +686,7 @@ Solution Meta-Kernel
 The meta-kernel we created for the solution to this exercise is named
 'visibl.tm'. Its contents follow:
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -732,8 +732,8 @@ The meta-kernel we created for the solution to this exercise is named
 
 Solution Code
 
-::
-
+.. code-block:: python
+       
       #
       # Solution visibl
       #
@@ -1021,7 +1021,7 @@ host platform's arithmetic implementation.
 
 Execute the program. The output is:
 
-::
+.. code-block:: text
 
       Inputs for target visibility search:
 
@@ -1096,7 +1096,7 @@ the questions asked in these tasks.
 Task statements
 ^^^^^^^^^^^^^^^
 
-::
+.. code-block:: text
 
        1.   Write a program that finds the times, within the time range
 
@@ -1125,7 +1125,7 @@ Task statements
 Solutions
 ^^^^^^^^^
 
-::
+.. code-block:: text
 
        1.   Solution for the equator crossing search, using spiceypy.gfposc
             for the MEX spacecraft latitude in the Mars body-fixed frame
