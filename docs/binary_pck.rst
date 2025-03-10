@@ -1,6 +1,9 @@
 Binary PCK Hands-On Lesson
 ===========================
 
+This required reading document is reproduced from the original NAIF
+document available at `https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/binary_pck.html <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/binary_pck.html>`_ 
+
 November 20, 2017
 
 Overview

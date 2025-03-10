@@ -41,6 +41,8 @@ extensions = [
     "myst_parser",
     'sphinx_rtd_theme',
 ]
+# conf for autodoc typehints
+autodoc_typehints = 'both'
 
 # conf for copybutton
 copybutton_prompt_text = ">>> "
