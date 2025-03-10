@@ -24,11 +24,12 @@ jobs:
           python-version: '3.13'
       - name: Display Python 🐍 
         run: python -c "import sys; print(sys.version)"
-      - name: Install dependencies
+      - name: Update pip
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r test-requirements.txt
-          python -m pip install build coverage>=5.1.0 twine>=3.3.0
+      - name: Install CI dependencies
+        run: |
+          python -m pip install -r ci-requirements.txt
       - name: Build 🛠️ sdist source and Install SpiceyPy 🌶️ 🥧
         run: |
           python -m build --sdist

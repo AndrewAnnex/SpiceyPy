@@ -35,7 +35,7 @@ Tutorials
 The following SPICE tutorials serve as references for the discussions in
 this lesson:
 
-::
+.. code-block:: text
 
       Name              Lesson steps/functions it describes
       ----------------  -----------------------------------------------
@@ -50,7 +50,7 @@ this lesson:
 
 These tutorials are available from the NAIF ftp server at JPL:
 
-::
+.. code-block:: text
 
       https://naif.jpl.nasa.gov/naif/tutorials.html
 
@@ -65,7 +65,7 @@ The Required Reading documents are provided with the Toolkit and are
 located under the "cspice/doc" directory in the CSPICE Toolkit
 installation tree.
 
-::
+.. code-block:: text
 
       Name             Lesson steps/functions that it describes
       ---------------  -----------------------------------------
@@ -102,14 +102,14 @@ built-in Python help system.
 
 For example, the Python help function
 
-::
+.. code-block:: python
 
       >>> import spiceypy
       >>> help(spiceypy.str2et)
 
 describes of the str2et function's parameters, while the document
 
-::
+.. code-block:: text
 
       https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/str2et_c.html
 
@@ -120,7 +120,7 @@ Kernels Used
 
 The following kernels are used in examples provided in this lesson:
 
-::
+.. code-block:: text
 
       #  FILE NAME                 TYPE DESCRIPTION
       -- ------------------------- ---- -----------------------------------
@@ -138,14 +138,14 @@ The following kernels are used in examples provided in this lesson:
 These SPICE kernels are included in the lesson package available from
 the NAIF server at JPL:
 
-::
+.. code-block:: text
 
       ftp://naif.jpl.nasa.gov/pub/naif/toolkit_docs/Lessons/
 
 In addition to these kernels, the extra credit exercises require the
 following kernels:
 
-::
+.. code-block:: text
 
       #  FILE NAME       TYPE DESCRIPTION
       -- --------------- ---- ---------------------------------------------
@@ -153,7 +153,7 @@ following kernels:
 
 These SPICE kernels are available from the NAIF server at JPL:
 
-::
+.. code-block:: text
 
       https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/
 
@@ -165,7 +165,7 @@ are suggested for usage in each of the exercises in this lesson. (You
 may wish to not look at this list unless/until you "get stuck" while
 working on your own.)
 
-::
+.. code-block:: text
 
       CHAPTER EXERCISE   FUNCTIONS        NON-VOID         KERNELS
       ------- ---------  ---------------  ---------------  ----------
@@ -235,7 +235,7 @@ Task Statement
 Write a program that prompts the user for an input UTC time string,
 converts it to the following time systems and output formats:
 
-::
+.. code-block:: text
 
        1.   Ephemeris Time (ET) in seconds past J2000
 
@@ -259,7 +259,7 @@ Approach
 The solution to the problem can be broken down into a series of simple
 steps:
 
-::
+.. code-block:: text
 
        --   Decide which SPICE kernels are necessary. Prepare a meta-kernel
             listing the kernels and load it into the program.
@@ -291,7 +291,7 @@ Solution Meta-Kernel
 The meta-kernel we created for the solution to this exercise is named
 'convtm.tm'. Its contents follow:
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -316,7 +316,8 @@ Solution Source Code
 
 A sample solution to the problem follows:
 
-::
+.. code-block:: python
+     :linenos:
 
       #
       # Solution convtm
@@ -382,7 +383,7 @@ Solution Sample Output
 
 Execute the program:
 
-::
+.. code-block:: text
 
       Input UTC Time: 2004 jun 11 19:32:00
       Converting UTC Time: 2004 jun 11 19:32:00
@@ -406,7 +407,7 @@ applicable) and answers to the questions asked in these tasks.
 
 Task statements and questions
 
-::
+.. code-block:: text
 
        1.   Extend your program to convert the input UTC time string to TDB
             Julian Date. Convert "2004 jun 11 19:32:00" UTC.
@@ -435,7 +436,7 @@ Task statements and questions
 
 Solutions and answers
 
-::
+.. code-block:: text
 
        1.   Two methods exist in order to convert ephemeris time to Julian
             Date: spiceypy.unitim and spiceypy.timout. The difference
@@ -580,7 +581,7 @@ Task Statement
 Write a program that prompts the user for an input UTC time string,
 computes the following quantities at that epoch:
 
-::
+.. code-block:: text
 
        1.   The apparent state of Phoebe as seen from CASSINI in the J2000
             frame, in kilometers and kilometers/second. This vector itself
@@ -620,7 +621,7 @@ Approach
 The solution to the problem can be broken down into a series of simple
 steps:
 
-::
+.. code-block:: text
 
        --   Decide which SPICE kernels are necessary. Prepare a meta-kernel
             listing the kernels and load it into the program.
@@ -670,7 +671,7 @@ Solution Meta-Kernel
 The meta-kernel we created for the solution to this exercise is named
 'getsta.tm'. Its contents follow:
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -700,7 +701,8 @@ Solution Source Code
 
 A sample solution to the problem follows:
 
-::
+.. code-block:: python
+     :linenos:
 
       #
       # Solution getsta.py
@@ -831,7 +833,7 @@ Solution Sample Output
 
 Execute the program:
 
-::
+.. code-block:: text
 
       Input UTC Time: 2004 jun 11 19:32:00
       Converting UTC Time: 2004 jun 11 19:32:00
@@ -878,7 +880,7 @@ applicable) and answers to the questions asked in these tasks.
 
 Task statements and questions
 
-::
+.. code-block:: text
 
        1.   Remove the Solar System ephemerides SPK from the original
             meta-kernel and run your program again, using the same inputs
@@ -898,7 +900,7 @@ Task statements and questions
 
 Solutions and answers
 
-::
+.. code-block:: text
 
        1.   When running the original program without the Solar System
             ephemerides SPK, an error is produced by spiceypy.spkezr:
@@ -1075,7 +1077,7 @@ Task Statement
 Write a program that prompts the user for an input time string, computes
 and displays the following at the epoch of interest:
 
-::
+.. code-block:: text
 
        1.   The apparent state of Phoebe as seen from CASSINI in the
             IAU_PHOEBE body-fixed frame. This vector itself is not of any
@@ -1113,7 +1115,7 @@ Approach
 The solution to the problem can be broken down into a series of simple
 steps:
 
-::
+.. code-block:: text
 
        --   Decide which SPICE kernels are necessary. Prepare a meta-kernel
             listing the kernels and load it into the program.
@@ -1158,7 +1160,7 @@ of the functions spiceypy.pxform and spiceypy.sxform.
 You may find it useful to consult the permuted index, the headers of
 various source modules, and the following toolkit documentation:
 
-::
+.. code-block:: text
 
        1.   Frames Required Reading (frames.req)
 
@@ -1182,7 +1184,7 @@ Solution Meta-Kernel
 The meta-kernel we created for the solution to this exercise is named
 'xform.tm'. Its contents follow:
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -1220,7 +1222,8 @@ Solution Source Code
 
 A sample solution to the problem follows:
 
-::
+.. code-block:: python
+     :linenos:
 
       #
       # Solution xform.py
@@ -1406,7 +1409,7 @@ Solution Sample Output
 
 Execute the program:
 
-::
+.. code-block:: text
 
       Input UTC Time: 2004 jun 11 19:32:00
       Converting UTC Time: 2004 jun 11 19:32:00
@@ -1452,7 +1455,7 @@ applicable) and answers to the questions asked in these tasks.
 
 Task statements and questions
 
-::
+.. code-block:: text
 
        1.   Run the original program using the input UTC time "2004 jun 11
             18:25:00". Explain what happens.
@@ -1463,7 +1466,7 @@ Task statements and questions
 
 Solutions and answers
 
-::
+.. code-block:: text
 
        1.   When running the original software using as input the UTC time
             string "2004 jun 11 18:25:00":
@@ -1571,7 +1574,7 @@ Task Statement
 Write a program that prompts the user for an input UTC time string and
 computes the following quantities at that epoch:
 
-::
+.. code-block:: text
 
        1.   The apparent sub-observer point of CASSINI on Phoebe, in the
             body fixed frame IAU_PHOEBE, in kilometers.
@@ -1582,13 +1585,13 @@ computes the following quantities at that epoch:
 The program computes each point twice: once using an ellipsoidal shape
 model and the
 
-::
+.. code-block:: text
 
            near point/ellipsoid
 
 definition, and once using a DSK shape model and the
 
-::
+.. code-block:: text
 
            nadir/dsk/unprioritized
 
@@ -1617,13 +1620,13 @@ to understand how to call them.
 One point worth considering: how would the results change if the
 sub-solar and sub-observer points were computed using the
 
-::
+.. code-block:: text
 
            intercept/ellipsoid
 
 and
 
-::
+.. code-block:: text
 
            intercept/dsk/unprioritized
 
@@ -1639,7 +1642,7 @@ Solution Meta-Kernel
 The meta-kernel we created for the solution to this exercise is named
 'subpts.tm'. Its contents follow:
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -1674,7 +1677,8 @@ Solution Source Code
 
 A sample solution to the problem follows:
 
-::
+.. code-block:: python
+     :linenos:
 
       #
       # Solution subpts.py
@@ -1782,7 +1786,7 @@ Solution Sample Output
 
 Execute the program:
 
-::
+.. code-block:: text
 
       Input UTC Time: 2004 jun 11 19:32:00
        Converting UTC Time: 2004 jun 11 19:32:00
@@ -1832,7 +1836,7 @@ applicable) and answers to the questions asked in these tasks.
 
 Task statements and questions
 
-::
+.. code-block:: text
 
        1.   Recompute the apparent sub-solar point on Phoebe as seen from
             CASSINI in the body fixed frame IAU_PHOEBE in kilometers using
@@ -1855,7 +1859,7 @@ Task statements and questions
 
 Solutions and answers
 
-::
+.. code-block:: text
 
        1.   The differences observed are due to the computation method. The
             "Intercept/ellipsoid" method defines the sub-solar point as
@@ -1943,7 +1947,7 @@ Phoebe. Compute each intercept twice: once with Phoebe's shape modeled
 as an ellipsoid, and once with Phoebe's shape modeled by DSK data. The
 program presents each point of intersection as
 
-::
+.. code-block:: text
 
        1.   A Cartesian vector in the IAU_PHOEBE frame
 
@@ -1956,7 +1960,7 @@ computations, otherwise it indicates no intersection exists.
 
 At each point of intersection compute the following:
 
-::
+.. code-block:: text
 
        3.   Phase angle
 
@@ -1973,7 +1977,7 @@ shape models.
 
 Use this program to compute values at the epoch:
 
-::
+.. code-block:: text
 
             "2004 jun 11 19:32:00" UTC
 
@@ -1996,7 +2000,7 @@ Approach
 
 This problem can be broken down into several simple, small steps:
 
-::
+.. code-block:: text
 
        --   Decide which SPICE kernels are necessary. Prepare a meta-kernel
             listing the kernels and load it into the program. Remember, you
@@ -2014,7 +2018,7 @@ This problem can be broken down into several simple, small steps:
 For each vector in the set of boundary corner vectors, and for the
 boresight vector, perform the following operations:
 
-::
+.. code-block:: text
 
        --   Compute the intercept of the vector with Phoebe modeled as an
             ellipsoid or using DSK data
@@ -2031,7 +2035,7 @@ boresight vector, perform the following operations:
 
 Finally
 
-::
+.. code-block:: text
 
        --   Compute the local solar time at the boresight intercept
             longitude on a 24-hour clock. The input time for this
@@ -2053,7 +2057,7 @@ Solution Meta-Kernel
 The meta-kernel we created for the solution to this exercise is named
 'fovint.tm'. Its contents follow:
 
-::
+.. code-block:: text
 
       KPL/MK
 
@@ -2095,8 +2099,9 @@ Solution Source Code
 
 A sample solution to the problem follows:
 
-::
-
+.. code-block:: python
+     :linenos:
+     
       #
       # Solution fovint.py
       #
@@ -2331,7 +2336,7 @@ Solution Sample Output
 
 Execute the program:
 
-::
+.. code-block:: text
 
       Input UTC Time: 2004 jun 11 19:32:00
       Converting UTC Time: 2004 jun 11 19:32:00

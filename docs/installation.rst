@@ -49,7 +49,7 @@ Offline installation
 --------------------
 
 If you need to install SpiceyPy without a network or if you have a prebuilt shared library at hand,
-you can override the default behaviour of SpiceyPy by using the CSPICE_SRC_DIR and CSPICE_SHARED_LIB environment variables respectively.
+you can override the default behavior of SpiceyPy by using the CSPICE_SRC_DIR and CSPICE_SHARED_LIB environment variables respectively.
 
 For example, if you have downloaded SpiceyPy and the CSPICE toolkit, and extracted CSPICE to /tmp/cspice you can run:
 

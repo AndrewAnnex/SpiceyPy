@@ -1,6 +1,8 @@
 .. _KernelPool:
-The :py:exc:`KernelPool` context manager
-==================================
+
+The KernelPool context manager 
+
+========================================= 
 
 The :py:exc:`KernelPool<spiceypy.spiceypy.KernelPool>` context manager provides a convenient way to load, and unload SPICE kernels, guaranteeing that the kernel database will still be cleared if an exception is raised.
 
@@ -54,6 +56,7 @@ access to kernels ``A``, and ``B`` (global kernels); while ``function_2()`` has
 access to kernels ``A``, ``C``, and ``D`` (local kernels).
 
 .. _kernel_pool_assignment_functions:
+
 Compatibility with kernel-pool assignment functions
 ---------------------------------------------------
 
