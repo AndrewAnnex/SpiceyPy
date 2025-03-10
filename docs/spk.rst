@@ -9,8 +9,6 @@ document available at `https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/spk
 Abstract
 =========
 
-
-
 | The SPK system is the component of SPICE concerned with ephemeris
   data.
 
@@ -115,137 +113,97 @@ High Level Functions
 
 | Loading/Unloading an SPK file
 
-
-.. code-block:: python
-
-      furnsh( <file> )
-      unload( <file> )
+* :py:meth:`~spiceypy.spiceypy.furnsh`
+* :py:meth:`~spiceypy.spiceypy.unload`
 
 Getting coverage summary
 
-.. code-block:: python
-
-      spkobj( <file>, ids )
-      spkcov( <file>, <idcode>, cover  )
+* :py:meth:`~spiceypy.spiceypy.spkobj`
+* :py:meth:`~spiceypy.spiceypy.spkcov`
 
 Retrieving states (position and velocity) using names of objects
 
-.. code-block:: python
-
-      state, lt = spkezr( <object>,   <et>,  <frame>, <corr>, <observer>)
+* :py:meth:`~spiceypy.spiceypy.spkezr`
 
 Retrieving positions using names of objects
 
-.. code-block:: python
-
-       postn, lt = spkpos( <object>,   <et>,  <frame>, <corr>, <observer> )
+* :py:meth:`~spiceypy.spiceypy.spkpos`
 
 Retrieving states using NAIF ID codes
 
-.. code-block:: python
-
-      spkez_c  ( <obj_id>,  <et>,  <frame>,  <corr>,
-                 <obj_id>,  state, &lt              )
-
-      spkgeo( <obj_id>,  <et>,  <frame>,
-                 <obj_id>,  state, &lt     )
+* :py:meth:`~spiceypy.spiceypy.spkez`
+* :py:meth:`~spiceypy.spiceypy.spkgeo`
 
 Retrieving positions using NAIF ID codes
 
-.. code-block:: python
-
-      spkezp( <obj_id>,  <et>,  <frame>,  <corr>,
-                 <obj_id>,  postn, &lt              )
-
-      spkgps( <obj_id>,  <et>,  <frame>,
-                 <obj_id>,  postn, &lt     )
+* :py:meth:`~spiceypy.spiceypy.spkezp`
+* :py:meth:`~spiceypy.spiceypy.spkgps`
 
 Calculating `Uplink and Downlink` Light Time
 
-.. code-block:: python
-
-    ltime( <etobs>, <obs_id>, <dir>, <targ_id>, &ettarg, &elapsd )
+* :py:meth:`~spiceypy.spiceypy.ltime`
 
 Loading/Unloading Binary PCK files (see PCK Required Reading,
 `pck <./pck.html>`__)
 
-.. code-block:: python
-
-      furnsh( <binary_pck> )
-      unload( <binary_pck> )
+* :py:meth:`~spiceypy.spiceypy.furnsh`
+* :py:meth:`~spiceypy.spiceypy.unload`
 
 Loading Text based kernels---PCK, SCLK, etc.
 
-.. code-block:: python
 
-      furnsh( <text_kernel> )
+* :py:meth:`~spiceypy.spiceypy.furnsh`
 
 Loading/Unloading C-kernels (see CK Required Reading,
 `ck <./ck.html>`__)
 
-.. code-block:: python
 
-      furnsh( <c-kernel> )
-      unload( <c-kernel> )
+* :py:meth:`~spiceypy.spiceypy.furnsh`
+* :py:meth:`~spiceypy.spiceypy.unload`
 
 
 
 Foundation Functions
 ----------------------
 
-| The functions listed in this section are the real `work horses` 
+| The functions listed in this section are the real `work horses`
   of the SPK and related systems. Not all of the functions in this
   section are described in this document. In those cases, the
   appropriate SPICE document is cited.
 
 Selecting files and segments
 
-
-.. code-block:: python
-
-      spksfs( <target>, <et>, &handle, descr, ident, &found )
+* :py:meth:`~spiceypy.spiceypy.spksfs`
 
 Computing states from segment descriptors
 
-.. code-block:: python
-
-      spkpvn( <handle>, <descr>, <et>, ref, state, &center )
+* :py:meth:`~spiceypy.spiceypy.spkpvn`
 
 Correcting for stellar aberration
 
-.. code-block:: python
-
-      stelab( pobj, vobs, appobj )
+* :py:meth:`~spiceypy.spiceypy.stelab`
 
 Translating between object names and object ID codes (see NAIF_IDS
 Required Reading, `naif_ids <./naif_ids.html>`__)
 
-.. code-block:: python
-
-      bodn2c( <name>,    &idcode, &found )
-      bodc2n( <idcode>,  name,    &found )
+* :py:meth:`~spiceypy.spiceypy.bodn2c`
+* :py:meth:`~spiceypy.spiceypy.bodc2n`
 
 Translating between frame names and frame ID codes (see Frames
 Required Reading, `frames <./frames.html>`__)
 
-.. code-block:: python
-
-      frmnam( <idcode>, name    )
-      namfrm( <name>,   &idcode )
+* :py:meth:`~spiceypy.spiceypy.frmnam`
+* :py:meth:`~spiceypy.spiceypy.namfrm`
 
 State transformation matrices (see Frames Required Reading,
 `frames <./frames.html>`__)
 
-.. code-block:: python
-
-      sxform( <from_name>,   <to_name>,   <et>, mat6x6 )
+* :py:meth:`~spiceypy.spiceypy.sxform`
 
 Classifying frames (see Frames Required Reading,
 `frames <./frames.html>`__)
 
-.. code-block:: python
-
-      frinfo( <idcode>, &center, &class, &clssid, &found )
+* :py:meth:`~spiceypy.spiceypy.frinfo`
 
 
 
@@ -594,9 +552,7 @@ arguments in angle brackets. For example,
 
 .. code-block:: python
 
-      spkezr( <targ>,  <et>,  <frame>,
-                 <aberr>, <obs>,
-                 state,   &lt            )  # Easier state 
+      state, lt = spkezr( <targ>,  <et>,  <frame>, <aberr>, <obs>)  # Easier state
 
 All C functions, including those whose names do not begin with
 `SPK`, are from CSPICE or the standard ANSI C library.
@@ -625,9 +581,7 @@ Computing States
 
 .. code-block:: python
 
-      spkezr( <targ>,  <et>,  <frame>,
-                 <aberr>, <obs>,
-                 state,   &lt            )  #  Easier state 
+      state, lt = spkezr( <targ>,  <et>,  <frame>, <aberr>, <obs>)  #  Easier state
 
 The function accepts five inputs---target body, epoch, reference
 frame, aberration correction type, and observing body---and returns
@@ -642,9 +596,7 @@ J2000 reference frame
 
 .. code-block:: python
 
-      spkezr( "triton",    et,    "j2000", aberr,
-
-               "voyager-2", state,  &lt           ) #  Easier state 
+      state, lt = spkezr( "triton",  et,  "j2000", aberr, "voyager-2" ) #  Easier state
 
 By definition, the ephemerides in SPK files are continuous: the user
 can obtain states at any epoch within the interval of coverage.
@@ -657,9 +609,7 @@ Julian Ephemeris Date 2447751.8293,
 
       et = ( 2447751.8293 - j2000_c() ) * spd_c()
 
-      spkezr( "triton",    et,    "j2000", <aberr>,
-
-             "voyager-2", state, &lt              ) #  Easier state 
+      state, lt = spkezr( "triton", et, "j2000", <aberr>,  "voyager-2" ) #  Easier state
 
 where the function :py:meth:`~spiceypy.spiceypy.j2000` returns the
 epoch of the J2000 frame (Julian Ephemeris Date 2451545.0) and the
@@ -676,10 +626,7 @@ Voyager-2, referenced to the J2000 ecliptic reference frame,
 
 .. code-block:: python
 
-      spkezr( "triton", et,          "eclipj2000",
-                 aberr,    "voyager-2", state,
-
-              &lt                                 ) #  Easier state 
+      state, lt = spkezr( "triton", et, "eclipj2000", aberr, "voyager-2") #  Easier state
 
 :py:meth:`~spiceypy.spiceypy.spkezr` returns apparent, true, or
 geometric states depending on the value of the aberration correction
@@ -802,12 +749,13 @@ following algorithm:
 It can be shown that the sequence LT_0, LT_1, LT_2, ... converges to
 LT geometrically. Moreover, it can be shown that the difference
 between LT_i and LT satisfies the following inequality.
+
 .. code-block:: text
 
                                     i
       | LT - LT_i | < LT_i * ( V/C )  / ( 1 - V/C )
-
          for i = 1, ...
+
 
 where V is the maximum speed of the target body with respect to the
 solar system barycenter and C is the speed of light.
@@ -918,7 +866,7 @@ computed by a function call similar to this:
 .. code-block:: python
 
       spkezr( "mars_balloon",  <et>,  "iau_mars", "lt",
-                 "earth",         state, &lt              )
+                 "earth",         state, lt              )
 
 :py:meth:`~spiceypy.spiceypy.spkezr` uses the following rules when
 computing states.
@@ -978,7 +926,7 @@ axes. We may call :py:meth:`~spiceypy.spiceypy.bodvcd` as shown:
 
 .. code-block:: python
 
-      bodvcd( 499, "RADII", 3, &nvals, axes )
+      nvals, axes =bodvcd( 499, "RADII", 3 )
 
       a = axes[0];
       b = axes[1];
@@ -989,12 +937,8 @@ MGS relative to Earth in the Mars bodyfixed frame.
 
 .. code-block:: python
 
-      spkezr( "mars",  et,     "iau_mars", "lt+s",
-                 "earth", marsst, &lt                )
-
-      spkezr( "mgs",   et,     "iau_mars", "lt+s",
-
-                "earth", mgsst,  &lt                ) # Easier State
+      marsst, lt = spkezr( "mars", et, "iau_mars", "lt+s",  "earth")
+      mgsst,  lt = spkezr( "mgs",  et, "iau_mars", "lt+s", "earth") # Easier State
 
 Compute the apparent position of the Earth relative to Mars in the
 apparent Mars bodyfixed frame. This means simply negating the
@@ -1073,16 +1017,8 @@ Voyager 2 is -32).
 
 .. code-block:: python
 
-      spkezr( "triton", et,          "eclipJ2000",
-                 aberr,    "voyager-2", state,
-
-              &lt                                 ) #  Easier state 
-
-
-      spkezr( "801",    et,          "eclipJ2000",
-                  aberr,   "-32",       state,
-
-               &lt                                ) #  Easier state 
+    state, lt = spkezr( "triton", et, "eclipJ2000", aberr,    "voyager-2") #  Easier state
+    state, lt = spkezr( "801", et, "eclipJ2000", aberr,   "-32" ) #  Easier state
 
 Consult the NAIF IDS Required Reading file,
 `naif_ids <./naif_ids.html>`__, for the current list of body
@@ -1105,9 +1041,7 @@ those bodies.
 
 .. code-block:: python
 
-      spkez( <targ_id>, <et>, <frame>, <corr>, <obj_id>,
-
-              state,     &lt )                          #  SPK Easy 
+      state, lt = spkez( <targ_id>, <et>, <frame>, <corr>, <obj_id> ) #  SPK Easy
 
 The NAIF-ID codes for ephemeris objects are listed in the NAIF_IDS
 required reading file, `naif_ids <./naif_ids.html>`__.
@@ -1123,12 +1057,9 @@ equivalent.
 
 .. code-block:: python
 
-      spkez( <targ_id>,  <et>,   <frame>, "none",
-                 <obj_id>,   state,  &lt             ) # SPK Easy
+      state, lt = spkez( <targ_id>,  <et>,   <frame>, "none", <obj_id>  ) # SPK Easy
 
-      spkgeo( <targ_id>,  <et>,   <frame>, <obj_id>,
-
-              state,      &lt                     ) # SPK Geometric 
+      state, lt = spkgeo( <targ_id>,  <et>,   <frame>, <obj_id> ) # SPK Geometric
 
 :py:meth:`~spiceypy.spiceypy.spkgeo` involves slightly less
 overhead than does :py:meth:`~spiceypy.spiceypy.spkez` and thus may
@@ -1153,7 +1084,7 @@ Loading Files
 .. code-block:: python
 
       for e in ephem
-         spice.furnsh(e)        # Load kernel file 
+          spice.furnsh(e)        # Load kernel file
       # or more simply:
       spice.furnsh(ephem)
 
@@ -1189,19 +1120,19 @@ of files:
 
 .. code-block:: python
 
-      furnsh( "barycenters.bsp"    )  # Load kernel file 
-      furnsh( "planet-centers.bsp" )  # Load kernel file 
-      furnsh( "satellites.bsp"     )  # Load kernel file 
-      furnsh( "spacecraft.bsp"     )  # Load kernel file 
+      furnsh( "barycenters.bsp"    )  # Load kernel file
+      furnsh( "planet-centers.bsp" )  # Load kernel file
+      furnsh( "satellites.bsp"     )  # Load kernel file
+      furnsh( "spacecraft.bsp"     )  # Load kernel file
 
 or from the following set:
 
 
 .. code-block:: python
 
-      furnsh( "earth.bsp"      )      # Load kernel file 
-      furnsh( "jupiter.bsp"    )      # Load kernel file 
-      furnsh( "spacecraft.bsp" )      # Load kernel file 
+      furnsh( "earth.bsp"      )      # Load kernel file
+      furnsh( "jupiter.bsp"    )      # Load kernel file
+      furnsh( "spacecraft.bsp" )      # Load kernel file
 
 
 
@@ -1231,20 +1162,20 @@ Unloading Files
 
 .. code-block:: python
 
-      furnsh( "file.a" )     # Load kernel file 
-      furnsh( "file.b" )     # Load kernel file 
-      furnsh( "file.c" )     # Load kernel file 
-      unload( "file.b" )     # Unload kernel file 
-      furnsh( "file.d" )     # Load kernel file 
-      unload( "file.c" )     # Unload kernel file 
+      furnsh( "file.a" )     # Load kernel file
+      furnsh( "file.b" )     # Load kernel file
+      furnsh( "file.c" )     # Load kernel file
+      unload( "file.b" )     # Unload kernel file
+      furnsh( "file.d" )     # Load kernel file
+      unload( "file.c" )     # Unload kernel file
 
 is equivalent to the following (shorter) sequence:
 
 
 .. code-block:: python
 
-      furnsh( "file.a" )     # Load kernel file 
-      furnsh( "file.d" )     # Load kernel file 
+      furnsh( "file.a" )     # Load kernel file
+      furnsh( "file.d" )     # Load kernel file
 
 
 
@@ -1263,7 +1194,7 @@ The :py:meth:`~spiceypy.spiceypy.spkcov` function provides an API
 via which an application can find the time periods for which a
 specified SPK file provides data for an body of interest. The
 coverage information is a set of disjoint time intervals returned in
-a SPICE `window` data structure (see `other stuff tutorial <../other_stuff.html>`__ and 
+a SPICE `window` data structure (see `other stuff tutorial <../other_stuff.html>`__ and
 `windows.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/windows.html>`__).
 
 Refer to the headers of :py:meth:`~spiceypy.spiceypy.spkobj` and
@@ -1324,10 +1255,7 @@ PCK frames
   to the loading and unloading of SPK files. To load a binary PCK
   file
 
-
-.. code-block:: python
-
-               furnsh( <file> )
+furnsh( <file> )
 
 - To unload a binary PCK file
 
@@ -1582,12 +1510,7 @@ Primitive States
 
 .. code-block:: python
 
-      spkpvn( <handle>,
-                 <descr>,
-                 <et>,
-                 ref,
-                 state,
-                 center   )  #  Position, velocity, native frame 
+      ref, state, center = spkpvn( <handle>, <descr>, <et>)  #  Position, velocity, native frame
 
 :py:meth:`~spiceypy.spiceypy.spkpvn` is the most basic SPK reader.
 It returns states relative to the frame in which they are stored in
@@ -1621,13 +1544,7 @@ that is stored later in the file. The call
 
 .. code-block:: python
 
-      spksfs( <801>,
-                 <et>,
-                 idlen,
-                 &handle,
-                 descr,
-                 segnam,
-                 &found )     #  Select file and segment 
+      handle, descr, segnam = spksfs( <801>, <et>, idlen) #  Select file and segment
 
 returns the handle, descriptor, and segment name for the latest
 segment containing data for Triton at the specified epoch.
@@ -1681,7 +1598,7 @@ the ray from the center of the target to the observer. )
       # needed to compute transformations from inertial
       # (J2000) coordinates to body-fixed (pole and prime
       # meridian) coordinates for the major bodies of the
-      # solar system. 
+      # solar system.
       spice.furnsh("leapseconds.ker")
       spice.furnsh("pck.ker")
 
@@ -1710,12 +1627,12 @@ the ray from the center of the target to the observer. )
       #
       # The epoch must be converted to ephemeris time (ET).
       while True:
-          obs = input("Observer? ")   
-          targ = input("Target? ") 
-          time_str = input("Epoch? ") 
+          obs = input("Observer? ")
+          targ = input("Target? ")
+          time_str = input("Epoch? ")
 
           et = spice.str2et(time_str)
-          frame = "IAU_" + targ  
+          frame = "IAU_" + targ
 
           # Compute the true state (corrected for light-time)
           # of the target as seen from the observer at the
@@ -1745,7 +1662,7 @@ the ray from the center of the target to the observer. )
   if __name__ == "__main__":
       main()
 
-         
+
 Example 2: Occultation or Transit
 ------------------------------------------------------------------------------------------------------------
 
@@ -3997,7 +3914,7 @@ inclusive. MAXTRM is declared in the SPICELIB include file spk21.inc.
 A list of the final epochs of the records is stored immediately after
 the last record.
 
-Following the list of epochs is a second list, the `directory` 
+Following the list of epochs is a second list, the `directory`
 containing every 100th epoch from the previous list. If there are N
 epochs, there will be N/100 directory epochs. If there are fewer than
 100 epochs, then the segment will not contain any directory epochs.
@@ -4015,10 +3932,8 @@ Appendix A --- Summary of SP-kernel Functions
 ================================================
 
 
-
 Summary of Mnemonics
 ---------------------
-
 
 
 | CSPICE contains a family of functions that are designed
@@ -4034,116 +3949,56 @@ implemented in Fortran as entry points of another function.
 The following is a complete list of mnemonics and translations, in
 alphabetical order.
 
-..code-block::
+Implemented CSPICE wrappers:
 
-      Implemented CSPICE wrappers:
-
-      furnsh( Load kernel file                     )
-      spk14a( S/P-kernel, add to a Type 14 segment )
-      spk14b( S/P-kernel, begin  a Type 14 segment )
-      spk14e( S/P-kernel, end    a Type 14 segment )
-      spkacs( S/P Kernel, aberration corrected state )
-      spkapo( S/P-Kernel, "apparent" position only )
-      spkaps( S/P-kernel, apparent state           )
-      spkcls( S/P-kernel, close after write        )
-      spkcov( S/P-kernel, coverage for a body      )
-      spkcpo( SPK, constant position observer state )
-      spkcpt( SPK, constant position target state  )
-      spkcvo( SPK, constant velocity observer state )
-      spkcvt( SPK, constant velocity target state  )
-      spkez( S/P-kernel, Easy state               )
-      spkezp( S/P Kernel, easy position            )
-      spkezr( S/P-kernel, Easier state             )
-      spkgeo( S/P-kernel, Geometric state          )
-      spkgps( S/P Kernel, geometric position       )
-      spklef( S/P-kernel, Load ephemeris file      )
-      spkltc( S/P Kernel, light time corrected state )
-      spkobj( S/P Kernel, bodies in a file         )
-      spkopa( S/P-kernel, open for addition        )
-      spkopn( S/P-kernel, open new file            )
-      spkpds( S/P-kernel, pack descriptor          )
-      spkpos( S/P Kernel, position                 )
-
-      spkpvn( S/P Kernel, position and velocity in native frame )
-      spksfs( S/P Kernel, Select file and segment  )
-      spkssb( S/P-kernel, Solar system barycenter  )
-      spksub( S/P-kernel, Subset a segment         )
-      spkuds( S/P-kernel, unpack descriptor        )
-      spkuef( S/P-kernel, Unload ephemeris file    )
-      spkw02( S/P-kernel, Write segment, Type 02   )
-      spkw03( S/P-kernel, Write segment, Type 03   )
-      spkw05( S/P-kernel, Write segment, Type 05   )
-      spkw08( S/P-kernel, Write segment, Type 08   )
-      spkw09( S/P-kernel, Write segment, Type 09   )
-      spkw10( S/P-kernel, Write segment, Type 10   )
-      spkw12( S/P-kernel, Write segment, Type 12   )
-      spkw13( S/P-kernel, Write segment, Type 13   )
-      spkw15( S/P-kernel, Write segment, Type 15   )
-      spkw17( S/P-kernel, Write segment, Type 17   )
-      spkw18( S/P-kernel, Write segment, Type 18   )
-      spkw20( S/P-kernel, Write segment, Type 20   )
-      unload( Unload kernel file                   )
-
-      Unimplemented CSPICE wrappers:
-
-      spkpv( S/P-kernel, Position, velocity       )
-
-      Low-level routines converted via f2c:
-
-      spke01( S/P-kernel, Evaluate record, Type 01 )
-      spke02( S/P-kernel, Evaluate record, Type 02 )
-      spke03( S/P-kernel, Evaluate record, Type 03 )
-      spke05( S/P-kernel, Evaluate record, Type 05 )
-      spke08( S/P-kernel, Evaluate record, Type 08 )
-      spke09( S/P-kernel, Evaluate record, Type 09 )
-      spke10( S/P-kernel, Evaluate record, Type 10 )
-      spke12( S/P-kernel, Evaluate record, Type 12 )
-      spke13( S/P-kernel, Evaluate record, Type 13 )
-      spke14( S/P-kernel, Evaluate record, Type 14 )
-      spke15( S/P-kernel, Evaluate record, Type 15 )
-      spke17( S/P-kernel, Evaluate record, Type 17 )
-      spke18( S/P-kernel, Evaluate record, Type 18 )
-      spke19( S/P-kernel, Evaluate record, Type 19 )
-      spke20( S/P-kernel, Evaluate record, Type 20 )
-      spke21( S/P-kernel, Evaluate record, Type 21 )
-      spkr01( S/P-kernel, Read record, Type 01     )
-      spkr02( S/P-kernel, Read record, Type 02     )
-      spkr03( S/P-kernel, Read record, Type 03     )
-      spkr05( S/P-kernel, Read record, Type 05     )
-      spkr08( S/P-kernel, Read record, Type 08     )
-      spkr09( S/P-kernel, Read record, Type 09     )
-      spkr10( S/P-kernel, Read record, Type 10     )
-      spkr12( S/P-kernel, Read record, Type 12     )
-      spkr13( S/P-kernel, Read record, Type 13     )
-      spkr14( S/P-kernel, Read record, Type 14     )
-      spkr15( S/P-kernel, Read record, Type 15     )
-      spkr17( S/P-kernel, Read record, Type 17     )
-      spkr18( S/P-kernel, Read record, Type 18     )
-      spkr19( S/P-kernel, Read record, Type 19     )
-      spkr20( S/P-kernel, Read record, Type 20     )
-      spkr21( S/P-kernel, Read record, Type 21     )
-      spks01( S/P-kernel, Subset data, Type 01     )
-      spks02( S/P-kernel, Subset data, Type 02     )
-      spks03( S/P-kernel, Subset data, Type 03     )
-      spks05( S/P-kernel, Subset data, Type 05     )
-      spks08( S/P-kernel, Subset data, Type 08     )
-      spks09( S/P-kernel, Subset data, Type 09     )
-      spks10( S/P-kernel, Subset data, Type 10     )
-      spks12( S/P-kernel, Subset data, Type 12     )
-      spks13( S/P-kernel, Subset data, Type 13     )
-      spks14( S/P-kernel, Subset data, Type 14     )
-      spks15( S/P-kernel, Subset data, Type 15     )
-      spks17( S/P-kernel, Subset data, Type 17     )
-      spks18( S/P-kernel, Subset data, Type 18     )
-      spks19( S/P-kernel, Subset data, Type 19     )
-      spks20( S/P-kernel, Subset data, Type 20     )
-      spks21( S/P-kernel, Subset data, Type 21     )
-
+* :py:meth:`~spiceypy.spiceypy.furnsh`
+* :py:meth:`~spiceypy.spiceypy.spk14a`
+* :py:meth:`~spiceypy.spiceypy.spk14b`
+* :py:meth:`~spiceypy.spiceypy.spk14e`
+* :py:meth:`~spiceypy.spiceypy.spkacs`
+* :py:meth:`~spiceypy.spiceypy.spkapo`
+* :py:meth:`~spiceypy.spiceypy.spkaps`
+* :py:meth:`~spiceypy.spiceypy.spkcls`
+* :py:meth:`~spiceypy.spiceypy.spkcov`
+* :py:meth:`~spiceypy.spiceypy.spkcpo`
+* :py:meth:`~spiceypy.spiceypy.spkcpt`
+* :py:meth:`~spiceypy.spiceypy.spkcvo`
+* :py:meth:`~spiceypy.spiceypy.spkcvt`
+* :py:meth:`~spiceypy.spiceypy.spkez`
+* :py:meth:`~spiceypy.spiceypy.spkezp`
+* :py:meth:`~spiceypy.spiceypy.spkezr`
+* :py:meth:`~spiceypy.spiceypy.spkgeo`
+* :py:meth:`~spiceypy.spiceypy.spkgps`
+* :py:meth:`~spiceypy.spiceypy.spklef`
+* :py:meth:`~spiceypy.spiceypy.spkltc`
+* :py:meth:`~spiceypy.spiceypy.spkobj`
+* :py:meth:`~spiceypy.spiceypy.spkopa`
+* :py:meth:`~spiceypy.spiceypy.spkopn`
+* :py:meth:`~spiceypy.spiceypy.spkpds`
+* :py:meth:`~spiceypy.spiceypy.spkpos`
+* :py:meth:`~spiceypy.spiceypy.spkpvn`
+* :py:meth:`~spiceypy.spiceypy.spksfs`
+* :py:meth:`~spiceypy.spiceypy.spkssb`
+* :py:meth:`~spiceypy.spiceypy.spksub`
+* :py:meth:`~spiceypy.spiceypy.spkuds`
+* :py:meth:`~spiceypy.spiceypy.spkuef`
+* :py:meth:`~spiceypy.spiceypy.spkw02`
+* :py:meth:`~spiceypy.spiceypy.spkw03`
+* :py:meth:`~spiceypy.spiceypy.spkw05`
+* :py:meth:`~spiceypy.spiceypy.spkw08`
+* :py:meth:`~spiceypy.spiceypy.spkw09`
+* :py:meth:`~spiceypy.spiceypy.spkw10`
+* :py:meth:`~spiceypy.spiceypy.spkw12`
+* :py:meth:`~spiceypy.spiceypy.spkw13`
+* :py:meth:`~spiceypy.spiceypy.spkw15`
+* :py:meth:`~spiceypy.spiceypy.spkw17`
+* :py:meth:`~spiceypy.spiceypy.spkw18`
+* :py:meth:`~spiceypy.spiceypy.spkw20`
+* :py:meth:`~spiceypy.spiceypy.unload`
 
 
 Summary of Calling Sequences
 ------------------------------
-
 
 
 | The calling sequences for the SPK functions are summarized below.
@@ -4151,229 +4006,83 @@ Summary of Calling Sequences
 
 High level routines for loading, unloading files:
 
-.. code-block:: python
-
-      furnsh( fname )
-      unload( fname )
+* :py:meth:`~spiceypy.spiceypy.furnsh`
+* :py:meth:`~spiceypy.spiceypy.unload`
 
 Lower level routines for loading, unloading files:
 
-.. code-block:: python
-
-      spklef( fname, &handle )
-      spkuef(         handle )
+* :py:meth:`~spiceypy.spiceypy.spklef`
+* :py:meth:`~spiceypy.spiceypy.spkuef`
 
 Getting coverage summary:
 
-.. code-block:: python
-
-      spkobj( <file>, ids )
-      spkcov( <file>, <idcode>, cover  )
+* :py:meth:`~spiceypy.spiceypy.spkobj`
+* :py:meth:`~spiceypy.spiceypy.spkcov`
 
 Computing states and positions:
 
-.. code-block:: python
-
-      spkezr( tname,  et, ref,        aberr, oname, state, &lt )
-      spkpos( tname,  et, ref,        aberr, oname, postn, &lt )
-      spkez( target, et, ref,        aberr, obs,   state, &lt )
-      spkezp( target, et, ref,        aberr, obs,   postn, &lt )
-      spkapo( target, et, ref, stobs, aberr,        postn, &lt )
-      spkpvn( handle, descr, et, &ref, state, &center )
-      spkssb( target, et, ref,                      state      )
-      spkgeo( target, et, ref,               obs,   state, &lt )
-      spkgps( target, et, ref,               obs,   postn, &lt )
+* :py:meth:`~spiceypy.spiceypy.spkezr`
+* :py:meth:`~spiceypy.spiceypy.spkpos`
+* :py:meth:`~spiceypy.spiceypy.spkez`
+* :py:meth:`~spiceypy.spiceypy.spkezp`
+* :py:meth:`~spiceypy.spiceypy.spkapo`
+* :py:meth:`~spiceypy.spiceypy.spkpvn`
+* :py:meth:`~spiceypy.spiceypy.spkssb`
+* :py:meth:`~spiceypy.spiceypy.spkgeo`
+* :py:meth:`~spiceypy.spiceypy.spkgps`
 
 Low-level routines for computing states and positions:
 
-.. code-block:: python
-
-      spkacs( targ,  et,     ref,   abcorr,
-                 obs,   starg,  lt,    dlt     )
-
-      spkaps( targ,  et,     ref,   abcorr,
-                 stobs, accobs, starg, lt,     dlt )
-
-      spkltc( targ,  et,     ref,   abcorr,
-                 stobs, starg,  lt,    dlt     )
+* :py:meth:`~spiceypy.spiceypy.spkacs`
+* :py:meth:`~spiceypy.spiceypy.spkaps`
+* :py:meth:`~spiceypy.spiceypy.spkltc`
 
 Computing states using constant-velocity or constant-position
 objects:
 
-.. code-block:: python
-
-      spkcpo( target, et,     outref, refloc, abcorr,
-                 obspos, obsctr, obsref, state,  lt     )
-
-      spkcpt( trgpos, trgctr, trgref, et,     outref,
-                 refloc, abcorr, obsrvr, state,  lt     )
-
-      spkcvo( target, et,     outref, refloc, abcorr,
-                 obssta, obsepc, obsctr, obsref, state,  lt )
-
-      spkcvt( trgsta, trgepc, trgctr, trgref, et,     outref,
-                 refloc, abcorr, obsrvr, state,  &lt            )
-
+* :py:meth:`~spiceypy.spiceypy.spkcpo`
+* :py:meth:`~spiceypy.spiceypy.spkcpt`
+* :py:meth:`~spiceypy.spiceypy.spkcvo`
+* :py:meth:`~spiceypy.spiceypy.spkcvt`
 
 Selecting files, segments:
 
-.. code-block:: python
-
-      spksfs( target, et, idlen, &handle, descr, ident, &found )
-
-Reading, evaluating records:
-
-.. code-block:: python
-
-      spkr01( handle, descr, et, record        )
-      spke01(                et, record, state )
-
-      spkr02( handle, descr, et, record        )
-      spke02(                et, record, state )
-
-      spkr03( handle, descr, et, record        )
-      spke03(                et, record, state )
-
-      spkr05( handle, descr, et, record        )
-      spke05(                et, record, state )
-
-      spkr08( handle, descr, et, record        )
-      spke08(                et, record, state )
-
-      spkr09( handle, descr, et, record        )
-      spke09(                et, record, state )
-
-      spkr10( handle, descr, et, record        )
-      spke10(                et, record, state )
-
-      spkr12( handle, descr, et, record        )
-      spke12(                et, record, state )
-
-      spkr13( handle, descr, et, record        )
-      spke13(                et, record, state )
-
-      spkr14( handle, descr, et, record        )
-      spke14(                et, record, state )
-
-      spkr15( handle, descr, et, record        )
-      spke15(                et, record, state )
-
-      spkr17( handle, descr, et, record        )
-      spke17(                et, record, state )
-
-      spkr18( handle, descr, et, record        )
-      spke18(                et, record, state )
-
-      spkr19( handle, descr, et, record        )
-      spke19(                et, record, state )
-
-      spkr20( handle, descr, et, record        )
-      spke20(                et, record, state )
-
-      spkr21( handle, descr, et, record        )
-      spke21(                et, record, state )
-
+* :py:meth:`~spiceypy.spiceypy.spksfs`
 
 Writing segments to files:
 
-.. code-block:: python
-
-
-     spkpds( body,   center, frame,  type,   first, last,  descr )
-
-      spkw02( handle, body,   center, frame,  first, last,  segid,
-                 intlen, n,      polydg, cdata,  btime              )
-
-      spkw03( handle, body,   center, frame,  first, last,  segid,
-                 intlen, n,      polydg, cdata,  btime              )
-
-      spkw05( handle, body,   center, frame,  first, last,  segid,
-                 gm,     n,      states, epochs                     )
-
-      spkw08( handle, body,   center, frame,  first, last,  segid,
-                 degree, n,      states, epoch1, step               )
-
-      spkw09( handle, body,   center, frame,  first, last,  segid,
-                 degree, n,      states, epochs                     )
-
-      spkw10( handle, body,   center, frame,  first, last,
-                 segid,  consts, n,      elems,  epochs      )
-
-
-      spkw12( handle, body,   center, frame,  first, last,  segid,
-                 degree, n,      states, epoch0, step               )
-
-      spkw13( handle, body,   center, frame,  first, last,  segid,
-                 degree, n,      states, epochs                     )
-
-      spk14b( handle, segid,  body,   center, frame,
-                 first,  last,   chbdeg  )
-
-      spk14a( handle, ncsets, coeffs, epochs )
-
-      spk14e( handle )
-
-
-      spkw15( handle, body,   center, frame,  first, last,  segid,
-                 epoch,  tpole,  peri,   p,      ecc,   j2flg, cpole,
-                 gm,     j2,     radius                             )
-
-      spkw17( handle, body,   center, frame,  first, last,
-                 segid,  epoch,  eqel,   rapol,  decpol      )
-
-      spkw18( handle, subtyp, body,   center, frame,  first, last,
-
-                segid,  degree, n,      packts, epochs              )
-
-      spkw20( handle, body,   center, frame,  first,  last,
-                 segid,  intlen, n,      polydg, cdata,  dscale,
-                 tscale, initjd, initfr                         )
+* :py:meth:`~spiceypy.spiceypy.spkpds`
+* :py:meth:`~spiceypy.spiceypy.spkw02`
+* :py:meth:`~spiceypy.spiceypy.spkw03`
+* :py:meth:`~spiceypy.spiceypy.spkw05`
+* :py:meth:`~spiceypy.spiceypy.spkw08`
+* :py:meth:`~spiceypy.spiceypy.spkw09`
+* :py:meth:`~spiceypy.spiceypy.spkw10`
+* :py:meth:`~spiceypy.spiceypy.spkw12`
+* :py:meth:`~spiceypy.spiceypy.spkw13`
+* :py:meth:`~spiceypy.spiceypy.spkw15`
+* :py:meth:`~spiceypy.spiceypy.spkw17`
+* :py:meth:`~spiceypy.spiceypy.spkw18`
+* :py:meth:`~spiceypy.spiceypy.spkw20`
 
 Examining segment descriptors:
 
-.. code-block:: python
-
-      spkuds( descr,  &body, &center, frame, &type,
-                 &first, &last, &begin,  &end         )
-
+* :py:meth:`~spiceypy.spiceypy.spkuds`
 
 Extracting subsets of data from a segment:
 
-.. code-block:: python
-
-      spks01( handle, baddr, eaddr, begin, end )
-      spks02( handle, baddr, eaddr, begin, end )
-      spks03( handle, baddr, eaddr, begin, end )
-      spks05( handle, baddr, eaddr, begin, end )
-      spks08( handle, baddr, eaddr, begin, end )
-      spks09( handle, baddr, eaddr, begin, end )
-      spks10( handle, baddr, eaddr, begin, end )
-      spks12( handle, baddr, eaddr, begin, end )
-      spks13( handle, baddr, eaddr, begin, end )
-      spks14( handle, baddr, eaddr, begin, end )
-      spks15( handle, baddr, eaddr, begin, end )
-      spks17( handle, baddr, eaddr, begin, end )
-      spks18( handle, baddr, eaddr, begin, end )
-      spks19( handle, baddr, eaddr, begin, end )
-      spks20( handle, baddr, eaddr, begin, end )
-      spks21( handle, baddr, eaddr, begin, end )
-
-      spksub( handle, descr, ident, begin, end, newh )
+* :py:meth:`~spiceypy.spiceypy.spksub`
 
 To write new or append segments to SPK files:
 
-.. code-block:: python
-
-      spkopn( name, ifname, ncomch, handle )
-      spkopa( file, handle                 )
-      spkcls( handle                       )
+* :py:meth:`~spiceypy.spiceypy.spkopn`
+* :py:meth:`~spiceypy.spiceypy.spkopa`
+* :py:meth:`~spiceypy.spiceypy.spkcls`
 
 
 
 Appendix B --- A Template for SPK Comments
 =============================================
-
-
 
 | An undocumented ephemeris is in many respects worse than
   undocumented source code. With source code you can at least read
@@ -4401,7 +4110,7 @@ this task NAIF has devised a `template` that you may wish to use
 as a starting point when creating the comments for an SPK file.
 
 Constraints
-^^^^^^^^^^^^^^
+-------------
 
 | The comments you place in an SPK file must be plain ASCII text.
   Each line of text must consist of 80 or fewer characters. The text
