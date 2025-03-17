@@ -1,5 +1,5 @@
 name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
-
+ 
 on:
   pull_request: 
   push:
@@ -12,36 +12,44 @@ jobs:
   build_sdist:
     name: Make SpiceyPy 🌶️ 🥧 Python 🐍 source distribution
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v3
-      - name: Set up Python 🐍 3.11
-        uses: actions/setup-python@v4
+        uses: actions/checkout@v4
+      - name: Set up Python 🐍 3.13
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
       - name: Display Python 🐍 
         run: python -c "import sys; print(sys.version)"
-      - name: Install dependencies
+      - name: Update pip
         run: |
           python -m pip install --upgrade pip
+      - name: Install CI dependencies
+        run: |
           python -m pip install -r ci-requirements.txt
       - name: Build 🛠️ sdist source and Install SpiceyPy 🌶️ 🥧
         env: 
           CSPICE_NO_TEMP: "YES"
         run: |
           python -m build --sdist
-          pip install dist/*.tar.gz --user
+          echo "Running Pip install from sdist"
+          python -m pip install dist/*.tar.gz --user
       - name: Test 🧪 with coverage 📈
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy
       - name: Upload 🆙 coverage 📈 report to codecov 
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
+          fail_ci_if_error: false
           verbose: true
+          use_oidc: true
       - name: Check dists
         run: |
           twine check dist/*
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           path: dist/*.tar.gz
   build_wheels:
@@ -49,48 +57,47 @@ jobs:
       matrix:
         include:
           - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "x86_64"}
-          - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "aarch64"}
-          - config: {"name": "macOS", "os": "macos-latest", "arch": "x86_64"}
-          - config: {"name": "macOS", "os": "macos-latest", "arch": "arm64"}
+          - config: {"name": "Linux", "os": "ubuntu-22.04-arm", "arch": "aarch64"}
+          - config: {"name": "macOS", "os": "macos-13", "arch": "x86_64"}
+          - config: {"name": "macOS", "os": "macos-14", "arch": "arm64"}
           - config: {"name": "Windows", "os": "windows-latest", "arch": "AMD64"}  
     name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels for ${{ matrix.config.os }} ${{ matrix.config.arch }}
     env: 
-      CSPICE_CACHE: 0
+      CSPICE_CACHE: 2
       CIBW_ARCHS: ${{ matrix.config.arch }}
     runs-on: ${{ matrix.config.os }}
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup 🔬🍦🏗️
         if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1.12.0
-      - name: set additional environment variables
-        if: runner.name == 'macOS' && runner.arch == 'arm64'
+        uses: ilammy/msvc-dev-cmd@v1.13.0
+      - name: set additional environment variables for macOS arm
+        if: runner.os == 'macOS' && matrix.config.arch == 'arm64'
         run: |
           echo "CIBW_ARCHS_MACOS=arm64" >> $GITHUB_ENV
           echo "ARCHFLAGS='-arch arm64'" >> $GITHUB_ENV
-      - name: Set up QEMU for arm64 builds
-        if: matrix.config.arch == 'aarch64'
-        uses: docker/setup-qemu-action@v2
+      - name: set additional environment variables for macOS x86
+        if: runner.os == 'macOS' && matrix.config.arch == 'x86_64'
+        run: |
+          echo "CIBW_ARCHS_MACOS=x86_64" >> $GITHUB_ENV
+          echo "ARCHFLAGS='-arch x86_64'" >> $GITHUB_ENV
+      - name: set additional environment variables for linux aarch64
+        if: runner.os == 'Linux' && matrix.config.arch == 'aarch64'
+        run: |
+          echo "CIBW_ARCHS_LINUX=aarch64" >> $GITHUB_ENV
+          echo "ARCHFLAGS='-arch aarch64'" >> $GITHUB_ENV
+      - name: Set up Python 🐍 3.13
+        uses: actions/setup-python@v5
         with:
-          platforms: all
-      - name: Cache libcspice.so for aarch64 builds because they take an hour to build with qemu
-        if: matrix.config.arch == 'aarch64'
-        uses: actions/cache@v3
-        with:
-          path: /project/src/spiceypy/utils/libcspice.so
-          key: ${{ env.CSPICE_CACHE }}-${{ matrix.config.os }}-${{ matrix.config.arch }}-${{ hashFiles('get_spice.py') }}-${{ hashFiles('setup.cfg') }}
-      - name: Set up Python 🐍 3.11
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+          python-version: '3.13'
       - name: Display Python 🐍 Version
         run: python -c "import sys; print(sys.version)"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r ci-requirements.txt
-          python -m pip install cibuildwheel==2.12.3
+          python -m pip install cibuildwheel==2.22.0
       - name: Build wheels for SpiceyPy 🌶️ 🥧
         timeout-minutes: 120
         run: |
@@ -101,22 +108,27 @@ jobs:
         run: |
           twine check wheelhouse/*
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
+          name: artifact-${{ env.CSPICE_CACHE }}-${{ matrix.config.os }}-${{ matrix.config.arch }}-${{ hashFiles('get_spice.py') }}-${{ hashFiles('setup.cfg') }}
           path: ./wheelhouse/*.whl
   publish_to_pypi:
     name: Publish SpiceyPy 🌶️ 🥧 Python 🐍 distributions 📦 to PyPI and TestPyPI
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: artifact
+          pattern: artifact-*
+          merge-multiple: true
           path: dist
-      - name: Set up Python 🐍 3.11
-        uses: actions/setup-python@v4
+      - name: Set up Python 🐍 3.13
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
       - name: Display Python 🐍
         run: python -c "import sys; print(sys.version)"
       - name: Install dependencies

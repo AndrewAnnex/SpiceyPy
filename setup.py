@@ -75,7 +75,6 @@ def get_cyice_extension(default_path: str = "./src/cspice/"):
         name="spiceypy.cyice.cyice",
         sources=[
             "./src/spiceypy/cyice/cyice.pyx",
-            "./src/spiceypy/cyice/cyice.pxd",
         ],
         **ext_options,
     )

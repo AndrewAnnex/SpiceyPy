@@ -2341,7 +2341,7 @@ def test_dskx02():
     plid, xpt, found = spice.dskx02(handle, dladsc, vertex, raydir)
     # test results
     assert found
-    assert plid == 421
+    assert plid in (349, 350, 420, 421, 422, 423)
     npt.assert_almost_equal(xpt, [12.36679999999999957083, 0.0, 0.0])
     # cleanup
     spice.dascls(handle)
@@ -2368,7 +2368,7 @@ def test_dskxsi():
     )
     # check output
     assert handle is not None
-    assert ic[0] == 420
+    assert ic[0] in (349, 350, 420, 421, 422, 423)
     assert dc[0] == pytest.approx(0.0)
     npt.assert_almost_equal(xpt, [12.36679999999999957083, 0.0, 0.0])
 
@@ -4706,8 +4706,9 @@ def test_gfsntc():
     beg, end = spice.wnfetd(result, 1)
     begstr = spice.timout(beg, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 80)
     endstr = spice.timout(end, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 80)
-    assert begstr == "2007-SEP-23 09:46:39.606982 (TDB)"
-    assert endstr == "2007-SEP-23 09:46:39.606982 (TDB)"
+    # uncertainty below is due to difference on arm vs x86 IEEE floating point issues
+    assert begstr == "2007-SEP-23 09:46:39.606982 (TDB)" or begstr == "2007-SEP-23 09:46:39.606981 (TDB)"
+    assert endstr == "2007-SEP-23 09:46:39.606982 (TDB)" or endstr == "2007-SEP-23 09:46:39.606981 (TDB)"
     cleanup_kernel(kernel)
 
 
@@ -6239,17 +6240,17 @@ def test_oscelt():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("Dec 25, 2007")
     state, ltime = spice.spkezr("Moon", et, "J2000", "LT+S", "EARTH")
-    mass_earth = spice.bodvrd("EARTH", "GM", 1)
+    _len, mass_earth = spice.bodvrd("EARTH", "GM", 1)
     elts = spice.oscelt(state, et, mass_earth[0])
     expected = [
-        3.65914105273643566761e05,
-        4.23931145731340453494e05,
-        4.87177926278510253777e-01,
-        6.18584206992959551030e00,
-        1.88544634402406319218e00,
-        1.86769787246217056236e04,
-        2.51812865183709204197e08,
-        1.00000000000000000000e00,
+        3.60975119168868346605e+05,
+        7.81035176779166367966e-02,
+        4.87177926278510309288e-01,
+        6.18584206992959551030e+00,
+        1.28678805411666807856e+00,
+        5.53312778515375192079e-01,
+        2.51812865183709204197e+08,
+        3.98600435436095925979e+05
     ]
     npt.assert_array_almost_equal(elts, expected, decimal=4)
 
@@ -6265,20 +6266,20 @@ def test_oscltx():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("Dec 25, 2007")
     state, ltime = spice.spkezr("Moon", et, "J2000", "LT+S", "EARTH")
-    mass_earth = spice.bodvrd("EARTH", "GM", 1)
+    _len, mass_earth = spice.bodvrd("EARTH", "GM", 1)
     elts = spice.oscltx(state, et, mass_earth[0])
     expected = [
-        3.65914105273643566761e05,
-        4.23931145731340453494e05,
-        4.87177926278510253777e-01,
-        6.18584206992959551030e00,
-        1.88544634402406319218e00,
-        1.86769787246217056236e04,
-        2.51812865183709204197e08,
-        1.00000000000000000000e00,
-        4.40283687897870881778e-02,
-        -8.63147169311087925081e-01,
-        0.00000000000000000000e00,
+        3.60975119168868346605e+05,
+        7.81035176779166367966e-02,
+        4.87177926278510309288e-01,
+        6.18584206992959551030e+00,
+        1.28678805411666807856e+00,
+        5.53312778515375192079e-01,
+        2.51812865183709204197e+08,
+        3.98600435436095925979e+05,
+        6.42686658697182999767e-01,
+        3.91557106563244480640e+05,
+        2.43839270213373843580e+06
     ]
     npt.assert_array_almost_equal(elts, expected, decimal=4)
 
@@ -6750,10 +6751,9 @@ def test_raxisa():
 
 
 def test_rdtext():
-    import datetime
-
+    from datetime import datetime, timezone
     # Create ISO UTC datetime string using current time
-    utcnow = datetime.datetime.utcnow().isoformat()
+    utcnow = datetime.now(timezone.utc).isoformat()
     spice.reset()
     # Create temporary filenames
     RDTEXT = os.path.join(cwd, "ex_rdtext.txt")
@@ -7369,7 +7369,7 @@ def test_sphcyl():
 
 def test_sphlat():
     result = np.array(spice.sphlat(1.0, spice.pi(), spice.halfpi()))
-    expected = np.array([0.0, spice.halfpi(), -1.0])
+    expected = np.array([1.0, spice.halfpi(), -spice.halfpi()])
     npt.assert_array_almost_equal(result, expected)
 
 
@@ -9602,7 +9602,7 @@ def test_tkfram():
             [0.00000000e00, 1.00000000e00, -0.00000000e00],
             [1.00000000e00, 0.00000000e00, 6.12323400e-17],
         ]
-    )
+    ).T
     npt.assert_array_almost_equal(rotation, expected)
     assert nextFrame == -82000
 
@@ -10544,7 +10544,7 @@ def test_zzdynrot():
             [-0.5895359, 0.53692566, 0.60345527],
             [0.44614992, -0.40633546, 0.79739685],
         ]
-    )
+    ).T
     npt.assert_array_almost_equal(rotation, expected)
     assert frame == 1
 

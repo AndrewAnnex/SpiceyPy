@@ -41,12 +41,37 @@ cdef extern from "SpiceUsr.h" nogil:
     cdef SpiceDouble b1950_c()
 
     #C 
+
+    #ckgp 
+    #ckgpav
+
     cdef void convrt_c(SpiceDouble      x,
                        ConstSpiceChar * inunit,
                        ConstSpiceChar * outunit,
                        SpiceDouble    * y)
 
+    #D
+    # deltet
+
+    cdef void deltet_c(SpiceDouble      epoch,
+                       ConstSpiceChar * eptype,
+                       SpiceDouble    * delta )
+
+
     #E
+
+    cdef void et2lst_c(SpiceDouble        et,
+                       SpiceInt           body,
+                       SpiceDouble        lon,
+                       ConstSpiceChar   * type,
+                       SpiceInt           timlen,
+                       SpiceInt           ampmlen,
+                       SpiceInt         * hr,
+                       SpiceInt         * mn,
+                       SpiceInt         * sc,
+                       SpiceChar        * time,
+                       SpiceChar        * ampm )
+
     cdef void et2utc_c(SpiceDouble      et,
                        ConstSpiceChar * format,
                        SpiceInt         prec,
@@ -57,9 +82,20 @@ cdef extern from "SpiceUsr.h" nogil:
                       SpiceInt      callen,
                       SpiceChar   * calstr)
 
+    #L 
+
+    cdef SpiceDouble lspcn_c(ConstSpiceChar   * body,
+                             SpiceDouble        et,
+                             ConstSpiceChar   * abcorr )
+
+
     #F 
     cdef SpiceBoolean failed_c()
     
+    # fovray
+
+    # fovtrg
+
     cdef void furnsh_c(ConstSpiceChar * file)
     
     #G
@@ -74,6 +110,36 @@ cdef extern from "SpiceUsr.h" nogil:
     cdef void reset_c()
 
     #S
+    
+    cdef void scdecd_c(SpiceInt        sc,
+                       SpiceDouble     sclkdp,
+                       SpiceInt        scllen,
+                       SpiceChar     * sclkch)
+
+    cdef void scencd_c(SpiceInt         sc,
+                        ConstSpiceChar * sclkch,
+                        SpiceDouble    * sclkdp)
+
+    cdef void str2et_c(ConstSpiceChar * date,
+                       SpiceDouble * et)
+
+    cdef void sce2c_c(SpiceInt        sc,
+                      SpiceDouble     et,
+                      SpiceDouble   * sclkdp)
+
+    cdef void sce2s_c(SpiceInt        sc,
+                      SpiceDouble     et,
+                      SpiceInt        scllen,
+                      SpiceChar     * sclkch  )
+
+    cdef void scs2e_c(SpiceInt          sc,
+                      ConstSpiceChar  * sclkch,
+                      SpiceDouble     * et      )
+
+    cdef void sct2e_c(SpiceInt       sc,
+                      SpiceDouble    sclkdp,
+                      SpiceDouble  * et     )
+
     cdef void spkez_c(SpiceInt         target,
                       SpiceDouble      epoch,
                       ConstSpiceChar * frame,
@@ -81,6 +147,8 @@ cdef extern from "SpiceUsr.h" nogil:
                       SpiceInt         observer,
                       SpiceDouble      state[6],
                       SpiceDouble    * lt)
+
+    # spkezp_c
     
     cdef void spkezr_c(ConstSpiceChar * target,
                        SpiceDouble      epoch,
@@ -98,13 +166,43 @@ cdef extern from "SpiceUsr.h" nogil:
                        SpiceDouble      ptarg[3],
                        SpiceDouble * lt)
 
-    cdef void str2et_c(ConstSpiceChar * date,
-                       SpiceDouble * et)
-
     cdef void sxform_c(ConstSpiceChar * fromstring,
                        ConstSpiceChar * tostring,
                        SpiceDouble      et,
                        SpiceDouble      xform[6][6])
-    
+    #spkapo	
+    #spkpvn	
+    #spkssb	
+    #spkgeo	
+    #spkgps	
+    #spkcpo	
+    #spkcpt	
+    #spkcvo	
+    #spkcvt
+    #sincpt	
+    #subpnt	
+    #subslr
+
+
+    # T
+
+    #	
+    #tangpt	
+    #trgsep
+
+    cdef void timout_c(SpiceDouble        et,
+                       ConstSpiceChar   * pictur,
+                       SpiceInt           outlen,
+                       ConstSpiceChar   * output)
+
     # U
+
+    cdef SpiceDouble unitim_c(SpiceDouble        epoch,
+                              ConstSpiceChar   * insys,
+                              ConstSpiceChar   * outsys)
+
+    cdef void unload_c(ConstSpiceChar * file)
+
     cdef void utc2et_c(ConstSpiceChar * utcstr, SpiceDouble * et)
+
+

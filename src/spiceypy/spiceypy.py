@@ -419,7 +419,7 @@ def azlcpo(
 
     :param method: Method to obtain the surface normal vector.
     :param target: Name of target ephemeris object.
-    :param et: Observation epoch.
+    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
     :param abcorr: Aberration correction.
     :param azccw: Flag indicating how azimuth is measured.
     :param elplsz: Flag indicating how elevation is measured.
@@ -1878,9 +1878,9 @@ def conics(elts: ndarray, et: float) -> ndarray:
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/conics_c.html
 
-    :param elts: Conic elements.
-    :param et: Input time.
-    :return: State of orbiting body at et.
+    :param elts: Conic elements, units are km, rad, rad/sec, km**3/sec**2.
+    :param et: Input time in ephemeris seconds J2000.
+    :return: State of orbiting body at et (x, y, z, dx/dt, dy/dt, dz/dt).
     """
     elts = stypes.to_double_vector(elts)
     et = ctypes.c_double(et)
@@ -4445,7 +4445,7 @@ def edterm(
     :param trmtyp: Terminator type.
     :param source: Light source.
     :param target: Target body.
-    :param et: Observation epoch.
+    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
     :param fixref: Body-fixed frame associated with target.
     :param abcorr: Aberration correction.
     :param obsrvr: Observer.
@@ -4453,7 +4453,7 @@ def edterm(
     :return:
             Epoch associated with target center,
             Position of observer in body-fixed frame,
-            Terminator point set.
+            Terminator point set in km units.
     """
     trmtyp = stypes.string_to_char_p(trmtyp)
     source = stypes.string_to_char_p(source)
@@ -5873,7 +5873,7 @@ def etcal(
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/etcal_c.html
 
-    :param et: Ephemeris time measured in seconds past J2000.
+    :param et: Ephemeris time measured in seconds past J2000 TDB.
     :param lenout: Length of output string.
     :return: A standard calendar representation of et.
     """
@@ -5906,7 +5906,7 @@ def eul2m(
     :param angle1: Rotation angle about first rotation axis (radians).
     :param axis3: Axis number of third rotation axis.
     :param axis2: Axis number of second rotation axis.
-    :param axis1: Axis number of first rotation axis.]
+    :param axis1: Axis number of first rotation axis.
     :return: Product of the 3 rotations.
     """
     angle3 = ctypes.c_double(angle3)
@@ -6040,8 +6040,7 @@ def failed() -> bool:
 @spice_error_check
 def fn2lun(fname: str) -> int:
     """
-    Internal undocumented command for mapping name of open file to
-    its FORTRAN (F2C) logical unit.
+    Map the name of an open file to its associated FORTRAN (F2C) logical unit.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/spicelib/fn2lun.html
 
@@ -6344,7 +6343,7 @@ def getelm(frstyr: int, lineln: int, lines: Iterable[str]) -> Tuple[float, ndarr
     :param lines: A pair of "lines" containing two-line elements.
     :return:
             The epoch of the elements in seconds past J2000,
-            The elements converted to SPICE units.
+            The elements converted to SPICE units (see naif docs for units).
     """
     frstyr = ctypes.c_int(frstyr)
     lineln = ctypes.c_int(lineln)
@@ -6530,12 +6529,12 @@ def gfdist(
     :param abcorr: Aberration correction flag.
     :param obsrvr: Name of the observing body.
     :param relate: Relational operator.
-    :param refval: Reference value.
-    :param adjust: Adjustment value for absolute extrema searches.
-    :param step: Step size used for locating extrema and roots.
+    :param refval: Reference value in km.
+    :param adjust: Adjustment value for absolute extrema searches in km.
+    :param step: Step size used for locating extrema and roots in TDB seconds.
     :param nintvls: Workspace window interval count.
-    :param cnfine: SPICE window to which the search is confined.
-    :param result: Optional SPICE window containing results.
+    :param cnfine: SPICE window to which the search is confined, endpoints in seconds past J2000 TDB.
+    :param result: Optional SPICE window containing results, endpoints in seconds past J2000 TDB.
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -7380,12 +7379,12 @@ def gfsep(
     :param abcorr: Aberration correction flag
     :param obsrvr: Name of the observing body.
     :param relate: Relational operator.
-    :param refval: Reference value.
-    :param adjust: Absolute extremum adjustment value.
-    :param step: Step size in seconds for finding angular separation events.
+    :param refval: Reference value in radians.
+    :param adjust: Absolute extremum adjustment value in radians.
+    :param step: Step size in seconds for finding angular separation events, in TDB seconds.
     :param nintvls: Workspace window interval count.
     :param cnfine: SPICE window to which the search is restricted.
-    :param result: Optional SPICE window containing results.
+    :param result: Optional SPICE window containing results, endpoints in seconds past J2000 TDB.
     """
     assert isinstance(cnfine, stypes.SpiceCell)
     assert cnfine.is_double()
@@ -7940,9 +7939,9 @@ def illum(
     :param obsrvr: Name of observing body.
     :param spoint: Body-fixed coordinates of a target surface point.
     :return:
-            Phase angle,
-            Solar incidence angle,
-            and Emission angle at the surface point.
+            Phase angle in radians,
+            Solar incidence angle in radians,
+            and Emission angle at the surface point in radians.
     """
     target = stypes.string_to_char_p(target)
     et = ctypes.c_double(et)
@@ -7998,10 +7997,14 @@ def illumf(
     :param abcorr: Desired aberration correction.
     :param obsrvr: Name of observing body.
     :param spoint: Body-fixed coordinates of a target surface point.
-    :return: Target surface point epoch, Vector from observer to target
-     surface point, Phase angle at the surface point, Source incidence
-     angle at the surface point, Emission angle at the surface point,
-     Visibility flag, Illumination flag
+    :return: 
+        Target surface point epoch in seconds past J2000 TDB, 
+        Vector from observer to target surface point in km,
+        Phase angle at the surface point in radians, 
+        Source incidence angle at the surface point in radians,
+        Emission angle at the surface point in radians,
+        Visibility flag, 
+        Illumination flag
     """
     method = stypes.string_to_char_p(method)
     target = stypes.string_to_char_p(target)
@@ -8077,9 +8080,12 @@ def illumg(
     :param abcorr: Desired aberration correction.
     :param obsrvr: Name of observing body.
     :param spoint: Body-fixed coordinates of a target surface point.
-    :return: Target surface point epoch, Vector from observer to target
-     surface point, Phase angle at the surface point, Source incidence
-     angle at the surface point, Emission angle at the surface point,
+    :return: 
+        Target surface point epoch in seconds past J2000 TDB, 
+        Vector from observer to target surface point in km,
+        Phase angle at the surface point in radians, 
+        Source incidence angle at the surface point in radians, 
+        Emission angle at the surface point in radians,
     """
     method = stypes.string_to_char_p(method)
     target = stypes.string_to_char_p(target)
@@ -9184,7 +9190,11 @@ def limbpt(
     :param schstp: Angular step size for searching.
     :param soltol: Solution convergence tolerance.
     :param maxn: Maximum number of entries in output arrays.
-    :return: Counts of limb points corresponding to cuts, Limb points, Times associated with limb points, Tangent vectors emanating from the observer
+    :return: 
+        Counts of limb points corresponding to cuts
+        Limb points in km, 
+        Times associated with limb points in seconds, 
+        Tangent vectors emanating from the observer in km
     """
     method = stypes.string_to_char_p(method)
     target = stypes.string_to_char_p(target)
@@ -9331,7 +9341,7 @@ def lspcn(body: str, et: float, abcorr: str) -> float:
     :param body: Name of central body.
     :param et: Epoch in seconds past J2000 TDB.
     :param abcorr: Aberration correction.
-    :return: planetocentric longitude of the sun
+    :return: planetocentric longitude of the sun in radians
     """
     body = stypes.string_to_char_p(body)
     et = ctypes.c_double(et)
@@ -10364,9 +10374,9 @@ def oscelt(state: ndarray, et: float, mu: Union[float, int]) -> ndarray:
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/oscelt_c.html
 
     :param state: State of body at epoch of elements.
-    :param et: Epoch of elements.
-    :param mu: Gravitational parameter (GM) of primary body.
-    :return: Equivalent conic elements
+    :param et: Epoch of elements in ephemeris seconds past J2000.
+    :param mu: Gravitational parameter (GM) of primary body in km**3/sec**2 units.
+    :return: Equivalent conic elements in  km, rad, rad/sec units.
     """
     state = stypes.to_double_vector(state)
     et = ctypes.c_double(et)
@@ -10626,7 +10636,7 @@ def phaseq(et: float, target: str, illmn: str, obsrvr: str, abcorr: str) -> floa
     :param illmn: Illuminating body name.
     :param obsrvr: Observer body.
     :param abcorr: Aberration correction flag.
-    :return: Value of phase angle.
+    :return: Value of phase angle in radians.
     """
     et = ctypes.c_double(et)
     target = stypes.string_to_char_p(target)
@@ -11122,7 +11132,7 @@ def qdq2av(q: ndarray, dq: Union[ndarray, Iterable[float]]) -> ndarray:
 
     :param q: Unit SPICE quaternion.
     :param dq: Derivative of q with respect to time
-    :return: Angular velocity defined by q and dq.
+    :return: Angular velocity defined by q and dq (see naif docs for units).
     """
     q = stypes.to_double_vector(q)
     dq = stypes.to_double_vector(dq)
@@ -11921,7 +11931,7 @@ def sce2c(sc: int, et: float) -> float:
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sce2c_c.html
 
     :param sc: NAIF spacecraft ID code.
-    :param et: Ephemeris time, seconds past J2000.
+    :param et: Ephemeris time, seconds past J2000 TDB.
     :return:
             SCLK, encoded as ticks since spacecraft clock start.
             sclkdp need not be integral.
@@ -11942,7 +11952,7 @@ def sce2s(sc: int, et: float, lenout: int = _default_len_out) -> str:
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sce2s_c.html
 
     :param sc: NAIF spacecraft clock ID code.
-    :param et: Ephemeris time, specified as seconds past J2000.
+    :param et: Ephemeris time, specified as seconds past J2000 TDB.
     :param lenout: Maximum length of output string.
     :return: An SCLK string.
     """
@@ -11965,7 +11975,7 @@ def sce2t(sc: int, et: float) -> float:
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sce2t_c.html
 
     :param sc: NAIF spacecraft ID code.
-    :param et: Ephemeris time, seconds past J2000.
+    :param et: Ephemeris time, seconds past J2000 TDB.
     :return: SCLK, encoded as ticks since spacecraft clock start.
     """
     sc = ctypes.c_int(sc)
@@ -12275,9 +12285,9 @@ def sincpt(
     :param dref: Reference frame of ray's direction vector.
     :param dvec: Ray's direction vector.
     :return:
-            Surface intercept point on the target body,
+            Surface intercept point on the target body in km,
             Intercept epoch,
-            Vector from observer to intercept point.
+            Vector from observer to intercept point in km.
     """
     method = stypes.string_to_char_p(method)
     target = stypes.string_to_char_p(target)
@@ -12389,7 +12399,7 @@ def sphlat(r: float, colat: float, lons: float) -> Tuple[float, float, float]:
     radius = ctypes.c_double()
     lon = ctypes.c_double()
     lat = ctypes.c_double()
-    libspice.sphcyl_c(
+    libspice.sphlat_c(
         r, colat, lons, ctypes.byref(radius), ctypes.byref(lon), ctypes.byref(lat)
     )
     return radius.value, lon.value, lat.value
@@ -12428,13 +12438,13 @@ def spkacs(
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkacs_c.html
 
     :param targ: Target body.
-    :param et: Observer epoch.
+    :param et: Observer epoch in seconds past J2000 TDB..
     :param ref: Inertial reference frame of output state.
     :param abcorr: Aberration correction flag.
     :param obs: Observer.
     :return:
-            State of target,
-            One way light time between observer and target,
+            State of target in km and km/sec,
+            One way light time between observer and target in seconds,
             Derivative of light time with respect to time.
     """
     targ = ctypes.c_int(targ)
@@ -12462,13 +12472,13 @@ def spkapo(
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkapo_c.html
 
     :param targ: Target body.
-    :param et: Observer epoch.
+    :param et: Observer epoch in seconds past J2000 TDB..
     :param ref: Inertial reference frame of observer's state.
     :param sobs: State of observer wrt. solar system barycenter.
     :param abcorr: Aberration correction flag.
     :return:
-            Position of target,
-            One way light time between observer and target.
+            Position of target in km,
+            One way light time between observer and target in seconds.
     """
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
@@ -12496,13 +12506,13 @@ def spkapp(
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkapp_c.html
 
     :param targ: Target body.
-    :param et: Observer epoch.
+    :param et: Observer epoch in seconds past J2000 TDB.
     :param ref: Inertial reference frame of observer's state.
     :param sobs: State of observer wrt. solar system barycenter.
     :param abcorr: Aberration correction flag.
     :return:
-            State of target,
-            One way light time between observer and target.
+            State of target in km and km/sec,
+            One way light time between observer and target in seconds.
     """
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
@@ -12538,14 +12548,14 @@ def spkaps(
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkaps_c.html
 
     :param targ: Target body.
-    :param et: Observer epoch.
+    :param et: Observer epoch in seconds past J2000 TDB.
     :param ref: Inertial reference frame of output state.
     :param abcorr: Aberration correction flag.
     :param stobs: State of the observer relative to the SSB.
     :param accobs: Acceleration of the observer relative to the SSB.
     :return:
-             State of target,
-             One way light time between observer and target,
+             State of target in km and km/sec,
+             One way light time between observer and target in seconds,
              Derivative of light time with respect to time.
     """
     targ = ctypes.c_int(targ)
@@ -12695,7 +12705,7 @@ def spkcpo(
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpo_c.html
 
     :param target: Name of target ephemeris object.
-    :param et: Observation epoch.
+    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
     :param outref: Reference frame of output state.
     :param refloc: Output reference frame evaluation locus.
     :param abcorr: Aberration correction.
@@ -12703,7 +12713,7 @@ def spkcpo(
     :param obsctr: Center of motion of observer.
     :param obsref: Frame of observer position.
     :return:
-            State of target with respect to observer,
+            State of target with respect to observer in km and km/sec,
             One way light time between target and observer.
     """
     target = stypes.string_to_char_p(target)
@@ -12753,13 +12763,13 @@ def spkcpt(
     :param trgpos: Target position relative to center of motion.
     :param trgctr: Center of motion of target.
     :param trgref: Observation epoch.
-    :param et: Observation epoch.
+    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
     :param outref: Reference frame of output state.
     :param refloc: Output reference frame evaluation locus.
     :param abcorr: Aberration correction.
     :param obsrvr: Name of observing ephemeris object.
     :return:
-            State of target with respect to observer,
+            State of target with respect to observer in km and km/sec,
             One way light time between target and observer.
     """
     trgpos = stypes.to_double_vector(trgpos)
@@ -12808,7 +12818,7 @@ def spkcvo(
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvo_c.html
 
     :param target: Name of target ephemeris object.
-    :param et: Observation epoch.
+    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
     :param outref: Reference frame of output state.
     :param refloc: Output reference frame evaluation locus.
     :param abcorr: Aberration correction.
@@ -12817,7 +12827,7 @@ def spkcvo(
     :param obsctr: Center of motion of observer.
     :param obsref: Frame of observer state.
     :return:
-            State of target with respect to observer,
+            State of target with respect to observer in km and km/sec,
             One way light time between target and observer.
     """
     target = stypes.string_to_char_p(target)
@@ -12871,13 +12881,13 @@ def spkcvt(
     :param trgepc: Epoch of target state.
     :param trgctr: Center of motion of target.
     :param trgref: Frame of target state.
-    :param et: Observation epoch.
+    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
     :param outref: Reference frame of output state.
     :param refloc: Output reference frame evaluation locus.
     :param abcorr: Aberration correction.
     :param obsrvr: Name of observing ephemeris object.
     :return:
-            State of target with respect to observer,
+            State of target with respect to observer in km and km/sec,
             One way light time between target and observer.
     """
     trgpos = stypes.to_double_vector(trgsta)
@@ -12919,13 +12929,13 @@ def spkez(
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkez_c.html
 
     :param targ: Target body.
-    :param et: Observer epoch.
+    :param et: Observer epoch in seconds past J2000 TDB.
     :param ref: Reference frame of output state vector.
     :param abcorr: Aberration correction flag.
     :param obs: Observing body.
     :return:
-            State of target,
-            One way light time between observer and target.
+            State of target in km and km/sec,
+            One way light time between observer and target in seconds.
     """
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
@@ -12950,13 +12960,13 @@ def spkezp(
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkezp_c.html
 
     :param targ: Target body NAIF ID code.
-    :param et: Observer epoch.
+    :param et: Observer epoch in seconds past J2000 TDB.
     :param ref: Reference frame of output position vector.
     :param abcorr: Aberration correction flag.
     :param obs: Observing body NAIF ID code.
     :return:
-            Position of target,
-            One way light time between observer and target.
+            Position of target in km,
+            One way light time between observer and target in seconds.
     """
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
@@ -12981,13 +12991,13 @@ def spkezr(
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkezr_c.html
 
     :param targ: Target body name.
-    :param et: Observer epoch.
+    :param et: Observer epoch in seconds past J2000 TDB.
     :param ref: Reference frame of output state vector.
     :param abcorr: Aberration correction flag.
     :param obs: Observing body name.
     :return:
-            State of target,
-            One way light time between observer and target.
+            State of target in km and km/sec,
+            One way light time between observer and target in seconds.
     """
     targ = stypes.string_to_char_p(targ)
     ref = stypes.string_to_char_p(ref)
@@ -13025,7 +13035,9 @@ def spkgeo(targ: int, et: float, ref: str, obs: int) -> Tuple[ndarray, float]:
     :param et: Target epoch.
     :param ref: Target reference frame.
     :param obs: Observing body.
-    :return: State of target, Light time.
+    :return: 
+        State of target in km and km/sec, 
+        One way light time between observer and target in seconds.
     """
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
@@ -13049,7 +13061,7 @@ def spkgps(targ: int, et: float, ref: str, obs: int) -> Tuple[ndarray, float]:
     :param et: Target epoch.
     :param ref: Target reference frame.
     :param obs: Observing body.
-    :return: Position of target, Light time.
+    :return: Position of target in km, Light time.
     """
     targ = ctypes.c_int(targ)
     et = ctypes.c_double(et)
@@ -13090,12 +13102,13 @@ def spkltc(
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkltc_c.html
 
     :param targ: Target body.
-    :param et: Observer epoch.
+    :param et: Observer epoch in seconds past J2000 TDB.
     :param ref: Inertial reference frame of output state.
     :param abcorr: Aberration correction flag.
     :param stobs: State of the observer relative to the SSB.
     :return:
-            One way light time between observer and target,
+            State of target in km and km/sec,
+            One way light time between observer and target in seconds,
             Derivative of light time with respect to time
     """
     assert len(stobs) == 6
@@ -13209,13 +13222,13 @@ def spkpos(
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpos_c.html
 
     :param targ: Target body name.
-    :param et: Observer epoch.
+    :param et: Observer epoch in seconds past J2000 TDB.
     :param ref: Reference frame of output position vector.
     :param abcorr: Aberration correction flag.
     :param obs: Observing body name.
     :return:
-            Position of target,
-            One way light time between observer and target.
+            Position of target in km,
+            One way light time between observer and target in seconds.
     """
     targ = stypes.string_to_char_p(targ)
     ref = stypes.string_to_char_p(ref)
@@ -13278,7 +13291,7 @@ def spksfs(
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spksfs_c.html
 
     :param body: Body ID.
-    :param et: Ephemeris time.
+    :param et: Ephemeris time in ephemeris seconds past J2000 TDB.
     :param idlen: Length of output segment ID string.
     :return:
             Handle of file containing the applicable segment,
@@ -14211,7 +14224,7 @@ def srfrec(body: int, longitude: float, latitude: float) -> ndarray:
     :param body: NAIF integer code of an extended body.
     :param longitude: Longitude of point in radians.
     :param latitude: Latitude of point in radians.
-    :return: Rectangular coordinates of the point.
+    :return: Rectangular coordinates of the point, same units as used in radii definition (typically km).
     """
     body = ctypes.c_int(body)
     longitude = ctypes.c_double(longitude)
@@ -14300,10 +14313,10 @@ def srfxpt(
     :param dref: Reference frame of input direction vector.
     :param dvec: Ray's direction vector.
     :return:
-            Surface intercept point on the target body,
-            Distance from the observer to the intercept point,
+            Surface intercept point on the target body in km,
+            Distance from the observer to the intercept point in km,
             Intercept epoch,
-            Observer position relative to target center.
+            Observer position relative to target center in km.
     """
     method = stypes.string_to_char_p(method)
     target = stypes.string_to_char_p(target)
@@ -14532,12 +14545,9 @@ def datetime2et(dt: Union[Iterable[datetime], datetime]) -> Union[ndarray, float
 
 
 if hasattr(datetime, "fromisoformat"):
-
     def fromisoformat(s):
         return datetime.fromisoformat(s + "+00:00")
-
 else:
-
     def fromisoformat(s):
         return datetime.strptime(s, "%Y-%m-%dT%H:%M:%S.%f").replace(tzinfo=timezone.utc)
 
@@ -14683,9 +14693,9 @@ def subslr(
     :param abcorr: Aberration correction.
     :param obsrvr: Name of observing body.
     :return:
-            Sub-solar point on the target body,
+            Sub-solar point on the target body in km,
             Sub-solar point epoch,
-            Vector from observer to sub-solar point.
+            Vector from observer to sub-solar point in km.
     """
     method = stypes.string_to_char_p(method)
     target = stypes.string_to_char_p(target)
@@ -15060,7 +15070,11 @@ def termpt(
     :param schstp: Angular step size for searching.
     :param soltol: Solution convergence tolerance.
     :param maxn: Maximum number of entries in output arrays.
-    :return: Counts of terminator points corresponding to cuts, Terminator points, Times associated with terminator points, Terminator vectors emanating from the observer
+    :return: 
+        Counts of terminator points corresponding to cuts, 
+        Terminator points in km, 
+        Times associated with terminator points in seconds, 
+        Terminator vectors emanating from the observer in km
     """
     method = stypes.string_to_char_p(method)
     ilusrc = stypes.string_to_char_p(ilusrc)
@@ -15226,8 +15240,8 @@ def tkfram(typid: int) -> Union[Tuple[ndarray, int, bool], Tuple[ndarray, int]]:
     matrix = stypes.empty_double_matrix(x=3, y=3)
     next_frame = ctypes.c_int()
     found = ctypes.c_int()
-    libspice.tkfram_(
-        ctypes.byref(code), matrix, ctypes.byref(next_frame), ctypes.byref(found)
+    libspice.tkfram_c(
+        code, matrix, ctypes.byref(next_frame), ctypes.byref(found)
     )
     return stypes.c_matrix_to_numpy(matrix), next_frame.value, bool(found.value)
 
@@ -17069,6 +17083,11 @@ def zzdynrot(typid: int, center: int, et: float) -> Tuple[ndarray, int]:
     :param et: Epoch measured in seconds past J2000
     :return:  Rotation matrix from the input frame to the returned associated frame, id for the associated frame
     """
+    warnings.warn(
+            f'zzdynrot is a "private routine" for spice. Users should avoid using it. It may disappear in future releases after v6.0.0',
+            DeprecationWarning,
+            stacklevel=2,
+        )
     typid = ctypes.c_int(typid)
     center = ctypes.c_int(center)
     et = ctypes.c_double(et)
@@ -17081,4 +17100,5 @@ def zzdynrot(typid: int, center: int, et: float) -> Tuple[ndarray, int]:
         matrix,
         ctypes.byref(next_frame),
     )
-    return stypes.c_matrix_to_numpy(matrix), next_frame.value
+    # make sure to transpose to get back into c order from fortran ordering
+    return stypes.c_matrix_to_numpy(matrix).T, next_frame.value

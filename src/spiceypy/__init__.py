@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 __author__ = "AndrewAnnex"
-__version__ = "5.2.0-alpha"
+__version__ = "6.1.0"
 
 from .spiceypy import *
 from .utils import support_types

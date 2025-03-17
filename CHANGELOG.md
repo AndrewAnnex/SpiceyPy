@@ -4,15 +4,53 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [?.?.?] - 2025-??-??
+
+### Changed
+- Added units to many parameter descriptions in function docstrings to address #350
+
+
+
+## [6.0.0] - 2023-08-31
+Fixed several major typos and fortran array ordering issues in tkfram, zzdynrot as well as failing tests on arm64 macos. 
+### Added
+- SpiceNOTENOUGHDATA2 exception #466
+- Context manager for SPICE kernels #458
+- CITATION.cff file
+- DeprecationWarning for zzdynrot
+
+### Changed
+- tkfram_c now used in tkfram wrapper function
+- updated setup.cfg
+- type hints for sincpt to be more correct
+
+### Deprecated
+- python 3.6
+- python 3.7
+
+### Removed
+- codecov as a dependency in dev
+
+### Fixed
+- fixed zzdynrot and tkfram return matrix element ordering
+- typo in exceptions.rst #459
+- fixed test test_sphlat
+- fixed sphlat to use correct libspice function call
+- fixed tests for dskx02, dskxsi, gfsntc for arm64 macos floating point issues #470
+- fixed typo in test_oscelt and test_oscltx
+
+
 ## [5.1.2] - 2022-10-14
 fix for exception error message toolkit version
 ### Fixed
 - exceptions now use dynamic lookup of toolkit version for error messages
 
+
 ## [5.1.1] - 2022-07-30
 fixes macOS arm64 cross compile
 ### Fixed
 - updated get_spice.py to allow for arch override for macos arm64
+
 
 ## [5.1.0] - 2022-07-09
 adds wrappers for the majority of new function in n67
@@ -70,6 +108,7 @@ adds wrappers for the majority of new function in n67
 ### Fixed
 - fixed docstring for frinfo
 - fixed freebsd support in getspice
+
 
 ## [5.0.1] - 2022-03-23
 minor update to make ld_library_path update safer
