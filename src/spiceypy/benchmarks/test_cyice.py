@@ -173,7 +173,6 @@ def test_etcal_v_process_time():
         _ = spice.etcal(ets)
     with ProcessTime('Cyice etcal') as after:
         _ = cyice.etcal_v(ets)
-    print(_)
     print(f'Speedup {before.elapsed/after.elapsed:.6f}')
 
 # def test_failed_cyice_benchmark(benchmark):

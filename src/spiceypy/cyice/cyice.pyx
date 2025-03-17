@@ -11,6 +11,7 @@ from cython cimport boundscheck, wraparound
 from cpython.unicode cimport PyUnicode_DecodeUTF8
 import numpy as np
 cimport numpy as np
+from numpy cimport PyArray_GETPTR1
 np.import_array()
 
 DEF _default_len_out = 256
@@ -177,21 +178,18 @@ cpdef str etcal(double et):
 @boundscheck(False)
 @wraparound(False)
 cpdef etcal_v(double[:] ets):
-    cdef Py_ssize_t i, n, fixed_length
-    n = ets.shape[0]
-    cdef char[TIMELEN] c_buffer
-    cdef list results = [None] * n
-    # Process the first element and compute the fixed length.
-    etcal_c(ets[0], TIMELEN, &c_buffer[0])
-    fixed_length = strlen(c_buffer)
-    results[0] = <unicode> c_buffer
-    if n > 1:    
-        for i in range(1,n):
-            etcal_c(ets[i], TIMELEN, &c_buffer[0])
-            results[i] = <unicode> c_buffer
-    return results
+    cdef Py_ssize_t i, n = ets.shape[0]
+    # Allocate a 2D buffer of shape (n, 24) with dtype np.uint8
+    cdef np.ndarray[dtype=np.uint8_t, ndim=2] buf = np.empty((n, 25), dtype=np.uint8)
+    # Create a typed memoryview over the buffer
+    cdef unsigned char[:, :] view = buf
+    for i in range(n):
+        # Get a pointer to the start of the i-th row and call etcal_c
+        etcal_c(ets[i], 25, <char*> &view[i, 0])
+    # Convert the buffer to a 1D array of fixed-length byte strings (dtype "|S25") (need extra byte for termination)
+    return buf.view(dtype="|S25").reshape(n)
 
-# F
+# # F
 
 cpdef int failed() noexcept:
     return failed_c()
