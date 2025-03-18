@@ -19,7 +19,8 @@ DEF _default_len_out = 256
 DEF TIMELEN = 64
 
 ctypedef np.double_t DOUBLE_t
-ctypedef np.uint8_t CHAR_T
+ctypedef np.uint8_t CHAR_t
+ctypedef np.uint8_t BOOL_t
 
 from .cyice cimport *
 
@@ -182,7 +183,7 @@ cpdef str etcal(double et):
 cpdef etcal_v(double[:] ets):
     cdef Py_ssize_t i, n = ets.shape[0]
     # Allocate a 2D buffer of shape (n, 24) with dtype np.uint8
-    cdef np.ndarray[dtype=CHAR_T, ndim=2] results = np.empty((n, 25), dtype=np.uint8)
+    cdef np.ndarray[dtype=CHAR_t, ndim=2] results = np.empty((n, 25), dtype=np.uint8)
     # Create a typed memoryview over the buffer
     cdef unsigned char[:, :] view = results
     for i in prange(n, nogil=True):
@@ -435,6 +436,72 @@ cpdef spkez_v(int target, double[:] epoch, str ref, str abcorr, int observer):
     # return results
     return states, lts
 
+@boundscheck(False)
+@wraparound(False)
+cpdef spkezp(targ: int,  et: float, ref: str, abcorr: str, obs: int):
+    # initialize c variables
+    cdef double[3] c_ptarg = (0.0, 0.0, 0.0)
+    cdef double lt = 0.0
+    # convert the strings to pointers once
+    cdef const char* _ref    = ref
+    cdef const char* _abcorr = abcorr
+    cdef int _targ = targ
+    cdef int _obs = obs
+    # initialize output arrays
+    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] ptarg = np.empty(3, dtype=np.double)
+    cdef double[:] _ptarg = ptarg
+    spkezp_c(
+        _targ, 
+        et, 
+        _ref, 
+        _abcorr, 
+        _obs, 
+        c_ptarg, 
+        &lt
+    )
+    _ptarg[0] = c_ptarg[0]
+    _ptarg[1] = c_ptarg[1]
+    _ptarg[2] = c_ptarg[2]
+    return ptarg, lt
+    
+
+@boundscheck(False)
+@wraparound(False)
+cpdef spkezp_v(targ: int, ets: double[:], ref: str, abcorr: str, obs: int):
+    cdef Py_ssize_t i, n = ets.shape[0]
+    cdef double[:] _ets = ets
+    # initialize c variables
+    cdef double[3] ptarg = (0.0, 0.0, 0.0)
+    cdef double lt = 0.0
+    # convert the strings to pointers once
+    cdef const char* _ref    = ref
+    cdef const char* _abcorr = abcorr
+    cdef int _targ = targ
+    cdef int _obs = obs
+    # initialize output arrays
+    cdef np.ndarray[dtype=DOUBLE_t, ndim=2, mode="c"] ptargs = np.empty((n,3), dtype=np.double)
+    cdef double[:,::1] _ptargs = ptargs
+    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] lts = np.empty(n, dtype=np.double)
+    cdef double[:] _lts = lts
+    # main loop
+    with nogil:
+        for i in range(n):
+            spkezp_c(
+                _targ, 
+                _ets[i],
+                _ref, 
+                _abcorr, 
+                _obs, 
+                ptarg, 
+                &lt
+            )
+            _ptargs[i][0] = ptarg[0]
+            _ptargs[i][1] = ptarg[1]
+            _ptargs[i][2] = ptarg[2]
+            _lts[i] = lt
+    # return results
+    return ptargs, lts
+
 
 @boundscheck(False)
 @wraparound(False)    
@@ -488,11 +555,26 @@ cpdef spkezr_v(str target, double[:] epoch, str frame, str abcorr, str observer)
 @boundscheck(False)
 @wraparound(False)
 cpdef spkpos(str targ, double et, str ref, str abcorr, str obs):
+        # initialize c variables
     cdef double[3] c_ptarg = (0.0, 0.0, 0.0)
     cdef double lt = 0.0
+    # convert the strings to pointers once
+    cdef const char* _targ   = targ
+    cdef const char* _ref    = ref
+    cdef const char* _abcorr = abcorr
+    cdef const char* _obs    = obs
+    # initialize output arrays
     cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] ptarg = np.empty(3, dtype=np.double)
     cdef double[:] _ptarg = ptarg
-    spkpos_c(targ, et, ref, abcorr, obs, c_ptarg, &lt)
+    spkpos_c(
+        _targ, 
+        et, 
+        _ref, 
+        _abcorr, 
+        _obs, 
+        c_ptarg, 
+        &lt
+    )
     _ptarg[0] = c_ptarg[0]
     _ptarg[1] = c_ptarg[1]
     _ptarg[2] = c_ptarg[2]
@@ -550,6 +632,233 @@ cpdef np.ndarray[DOUBLE_t, ndim=1] str2et_v(np.ndarray times):
         _ets[i] = _et
     # return results
     return ets
+
+# TODO need error check, need found exception thrower in cython
+@wraparound(False)
+@boundscheck(False)
+cpdef sincpt(
+    method: str,
+    target: str,
+    et: float,
+    fixref: str,
+    abcorr: str,
+    obsrvr: str,
+    dref: str,
+    dvec: double[:]):
+    # convert strings 
+    cdef const char * _method = method
+    cdef const char * _target = target
+    cdef const char * _fixref = fixref
+    cdef const char * _abcorr = abcorr
+    cdef const char * _obsrvr = obsrvr
+    cdef const char * _dref   = dref
+    # convert dvec to c #TODO vectorize over dvec too?
+    cdef double[3] c_dvec
+    c_dvec[0] = dvec[0]
+    c_dvec[1] = dvec[1]
+    c_dvec[2] = dvec[2]
+    # Allocate output floats and arrays with appropriate shapes.
+    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] spoint = np.empty(3, dtype=np.double)
+    cdef double[:] _spoint = spoint
+    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] srfvec = np.empty(3, dtype=np.double)
+    cdef double[:] _srfvec = srfvec
+    cdef double[3] c_spoint
+    cdef double[3] c_srfvec
+    cdef double c_trgepc
+    cdef SpiceBoolean c_found
+    # perform the call
+    sincpt_c(
+        _method,
+        _target,
+        et,
+        _fixref,
+        _abcorr,
+        _obsrvr,
+        _dref,
+        c_dvec,
+        c_spoint,
+        &c_trgepc,
+        c_srfvec,
+        &c_found
+    )
+    # accumulate the results to output arrays
+    _spoint[0] = c_spoint[0]
+    _spoint[1] = c_spoint[1]
+    _spoint[2] = c_spoint[2]
+    _srfvec[0] = c_srfvec[0]
+    _srfvec[1] = c_srfvec[1]
+    _srfvec[2] = c_srfvec[2]
+    # return results
+    return spoint, c_trgepc, srfvec, c_found
+
+
+# TODO need error check, need found exception thrower in cython
+@wraparound(False)
+@boundscheck(False)
+cpdef sincpt_v(
+    method: str,
+    target: str,
+    ets: double[:],
+    fixref: str,
+    abcorr: str,
+    obsrvr: str,
+    dref: str,
+    dvec: double[:]):
+    # get size of input array
+    cdef Py_ssize_t i, n = ets.shape[0]
+    cdef const double[:] _ets = ets
+
+    # convert strings 
+    cdef const char * _method = method
+    cdef const char * _target = target
+    cdef const char * _fixref = fixref
+    cdef const char * _abcorr = abcorr
+    cdef const char * _obsrvr = obsrvr
+    cdef const char * _dref   = dref
+    # convert dvec to c #TODO vectorize over dvec too?
+    cdef double[3] c_dvec
+    c_dvec[0] = dvec[0]
+    c_dvec[1] = dvec[1]
+    c_dvec[2] = dvec[2]
+    # Allocate output floats and arrays with appropriate shapes.
+    cdef np.ndarray[dtype=DOUBLE_t, ndim=2, mode="c"] spoint = np.empty((n,3), dtype=np.double)
+    cdef double[:,:] _spoint = spoint
+    cdef np.ndarray[dtype=DOUBLE_t, ndim=2, mode="c"] srfvec = np.empty((n,3), dtype=np.double)
+    cdef double[:,:] _srfvec = srfvec
+    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] trgepc = np.empty(n, dtype=np.double)
+    cdef double[:,:] _trgepc = trgepc
+    cdef np.ndarray[dtype=BOOL_t, ndim=1, mode="c", cast=True] found = np.empty(n, dtype=np.uint8)
+    cdef BOOL_t[:,:] _found = found
+    cdef double[3] c_spoint
+    cdef double[3] c_srfvec
+    cdef double c_trgepc
+    cdef SpiceBoolean c_found
+    # perform the call
+    for i in range(n):
+        sincpt_c(
+            _method,
+            _target,
+            _ets[i],
+            _fixref,
+            _abcorr,
+            _obsrvr,
+            _dref,
+            c_dvec,
+            c_spoint,
+            &c_trgepc,
+            c_srfvec,
+            &c_found
+        )
+        # accumulate the results to output arrays
+        _spoint[i,0] = c_spoint[0]
+        _spoint[i,1] = c_spoint[1]
+        _spoint[i,2] = c_spoint[2]
+        _srfvec[i,0] = c_srfvec[0]
+        _srfvec[i,1] = c_srfvec[1]
+        _srfvec[i,2] = c_srfvec[2]
+        _trgepc[i] = c_trgepc
+        _found[i]  = c_found
+        # return results
+    return spoint, trgepc, srfvec, found
+
+
+
+@wraparound(False)
+@boundscheck(False)
+cpdef subpnt(
+    method: str,
+    target: str, 
+    et: float, 
+    fixref: str, 
+    abcorr: str, 
+    obsrvr: str):
+    # convert strings 
+    cdef const char * _method = method
+    cdef const char * _target = target
+    cdef const char * _fixref = fixref
+    cdef const char * _abcorr = abcorr
+    cdef const char * _obsrvr = obsrvr
+    # Allocate output floats and arrays with appropriate shapes.
+    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] spoint = np.empty(3, dtype=np.double)
+    cdef double[:] _spoint = spoint
+    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] srfvec = np.empty(3, dtype=np.double)
+    cdef double[:] _srfvec = srfvec
+    cdef double trgepc
+    cdef double[3] c_spoint
+    cdef double[3] c_srfvec
+    # perform the call
+    subpnt_c(
+        _method,
+        _target,
+        et,
+        _fixref,
+        _abcorr,
+        _obsrvr,
+        c_spoint,
+        &trgepc,
+        c_srfvec
+        )
+    # accumulate the results to output arrays
+    _spoint[0] = c_spoint[0]
+    _spoint[1] = c_spoint[1]
+    _spoint[2] = c_spoint[2]
+    _srfvec[0] = c_srfvec[0]
+    _srfvec[1] = c_srfvec[1]
+    _srfvec[2] = c_srfvec[2]
+    # return results
+    return spoint, trgepc, srfvec
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef subpnt_v(
+    method: str,
+    target: str, 
+    ets: double[:], 
+    fixref: str, 
+    abcorr: str, 
+    obsrvr: str):
+    # get size of input array
+    cdef Py_ssize_t i, n = ets.shape[0]
+    # convert strings 
+    cdef const char * _method = method
+    cdef const char * _target = target
+    cdef const char * _fixref = fixref
+    cdef const char * _abcorr = abcorr
+    cdef const char * _obsrvr = obsrvr
+    # Allocate output floats and arrays with appropriate shapes.
+    cdef np.ndarray[dtype=DOUBLE_t, ndim=2, mode="c"] spoint = np.empty((n,3), dtype=np.double)
+    cdef double[:,:] _spoint = spoint
+    cdef np.ndarray[dtype=DOUBLE_t, ndim=2, mode="c"] srfvec = np.empty((n,3), dtype=np.double)
+    cdef double[:,:] _srfvec = srfvec
+    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] trgepc = np.empty(n, dtype=np.double)
+    cdef double[:] _trgepc = trgepc
+    cdef double c_trgepc
+    cdef double[3] c_spoint
+    cdef double[3] c_srfvec
+    # perform the call
+    for i in range(n):
+        subpnt_c(
+            _method,
+            _target,
+            ets[i],
+            _fixref,
+            _abcorr,
+            _obsrvr,
+            c_spoint,
+            &c_trgepc,
+            c_srfvec
+            )
+        # accumulate the results to output arrays
+        _spoint[i, 0] = c_spoint[0]
+        _spoint[i, 1] = c_spoint[1]
+        _spoint[i, 2] = c_spoint[2]
+        _trgepc[i] = c_trgepc
+        _srfvec[i, 0] = c_srfvec[0]
+        _srfvec[i, 1] = c_srfvec[1]
+        _srfvec[i, 2] = c_srfvec[2]
+    # return results
+    return spoint, trgepc, srfvec
 
 
 @wraparound(False)

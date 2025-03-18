@@ -145,10 +145,16 @@ cdef extern from "SpiceUsr.h" nogil:
                       ConstSpiceChar * frame,
                       ConstSpiceChar * abcorr,
                       SpiceInt         observer,
-                      SpiceDouble[6]      state,
+                      SpiceDouble[6]   state,
                       SpiceDouble    * lt)
 
-    # spkezp_c
+    cdef void spkezp_c(SpiceInt            targ,
+                       SpiceDouble         et,
+                       ConstSpiceChar    * ref,
+                       ConstSpiceChar    * abcorr,
+                       SpiceInt            obs,
+                       SpiceDouble[3]      ptarg,
+                       SpiceDouble       * lt        )
     
     cdef void spkezr_c(ConstSpiceChar * target,
                        SpiceDouble      epoch,
@@ -163,7 +169,7 @@ cdef extern from "SpiceUsr.h" nogil:
                        ConstSpiceChar * ref,
                        ConstSpiceChar * abcorr,
                        ConstSpiceChar * obs,
-                       SpiceDouble[3]      ptarg,
+                       SpiceDouble[3]   ptarg,
                        SpiceDouble * lt)
 
     cdef void sxform_c(ConstSpiceChar * fromstring,
@@ -179,8 +185,30 @@ cdef extern from "SpiceUsr.h" nogil:
     #spkcpt	
     #spkcvo	
     #spkcvt
-    #sincpt	
-    #subpnt	
+    cdef void sincpt_c(ConstSpiceChar      * method,
+                       ConstSpiceChar      * target,
+                       SpiceDouble           et,
+                       ConstSpiceChar      * fixref,
+                       ConstSpiceChar      * abcorr,
+                       ConstSpiceChar      * obsrvr,
+                       ConstSpiceChar      * dref,
+                       ConstSpiceDouble[3]   dvec,
+                       SpiceDouble[3]        spoint,
+                       SpiceDouble         * trgepc,
+                       SpiceDouble[3]        srfvec,
+                       SpiceBoolean        * found       )
+
+    cdef void subpnt_c(ConstSpiceChar       * method,
+                       ConstSpiceChar       * target,
+                       SpiceDouble            et,
+                       ConstSpiceChar       * fixref,
+                       ConstSpiceChar       * abcorr,
+                       ConstSpiceChar       * obsrvr,
+                       SpiceDouble[3]         spoint,
+                       SpiceDouble          * trgepc,
+                       SpiceDouble[3]         srfvec)
+
+
     cdef void subslr_c(ConstSpiceChar       * method,
                        ConstSpiceChar       * target,
                        SpiceDouble            et,
