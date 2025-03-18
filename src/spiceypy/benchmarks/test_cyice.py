@@ -146,7 +146,7 @@ def test_cyice_etcal(benchmark):
 
 
 def test_cyice_etcal_v(benchmark):
-    data = np.arange(1000.0, dtype=float)
+    data = np.arange(10000.0, dtype=float)
     benchmark(cyice.etcal_v, data)
 
 
@@ -155,8 +155,9 @@ def test_spiceypy_etcal(benchmark):
 
 
 def test_spiceypy_etcal_v(benchmark):
-    data = np.arange(1000.0, dtype=float)
+    data = np.arange(10000.0, dtype=float)
     benchmark(spice.etcal, data)
+
 
 def test_etcal_process_time():
     with ProcessTime('Spice etcal') as before:
@@ -166,6 +167,7 @@ def test_etcal_process_time():
         for i in np.arange(0.0,1000.0):
             _ = cyice.etcal(i)
     print(f'Speedup {before.elapsed/after.elapsed:.6f}')
+
 
 def test_etcal_v_process_time():
     ets = np.arange(0.0,10000.0).astype(float)

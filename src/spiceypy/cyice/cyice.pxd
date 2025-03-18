@@ -145,7 +145,7 @@ cdef extern from "SpiceUsr.h" nogil:
                       ConstSpiceChar * frame,
                       ConstSpiceChar * abcorr,
                       SpiceInt         observer,
-                      SpiceDouble      state[6],
+                      SpiceDouble[6]      state,
                       SpiceDouble    * lt)
 
     # spkezp_c
@@ -163,13 +163,13 @@ cdef extern from "SpiceUsr.h" nogil:
                        ConstSpiceChar * ref,
                        ConstSpiceChar * abcorr,
                        ConstSpiceChar * obs,
-                       SpiceDouble      ptarg[3],
+                       SpiceDouble[3]      ptarg,
                        SpiceDouble * lt)
 
     cdef void sxform_c(ConstSpiceChar * fromstring,
                        ConstSpiceChar * tostring,
                        SpiceDouble      et,
-                       SpiceDouble      xform[6][6])
+                       SpiceDouble[6][6]      xform)
     #spkapo	
     #spkpvn	
     #spkssb	
@@ -181,19 +181,51 @@ cdef extern from "SpiceUsr.h" nogil:
     #spkcvt
     #sincpt	
     #subpnt	
-    #subslr
+    cdef void subslr_c(ConstSpiceChar       * method,
+                       ConstSpiceChar       * target,
+                       SpiceDouble            et,
+                       ConstSpiceChar       * fixref,
+                       ConstSpiceChar       * abcorr,
+                       ConstSpiceChar       * obsrvr,
+                       SpiceDouble[3]         spoint,
+                       SpiceDouble          * trgepc,
+                       SpiceDouble[3]         srfvec)
 
 
     # T
 
-    #	
-    #tangpt	
-    #trgsep
+    cdef void tangpt_c(ConstSpiceChar    * method,
+                       ConstSpiceChar    * target,
+                       SpiceDouble         et,
+                       ConstSpiceChar    * fixref,
+                       ConstSpiceChar    * abcorr,
+                       ConstSpiceChar    * corloc,
+                       ConstSpiceChar    * obsrvr,
+                       ConstSpiceChar    * dref,
+                       ConstSpiceDouble[3]    dvec,
+                       SpiceDouble[3]         tanpt,
+                       SpiceDouble       * alt,
+                       SpiceDouble       * range,
+                       SpiceDouble[3]         srfpt,
+                       SpiceDouble       * trgepc,
+                       SpiceDouble[3]         srfvec)
+
 
     cdef void timout_c(SpiceDouble        et,
                        ConstSpiceChar   * pictur,
                        SpiceInt           outlen,
                        ConstSpiceChar   * output)
+
+
+    cdef SpiceDouble trgsep_c(SpiceDouble         et,
+                              ConstSpiceChar    * targ1,
+                              ConstSpiceChar    * shape1,
+                              ConstSpiceChar    * frame1,
+                              ConstSpiceChar    * targ2,
+                              ConstSpiceChar    * shape2,
+                              ConstSpiceChar    * frame2,
+                              ConstSpiceChar    * obsrvr,
+                              ConstSpiceChar    * abcorr)
 
     # U
 
