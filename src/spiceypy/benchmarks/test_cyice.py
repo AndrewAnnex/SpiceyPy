@@ -177,6 +177,70 @@ def test_etcal_v_process_time():
         _ = cyice.etcal_v(ets)
     print(f'Speedup {before.elapsed/after.elapsed:.6f}')
 
+
+def test_cyice_spkcvt_correctness():
+    spice.furnsh(ExtraKernels.earthStnSpk)
+    spice.furnsh(ExtraKernels.earthHighPerPck)
+    spice.furnsh(ExtraKernels.earthTopoTf)
+    spice.furnsh(CoreKernels.testMetaKernel)
+    obstime = spice.str2et("2003 Oct 13 06:00:00")
+    trgstate = np.array([
+        -2353.6213656676991,
+        -4641.3414911499403,
+        3677.0523293197439,
+        -0.00000000000057086,
+        0.00000000000020549,
+        -0.00000000000012171,
+    ])
+    state, lt = cyice.spkcvt(
+        trgstate, 0.0, "EARTH", "ITRF93", obstime, "ITRF93", "TARGET", "CN+S", "SUN"
+    )
+    breakpoint()
+    expected_lt = 497.932192824968
+    expected_state = np.array([
+        -3.41263006574816117063e06,
+        -1.47916331564124494791e08,
+        1.98124035009435638785e07,
+        -1.07582448117247804475e04,
+        2.50028331500423831812e02,
+        1.11355285621839659171e01,
+    ])
+    npt.assert_almost_equal(lt, expected_lt)
+    npt.assert_array_almost_equal(state, expected_state, decimal=6)
+
+def test_spiceypy_spkcvt(benchmark):
+    spice.furnsh(ExtraKernels.earthStnSpk)
+    spice.furnsh(ExtraKernels.earthHighPerPck)
+    spice.furnsh(ExtraKernels.earthTopoTf)
+    spice.furnsh(CoreKernels.testMetaKernel)
+    obstime = spice.str2et("2003 Oct 13 06:00:00")
+    trgstate = np.array([
+        -2353.6213656676991,
+        -4641.3414911499403,
+        3677.0523293197439,
+        -0.00000000000057086,
+        0.00000000000020549,
+        -0.00000000000012171,
+    ])
+    benchmark(spice.spkcvt, trgstate, 0.0, "EARTH", "ITRF93", obstime, "ITRF93", "TARGET", "CN+S", "SUN")
+
+def test_cyice_spkcvt(benchmark):
+    spice.furnsh(ExtraKernels.earthStnSpk)
+    spice.furnsh(ExtraKernels.earthHighPerPck)
+    spice.furnsh(ExtraKernels.earthTopoTf)
+    spice.furnsh(CoreKernels.testMetaKernel)
+    obstime = spice.str2et("2003 Oct 13 06:00:00")
+    trgstate = np.array([
+        -2353.6213656676991,
+        -4641.3414911499403,
+        3677.0523293197439,
+        -0.00000000000057086,
+        0.00000000000020549,
+        -0.00000000000012171,
+    ])
+    benchmark(cyice.spkcvt, trgstate, 0.0, "EARTH", "ITRF93", obstime, "ITRF93", "TARGET", "CN+S", "SUN")
+
+
 # def test_failed_cyice_benchmark(benchmark):
 #     benchmark(cyice.failed)
 
