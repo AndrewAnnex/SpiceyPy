@@ -20,8 +20,14 @@
 *.ti
 *.bc
 
+# Cyice things
+src/spiceypy/cyice/cyice.html
+src/spiceypy/cyice/cyice.c
+
+
 # Cspice
 cspice/
+src/cspice/
 
 # Test meta kernels
 src/spiceypy/tests/*.txt
@@ -32,6 +38,7 @@ docs/_build
 
 # Pycharm specific things
 .idea/
+.fleet/
 
 # python things
 *.egg-info*
