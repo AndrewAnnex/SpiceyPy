@@ -418,7 +418,7 @@ def test_str2et_v_correctness():
     spice.furnsh(CoreKernels.testMetaKernel)
     date = "Thu Mar 20 12:53:29 PST 1997"
     expected_ets = np.ones(100) * -87836728.81438904
-    dates = np.array([date] * 100, dtype=np.string_)
+    dates = np.array([date] * 100, dtype=np.str_)
     print(dates.shape, dates.dtype, flush=True)
     ets = cyice.str2et_v(dates)
     npt.assert_array_almost_equal(ets, expected_ets)

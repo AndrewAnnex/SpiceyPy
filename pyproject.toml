@@ -16,14 +16,13 @@ requires-python = ">=3.9"
 authors = [
     {name = 'Andrew M. Annex', email='ama6fy@virginia.edu'}
 ]
-license = {text = "MIT License"}
+license = "MIT"
 keywords = ['spiceypy', 'spice', 'cspice', 'naif', 'jpl', 'space', 'geometry', 'ephemeris']
 classifiers = [
      'Development Status :: 5 - Production/Stable',
      'Natural Language :: English',
      'Topic :: Scientific/Engineering',
      'Topic :: Scientific/Engineering :: Astronomy',
-     'License :: OSI Approved :: MIT License',
      'Programming Language :: Python :: 3.9',
      'Programming Language :: Python :: 3.10',
      'Programming Language :: Python :: 3.11',
@@ -57,8 +56,8 @@ readme = {file = "README.rst"}
 where = ["src"]
 
 [tool.setuptools.package-data]
-spiceypy = ['get_spice.py', 'LICENSE', 'utils/*.so', 'utils/*.dylib', 'utils/*.dll']
-# todo add cyice here?
+"*" = ['get_spice.py', 'LICENSE', 'README.rst']
+spiceypy = [ 'utils/*.so', 'utils/*.dylib', 'utils/*.dll', 'cyice/*.so', 'cyice/*.dylib', 'cyice/*.dll']
 
 [tool.coverage.run]
 relative_files = true

@@ -29,7 +29,7 @@ jobs:
             ./src/spiceypy/utils/libcspice.*
             ./src/cspice/include
             ./src/cspice/src/cspice
-          key: ${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
+          key: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
       - name: Setup 🔬🍦🏗️
         if: ${{ matrix.os == 'windows-latest' && steps.cache-libcspice.outputs.cache-hit != 'true' }}
         uses: ilammy/msvc-dev-cmd@v1.13.0
@@ -168,7 +168,7 @@ jobs:
           python -m pip install .
       - name: Test 🧪 with coverage 📈
         run: |
-          coverage run --source spiceypy -m pytest --pyargs spiceypy
+          coverage run --source spiceypy -m pytest --pyargs spiceypy --maxfail=4
       - name: Upload 🆙 coverage 📈 report to codecov 
         uses: codecov/codecov-action@v4
         with:
@@ -228,7 +228,7 @@ jobs:
           python -m pip install . --user
       - name: Test 🧪 with coverage 📈
         run: |
-          coverage run --source spiceypy -m pytest --pyargs spiceypy
+          coverage run --source spiceypy -m pytest --pyargs spiceypy --maxfail=4
       - name: Upload 🆙 coverage 📈 report to codecov 
         uses: codecov/codecov-action@v4
         with:
@@ -283,7 +283,7 @@ jobs:
           python -m pip install .
       - name: Test 🧪 with coverage 📈
         run: |
-          coverage run --source spiceypy -m pytest --pyargs spiceypy
+          coverage run --source spiceypy -m pytest --pyargs spiceypy --maxfail=4
       - name: Upload 🆙 coverage 📈 report to codecov 
         uses: codecov/codecov-action@v4
         with:
