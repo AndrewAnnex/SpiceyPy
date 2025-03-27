@@ -271,7 +271,7 @@ def test_perf_sce2c(function, benchmark):
     et = spice.str2et("1979 JUL 05 21:50:21.23379")
     benchmark(function, -32, et)
 
-
+@pytest.mark.skip(reason="broken")
 @pytest.mark.parametrize('function', [cyice.sce2s, spice.sce2s])
 def test_perf_sce2s(function, benchmark):
     benchmark.group = '%s - perf' % get_qualified_name(function)

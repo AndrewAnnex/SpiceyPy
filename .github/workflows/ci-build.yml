@@ -153,10 +153,11 @@ jobs:
           ls ./src/cspice/include/
           ls ./src/cspice/src/
           ls ./src/spiceypy/utils/
-          echo "\n\n\n"
+          echo 
           python setup.py build_ext -j 2 --inplace
+          echo 
           python -m build --wheel
-          echo "\n\n\n"
+          echo 
           ls ./src/spiceypy/cyice/
           ls ./dist/
       - name: Install SpiceyPy 🌶️ 🥧

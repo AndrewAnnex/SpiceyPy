@@ -1,5 +1,5 @@
 oldest-supported-numpy
-setuptools>=38.0.0
+setuptools>=75.8.2
 pytest>=7.0.0
 pytest-benchmark
 pandas>=0.24.0
