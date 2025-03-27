@@ -140,22 +140,23 @@ cpdef double convrt(double x, str inunit, str outunit):
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1] convrt_v(double[:] x, str inunit, str outunit):
-    cdef double[:] c_x = x
-    cdef Py_ssize_t i, n = c_x.shape[0]
+cpdef double[::1] convrt_v(
+    double[::1] x, 
+    str inunit, 
+    str outunit
+    ):
+    cdef Py_ssize_t i, n = x.shape[0]
     cdef const char * c_inunit = inunit
     cdef const char * c_outunit = outunit
     cdef double[::1] c_outs = np.empty(n, dtype=np.double)
-    cdef double out = 0.0
     # main loop
     for i in range(n):
         convrt_c(
-            c_x[i], 
+            x[i], 
             c_inunit,
             c_outunit, 
-            &out
+            &c_outs[i]
         )
-        c_outs[i] = out
     return c_outs
 
 
@@ -164,10 +165,36 @@ cpdef np.ndarray[DOUBLE_t, ndim=1] convrt_v(double[:] x, str inunit, str outunit
 
 cpdef double deltet(epoch: float, eptype: str):
     cdef double delta
-    cdef const char* _eptype = eptype
-    deltet_c(epoch, _eptype, &delta)
+    cdef const char* c_eptype = eptype
+    deltet_c(
+        epoch, 
+        c_eptype, 
+        &delta
+    )
     return delta
 
+
+# new rule: always use type name style if accepting arrays as input
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:] deltet_v(
+    double[::1] epochs, 
+    str eptype
+    ):
+    cdef Py_ssize_t i, n = epochs.shape[0]
+    cdef const char* c_eptype = eptype
+    # allocate output array
+    cdef double[::1] deltas = np.empty(n, dtype=np.double)
+    # perform the loop
+    with nogil:
+        for i in range(n):
+            deltet_c(
+                epochs[i], 
+                c_eptype, 
+                &deltas[i]
+            )
+    # return results
+    return deltas
 
 #E 
 
@@ -179,65 +206,67 @@ cpdef et2lst(
     typein: str,
 ):
     cdef SpiceInt hr, mn, sc
-    cdef SpiceInt _body = body
+    cdef SpiceInt c_body = body
     cdef char[_default_len_out] time
     cdef char[_default_len_out] ampm
-    cdef const char * _typein = typein
+    cdef const char * c_typein = typein
     et2lst_c(
         et,
-        _body,
+        c_body,
         lon,
-        _typein,
-         _default_len_out,
-         _default_len_out,
-        &hr, &mn, &sc, time, ampm
+        c_typein,
+        _default_len_out,
+        _default_len_out,
+        &hr,
+        &mn,
+        &sc,
+        time,
+        ampm
     )
     return hr, mn, sc, PyUnicode_DecodeUTF8(time, strlen(time), "strict"), PyUnicode_DecodeUTF8(ampm, strlen(ampm), "strict")
 
 
-# cpdef et2lst_c(
-#    double[:] ets,
-#    int body,
-#    double lon,
-#    str typein
-# ):
-#     cdef Py_ssize_t i, n
-#     n = ets.shape[0]
-#     cdef SpiceInt hr, mn, sc
-#     cdef char[_default_len_out] time
-#     cdef char[_default_len_out] ampm
-#     cdef const char * _typein = typein
-#     # initialize output arrays 
-#     cdef np.ndarray[dtype=np.int, ndim=1] hrs = np.empty(n, dtype=np.int)
-#     cdef int[:] _hrs = hrs
-#     cdef np.ndarray[dtype=np.int, ndim=1] mns = np.empty(n, dtype=np.int)
-#     cdef int[:] _mns = mns
-#     cdef np.ndarray[dtype=np.int, ndim=1] scs = np.empty(n, dtype=np.int)
-#     cdef int[:] _scs = scs
-#     # TODO: using a unicode numpy array?
-#     cdef np.ndarray[dtype=np.str_, ndim=2] times = np.empty(n, dtype=np.str_)
-#     #cdef list times = [None] * n
-#     cdef np.ndarray[dtype=np.str_, ndim=2] ampms = np.empty(n, dtype=np.str_)
-#     # main loop
-#     for i in range(n):
-#         et2lst_c(
-#             ets[i],
-#             body,
-#             lon,
-#             _typein,
-#              _default_len_out,
-#              _default_len_out,
-#             &hr, &mn, &sc, time, ampm
-#         )
-#         #
-#         _hrs[i] = hr
-#         _mns[i] = mn
-#         _scs[i] = sc
-#         # Idea, set strlen once on first iteration thne re-use
-#         times[i] = PyUnicode_DecodeUTF8(time, strlen(time), "strict")
-#         ampms[i] = PyUnicode_DecodeUTF8(ampm, strlen(ampm), "strict")
-
-#     return hrs, mns, scs, times, ampms 
+@boundscheck(False)
+@wraparound(False)
+cpdef et2lst_v(
+   ets: double[:],
+   body: int,
+   lon: double,
+   typein: str
+):
+    cdef double[:] c_ets = ets
+    cdef Py_ssize_t i, n = c_ets.shape[0]
+    cdef char[_default_len_out] time
+    cdef char[_default_len_out] ampm
+    cdef const char * c_typein = typein
+    cdef int c_body = body
+    cdef double c_lon = lon
+    # initialize output arrays 
+    cdef int[:] c_hrs = np.empty(n, dtype=np.int)
+    cdef int[:] c_mns = np.empty(n, dtype=np.int)
+    cdef int[:] c_scs = np.empty(n, dtype=np.int)
+    # TODO: using a unicode numpy array?
+    cdef np.ndarray[dtype=CHAR_t, ndim=2] times = np.empty((n, _default_len_out), dtype=np.uint8)
+    #cdef list times = [None] * n
+    cdef np.ndarray[dtype=CHAR_t, ndim=2] ampms = np.empty((n, _default_len_out), dtype=np.uint8)
+    # main loop
+    for i in range(n):
+        et2lst_c(
+            c_ets[i],
+            c_body,
+            c_lon,
+            c_typein,
+            _default_len_out,
+            _default_len_out,
+            &c_hrs[i],
+            &c_mns[i], 
+            &c_scs[i], 
+            <char*> &times[i, 0], 
+            <char*> &ampms[i, 0]
+        )
+    # return values
+    # TODO I don't like how I handle strings here, consider reverting to manual method
+    return c_hrs, c_mns, c_scs, times.astype(np.str_), ampms.astype(np.str_) 
 
 
 cpdef str et2utc(et: float, format_str: str, prec: int):
@@ -312,15 +341,14 @@ cpdef int failed() noexcept:
 @boundscheck(False)
 @wraparound(False)
 cpdef bint fovray(
-    inst: str,
-    raydir: double[::1],
-    rframe: str,
-    abcorr: str,
-    obsrvr: str,
-    et: float
+    str inst,
+    double[::1] raydir,
+    str rframe,
+    str abcorr,
+    str obsrvr,
+    double et
 ):
     # initialize c variables
-    cdef double[::1] c_raydir = raydir 
     cdef double c_et = et
     cdef SpiceBoolean c_visibl = False
     # convert the strings to pointers once
@@ -331,7 +359,7 @@ cpdef bint fovray(
     # perform the call
     fovray_c(
         c_inst,
-        &c_raydir[0],
+        &raydir[0],
         c_rframe,
         c_abcorr,
         c_obsrvr,
@@ -345,39 +373,36 @@ cpdef bint fovray(
 @boundscheck(False)
 @wraparound(False)    
 cpdef np.ndarray[BOOL_t, ndim=1] fovray_v(
-    inst: str,
-    raydir: double[::1],
-    rframe: str,
-    abcorr: str,
-    obsrvr: str,
-    ets: double[:]
+    str inst,
+    double[::1] raydir,
+    str rframe,
+    str abcorr,
+    str obsrvr,
+    double[::1] ets
 ):
     # initialize c variables
-    cdef double[::1] c_raydir = raydir 
-    cdef double[:] c_ets = ets
-    cdef Py_ssize_t i, n = c_ets.shape[0]
+    cdef Py_ssize_t i, n = ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_inst     = inst
     cdef const char* c_rframe   = rframe
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # initialize output arrays
-    cdef np.ndarray[dtype=BOOL_t, ndim=1, mode="c"] p_visibl = np.empty(n, dtype=np.uint8)
-    cdef bint[:] c_visibl = p_visibl
+    cdef bint[:] c_visibl = np.empty(n, dtype=np.uint8)
     # perform the call
     with nogil:
         for i in range(n):
             fovray_c(
                 c_inst,
-                &c_raydir[0],
+                &raydir[0],
                 c_rframe,
                 c_abcorr,
                 c_obsrvr,
-                &c_ets[i],
+                &ets[i],
                 &c_visibl[i]
             )
     # return
-    return p_visibl
+    return c_visibl
   
 
 cpdef bint fovtrg(
@@ -391,7 +416,7 @@ cpdef bint fovtrg(
 ):
     # initialize c variables
     cdef double c_et = et
-    cdef SpiceBoolean c_visibl = False
+    cdef bint c_visibl = False
     # convert the strings to pointers once
     cdef const char* c_inst     = inst
     cdef const char* c_target   = target
@@ -485,9 +510,13 @@ cpdef str getmsg(str option, int msglen):
 
 cpdef double lspcn(body: str, et: double, abcorr: str):
     cdef double l_s
-    cdef const char * _body   = body
-    cdef const char * _abcorr = abcorr
-    l_s = lspcn_c(_body, et, _abcorr)
+    cdef const char * c_body   = body
+    cdef const char * c_abcorr = abcorr
+    l_s = lspcn_c(
+        c_body, 
+        et, 
+        c_abcorr
+    )
     return l_s
 
 
@@ -602,10 +631,19 @@ cpdef np.ndarray[DOUBLE_t, ndim=1] sce2c_v(sc: int, double[:] ets):
     return sclkdps
 
 
-cpdef double sce2s(sc: int, et: float):
-    cdef SpiceInt _sc = sc
+cpdef double sce2s(
+    int sc, 
+    double et
+    ):
+    cdef int c_sc = sc
+    cdef double c_et = et
     cdef char[_default_len_out] c_buffer
-    sce2s_c(_sc, et, _default_len_out, &c_buffer[0])
+    sce2s_c(
+        c_sc, 
+        c_et, 
+        _default_len_out, 
+        &c_buffer[0]
+    )
     return PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
 
 
@@ -739,71 +777,84 @@ cpdef spkapo_v(
     cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] lts = np.empty(n, dtype=np.double)
     cdef double[:,:] p_lts = lts
     # perform the call
-    for i in range(n):
-        spkapo_c(
-            c_targ, 
-            c_ets[i], 
-            c_ref, 
-            c_sobs,
-            c_abcorr, 
-            c_ptarg, 
-            &c_lt
-        )
-        p_ptarg[i,0] = c_ptarg[0]
-        p_ptarg[i,1] = c_ptarg[1]
-        p_ptarg[i,2] = c_ptarg[2]
-        p_lts[i] = c_lt
+    with nogil:
+        for i in range(n):
+            spkapo_c(
+                c_targ, 
+                c_ets[i], 
+                c_ref, 
+                c_sobs,
+                c_abcorr, 
+                c_ptarg, 
+                &c_lt
+            )
+            p_ptarg[i,0] = c_ptarg[0]
+            p_ptarg[i,1] = c_ptarg[1]
+            p_ptarg[i,2] = c_ptarg[2]
+            p_lts[i] = c_lt
     return ptarg, lts
 
 
 
 @boundscheck(False)
 @wraparound(False)    
-cpdef spkez(int target, double epoch, str ref, str abcorr, int observer):
-    cdef double[6] c_state = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+cpdef spkez(
+    int target, 
+    double epoch, 
+    str ref, 
+    str abcorr, 
+    int observer
+    ):
+    # convert the strings to pointers once
+    cdef const char* c_ref    = ref
+    cdef const char* c_abcorr = abcorr
+    # allocate output variables
     cdef double lt = 0.0
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] state = np.empty(6, dtype=np.double)
-    cdef double[:] _state = state
-    spkez_c(target, epoch, ref, abcorr, observer, c_state, &lt)
-    _state[0] = c_state[0]
-    _state[1] = c_state[1]
-    _state[2] = c_state[2]
-    _state[3] = c_state[3]
-    _state[4] = c_state[4]
-    _state[5] = c_state[5]
-    return state, lt
+    cdef double[::1] c_state = np.empty(6, dtype=np.double)
+    spkez_c(
+        target, 
+        epoch, 
+        c_ref, 
+        c_abcorr, 
+        observer, 
+        &c_state[0], 
+        &lt)
+    return c_state, lt
 
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkez_v(int target, double[:] epoch, str ref, str abcorr, int observer):
+cpdef spkez_v(
+    int target, 
+    double[::1] epoch, 
+    str ref, 
+    str abcorr, 
+    int observer):
     # initialize c variables
-    cdef double[6] state = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-    cdef double lt = 0.0
     cdef Py_ssize_t i, n = epoch.shape[0]
     # convert the strings to pointers once
-    cdef int _target   = target
-    cdef const char* _ref    = ref
-    cdef const char* _abcorr = abcorr
-    cdef int _observer = observer
+    cdef int c_target   = target
+    cdef const char* c_ref    = ref
+    cdef const char* c_abcorr = abcorr
+    cdef int c_observer = observer
     # initialize output arrays
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=2, mode="c"] states = np.empty((n,6), dtype=np.double)
-    cdef double[:,::1] _states = states
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] lts = np.empty(n, dtype=np.double)
-    cdef double[:] _lts = lts
+    cdef double[:,::1] c_states = np.empty((n,6), dtype=np.double)
+    cdef double[:] c_lts = np.empty(n, dtype=np.double)
     # main loop
     with nogil:
         for i in range(n):
-            spkez_c(_target, epoch[i], _ref, _abcorr, _observer, state, &lt)
-            _states[i][0] = state[0]
-            _states[i][1] = state[1]
-            _states[i][2] = state[2]
-            _states[i][3] = state[3]
-            _states[i][4] = state[4]
-            _states[i][5] = state[5]
-            _lts[i] = lt
+            spkez_c(
+                c_target, 
+                epoch[i], 
+                c_ref, 
+                c_abcorr, 
+                c_observer, 
+                &c_states[i][0], 
+                &c_lts[i]
+            )
     # return results
-    return states, lts
+    return c_states, c_lts
+
 
 @boundscheck(False)
 @wraparound(False)
@@ -841,62 +892,68 @@ cpdef spkezp(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkezp_v(targ: int, ets: double[:], ref: str, abcorr: str, obs: int):
+cpdef spkezp_v(
+    int targ, 
+    double[::1] ets, 
+    str ref, 
+    str abcorr, 
+    int obs):
     cdef Py_ssize_t i, n = ets.shape[0]
-    cdef double[:] _ets = ets
     # initialize c variables
-    cdef double[3] ptarg = (0.0, 0.0, 0.0)
     cdef double lt = 0.0
     # convert the strings to pointers once
-    cdef const char* _ref    = ref
-    cdef const char* _abcorr = abcorr
-    cdef int _targ = targ
-    cdef int _obs = obs
+    cdef const char* c_ref    = ref
+    cdef const char* c_abcorr = abcorr
+    cdef int c_targ = targ
+    cdef int c_obs = obs
     # initialize output arrays
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=2, mode="c"] ptargs = np.empty((n,3), dtype=np.double)
-    cdef double[:,::1] _ptargs = ptargs
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] lts = np.empty(n, dtype=np.double)
-    cdef double[:] _lts = lts
+    cdef double[:,::1] c_ptargs = np.empty((n,3), dtype=np.double)
+    cdef double[::1] c_lts = np.empty(n, dtype=np.double)
     # main loop
     with nogil:
         for i in range(n):
             spkezp_c(
-                _targ, 
-                _ets[i],
-                _ref, 
-                _abcorr, 
-                _obs, 
-                ptarg, 
-                &lt
+                c_targ, 
+                ets[i],
+                c_ref, 
+                c_abcorr, 
+                c_obs, 
+                &c_ptargs[i][0], 
+                &c_lts[i]
             )
-            _ptargs[i][0] = ptarg[0]
-            _ptargs[i][1] = ptarg[1]
-            _ptargs[i][2] = ptarg[2]
-            _lts[i] = lt
     # return results
-    return ptargs, lts
+    return c_ptargs, c_lts
 
 
 @boundscheck(False)
 @wraparound(False)    
-cpdef spkezr(str target, double epoch, str frame, str abcorr, str observer):
-    cdef double[6] c_state = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+cpdef spkezr(
+    str target, 
+    double epoch, 
+    str frame, 
+    str abcorr, 
+    str observer):
     cdef double lt = 0.0
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] state = np.empty(6, dtype=np.double)
-    cdef double[:] _state = state
-    spkezr_c(target, epoch, frame, abcorr, observer, c_state, &lt)
-    _state[0] = c_state[0]
-    _state[1] = c_state[1]
-    _state[2] = c_state[2]
-    _state[3] = c_state[3]
-    _state[4] = c_state[4]
-    _state[5] = c_state[5]
-    return state, lt
+    cdef double[::1] c_state = np.empty(6, dtype=np.double)
+    spkezr_c(
+        target, 
+        epoch,
+        frame, 
+        abcorr, 
+        observer, 
+        &c_state[0], 
+        &lt)
+    return c_state, lt
 
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkezr_v(str target, double[:] epoch, str frame, str abcorr, str observer):
+cpdef spkezr_v(
+    str target, 
+    double[::1] epoch, 
+    str frame, 
+    str abcorr, 
+    str observer):
     # initialize c variables
     cdef double[6] state = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
     cdef double lt = 0.0
@@ -1277,21 +1334,17 @@ cpdef spkcvo_v(
 @boundscheck(False)
 @wraparound(False)
 cpdef spkcvt(
-    trgsta: double[::1],
-    trgepc: double,
-    trgctr: str,
-    trgref: str,
-    et: double,
-    outref: str,
-    refloc: str,
-    abcorr: str,
-    obsrvr: str):
-    # TODO new compact style 03/25/25 to use elsewhere
+    double[::1] trgsta,
+    double trgepc,
+    str trgctr,
+    str trgref,
+    double et,
+    str outref,
+    str refloc,
+    str abcorr,
+    str obsrvr):
     # initialize c variables
-    cdef double[::1] c_trgsta = trgsta 
-    cdef double c_trgepc = trgepc
     cdef double c_lt = 0.0
-    cdef double c_et = et
     # convert the strings to pointers once
     cdef const char* c_trgctr   = trgctr
     cdef const char* c_trgref   = trgref
@@ -1300,15 +1353,14 @@ cpdef spkcvt(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # initialize output arrays
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] p_state = np.empty(6, dtype=np.double)
-    cdef double[::1] c_state = p_state
+    cdef double[::1] c_state = np.empty(6, dtype=np.double)
     # perform the call
     spkcvt_c(
-        &c_trgsta[0],
-        c_trgepc,
+        &trgsta[0],
+        trgepc,
         c_trgctr,
         c_trgref,
-        c_et,
+        et,
         c_outref,
         c_refloc,
         c_abcorr,
@@ -1317,34 +1369,23 @@ cpdef spkcvt(
         &c_lt
     )
     # return output
-    return p_state, c_lt
+    return c_state, c_lt
 
 
 @boundscheck(False)
 @wraparound(False)
 cpdef spkcvt_v(
-    trgsta: double[:],
-    trgepc: double,
-    trgctr: str,
-    trgref: str,
-    ets: double[:],
-    outref: str,
-    refloc: str,
-    abcorr: str,
-    obsrvr: str):
-    cdef const double[:] c_ets = ets
-    cdef Py_ssize_t i, n = c_ets.shape[0]
-    # initialize c variables TODO: vectorize obspos?
-    cdef double[6] c_trgsta
-    c_trgsta[0] = trgsta[0] 
-    c_trgsta[1] = trgsta[1] 
-    c_trgsta[2] = trgsta[2]
-    c_trgsta[3] = trgsta[3] 
-    c_trgsta[4] = trgsta[4] 
-    c_trgsta[5] = trgsta[5]  
-    cdef double c_trgepc = trgepc
-    cdef double[6] c_state = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-    cdef double c_lt = 0.0
+    double[::1] trgsta,
+    double trgepc,
+    str trgctr,
+    str trgref,
+    double[::1] ets,
+    str outref,
+    str refloc,
+    str abcorr,
+    str obsrvr):
+    # initialize c variables
+    cdef Py_ssize_t i, n = ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_trgctr   = trgctr
     cdef const char* c_trgref   = trgref
@@ -1353,36 +1394,26 @@ cpdef spkcvt_v(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # initialize output arrays
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=2, mode="c"] state = np.empty((n,6), dtype=np.double)
-    cdef double[:, :] _state = state
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] lts = np.empty(n, dtype=np.double)
-    cdef double[:, :] _lts = lts
+    cdef double[:, ::1] c_states = np.empty((n,6), dtype=np.double)
+    cdef double[::1] c_lts = np.empty(n, dtype=np.double)
     # perform the call
     with nogil:
         for i in range(n):
             spkcvt_c(
-                c_trgsta,
-                c_trgepc,
+                &trgsta[0],
+                trgepc,
                 c_trgctr,
                 c_trgref,
-                c_ets[i],
+                ets[i],
                 c_outref,
                 c_refloc,
                 c_abcorr,
                 c_obsrvr,
-                c_state,
-                &c_lt
+                &c_states[i][0],
+                &c_lts[i]
             )
-            # accumulate output
-            _state[i, 0] = c_state[0]
-            _state[i, 1] = c_state[1]
-            _state[i, 2] = c_state[2]
-            _state[i, 3] = c_state[3]
-            _state[i, 4] = c_state[4]
-            _state[i, 5] = c_state[5]
-            _lts[i] = c_lt
     # return output
-    return state, lts
+    return c_states, c_lts
 
 
 @boundscheck(False)
@@ -1401,8 +1432,7 @@ cpdef spkgeo(
     # convert the strings to pointers once
     cdef const char* c_ref   = ref
     # initialize output arrays
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] p_state = np.empty(6, dtype=np.double)
-    cdef double[:] c_state = p_state
+    cdef double[::1] c_state = np.empty(6, dtype=np.double)
     # perform the call
     spkgeo_c(
         c_targ,
@@ -1413,62 +1443,58 @@ cpdef spkgeo(
         &c_lt
     )
     # return output
-    return p_state, c_lt
+    return c_state, c_lt
 
 
 @boundscheck(False)
 @wraparound(False)
 cpdef spkgeo_v(
-    targ: int,
-    ets: double[:],
-    ref: str,
-    obs: int,
+    int targ,
+    double[::1] ets,
+    str ref,
+    int obs,
     ):
     # initialize c variables
-    cdef const double[:] c_ets = ets
-    cdef Py_ssize_t i, n = c_ets.shape[0]
+    cdef Py_ssize_t i, n = ets.shape[0]
     cdef long c_targ = targ
     cdef long c_obs  = obs
     # convert the strings to pointers once
     cdef const char* c_ref   = ref
     # initialize output arrays
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=2, mode="c"] p_state = np.empty((n,6), dtype=np.double)
-    cdef double[:,:] c_state = p_state
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] p_lts = np.empty(n, dtype=np.double)
-    cdef double[:] c_lts = p_lts
+    cdef double[:,::1] c_state = np.empty((n,6), dtype=np.double)
+    cdef double[::1] c_lts = np.empty(n, dtype=np.double)
     # perform the call
     with nogil:
         for i in range(n):
             spkgeo_c(
                 c_targ,
-                c_ets[i],
+                ets[i],
                 c_ref,
                 c_obs,
                 &c_state[i][0],
                 &c_lts[i]
             )
     # return output
-    return p_state, p_lts
+    return c_state, c_lts
 
 
 @boundscheck(False)
 @wraparound(False)
 cpdef spkgps(
-    targ: int,
-    et: float,
-    ref: str,
-    obs: int
+    int targ,
+    double et,
+    str ref,
+    int obs
     ):
     # initialize c variables
-    cdef long c_targ = targ
+    cdef int c_targ = targ
     cdef double c_et = et
     cdef double c_lt = 0.0
-    cdef long c_obs  = obs
+    cdef int c_obs  = obs
     # convert the strings to pointers once
     cdef const char* c_ref   = ref
     # initialize output arrays
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] p_pos = np.empty(3, dtype=np.double)
-    cdef double[:] c_pos = p_pos
+    cdef double[::1] c_pos = np.empty(3, dtype=np.double)
     # perform the call
     spkgeo_c(
         c_targ,
@@ -1479,136 +1505,96 @@ cpdef spkgps(
         &c_lt
     )
     # return output
-    return p_pos, c_lt
+    return c_pos, c_lt
 
 
 @boundscheck(False)
 @wraparound(False)
 cpdef spkgps_v(
-    targ: int,
-    ets: double[:],
-    ref: str,
-    obs: int,
+    int targ,
+    double[::1] ets,
+    str ref,
+    int obs,
     ):
     # initialize c variables
-    cdef const double[:] c_ets = ets
-    cdef Py_ssize_t i, n = c_ets.shape[0]
+    cdef Py_ssize_t i, n = ets.shape[0]
     cdef long c_targ = targ
     cdef long c_obs  = obs
     # convert the strings to pointers once
     cdef const char* c_ref   = ref
     # initialize output arrays
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=2, mode="c"] p_pos = np.empty((n,3), dtype=np.double)
-    cdef double[:,:] c_pos = p_pos
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] p_lts = np.empty(n, dtype=np.double)
-    cdef double[:] c_lts = p_lts
+    cdef double[:,::1] c_pos = np.empty((n,3), dtype=np.double)
+    cdef double[::1] c_lts = np.empty(n, dtype=np.double)
     # perform the call
     with nogil:
         for i in range(n):
             spkgps_c(
                 c_targ,
-                c_ets[i],
+                ets[i],
                 c_ref,
                 c_obs,
                 &c_pos[i][0],
                 &c_lts[i]
             )
     # return output
-    return p_pos, p_lts
+    return c_pos, c_lts
 
 
 @boundscheck(False)
 @wraparound(False)
 cpdef spkpvn(
-    handle: int,
-    descr: double[:],
-    et: float
+    int handle,
+    double[::1] descr,
+    double et
     ):
     # initialize c variables
-    cdef SpiceInt c_handle = handle
-    cdef double[5] c_descr = (0.0, 0.0, 0.0, 0.0, 0.0) # const?
-    c_descr[0] = descr[0]
-    c_descr[1] = descr[1]
-    c_descr[2] = descr[2]
-    c_descr[3] = descr[3]
-    c_descr[4] = descr[4]
+    cdef int c_handle = handle
     cdef double c_et = et
     # inititalize output variables
-    cdef SpiceInt c_ref = 0
-    cdef double[6] c_state = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-    cdef SpiceInt c_center = 0
+    cdef int c_ref = 0
+    cdef int c_center = 0
     # initialize output arrays
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] state = np.empty(6, dtype=np.double)
-    cdef double[:] p_state = state
+    cdef double[::1] c_state = np.empty(6, dtype=np.double)
     # perform the call
     spkpvn_c(
         c_handle,
-        c_descr,
+        &descr[0],
         c_et,
         &c_ref,
-        c_state,
+        &c_state[0],
         &c_center
     )
-    # accumulate output
-    p_state[0] = c_state[0]
-    p_state[1] = c_state[1]
-    p_state[2] = c_state[2]
-    p_state[3] = c_state[3]
-    p_state[4] = c_state[4]
-    p_state[5] = c_state[5]
     # return output 
-    return c_ref, p_state, c_center
+    return c_ref, c_state, c_center
 
 
 @boundscheck(False)
 @wraparound(False)
 cpdef spkpvn_v(
-    handle: int,
-    descr: double[:,:],
-    ets: double[:]
+    int handle,
+    double[::1] descr,
+    double[:] ets
     ):
-    cdef const double[:] c_ets = ets
-    cdef Py_ssize_t i, n = c_ets.shape[0]
+    cdef Py_ssize_t i, n = ets.shape[0]
     # initialize c variables
-    cdef SpiceInt c_handle = handle
-    cdef double[5] c_descr = (0.0, 0.0, 0.0, 0.0, 0.0) # const?
-    c_descr[0] = descr[0]
-    c_descr[1] = descr[1]
-    c_descr[2] = descr[2]
-    c_descr[3] = descr[3]
-    c_descr[4] = descr[4]
-    # inititalize output variables
-    cdef SpiceInt c_ref = 0
-    cdef double[6] c_state = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-    cdef SpiceInt c_center = 0
+    cdef int c_handle = handle
     # initialize output arrays
-    cdef np.ndarray[dtype=INT_t, ndim=1, mode="c"] refs = np.empty(n, dtype=np.int)
-    cdef long[:] p_refs = refs
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=2, mode="c"] state = np.empty((n,6), dtype=np.double)
-    cdef double[:,:] p_state = state
-    cdef np.ndarray[dtype=INT_t, ndim=1, mode="c"] centers = np.empty(n, dtype=np.int)
-    cdef long[:] p_centers = centers
+    cdef int[::1] c_refs  = np.empty(n, dtype=np.int)
+    cdef double[:,::1] c_states = np.empty((n,6), dtype=np.double)
+    cdef int[::1] c_centers  = np.empty(n, dtype=np.int)
     # perform the call
-    for i in range(n):
-        spkpvn_c(
-            c_handle,
-            c_descr,
-            c_ets[i],
-            &c_ref,
-            c_state,
-            &c_center
-        )
-        # accumulate output
-        p_state[i,0] = c_state[0]
-        p_state[i,1] = c_state[1]
-        p_state[i,2] = c_state[2]
-        p_state[i,3] = c_state[3]
-        p_state[i,4] = c_state[4]
-        p_state[i,5] = c_state[5]
-        p_refs[i] = c_ref
-        p_centers[i] = c_center
+    with nogil:
+        for i in range(n):
+            spkpvn_c(
+                c_handle,
+                &descr[0],
+                ets[i],
+                &c_refs[i],
+                &c_states[i][0],
+                &c_centers[i]
+            )
     # return output 
-    return refs, p_state, centers
+    return c_refs, c_states, c_centers
 
 
 @boundscheck(False)

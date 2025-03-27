@@ -6,11 +6,11 @@
 cdef extern from "SpiceUsr.h" nogil:
     ctypedef bint SpiceBoolean
     ctypedef char SpiceChar
-    ctypedef long SpiceInt
+    ctypedef int SpiceInt
     ctypedef double SpiceDouble
     ctypedef const int ConstSpiceBool
     ctypedef const char ConstSpiceChar
-    ctypedef const long ConstSpiceInt
+    ctypedef const int ConstSpiceInt
     ctypedef const double ConstSpiceDouble
 
     # Cells
