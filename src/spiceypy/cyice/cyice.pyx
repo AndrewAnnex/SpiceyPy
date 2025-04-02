@@ -2,6 +2,7 @@
 # cython: embedsignature = True
 # cython: c_string_type = bytes
 # cython: c_string_encoding = utf-8
+# distutils: define_macros=NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
 """
 main cython wrapper code
 """

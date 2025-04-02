@@ -20,11 +20,6 @@ is_unix = host_OS in ("Linux", "Darwin", "FreeBSD")
 
 # https://setuptools.pypa.io/en/latest/userguide/ext_modules.html
 
-# I can just use the shared library!
-# cspice_c = list(map(str, Path("src/cspice/src/cspice/").glob("*.c")))
-# csupport_c = list(map(str, Path("src/cspice/src/csupport/").glob("*.c")))
-
-
 passnumber = 0
 
 
@@ -53,12 +48,20 @@ def try_get_spice():
 
 
 def get_cyice_extension(default_path: str = "./src/cspice/"):
+    try:
+        from Cython.Build import cythonize
+        USE_CYTHON = True
+    except ImportError:
+        USE_CYTHON = False
+    
+    cyice_ext = '.pyx' if USE_CYTHON else '.c'
+
     cspice_dir = os.environ.get("CSPICE_SRC_DIR", default_path)
 
     ext_options = {
         "include_dirs": [
             f"{cspice_dir}include/",
-            f"{cspice_dir}/src/cspice/",
+            f"{cspice_dir}src/cspice/",
             numpy.get_include(),
         ],
         "libraries": ["cspice" if is_unix else "libcspice"],
@@ -68,13 +71,13 @@ def get_cyice_extension(default_path: str = "./src/cspice/"):
         ],
         "language": "c",
         "define_macros": [],
-        "extra_compile_args": [],
+        "extra_compile_args": ["-Wno-pointer-to-int-cast"],
     }
 
     cyice_ext = Extension(
         name="spiceypy.cyice.cyice",
         sources=[
-            "./src/spiceypy/cyice/cyice.pyx",
+            f"./src/spiceypy/cyice/cyice.{cyice_ext}",
         ],
         **ext_options,
     )
@@ -153,5 +156,5 @@ setup(
         bdist_wheel=SpiceyPyWheelBuild,
         build_ext=build_ext,
     ),
-    ext_modules=cythonize([get_cyice_extension()], annotate=True, nthreads=4),
+    ext_modules=cythonize([get_cyice_extension()], annotate=True, nthreads=2),
 )

@@ -78,7 +78,6 @@ environment = { CSPICE_NO_TEMP = 'YES', LD_LIBRARY_PATH = 'src/spiceypy/utils/' 
 before-build = [
     "python -m pip install -r {project}/ci-requirements.txt",
     "python {project}/get_spice.py",
-    "python {project}/setup.py build_ext -j 2 --inplace",
 ]
 # Specify Python Versions to build
 build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]

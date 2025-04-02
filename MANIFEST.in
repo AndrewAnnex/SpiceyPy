@@ -5,8 +5,9 @@ include get_spice.py
 # include build scripts
 include build_cyice.py
 include build_spiceypy.py
-# exclude cyice cython c file
-exclude src/spiceypy/cyice/cyice.c
+# include cython c file in sdist
+include src/spiceypy/cyice/cyice.c
+# exclude cyice cython html annotation
 exclude src/spiceypy/cyice/cyice.html
 
 # Misc

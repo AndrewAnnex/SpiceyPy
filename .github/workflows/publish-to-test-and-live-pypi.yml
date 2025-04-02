@@ -34,6 +34,7 @@ jobs:
         env: 
           CSPICE_NO_TEMP: "YES"
         run: |
+          python setup.py build_ext --inplace
           python -m build --sdist
           echo "Running Pip install from sdist"
           python -m pip install dist/*.tar.gz --user

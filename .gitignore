@@ -20,7 +20,7 @@
 *.ti
 *.bc
 
-# Cyice things
+# Cyice things, exclude the c file and html annotation
 src/spiceypy/cyice/cyice.html
 src/spiceypy/cyice/cyice.c
 
