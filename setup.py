@@ -71,7 +71,7 @@ def get_cyice_extension(default_path: str = "./src/cspice/"):
         ],
         "language": "c",
         "define_macros": [],
-        "extra_compile_args": ["-Wno-pointer-to-int-cast"],
+        "extra_compile_args": ["-Wno-pointer-to-int-cast", "-Wno-shift-op-parentheses", "-Wno-parentheses", "-Wno-deprecated-non-prototype"],
     }
 
     cyice_ext = Extension(

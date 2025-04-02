@@ -11,7 +11,7 @@ build-backend = "setuptools.build_meta"
 name = 'spiceypy'
 dynamic = ["version"]
 description = 'A Python Wrapper for the NAIF CSPICE Toolkit'
-readme = {file = "README.txt", content-type = "text/x-rst"}
+readme = {file = "README.rst", content-type = "text/x-rst"}
 requires-python = ">=3.10"
 authors = [
     {name = 'Andrew M. Annex', email='ama6fy@virginia.edu'}
@@ -90,5 +90,5 @@ before-test = [
     "pip install -r ci-requirements.txt"
 ]
 test-command = [
-    "coverage run --source {package} -m pytest --pyargs {project}",
+    "coverage run --source spiceypy -m pytest --pyargs {project}",
 ]
