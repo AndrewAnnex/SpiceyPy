@@ -1,4 +1,4 @@
-oldest-supported-numpy
-setuptools>=38.0.0
-cython
+numpy>=2.0,<3
+setuptools>=75.8.2
+Cython>=3.0.12
 build 

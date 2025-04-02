@@ -1,11 +1,11 @@
-oldest-supported-numpy
+numpy>=2.0,<3
 setuptools>=75.8.2
 pytest>=7.0.0
 pytest-benchmark
 pandas>=0.24.0
 coverage>=5.1.0
 twine>=3.3.0
-cython
+Cython>=3.0.12
 wheel
 black
 build 

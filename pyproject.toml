@@ -2,8 +2,8 @@
 requires = [
     "setuptools >= 76.0.0",
     "wheel",
-    "cython",
-    "oldest-supported-numpy",
+    "Cython>=3.0.12",
+    "numpy>=2.0,<3",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -12,7 +12,7 @@ name = 'spiceypy'
 dynamic = ["version"]
 description = 'A Python Wrapper for the NAIF CSPICE Toolkit'
 readme = {file = "README.txt", content-type = "text/x-rst"}
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [
     {name = 'Andrew M. Annex', email='ama6fy@virginia.edu'}
 ]
@@ -24,7 +24,6 @@ classifiers = [
      'Topic :: Scientific/Engineering',
      'Topic :: Scientific/Engineering :: Astronomy',
      'License :: OSI Approved :: MIT License',
-     'Programming Language :: Python :: 3.9',
      'Programming Language :: Python :: 3.10',
      'Programming Language :: Python :: 3.11',
      'Programming Language :: Python :: 3.12',
@@ -36,8 +35,8 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-tests = ['numpy>=1.17.0', 'pytest>=7.0.0', 'pandas>=0.24.0']
-dev = ['numpy>=1.17.0', 'pytest>=7.0.0', 'pytest-benchmark', 'pandas>=0.24.0', 'coverage>=5.1.0', 'twine>=3.3.0', 'Cython>=3.0.12', 'wheel', 'build', 'black']
+tests = ['numpy>=2.0,<3', 'pytest>=7.0.0', 'pandas>=0.24.0']
+dev = ['numpy>=2.0,<3', 'Cython>=3.0.12', 'pytest>=7.0.0', 'pytest-benchmark', 'pandas>=0.24.0', 'coverage>=5.1.0', 'twine>=3.3.0', 'wheel', 'build', 'black']
 
 [project.urls]
 'Homepage'      = 'https://github.com/AndrewAnnex/SpiceyPy'
@@ -77,12 +76,12 @@ build-frontend = "build"
 environment = { CSPICE_NO_TEMP = 'YES', LD_LIBRARY_PATH = 'src/spiceypy/utils/' }
 # build libcspice inside cibuildwheel before running python build steps
 before-build = [
-    "python -m pip install oldest-supported-numpy Cython wheel setuptools",
+    "python -m pip install -r {project}/ci-requirements.txt",
     "python {project}/get_spice.py",
     "python {project}/setup.py build_ext -j 2 --inplace",
 ]
-# Only build on CPython 3.13
-build = "cp313-*"
+# Specify Python Versions to build
+build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
 # Skip 32-bit builds, pypy, and musllinux
 skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "pypy*", "pp*", "*-musllinux_aarch64", "*-musllinux_x86_64"]
 # other options
