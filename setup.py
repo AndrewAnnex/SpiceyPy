@@ -56,12 +56,12 @@ def get_cyice_extension(default_path: str = "./src/cspice/"):
     
     cyice_ext = 'pyx' if USE_CYTHON else 'c'
 
-    cspice_dir = os.environ.get("CSPICE_SRC_DIR", default_path)
+    cspice_dir = Path(os.environ.get("CSPICE_SRC_DIR", default_path))
 
     ext_options = {
         "include_dirs": [
-            f"{cspice_dir}include/",
-            f"{cspice_dir}src/cspice/",
+            f"{cspice_dir / 'include/'}",
+            f"{cspice_dir / 'src/cspice/'}",
             numpy.get_include(),
         ],
         "libraries": ["cspice" if is_unix else "libcspice"],
