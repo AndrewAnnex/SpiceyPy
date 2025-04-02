@@ -54,7 +54,7 @@ def get_cyice_extension(default_path: str = "./src/cspice/"):
     except ImportError:
         USE_CYTHON = False
     
-    cyice_ext = '.pyx' if USE_CYTHON else '.c'
+    cyice_ext = 'pyx' if USE_CYTHON else 'c'
 
     cspice_dir = os.environ.get("CSPICE_SRC_DIR", default_path)
 
