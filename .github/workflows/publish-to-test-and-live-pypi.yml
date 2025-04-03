@@ -40,6 +40,8 @@ jobs:
           ls ./src/spiceypy/cyice/
           echo "Running build for sdist"
           python -m build --sdist
+          echo "contents of dist folder: "
+          ls dist/
       - name: Check dists
         run: |
           twine check dist/*
@@ -57,13 +59,15 @@ jobs:
       id-token: write
       contents: read
     steps:
+      - name: Checkout 🌶️ 🥧
+        uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           pattern: artifact-*
           merge-multiple: true
           path: dist
-      - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v4
+      - name: Display structure of downloaded files
+        run: ls dist/ 
       - name: Setup windows msvc
         if: ${{ matrix.os == 'windows-latest' }}
         uses: ilammy/msvc-dev-cmd@v1.13.0
