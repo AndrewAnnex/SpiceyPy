@@ -281,7 +281,7 @@ jobs:
           ls ./src/spiceypy/utils/
           python setup.py build_ext -j 2 --inplace
           ls ./src/spiceypy/cyice/
-          python -m pip install .
+          python -m pip install . --user
       - name: Test 🧪 with coverage 📈
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy --maxfail=4

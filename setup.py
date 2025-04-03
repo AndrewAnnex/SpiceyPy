@@ -8,10 +8,15 @@ from setuptools import setup, find_packages, Command, Extension
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
 from setuptools.dist import Distribution
-from Cython.Distutils import build_ext
-from Cython.Build import cythonize
-from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 
+from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+try:
+    from Cython.Build import cythonize
+    from Cython.Distutils import build_ext
+    USE_CYTHON = True
+except ImportError:
+    USE_CYTHON = False
+    
 
 host_OS = platform.system()
 host_arch = platform.machine()
@@ -48,12 +53,6 @@ def try_get_spice():
 
 
 def get_cyice_extension(default_path: str = "./src/cspice/"):
-    try:
-        from Cython.Build import cythonize
-        USE_CYTHON = True
-    except ImportError:
-        USE_CYTHON = False
-    
     cyice_ext = 'pyx' if USE_CYTHON else 'c'
 
     cspice_dir = Path(os.environ.get("CSPICE_SRC_DIR", default_path))
@@ -130,6 +129,17 @@ class SpiceyPyWheelBuild(_bdist_wheel):
         super().finalize_options()
         self.root_is_pure = False
 
+cmd_class = dict(
+    install=InstallSpiceyPy,
+    build_py=BuildPyCommand,
+    bdist_wheel=SpiceyPyWheelBuild,
+)
+
+ext_modules = [get_cyice_extension()]
+
+if USE_CYTHON:
+    cmd_class['build_ext'] = build_ext
+    ext_modules = cythonize(ext_modules, annotate=True, nthreads=2)
 
 setup(
     distclass=SpiceyPyBinaryDistribution,
@@ -147,14 +157,9 @@ setup(
             "cyice/*.pyx",
             "cyice/*.pxd",
         ],
-        "*": ["get_spice.py", "build_cyice.py", "build_spiceypy.py"],
+        "*": ["get_spice.py"],
     },
     include_package_data=True,
-    cmdclass=dict(
-        install=InstallSpiceyPy,
-        build_py=BuildPyCommand,
-        bdist_wheel=SpiceyPyWheelBuild,
-        build_ext=build_ext,
-    ),
-    ext_modules=cythonize([get_cyice_extension()], annotate=True, nthreads=2),
+    cmdclass=cmd_class,
+    ext_modules=ext_modules,
 )

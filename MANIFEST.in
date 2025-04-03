@@ -2,9 +2,6 @@
 include *.patch
 # include getspice
 include get_spice.py
-# include build scripts
-include build_cyice.py
-include build_spiceypy.py
 # include cython c file in sdist
 include src/spiceypy/cyice/cyice.c
 # exclude cyice cython html annotation
