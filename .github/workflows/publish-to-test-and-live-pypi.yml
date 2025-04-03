@@ -48,6 +48,7 @@ jobs:
           path: dist/*.tar.gz
   test_sdist:
     name: Test SpiceyPy 🌶️ 🥧 Python 🐍 source distribution
+    needs: [build_sdist]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
