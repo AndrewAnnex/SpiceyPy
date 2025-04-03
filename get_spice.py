@@ -136,13 +136,13 @@ class GetCSPICE(object):
     """
     Class that support the download from the NAIF FTP server of the required
     CSPICE package for the architecture used by the Python distribution that
-    invokes this module. By default the CSPICE Toolkit version N0066 is
+    invokes this module. By default the CSPICE Toolkit version N0067 is
     downloaded and unpacked on the directory where this module is located.
 
     Arguments
     ---------
     :argument version: String indicating the required version of the CSPICE
-                       Toolkit. By default it is 'N0066'.
+                       Toolkit. By default it is 'N0067'.
     :type: str
 
     """
@@ -164,7 +164,7 @@ class GetCSPICE(object):
     }
 
     def __init__(self, version=spice_version, dst=None):
-        """Init method that uses either the default N0066 toolkit version token
+        """Init method that uses either the default N0067 toolkit version token
         or a user provided one.
         """
         try:
@@ -227,7 +227,7 @@ class GetCSPICE(object):
 
         # Cygwin system is CYGWIN-NT-xxx.
         system = "cygwin" if "CYGWIN" in system else system
-        cpu_bits = "64bit" if sys.maxsize > 2**32 else "32bit"
+        cpu_bits = "64bit" if sys.maxsize > 2 ** 32 else "32bit"
 
         if machine in ("x86", "x86_64", "AMD64", "i686"):
             machine = "x86_64"
