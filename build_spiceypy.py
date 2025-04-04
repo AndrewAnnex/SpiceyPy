@@ -1,8 +1,8 @@
 from setuptools import setup, Command, find_packages
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
+from setuptools.command.bdist_wheel import bdist_wheel as _bdist_wheel
 from setuptools.dist import Distribution
-from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 
 import sys
 from pathlib import Path

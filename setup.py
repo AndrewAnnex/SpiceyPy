@@ -7,9 +7,8 @@ import numpy
 from setuptools import setup, find_packages, Command, Extension
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
+from setuptools.command.bdist_wheel import bdist_wheel as _bdist_wheel
 from setuptools.dist import Distribution
-
-from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 try:
     from Cython.Build import cythonize
     from Cython.Distutils import build_ext

@@ -1,7 +1,6 @@
 [build-system]
 requires = [
     "setuptools>=76.0.0",
-    "wheel",
     "Cython>=3.0.12",
     "numpy>=2.0,<3",
 ]
@@ -36,7 +35,7 @@ classifiers = [
 
 [project.optional-dependencies]
 tests = ['numpy>=2.0,<3', 'pytest>=7.0.0', 'pandas>=0.24.0']
-dev = ['numpy>=2.0,<3', 'Cython>=3.0.12', 'pytest>=7.0.0', 'pytest-benchmark', 'pandas>=0.24.0', 'coverage>=5.1.0', 'twine>=3.3.0', 'wheel', 'build', 'black']
+dev = ['numpy>=2.0,<3', 'Cython>=3.0.12', 'pytest>=7.0.0', 'pytest-benchmark', 'pandas>=0.24.0', 'coverage>=5.1.0', 'twine>=3.3.0', 'build', 'black']
 
 [project.urls]
 'Homepage'      = 'https://github.com/AndrewAnnex/SpiceyPy'

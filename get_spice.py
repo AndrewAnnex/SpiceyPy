@@ -339,15 +339,7 @@ def prepare_cspice() -> None:
     """
     cwd = os.getcwd()
     global cspice_dir, tmp_cspice_root_dir
-    no_temp = CSPICE_NO_TEMP in os.environ
-    with tempfile.TemporaryDirectory(prefix="cspice_spiceypy_") as tmp_dir:
-        # Trick for python <3.8, delete tmp dir so that we can write it overwrite it
-        if not no_temp:
-            tmp_cspice_root_dir = str((Path(tmp_dir)).absolute())
-        else:
-            # we are telling get_spice.py we want to download to the root/src/cspice dir
-            tmp_cspice_root_dir = os.path.join(root_dir, "src")
-        print(f'TMP cspice src dir: {tmp_cspice_root_dir}')
+    tmp_cspice_root_dir = os.path.join(root_dir, "src")
     tmp_cspice_src_dir = os.path.join(tmp_cspice_root_dir, "cspice")
     if tmp_cspice_src_dir == cspice_dir and os.path.exists(cspice_dir):
         print(f"CSPICE src dir already in place {cspice_dir}, moving on")
@@ -496,6 +488,8 @@ def main(build: bool = True) -> None:
             print(f"Copying: {slp} to {destination}", flush=True)
             # okay now move shared library to dst dir
             shutil.copy(slp, destination_dir)
+            # cleanup slp
+            os.remove(slp)
             # cleanup tmp dir, windows seems to fail with this:
             #    PermissionError: [WinError 32] The process cannot access the file because it is being used by another process
             # if tmp_cspice_root_dir is not None:
