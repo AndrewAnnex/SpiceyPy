@@ -59,9 +59,9 @@ def get_cyice_extension(default_path: str = "./src/cspice/"):
     libraries = ["cspice" if is_unix else "libcspice"]
     library_dirs = ["./src/spiceypy/utils"]
 
-    extra_link_args = []
-    if is_unix:
-        extra_link_args.append('-lm')
+    extra_link_args = ['-lm']
+    # if is_unix:
+    #     extra_link_args.append('-lm')
 
     ext_options = {
         "include_dirs": [
