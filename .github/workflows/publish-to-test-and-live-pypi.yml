@@ -52,6 +52,9 @@ jobs:
     name: Test SpiceyPy 🌶️ 🥧 Python 🐍 source distribution
     needs: [build_sdist]
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     strategy:
       matrix:
         os: [ubuntu-latest, macos-14, windows-latest]
