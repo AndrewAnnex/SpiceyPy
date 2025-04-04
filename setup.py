@@ -57,10 +57,11 @@ def get_cyice_extension(default_path: str = "./src/cspice/"):
     cspice_dir = Path(os.environ.get("CSPICE_SRC_DIR", default_path))
 
     libraries = ["cspice" if is_unix else "libcspice"]
-    if is_unix:
-        libraries.append('m')
-
     library_dirs = ["./src/spiceypy/utils"]
+
+    extra_link_args = []
+    if is_unix:
+        extra_link_args.append('-lm')
 
     ext_options = {
         "include_dirs": [
@@ -73,6 +74,7 @@ def get_cyice_extension(default_path: str = "./src/cspice/"):
         "language": "c",
         "define_macros": [],
         "extra_compile_args": [],
+        "extra_link_args": extra_link_args
     }
 
     cyice_ext = Extension(
