@@ -64,7 +64,6 @@ def get_cyice_extension(default_path: str = "./src/cspice/"):
         ],
         "libraries": ["cspice" if is_unix else "libcspice"],
         "library_dirs": [
-            "/usr/local/lib",
             "./src/spiceypy/utils",
         ],
         "language": "c",
