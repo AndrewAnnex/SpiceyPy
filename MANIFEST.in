@@ -6,6 +6,8 @@ include get_spice.py
 include src/spiceypy/cyice/cyice.c
 # exclude cyice cython html annotation
 exclude src/spiceypy/cyice/cyice.html
+# I really don't know how, but the extension ends up including cspice in sdist
+exclude src/cspice/include/SpiceUsr.h
 
 # Misc
 include LICENSE

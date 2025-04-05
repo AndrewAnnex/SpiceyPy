@@ -11,7 +11,7 @@ from setuptools.command.bdist_wheel import bdist_wheel as _bdist_wheel
 from setuptools.dist import Distribution
 try:
     from Cython.Build import cythonize
-    from Cython.Distutils import build_ext
+    from Cython.Build import build_ext
     USE_CYTHON = True
 except ImportError:
     USE_CYTHON = False
