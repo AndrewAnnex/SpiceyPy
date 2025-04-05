@@ -11,7 +11,7 @@ If you are new to python, it is a good idea to read a bit about it first
 encouraged to install and or update: pip, setuptools, wheel, and numpy first
 before installing SpiceyPy ::
 
-    pip install -U pip setuptools wheel
+    pip install -U pip setuptools
     pip install -U numpy
 
 Then to install SpiceyPy, simply run::
