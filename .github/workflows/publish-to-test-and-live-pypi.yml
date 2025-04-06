@@ -85,6 +85,7 @@ jobs:
           python -m pip install --user -r ci-requirements.txt
       - name: Install SpiceyPy 🌶️ 🥧 from sdist on Mac/Linux
         if: ${{ matrix.os != 'windows-latest' }}
+        shell: bash
         run: |
           echo "Running Pip install from sdist"
           python -m pip install dist/*.tar.gz --user --no-build-isolation -vvvv
@@ -97,7 +98,7 @@ jobs:
           ) 
       - name: Test 🧪 with coverage 📈
         run: |
-          coverage run --source spiceypy -m pytest --pyargs spiceypy --maxfail=4
+          python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --maxfail=4
       - name: Upload 🆙 coverage 📈 report to codecov 
         uses: codecov/codecov-action@v4
         with:
