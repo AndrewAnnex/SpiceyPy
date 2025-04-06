@@ -84,11 +84,28 @@ jobs:
           python -m pip install --upgrade pip
       - name: Install CI dependencies
         run: |
-          python -m pip install -U -r ci-requirements.txt
+          python -m pip install --user -r ci-requirements.txt
       - name: Install SpiceyPy 🌶️ 🥧 from sdist
         run: |
           echo "Running Pip install from sdist"
-          python -m pip install dist/*.tar.gz --user --no-build-isolation
+          python -m pip install dist/*.tar.gz --user --no-build-isolation -vvvv
+      - name: List all contents in site-packages
+        shell: bash
+        run: |
+          SITE_PACKAGES=$(python -c "import site; site.getusersitepackages()")
+          echo "📂 Site-packages directory: $SITE_PACKAGES"
+          echo "📦 Listing all contents recursively:"
+          find "$SITE_PACKAGES"
+      - name: Verify SpiceyPy install
+        shell: bash
+        run: |
+          # first attempt a simple import 
+          python -c "import $PACKAGE_NAME" || { echo "❌ Package '$PACKAGE_NAME' not found or failed to import"; exit 1; }
+          # Get the installed path from the package's __file__
+          PACKAGE_PATH=$(python -c "import spiceypy, os; print(os.path.dirname(spiceypy.__file__))")
+          echo "✅ Found $PACKAGE_NAME in: $PACKAGE_PATH"
+          echo "📦 Listing contents recursively:"
+          find "$PACKAGE_PATH"
       - name: Test 🧪 with coverage 📈
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy --maxfail=4
