@@ -92,7 +92,7 @@ jobs:
       - name: List all contents in site-packages
         shell: bash
         run: |
-          SITE_PACKAGES=$(python -c "import site; site.getusersitepackages()")
+          SITE_PACKAGES=$(python -c 'import site; print(site.getsitepackages()[0])')
           echo "📂 Site-packages directory: $SITE_PACKAGES"
           echo "📦 Listing all contents recursively:"
           find "$SITE_PACKAGES"
