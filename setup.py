@@ -55,7 +55,7 @@ def try_get_spice():
 
 def get_cyice_extension(default_path: str = "./src/cspice/"):
     print(f'Running on {host_OS} (which is_unix: {is_unix}) with arch {host_arch}', flush=True)
-    cyice_ext = 'pyx' if USE_CYTHON else 'c'
+    try_get_spice()
 
     cspice_dir = Path(os.environ.get("CSPICE_SRC_DIR", default_path))
 
@@ -66,12 +66,13 @@ def get_cyice_extension(default_path: str = "./src/cspice/"):
     if is_unix:
         extra_link_args.append('-lm')
 
+    include_dirs = [
+        numpy.get_include(),
+        f"{cspice_dir / 'include/'}",
+    ]
+
     ext_options = {
-        "include_dirs": [
-            f"{cspice_dir / 'include/'}",
-            f"{cspice_dir / 'src/cspice/'}",
-            numpy.get_include(),
-        ],
+        "include_dirs": include_dirs,
         "libraries": libraries,
         "library_dirs": library_dirs,
         "language": "c",
@@ -83,7 +84,7 @@ def get_cyice_extension(default_path: str = "./src/cspice/"):
     cyice_ext = Extension(
         name="spiceypy.cyice.cyice",
         sources=[
-            f"./src/spiceypy/cyice/cyice.{cyice_ext}",
+            f"./src/spiceypy/cyice/cyice.pyx",
         ],
         **ext_options,
     )
@@ -135,6 +136,10 @@ class SpiceyPyWheelBuild(_bdist_wheel):
         self.root_is_pure = False
         super().finalize_options()
         self.root_is_pure = False
+    
+    def run(self):
+        try_get_spice()
+        return super().run()
 
 cmd_class = dict(
     install=InstallSpiceyPy,
