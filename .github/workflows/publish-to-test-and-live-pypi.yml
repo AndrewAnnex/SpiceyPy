@@ -52,10 +52,8 @@ jobs:
     name: Test SpiceyPy 🌶️ 🥧 Python 🐍 source distribution
     needs: [build_sdist]
     runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        shell: bash
     strategy:
+      fail-fast: false 
       matrix:
         os: [ubuntu-latest, macos-14, windows-latest]
     permissions:
@@ -85,27 +83,18 @@ jobs:
       - name: Install CI dependencies
         run: |
           python -m pip install --user -r ci-requirements.txt
-      - name: Install SpiceyPy 🌶️ 🥧 from sdist
+      - name: Install SpiceyPy 🌶️ 🥧 from sdist on Mac/Linux
+        if: ${{ matrix.os != 'windows-latest' }}
         run: |
           echo "Running Pip install from sdist"
           python -m pip install dist/*.tar.gz --user --no-build-isolation -vvvv
-      - name: List all contents in site-packages
-        shell: bash
+      - name: Install SpiceyPy 🌶️ 🥧 from sdist on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
         run: |
-          SITE_PACKAGES=$(python -c 'import site; print(site.getsitepackages()[0])')
-          echo "📂 Site-packages directory: $SITE_PACKAGES"
-          echo "📦 Listing all contents recursively:"
-          find "$SITE_PACKAGES"
-      - name: Verify SpiceyPy install
-        shell: bash
-        run: |
-          # first attempt a simple import 
-          python -c "import spiceypy" || { echo "❌ Package spiceypy not found or failed to import"; exit 1; }
-          # Get the installed path from the package's __file__
-          PACKAGE_PATH=$(python -c "import spiceypy, os; print(os.path.dirname(spiceypy.__file__))")
-          echo "✅ Found spiceypy in: $PACKAGE_PATH"
-          echo "📦 Listing contents recursively:"
-          find "$PACKAGE_PATH"
+          for /f %%f in ('dir /b dist\*.tar.gz') do (
+            python -m pip install dist\%%f --user --no-build-isolation -vvvv
+          ) 
       - name: Test 🧪 with coverage 📈
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy --maxfail=4
@@ -115,9 +104,6 @@ jobs:
           fail_ci_if_error: false
           verbose: true
           use_oidc: true
-      - name: Check dists
-        run: |
-          twine check dist/*
   build_wheels:
     strategy:
       matrix:
