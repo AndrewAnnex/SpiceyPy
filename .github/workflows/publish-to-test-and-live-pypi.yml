@@ -100,10 +100,10 @@ jobs:
         shell: bash
         run: |
           # first attempt a simple import 
-          python -c "import $PACKAGE_NAME" || { echo "❌ Package '$PACKAGE_NAME' not found or failed to import"; exit 1; }
+          python -c "import spiceypy" || { echo "❌ Package spiceypy not found or failed to import"; exit 1; }
           # Get the installed path from the package's __file__
           PACKAGE_PATH=$(python -c "import spiceypy, os; print(os.path.dirname(spiceypy.__file__))")
-          echo "✅ Found $PACKAGE_NAME in: $PACKAGE_PATH"
+          echo "✅ Found spiceypy in: $PACKAGE_PATH"
           echo "📦 Listing contents recursively:"
           find "$PACKAGE_PATH"
       - name: Test 🧪 with coverage 📈

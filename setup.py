@@ -22,8 +22,6 @@ host_arch = platform.machine()
 # Get platform is Unix-like OS or not
 is_unix = host_OS in ("Linux", "Darwin", "FreeBSD")
 
-print(f'Running on {host_OS} (which is_unix: {is_unix}) with arch {host_arch}', flush=True)
-
 # https://setuptools.pypa.io/en/latest/userguide/ext_modules.html
 
 passnumber = 0
@@ -54,7 +52,6 @@ def try_get_spice():
 
 
 def get_cyice_extension(default_path: str = "./src/cspice/"):
-    print(f'Running on {host_OS} (which is_unix: {is_unix}) with arch {host_arch}', flush=True)
     try_get_spice()
 
     cspice_dir = Path(os.environ.get("CSPICE_SRC_DIR", default_path))
