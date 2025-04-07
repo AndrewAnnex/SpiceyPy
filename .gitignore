@@ -24,6 +24,9 @@
 src/spiceypy/cyice/cyice.html
 src/spiceypy/cyice/cyice.c
 
+# ignore patch files that end up in src
+scr/*.patch
+
 
 # Cspice
 cspice/
