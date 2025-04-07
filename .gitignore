@@ -27,6 +27,8 @@ src/spiceypy/cyice/cyice.c
 # ignore patch files that end up in src
 scr/*.patch
 
+# ignore .benchmark folder
+.benchmark/
 
 # Cspice
 cspice/
