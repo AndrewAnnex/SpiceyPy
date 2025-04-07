@@ -58,6 +58,12 @@ where = ["src"]
 "*" = ['get_spice.py', 'LICENSE', 'README.rst']
 spiceypy = [ 'utils/*.so', 'utils/*.dylib', 'utils/*.dll', 'cyice/*.so', 'cyice/*.dylib', 'cyice/*.dll']
 
+# pytest things
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "--benchmark-autosave"
+
+# coverage things
 [tool.coverage.run]
 relative_files = true
 

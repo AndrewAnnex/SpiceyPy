@@ -24,6 +24,23 @@ ctypedef np.uint64_t INT_t
 ctypedef np.uint8_t CHAR_t
 ctypedef np.uint8_t BOOL_t
 
+ctypedef fused double_arr_t:
+   np.double_t[:]
+   np.double_t[::1]
+
+ctypedef fused int_arr_t:
+   np.uint64_t[:]
+   np.uint64_t[::1]
+
+ctypedef fused char_arr_t:
+   np.uint8_t[:]
+   np.uint8_t[::1]
+
+ctypedef fused bool_arr_t:
+   np.uint8_t[:]
+   np.uint8_t[::1]
+
+
 
 from .cyice cimport *
 
@@ -217,7 +234,7 @@ cpdef double[::1] convrt_v(
     cdef Py_ssize_t i, n = x.shape[0]
     cdef const char * c_inunit = inunit
     cdef const char * c_outunit = outunit
-    cdef double[::1] c_outs = np.empty(n, dtype=np.double)
+    cdef np.double_t[::1] c_outs = np.empty(n, dtype=np.double)
     # main loop
     for i in range(n):
         convrt_c(
@@ -255,7 +272,7 @@ cpdef double deltet(epoch: float, eptype: str):
 # new rule: always use type name style if accepting arrays as input
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:] deltet_v(
+cpdef double[::1] deltet_v(
     double[::1] epochs, 
     str eptype
     ):
@@ -273,7 +290,7 @@ cpdef double[:] deltet_v(
     cdef Py_ssize_t i, n = epochs.shape[0]
     cdef const char* c_eptype = eptype
     # allocate output array
-    cdef double[::1] deltas = np.empty(n, dtype=np.double)
+    cdef np.double_t[::1] deltas = np.empty(n, dtype=np.double)
     # perform the loop
     with nogil:
         for i in range(n):
@@ -601,7 +618,7 @@ cpdef np.ndarray[BOOL_t, ndim=1] fovray_v(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # initialize output arrays
-    cdef bint[:] c_visibl = np.empty(n, dtype=np.uint8)
+    cdef bint[::1] c_visibl = np.empty(n, dtype=np.uint8)
     # perform the call
     with nogil:
         for i in range(n):
@@ -670,13 +687,13 @@ cpdef bint fovtrg(
 @boundscheck(False)
 @wraparound(False)    
 cpdef np.ndarray[BOOL_t, ndim=1] fovtrg_v(
-    inst: str,
-    target: str,
-    tshape: str,
-    tframe: str,
-    abcorr: str,
-    obsrvr: str,
-    ets: double[:]
+    str inst,
+    str target,
+    str tshape,
+    str tframe,
+    str abcorr,
+    str obsrvr,
+    np.double_t[::1] ets
 ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.fovtrg`
@@ -696,8 +713,7 @@ cpdef np.ndarray[BOOL_t, ndim=1] fovtrg_v(
     :return: Visibility flags
     """
     # initialize c variables
-    cdef double[:] c_ets = ets
-    cdef Py_ssize_t i, n = c_ets.shape[0]
+    cdef Py_ssize_t i, n = ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_inst     = inst
     cdef const char* c_target   = target
@@ -706,23 +722,21 @@ cpdef np.ndarray[BOOL_t, ndim=1] fovtrg_v(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # initialize output arrays
-    cdef np.ndarray[dtype=BOOL_t, ndim=1, mode="c"] p_visibl = np.empty(n, dtype=np.uint8)
-    cdef bint[:] c_visibl = p_visibl
+    cdef bint[::1] c_visibl = np.empty(n, dtype=np.uint8)
     # perform the call
-    with nogil:
-        for i in range(n):
-            fovtrg_c(
-                c_inst,
-                c_target,
-                c_tshape,
-                c_tframe,
-                c_abcorr,
-                c_obsrvr,
-                &c_ets[i],
-                &c_visibl[i]
-            )
+    for i in range(n):
+        fovtrg_c(
+            c_inst,
+            c_target,
+            c_tshape,
+            c_tframe,
+            c_abcorr,
+            c_obsrvr,
+            &ets[i],
+            &c_visibl[i]
+        )
     # return
-    return p_visibl
+    return c_visibl
 
 
 cpdef void furnsh(file: str):
@@ -800,10 +814,10 @@ cpdef double lspcn(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1] lspcn_v(
-    body: str, 
-    ets: double[::1], 
-    abcorr: str
+cpdef np.double_t[::1] lspcn_v(
+    str body, 
+    np.double_t[::1] ets, 
+    str abcorr
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.lspcn`
@@ -818,15 +832,16 @@ cpdef np.ndarray[DOUBLE_t, ndim=1] lspcn_v(
     :param abcorr: Aberration correction.
     :return: planetocentric longitudes of the sun in radians
     """
-    cdef double l_s
+    cdef Py_ssize_t i, n = ets.shape[0]
     cdef const char * _body   = body
     cdef const char * _abcorr = abcorr
-    cdef Py_ssize_t i, n = ets.shape[0]
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] l_s_s = np.empty(n, dtype=np.double)
-    cdef double[:] _l_s_s = l_s_s
+    cdef np.double_t[::1] l_s_s = np.empty(n, dtype=np.double)
     for i in range(n):
-        l_s = lspcn_c(_body, ets[i], _abcorr)
-        _l_s_s[i] = l_s
+        l_s_s[i] = lspcn_c(
+            _body, 
+            ets[i], 
+            _abcorr
+        )
     return  l_s_s
 
 #M 
@@ -933,10 +948,14 @@ cpdef double scencd(sc: int, sclkch: str):
     :param sclkch: Character representation of a spacecraft clock.
     :return: Encoded representation of the clock count.
     """
-    cdef SpiceInt _sc = sc
+    cdef SpiceInt c_sc = sc
     cdef double sclkdp
-    cdef const char * _sclkch = sclkch
-    scencd_c(_sc, _sclkch, &sclkdp)
+    cdef const char * c_sclkch = sclkch
+    scencd_c(
+        c_sc, 
+        c_sclkch, 
+        &sclkdp
+    )
     return sclkdp
 
 
@@ -955,16 +974,17 @@ cpdef np.ndarray[DOUBLE_t, ndim=1] scencd_v(sc: int, sclkchs: list[str]):
     :param sclkchs: Character representations of a spacecraft clock.
     :return: Encoded representations of the clock count.
     """
-    cdef SpiceInt _sc = sc
+    cdef SpiceInt c_sc = sc
     cdef Py_ssize_t n, i
     n = len(sclkchs)
-    cdef double sclkdp
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] sclkdps = np.empty(n, dtype=np.double)
-    cdef double[:] _sclkdps = sclkdps
+    cdef np.double_t[::1] c_sclkdps  = np.empty(n, dtype=np.double)
     for i in range(n):
-        scencd_c(_sc, sclkchs[i], &sclkdp)
-        _sclkdps[i] = sclkdp
-    return sclkdp
+        scencd_c(
+            c_sc, 
+            sclkchs[i], 
+            &c_sclkdps[i]
+        )
+    return c_sclkdps
 
 
 cpdef double sce2c(sc: int, et: float):
@@ -981,9 +1001,13 @@ cpdef double sce2c(sc: int, et: float):
             SCLK, encoded as ticks since spacecraft clock start.
             sclkdp need not be integral.
     """
-    cdef SpiceInt _sc = sc
+    cdef SpiceInt c_sc = sc
     cdef double sclkdp
-    sce2c_c(_sc, et, &sclkdp)
+    sce2c_c(
+        c_sc, 
+        et, 
+        &sclkdp
+    )
     return sclkdp
 
 
@@ -1008,14 +1032,15 @@ cpdef np.ndarray[DOUBLE_t, ndim=1] sce2c_v(
             SCLK, encoded as ticks since spacecraft clock start.
             sclkdp need not be integral.
     """
-    cdef SpiceInt _sc = sc
-    cdef double sclkdp
     cdef Py_ssize_t i, n = ets.shape[0]
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] sclkdps = np.empty(n, dtype=np.double)
-    cdef double[:] _sclkdps = sclkdps
+    cdef SpiceInt c_sc = sc
+    cdef np.double_t[::1] sclkdps = np.empty(n, dtype=np.double)
     for i in range(n):
-        sce2c_c(_sc, ets[i], &sclkdp)
-        _sclkdps[i] = sclkdp
+        sce2c_c(
+            c_sc, 
+            ets[i], 
+            &sclkdps[i]
+        )
     return sclkdps
 
 
