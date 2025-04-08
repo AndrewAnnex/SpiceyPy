@@ -127,6 +127,8 @@ cpdef ckgp(
     return c_cmat, c_clkout, c_found
 
 
+@boundscheck(False)
+@wraparound(False)
 cpdef ckgpav(
         inst: int,
         sclkdp: double,
@@ -160,8 +162,8 @@ cpdef ckgpav(
     cdef const char* c_ref = ref
     # initialize output arrays
     # TODO avoiding the extra python numpy dec may be better
-    cdef double[:,::1] c_cmat = np.empty((3,3), dtype=np.double)
-    cdef double[::1] c_av = np.empty(3, dtype=np.double)
+    cdef np.double_t[:,::1] c_cmat = np.empty((3,3), dtype=np.double)
+    cdef np.double_t[::1] c_av = np.empty(3, dtype=np.double)
     # perform the call
     ckgpav_c(
         c_inst,
@@ -169,7 +171,7 @@ cpdef ckgpav(
         c_tol,
         c_ref,
         _c_cmat, # todo attempt to avoid extra c array with memoryview
-        _c_av,
+        &c_av[0],
         &c_clkout,
         &c_found
     )
@@ -183,9 +185,6 @@ cpdef ckgpav(
     c_cmat[2][0] = _c_cmat[2][0]
     c_cmat[2][1] = _c_cmat[2][1]
     c_cmat[2][2] = _c_cmat[2][2]
-    c_av[0] = _c_av[0]
-    c_av[1] = _c_av[1]
-    c_av[2] = _c_av[2]
     # return results
     return c_cmat, c_av, c_clkout, c_found
 
@@ -354,7 +353,7 @@ cpdef et2lst(
 @boundscheck(False)
 @wraparound(False)
 cpdef et2lst_v(
-   ets: double[:],
+   ets: double[::1],
    body: int,
    lon: double,
    typein: str
@@ -388,9 +387,9 @@ cpdef et2lst_v(
     cdef int c_body = body
     cdef double c_lon = lon
     # initialize output arrays 
-    cdef int[:] c_hrs = np.empty(n, dtype=np.int)
-    cdef int[:] c_mns = np.empty(n, dtype=np.int)
-    cdef int[:] c_scs = np.empty(n, dtype=np.int)
+    cdef int[::1] c_hrs = np.empty(n, dtype=np.int)
+    cdef int[::1] c_mns = np.empty(n, dtype=np.int)
+    cdef int[::1] c_scs = np.empty(n, dtype=np.int)
     # TODO: using a unicode numpy array?
     cdef np.ndarray[dtype=CHAR_t, ndim=2] times = np.empty((n, _default_len_out), dtype=np.uint8)
     #cdef list times = [None] * n
@@ -415,7 +414,11 @@ cpdef et2lst_v(
     return c_hrs, c_mns, c_scs, times.astype(np.str_), ampms.astype(np.str_) 
 
 
-cpdef str et2utc(et: float, format_str: str, prec: int):
+cpdef str et2utc(
+    et: float, 
+    format_str: str, 
+    prec: int
+):
     """
     Convert an input time from ephemeris seconds past J2000
     to Calendar, Day-of-Year, or Julian Date format, UTC.
@@ -429,8 +432,14 @@ cpdef str et2utc(et: float, format_str: str, prec: int):
     :return: Output time string in UTC
     """
     cdef char[TIMELEN] c_buffer
-    cdef const char* _format_str = format_str
-    et2utc_c(et, _format_str, prec, TIMELEN, c_buffer) # TODO or &c_buffer[0]?
+    cdef const char* c_format_str = format_str
+    et2utc_c(
+        et, 
+        c_format_str, 
+        prec, 
+        TIMELEN, 
+        c_buffer
+    ) # TODO or &c_buffer[0]?
     return PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
 
 
@@ -1177,12 +1186,12 @@ cpdef np.ndarray[DOUBLE_t, ndim=1] sct2e_v(long sc, double[::1] sclkdps):
     :param sclkdps: SCLKs, encoded as ticks since spacecraft clock start.
     :return: Ephemeris time, seconds past J2000.
     """
-    cdef SpiceInt _sc = sc
     cdef Py_ssize_t i, n = sclkdps.shape[0]
+    cdef SpiceInt c_sc = sc
     cdef double[::1] c_ets = np.empty(n, dtype=np.double)
     for i in range(n):
         sct2e_c(
-            _sc, 
+            c_sc, 
             sclkdps[i], 
             &c_ets[i]
         )
@@ -1192,11 +1201,12 @@ cpdef np.ndarray[DOUBLE_t, ndim=1] sct2e_v(long sc, double[::1] sclkdps):
 @boundscheck(False)
 @wraparound(False)
 cpdef spkapo(
-    targ: int,  
-    et: float, 
-    ref: str,
-    sobs: double[::1], 
-    abcorr: str):
+    int targ,  
+    float et, 
+    str ref,
+    double[::1] sobs, 
+    str abcorr
+):
     """
     Return the position of a target body relative to an observer,
     optionally corrected for light time and stellar aberration.
@@ -1213,35 +1223,23 @@ cpdef spkapo(
             One way light time between observer and target in seconds.
     """
     # initialize c variables
-    cdef double[6] c_sobs = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-    c_sobs[0] = sobs[0]
-    c_sobs[1] = sobs[1]
-    c_sobs[2] = sobs[2]
-    c_sobs[3] = sobs[3]
-    c_sobs[4] = sobs[4]
-    c_sobs[5] = sobs[5]
-    cdef double[3] c_ptarg = (0.0, 0.0, 0.0)
     cdef double lt = 0.0
     # convert the strings to pointers once
     cdef const char* c_ref    = ref
     cdef const char* c_abcorr = abcorr
     cdef long c_targ = targ
     # initialize output arrays
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] ptarg = np.empty(3, dtype=np.double)
-    cdef double[::1] p_ptarg = ptarg
+    cdef double[::1] c_ptarg =  np.empty(3, dtype=np.double)
     spkapo_c(
         c_targ, 
         et, 
         c_ref, 
-        c_sobs,
+        &sobs[0],
         c_abcorr, 
-        c_ptarg, 
+        &c_ptarg[0], 
         &lt
     )
-    p_ptarg[0] = c_ptarg[0]
-    p_ptarg[1] = c_ptarg[1]
-    p_ptarg[2] = c_ptarg[2]
-    return ptarg, lt
+    return c_ptarg, lt
 
 
 @boundscheck(False)
@@ -3185,12 +3183,17 @@ cpdef np.ndarray[DOUBLE_t, ndim=2] sxform(
     :return: A state transformation matrix.
     """
     cdef double[6][6] tform 
-    cdef const char * _fromstring = fromstring
-    cdef const char * _tostring = tostring
+    cdef const char * c_fromstring = fromstring
+    cdef const char * c_tostring = tostring
     # initialize output
     cdef np.ndarray[dtype=DOUBLE_t, ndim=2, mode="c"] xform = np.empty((6, 6), dtype=np.double)
     cdef double[:,:] _xform = xform
-    sxform_c(_fromstring, _tostring, et, tform)
+    sxform_c(
+        c_fromstring, 
+        c_tostring, 
+        et, 
+        tform
+    )
     _xform[:,:] = tform
     return xform
 
@@ -3218,15 +3221,15 @@ cpdef np.ndarray[DOUBLE_t, ndim=3] sxform_v(
     """
     cdef Py_ssize_t i, n = ets.shape[0]
     cdef double[6][6] c_tform
-    cdef const char * _fromstring = fromstring
-    cdef const char * _tostring = tostring
+    cdef const char * c_fromstring = fromstring
+    cdef const char * c_tostring = tostring
     # initialize output
     cdef np.ndarray[dtype=DOUBLE_t, ndim=3, mode="c"] xform = np.empty((n, 6, 6), dtype=np.double)
     cdef double[:,:,::1] _xform = xform
     for i in range(n):
         sxform_c(
-            _fromstring, 
-            _tostring, 
+            c_fromstring, 
+            c_tostring, 
             ets[i], 
             c_tform
         )
@@ -3238,15 +3241,15 @@ cpdef np.ndarray[DOUBLE_t, ndim=3] sxform_v(
 @wraparound(False)
 @boundscheck(False)
 cpdef tangpt(
-    method: str,
-    target: str,
-    et: float,
-    fixref: str,
-    abcorr: str,
-    corloc: str,
-    obsrvr: str,
-    dref: str,
-    dvec: double[::1]
+    str method,
+    str target,
+    double et,
+    str fixref,
+    str abcorr,
+    str corloc,
+    str obsrvr,
+    str dref,
+    double[::1] dvec
     ):
     """
     Compute, for a given observer, ray emanating from the observer,
@@ -3277,73 +3280,53 @@ cpdef tangpt(
      correction locus, Vector from observer to surface point `srfpt'.
     """
     # convert strings 
-    cdef const char * _method = method
-    cdef const char * _target = target
-    cdef const char * _fixref = fixref
-    cdef const char * _abcorr = abcorr
-    cdef const char * _corloc = corloc
-    cdef const char * _obsrvr = obsrvr
-    cdef const char * _dref   = dref
-    # convert dvec to c
-    cdef double[3] _dvec
-    _dvec[0] = dvec[0]
-    _dvec[1] = dvec[1]
-    _dvec[2] = dvec[2]
+    cdef const char * c_method = method
+    cdef const char * c_target = target
+    cdef const char * c_fixref = fixref
+    cdef const char * c_abcorr = abcorr
+    cdef const char * c_corloc = corloc
+    cdef const char * c_obsrvr = obsrvr
+    cdef const char * c_dref   = dref
     # Allocate output floats and arrays with appropriate shapes.
     cdef double alt, vrange, trgepc
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] tanpt = np.empty(3, dtype=np.double)
-    cdef double[:] _tanpt = tanpt
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] srfpt = np.empty(3, dtype=np.double)
-    cdef double[:] _srfpt = srfpt
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] srfvec = np.empty(3, dtype=np.double)
-    cdef double[:] _srfvec = srfvec
-    cdef double[3] c_tanpt
-    cdef double[3] c_srfpt
-    cdef double[3] c_srfvec
+    cdef np.double_t[::1] c_tanpt = np.empty(3, dtype=np.double)
+    cdef np.double_t[::1] c_srfpt = np.empty(3, dtype=np.double)
+    cdef np.double_t[::1] c_srfvec = np.empty(3, dtype=np.double)
     # perform the call
     tangpt_c(
-        _method, 
-        _target, 
+        c_method, 
+        c_target, 
         et, 
-        _fixref, 
-        _abcorr,
-        _corloc,
-        _obsrvr,
-        _dref,
-        _dvec,
-        c_tanpt,
+        c_fixref, 
+        c_abcorr,
+        c_corloc,
+        c_obsrvr,
+        c_dref,
+        &dvec[0],
+        &c_tanpt[0],
         &alt,
         &vrange,
-        c_srfpt,
+        &c_srfpt[0],
         &trgepc,
-        c_srfvec
+        &c_srfvec[0]
     )
-    # accumulate the results to output arrays
-    _tanpt[0] = c_tanpt[0]
-    _tanpt[1] = c_tanpt[1]
-    _tanpt[2] = c_tanpt[2]
-    _srfpt[0] = c_srfpt[0]
-    _srfpt[1] = c_srfpt[1]
-    _srfpt[2] = c_srfpt[2]
-    _srfvec[0] = c_srfvec[0]
-    _srfvec[1] = c_srfvec[1]
-    _srfvec[2] = c_srfvec[2]
     # return values
-    return tanpt, alt, vrange, srfpt, trgepc, srfvec
+    return c_tanpt, alt, vrange, c_srfpt, trgepc, c_srfvec
 
 
 @boundscheck(False)
 @wraparound(False)
 cpdef tangpt_v(    
-    method: str,
-    target: str,
-    ets: double[::1],
-    fixref: str,
-    abcorr: str,
-    corloc: str,
-    obsrvr: str,
-    dref: str,
-    dvec: double[::1]):
+    str method,
+    str target,
+    double[::1] ets,
+    str fixref,
+    str abcorr,
+    str corloc,
+    str obsrvr,
+    str dref,
+    double[::1] dvec
+):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.tangpt`
     
@@ -3376,72 +3359,42 @@ cpdef tangpt_v(
     """
     # allocate sizes
     cdef Py_ssize_t i, n = ets.shape[0]
-    # get memoryview of ets TODO not sure if this works
-    cdef const double[:] _ets = ets
     # convert strings to ascii
-    cdef const char *_method = method
-    cdef const char *_target = target
-    cdef const char *_fixref = fixref
-    cdef const char *_abcorr = abcorr
-    cdef const char *_corloc = corloc
-    cdef const char *_obsrvr = obsrvr
-    cdef const char *_dref   = dref
-    # convert dvec to c TODO vectorize also over this?
-    cdef double[3] _dvec
-    _dvec[0] = dvec[0]
-    _dvec[1] = dvec[1]
-    _dvec[2] = dvec[2]
+    cdef const char * c_method = method
+    cdef const char * c_target = target
+    cdef const char * c_fixref = fixref
+    cdef const char * c_abcorr = abcorr
+    cdef const char * c_corloc = corloc
+    cdef const char * c_obsrvr = obsrvr
+    cdef const char * c_dref   = dref
     # Allocate output floats and arrays with appropriate shapes.
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=2, mode="c"] tanpt  = np.empty((n,3), dtype=np.double)
-    cdef double[:,:] _tanpt = tanpt
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] alt    = np.empty(n, dtype=np.float64)
-    cdef double[:] _alt = alt
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] vrange = np.empty(n, dtype=np.float64)
-    cdef double[:] _vrange = vrange
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=2, mode="c"] srfpt  = np.empty((n,3), dtype=np.double)
-    cdef double[:,:] _srfpt = srfpt
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode="c"] trgepc = np.empty(n, dtype=np.float64)
-    cdef double[:] _trgepc = trgepc
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=2, mode="c"] srfvec = np.empty((n,3), dtype=np.double)
-    cdef double[:,:] _srfvec = srfvec
-    cdef double[3] c_tanpt
-    cdef double[3] c_srfpt
-    cdef double[3] c_srfvec
-    cdef double c_alt, c_range, c_trgepc
+    cdef np.double_t[:,::1] c_tanpt  = np.empty((n,3), dtype=np.double)
+    cdef np.double_t[::1]   c_alt    = np.empty(n, dtype=np.float64)
+    cdef np.double_t[::1]   c_vrange = np.empty(n, dtype=np.float64)
+    cdef np.double_t[:,::1] c_srfpt  = np.empty((n,3), dtype=np.double)
+    cdef np.double_t[::1]   c_trgepc = np.empty(n, dtype=np.float64)
+    cdef np.double_t[:,::1]   c_srfvec = np.empty((n,3), dtype=np.double)
     # perform the calls
     for i in range(n):
         tangpt_c(
-            _method, 
-            _target, 
-            _ets[i], 
-            _fixref, 
-            _abcorr,
-            _corloc,
-            _obsrvr,
-            _dref,
-            _dvec,
-            c_tanpt,
-            &c_alt,
-            &c_range,
-            c_srfpt,
-            &c_trgepc,
-            c_srfvec
+            c_method, 
+            c_target, 
+            ets[i], 
+            c_fixref, 
+            c_abcorr,
+            c_corloc,
+            c_obsrvr,
+            c_dref,
+            &dvec[0],
+            &c_tanpt[i][0],
+            &c_alt[i],
+            &c_vrange[i],
+            &c_srfpt[i][0],
+            &c_trgepc[i],
+            &c_srfvec[i][0]
         )
-        # accumulate the results in output arrays
-        _tanpt[i, 0] = c_tanpt[0]
-        _tanpt[i, 1] = c_tanpt[1]
-        _tanpt[i, 2] = c_tanpt[2]
-        _alt[i]    = c_alt
-        _vrange[i]  = c_range
-        _srfpt[i, 0] = c_srfpt[0]
-        _srfpt[i, 1] = c_srfpt[1]
-        _srfpt[i, 2] = c_srfpt[2]
-        _trgepc[i] = c_trgepc
-        _srfvec[i, 0] = c_srfvec[0]
-        _srfvec[i, 1] = c_srfvec[1]
-        _srfvec[i, 2] = c_srfvec[2]
     # return values
-    return tanpt, alt, range, srfpt, trgepc, srfvec
+    return c_tanpt, c_alt, c_vrange, c_srfpt, c_trgepc, c_srfvec
 
 
 cpdef str timout(et: float, pictur: str):
@@ -3510,30 +3463,40 @@ cpdef double trgsep(et: float, targ1: str, shape1: str, frame1: str, targ2: str,
     :param abcorr: Aberration corrections flag.
     :return: angular separation in radians.
     """
-    cdef SpiceDouble _et = et
-    cdef const char* _targ1   = targ1
-    cdef const char* _shape1  = shape1
-    cdef const char* _frame1  = frame1
-    cdef const char* _targ2   = targ2
-    cdef const char* _shape2  = shape2
-    cdef const char* _frame2  = frame2
-    cdef const char* _obsrvr  = obsrvr
-    cdef const char* _abcorr  = abcorr
-    return trgsep_c(_et, _targ1, _shape1, _frame1, _targ2, _shape2, _frame2, _obsrvr, _abcorr)
+    cdef SpiceDouble c_et = et
+    cdef const char * c_targ1   = targ1
+    cdef const char * c_shape1  = shape1
+    cdef const char * c_frame1  = frame1
+    cdef const char * c_targ2   = targ2
+    cdef const char * c_shape2  = shape2
+    cdef const char * c_frame2  = frame2
+    cdef const char * c_obsrvr  = obsrvr
+    cdef const char * c_abcorr  = abcorr
+    return trgsep_c(
+        c_et, 
+        c_targ1, 
+        c_shape1, 
+        c_frame1, 
+        c_targ2, 
+        c_shape2, 
+        c_frame2, 
+        c_obsrvr, 
+        c_abcorr
+    )
 
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1] trgsep_v(
-    ets: double[::1], 
-    targ1: str,
-    shape1: str,
-    frame1: str,
-    targ2: str, 
-    shape2: str, 
-    frame2: str, 
-    obsrvr: str, 
-    abcorr: str
+cpdef double[::1] trgsep_v(
+    double[::1] ets, 
+    str targ1,
+    str shape1,
+    str frame1,
+    str targ2, 
+    str shape2, 
+    str frame2, 
+    str obsrvr, 
+    str abcorr
 ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.trgsep`
@@ -3554,23 +3517,31 @@ cpdef np.ndarray[DOUBLE_t, ndim=1] trgsep_v(
     :param abcorr: Aberration corrections flag.
     :return: angular separation in radians.
     """
-    cdef SpiceDouble _angsep
     cdef Py_ssize_t i, n = ets.shape[0] 
-    cdef const char* _targ1   = targ1
-    cdef const char* _shape1  = shape1
-    cdef const char* _frame1  = frame1
-    cdef const char* _targ2   = targ2
-    cdef const char* _shape2  = shape2
-    cdef const char* _frame2  = frame2
-    cdef const char* _obsrvr  = obsrvr
-    cdef const char* _abcorr  = abcorr
+    cdef const char * c_targ1   = targ1
+    cdef const char * c_shape1  = shape1
+    cdef const char * c_frame1  = frame1
+    cdef const char * c_targ2   = targ2
+    cdef const char * c_shape2  = shape2
+    cdef const char * c_frame2  = frame2
+    cdef const char * c_obsrvr  = obsrvr
+    cdef const char * c_abcorr  = abcorr
     # initialize output
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode='c'] angseps = np.empty(n, dtype=np.double)
-    cdef double[::1] _angseps = angseps
+    cdef np.double_t[::1] c_angseps = np.empty(n, dtype=np.double)
     for i in range(n):
-        _angsep = trgsep_c(ets[i], _targ1, _shape1, _frame1, _targ2, _shape2, _frame2, _obsrvr, _abcorr)
-        _angseps[i] = _angsep  
-    return angseps
+        c_angseps[i] = trgsep_c(
+            ets[i], 
+            c_targ1, 
+            c_shape1, 
+            c_frame1, 
+            c_targ2, 
+            c_shape2,
+            c_frame2, 
+            c_obsrvr, 
+            c_abcorr
+        )
+    return c_angseps
+
 # U
 
 cpdef double unitim(
@@ -3598,7 +3569,7 @@ cpdef double unitim(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1] unitim_v(
+cpdef np.double_t[::1] unitim_v(
         double[::1] epochs,
         insys: str,
         outsys: str,
@@ -3620,15 +3591,18 @@ cpdef np.ndarray[DOUBLE_t, ndim=1] unitim_v(
     """
     cdef Py_ssize_t i, n = epochs.shape[0]
     cdef double _unitim
-    cdef const char * _insys = insys
-    cdef const char * _outsys = outsys
+    cdef const char * c_insys = insys
+    cdef const char * c_outsys = outsys
     # initialize output
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1, mode='c'] unitims = np.empty(n, dtype=np.double)
-    cdef double[::1] _unitims = unitims
+    cdef np.double_t[::1] c_unitims = np.empty(n, dtype=np.double)
+    # perform the actual call
     for i in range(n):
-        _unitim = unitim_c(epochs[i], _insys, _outsys)
-        _unitims[i] = _unitim
-    return unitims
+        c_unitims[i] = unitim_c(
+            epochs[i], 
+            c_insys, 
+            c_outsys
+        )
+    return c_unitims
 
 
 cpdef void unload(file: str) noexcept:
@@ -3653,15 +3627,18 @@ cpdef double utc2et(utcstr: str):
     :param utcstr: Input time string, UTC.
     :return: Output epoch, ephemeris seconds past J2000.
     """
-    cdef const char* _utcstr = utcstr
+    cdef const char* c_utcstr = utcstr
     cdef double et
-    utc2et_c(_utcstr, &et)
+    utc2et_c(
+        c_utcstr, 
+        &et
+    )
     return et
 
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1] utc2et_v(np.ndarray utcstr):
+cpdef double[::1] utc2et_v(np.ndarray utcstr):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.utc2et`
     
@@ -3674,11 +3651,11 @@ cpdef np.ndarray[DOUBLE_t, ndim=1] utc2et_v(np.ndarray utcstr):
     :return: Output epochs, ephemeris seconds past J2000.
     """
     cdef Py_ssize_t i, n = utcstr.shape[0]
-    cdef double et
     # initialize output
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=1] p_ets = np.empty(n, dtype=np.double)
-    cdef double[:] c_ets = p_ets
+    cdef np.double_t[::1] c_ets = np.empty(n, dtype=np.double)
     for i in range(n):
-        utc2et_c(utcstr[i], &et)
-        c_ets[i] = et
-    return p_ets
+        utc2et_c(
+            utcstr[i], 
+            &c_ets[i]
+        )
+    return c_ets
