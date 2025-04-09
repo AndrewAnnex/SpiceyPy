@@ -50,6 +50,7 @@ Contents:
 
    citation
    installation
+   cyice
    changelog
    exampleone
    cells

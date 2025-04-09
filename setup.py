@@ -1,35 +1,28 @@
-"""
-The MIT License (MIT)
+import sys
+import os
+import platform
+from pathlib import Path
 
-Copyright (c) [2015-2022] [Andrew Annex]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
-__author__ = "AndrewAnnex"
-
-from setuptools import setup, Command, find_packages
+import numpy
+from setuptools import setup, find_packages, Command, Extension
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
+from setuptools.command.bdist_wheel import bdist_wheel as _bdist_wheel
 from setuptools.dist import Distribution
-import os
-import sys
-from pathlib import Path
+try:
+    from Cython.Build import cythonize
+    from Cython.Build import build_ext
+    USE_CYTHON = True
+except ImportError:
+    USE_CYTHON = False
+    
+
+host_OS = platform.system()
+host_arch = platform.machine()
+# Get platform is Unix-like OS or not
+is_unix = host_OS in ("Linux", "Darwin", "FreeBSD")
+
+# https://setuptools.pypa.io/en/latest/userguide/ext_modules.html
 
 passnumber = 0
 
@@ -58,6 +51,43 @@ def try_get_spice():
     return
 
 
+def get_cyice_extension(default_path: str = "./src/cspice/"):
+    try_get_spice()
+
+    cspice_dir = Path(os.environ.get("CSPICE_SRC_DIR", default_path))
+
+    libraries = ["cspice" if is_unix else "libcspice"]
+    library_dirs = ["./src/spiceypy/utils"]
+
+    extra_link_args = []
+    if is_unix:
+        extra_link_args.append('-lm')
+
+    include_dirs = [
+        numpy.get_include(),
+        f"{cspice_dir / 'include/'}",
+    ]
+
+    ext_options = {
+        "include_dirs": include_dirs,
+        "libraries": libraries,
+        "library_dirs": library_dirs,
+        "language": "c",
+        "define_macros": [],
+        "extra_compile_args": [],
+        "extra_link_args": extra_link_args
+    }
+
+    cyice_ext = Extension(
+        name="spiceypy.cyice.cyice",
+        sources=[
+            f"./src/spiceypy/cyice/cyice.pyx",
+        ],
+        **ext_options,
+    )
+    return cyice_ext
+
+
 class SpiceyPyBinaryDistribution(Distribution):
     def is_pure(self):
         return False
@@ -67,7 +97,8 @@ class SpiceyPyBinaryDistribution(Distribution):
 
 
 class InstallSpiceyPy(install):
-    """Class that extends the install command and encapsulates the
+    """
+    Class that extends the install command and encapsulates the
     process for installing the required CSPICE distribution at the
     right place.
     """
@@ -78,6 +109,7 @@ class InstallSpiceyPy(install):
 
     def run(self):
         try_get_spice()
+        self.run_command("build_ext")
         return super().run()
 
 
@@ -86,53 +118,57 @@ class BuildPyCommand(build_py):
 
     def run(self):
         try_get_spice()
+        self.run_command("build_ext")
         return super().run()
 
 
-cmdclass = {
-    "install": InstallSpiceyPy,
-    "build_py": BuildPyCommand,
-}
+class SpiceyPyWheelBuild(_bdist_wheel):
+    """
+    override for bdist_wheel
+    """
 
-# https://stackoverflow.com/questions/45150304/how-to-force-a-python-wheel-to-be-platform-specific-when-building-it
-# http://lepture.com/en/2014/python-on-a-hard-wheel
-try:
-    from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+    root_is_pure = False
 
-    class generic_bdist_wheel(_bdist_wheel):
-        """
-        override for bdist_wheel
-        """
+    def finalize_options(self) -> None:
+        self.root_is_pure = False
+        super().finalize_options()
+        self.root_is_pure = False
+    
+    def run(self):
+        try_get_spice()
+        return super().run()
 
-        root_is_pure = False
+cmd_class = dict(
+    install=InstallSpiceyPy,
+    build_py=BuildPyCommand,
+    bdist_wheel=SpiceyPyWheelBuild,
+)
 
-        def finalize_options(self) -> None:
-            self.root_is_pure = False
-            super().finalize_options()
-            self.root_is_pure = False
+ext_modules = [get_cyice_extension()]
 
-        def get_tag(self) -> (str, str, str):
-            self.root_is_pure = False
-            python, abi, plat = super().get_tag()
-            self.root_is_pure = False
-            return "py3", "none", plat
-
-    # add our override to the cmdclass dict so we can inject this behavior
-    cmdclass["bdist_wheel"] = generic_bdist_wheel
-
-except ImportError:
-    # we don't have wheel installed so there is nothing to change
-    pass
-
-
-# todo: https://setuptools.pypa.io/en/latest/userguide/extension.html,
-# https://setuptools.pypa.io/en/latest/deprecated/distutils/extending.html?highlight=cmdclass#integrating-new-commands
+if USE_CYTHON:
+    cmd_class['build_ext'] = build_ext
+    ext_modules = cythonize(ext_modules, annotate=True, nthreads=2)
 
 setup(
     distclass=SpiceyPyBinaryDistribution,
     packages=find_packages("src"),
     package_dir={"": "src"},
-    package_data={"spiceypy": ["utils/*.so", "utils/*.dylib", "utils/*.dll"]},
+    package_data={
+        "spiceypy": [
+            "utils/*.so",
+            "utils/*.dylib",
+            "utils/*.dll",
+            "utils/*.lib",
+            "cyice/*.c",
+            "cyice/*.so",
+            "cyice/*.pyd",
+            "cyice/*.pyx",
+            "cyice/*.pxd",
+        ],
+        "*": ["get_spice.py"],
+    },
     include_package_data=True,
-    cmdclass=cmdclass,
+    cmdclass=cmd_class,
+    ext_modules=ext_modules,
 )

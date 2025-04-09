@@ -5,8 +5,9 @@ channels:
   - nodefaults
 
 dependencies:
-  - python=3.10
-  - numpy==1.25.2
+  - python=3.13
+  - numpy>=2.0,<3
+  - cython>=3.0.12
   - myst-parser==2.0.0
   - docutils
   - graphviz

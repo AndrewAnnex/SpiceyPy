@@ -2,6 +2,12 @@
 include *.patch
 # include getspice
 include get_spice.py
+# include cython c file in sdist
+include src/spiceypy/cyice/cyice.c
+# exclude cyice cython html annotation
+exclude src/spiceypy/cyice/cyice.html
+# I really don't know how, but the extension ends up including cspice in sdist
+exclude src/cspice/include/SpiceUsr.h
 
 # Misc
 include LICENSE
@@ -20,6 +26,10 @@ include makeDynamicSpice.bat
 
 # Tests
 exclude src/spiceypy/tests/exampleKernels.txt
+
+# Cython
+global-include *.pyx
+global-include *.pxd
 
 # Ensure no shared libraries are included in sdist! note I think this breaks 906a7650ba813a32e2f10a8dcf9afd946b774b67, maybe do this manually instead?
 global-exclude *.so
