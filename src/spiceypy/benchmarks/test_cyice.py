@@ -265,20 +265,16 @@ def test_perf_sce2c(function, grouped_benchmark, load_voyager_kernels):
 #     benchmark(function, -32, et)
 
 
-# @pytest.mark.parametrize('function', [cyice.scs2e, spice.scs2e])
-# def test_perf_scs2e(function, benchmark):
-#     benchmark.group = 'performance - %s' % get_qualified_name(function)
-#     spice.furnsh(CoreKernels.testMetaKernel)
-#     spice.furnsh(ExtraKernels.voyagerSclk)
-#     benchmark(function, -32, "2/20538:39:768")
+@pytest.mark.parametrize('function', [cyice.scs2e, spice.scs2e], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["scs2e"], indirect=True)
+def test_perf_scs2e(function, grouped_benchmark, load_voyager_kernels):
+    grouped_benchmark(function, -32, "2/20538:39:768")
 
 
-# @pytest.mark.parametrize('function', [cyice.sct2e, spice.sct2e])
-# def test_perf_sct2e(function, benchmark):
-#     benchmark.group = 'performance - %s' % get_qualified_name(function)
-#     spice.furnsh(CoreKernels.testMetaKernel)
-#     spice.furnsh(ExtraKernels.voyagerSclk)
-#     benchmark(function, -32,  985327965.0)
+@pytest.mark.parametrize('function', [cyice.sct2e, spice.sct2e], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["sct2e"], indirect=True)
+def test_perf_sct2e(function, grouped_benchmark, load_voyager_kernels):
+    grouped_benchmark(function, -32,  985327965.0)
 
 # # def test_getmsg_cyice_benchmark(benchmark):
 # #     cyice.reset()
@@ -325,148 +321,110 @@ def test_perf_sce2c(function, grouped_benchmark, load_voyager_kernels):
 # #     spice.reset()
 
 
-# @pytest.mark.parametrize('function', [cyice.spkez, spice.spkez])
-# def test_perf_spkez(function, benchmark):
-#     benchmark.group = 'performance - %s' % get_qualified_name(function)
-#     spice.furnsh(CoreKernels.testMetaKernel)
-#     et = cyice.str2et("July 4, 2003 11:00 AM PST")
-#     benchmark(function, 499, et, "J2000", "LT+S", 399)
+@pytest.mark.parametrize('function', [cyice.spkez, spice.spkez], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["spkez"], indirect=True)
+def test_perf_spkez(function, grouped_benchmark, load_core_kernels):
+    et = cyice.str2et("July 4, 2003 11:00 AM PST")
+    grouped_benchmark(function, 499, et, "J2000", "LT+S", 399)
 
 
-# def test_cyice_spkez_v_correctness():
-#     spice.furnsh(CoreKernels.testMetaKernel)
-#     et = np.full((100,), spice.str2et("July 4, 2003 11:00 AM PST"))
-#     state, lt = cyice.spkez_v(499, et, "J2000", "LT+S", 399)
-#     expected_lt = np.full((100,), 269.6898816177049)
-#     expected_state = np.full(
-#         (100, 6),
-#         [
-#             73822235.33116072,
-#             -27127919.178592984,
-#             -18741306.284863796,
-#             -6.808513317178952,
-#             7.513996167680786,
-#             3.001298515816776,
-#         ],
-#     )
-#     npt.assert_allclose(lt, expected_lt)
-#     npt.assert_allclose(state, expected_state)
+
+@pytest.mark.parametrize('function', [cyice.spkezr, spice.spkezr], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["spkezr"], indirect=True)
+def test_perf_spkezr(function, grouped_benchmark, load_core_kernels):
+    et = cyice.str2et("July 4, 2003 11:00 AM PST")
+    grouped_benchmark(function, "Mars", et, "J2000", "LT+S", "Earth")
 
 
-# @pytest.mark.parametrize('function', [cyice.spkezr, spice.spkezr])
-# def test_perf_spkezr(function, benchmark):
-#     benchmark.group = 'performance - %s' % get_qualified_name(function)
-#     spice.furnsh(CoreKernels.testMetaKernel)
-#     et = cyice.str2et("July 4, 2003 11:00 AM PST")
-#     benchmark(function, "Mars", et, "J2000", "LT+S", "Earth")
+@pytest.mark.parametrize('function', [cyice.spkezr_v, spice.spkezr], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["spkezr_v"], indirect=True)
+def test_perf_spkezr_v(function, grouped_benchmark, load_core_kernels):
+    ets = np.full((100,), spice.str2et("July 4, 2003 11:00 AM PST"))
+    grouped_benchmark(function, "Mars", ets, "J2000", "LT+S", "Earth")
+    state, lt = function("Mars", ets, "J2000", "LT+S", "Earth")
+    expected_lt = np.full((100,), 269.6898816177049)
+    expected_state = np.full(
+        (100, 6),
+        [
+            73822235.33116072,
+            -27127919.178592984,
+            -18741306.284863796,
+            -6.808513317178952,
+            7.513996167680786,
+            3.001298515816776,
+        ],
+    )
+    npt.assert_allclose(lt, expected_lt)
+    npt.assert_allclose(state, expected_state)
 
 
-# @pytest.mark.parametrize('function', [cyice.spkezr_v, spice.spkezr])
-# def test_perf_spkezr_v(function, benchmark):
-#     benchmark.group = 'performance - %s' % get_qualified_name(function)
-#     spice.furnsh(CoreKernels.testMetaKernel)
-#     et = np.full((100,), spice.str2et("July 4, 2003 11:00 AM PST"))
-#     benchmark(function, "Mars", et, "J2000", "LT+S", "Earth")
+@pytest.mark.parametrize('function', [cyice.spkpos, spice.spkpos], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["spkpos"], indirect=True)
+def test_perf_spkpos(function, grouped_benchmark, load_core_kernels):
+    et = cyice.str2et("July 4, 2003 11:00 AM PST")
+    grouped_benchmark(function, "Mars", et, "J2000", "LT+S", "Earth")
 
 
-# def test_spkpos_v_correctness():
-#     spice.furnsh(CoreKernels.testMetaKernel)
-#     et = spice.str2et(["July 4, 2003 11:00 AM PST", "July 11, 2003 11:00 AM PST"])
-#     pos, lt = cyice.spkpos_v("Mars", et, "J2000", "LT+S", "Earth")
-#     expected_lt = [269.68988136615047324085, 251.44204326148698669385]
-#     expected_pos = [
-#         [
-#             73822235.31053550541400909424,
-#             -27127918.99847228080034255981,
-#             -18741306.30148987472057342529,
-#         ],
-#         [
-#             69682765.52989411354064941406,
-#             -23090281.18098583817481994629,
-#             -17127756.93968883529305458069,
-#         ],
-#     ]
-#     npt.assert_almost_equal(lt, expected_lt)
-#     npt.assert_array_almost_equal(pos, expected_pos)
+@pytest.mark.parametrize('function', [cyice.spkpos_v, spice.spkpos], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["spkpos_v"], indirect=True)
+def test_perf_spkpos_v(function, grouped_benchmark, load_core_kernels):
+    _et = spice.str2et(["July 4, 2003 11:00 AM PST", "July 11, 2003 11:10 AM PST"])
+    et = np.linspace(_et[0], _et[1], num=100)
+    grouped_benchmark(function, "Mars", et, "J2000", "LT+S", "Earth")
 
 
-# @pytest.mark.parametrize('function', [cyice.spkpos, spice.spkpos])
-# def test_perf_spkpos(function, benchmark):
-#     benchmark.group = 'performance - %s' % get_qualified_name(function)
-#     spice.furnsh(CoreKernels.testMetaKernel)
-#     et = cyice.str2et("July 4, 2003 11:00 AM PST")
-#     benchmark(function, "Mars", et, "J2000", "LT+S", "Earth")
+@pytest.mark.parametrize('function', [cyice.str2et, spice.str2et], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["str2et"], indirect=True)
+def test_perf_str2et(function, grouped_benchmark, load_core_kernels):
+    grouped_benchmark(function, "Thu Mar 20 12:53:29 PST 1997")
+
+@pytest.mark.parametrize('function', [cyice.str2et_v, spice.str2et], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["str2et_v"], indirect=True)
+def test_perf_str2et_v(function, grouped_benchmark, load_core_kernels):
+    date = "Thu Mar 20 12:53:29 PST 1997"
+    dates = np.array([date] * 100, dtype=np.str_)
+    grouped_benchmark(function, dates)
+    expected_ets = np.ones(100) * -87836728.81438904
+    ets = function(dates)
+    npt.assert_array_almost_equal(ets, expected_ets)
 
 
-# def test_str2et_v_correctness():
-#     spice.furnsh(CoreKernels.testMetaKernel)
-#     date = "Thu Mar 20 12:53:29 PST 1997"
-#     expected_ets = np.ones(100) * -87836728.81438904
-#     dates = np.array([date] * 100, dtype=np.str_)
-#     print(dates.shape, dates.dtype, flush=True)
-#     ets = cyice.str2et_v(dates)
-#     npt.assert_array_almost_equal(ets, expected_ets)
+@pytest.mark.parametrize('function', [cyice.sxform, spice.sxform], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["sxform"], indirect=True)
+def test_perf_sxform(function, grouped_benchmark, load_core_kernels):
+    et = spice.str2et("January 1, 1990")
+    grouped_benchmark(function, "IAU_EARTH", "J2000", et)
+    lon = 118.25 * spice.rpd()
+    lat = 34.05 * spice.rpd()
+    alt = 0.0
+    utc = "January 1, 1990"
+    et = spice.str2et(utc)
+    len, abc = spice.bodvrd("EARTH", "RADII", 3)
+    equatr = abc[0]
+    polar = abc[2]
+    f = (equatr - polar) / equatr
+    estate = spice.georec(lon, lat, alt, equatr, f)
+    estate = np.append(estate, [0.0, 0.0, 0.0])
+    xform = cyice.sxform("IAU_EARTH", "J2000", et)
+    jstate = np.dot(xform, estate)
+    expected = np.array(
+        [
+            -4131.45969,
+            -3308.36805,
+            3547.02462,
+            0.241249619,
+            -0.301019201,
+            0.000234215666,
+        ]
+    )
+    npt.assert_array_almost_equal(jstate, expected, decimal=4)
 
 
-# @pytest.mark.parametrize('function', [cyice.str2et, spice.str2et])
-# def test_perf_str2et(function, benchmark):
-#     benchmark.group = 'performance - %s' % get_qualified_name(function)
-#     spice.furnsh(CoreKernels.testMetaKernel)
-#     benchmark(function, "Thu Mar 20 12:53:29 PST 1997")
-
-
-# @pytest.mark.parametrize('function', [cyice.str2et_v, spice.str2et])
-# def test_perf_str2et_v(function, benchmark):
-#     benchmark.group = 'performance - %s' % get_qualified_name(function)
-#     spice.furnsh(CoreKernels.testMetaKernel)
-#     date = "Thu Mar 20 12:53:29 PST 1997"
-#     dates = np.array([date] * 100, dtype=np.str_)
-#     benchmark(function, dates)
-
-
-# def test_cyice_sxform_correctness():
-#     spice.furnsh(CoreKernels.testMetaKernel)
-#     lon = 118.25 * spice.rpd()
-#     lat = 34.05 * spice.rpd()
-#     alt = 0.0
-#     utc = "January 1, 1990"
-#     et = spice.str2et(utc)
-#     len, abc = spice.bodvrd("EARTH", "RADII", 3)
-#     equatr = abc[0]
-#     polar = abc[2]
-#     f = (equatr - polar) / equatr
-#     estate = spice.georec(lon, lat, alt, equatr, f)
-#     estate = np.append(estate, [0.0, 0.0, 0.0])
-#     xform = cyice.sxform("IAU_EARTH", "J2000", et)
-#     jstate = np.dot(xform, estate)
-#     expected = np.array(
-#         [
-#             -4131.45969,
-#             -3308.36805,
-#             3547.02462,
-#             0.241249619,
-#             -0.301019201,
-#             0.000234215666,
-#         ]
-#     )
-#     npt.assert_array_almost_equal(jstate, expected, decimal=4)
-
-
-# @pytest.mark.parametrize('function', [cyice.sxform, spice.sxform])
-# def test_perf_sxform(function, benchmark):
-#     benchmark.group = 'performance - %s' % get_qualified_name(function)
-#     spice.furnsh(CoreKernels.testMetaKernel)
-#     et = spice.str2et("January 1, 1990")
-#     benchmark(function, "IAU_EARTH", "J2000", et)
-
-
-# @pytest.mark.parametrize('function', [cyice.sxform_v, spice.sxform])
-# def test_perf_sxform_v(function, benchmark):
-#     benchmark.group = '%s - v - perf' % get_qualified_name(function)
-#     spice.furnsh(CoreKernels.testMetaKernel)
-#     et = np.repeat(spice.str2et("January 1, 1990"), 1000)
-#     benchmark(function, "IAU_EARTH", "J2000", et)
-
+@pytest.mark.parametrize('function', [cyice.sxform_v, spice.sxform], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["sxform_v"], indirect=True)
+def test_perf_sxform_v(function, grouped_benchmark, load_core_kernels):
+    et = np.repeat(spice.str2et("January 1, 1990"), 1000)
+    grouped_benchmark(function, "IAU_EARTH", "J2000", et)
 
 
 @pytest.mark.parametrize('function', [cyice.tangpt, spice.tangpt], ids=get_module_name)
