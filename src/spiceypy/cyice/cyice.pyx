@@ -243,7 +243,10 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] convrt_v(
 #D
 
 
-cpdef double deltet(epoch: float, eptype: str):
+cpdef double deltet(
+    double epoch, 
+    str eptype
+    ):
     """
     Return the value of Delta ET (ET-UTC) for an input epoch.
 
@@ -650,13 +653,13 @@ cpdef np.ndarray fovray_v(
   
 
 cpdef bint fovtrg(
-    inst: str,
-    target: str,
-    tshape: str,
-    tframe: str,
-    abcorr: str,
-    obsrvr: str,
-    et: float
+    str inst,   
+    str target,
+    str tshape,
+    str tframe,
+    str abcorr,
+    str obsrvr,
+    double et
 ):
     """
     Determine if a specified ephemeris object is within the field-of-view (FOV)
@@ -929,7 +932,7 @@ cpdef str scdecd(int sc, double sclkdp):
 
 @boundscheck(False)
 @wraparound(False)
-cpdef list[str] scdecd_v(sc: int, sclkdps: double[::1]):
+cpdef scdecd_v(sc: int, sclkdps: double[::1]):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.scdecd`
 
@@ -959,7 +962,7 @@ cpdef list[str] scdecd_v(sc: int, sclkdps: double[::1]):
                 &c_buffer[0]
             )
             sclkchs[i] = PyUnicode_DecodeUTF8(c_buffer, length, "strict")
-    return sclkchs
+    return np.asarray(sclkchs)
 
 
 cpdef double scencd(
@@ -1012,7 +1015,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] scencd_v(
             sclkchs[i], 
             &c_sclkdps[i]
         )
-    return c_sclkdps
+    return np.asarray(c_sclkdps)
 
 
 cpdef double sce2c(
@@ -1072,7 +1075,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] sce2c_v(
             ets[i], 
             &sclkdps[i]
         )
-    return sclkdps
+    return np.asarray(sclkdps)
 
 
 cpdef str sce2s(
@@ -1103,7 +1106,7 @@ cpdef str sce2s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef list[str] sce2s_v(
+cpdef np.ndarray sce2s_v(
     int sc, 
     double[::1] ets
 ):
@@ -1143,7 +1146,7 @@ cpdef list[str] sce2s_v(
                 &c_buffer[0]
             )
             sclkchs[i] = PyUnicode_DecodeUTF8(c_buffer, length, "strict")
-    return sclkchs
+    return np.asarray(sclkchs)
 
 
 cpdef double scs2e(
@@ -1254,7 +1257,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] sct2e_v(
 @wraparound(False)
 cpdef spkapo(
     int targ,  
-    float et, 
+    double et, 
     str ref,
     double[::1] sobs, 
     str abcorr
@@ -1281,7 +1284,7 @@ cpdef spkapo(
     cdef const char* c_abcorr = abcorr
     cdef long c_targ = targ
     # initialize output arrays
-    cdef double[::1] c_ptarg =  np.empty(3, dtype=np.double)
+    cdef np.double_t[::1] c_ptarg =  np.empty(3, dtype=np.double)
     spkapo_c(
         c_targ, 
         et, 
@@ -1980,7 +1983,7 @@ cpdef spkcvo_v(
     cdef const char* c_obsctr   = obsctr
     cdef const char* c_obsref   = obsref
     # initialize output arrays
-    cdef double[:, ::1] c_state = np.empty((n,6), dtype=np.double)
+    cdef double[:,::1] c_state = np.empty((n,6), dtype=np.double)
     cdef double[::1] c_lts = np.empty(n, dtype=np.double)
     # perform the call
     for i in range(n):
@@ -2503,9 +2506,9 @@ cpdef spkpos_v(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[DOUBLE_t, ndim=1] spkssb(
-    targ: int,
-    et: float,
-    ref: str,
+    int targ,
+    double et,
+    str ref,
     ):
     """
     Return the state (position and velocity) of a target body
@@ -2766,12 +2769,12 @@ cpdef sincpt_v(
 @wraparound(False)
 @boundscheck(False)
 cpdef subpnt(
-    method: str,
-    target: str, 
-    et: float, 
-    fixref: str, 
-    abcorr: str, 
-    obsrvr: str
+    str method,
+    str target, 
+    double et, 
+    str fixref, 
+    str abcorr, 
+    str obsrvr
 ):
     """
     Compute the rectangular coordinates of the sub-observer point on
@@ -3202,10 +3205,10 @@ cpdef tangpt_v(
     cdef const char * c_dref   = dref
     # Allocate output floats and arrays with appropriate shapes.
     cdef np.double_t[:,::1] c_tanpt  = np.empty((n,3), dtype=np.double)
-    cdef np.double_t[::1]   c_alt    = np.empty(n, dtype=np.float64)
-    cdef np.double_t[::1]   c_vrange = np.empty(n, dtype=np.float64)
+    cdef np.double_t[::1]   c_alt    = np.empty(n, dtype=np.double)
+    cdef np.double_t[::1]   c_vrange = np.empty(n, dtype=np.double)
     cdef np.double_t[:,::1] c_srfpt  = np.empty((n,3), dtype=np.double)
-    cdef np.double_t[::1]   c_trgepc = np.empty(n, dtype=np.float64)
+    cdef np.double_t[::1]   c_trgepc = np.empty(n, dtype=np.double)
     cdef np.double_t[:,::1] c_srfvec = np.empty((n,3), dtype=np.double)
     # perform the calls
     for i in range(n):
@@ -3230,7 +3233,10 @@ cpdef tangpt_v(
     return np.asarray(c_tanpt), np.asarray(c_alt), np.asarray(c_vrange), np.asarray(c_srfpt), np.asarray(c_trgepc), np.asarray(c_srfvec)
 
 
-cpdef str timout(et: float, pictur: str):
+cpdef str timout(
+    double et, 
+    str pictur
+    ):
     """
     This vectorized routine converts an input epoch represented in TDB seconds
     past the TDB epoch of J2000 to a character string formatted to
@@ -3388,9 +3394,9 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] trgsep_v(
 # U
 
 cpdef double unitim(
-        epoch: float,
-        insys: str,
-        outsys: str,
+        double epoch,
+        str insys,
+        str outsys,
     ):
     """
     Transform time from one uniform scale to another.  The uniform

@@ -73,7 +73,7 @@ def get_cyice_extension(default_path: str = "./src/cspice/"):
         "libraries": libraries,
         "library_dirs": library_dirs,
         "language": "c",
-        "define_macros": [],
+        "define_macros": [("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),],
         "extra_compile_args": [],
         "extra_link_args": extra_link_args
     }
@@ -148,7 +148,7 @@ ext_modules = [get_cyice_extension()]
 
 if USE_CYTHON:
     cmd_class['build_ext'] = build_ext
-    ext_modules = cythonize(ext_modules, annotate=True, nthreads=2)
+    ext_modules = cythonize(ext_modules, annotate=True, nthreads=4)
 
 setup(
     distclass=SpiceyPyBinaryDistribution,
