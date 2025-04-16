@@ -85,20 +85,61 @@ def setup_module(module):
 def test_cyice_b1900_correctness():
     assert cyice.b1900() == 2415020.31352
 
+
 @pytest.mark.parametrize('function', [cyice.b1900, spice.b1900], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["b1900"], indirect=True)
 def test_perf_b1900(function, grouped_benchmark):
     grouped_benchmark(function)
 
 
-def test_cyice_convrt_correctness():
-    assert cyice.convrt(300.0, "statute_miles", "km") == 482.80320
+@pytest.mark.parametrize('function', [cyice.ckgp, spice.ckgp], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["ckgp"], indirect=True)
+def test_perf_ckgp(function, grouped_benchmark, load_cassini_kernels):
+    ckid  = -82000
+    cover = 267832537952.0
+    grouped_benchmark(function, ckid, cover, 256, "J2000")
+    res = function(ckid, cover, 256, "J2000")
+    cmat, clkout = res[0], res[1]
+    assert clkout == 267832537952.0
+    assert isinstance(cmat, np.ndarray)
+    expected_cmat = [
+        [0.5064665782997639365, -0.75794210739897316387, 0.41111478554891744963],
+        [-0.42372128242505308071, 0.19647683351734512858, 0.88422685364733510927],
+        [-0.7509672961490383436, -0.6220294331642198804, -0.22164725216433822652],
+    ]
+    npt.assert_array_almost_equal(cmat, expected_cmat)
+
+
+@pytest.mark.parametrize('function', [cyice.ckgpav, spice.ckgpav], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["ckgpav"], indirect=True)
+def test_perf_ckgpav(function, grouped_benchmark, load_cassini_kernels):
+    ckid  = -82000
+    cover = 267832537952.0
+    grouped_benchmark(function, ckid, cover, 256, "J2000")
+    res = function(ckid, cover, 256, "J2000")
+    cmat, avout, clkout = res[0], res[1], res[2]
+    assert clkout == 267832537952.0
+    assert isinstance(cmat, np.ndarray)
+    assert isinstance(avout, np.ndarray)
+    expected_cmat = [
+        [0.5064665782997639365, -0.75794210739897316387, 0.41111478554891744963],
+        [-0.42372128242505308071, 0.19647683351734512858, 0.88422685364733510927],
+        [-0.7509672961490383436, -0.6220294331642198804, -0.22164725216433822652],
+    ]
+    expected_avout = [
+        -0.00231258422150853885,
+        -0.00190333614370416515,
+        -0.00069657429072504716,
+    ]
+    npt.assert_array_almost_equal(cmat, expected_cmat)
+    npt.assert_array_almost_equal(avout, expected_avout)
 
 
 @pytest.mark.parametrize('function', [cyice.convrt, spice.convrt], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["convrt"], indirect=True)
 def test_perf_convrt(function, grouped_benchmark):
     grouped_benchmark(function, 1.0, "parsecs", "lightyears")
+    assert function(300.0, "statute_miles", "km") == 482.80320
 
 
 @pytest.mark.parametrize('function', [cyice.convrt_v, spice.convrt], ids=get_module_name)
@@ -120,11 +161,14 @@ def test_perf_deltet(function, grouped_benchmark, load_core_kernels):
 def test_perf_deltet_v(function, grouped_benchmark, load_core_kernels):
     ets_2004 = np.repeat(spice.str2et("Jan 1 2004"), 100)
     grouped_benchmark(function, ets_2004, "ET")
+    res = function(ets_2004, "ET")
+    assert isinstance(res, np.ndarray)
 
 
 def test_cyice_et2utc_v_correctness(load_core_kernels):
     et = -527644192.5403653
     output = cyice.et2utc_v(np.array([et] * 100), "J", 6)
+    assert isinstance(output, list)
     assert np.array_equal(
         output,
         np.array(["JD 2445438.006415"] * 100),
@@ -155,6 +199,8 @@ def test_perf_etcal(function, grouped_benchmark):
 def test_perf_etcal_v(function, grouped_benchmark):
     data = np.arange(10000.0, dtype=float)
     grouped_benchmark(function, data)
+    res = function(data)
+    assert isinstance(res, np.ndarray)
 
 
 @pytest.mark.parametrize('function', [cyice.failed, spice.failed], ids=get_module_name)
@@ -172,13 +218,36 @@ def test_perf_fovray(function, grouped_benchmark, load_cassini_kernels):
     et = spice.str2et("2013 FEB 25 11:50:00 UTC")
     raydir = np.array([0.0, 0.0, 1.0])
     grouped_benchmark(function, "CASSINI_ISS_NAC", raydir, frame, "S", "CASSINI", et)
+    assert function("CASSINI_ISS_NAC", raydir, frame, "S", "CASSINI", et)
+
+
+@pytest.mark.parametrize('function', [cyice.fovray_v], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["fovray_v"], indirect=True)
+def test_perf_fovray_v(function, grouped_benchmark, load_cassini_kernels):
+    # core of test
+    ets = np.repeat(spice.str2et("2013 FEB 25 11:50:00 UTC"), 100)
+    raydir = np.array([0.0, 0.0, 1.0])
+    grouped_benchmark(function, "CASSINI_ISS_NAC", raydir, "CASSINI_ISS_NAC", "S", "CASSINI", ets)
+    res = function("CASSINI_ISS_NAC", raydir, "CASSINI_ISS_NAC", "S", "CASSINI", ets)
+    assert isinstance(res, np.ndarray)
+    assert res.dtype == np.bool
 
 
 @pytest.mark.parametrize('function', [cyice.fovtrg, spice.fovtrg], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["fovtrg"], indirect=True)
-def test_perf_fovray(function, grouped_benchmark, load_cassini_kernels):
+def test_perf_fovtrg(function, grouped_benchmark, load_cassini_kernels):
     et = spice.str2et("2013 FEB 25 11:50:00 UTC")
-    grouped_benchmark(function, "CASSINI_ISS_NAC","Enceladus", "Ellipsoid", "IAU_ENCELADUS", "LT+S","CASSINI", et)
+    grouped_benchmark(function, "CASSINI_ISS_NAC", "Enceladus", "Ellipsoid", "IAU_ENCELADUS", "LT+S","CASSINI", et)
+
+
+@pytest.mark.parametrize('function', [cyice.fovtrg_v], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["fovtrg_v"], indirect=True)
+def test_perf_fovtrg_v(function, grouped_benchmark, load_cassini_kernels):
+    ets = np.repeat(spice.str2et("2013 FEB 25 11:50:00 UTC"), 100)
+    grouped_benchmark(function, "CASSINI_ISS_NAC","Enceladus", "Ellipsoid", "IAU_ENCELADUS", "LT+S","CASSINI", ets)
+    res = function( "CASSINI_ISS_NAC","Enceladus", "Ellipsoid", "IAU_ENCELADUS", "LT+S","CASSINI", ets)
+    assert isinstance(res, np.ndarray)
+    assert res.dtype == np.bool
 
 
 @pytest.mark.parametrize('function', [cyice.lspcn, spice.lspcn], ids=get_module_name)
@@ -217,6 +286,7 @@ def test_cyice_spkcvt_correctness(load_earth_kernels):
         1.11355285621839659171e01,
     ])
     npt.assert_almost_equal(lt, expected_lt)
+    assert isinstance(state, np.ndarray)
     npt.assert_array_almost_equal(state, expected_state, decimal=6)
 
 
@@ -255,14 +325,13 @@ def test_perf_sce2c(function, grouped_benchmark, load_voyager_kernels):
     grouped_benchmark(function, -32, et)
 
 
-# @pytest.mark.skip(reason="broken")
-# @pytest.mark.parametrize('function', [cyice.sce2s, spice.sce2s])
-# def test_perf_sce2s(function, benchmark):
-#     benchmark.group = 'performance - %s' % get_qualified_name(function)
-#     spice.furnsh(CoreKernels.testMetaKernel)
-#     spice.furnsh(ExtraKernels.voyagerSclk)
-#     et = spice.str2et("1979 JUL 05 21:50:21.23379")
-#     benchmark(function, -32, et)
+@pytest.mark.parametrize('function', [cyice.sce2s, spice.sce2s], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["sce2s"], indirect=True)
+def test_perf_sce2s(function, grouped_benchmark):
+    spice.furnsh(CoreKernels.testMetaKernel)
+    spice.furnsh(ExtraKernels.voyagerSclk)
+    et = spice.str2et("1979 JUL 05 21:50:21.23379")
+    grouped_benchmark(function, -32, et)
 
 
 @pytest.mark.parametrize('function', [cyice.scs2e, spice.scs2e], ids=get_module_name)
@@ -276,49 +345,28 @@ def test_perf_scs2e(function, grouped_benchmark, load_voyager_kernels):
 def test_perf_sct2e(function, grouped_benchmark, load_voyager_kernels):
     grouped_benchmark(function, -32,  985327965.0)
 
-# # def test_getmsg_cyice_benchmark(benchmark):
-# #     cyice.reset()
-# #     spice.sigerr("test error")
-# #     benchmark(cyice.getmsg, "SHORT", 200)
-# #     cyice.reset()
+
+@pytest.mark.parametrize('function', [cyice.getmsg, spice.getmsg], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["getmsg"], indirect=True)
+def test_perf_getmsg(function, grouped_benchmark):
+    cyice.reset()
+    spice.sigerr("test error")
+    grouped_benchmark(function, "SHORT", 200)
+    cyice.reset()
 
 
-# # def test_getmsg_spiceypy_benchmark(benchmark):
-# #     spice.reset()
-# #     spice.sigerr("test error")
-# #     benchmark(spice.getmsg, "SHORT", 200)
-# #     spice.reset()
-
-
-# # def test_qcktrc():
-# #     cyice.reset()
-# #     spice.chkin("test")
-# #     spice.chkin("qcktrc")
-# #     trace = cyice.qcktrc(40)
-# #     assert trace == "test --> qcktrc"
-# #     spice.chkout("qcktrc")
-# #     spice.chkout("test")
-# #     cyice.reset()
-
-
-# # def test_qcktrc_cyice_benchmark(benchmark):
-# #     cyice.reset()
-# #     spice.chkin("test")
-# #     spice.chkin("qcktrc")
-# #     benchmark(cyice.qcktrc, 40)
-# #     spice.chkout("qcktrc")
-# #     spice.chkout("test")
-# #     cyice.reset()
-
-
-# # def test_qcktrc_spiceypy_benchmark(benchmark):
-# #     spice.reset()
-# #     spice.chkin("test")
-# #     spice.chkin("qcktrc")
-# #     benchmark(spice.qcktrc, 40)
-# #     spice.chkout("qcktrc")
-# #     spice.chkout("test")
-# #     spice.reset()
+@pytest.mark.parametrize('function', [cyice.qcktrc, spice.qcktrc], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["qcktrc"], indirect=True)
+def test_perf_qcktrc(function, grouped_benchmark):
+    cyice.reset()
+    spice.chkin("test")
+    spice.chkin("qcktrc")
+    grouped_benchmark(function, 40)
+    trace = function(40)
+    assert trace == "test --> qcktrc"
+    spice.chkout("qcktrc")
+    spice.chkout("test")
+    cyice.reset()
 
 
 @pytest.mark.parametrize('function', [cyice.spkez, spice.spkez], ids=get_module_name)
@@ -326,7 +374,18 @@ def test_perf_sct2e(function, grouped_benchmark, load_voyager_kernels):
 def test_perf_spkez(function, grouped_benchmark, load_core_kernels):
     et = cyice.str2et("July 4, 2003 11:00 AM PST")
     grouped_benchmark(function, 499, et, "J2000", "LT+S", 399)
+    state, lt = function(499, et, "J2000", "LT+S", 399)
+    assert isinstance(state, np.ndarray)
 
+
+@pytest.mark.parametrize('function', [cyice.spkez_v], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["spkez_v"], indirect=True)
+def test_perf_spkez_v(function, grouped_benchmark, load_core_kernels):
+    ets = np.repeat(cyice.str2et("July 4, 2003 11:00 AM PST"), 100)
+    grouped_benchmark(function, 499, ets, "J2000", "LT+S", 399)
+    state, lts = function(499, ets, "J2000", "LT+S", 399)
+    assert isinstance(state, np.ndarray)
+    assert isinstance(lts, np.ndarray)
 
 
 @pytest.mark.parametrize('function', [cyice.spkezr, spice.spkezr], ids=get_module_name)
@@ -334,6 +393,8 @@ def test_perf_spkez(function, grouped_benchmark, load_core_kernels):
 def test_perf_spkezr(function, grouped_benchmark, load_core_kernels):
     et = cyice.str2et("July 4, 2003 11:00 AM PST")
     grouped_benchmark(function, "Mars", et, "J2000", "LT+S", "Earth")
+    state, lt = function("Mars", et, "J2000", "LT+S", "Earth")
+    assert isinstance(state, np.ndarray)
 
 
 @pytest.mark.parametrize('function', [cyice.spkezr_v, spice.spkezr], ids=get_module_name)
@@ -341,7 +402,9 @@ def test_perf_spkezr(function, grouped_benchmark, load_core_kernels):
 def test_perf_spkezr_v(function, grouped_benchmark, load_core_kernels):
     ets = np.full((100,), spice.str2et("July 4, 2003 11:00 AM PST"))
     grouped_benchmark(function, "Mars", ets, "J2000", "LT+S", "Earth")
-    state, lt = function("Mars", ets, "J2000", "LT+S", "Earth")
+    state, lts = function("Mars", ets, "J2000", "LT+S", "Earth")
+    assert isinstance(lts, np.ndarray)
+    assert isinstance(state, np.ndarray)
     expected_lt = np.full((100,), 269.6898816177049)
     expected_state = np.full(
         (100, 6),
@@ -354,7 +417,7 @@ def test_perf_spkezr_v(function, grouped_benchmark, load_core_kernels):
             3.001298515816776,
         ],
     )
-    npt.assert_allclose(lt, expected_lt)
+    npt.assert_allclose(lts, expected_lt)
     npt.assert_allclose(state, expected_state)
 
 
@@ -371,12 +434,15 @@ def test_perf_spkpos_v(function, grouped_benchmark, load_core_kernels):
     _et = spice.str2et(["July 4, 2003 11:00 AM PST", "July 11, 2003 11:10 AM PST"])
     et = np.linspace(_et[0], _et[1], num=100)
     grouped_benchmark(function, "Mars", et, "J2000", "LT+S", "Earth")
+    ptargs, lts = function("Mars", et, "J2000", "LT+S", "Earth")
+    assert isinstance(ptargs, np.ndarray)
 
 
 @pytest.mark.parametrize('function', [cyice.str2et, spice.str2et], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["str2et"], indirect=True)
 def test_perf_str2et(function, grouped_benchmark, load_core_kernels):
     grouped_benchmark(function, "Thu Mar 20 12:53:29 PST 1997")
+
 
 @pytest.mark.parametrize('function', [cyice.str2et_v, spice.str2et], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["str2et_v"], indirect=True)
@@ -386,6 +452,7 @@ def test_perf_str2et_v(function, grouped_benchmark, load_core_kernels):
     grouped_benchmark(function, dates)
     expected_ets = np.ones(100) * -87836728.81438904
     ets = function(dates)
+    assert isinstance(ets, np.ndarray)
     npt.assert_array_almost_equal(ets, expected_ets)
 
 
@@ -406,6 +473,7 @@ def test_perf_sxform(function, grouped_benchmark, load_core_kernels):
     estate = spice.georec(lon, lat, alt, equatr, f)
     estate = np.append(estate, [0.0, 0.0, 0.0])
     xform = cyice.sxform("IAU_EARTH", "J2000", et)
+    assert isinstance(xform, np.ndarray)
     jstate = np.dot(xform, estate)
     expected = np.array(
         [
@@ -425,6 +493,8 @@ def test_perf_sxform(function, grouped_benchmark, load_core_kernels):
 def test_perf_sxform_v(function, grouped_benchmark, load_core_kernels):
     et = np.repeat(spice.str2et("January 1, 1990"), 1000)
     grouped_benchmark(function, "IAU_EARTH", "J2000", et)
+    res = function("IAU_EARTH", "J2000", et)
+    assert isinstance(res, np.ndarray)
 
 
 @pytest.mark.parametrize('function', [cyice.tangpt, spice.tangpt], ids=get_module_name)
@@ -451,6 +521,8 @@ def test_perf_tangpt(function, grouped_benchmark, load_core_kernels):
     tanpt, alt, range, srfpt, trgepc, srfvec = spice.tangpt(
         "ELLIPSOID", target, et, fixref, "NONE", locus, obsrvr, rayfrm, raydir
     )
+    assert isinstance(tanpt, np.ndarray)
+    assert isinstance(srfpt, np.ndarray)
     npt.assert_array_almost_equal(
         tanpt, [-113646.428171, 213634.489363, -222709.965702], decimal=5
     )
@@ -461,6 +533,7 @@ def test_perf_tangpt(function, grouped_benchmark, load_core_kernels):
     )
     assert trgepc == pytest.approx(414026480.213872)
 
+
 @pytest.mark.parametrize('function', [cyice.trgsep, spice.trgsep], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["trgsep"], indirect=True)
 def test_perf_trgsep(function, grouped_benchmark, load_core_kernels):
@@ -469,11 +542,14 @@ def test_perf_trgsep(function, grouped_benchmark, load_core_kernels):
     point_sep = function(et, "MOON", "POINT", "IAU_MOON", "EARTH", "POINT", "IAU_EARTH", "SUN", "LT+S")
     assert spice.dpr() * point_sep == pytest.approx(0.15729276)
 
+
 @pytest.mark.parametrize('function', [cyice.trgsep_v,], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["trgsep_v"], indirect=True)
 def test_perf_trgsep_v(function, grouped_benchmark, load_core_kernels):
     ets = np.repeat(spice.str2et("2007-JAN-11 11:21:20.213872 (TDB)"),100)
     grouped_benchmark(function, ets, "MOON", "POINT", "IAU_MOON", "EARTH", "POINT", "IAU_EARTH", "SUN", "LT+S")  
+    res = function(ets, "MOON", "POINT", "IAU_MOON", "EARTH", "POINT", "IAU_EARTH", "SUN", "LT+S")
+    assert isinstance(res, np.ndarray)
 
 
 @pytest.mark.parametrize('function', [cyice.unitim, spice.unitim], ids=get_module_name)
@@ -491,12 +567,15 @@ def test_perf_unitim(function, grouped_benchmark, load_core_kernels):
 def test_perf_unitim_v(function, grouped_benchmark, load_core_kernels):
     ets = np.repeat(spice.str2et("Dec 19 2003"), 100)
     grouped_benchmark(function, ets, "ET", "JED")
+    res = function(ets, "ET", "JED")
+    assert isinstance(res, np.ndarray)
 
 
 @pytest.mark.parametrize('function', [cyice.utc2et, spice.utc2et], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["utc2et"], indirect=True)
 def test_perf_utc2et(function, grouped_benchmark, load_core_kernels):
     grouped_benchmark(function, "December 1, 2004 15:04:11")
+    assert function("December 1, 2004 15:04:11") == 155185515.1831043
 
 
 @pytest.mark.parametrize('function', [cyice.utc2et_v], ids=get_module_name)
@@ -505,3 +584,5 @@ def test_perf_utc2et_v(function, grouped_benchmark, load_core_kernels):
     date = "December 1, 2004 15:04:11"
     dates = np.array([date] * 100, dtype=np.str_)
     grouped_benchmark(function, dates)
+    res = function(dates)
+    assert isinstance(res, np.ndarray)

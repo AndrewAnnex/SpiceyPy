@@ -5885,7 +5885,7 @@ def etcal(
             libspice.etcal_c(t, lenout, string)
             check_for_spice_error(None)
             strings.append(stypes.to_python_string(string))
-        return strings
+        return numpy.asarray(strings)
     else:
         et = ctypes.c_double(et)
         libspice.etcal_c(et, lenout, string)
@@ -13015,7 +13015,7 @@ def spkezr(
             check_for_spice_error(None)
             states.append(stypes.c_vector_to_python(starg))
             times.append(lt.value)
-        return states, times
+        return numpy.vstack(states), numpy.asarray(times)
     else:
         libspice.spkezr_c(
             targ, ctypes.c_double(et), ref, abcorr, obs, starg, ctypes.byref(lt)
