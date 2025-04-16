@@ -73,10 +73,10 @@ cpdef double b1950() noexcept:
 @boundscheck(False)
 @wraparound(False)
 cpdef ckgp(
-        inst: int,
-        sclkdp: double,
-        tol: double,
-        ref: str
+    int inst,
+    double sclkdp,
+    double tol,
+    str ref
     ):
     """
     Get pointing (attitude) for a specified spacecraft clock time.
@@ -92,7 +92,6 @@ cpdef ckgp(
             Output encoded spacecraft clock time
     """
     # initialize c variables
-    cdef long c_inst = inst
     cdef double c_sclkdp = sclkdp
     cdef double c_tol = tol
     cdef double c_clkout = 0.0
@@ -104,7 +103,7 @@ cpdef ckgp(
     cdef np.double_t[:,::1] c_cmat = np.empty((3,3), dtype=np.double)
     # perform the call
     ckgp_c(
-        c_inst,
+        inst,
         c_sclkdp,
         c_tol,
         c_ref,
@@ -382,9 +381,9 @@ cpdef et2lst_v(
     cdef int c_body = body
     cdef double c_lon = lon
     # initialize output arrays 
-    cdef int[::1] c_hrs = np.empty(n, dtype=np.int)
-    cdef int[::1] c_mns = np.empty(n, dtype=np.int)
-    cdef int[::1] c_scs = np.empty(n, dtype=np.int)
+    cdef int[::1] c_hrs = np.empty(n, dtype=np.int32)
+    cdef int[::1] c_mns = np.empty(n, dtype=np.int32)
+    cdef int[::1] c_scs = np.empty(n, dtype=np.int32)
     # TODO: using a unicode numpy array?
     cdef np.ndarray[dtype=CHAR_t, ndim=2] times = np.empty((n, _default_len_out), dtype=np.uint8)
     #cdef list times = [None] * n
@@ -759,7 +758,7 @@ cpdef np.ndarray fovtrg_v(
     return np.asarray(visibl).astype(np.bool_)
 
 
-cpdef void furnsh(str file):
+cpdef void furnsh(str file) noexcept:
     """
     Load one or more SPICE kernels into a program.
 
@@ -857,14 +856,14 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] lspcn_v(
     :return: planetocentric longitudes of the sun in radians
     """
     cdef Py_ssize_t i, n = ets.shape[0]
-    cdef const char * _body   = body
-    cdef const char * _abcorr = abcorr
-    cdef np.double_t[::1] l_s_s = np.empty(n, dtype=np.double)
+    cdef const char * c_body   = body
+    cdef const char * c_abcorr = abcorr
+    cdef double[::1] l_s_s = np.empty(n, dtype=np.double)
     for i in range(n):
         l_s_s[i] = lspcn_c(
-            _body, 
+            c_body, 
             ets[i], 
-            _abcorr
+            c_abcorr
         )
     return np.asarray(l_s_s)
 
@@ -888,7 +887,10 @@ cpdef str qcktrc(int tracelen):
     :return: A traceback string.
     """
     cdef char * _tracestr = <char *> malloc((tracelen) * sizeof(char))
-    qcktrc_c(tracelen, _tracestr)
+    qcktrc_c(
+        tracelen, 
+        _tracestr
+    )
     pytracestr = <unicode> _tracestr
     free(_tracestr)
     return pytracestr
@@ -2342,7 +2344,7 @@ cpdef spkpvn(
     cdef int c_ref = 0
     cdef int c_center = 0
     # initialize output arrays
-    cdef double[::1] c_state = np.empty(6, dtype=np.double)
+    cdef np.double_t[::1] c_state = np.empty(6, dtype=np.double)
     # perform the call
     spkpvn_c(
         c_handle,
@@ -2384,9 +2386,9 @@ cpdef spkpvn_v(
     # initialize c variables
     cdef int c_handle = handle
     # initialize output arrays
-    cdef int[::1] c_refs  = np.empty(n, dtype=np.int)
     cdef double[:,::1] c_states = np.empty((n,6), dtype=np.double)
-    cdef int[::1] c_centers  = np.empty(n, dtype=np.int)
+    cdef int[::1] c_refs     = np.empty(n, dtype=np.int32)
+    cdef int[::1] c_centers  = np.empty(n, dtype=np.int32)
     # perform the call
     with nogil:
         for i in range(n):
@@ -2410,7 +2412,7 @@ cpdef spkpos(
     str ref, 
     str abcorr, 
     str obs
-):
+    ):
     """
     Return the position of a target body relative to an observing
     body, optionally corrected for light time (planetary aberration)
@@ -2456,7 +2458,7 @@ cpdef spkpos_v(
     str ref, 
     str abcorr, 
     str obs
-):
+    ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkpos`
     
@@ -2505,7 +2507,7 @@ cpdef spkpos_v(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1] spkssb(
+cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] spkssb(
     int targ,
     double et,
     str ref,
@@ -2522,7 +2524,6 @@ cpdef np.ndarray[DOUBLE_t, ndim=1] spkssb(
     :return: State of target.
     """
     # initialize c variables
-    cdef long c_targ = targ
     cdef double c_et = et
     # convert the strings to pointers once
     cdef const char* c_ref   = ref
@@ -2530,7 +2531,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1] spkssb(
     cdef double[::1] c_state = np.empty(6, dtype=np.double)
     # perform the call
     spkssb_c(
-        c_targ,
+        targ,
         c_et,
         c_ref,
         &c_state[0],
@@ -2541,7 +2542,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1] spkssb(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=2] spkssb_v(
+cpdef np.ndarray[DOUBLE_t, ndim=2, mode='c'] spkssb_v(
     int targ,
     double[::1] ets,
     str ref,
@@ -2566,18 +2567,21 @@ cpdef np.ndarray[DOUBLE_t, ndim=2] spkssb_v(
     # initialize output arrays
     cdef double[:,::1] c_state = np.empty((n,6), dtype=np.double)
     # perform the call
-    for i in range(n):
-        spkssb_c(
-            targ,
-            ets[i],
-            c_ref,
-            &c_state[i][0],
-        )
+    with nogil:
+        for i in range(n):
+            spkssb_c(
+                targ,
+                ets[i],
+                c_ref,
+                &c_state[i][0],
+            )
     # return output
     return np.asarray(c_state)
 
 
-cpdef double str2et(time: str):
+cpdef double str2et(
+    str time
+    ):
     """
     Convert a string representing an epoch to a double precision
     value representing the number of TDB seconds past the J2000
@@ -2599,7 +2603,9 @@ cpdef double str2et(time: str):
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] str2et_v(np.ndarray times):
+cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] str2et_v(
+    np.ndarray times
+    ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.str2et`
     
@@ -2613,7 +2619,6 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] str2et_v(np.ndarray times):
     :return: The equivalent values in seconds past J2000, TDB.
     """
     cdef Py_ssize_t i, n = times.shape[0]
-    cdef double c_et
     # initialize output
     cdef double[::1] c_ets = np.empty(n, dtype=np.double)
     #main loop
@@ -2624,7 +2629,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] str2et_v(np.ndarray times):
             &c_ets[i]
         )
     # return results
-    return np.asarray(c_ets.base)
+    return np.asarray(c_ets)
 
 # TODO need error check, need found exception thrower in cython
 @wraparound(False)
@@ -2673,7 +2678,7 @@ cpdef sincpt(
     cdef double[::1] c_spoint = np.empty(3, dtype=np.double)
     cdef double[::1] c_srfvec = np.empty(3, dtype=np.double)
     cdef double c_trgepc
-    cdef SpiceBoolean c_found
+    cdef SpiceBoolean c_found # TODO what to do about found flag
     # perform the call
     sincpt_c(
         c_method,
@@ -2705,7 +2710,7 @@ cpdef sincpt_v(
     str obsrvr,
     str dref,
     double[::1] dvec
-):
+    ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sincpt`
     
@@ -2733,6 +2738,7 @@ cpdef sincpt_v(
     """
     # get size of input array
     cdef Py_ssize_t i, n = ets.shape[0]
+    cdef bint _found 
     # convert strings 
     cdef const char * c_method = method
     cdef const char * c_target = target
@@ -2741,10 +2747,13 @@ cpdef sincpt_v(
     cdef const char * c_obsrvr = obsrvr
     cdef const char * c_dref   = dref
     # Allocate output floats and arrays with appropriate shapes.
-    cdef double[:,::1]    c_spoint = np.empty((n,3), dtype=np.double)
-    cdef double[:,::1]    c_srfvec = np.empty((n,3), dtype=np.double)
-    cdef double[::1]      c_trgepc = np.empty(n, dtype=np.double)
-    cdef SpiceBoolean[::1]  c_found = np.empty(n, dtype=np.uint8)
+    cdef double[:,::1]      c_spoint = np.empty((n,3), dtype=np.double)
+    cdef double[:,::1]      c_srfvec = np.empty((n,3), dtype=np.double)
+    cdef double[::1]        c_trgepc = np.empty(n, dtype=np.double)
+    # TODO what to do about found flag
+    # TODO this works but it is nasty, see if there is a better way
+    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] found = np.empty(n, dtype=np.uint8)
+    cdef np.uint8_t[::1] c_found = found
     # perform the call
     for i in range(n):
         sincpt_c(
@@ -2759,11 +2768,11 @@ cpdef sincpt_v(
             &c_spoint[i][0],
             &c_trgepc[i],
             &c_srfvec[i][0],
-            &c_found[i]
+            &_found
         )
+        c_found[i] = _found
         # return results
-    return np.asarray(c_spoint), np.asarray(c_trgepc), np.asarray(c_srfvec), np.asarray(c_found).astype(np.bool_)
-
+    return np.asarray(c_spoint), np.asarray(c_trgepc), np.asarray(c_srfvec), np.asarray(found).astype(np.bool_)
 
 
 @wraparound(False)
@@ -2775,7 +2784,7 @@ cpdef subpnt(
     str fixref, 
     str abcorr, 
     str obsrvr
-):
+    ):
     """
     Compute the rectangular coordinates of the sub-observer point on
     a target body at a specified epoch, optionally corrected for
@@ -2892,7 +2901,7 @@ cpdef subslr(
     str fixref, 
     str abcorr, 
     str obsrvr
-):
+    ):
     """
     Compute the rectangular coordinates of the sub-solar point on
     a target body at a specified epoch, optionally corrected for
@@ -3005,7 +3014,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=2, mode='c'] sxform(
     str fromstring, 
     str tostring, 
     double et
-):
+    ):
     """
     Return the state transformation matrix from one frame to
     another at a specified epoch.
@@ -3249,14 +3258,14 @@ cpdef str timout(
     :return: A string representation of the input epoch.
     """
     cdef const char * _pictur = pictur 
-    cdef char[_default_len_out] c_buffer
-    timout_c(et, _pictur, _default_len_out, c_buffer)
+    cdef char[TIMELEN] c_buffer
+    timout_c(et, _pictur, TIMELEN, c_buffer)
     return PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
 
 
 @boundscheck(False)
 @wraparound(False)
-cpdef list[str] timout_v(
+cpdef timout_v(
     double[::1] ets, 
     str pictur
 ):
@@ -3274,14 +3283,19 @@ cpdef list[str] timout_v(
     :return: A string representation of the input epoch.
     """
     cdef Py_ssize_t i, n = ets.shape[0]
-    cdef const char * _pictur = pictur 
-    cdef char[_default_len_out] c_buffer
+    cdef const char * c_pictur = pictur 
+    cdef char[TIMELEN] c_buffer
      # initialize output
     cdef list output = [None] * n
     for i in range(n):
-        timout_c(ets[i], _pictur, _default_len_out, c_buffer)
+        timout_c(
+            ets[i], 
+            c_pictur, 
+            TIMELEN, 
+            c_buffer
+        )
         output[i] = PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
-    return output
+    return np.asarray(output)
 
 
 cpdef double trgsep(
