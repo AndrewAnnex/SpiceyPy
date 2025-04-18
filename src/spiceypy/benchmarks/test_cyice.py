@@ -174,6 +174,25 @@ def test_et2lst(function, grouped_benchmark, load_core_kernels):
     assert ampm == "11:19:22 A.M."
 
 
+@pytest.mark.parametrize('function', [cyice.et2lst_v], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["et2lst_v"], indirect=True)
+def test_et2lst_v(function, grouped_benchmark, load_core_kernels):
+    ets = np.repeat(spice.str2et("2004 may 17 16:30:00"), 100)
+    lon = 281.49521300000004 * spice.rpd()
+    grouped_benchmark(function, ets, 399, lon, "planetocentric")
+    hr, mn, sc, time, ampm = function(
+        ets, 399, lon, "planetocentric"
+    )
+    assert hr[0] == 11
+    assert mn[0] == 19
+    assert sc[0] == 22
+    assert time[0] == "11:19:22"
+    assert ampm[0] == "11:19:22 A.M."
+    assert len(time) == 100
+    assert isinstance(time, np.ndarray)
+    assert isinstance(hr, np.ndarray)
+
+
 @pytest.mark.parametrize('function', [cyice.et2utc, spice.et2utc], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["et2utc"], indirect=True)
 def test_et2utc(function, grouped_benchmark, load_core_kernels):

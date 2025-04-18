@@ -17,7 +17,7 @@ np.import_array()
 
 DEF _default_len_out = 256
 
-DEF TIMELEN = 64
+DEF TIMELEN = 60
 
 ctypedef np.double_t DOUBLE_t
 ctypedef np.uint64_t INT_t 
@@ -92,37 +92,25 @@ cpdef ckgp(
             Output encoded spacecraft clock time
     """
     # initialize c variables
-    cdef double c_sclkdp = sclkdp
-    cdef double c_tol = tol
     cdef double c_clkout = 0.0
-    cdef SpiceBoolean c_found
-    cdef double[3][3] _c_cmat 
+    cdef bint c_found
     # convert the strings to pointers once
     cdef const char* c_ref = ref
     # initialize output arrays
-    cdef np.double_t[:,::1] c_cmat = np.empty((3,3), dtype=np.double)
+    cdef np.ndarray[np.double_t, ndim=2] c_cmat = np.empty((3,3), dtype=np.double, order="c")
+    cdef double[:,::1] mv_cmat = c_cmat
     # perform the call
     ckgp_c(
         inst,
-        c_sclkdp,
-        c_tol,
+        sclkdp,
+        tol,
         c_ref,
-        _c_cmat, # todo attempt to avoid extra c array with memoryview
+        <SpiceDouble (*)[3]> &mv_cmat[0,0],
         &c_clkout,
         &c_found
     )
-    # accumulate the results
-    c_cmat[0][0] = _c_cmat[0][0]
-    c_cmat[0][1] = _c_cmat[0][1]
-    c_cmat[0][2] = _c_cmat[0][2]
-    c_cmat[1][0] = _c_cmat[1][0]
-    c_cmat[1][1] = _c_cmat[1][1]
-    c_cmat[1][2] = _c_cmat[1][2]
-    c_cmat[2][0] = _c_cmat[2][0]
-    c_cmat[2][1] = _c_cmat[2][1]
-    c_cmat[2][2] = _c_cmat[2][2]
     # return results
-    return np.asarray(c_cmat), c_clkout, c_found
+    return c_cmat, c_clkout, c_found
 
 
 @boundscheck(False)
@@ -150,37 +138,28 @@ cpdef ckgpav(
     """
     # initialize c variables
     cdef double c_clkout = 0.0
-    cdef SpiceBoolean c_found 
-    cdef double[3][3] _c_cmat 
+    cdef bint c_found 
     # convert the strings to pointers once
     cdef const char* c_ref = ref
     # initialize output arrays
-    # TODO avoiding the extra python numpy dec may be better
-    cdef np.double_t[:,::1] c_cmat = np.empty((3,3), dtype=np.double)
-    cdef np.double_t[::1] c_av = np.empty(3, dtype=np.double)
+    cdef np.ndarray[np.double_t, ndim=2] c_cmat = np.empty((3,3), dtype=np.double, order="c")
+    cdef np.ndarray[np.double_t, ndim=1] c_av   = np.empty(3, dtype=np.double, order="c")
+    # get C views 
+    cdef double[:,::1] mv_cmat = c_cmat
+    cdef double[::1]   mv_av   = c_av   
     # perform the call
     ckgpav_c(
         inst,
         sclkdp,
         tol,
         c_ref,
-        _c_cmat, # todo attempt to avoid extra c array with memoryview
-        &c_av[0],
+        <SpiceDouble (*)[3]> &mv_cmat[0,0],
+        &mv_av[0],
         &c_clkout,
         &c_found
     )
-    # accumulate the results
-    c_cmat[0][0] = _c_cmat[0][0]
-    c_cmat[0][1] = _c_cmat[0][1]
-    c_cmat[0][2] = _c_cmat[0][2]
-    c_cmat[1][0] = _c_cmat[1][0]
-    c_cmat[1][1] = _c_cmat[1][1]
-    c_cmat[1][2] = _c_cmat[1][2]
-    c_cmat[2][0] = _c_cmat[2][0]
-    c_cmat[2][1] = _c_cmat[2][1]
-    c_cmat[2][2] = _c_cmat[2][2]
     # return results
-    return np.asarray(c_cmat), np.asarray(c_av), c_clkout, c_found
+    return c_cmat, c_av, c_clkout, c_found
 
 
 cpdef double convrt(double x, str inunit, str outunit):
@@ -326,16 +305,16 @@ cpdef et2lst(
             String giving time on A.M. / P.M. scale.
     """
     cdef int hr, mn, sc
-    cdef char[_default_len_out] time
-    cdef char[_default_len_out] ampm
+    cdef char[TIMELEN] time
+    cdef char[TIMELEN] ampm
     cdef const char * c_typein = typein
     et2lst_c(
         et,
         body,
         lon,
         c_typein,
-        _default_len_out,
-        _default_len_out,
+        TIMELEN,
+        TIMELEN,
         &hr,
         &mn,
         &sc,
@@ -375,37 +354,41 @@ cpdef et2lst_v(
             String giving time on A.M. / P.M. scale.
     """
     cdef Py_ssize_t i, n = ets.shape[0]
-    cdef char[_default_len_out] time
-    cdef char[_default_len_out] ampm
     cdef const char * c_typein = typein
     cdef int c_body = body
     cdef double c_lon = lon
     # initialize output arrays 
-    cdef int[::1] c_hrs = np.empty(n, dtype=np.int32)
-    cdef int[::1] c_mns = np.empty(n, dtype=np.int32)
-    cdef int[::1] c_scs = np.empty(n, dtype=np.int32)
-    # TODO: using a unicode numpy array?
-    cdef np.ndarray[dtype=CHAR_t, ndim=2] times = np.empty((n, _default_len_out), dtype=np.uint8)
-    #cdef list times = [None] * n
-    cdef np.ndarray[dtype=CHAR_t, ndim=2] ampms = np.empty((n, _default_len_out), dtype=np.uint8)
+    cdef SpiceInt[::1] c_hrs = np.empty(n, dtype=np.int32, order='C')
+    cdef SpiceInt[::1] c_mns = np.empty(n, dtype=np.int32, order='C')
+    cdef SpiceInt[::1] c_scs = np.empty(n, dtype=np.int32, order='C')
+    p_np_s_dtype = np.dtype(('S', TIMELEN))
+    p_np_u_dtype = np.dtype(('U', TIMELEN))
+    cdef np.uint8_t[:,::1] times = np.zeros((n, TIMELEN), dtype=np.uint8, order='C')
+    cdef np.uint8_t[:,::1] ampms = np.zeros((n, TIMELEN), dtype=np.uint8, order='C')
     # main loop
-    for i in range(n):
-        et2lst_c(
-            ets[i],
-            c_body,
-            c_lon,
-            c_typein,
-            _default_len_out,
-            _default_len_out,
-            &c_hrs[i],
-            &c_mns[i], 
-            &c_scs[i], 
-            <char*> &times[i, 0], 
-            <char*> &ampms[i, 0]
-        )
+    with nogil:
+        for i in range(n):
+            et2lst_c(
+                ets[i],
+                c_body,
+                c_lon,
+                c_typein,
+                TIMELEN,
+                TIMELEN,
+                &c_hrs[i],
+                &c_mns[i], 
+                &c_scs[i], 
+                <char*> &times[i, 0], 
+                <char*> &ampms[i, 0]
+            )
     # return values
-    # TODO I don't like how I handle strings here, consider reverting to manual method
-    return np.asarray(c_hrs), np.asarray(c_mns), np.asarray(c_scs), times.astype(np.str_), ampms.astype(np.str_) 
+    py_times = np.asarray(times).view(p_np_s_dtype).reshape(n)
+    py_times = np.char.rstrip(py_times)
+    py_times = py_times.astype(p_np_u_dtype)
+    py_ampms = np.asarray(ampms).view(p_np_s_dtype).reshape(n)
+    py_ampms = np.char.rstrip(py_ampms)
+    py_ampms = py_ampms.astype(p_np_u_dtype)
+    return np.asarray(c_hrs), np.asarray(c_mns), np.asarray(c_scs), py_times, py_ampms
 
 
 cpdef str et2utc(
@@ -489,7 +472,7 @@ cpdef et2utc_v(
             )
             results[i] = PyUnicode_DecodeUTF8(c_buffer, fixed_length, "strict")
     # return array
-    return results
+    return np.asarray(results)
 
 
 cpdef str etcal(double et):
@@ -528,7 +511,7 @@ cpdef etcal_v(double[::1] ets):
     # Allocate a 2D buffer of shape (n, 24) with dtype np.uint8
     cdef np.ndarray[dtype=CHAR_t, ndim=2] results = np.empty((n, 25), dtype=np.uint8)
     # Create a typed memoryview over the buffer
-    cdef unsigned char[:, :] view = results
+    cdef unsigned char[:, ::1] view = results
     for i in prange(n, nogil=True):
         # Get a pointer to the start of the i-th row and call etcal_c
         etcal_c(
@@ -934,7 +917,10 @@ cpdef str scdecd(int sc, double sclkdp):
 
 @boundscheck(False)
 @wraparound(False)
-cpdef scdecd_v(sc: int, sclkdps: double[::1]):
+cpdef scdecd_v(
+    int sc, 
+    double[::1] sclkdps
+    ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.scdecd`
 
@@ -947,19 +933,22 @@ cpdef scdecd_v(sc: int, sclkdps: double[::1]):
     :param sclkdps: Encoded representations of a spacecraft clock count.
     :return: Character representation of a clock count.
     """
-    cdef SpiceInt _sc = sc
     cdef Py_ssize_t i, length, n = sclkdps.shape[0]
-    cdef double[:] _sclkdps = sclkdps
     cdef char[_default_len_out] c_buffer 
     cdef list sclkchs = [None] * n
-    scdecd_c(_sc, sclkdps[0], _default_len_out, &c_buffer[0])
+    scdecd_c(
+        sc, 
+        sclkdps[0], 
+        _default_len_out, 
+        &c_buffer[0]
+    )
     length = strlen(c_buffer)
     sclkchs[0] = PyUnicode_DecodeUTF8(c_buffer, length, "strict") 
     if n > 1:
         for i in range(1, n):
             scdecd_c(
-                _sc, 
-                _sclkdps[i], 
+                sc, 
+                sclkdps[i], 
                 _default_len_out, 
                 &c_buffer[0]
             )
@@ -1037,10 +1026,9 @@ cpdef double sce2c(
             SCLK, encoded as ticks since spacecraft clock start.
             sclkdp need not be integral.
     """
-    cdef SpiceInt c_sc = sc
     cdef double sclkdp
     sce2c_c(
-        c_sc, 
+        sc, 
         et, 
         &sclkdp
     )
@@ -1069,11 +1057,10 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] sce2c_v(
             sclkdp need not be integral.
     """
     cdef Py_ssize_t i, n = ets.shape[0]
-    cdef SpiceInt c_sc = sc
     cdef np.double_t[::1] sclkdps = np.empty(n, dtype=np.double)
     for i in range(n):
         sce2c_c(
-            c_sc, 
+            sc, 
             ets[i], 
             &sclkdps[i]
         )
@@ -1284,11 +1271,10 @@ cpdef spkapo(
     # convert the strings to pointers once
     cdef const char* c_ref    = ref
     cdef const char* c_abcorr = abcorr
-    cdef long c_targ = targ
     # initialize output arrays
     cdef np.double_t[::1] c_ptarg =  np.empty(3, dtype=np.double)
     spkapo_c(
-        c_targ, 
+        targ, 
         et, 
         c_ref, 
         &sobs[0],
@@ -1330,14 +1316,13 @@ cpdef spkapo_v(
     # convert the strings to pointers once
     cdef const char* c_ref    = ref
     cdef const char* c_abcorr = abcorr
-    cdef long c_targ = targ
     # initialize output arrays
     cdef double[:,::1] c_ptarg = np.empty((n,3), dtype=np.double)
     cdef double[::1] c_lts = np.empty(n, dtype=np.double)
     # perform the call
     for i in range(n):
         spkapo_c(
-            c_targ, 
+            targ, 
             ets[i], 
             c_ref, 
             &sobs[0],
@@ -2205,8 +2190,6 @@ cpdef spkgeo_v(
     """
     # initialize c variables
     cdef Py_ssize_t i, n = ets.shape[0]
-    cdef long c_targ = targ
-    cdef long c_obs  = obs
     # convert the strings to pointers once
     cdef const char* c_ref   = ref
     # initialize output arrays
@@ -2216,11 +2199,11 @@ cpdef spkgeo_v(
     with nogil:
         for i in range(n):
             spkgeo_c(
-                c_targ,
+                targ,
                 ets[i],
                 c_ref,
-                c_obs,
-                &c_state[i][0],
+                obs,
+                &c_state[i,0],
                 &c_lts[i]
             )
     # return output
@@ -2293,8 +2276,6 @@ cpdef spkgps_v(
     """
     # initialize c variables
     cdef Py_ssize_t i, n = ets.shape[0]
-    cdef long c_targ = targ
-    cdef long c_obs  = obs
     # convert the strings to pointers once
     cdef const char* c_ref   = ref
     # initialize output arrays
@@ -2304,11 +2285,11 @@ cpdef spkgps_v(
     with nogil:
         for i in range(n):
             spkgps_c(
-                c_targ,
+                targ,
                 ets[i],
                 c_ref,
-                c_obs,
-                &c_pos[i][0],
+                obs,
+                &c_pos[i,0],
                 &c_lts[i]
             )
     # return output
@@ -2678,7 +2659,7 @@ cpdef sincpt(
     cdef double[::1] c_spoint = np.empty(3, dtype=np.double)
     cdef double[::1] c_srfvec = np.empty(3, dtype=np.double)
     cdef double c_trgepc
-    cdef SpiceBoolean c_found # TODO what to do about found flag
+    cdef bint c_found 
     # perform the call
     sincpt_c(
         c_method,
@@ -3027,20 +3008,18 @@ cpdef np.ndarray[DOUBLE_t, ndim=2, mode='c'] sxform(
     :param et: Epoch of the state transformation matrix.
     :return: A state transformation matrix.
     """
-    cdef double[6][6] tform 
     cdef const char * c_fromstring = fromstring
     cdef const char * c_tostring = tostring
     # initialize output
     cdef np.ndarray[dtype=DOUBLE_t, ndim=2, mode="c"] xform = np.empty((6, 6), dtype=np.double)
-    cdef double[:,:] _xform = xform
+    cdef double[:,::1] mv_xform = xform
     sxform_c(
         c_fromstring, 
         c_tostring, 
         et, 
-        tform
+        <SpiceDouble (*)[6]> &mv_xform[0,0]
     )
-    _xform[:,:] = tform
-    return np.asarray(xform)
+    return xform
 
 
 @boundscheck(False)
@@ -3065,21 +3044,19 @@ cpdef np.ndarray[DOUBLE_t, ndim=3, mode='c'] sxform_v(
     :return: A state transformation matrix.
     """
     cdef Py_ssize_t i, n = ets.shape[0]
-    cdef double[6][6] c_tform
     cdef const char * c_fromstring = fromstring
     cdef const char * c_tostring = tostring
     # initialize output
     cdef np.ndarray[dtype=DOUBLE_t, ndim=3, mode="c"] xform = np.empty((n, 6, 6), dtype=np.double)
-    cdef double[:,:,::1] _xform = xform
+    cdef double[:,:,::1] mv_xform = xform
     for i in range(n):
         sxform_c(
             c_fromstring, 
             c_tostring, 
             ets[i], 
-            c_tform
+            <SpiceDouble (*)[6]> &mv_xform[i,0,0]
         )
-        _xform[i,:,:] = c_tform
-    return np.asarray(xform)
+    return xform
 
 # T
 
@@ -3326,7 +3303,6 @@ cpdef double trgsep(
     :param abcorr: Aberration corrections flag.
     :return: angular separation in radians.
     """
-    cdef SpiceDouble c_et = et
     cdef const char * c_targ1   = targ1
     cdef const char * c_shape1  = shape1
     cdef const char * c_frame1  = frame1
@@ -3336,7 +3312,7 @@ cpdef double trgsep(
     cdef const char * c_obsrvr  = obsrvr
     cdef const char * c_abcorr  = abcorr
     return trgsep_c(
-        c_et, 
+        et, 
         c_targ1, 
         c_shape1, 
         c_frame1, 
