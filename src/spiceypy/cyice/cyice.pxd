@@ -74,7 +74,6 @@ cdef extern from "SpiceUsr.h" nogil:
                        ConstSpiceChar * eptype,
                        SpiceDouble    * delta )
 
-
     #E
 
     cdef void et2lst_c(SpiceDouble        et,

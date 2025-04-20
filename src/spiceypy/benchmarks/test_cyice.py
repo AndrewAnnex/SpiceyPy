@@ -83,6 +83,7 @@ def test_b1900(function, grouped_benchmark):
     assert function() == 2415020.31352
 
 # C
+
 @pytest.mark.parametrize('function', [cyice.ckgp, spice.ckgp], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["ckgp"], indirect=True)
 def test_ckgp(function, grouped_benchmark, load_cassini_kernels):
@@ -180,6 +181,7 @@ def test_deltet_v(function, grouped_benchmark, load_core_kernels):
     assert isinstance(res, np.ndarray)
 
 # E
+
 @pytest.mark.parametrize('function', [cyice.et2lst, spice.et2lst], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["et2lst"], indirect=True)
 def test_et2lst(function, grouped_benchmark, load_core_kernels):
