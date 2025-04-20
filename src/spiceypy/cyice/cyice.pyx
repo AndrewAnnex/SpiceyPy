@@ -945,7 +945,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] lspcn_v(
     cdef Py_ssize_t i, n = ets.shape[0]
     cdef const char * c_body   = body
     cdef const char * c_abcorr = abcorr
-    cdef double[::1] l_s_s = np.empty(n, dtype=np.double)
+    cdef np.double_t[::1] l_s_s = np.empty(n, dtype=np.double)
     for i in range(n):
         l_s_s[i] = lspcn_c(
             c_body, 
@@ -1103,14 +1103,15 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] scencd_v(
     :return: Encoded representations of the clock count.
     """
     cdef Py_ssize_t i, n = len(sclkchs)
-    cdef np.double_t[::1] c_sclkdps  = np.empty(n, dtype=np.double)
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_sclkdps = np.empty(n, dtype=np.double, order='c')
+    cdef np.double_t[::1] c_sclkdps = p_sclkdps
     for i in range(n):
         scencd_c(
             sc, 
             sclkchs[i], 
             &c_sclkdps[i]
         )
-    return np.asarray(c_sclkdps)
+    return p_sclkdps
 
 
 cpdef double sce2c(
@@ -1161,14 +1162,16 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] sce2c_v(
             sclkdp need not be integral.
     """
     cdef Py_ssize_t i, n = ets.shape[0]
-    cdef np.double_t[::1] sclkdps = np.empty(n, dtype=np.double)
-    for i in range(n):
-        sce2c_c(
-            sc, 
-            ets[i], 
-            &sclkdps[i]
-        )
-    return np.asarray(sclkdps)
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_sclkdps = np.empty(n, dtype=np.double, order='c')
+    cdef np.double_t[::1] c_sclkdps = p_sclkdps
+    with nogil:
+        for i in range(n):
+            sce2c_c(
+                sc, 
+                ets[i], 
+                &c_sclkdps[i]
+            )
+    return p_sclkdps
 
 
 cpdef str sce2s(
@@ -2760,8 +2763,10 @@ cpdef sincpt(
     cdef const char * c_obsrvr = obsrvr
     cdef const char * c_dref   = dref
     # Allocate output floats and arrays with appropriate shapes.
-    cdef double[::1] c_spoint = np.empty(3, dtype=np.double)
-    cdef double[::1] c_srfvec = np.empty(3, dtype=np.double)
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_spoint = np.empty(3, dtype=np.double, order='c')
+    cdef np.double_t[::1] c_spoint = p_spoint
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_srfvec = np.empty(3, dtype=np.double, order='c')
+    cdef np.double_t[::1] c_srfvec = p_srfvec
     cdef double c_trgepc
     cdef bint c_found 
     # perform the call
@@ -2780,7 +2785,7 @@ cpdef sincpt(
         &c_found
     )
     # return results
-    return np.asarray(c_spoint), c_trgepc, np.asarray(c_srfvec), c_found
+    return p_spoint, c_trgepc, p_srfvec, c_found
 
 
 # TODO need error check, need found exception thrower in cython
@@ -2831,29 +2836,33 @@ cpdef sincpt_v(
     cdef const char * c_obsrvr = obsrvr
     cdef const char * c_dref   = dref
     # Allocate output floats and arrays with appropriate shapes.
-    cdef double[:,::1]      c_spoint = np.empty((n,3), dtype=np.double)
-    cdef double[:,::1]      c_srfvec = np.empty((n,3), dtype=np.double)
-    cdef double[::1]        c_trgepc = np.empty(n, dtype=np.double)
-    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] found = np.empty(n, dtype=np.uint8)
-    cdef np.uint8_t[::1] c_found = found
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_spoint = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.double_t[:,::1] c_spoint = p_spoint 
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_srfvec = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.double_t[:,::1] c_srfvec = p_srfvec 
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_trgepc = np.empty(n, dtype=np.double, order='c')
+    cdef np.double_t[::1]   c_trgepc = p_trgepc 
+    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.bool_, order='c')
+    cdef np.uint8_t[::1] c_found = p_found
     # perform the call
-    for i in range(n):
-        sincpt_c(
-            c_method,
-            c_target,
-            ets[i],
-            c_fixref,
-            c_abcorr,
-            c_obsrvr,
-            c_dref,
-            &dvec[0],
-            &c_spoint[i][0],
-            &c_trgepc[i],
-            &c_srfvec[i][0],
-            <SpiceBoolean *> &c_found[i]
-        )
-        # return results
-    return np.asarray(c_spoint), np.asarray(c_trgepc), np.asarray(c_srfvec), np.asarray(found).astype(np.bool_)
+    with nogil:
+        for i in range(n):
+            sincpt_c(
+                c_method,
+                c_target,
+                ets[i],
+                c_fixref,
+                c_abcorr,
+                c_obsrvr,
+                c_dref,
+                &dvec[0],
+                &c_spoint[i][0],
+                &c_trgepc[i],
+                &c_srfvec[i][0],
+                <SpiceBoolean *> &c_found[i]
+            )
+            # return results
+    return p_spoint, p_trgepc, p_srfvec, p_found
 
 
 @wraparound(False)
@@ -2893,8 +2902,10 @@ cpdef subpnt(
     cdef const char * c_abcorr = abcorr
     cdef const char * c_obsrvr = obsrvr
     # Allocate output floats and arrays with appropriate shapes.
-    cdef double[::1] c_spoint = np.empty(3, dtype=np.double)
-    cdef double[::1] c_srfvec = np.empty(3, dtype=np.double)
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_spoint = np.empty(3, dtype=np.double, order='c')
+    cdef np.double_t[::1] c_spoint = p_spoint
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_srfvec = np.empty(3, dtype=np.double, order='c')
+    cdef np.double_t[::1] c_srfvec = p_srfvec
     cdef double trgepc
     # perform the call
     subpnt_c(
@@ -2909,7 +2920,7 @@ cpdef subpnt(
         &c_srfvec[0]
         )
     # return results
-    return np.asarray(c_spoint), trgepc, np.asarray(c_srfvec)
+    return p_spoint, trgepc, p_srfvec
 
 
 @boundscheck(False)
@@ -3010,8 +3021,10 @@ cpdef subslr(
     cdef const char * c_abcorr = abcorr
     cdef const char * c_obsrvr = obsrvr
     # Allocate output floats and arrays with appropriate shapes.
-    cdef double[::1] c_spoint = np.empty(3, dtype=np.double)
-    cdef double[::1] c_srfvec = np.empty(3, dtype=np.double)
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_spoint = np.empty(3, dtype=np.double, order='c')
+    cdef np.double_t[::1] c_spoint = p_spoint
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_srfvec = np.empty(3, dtype=np.double, order='c')
+    cdef np.double_t[::1] c_srfvec = p_srfvec
     cdef double trgepc
     # perform the call
     subslr_c(
@@ -3026,7 +3039,7 @@ cpdef subslr(
         &c_srfvec[0]
         )
     # return results
-    return np.asarray(c_spoint), trgepc, np.asarray(c_srfvec)
+    return p_spoint, trgepc, p_srfvec
 
 
 @boundscheck(False)
@@ -3070,9 +3083,12 @@ cpdef subslr_v(
     cdef const char * c_abcorr = abcorr
     cdef const char * c_obsrvr = obsrvr
     # Allocate output floats and arrays with appropriate shapes.
-    cdef double[:,::1] c_spoint = np.empty((n,3), dtype=np.double)
-    cdef double[:,::1] c_srfvec = np.empty((n,3), dtype=np.double)
-    cdef double[::1] c_trgepc = np.empty(n, dtype=np.double)
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_spoint = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.double_t[:,::1] c_spoint = p_spoint
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_srfvec = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.double_t[:,::1] c_srfvec = p_srfvec
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_trgepc = np.empty(n, dtype=np.double, order='c')
+    cdef np.double_t[::1] c_trgepc = p_trgepc
     # perform the call
     for i in range(n):
         subslr_c(
@@ -3082,12 +3098,12 @@ cpdef subslr_v(
             c_fixref,
             c_abcorr,
             c_obsrvr,
-            &c_spoint[i][0],
-            &c_trgepc[0],
-            &c_srfvec[i][0]
+            &c_spoint[i,0],
+            &c_trgepc[i],
+            &c_srfvec[i,0]
         )
     # return results
-    return np.asarray(c_spoint), np.asarray(c_trgepc), np.asarray(c_srfvec)
+    return p_spoint, p_trgepc, p_srfvec
 
 @boundscheck(False)
 @wraparound(False)
