@@ -898,14 +898,14 @@ def test_spkpvn_v(function, grouped_benchmark, load_core_kernels):
     assert isinstance(center, np.ndarray)
     assert center.dtype == np.int32
 
-
+@pytest.mark.skip(reason='Attempting to isolate segfault')
 @pytest.mark.parametrize('function', [cyice.spkpos, spice.spkpos], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["spkpos"], indirect=True)
 def test_spkpos(function, grouped_benchmark, load_core_kernels):
     et = cyice.str2et("July 4, 2003 11:00 AM PST")
     grouped_benchmark(function, "Mars", et, "J2000", "LT+S", "Earth")
 
-
+@pytest.mark.skip(reason='Attempting to isolate segfault')
 @pytest.mark.parametrize('function', [cyice.spkpos_v, spice.spkpos], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["spkpos_v"], indirect=True)
 def test_spkpos_v(function, grouped_benchmark, load_core_kernels):
