@@ -101,6 +101,17 @@ def test_ckgp(function, grouped_benchmark, load_cassini_kernels):
     npt.assert_array_almost_equal(cmat, expected_cmat)
 
 
+@pytest.mark.parametrize('function', [cyice.ckgp_v], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["ckgp_v"], indirect=True)
+def test_ckgp_v(function, grouped_benchmark, load_cassini_kernels):
+    ckid  = -82000
+    covers = np.repeat(267832537952.0,100)
+    grouped_benchmark(function, ckid, covers, 256, "J2000")
+    res = function(ckid, covers, 256, "J2000")
+    cmat, clkout = res[0], res[1]
+    assert clkout[0] == 267832537952.0
+
+
 @pytest.mark.parametrize('function', [cyice.ckgpav, spice.ckgpav], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["ckgpav"], indirect=True)
 def test_ckgpav(function, grouped_benchmark, load_cassini_kernels):
@@ -124,6 +135,17 @@ def test_ckgpav(function, grouped_benchmark, load_cassini_kernels):
     ]
     npt.assert_array_almost_equal(cmat, expected_cmat)
     npt.assert_array_almost_equal(avout, expected_avout)
+
+
+@pytest.mark.parametrize('function', [cyice.ckgpav_v], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["ckgpav_v"], indirect=True)
+def test_ckgpav_v(function, grouped_benchmark, load_cassini_kernels):
+    ckid  = -82000
+    covers = np.repeat(267832537952.0,100)
+    grouped_benchmark(function, ckid, covers, 256, "J2000")
+    res = function(ckid, covers, 256, "J2000")
+    cmat, avout, clkout = res[0], res[1], res[2]
+    assert clkout[0] == 267832537952.0
 
 
 @pytest.mark.parametrize('function', [cyice.convrt, spice.convrt], ids=get_module_name)

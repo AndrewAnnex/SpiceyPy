@@ -10,7 +10,7 @@ from libc.stdlib cimport malloc, calloc, free
 from libc.string cimport memcpy, strlen
 from cython cimport boundscheck, wraparound
 from cython.parallel import prange
-from cpython.unicode cimport PyUnicode_DecodeUTF8
+from cpython.unicode cimport PyUnicode_DecodeUTF8, PyUnicode_DecodeASCII, PyUnicode_DecodeCharmap
 import numpy as np
 cimport numpy as np
 np.import_array()
@@ -97,7 +97,7 @@ cpdef ckgp(
     # convert the strings to pointers once
     cdef const char* c_ref = ref
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2] c_cmat = np.empty((3,3), dtype=np.double, order="c")
+    cdef np.ndarray[np.double_t, ndim=2] c_cmat = np.empty((3,3), dtype=np.double, order='c')
     cdef double[:,::1] mv_cmat = c_cmat
     # perform the call
     ckgp_c(
@@ -111,6 +111,56 @@ cpdef ckgp(
     )
     # return results
     return c_cmat, c_clkout, c_found
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef ckgp_v(
+    int inst,
+    double[::1] sclkdps,
+    double tol,
+    str ref
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.ckgp`
+
+    Get pointing (attitude) for specified spacecraft clock times.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckgp_c.html
+
+    :param inst: NAIF ID of instrument, spacecraft, or structure.
+    :param sclkdps: Encoded spacecraft clock times.
+    :param tol: Time tolerance.
+    :param ref: Reference frame.
+    :return:
+            C-matrix pointing data,
+            Output encoded spacecraft clock time
+    """
+    # initialize c variables
+    cdef Py_ssize_t i, n = sclkdps.shape[0]
+    # convert the strings to pointers once
+    cdef const char* c_ref = ref
+    # initialize output arrays
+    cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_cmat = np.empty((n,3,3), dtype=np.double, order='c')
+    cdef np.double_t[:,:,::1] c_cmat = p_cmat
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_clkout = np.empty(n, dtype=np.double, order='c')
+    cdef np.double_t[::1] c_clkout = p_clkout
+    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.bool_, order='c')
+    cdef np.uint8_t[::1] c_found = p_found
+    # perform the call
+    with nogil:
+        for i in range(n):
+            ckgp_c(
+                inst,
+                sclkdps[i],
+                tol,
+                c_ref,
+                <SpiceDouble (*)[3]> &c_cmat[i,0,0],
+                &c_clkout[i],
+                <SpiceBoolean *> &c_found[i]
+            )
+    # return results
+    return p_cmat, p_clkout, p_found
 
 
 @boundscheck(False)
@@ -142,24 +192,78 @@ cpdef ckgpav(
     # convert the strings to pointers once
     cdef const char* c_ref = ref
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2] c_cmat = np.empty((3,3), dtype=np.double, order="c")
-    cdef np.ndarray[np.double_t, ndim=1] c_av   = np.empty(3, dtype=np.double, order="c")
-    # get C views 
-    cdef double[:,::1] mv_cmat = c_cmat
-    cdef double[::1]   mv_av   = c_av   
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_cmat = np.empty((3,3), dtype=np.double, order='c')
+    cdef double[:,::1] c_cmat = p_cmat
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_av   = np.empty(3, dtype=np.double, order='c')
+    cdef double[::1]   c_av   = p_av   
     # perform the call
     ckgpav_c(
         inst,
         sclkdp,
         tol,
         c_ref,
-        <SpiceDouble (*)[3]> &mv_cmat[0,0],
-        &mv_av[0],
+        <SpiceDouble (*)[3]> &c_cmat[0,0],
+        &c_av[0],
         &c_clkout,
         &c_found
     )
     # return results
-    return c_cmat, c_av, c_clkout, c_found
+    return p_cmat, p_av, c_clkout, c_found
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef ckgpav_v(
+    int    inst,
+    double[::1] sclkdps,
+    double tol,
+    str    ref
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.ckgpav`
+
+    Get pointing (attitude) and angular velocity
+    for specified spacecraft clock times.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckgpav_c.html
+
+    :param inst: NAIF ID of instrument, spacecraft, or structure.
+    :param sclkdp: Encoded spacecraft clock times.
+    :param tol: Time tolerance.
+    :param ref: Reference frame.
+    :return:
+            C-matrix pointing data,
+            Angular velocity vector,
+            Output encoded spacecraft clock time.
+    """
+    # initialize c variables
+    cdef Py_ssize_t i, n = sclkdps.shape[0]
+    # convert the strings to pointers once
+    cdef const char* c_ref = ref
+    # initialize output arrays
+    cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_cmat = np.empty((n,3,3), dtype=np.double, order='c')
+    cdef np.double_t[:,:,::1] c_cmat = p_cmat
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_av   = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.double_t[:,::1]   c_av = p_av
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_clkout = np.empty(n, dtype=np.double, order='c')
+    cdef np.double_t[::1] c_clkout = p_clkout
+    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.bool_, order='c')
+    cdef np.uint8_t[::1] c_found = p_found
+    # perform the call
+    with nogil:
+        for i in range(n):
+            ckgpav_c(
+                inst,
+                sclkdps[i],
+                tol,
+                c_ref,
+                <SpiceDouble (*)[3]> &c_cmat[i,0,0],
+                &c_av[i,0],
+                &c_clkout[i],
+                <SpiceBoolean *> &c_found[i]
+            )
+    # return results
+    return p_cmat, p_av, p_clkout, p_found
 
 
 cpdef double convrt(double x, str inunit, str outunit):
@@ -267,12 +371,13 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] deltet_v(
     # allocate output array
     cdef np.double_t[::1] c_deltas = np.empty(n, dtype=np.double)
     # perform the loop
-    for i in range(n):
-        deltet_c(
-            epochs[i], 
-            c_eptype, 
-            &c_deltas[i]
-        )
+    with nogil:
+        for i in range(n):
+            deltet_c(
+                epochs[i], 
+                c_eptype, 
+                &c_deltas[i]
+            )
     # return results
     return np.asarray(c_deltas)
 
@@ -358,13 +463,13 @@ cpdef et2lst_v(
     cdef int c_body = body
     cdef double c_lon = lon
     # initialize output arrays 
-    cdef SpiceInt[::1] c_hrs = np.empty(n, dtype=np.int32, order='C')
-    cdef SpiceInt[::1] c_mns = np.empty(n, dtype=np.int32, order='C')
-    cdef SpiceInt[::1] c_scs = np.empty(n, dtype=np.int32, order='C')
+    cdef SpiceInt[::1] c_hrs = np.empty(n, dtype=np.int32, order='c')
+    cdef SpiceInt[::1] c_mns = np.empty(n, dtype=np.int32, order='c')
+    cdef SpiceInt[::1] c_scs = np.empty(n, dtype=np.int32, order='c')
     p_np_s_dtype = np.dtype(('S', TIMELEN))
     p_np_u_dtype = np.dtype(('U', TIMELEN))
-    cdef np.uint8_t[:,::1] times = np.zeros((n, TIMELEN), dtype=np.uint8, order='C')
-    cdef np.uint8_t[:,::1] ampms = np.zeros((n, TIMELEN), dtype=np.uint8, order='C')
+    cdef np.uint8_t[:,::1] times = np.zeros((n, TIMELEN), dtype=np.uint8, order='c')
+    cdef np.uint8_t[:,::1] ampms = np.zeros((n, TIMELEN), dtype=np.uint8, order='c')
     # main loop
     with nogil:
         for i in range(n):
@@ -609,15 +714,14 @@ cpdef np.ndarray fovray_v(
     """
     # initialize c variables
     cdef Py_ssize_t i, n = ets.shape[0]
-    cdef bint c_visibl
     # convert the strings to pointers once
     cdef const char* c_inst     = inst
     cdef const char* c_rframe   = rframe
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # initialize output arrays
-    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] visibl = np.empty(n, dtype=np.uint8)
-    cdef np.uint8_t[::1] _visibl = visibl
+    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_visibl = np.empty(n, dtype=np.bool_, order='c')
+    cdef np.uint8_t[::1] c_visibl = p_visibl
     # perform the call
     for i in range(n):
         fovray_c(
@@ -627,11 +731,10 @@ cpdef np.ndarray fovray_v(
             c_abcorr,
             c_obsrvr,
             &ets[i],
-            &c_visibl
+            <SpiceBoolean *> &c_visibl[0]
         )
-        _visibl[i] = c_visibl
     # return
-    return np.asarray(visibl).astype(np.bool_)
+    return p_visibl
   
 
 cpdef bint fovtrg(
@@ -712,7 +815,6 @@ cpdef np.ndarray fovtrg_v(
     :return: Visibility flags
     """
     # initialize c variables
-    cdef bint c_visibl
     cdef Py_ssize_t i, n = ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_inst     = inst
@@ -722,8 +824,8 @@ cpdef np.ndarray fovtrg_v(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # initialize output arrays
-    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] visibl = np.empty(n, dtype=np.uint8)
-    cdef np.uint8_t[::1] _visibl = visibl
+    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_visibl = np.empty(n, dtype=np.bool_, order='c')
+    cdef np.uint8_t[::1] c_visibl = p_visibl
     # perform the call
     for i in range(n):
         fovtrg_c(
@@ -734,11 +836,10 @@ cpdef np.ndarray fovtrg_v(
             c_abcorr,
             c_obsrvr,
             &ets[i],
-            &c_visibl
+            <SpiceBoolean *> &c_visibl[0]
         )
-        _visibl[i] = c_visibl
     # return
-    return np.asarray(visibl).astype(np.bool_)
+    return p_visibl
 
 
 cpdef void furnsh(str file) noexcept:
@@ -754,7 +855,10 @@ cpdef void furnsh(str file) noexcept:
     
 
 # G
-cpdef str getmsg(str option, int msglen):
+cpdef str getmsg(
+    str option, 
+    int msglen
+    ):
     """
     Retrieve the current short error message,
     the explanation of the short error message, or the
@@ -767,14 +871,14 @@ cpdef str getmsg(str option, int msglen):
     :return: The error message to be retrieved.
     """
     cdef const char * c_option = option
-    cdef char* _msgstr = <char *> malloc((msglen) * sizeof(char))
+    cdef char* c_msgstr = <char *> malloc((msglen) * sizeof(char))
     getmsg_c(
         c_option, 
         msglen, 
-        _msgstr
+        c_msgstr
     )
-    pymsg = <unicode> _msgstr
-    free(_msgstr)
+    pymsg = <unicode> c_msgstr
+    free(c_msgstr)
     return pymsg
 
 
@@ -2719,7 +2823,6 @@ cpdef sincpt_v(
     """
     # get size of input array
     cdef Py_ssize_t i, n = ets.shape[0]
-    cdef bint _found 
     # convert strings 
     cdef const char * c_method = method
     cdef const char * c_target = target
@@ -2731,8 +2834,6 @@ cpdef sincpt_v(
     cdef double[:,::1]      c_spoint = np.empty((n,3), dtype=np.double)
     cdef double[:,::1]      c_srfvec = np.empty((n,3), dtype=np.double)
     cdef double[::1]        c_trgepc = np.empty(n, dtype=np.double)
-    # TODO what to do about found flag
-    # TODO this works but it is nasty, see if there is a better way
     cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] found = np.empty(n, dtype=np.uint8)
     cdef np.uint8_t[::1] c_found = found
     # perform the call
@@ -2749,9 +2850,8 @@ cpdef sincpt_v(
             &c_spoint[i][0],
             &c_trgepc[i],
             &c_srfvec[i][0],
-            &_found
+            <SpiceBoolean *> &c_found[i]
         )
-        c_found[i] = _found
         # return results
     return np.asarray(c_spoint), np.asarray(c_trgepc), np.asarray(c_srfvec), np.asarray(found).astype(np.bool_)
 
