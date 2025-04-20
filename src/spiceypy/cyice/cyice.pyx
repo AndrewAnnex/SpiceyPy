@@ -527,8 +527,8 @@ cpdef str et2utc(
         c_format_str, 
         c_prec, 
         TIMELEN, 
-        c_buffer
-    ) # TODO or &c_buffer[0]?
+        &c_buffer[0]
+    ) 
     return PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
 
 
@@ -557,17 +557,17 @@ cpdef et2utc_v(
     cdef char[TIMELEN] c_buffer
     cdef Py_ssize_t i, fixed_length, n = ets.shape[0]
     # convert the strings to pointers once
-    cdef const char* _format_str = format_str
+    cdef const char * c_format_str = format_str
     # initialize output arrays TODO: using a unicode numpy array?
     cdef list results = [None] * n
     # Process the first element and compute the fixed length.
     et2utc_c(
         ets[0], 
-        _format_str, 
+        c_format_str, 
         c_prec, 
         TIMELEN, 
-        c_buffer
-    )  # TODO or &c_buffer[0]?
+        &c_buffer[0]
+    )  
     fixed_length = strlen(c_buffer)
     results[0] = PyUnicode_DecodeUTF8(c_buffer, fixed_length, "strict")
     # main loop for all other values
@@ -575,10 +575,10 @@ cpdef et2utc_v(
         for i in range(1, n):
             et2utc_c(
                 ets[i], 
-                _format_str, 
+                c_format_str, 
                 c_prec, 
                 TIMELEN, 
-                c_buffer
+                &c_buffer[0]
             )
             results[i] = PyUnicode_DecodeUTF8(c_buffer, fixed_length, "strict")
     # return array
@@ -597,7 +597,11 @@ cpdef str etcal(double et):
     :return: A standard calendar representation of et.
     """
     cdef char[TIMELEN] c_buffer
-    etcal_c(et, TIMELEN, &c_buffer[0])
+    etcal_c(
+        et, 
+        TIMELEN, 
+        &c_buffer[0]
+    )
     # Convert the C char* to a Python string
     return PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
 
@@ -1020,7 +1024,7 @@ cpdef str scdecd(int sc, double sclkdp):
         sc, 
         sclkdp, 
         _default_len_out, 
-        c_buffer
+        &c_buffer[0]
     )
     return PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
 
@@ -1351,7 +1355,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] sct2e_v(
         sct2e_c(
             sc, 
             sclkdps[i], 
-            &p_ets[i]
+            &c_ets[i]
         )
     return p_ets
 
@@ -2630,7 +2634,7 @@ cpdef spkpos_v(
                 c_abcorr, 
                 c_obs, 
                 &c_ptargs[i,0], 
-                &p_lts[i]
+                &c_lts[i]
             )
     # return results
     return p_ptargs, p_lts
@@ -3408,9 +3412,14 @@ cpdef str timout(
     :param pictur: A format specification for the output string.
     :return: A string representation of the input epoch.
     """
-    cdef const char * _pictur = pictur 
+    cdef const char * c_pictur = pictur 
     cdef char[TIMELEN] c_buffer
-    timout_c(et, _pictur, TIMELEN, c_buffer)
+    timout_c(
+        et, 
+        c_pictur, 
+        TIMELEN, 
+        &c_buffer[0]
+    )
     return PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
 
 
@@ -3443,7 +3452,7 @@ cpdef timout_v(
             ets[i], 
             c_pictur, 
             TIMELEN, 
-            c_buffer
+            &c_buffer[0]
         )
         output[i] = PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
     return np.asarray(output)

@@ -908,9 +908,9 @@ def test_spkpos(function, grouped_benchmark, load_core_kernels):
 @pytest.mark.parametrize('grouped_benchmark', ["spkpos_v"], indirect=True)
 def test_spkpos_v(function, grouped_benchmark, load_core_kernels):
     _et = spice.str2et(["July 4, 2003 11:00 AM PST", "July 11, 2003 11:10 AM PST"])
-    et = np.linspace(_et[0], _et[1], num=100)
-    grouped_benchmark(function, "Mars", et, "J2000", "LT+S", "Earth")
-    ptargs, lts = function("Mars", et, "J2000", "LT+S", "Earth")
+    ets = np.linspace(_et[0], _et[1], num=100)
+    grouped_benchmark(function, "Mars", ets, "J2000", "LT+S", "Earth")
+    ptargs, lts = function("Mars", ets, "J2000", "LT+S", "Earth")
     assert isinstance(ptargs, np.ndarray)
 
 
