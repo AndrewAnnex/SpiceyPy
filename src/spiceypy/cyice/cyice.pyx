@@ -148,17 +148,16 @@ cpdef ckgp_v(
     cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.bool_, order='c')
     cdef np.uint8_t[::1] c_found = p_found
     # perform the call
-    with nogil:
-        for i in range(n):
-            ckgp_c(
-                inst,
-                sclkdps[i],
-                tol,
-                c_ref,
-                <SpiceDouble (*)[3]> &c_cmat[i,0,0],
-                &c_clkout[i],
-                <SpiceBoolean *> &c_found[i]
-            )
+    for i in range(n):
+        ckgp_c(
+            inst,
+            sclkdps[i],
+            tol,
+            c_ref,
+            <SpiceDouble (*)[3]> &c_cmat[i,0,0],
+            &c_clkout[i],
+            <SpiceBoolean *> &c_found[i]
+        )
     # return results
     return p_cmat, p_clkout, p_found
 
@@ -250,18 +249,17 @@ cpdef ckgpav_v(
     cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.bool_, order='c')
     cdef np.uint8_t[::1] c_found = p_found
     # perform the call
-    with nogil:
-        for i in range(n):
-            ckgpav_c(
-                inst,
-                sclkdps[i],
-                tol,
-                c_ref,
-                <SpiceDouble (*)[3]> &c_cmat[i,0,0],
-                &c_av[i,0],
-                &c_clkout[i],
-                <SpiceBoolean *> &c_found[i]
-            )
+    for i in range(n):
+        ckgpav_c(
+            inst,
+            sclkdps[i],
+            tol,
+            c_ref,
+            <SpiceDouble (*)[3]> &c_cmat[i,0,0],
+            &c_av[i,0],
+            &c_clkout[i],
+            <SpiceBoolean *> &c_found[i]
+        )
     # return results
     return p_cmat, p_av, p_clkout, p_found
 
@@ -373,13 +371,12 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] deltet_v(
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_deltas = np.empty(n, dtype=np.double, order='c')
     cdef np.double_t[::1] c_deltas = p_deltas
     # perform the loop
-    with nogil:
-        for i in range(n):
-            deltet_c(
-                epochs[i], 
-                c_eptype, 
-                &c_deltas[i]
-            )
+    for i in range(n):
+        deltet_c(
+            epochs[i], 
+            c_eptype, 
+            &c_deltas[i]
+        )
     # return results
     return p_deltas
 
@@ -478,21 +475,20 @@ cpdef et2lst_v(
     cdef np.uint8_t[:,::1] times = p_times
     cdef np.uint8_t[:,::1] ampms = p_ampms
     # main loop
-    with nogil:
-        for i in range(n):
-            et2lst_c(
-                ets[i],
-                c_body,
-                c_lon,
-                c_typein,
-                TIMELEN,
-                TIMELEN,
-                &c_hrs[i],
-                &c_mns[i], 
-                &c_scs[i], 
-                <char*> &times[i, 0], 
-                <char*> &ampms[i, 0]
-            )
+    for i in range(n):
+        et2lst_c(
+            ets[i],
+            c_body,
+            c_lon,
+            c_typein,
+            TIMELEN,
+            TIMELEN,
+            &c_hrs[i],
+            &c_mns[i], 
+            &c_scs[i], 
+            <char*> &times[i, 0], 
+            <char*> &ampms[i, 0]
+        )
     # return values
     py_times = p_times.view(p_np_s_dtype).reshape(n)
     py_times = np.char.rstrip(py_times).astype(p_np_u_dtype)
@@ -1174,13 +1170,12 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] sce2c_v(
     cdef Py_ssize_t i, n = ets.shape[0]
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_sclkdps = np.empty(n, dtype=np.double, order='c')
     cdef np.double_t[::1] c_sclkdps = p_sclkdps
-    with nogil:
-        for i in range(n):
-            sce2c_c(
-                sc, 
-                ets[i], 
-                &c_sclkdps[i]
-            )
+    for i in range(n):
+        sce2c_c(
+            sc, 
+            ets[i], 
+            &c_sclkdps[i]
+        )
     return p_sclkdps
 
 
@@ -1537,17 +1532,16 @@ cpdef spkez_v(
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='c')
     cdef np.double_t[::1] c_lts = p_lts
     # main loop
-    with nogil:
-        for i in range(n):
-            spkez_c(
-                c_target, 
-                epochs[i], 
-                c_ref, 
-                c_abcorr, 
-                c_observer, 
-                &c_states[i,0], 
-                &c_lts[i]
-            )
+    for i in range(n):
+        spkez_c(
+            c_target, 
+            epochs[i], 
+            c_ref, 
+            c_abcorr, 
+            c_observer, 
+            &c_states[i,0], 
+            &c_lts[i]
+        )
     # return results
     return p_states, p_lts
 
@@ -2112,21 +2106,20 @@ cpdef spkcvo_v(
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='c')
     cdef np.double_t[::1] c_lts = p_lts
     # perform the call
-    with nogil:
-        for i in range(n):
-            spkcvo_c(
-                c_target,
-                ets[i],
-                c_outref,
-                c_refloc,
-                c_abcorr,
-                &obssta[0],
-                obsepc,
-                c_obsctr,
-                c_obsref,
-                &c_states[i,0],
-                &c_lts[i]
-            )
+    for i in range(n):
+        spkcvo_c(
+            c_target,
+            ets[i],
+            c_outref,
+            c_refloc,
+            c_abcorr,
+            &obssta[0],
+            obsepc,
+            c_obsctr,
+            c_obsref,
+            &c_states[i,0],
+            &c_lts[i]
+        )
     # return output
     return p_states, p_lts
 
@@ -2244,21 +2237,20 @@ cpdef spkcvt_v(
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='c')
     cdef np.double_t[::1] c_lts = p_lts
     # perform the call
-    with nogil:
-        for i in range(n):
-            spkcvt_c(
-                &trgsta[0],
-                trgepc,
-                c_trgctr,
-                c_trgref,
-                ets[i],
-                c_outref,
-                c_refloc,
-                c_abcorr,
-                c_obsrvr,
-                &c_states[i,0],
-                &c_lts[i]
-            )
+    for i in range(n):
+        spkcvt_c(
+            &trgsta[0],
+            trgepc,
+            c_trgctr,
+            c_trgref,
+            ets[i],
+            c_outref,
+            c_refloc,
+            c_abcorr,
+            c_obsrvr,
+            &c_states[i,0],
+            &c_lts[i]
+        )
     # return output
     return p_states, p_lts
 
@@ -2342,16 +2334,15 @@ cpdef spkgeo_v(
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='c')
     cdef np.double_t[::1] c_lts = p_lts
     # perform the call
-    with nogil:
-        for i in range(n):
-            spkgeo_c(
-                targ,
-                ets[i],
-                c_ref,
-                obs,
-                &c_states[i,0],
-                &c_lts[i]
-            )
+    for i in range(n):
+        spkgeo_c(
+            targ,
+            ets[i],
+            c_ref,
+            obs,
+            &c_states[i,0],
+            &c_lts[i]
+        )
     # return output
     return p_states, p_lts
 
@@ -2431,16 +2422,15 @@ cpdef spkgps_v(
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='c')
     cdef np.double_t[::1] c_lts = p_lts
     # perform the call
-    with nogil:
-        for i in range(n):
-            spkgps_c(
-                targ,
-                ets[i],
-                c_ref,
-                obs,
-                &c_pos[i,0],
-                &c_lts[i]
-            )
+    for i in range(n):
+        spkgps_c(
+            targ,
+            ets[i],
+            c_ref,
+            obs,
+            &c_pos[i,0],
+            &c_lts[i]
+        )
     # return output
     return p_pos, p_lts
 
@@ -2524,16 +2514,15 @@ cpdef spkpvn_v(
     cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_centers = np.empty(n, dtype=np.int32, order='c')
     cdef np.int32_t[::1] c_centers = p_centers
     # perform the call
-    with nogil:
-        for i in range(n):
-            spkpvn_c(
-                c_handle,
-                &descr[0],
-                ets[i],
-                <SpiceInt *> &c_refs[i],
-                &c_states[i,0],
-                <SpiceInt *> &c_centers[i]
-            )
+    for i in range(n):
+        spkpvn_c(
+            c_handle,
+            &descr[0],
+            ets[i],
+            <SpiceInt *> &c_refs[i],
+            &c_states[i,0],
+            <SpiceInt *> &c_centers[i]
+        )
     # return output 
     return p_refs, p_states, p_centers
 
@@ -2625,17 +2614,16 @@ cpdef spkpos_v(
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='c')
     cdef np.double_t[::1] c_lts = p_lts
     # main loop
-    with nogil:
-        for i in range(n):
-            spkpos_c(
-                c_targ, 
-                ets[i],
-                c_ref, 
-                c_abcorr, 
-                c_obs, 
-                &c_ptargs[i,0], 
-                &c_lts[i]
-            )
+    for i in range(n):
+        spkpos_c(
+            c_targ, 
+            ets[i],
+            c_ref, 
+            c_abcorr, 
+            c_obs, 
+            &c_ptargs[i,0], 
+            &c_lts[i]
+        )
     # return results
     return p_ptargs, p_lts
 
@@ -2704,14 +2692,13 @@ cpdef np.ndarray[DOUBLE_t, ndim=2, mode='c'] spkssb_v(
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='c')
     cdef np.double_t[:,::1] c_states = p_states
     # perform the call
-    with nogil:
-        for i in range(n):
-            spkssb_c(
-                targ,
-                ets[i],
-                c_ref,
-                &c_states[i,0],
-            )
+    for i in range(n):
+        spkssb_c(
+            targ,
+            ets[i],
+            c_ref,
+            &c_states[i,0],
+        )
     # return output
     return p_states
 
@@ -2895,23 +2882,22 @@ cpdef sincpt_v(
     cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.bool_, order='c')
     cdef np.uint8_t[::1] c_found = p_found
     # perform the call
-    with nogil:
-        for i in range(n):
-            sincpt_c(
-                c_method,
-                c_target,
-                ets[i],
-                c_fixref,
-                c_abcorr,
-                c_obsrvr,
-                c_dref,
-                &dvec[0],
-                &c_spoint[i][0],
-                &c_trgepc[i],
-                &c_srfvec[i][0],
-                <SpiceBoolean *> &c_found[i]
-            )
-            # return results
+    for i in range(n):
+        sincpt_c(
+            c_method,
+            c_target,
+            ets[i],
+            c_fixref,
+            c_abcorr,
+            c_obsrvr,
+            c_dref,
+            &dvec[0],
+            &c_spoint[i,0],
+            &c_trgepc[i],
+            &c_srfvec[i,0],
+            <SpiceBoolean *> &c_found[i]
+        )
+        # return results
     return p_spoint, p_trgepc, p_srfvec, p_found
 
 
