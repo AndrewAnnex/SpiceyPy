@@ -59,13 +59,18 @@ def get_cyice_extension(default_path: str = "./src/cspice/"):
     libraries = ["cspice" if is_unix else "libcspice"]
     library_dirs = ["./src/spiceypy/utils"]
 
-    extra_link_args = []
+    extra_link_args =  [
+
+    ]
     if is_unix:
         extra_link_args.append('-lm')
 
     include_dirs = [
         numpy.get_include(),
         f"{cspice_dir / 'include/'}",
+    ]
+    extra_compile_args = [
+        
     ]
 
     ext_options = {
@@ -74,7 +79,7 @@ def get_cyice_extension(default_path: str = "./src/cspice/"):
         "library_dirs": library_dirs,
         "language": "c",
         "define_macros": [("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),],
-        "extra_compile_args": [],
+        "extra_compile_args": extra_compile_args,
         "extra_link_args": extra_link_args
     }
 

@@ -97,7 +97,7 @@ cpdef ckgp(
     # convert the strings to pointers once
     cdef const char* c_ref = ref
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2] p_cmat = np.empty((3,3), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2] p_cmat = np.empty((3,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_cmat = p_cmat
     # perform the call
     ckgp_c(
@@ -141,11 +141,11 @@ cpdef ckgp_v(
     # convert the strings to pointers once
     cdef const char* c_ref = ref
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_cmat = np.empty((n,3,3), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_cmat = np.empty((n,3,3), dtype=np.double, order='C')
     cdef np.double_t[:,:,::1] c_cmat = p_cmat
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_clkout = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_clkout = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_clkout = p_clkout
-    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.bool_, order='c')
+    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.bool_, order='C')
     cdef np.uint8_t[::1] c_found = p_found
     # perform the call
     for i in range(n):
@@ -191,9 +191,9 @@ cpdef ckgpav(
     # convert the strings to pointers once
     cdef const char* c_ref = ref
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_cmat = np.empty((3,3), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_cmat = np.empty((3,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_cmat = p_cmat
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_av   = np.empty(3, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_av   = np.empty(3, dtype=np.double, order='C')
     cdef np.double_t[::1]   c_av   = p_av   
     # perform the call
     ckgpav_c(
@@ -240,13 +240,13 @@ cpdef ckgpav_v(
     # convert the strings to pointers once
     cdef const char* c_ref = ref
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_cmat = np.empty((n,3,3), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_cmat = np.empty((n,3,3), dtype=np.double, order='C')
     cdef np.double_t[:,:,::1] c_cmat = p_cmat
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_av   = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_av   = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1]   c_av = p_av
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_clkout = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_clkout = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_clkout = p_clkout
-    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.bool_, order='c')
+    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.bool_, order='C')
     cdef np.uint8_t[::1] c_found = p_found
     # perform the call
     for i in range(n):
@@ -308,7 +308,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] convrt_v(
     cdef Py_ssize_t i, n = x.shape[0]
     cdef const char * c_inunit = inunit
     cdef const char * c_outunit = outunit
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_outs = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_outs = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_outs = p_outs
     # main loop
     for i in range(n):
@@ -368,7 +368,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] deltet_v(
     cdef Py_ssize_t i, n = epochs.shape[0]
     cdef const char* c_eptype = eptype
     # allocate output array
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_deltas = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_deltas = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_deltas = p_deltas
     # perform the loop
     for i in range(n):
@@ -464,11 +464,11 @@ cpdef et2lst_v(
     # initialize output arrays 
     p_np_s_dtype = np.dtype(('S', TIMELEN))
     p_np_u_dtype = np.dtype(('U', TIMELEN))
-    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_hrs = np.empty(n, dtype=np.int32, order='c')
-    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_mns = np.empty(n, dtype=np.int32, order='c')
-    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_scs = np.empty(n, dtype=np.int32, order='c')
-    cdef np.ndarray[np.uint8_t, ndim=2, mode='c'] p_times = np.zeros((n, TIMELEN), dtype=np.uint8, order='c')
-    cdef np.ndarray[np.uint8_t, ndim=2, mode='c'] p_ampms = np.zeros((n, TIMELEN), dtype=np.uint8, order='c')
+    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_hrs = np.empty(n, dtype=np.int32, order='C')
+    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_mns = np.empty(n, dtype=np.int32, order='C')
+    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_scs = np.empty(n, dtype=np.int32, order='C')
+    cdef np.ndarray[np.uint8_t, ndim=2, mode='c'] p_times = np.zeros((n, TIMELEN), dtype=np.uint8, order='C')
+    cdef np.ndarray[np.uint8_t, ndim=2, mode='c'] p_ampms = np.zeros((n, TIMELEN), dtype=np.uint8, order='C')
     cdef SpiceInt[::1] c_hrs = p_hrs
     cdef SpiceInt[::1] c_mns = p_mns
     cdef SpiceInt[::1] c_scs = p_scs
@@ -725,7 +725,7 @@ cpdef np.ndarray fovray_v(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # initialize output arrays
-    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_visibl = np.empty(n, dtype=np.bool_, order='c')
+    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_visibl = np.empty(n, dtype=np.bool_, order='C')
     cdef np.uint8_t[::1] c_visibl = p_visibl
     # perform the call
     for i in range(n):
@@ -829,7 +829,7 @@ cpdef np.ndarray fovtrg_v(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # initialize output arrays
-    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_visibl = np.empty(n, dtype=np.bool_, order='c')
+    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_visibl = np.empty(n, dtype=np.bool_, order='C')
     cdef np.uint8_t[::1] c_visibl = p_visibl
     # perform the call
     for i in range(n):
@@ -950,7 +950,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] lspcn_v(
     cdef Py_ssize_t i, n = ets.shape[0]
     cdef const char * c_body   = body
     cdef const char * c_abcorr = abcorr
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_l_s_s = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_l_s_s = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_l_s_s = p_l_s_s
     for i in range(n):
         c_l_s_s[i] = lspcn_c(
@@ -1109,7 +1109,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] scencd_v(
     :return: Encoded representations of the clock count.
     """
     cdef Py_ssize_t i, n = len(sclkchs)
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_sclkdps = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_sclkdps = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_sclkdps = p_sclkdps
     for i in range(n):
         scencd_c(
@@ -1168,7 +1168,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] sce2c_v(
             sclkdp need not be integral.
     """
     cdef Py_ssize_t i, n = ets.shape[0]
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_sclkdps = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_sclkdps = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_sclkdps = p_sclkdps
     for i in range(n):
         sce2c_c(
@@ -1291,7 +1291,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] scs2e_v(
     :return: Ephemeris time, seconds past J2000.
     """
     cdef Py_ssize_t i, n = sclkchs.shape[0]
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ets = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ets = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_ets = p_ets
     for i in range(n):
         scs2e_c(
@@ -1344,7 +1344,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] sct2e_v(
     :return: Ephemeris time, seconds past J2000.
     """
     cdef Py_ssize_t i, n = sclkdps.shape[0]
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ets = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ets = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_ets = p_ets
     for i in range(n):
         sct2e_c(
@@ -1385,7 +1385,7 @@ cpdef spkapo(
     cdef const char* c_ref    = ref
     cdef const char* c_abcorr = abcorr
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ptarg = np.empty(3, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ptarg = np.empty(3, dtype=np.double, order='C')
     cdef np.double_t[::1] c_ptarg = p_ptarg
     spkapo_c(
         targ, 
@@ -1431,9 +1431,9 @@ cpdef spkapo_v(
     cdef const char* c_ref    = ref
     cdef const char* c_abcorr = abcorr
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_ptargs = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_ptargs = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_ptargs = p_ptargs
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_lts = p_lts
     # perform the call
     for i in range(n):
@@ -1480,7 +1480,7 @@ cpdef spkez(
     cdef const char* c_abcorr = abcorr
     # allocate output variables
     cdef double lt = 0.0
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
     spkez_c(
         target, 
@@ -1527,9 +1527,9 @@ cpdef spkez_v(
     cdef const char* c_abcorr = abcorr
     cdef int c_observer = observer
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_states = p_states
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_lts = p_lts
     # main loop
     for i in range(n):
@@ -1578,7 +1578,7 @@ cpdef spkezp(
     cdef int c_obs = obs
     cdef double c_lt
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ptarg = np.empty(3, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ptarg = np.empty(3, dtype=np.double, order='C')
     cdef np.double_t[::1] c_ptarg = p_ptarg
     spkezp_c(
         c_targ, 
@@ -1627,9 +1627,9 @@ cpdef spkezp_v(
     cdef int c_targ = targ
     cdef int c_obs = obs
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_ptargs = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_ptargs = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_ptargs = p_ptargs
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_lts = p_lts
     # main loop
     for i in range(n):
@@ -1671,7 +1671,7 @@ cpdef spkezr(
             One way light time between observer and target in seconds.
     """
     cdef double lt = 0.0
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
     spkezr_c(
         target, 
@@ -1718,9 +1718,9 @@ cpdef spkezr_v(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_observer = observer
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_states = p_states
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_lts = p_lts
     # main loop
     for i in range(n):
@@ -1779,7 +1779,7 @@ cpdef spkcpo(
     cdef const char* c_obsref   = obsref
     # initialize output arrays
     cdef double c_lt
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
     # perform the call
     spkcpo_c(
@@ -1842,9 +1842,9 @@ cpdef spkcpo_v(
     cdef const char* c_obsctr   = obsctr
     cdef const char* c_obsref   = obsref
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_states = p_states
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_lts = p_lts
     # perform the call
     for i in range(n):
@@ -1906,7 +1906,7 @@ cpdef spkcpt(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
     # perform the call
     spkcpt_c(
@@ -1969,9 +1969,9 @@ cpdef spkcpt_v(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_states = p_states
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_lts = p_lts
     # perform the call
     for i in range(n):
@@ -2036,7 +2036,7 @@ cpdef spkcvo(
     cdef const char* c_obsctr   = obsctr
     cdef const char* c_obsref   = obsref
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
     # perform the call
     spkcvo_c(
@@ -2101,9 +2101,9 @@ cpdef spkcvo_v(
     cdef const char * c_obsctr   = obsctr
     cdef const char * c_obsref   = obsref
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_states = p_states
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_lts = p_lts
     # perform the call
     for i in range(n):
@@ -2167,7 +2167,7 @@ cpdef spkcvt(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
     # perform the call
     spkcvt_c(
@@ -2232,9 +2232,9 @@ cpdef spkcvt_v(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_states = p_states
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_lts = p_lts
     # perform the call
     for i in range(n):
@@ -2285,7 +2285,7 @@ cpdef spkgeo(
     # convert the strings to pointers once
     cdef const char* c_ref   = ref
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
     # perform the call
     spkgeo_c(
@@ -2329,9 +2329,9 @@ cpdef spkgeo_v(
     # convert the strings to pointers once
     cdef const char* c_ref   = ref
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_states = p_states
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_lts = p_lts
     # perform the call
     for i in range(n):
@@ -2375,7 +2375,7 @@ cpdef spkgps(
     # convert the strings to pointers once
     cdef const char* c_ref   = ref
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_pos = np.empty(3, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_pos = np.empty(3, dtype=np.double, order='C')
     cdef np.double_t[::1] c_pos = p_pos
     # perform the call
     spkgeo_c(
@@ -2417,9 +2417,9 @@ cpdef spkgps_v(
     # convert the strings to pointers once
     cdef const char* c_ref   = ref
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_pos = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_pos = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_pos = p_pos
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_lts = p_lts
     # perform the call
     for i in range(n):
@@ -2464,7 +2464,7 @@ cpdef spkpvn(
     cdef int c_ref = 0
     cdef int c_center = 0
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
     # perform the call
     spkpvn_c(
@@ -2507,11 +2507,11 @@ cpdef spkpvn_v(
     # initialize c variables
     cdef int c_handle = handle
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_states = p_states
-    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_refs = np.empty(n, dtype=np.int32, order='c')
+    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_refs = np.empty(n, dtype=np.int32, order='C')
     cdef np.int32_t[::1] c_refs = p_refs
-    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_centers = np.empty(n, dtype=np.int32, order='c')
+    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_centers = np.empty(n, dtype=np.int32, order='C')
     cdef np.int32_t[::1] c_centers = p_centers
     # perform the call
     for i in range(n):
@@ -2560,7 +2560,7 @@ cpdef spkpos(
     cdef const char* c_abcorr = abcorr
     cdef const char* c_obs    = obs
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ptarg = np.empty(3, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ptarg = np.empty(3, dtype=np.double, order='C')
     cdef np.double_t[::1] c_ptarg = p_ptarg
     spkpos_c(
         c_targ, 
@@ -2603,21 +2603,22 @@ cpdef spkpos_v(
     """
     # initialize c variables
     cdef Py_ssize_t i, n = ets.shape[0]
+    cdef const np.double_t[::1] c_ets = ets
     # convert the strings to pointers once
-    cdef const char* c_targ   = targ
-    cdef const char* c_ref    = ref
-    cdef const char* c_abcorr = abcorr
-    cdef const char* c_obs    = obs
+    cdef const char * c_targ   = targ
+    cdef const char * c_ref    = ref
+    cdef const char * c_abcorr = abcorr
+    cdef const char * c_obs    = obs
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_ptargs = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_ptargs = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_ptargs = p_ptargs
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_lts = p_lts
     # main loop
     for i in range(n):
         spkpos_c(
             c_targ, 
-            ets[i],
+            c_ets[i],
             c_ref, 
             c_abcorr, 
             c_obs, 
@@ -2651,7 +2652,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] spkssb(
     # convert the strings to pointers once
     cdef const char* c_ref   = ref
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
     # perform the call
     spkssb_c(
@@ -2689,7 +2690,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=2, mode='c'] spkssb_v(
     # convert the strings to pointers once
     cdef const char* c_ref   = ref
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_states = p_states
     # perform the call
     for i in range(n):
@@ -2744,7 +2745,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] str2et_v(
     """
     cdef Py_ssize_t i, n = times.shape[0]
     # initialize output
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ets = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ets = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_ets = p_ets
     #main loop
     for i in range(n):
@@ -2800,9 +2801,9 @@ cpdef sincpt(
     cdef const char * c_obsrvr = obsrvr
     cdef const char * c_dref   = dref
     # Allocate output floats and arrays with appropriate shapes.
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_spoint = np.empty(3, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_spoint = np.empty(3, dtype=np.double, order='C')
     cdef np.double_t[::1] c_spoint = p_spoint
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_srfvec = np.empty(3, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_srfvec = np.empty(3, dtype=np.double, order='C')
     cdef np.double_t[::1] c_srfvec = p_srfvec
     cdef double c_trgepc
     cdef bint c_found 
@@ -2873,13 +2874,13 @@ cpdef sincpt_v(
     cdef const char * c_obsrvr = obsrvr
     cdef const char * c_dref   = dref
     # Allocate output floats and arrays with appropriate shapes.
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_spoint = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_spoint = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_spoint = p_spoint 
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_srfvec = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_srfvec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_srfvec = p_srfvec 
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_trgepc = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_trgepc = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1]   c_trgepc = p_trgepc 
-    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.bool_, order='c')
+    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.bool_, order='C')
     cdef np.uint8_t[::1] c_found = p_found
     # perform the call
     for i in range(n):
@@ -2938,9 +2939,9 @@ cpdef subpnt(
     cdef const char * c_abcorr = abcorr
     cdef const char * c_obsrvr = obsrvr
     # Allocate output floats and arrays with appropriate shapes.
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_spoint = np.empty(3, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_spoint = np.empty(3, dtype=np.double, order='C')
     cdef np.double_t[::1] c_spoint = p_spoint
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_srfvec = np.empty(3, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_srfvec = np.empty(3, dtype=np.double, order='C')
     cdef np.double_t[::1] c_srfvec = p_srfvec
     cdef double trgepc
     # perform the call
@@ -3000,11 +3001,11 @@ cpdef subpnt_v(
     cdef const char * c_abcorr = abcorr
     cdef const char * c_obsrvr = obsrvr
     # Allocate output floats and arrays with appropriate shapes.
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_spoint = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_spoint = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_spoint = p_spoint
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_srfvec = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_srfvec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_srfvec = p_srfvec
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_trgepc = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_trgepc = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_trgepc = p_trgepc
     # perform the call
     for i in range(n):
@@ -3060,9 +3061,9 @@ cpdef subslr(
     cdef const char * c_abcorr = abcorr
     cdef const char * c_obsrvr = obsrvr
     # Allocate output floats and arrays with appropriate shapes.
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_spoint = np.empty(3, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_spoint = np.empty(3, dtype=np.double, order='C')
     cdef np.double_t[::1] c_spoint = p_spoint
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_srfvec = np.empty(3, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_srfvec = np.empty(3, dtype=np.double, order='C')
     cdef np.double_t[::1] c_srfvec = p_srfvec
     cdef double trgepc
     # perform the call
@@ -3122,11 +3123,11 @@ cpdef subslr_v(
     cdef const char * c_abcorr = abcorr
     cdef const char * c_obsrvr = obsrvr
     # Allocate output floats and arrays with appropriate shapes.
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_spoint = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_spoint = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_spoint = p_spoint
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_srfvec = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_srfvec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_srfvec = p_srfvec
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_trgepc = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_trgepc = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_trgepc = p_trgepc
     # perform the call
     for i in range(n):
@@ -3166,7 +3167,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=2, mode='c'] sxform(
     cdef const char * c_fromstring = fromstring
     cdef const char * c_tostring = tostring
     # initialize output
-    cdef np.ndarray[np.double_t, ndim=2, mode="c"] p_xform = np.empty((6,6), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode="c"] p_xform = np.empty((6,6), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_xform = p_xform
     sxform_c(
         c_fromstring, 
@@ -3266,11 +3267,11 @@ cpdef tangpt(
     cdef const char * c_dref   = dref
     # Allocate output floats and arrays with appropriate shapes.
     cdef double alt, vrange, trgepc
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_tanpt = np.empty(3, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_tanpt = np.empty(3, dtype=np.double, order='C')
     cdef np.double_t[::1] c_tanpt = p_tanpt 
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_srfpt = np.empty(3, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_srfpt = np.empty(3, dtype=np.double, order='C')
     cdef np.double_t[::1] c_srfpt = p_srfpt
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_srfvec = np.empty(3, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_srfvec = np.empty(3, dtype=np.double, order='C')
     cdef np.double_t[::1] c_srfvec = p_srfvec
     # perform the call
     tangpt_c(
@@ -3348,17 +3349,17 @@ cpdef tangpt_v(
     cdef const char * c_obsrvr = obsrvr
     cdef const char * c_dref   = dref
     # Allocate output floats and arrays with appropriate shapes.
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_tanpt = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_tanpt = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_tanpt = p_tanpt
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_alt = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_alt = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_alt = p_alt
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_vrange = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_vrange = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_vrange = p_vrange
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_srfpt = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_srfpt = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_srfpt = p_srfpt
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_srfvec = np.empty((n,3), dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_srfvec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_srfvec = p_srfvec
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_trgepc = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_trgepc = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_trgepc = p_trgepc
     # perform the calls
     for i in range(n):
@@ -3535,7 +3536,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] trgsep_v(
     cdef const char * c_obsrvr  = obsrvr
     cdef const char * c_abcorr  = abcorr
     # initialize output
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_angseps = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_angseps = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_angseps = p_angseps
     for i in range(n):
         c_angseps[i] = trgsep_c(
@@ -3602,7 +3603,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] unitim_v(
     cdef const char * c_insys = insys
     cdef const char * c_outsys = outsys
     # initialize output
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_unitims = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_unitims = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_unitims = p_unitims
     # perform the actual call
     for i in range(n):
@@ -3663,7 +3664,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] utc2et_v(
     """
     cdef Py_ssize_t i, n = utcstr.shape[0]
     # initialize output
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ets = np.empty(n, dtype=np.double, order='c')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ets = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_ets = p_ets
     for i in range(n):
         utc2et_c(
