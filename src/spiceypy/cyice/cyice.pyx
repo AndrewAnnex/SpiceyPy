@@ -47,7 +47,7 @@ from .cyice cimport *
 
 #B
 
-cpdef double b1900() noexcept:
+def b1900():
     """
     Return the Julian Date corresponding to Besselian Date 1900.0.
 
@@ -58,7 +58,7 @@ cpdef double b1900() noexcept:
     return b1900_c()
 
 
-cpdef double b1950() noexcept:
+def b1950():
     """
     Return the Julian Date corresponding to Besselian Date 1950.0.
 
@@ -72,7 +72,7 @@ cpdef double b1950() noexcept:
 
 @boundscheck(False)
 @wraparound(False)
-cpdef ckgp(
+def ckgp(
     int inst,
     double sclkdp,
     double tol,
@@ -115,7 +115,7 @@ cpdef ckgp(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef ckgp_v(
+def ckgp_v(
     int inst,
     double[::1] sclkdps,
     double tol,
@@ -165,7 +165,7 @@ cpdef ckgp_v(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef ckgpav(
+def ckgpav(
     int    inst,
     double sclkdp,
     double tol,
@@ -213,7 +213,7 @@ cpdef ckgpav(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef ckgpav_v(
+def ckgpav_v(
     int    inst,
     double[::1] sclkdps,
     double tol,
@@ -266,7 +266,7 @@ cpdef ckgpav_v(
     return p_cmat, p_av, p_clkout, p_found
 
 
-cpdef double convrt(double x, str inunit, str outunit):
+def convrt(double x, str inunit, str outunit):
     """
     Take a measurement X, the units associated with
     X, and units to which X should be converted; return Y
@@ -288,7 +288,7 @@ cpdef double convrt(double x, str inunit, str outunit):
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] convrt_v(
+def convrt_v(
     double[::1] x, 
     str inunit, 
     str outunit
@@ -326,7 +326,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] convrt_v(
 #D
 
 
-cpdef double deltet(
+def deltet(
     double epoch, 
     str eptype
     ):
@@ -352,7 +352,7 @@ cpdef double deltet(
 # new rule: always use type name style if accepting arrays as input
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] deltet_v(
+def deltet_v(
     double[::1] epochs, 
     str eptype
     ):
@@ -386,7 +386,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] deltet_v(
 #E 
 
 
-cpdef et2lst(
+def et2lst(
     double et,
     int body,
     double lon,
@@ -433,7 +433,7 @@ cpdef et2lst(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef et2lst_v(
+def et2lst_v(
    double[::1] ets,
    int body,
    double lon,
@@ -501,7 +501,7 @@ cpdef et2lst_v(
     return p_hrs, p_mns, p_scs, py_times, py_ampms
 
 
-cpdef str et2utc(
+def et2utc(
     double et, 
     str format_str, 
     int prec
@@ -534,7 +534,7 @@ cpdef str et2utc(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef et2utc_v(
+def et2utc_v(
     double[::1] ets,
     str format_str, 
     int prec
@@ -586,7 +586,7 @@ cpdef et2utc_v(
     return np.asarray(results)
 
 
-cpdef str etcal(double et):
+def etcal(double et):
     """
     Convert from an ephemeris epoch measured in seconds past
     the epoch of J2000 to a calendar string format using a
@@ -609,7 +609,7 @@ cpdef str etcal(double et):
 
 @boundscheck(False)
 @wraparound(False)
-cpdef etcal_v(double[::1] ets):
+def etcal_v(double[::1] ets):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.etcal`
 
@@ -640,7 +640,7 @@ cpdef etcal_v(double[::1] ets):
 
 # F
 
-cpdef int failed() noexcept:
+def failed():
     """
     True if an error condition has been signalled via sigerr_c.
 
@@ -653,7 +653,7 @@ cpdef int failed() noexcept:
 
 @boundscheck(False)
 @wraparound(False)
-cpdef bint fovray(
+def fovray(
     str inst,
     double[::1] raydir,
     str rframe,
@@ -699,7 +699,7 @@ cpdef bint fovray(
 
 @boundscheck(False)
 @wraparound(False)    
-cpdef np.ndarray fovray_v(
+def fovray_v(
     str inst,
     double[::1] raydir,
     str rframe,
@@ -749,7 +749,7 @@ cpdef np.ndarray fovray_v(
     return p_visibl
   
 
-cpdef bint fovtrg(
+def fovtrg(
     str inst,   
     str target,
     str tshape,
@@ -800,7 +800,7 @@ cpdef bint fovtrg(
 
 @boundscheck(False)
 @wraparound(False)    
-cpdef np.ndarray fovtrg_v(
+def fovtrg_v(
     str inst,
     str target,
     str tshape,
@@ -855,7 +855,7 @@ cpdef np.ndarray fovtrg_v(
     return p_visibl
 
 
-cpdef void furnsh(str file) noexcept:
+def furnsh(str file):
     """
     Load one or more SPICE kernels into a program.
 
@@ -868,7 +868,7 @@ cpdef void furnsh(str file) noexcept:
     
 
 # G
-cpdef str getmsg(
+def getmsg(
     str option, 
     int msglen
     ):
@@ -908,7 +908,7 @@ cpdef str getmsg(
 
 # L
 
-cpdef double lspcn(
+def lspcn(
     str body, 
     double et, 
     str abcorr
@@ -937,7 +937,7 @@ cpdef double lspcn(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] lspcn_v(
+def lspcn_v(
     str body, 
     double[::1] ets, 
     str abcorr
@@ -979,7 +979,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] lspcn_v(
 
 # Q
 
-cpdef str qcktrc(int tracelen):
+def qcktrc(int tracelen):
     """
     Return a string containing a traceback.
 
@@ -1000,7 +1000,7 @@ cpdef str qcktrc(int tracelen):
 # R
 
 
-cpdef void reset() noexcept:
+def reset():
     """
     Reset the SPICE error status to a value of "no error."
     As a result, the status routine, failed, will return a value
@@ -1013,7 +1013,7 @@ cpdef void reset() noexcept:
 
 #S
 
-cpdef str scdecd(int sc, double sclkdp):
+def scdecd(int sc, double sclkdp):
     """
     Convert double precision encoding of spacecraft clock time into
     a character representation.
@@ -1036,7 +1036,7 @@ cpdef str scdecd(int sc, double sclkdp):
 
 @boundscheck(False)
 @wraparound(False)
-cpdef scdecd_v(
+def scdecd_v(
     int sc, 
     double[::1] sclkdps
     ):
@@ -1076,7 +1076,7 @@ cpdef scdecd_v(
     return np.asarray(sclkchs)
 
 
-cpdef double scencd(
+def scencd(
     int sc, 
     str sclkch
     ):
@@ -1102,7 +1102,7 @@ cpdef double scencd(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] scencd_v(
+def scencd_v(
     int sc, 
     list[str] sclkchs
     ):
@@ -1130,7 +1130,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] scencd_v(
     return p_sclkdps
 
 
-cpdef double sce2c(
+def sce2c(
     int sc, 
     double et
     ):
@@ -1158,7 +1158,7 @@ cpdef double sce2c(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] sce2c_v(
+def sce2c_v(
     int sc, 
     double[::1] ets
 ):
@@ -1190,7 +1190,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] sce2c_v(
     return p_sclkdps
 
 
-cpdef str sce2s(
+def sce2s(
     int sc, 
     double et
     ):
@@ -1218,7 +1218,7 @@ cpdef str sce2s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray sce2s_v(
+def sce2s_v(
     int sc, 
     double[::1] ets
 ):
@@ -1262,7 +1262,7 @@ cpdef np.ndarray sce2s_v(
     return np.asarray(sclkchs)
 
 
-cpdef double scs2e(
+def scs2e(
     int sc,
     str sclkch
     ):
@@ -1287,7 +1287,7 @@ cpdef double scs2e(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] scs2e_v(
+def scs2e_v(
     int sc, 
     np.ndarray sclkchs
     ):
@@ -1314,7 +1314,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] scs2e_v(
     return p_ets
 
 
-cpdef double sct2e(
+def sct2e(
     int sc, 
     double sclkdp
     ):
@@ -1339,7 +1339,7 @@ cpdef double sct2e(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] sct2e_v(
+def sct2e_v(
     int sc, 
     double[::1] sclkdps
     ):
@@ -1370,7 +1370,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] sct2e_v(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkapo(
+def spkapo(
     int targ,  
     double et, 
     str ref,
@@ -1414,7 +1414,7 @@ cpdef spkapo(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkapo_v(
+def spkapo_v(
     int targ,  
     double[::1] ets, 
     str ref,
@@ -1466,7 +1466,7 @@ cpdef spkapo_v(
 
 @boundscheck(False)
 @wraparound(False)    
-cpdef spkez(
+def spkez(
     int target, 
     double epoch, 
     str ref, 
@@ -1509,7 +1509,7 @@ cpdef spkez(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkez_v(
+def spkez_v(
     int target, 
     double[::1] epochs, 
     str ref, 
@@ -1563,7 +1563,7 @@ cpdef spkez_v(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkezp(
+def spkezp(
     int targ,  
     double et, 
     str ref, 
@@ -1609,7 +1609,7 @@ cpdef spkezp(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkezp_v(
+def spkezp_v(
     int targ, 
     double[::1] ets, 
     str ref, 
@@ -1664,7 +1664,7 @@ cpdef spkezp_v(
 
 @boundscheck(False)
 @wraparound(False)    
-cpdef spkezr(
+def spkezr(
     str target, 
     double epoch, 
     str frame, 
@@ -1702,7 +1702,7 @@ cpdef spkezr(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkezr_v(
+def spkezr_v(
     str target, 
     double[::1] epochs, 
     str frame, 
@@ -1757,7 +1757,7 @@ cpdef spkezr_v(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkcpo(
+def spkcpo(
     str target,
     double et,
     str outref,
@@ -1817,7 +1817,7 @@ cpdef spkcpo(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkcpo_v(
+def spkcpo_v(
     str target,
     double[::1] ets,
     str outref,
@@ -1884,7 +1884,7 @@ cpdef spkcpo_v(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkcpt(
+def spkcpt(
     double[::1] trgpos,
     str trgctr,
     str trgref,
@@ -1945,7 +1945,7 @@ cpdef spkcpt(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkcpt_v(
+def spkcpt_v(
     double[::1] trgpos,
     str trgctr,
     str trgref,
@@ -2012,7 +2012,7 @@ cpdef spkcpt_v(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkcvo(
+def spkcvo(
     str target,
     double et,
     str outref,
@@ -2077,7 +2077,7 @@ cpdef spkcvo(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkcvo_v(
+def spkcvo_v(
     str target,
     double[::1] ets,
     str outref,
@@ -2146,7 +2146,7 @@ cpdef spkcvo_v(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkcvt(
+def spkcvt(
     double[::1] trgsta,
     double trgepc,
     str trgctr,
@@ -2209,7 +2209,7 @@ cpdef spkcvt(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkcvt_v(
+def spkcvt_v(
     double[::1] trgsta,
     double trgepc,
     str trgctr,
@@ -2278,7 +2278,7 @@ cpdef spkcvt_v(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkgeo(
+def spkgeo(
     int targ,
     double et,
     str ref,
@@ -2323,7 +2323,7 @@ cpdef spkgeo(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkgeo_v(
+def spkgeo_v(
     int targ,
     double[::1] ets,
     str ref,
@@ -2371,7 +2371,7 @@ cpdef spkgeo_v(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkgps(
+def spkgps(
     int targ,
     double et,
     str ref,
@@ -2414,7 +2414,7 @@ cpdef spkgps(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkgps_v(
+def spkgps_v(
     int targ,
     double[::1] ets,
     str ref,
@@ -2460,7 +2460,7 @@ cpdef spkgps_v(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkpvn(
+def spkpvn(
     int handle,
     double[::1] descr,
     double et
@@ -2503,7 +2503,7 @@ cpdef spkpvn(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkpvn_v(
+def spkpvn_v(
     int handle,
     double[::1] descr,
     double[::1] ets
@@ -2552,7 +2552,7 @@ cpdef spkpvn_v(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkpos(
+def spkpos(
     str target, 
     double et, 
     str ref, 
@@ -2599,7 +2599,7 @@ cpdef spkpos(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef spkpos_v(
+def spkpos_v(
     str targ, 
     double[::1] ets, 
     str ref, 
@@ -2656,7 +2656,7 @@ cpdef spkpos_v(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] spkssb(
+def spkssb(
     int targ,
     double et,
     str ref,
@@ -2692,7 +2692,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] spkssb(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=2, mode='c'] spkssb_v(
+def spkssb_v(
     int targ,
     double[::1] ets,
     str ref,
@@ -2730,7 +2730,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=2, mode='c'] spkssb_v(
     return p_states
 
 
-cpdef double str2et(
+def str2et(
     str time
     ):
     """
@@ -2754,7 +2754,7 @@ cpdef double str2et(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] str2et_v(
+def str2et_v(
     np.ndarray times
     ):
     """
@@ -2786,7 +2786,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] str2et_v(
 # TODO need error check, need found exception thrower in cython
 @wraparound(False)
 @boundscheck(False)
-cpdef sincpt(
+def sincpt(
     str method,
     str target,
     double et,
@@ -2855,7 +2855,7 @@ cpdef sincpt(
 # TODO need error check, need found exception thrower in cython
 @wraparound(False)
 @boundscheck(False)
-cpdef sincpt_v(
+def sincpt_v(
     str method,
     str target,
     double[::1] ets,
@@ -2931,7 +2931,7 @@ cpdef sincpt_v(
 
 @wraparound(False)
 @boundscheck(False)
-cpdef subpnt(
+def subpnt(
     str method,
     str target, 
     double et, 
@@ -2989,7 +2989,7 @@ cpdef subpnt(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef subpnt_v(
+def subpnt_v(
     str method,
     str target, 
     double[::1] ets, 
@@ -3054,7 +3054,7 @@ cpdef subpnt_v(
 
 @wraparound(False)
 @boundscheck(False)
-cpdef subslr(
+def subslr(
     str method,
     str target, 
     double et, 
@@ -3112,7 +3112,7 @@ cpdef subslr(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef subslr_v(
+def subslr_v(
     str method,
     str target, 
     double[::1] ets, 
@@ -3176,7 +3176,7 @@ cpdef subslr_v(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=2, mode='c'] sxform(
+def sxform(
     str fromstring, 
     str tostring, 
     double et
@@ -3209,7 +3209,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=2, mode='c'] sxform(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=3, mode='c'] sxform_v(
+def sxform_v(
     str fromstring, 
     str tostring, 
     double[::1] ets
@@ -3248,7 +3248,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=3, mode='c'] sxform_v(
 
 @wraparound(False)
 @boundscheck(False)
-cpdef tangpt(
+def tangpt(
     str method,
     str target,
     double et,
@@ -3327,7 +3327,7 @@ cpdef tangpt(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef tangpt_v(    
+def tangpt_v(    
     str method,
     str target,
     double[::1] ets,
@@ -3415,7 +3415,7 @@ cpdef tangpt_v(
     return p_tanpt, p_alt, p_vrange, p_srfpt, p_trgepc, p_srfvec
 
 
-cpdef str timout(
+def timout(
     double et, 
     str pictur
     ):
@@ -3443,7 +3443,7 @@ cpdef str timout(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef timout_v(
+def timout_v(
     double[::1] ets, 
     str pictur
 ):
@@ -3477,7 +3477,7 @@ cpdef timout_v(
     return np.asarray(output)
 
 
-cpdef double trgsep(
+def trgsep(
     double et, 
     str targ1, 
     str shape1, 
@@ -3528,7 +3528,7 @@ cpdef double trgsep(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] trgsep_v(
+def trgsep_v(
     double[::1] ets, 
     str targ1,
     str shape1,
@@ -3587,7 +3587,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] trgsep_v(
 
 # U
 
-cpdef double unitim(
+def unitim(
         double epoch,
         str insys,
         str outsys,
@@ -3612,7 +3612,7 @@ cpdef double unitim(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] unitim_v(
+def unitim_v(
         double[::1] epochs,
         insys: str,
         outsys: str,
@@ -3649,7 +3649,7 @@ cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] unitim_v(
     return p_unitims
 
 
-cpdef void unload(str file) noexcept:
+def unload(str file):
     """
     Unload a SPICE kernel.
 
@@ -3661,7 +3661,7 @@ cpdef void unload(str file) noexcept:
     unload_c(c_file)
 
 
-cpdef double utc2et(str utcstr):
+def utc2et(str utcstr):
     """
     Convert an input time from Calendar or Julian Date format, UTC,
     to ephemeris seconds past J2000.
@@ -3682,7 +3682,7 @@ cpdef double utc2et(str utcstr):
 
 @boundscheck(False)
 @wraparound(False)
-cpdef np.ndarray[DOUBLE_t, ndim=1, mode='c'] utc2et_v(
+def utc2et_v(
     np.ndarray utcstr
     ):
     """
