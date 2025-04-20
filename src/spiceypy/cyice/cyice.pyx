@@ -2602,8 +2602,10 @@ cpdef spkpos_v(
             One way light time between observer and target in seconds.
     """
     # initialize c variables
-    cdef Py_ssize_t i, n = ets.shape[0]
     cdef const np.double_t[::1] c_ets = ets
+    cdef Py_ssize_t i, n = c_ets.shape[0]
+    cdef double[3] c_ptarg = (0.0, 0.0, 0.0)
+    cdef double c_lt = 0.0 
     # convert the strings to pointers once
     cdef const char * c_targ   = targ
     cdef const char * c_ref    = ref
@@ -2622,9 +2624,13 @@ cpdef spkpos_v(
             c_ref, 
             c_abcorr, 
             c_obs, 
-            &c_ptargs[i,0], 
-            &c_lts[i]
+            c_ptarg, 
+            &c_lt
         )
+        c_ptargs[i][0] = c_ptarg[0]
+        c_ptargs[i][1] = c_ptarg[1]
+        c_ptargs[i][2] = c_ptarg[2]
+        c_lts[i] = c_lt
     # return results
     return p_ptargs, p_lts
 
