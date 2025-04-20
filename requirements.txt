@@ -1,4 +1,4 @@
 numpy>=2.0,<3
-setuptools>=75.8.2
+setuptools>=76.0.0
 Cython>=3.0.12
 build 

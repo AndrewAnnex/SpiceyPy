@@ -17,7 +17,7 @@ np.import_array()
 
 DEF _default_len_out = 256
 
-DEF TIMELEN = 60
+DEF TIMELEN = 64
 
 ctypedef np.double_t DOUBLE_t
 ctypedef np.uint64_t INT_t 

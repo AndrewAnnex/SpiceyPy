@@ -78,7 +78,7 @@ def get_cyice_extension(default_path: str = "./src/cspice/"):
         "libraries": libraries,
         "library_dirs": library_dirs,
         "language": "c",
-        "define_macros": [("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),],
+        "define_macros": [],
         "extra_compile_args": extra_compile_args,
         "extra_link_args": extra_link_args
     }
