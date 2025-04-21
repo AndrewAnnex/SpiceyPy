@@ -229,7 +229,7 @@ jobs:
           python -m pip install . --user
       - name: Test 🧪 with coverage 📈
         run: |
-          coverage run --source spiceypy -m pytest --pyargs spiceypy --maxfail=4
+          coverage run --source spiceypy -m pytest -vv --pyargs spiceypy 
       - name: Upload 🆙 coverage 📈 report to codecov 
         uses: codecov/codecov-action@v4
         with:

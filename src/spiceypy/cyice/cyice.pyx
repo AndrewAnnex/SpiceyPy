@@ -97,7 +97,7 @@ def ckgp(
     # convert the strings to pointers once
     cdef const char* c_ref = ref
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2] p_cmat = np.empty((3,3), dtype=np.double, order='C')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_cmat = np.empty((3,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_cmat = p_cmat
     # perform the call
     ckgp_c(
@@ -137,17 +137,17 @@ def ckgp_v(
             Output encoded spacecraft clock time
     """
     # initialize c variables
-    cdef const double[::1] c_sclkdps= np.ascontiguousarray(sclkdps)
+    cdef const double[::1] c_sclkdps = np.ascontiguousarray(sclkdps)
     cdef Py_ssize_t i, n = c_sclkdps.shape[0]
     # convert the strings to pointers once
     cdef const char* c_ref = ref
     # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_cmat = np.empty((n,3,3), dtype=np.double, order='C')
-    cdef np.double_t[:,:,::1] c_cmat = p_cmat
+    cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_cmat   = np.empty((n,3,3), dtype=np.double, order='C')
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_clkout = np.empty(n, dtype=np.double, order='C')
-    cdef np.double_t[::1] c_clkout = p_clkout
-    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.bool_, order='C')
-    cdef np.uint8_t[::1] c_found = p_found
+    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found   = np.empty(n, dtype=np.uint8, order='C')
+    cdef np.double_t[:,:,::1] c_cmat = p_cmat
+    cdef np.double_t[::1] c_clkout   = p_clkout
+    cdef np.uint8_t[::1] c_found     = p_found
     # perform the call
     for i in range(n):
         ckgp_c(
@@ -743,7 +743,7 @@ def fovray_v(
             c_abcorr,
             c_obsrvr,
             &ets[i],
-            <SpiceBoolean *> &c_visibl[0]
+            <SpiceBoolean *> &c_visibl[i]
         )
     # return
     return p_visibl
@@ -849,7 +849,7 @@ def fovtrg_v(
             c_abcorr,
             c_obsrvr,
             &ets[i],
-            <SpiceBoolean *> &c_visibl[0]
+            <SpiceBoolean *> &c_visibl[i]
         )
     # return
     return p_visibl
@@ -1003,7 +1003,7 @@ def qcktrc(int tracelen):
 def reset():
     """
     Reset the SPICE error status to a value of "no error."
-    As a result, the status routine, failed, will return a value
+    As a result, the status routine, :py:meth:`~spiceypy.cyice.cyice.failed`, will return a value
     of False
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/reset_c.html
