@@ -1,7 +1,14 @@
 # cython: language_level = 3
 # cython: embedsignature = True
 # cython: c_string_type = bytes
-# cython: c_string_encoding = utf-8
+# cython: c_string_encoding = ascii
+# cython: cdivision = True
+# cython: profile = False
+# cython: linetrace = False
+# cython: warn.unused = True
+# cython: warn.maybe_uninitialized = True
+# cython: warn.multiple_declarators = True
+# cython: show_performance_hints = True
 # distutils: define_macros=NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
 
 cdef extern from "SpiceUsr.h" nogil:
