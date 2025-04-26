@@ -195,6 +195,7 @@ jobs:
         run: |
           twine check dist/*
       - name: Publish distribution 📦 to Test PyPI
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}

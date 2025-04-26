@@ -192,39 +192,39 @@ def test_b1950(function, grouped_benchmark):
 
 # # E
 
-# @pytest.mark.parametrize('function', [cyice.et2lst, spice.et2lst], ids=get_module_name)
-# @pytest.mark.parametrize('grouped_benchmark', ["et2lst"], indirect=True)
-# def test_et2lst(function, grouped_benchmark, load_core_kernels):
-#     et = spice.str2et("2004 may 17 16:30:00")
-#     lon = 281.49521300000004 * spice.rpd()
-#     grouped_benchmark(function, et, 399, lon, "planetocentric")
-#     hr, mn, sc, time, ampm = function(
-#         et, 399, lon, "planetocentric"
-#     )
-#     assert hr == 11
-#     assert mn == 19
-#     assert sc == 22
-#     assert time == "11:19:22"
-#     assert ampm == "11:19:22 A.M."
+@pytest.mark.parametrize('function', [cyice.et2lst, spice.et2lst], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["et2lst"], indirect=True)
+def test_et2lst(function, grouped_benchmark, load_core_kernels):
+    et = spice.str2et("2004 may 17 16:30:00")
+    lon = 281.49521300000004 * spice.rpd()
+    grouped_benchmark(function, et, 399, lon, "planetocentric")
+    hr, mn, sc, time, ampm = function(
+        et, 399, lon, "planetocentric"
+    )
+    assert hr == 11
+    assert mn == 19
+    assert sc == 22
+    assert time == "11:19:22"
+    assert ampm == "11:19:22 A.M."
 
 
-# @pytest.mark.parametrize('function', [cyice.et2lst_v], ids=get_module_name)
-# @pytest.mark.parametrize('grouped_benchmark', ["et2lst_v"], indirect=True)
-# def test_et2lst_v(function, grouped_benchmark, load_core_kernels):
-#     ets = np.repeat(spice.str2et("2004 may 17 16:30:00"), 100)
-#     lon = 281.49521300000004 * spice.rpd()
-#     grouped_benchmark(function, ets, 399, lon, "planetocentric")
-#     hr, mn, sc, time, ampm = function(
-#         ets, 399, lon, "planetocentric"
-#     )
-#     assert hr[0] == 11
-#     assert mn[0] == 19
-#     assert sc[0] == 22
-#     assert time[0] == "11:19:22"
-#     assert ampm[0] == "11:19:22 A.M."
-#     assert len(time) == 100
-#     assert isinstance(time, np.ndarray)
-#     assert isinstance(hr, np.ndarray)
+@pytest.mark.parametrize('function', [cyice.et2lst_v], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["et2lst_v"], indirect=True)
+def test_et2lst_v(function, grouped_benchmark, load_core_kernels):
+    ets = np.repeat(spice.str2et("2004 may 17 16:30:00"), 100)
+    lon = 281.49521300000004 * spice.rpd()
+    grouped_benchmark(function, ets, 399, lon, "planetocentric")
+    hr, mn, sc, time, ampm = function(
+        ets, 399, lon, "planetocentric"
+    )
+    assert hr[0] == 11
+    assert mn[0] == 19
+    assert sc[0] == 22
+    assert time[0] == "11:19:22"
+    assert ampm[0] == "11:19:22 A.M."
+    assert len(time) == 100
+    assert isinstance(time, np.ndarray)
+    assert isinstance(hr, np.ndarray)
 
 
 @pytest.mark.parametrize('function', [cyice.et2utc, spice.et2utc], ids=get_module_name)
@@ -244,19 +244,19 @@ def test_et2utc_v(function, grouped_benchmark, load_core_kernels):
     assert np.array_equal(res, expected_res)
 
 
-# @pytest.mark.parametrize('function', [cyice.etcal, spice.etcal], ids=get_module_name)
-# @pytest.mark.parametrize('grouped_benchmark', ["etcal"], indirect=True)
-# def test_etcal(function, grouped_benchmark):
-#     grouped_benchmark(function, 0.0)
+@pytest.mark.parametrize('function', [cyice.etcal, spice.etcal], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["etcal"], indirect=True)
+def test_etcal(function, grouped_benchmark):
+    grouped_benchmark(function, 0.0)
 
 
-# @pytest.mark.parametrize('function', [cyice.etcal_v, spice.etcal], ids=get_module_name)
-# @pytest.mark.parametrize('grouped_benchmark', ["etcal_v"], indirect=True)
-# def test_etcal_v(function, grouped_benchmark):
-#     data = np.arange(10000.0, dtype=float)
-#     grouped_benchmark(function, data)
-#     res = function(data)
-#     assert isinstance(res, np.ndarray)
+@pytest.mark.parametrize('function', [cyice.etcal_v, spice.etcal], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["etcal_v"], indirect=True)
+def test_etcal_v(function, grouped_benchmark):
+    data = np.arange(10000.0, dtype=float)
+    grouped_benchmark(function, data)
+    res = function(data)
+    assert isinstance(res, np.ndarray)
 
 # # F
 # @pytest.mark.parametrize('function', [cyice.failed, spice.failed], ids=get_module_name)
@@ -319,13 +319,13 @@ def test_et2utc_v(function, grouped_benchmark, load_core_kernels):
 
 # # G
 
-# @pytest.mark.parametrize('function', [cyice.getmsg, spice.getmsg], ids=get_module_name)
-# @pytest.mark.parametrize('grouped_benchmark', ["getmsg"], indirect=True)
-# def test_getmsg(function, grouped_benchmark):
-#     cyice.reset()
-#     spice.sigerr("test error")
-#     grouped_benchmark(function, "SHORT", 200)
-#     cyice.reset()
+@pytest.mark.parametrize('function', [cyice.getmsg, spice.getmsg], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["getmsg"], indirect=True)
+def test_getmsg(function, grouped_benchmark):
+    cyice.reset()
+    spice.sigerr("test error")
+    grouped_benchmark(function, "SHORT", 200)
+    cyice.reset()
 
 # # H
 
@@ -361,24 +361,24 @@ def test_et2utc_v(function, grouped_benchmark, load_core_kernels):
 # # P
 
 # # Q 
-# @pytest.mark.parametrize('function', [cyice.qcktrc, spice.qcktrc], ids=get_module_name)
-# @pytest.mark.parametrize('grouped_benchmark', ["qcktrc"], indirect=True)
-# def test_qcktrc(function, grouped_benchmark):
-#     cyice.reset()
-#     spice.chkin("test")
-#     spice.chkin("qcktrc")
-#     grouped_benchmark(function, 40)
-#     trace = function(40)
-#     assert trace == "test --> qcktrc"
-#     spice.chkout("qcktrc")
-#     spice.chkout("test")
-#     cyice.reset()
+@pytest.mark.parametrize('function', [cyice.qcktrc, spice.qcktrc], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["qcktrc"], indirect=True)
+def test_qcktrc(function, grouped_benchmark):
+    cyice.reset()
+    spice.chkin("test")
+    spice.chkin("qcktrc")
+    grouped_benchmark(function, 40)
+    trace = function(40)
+    assert trace == "test --> qcktrc"
+    spice.chkout("qcktrc")
+    spice.chkout("test")
+    cyice.reset()
 
-# # R
-# @pytest.mark.parametrize('function', [cyice.reset, spice.reset], ids=get_module_name)
-# @pytest.mark.parametrize('grouped_benchmark', ["reset"], indirect=True)
-# def test_reset(function, grouped_benchmark):
-#    grouped_benchmark(function)
+# R
+@pytest.mark.parametrize('function', [cyice.reset, spice.reset], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["reset"], indirect=True)
+def test_reset(function, grouped_benchmark):
+   grouped_benchmark(function)
 
 
 # # S

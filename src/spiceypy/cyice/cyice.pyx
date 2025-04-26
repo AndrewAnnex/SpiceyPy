@@ -144,7 +144,7 @@ def ckgp_v(
             Output encoded spacecraft clock time
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_sclkdps = np.ascontiguousarray(sclkdps)
+    cdef const np.double_t[::1] c_sclkdps = np.ascontiguousarray(sclkdps, dtype=np.double)
     cdef Py_ssize_t i, n = c_sclkdps.shape[0]
     # convert the strings to pointers once
     cdef const char* c_ref = ref
@@ -244,7 +244,7 @@ def ckgpav_v(
             Output encoded spacecraft clock time.
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_sclkdps = np.ascontiguousarray(sclkdps)
+    cdef const np.double_t[::1] c_sclkdps = np.ascontiguousarray(sclkdps, dtype=np.double)
     cdef Py_ssize_t i, n = c_sclkdps.shape[0]
     # convert the strings to pointers once
     cdef const char* c_ref = ref
@@ -374,7 +374,7 @@ def deltet_v(
     :param eptype: Type of input epoch ("UTC" or "ET").
     :return: Delta ET (ET-UTC) at input epoch.
     """
-    cdef const np.double_t[::1] c_epochs = np.ascontiguousarray(epochs)
+    cdef const np.double_t[::1] c_epochs = np.ascontiguousarray(epochs, dtype=np.double)
     cdef Py_ssize_t i, n = c_epochs.shape[0]
     cdef const char* c_eptype = eptype
     # allocate output array
@@ -469,7 +469,7 @@ def et2lst_v(
             String giving local time on 24 hour clock,
             String giving time on A.M. / P.M. scale.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef const char* c_typein = typein
     cdef int c_body = body
@@ -485,8 +485,10 @@ def et2lst_v(
     cdef SpiceInt[::1] c_hrs = p_hrs
     cdef SpiceInt[::1] c_mns = p_mns
     cdef SpiceInt[::1] c_scs = p_scs
-    cdef np.uint8_t[:,::1] times = p_times
-    cdef np.uint8_t[:,::1] ampms = p_ampms
+    cdef np.uint8_t[:,::1] c_times = p_times
+    cdef np.uint8_t[:,::1] c_ampms = p_ampms
+    cdef char* _c_times = <char*> &c_times[0,0]
+    cdef char* _c_ampms = <char*> &c_ampms[0,0]
     # main loop
     for i in range(n):
         et2lst_c(
@@ -499,8 +501,8 @@ def et2lst_v(
             &c_hrs[i],
             &c_mns[i], 
             &c_scs[i], 
-            <char*> &times[i, 0], 
-            <char*> &ampms[i, 0]
+            _c_times + i*TIMELEN, 
+            _c_ampms + i*TIMELEN
         )
     # return values
     py_times = p_times.view(p_np_s_dtype).reshape(n)
@@ -563,15 +565,16 @@ def et2utc_v(
     :return: Output time string in UTC
     """
     cdef int c_prec = prec
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_format_str = format_str
-    # initialize output arrays TODO: using a unicode numpy array?
+    # initialize output arrays 
     p_np_s_dtype = np.dtype(('S', TIMELEN))
     p_np_u_dtype = np.dtype(('U', TIMELEN))
     cdef np.ndarray[np.uint8_t, ndim=2, mode='c'] p_utcstr = np.zeros((n, TIMELEN), dtype=np.uint8, order='C')
     cdef np.uint8_t[:,::1] c_utcstr = p_utcstr
+    cdef char* base = <char*> &c_utcstr[0,0]
     # main loop 
     for i in range(n):
         et2utc_c(
@@ -579,7 +582,7 @@ def et2utc_v(
             c_format_str, 
             c_prec, 
             TIMELEN, 
-            <char*> &c_utcstr[i, 0],
+            base + i*TIMELEN,
         )
     # return values
     py_utcstr = p_utcstr.view(p_np_s_dtype).reshape(n)
@@ -598,9 +601,10 @@ def etcal(double et):
     :param et: Ephemeris time measured in seconds past J2000 TDB.
     :return: A standard calendar representation of et.
     """
+    cdef double c_et = et
     cdef char[TIMELEN] c_buffer
     etcal_c(
-        et, 
+        c_et, 
         TIMELEN, 
         &c_buffer[0]
     )
@@ -623,22 +627,24 @@ def etcal_v(double[::1] ets):
     :param ets: Ephemeris times measured in seconds past J2000 TDB.
     :return: A standard calendar representation of et.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # Allocate a 2D buffer of shape (n, 24) with dtype np.uint8
-    cdef np.ndarray[dtype=CHAR_t, ndim=2] results = np.empty((n, 25), dtype=np.uint8)
-    # Create a typed memoryview over the buffer
-    cdef unsigned char[:, ::1] view = results
+    p_np_s_dtype = np.dtype(('S', 25))
+    p_np_u_dtype = np.dtype(('U', 25))
+    cdef np.ndarray[np.uint8_t, ndim=2, mode='c'] p_results = np.empty((n, 25), dtype=np.uint8, order='C')
+    cdef np.uint8_t[:,::1] c_results = p_results
+    cdef char* base = <char*> &c_results[0,0]
     for i in range(n):
-        # Get a pointer to the start of the i-th row and call etcal_c
         etcal_c(
             c_ets[i], 
             25, 
-            <char*> &view[i, 0]
+            base + i*25
         )
-    # Convert the buffer to a 1D array of fixed-length byte strings (dtype "|S25") (need extra byte for termination)
-    return results.view(dtype="|S25").reshape(n) #.astype(np.str_) this converts it to a more usable dtype but adds overhead
-
+    # return values
+    py_results = p_results.view(p_np_s_dtype).reshape(n)
+    py_results = np.char.rstrip(py_results).astype(p_np_u_dtype)
+    return py_results
 # F
 
 def failed():
@@ -725,7 +731,7 @@ def fovray_v(
     :return: Visibility flags
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_inst     = inst
@@ -828,7 +834,7 @@ def fovtrg_v(
     :return: Visibility flags
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_inst     = inst
@@ -884,17 +890,28 @@ def getmsg(
     :param lenout: Available space in the output string msg.
     :return: The error message to be retrieved.
     """
-    cdef int c_msglen = msglen
     cdef const char* c_option = option
+    if c_option == NULL:
+        raise UnicodeError("Failed to encode option")
+    cdef int c_msglen = msglen
+    cdef Py_ssize_t length = _default_len_out
+    if c_msglen <= 0:
+        raise ValueError("msglen must be positive")
     cdef char* c_msgstr = <char*> malloc((msglen) * sizeof(char))
-    getmsg_c(
-        c_option, 
-        c_msglen, 
-        c_msgstr
-    )
-    p_msg = <unicode> c_msgstr
-    free(c_msgstr)
-    return p_msg
+    if c_msgstr == NULL:
+        raise MemoryError("Unable to allocate memory for traceback string in getmsg.")
+    try:
+        getmsg_c(
+            c_option, 
+            c_msglen, 
+            c_msgstr
+        )
+        length = strlen(c_msgstr)
+        p_msgstr = PyUnicode_DecodeUTF8(c_msgstr, length, "strict")
+        return p_msgstr
+    finally:
+        free(c_msgstr)
+
 
 
 # H
@@ -958,7 +975,7 @@ def lspcn_v(
     :param abcorr: Aberration correction.
     :return: planetocentric longitudes of the sun in radians
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef const char* c_body   = body
     cdef const char* c_abcorr = abcorr
@@ -991,19 +1008,29 @@ def qcktrc(int tracelen):
     :param tracelen: Maximum length of output traceback string.
     :return: A traceback string.
     """
+    cdef int c_tracelen = tracelen
+    cdef Py_ssize_t length = _default_len_out
+    if c_tracelen <= 0:
+        raise ValueError("tracelen must be positive")
     cdef char* c_tracestr = <char*> malloc((tracelen) * sizeof(char))
-    qcktrc_c(
-        tracelen, 
-        c_tracestr
-    )
-    p_tracestr = <unicode> c_tracestr
-    free(c_tracestr)
-    return p_tracestr
+    if c_tracestr == NULL:
+        raise MemoryError("Unable to allocate memory for traceback string in qcktrc.")
+    try:
+        qcktrc_c(
+            c_tracelen, 
+            c_tracestr
+        )
+        length = strlen(c_tracestr)
+        p_tracestr = PyUnicode_DecodeUTF8(c_tracestr, length, "strict")
+        return p_tracestr
+    finally:
+        free(c_tracestr)
+
 
 # R
 
 
-def reset():
+def reset() -> None:
     """
     Reset the SPICE error status to a value of "no error."
     As a result, the status routine, :py:meth:`~spiceypy.cyice.cyice.failed`, will return a value
@@ -1057,19 +1084,20 @@ def scdecd_v(
     :return: Character representation of a clock count.
     """
     cdef int c_sc = sc
-    cdef const np.double_t[::1] c_sclkdps = np.ascontiguousarray(sclkdps)
+    cdef const np.double_t[::1] c_sclkdps = np.ascontiguousarray(sclkdps, dtype=np.double)
     cdef Py_ssize_t i, n = c_sclkdps.shape[0]
     # initialize output arrays 
     p_np_s_dtype = np.dtype(('S', _default_len_out))
     p_np_u_dtype = np.dtype(('U', _default_len_out))
     cdef np.ndarray[np.uint8_t, ndim=2, mode='c'] p_sclkchs = np.zeros((n, _default_len_out), dtype=np.uint8, order='C')
     cdef np.uint8_t[:,::1] c_sclkchs = p_sclkchs
+    cdef char* base = <char*> &c_sclkchs[0,0]
     for i in range(n):
         scdecd_c(
             c_sc, 
             c_sclkdps[i], 
             _default_len_out, 
-            <char*> &c_sclkchs[i, 0],
+            base + i*_default_len_out
         )
     # return values
     py_sclkchs = p_sclkchs.view(p_np_s_dtype).reshape(n)
@@ -1182,7 +1210,7 @@ def sce2c_v(
             sclkdp need not be integral.
     """
     cdef int c_sc = sc
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_sclkdps = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_sclkdps = p_sclkdps
@@ -1241,19 +1269,20 @@ def sce2s_v(
     :return: An SCLK string.
     """
     cdef int c_sc = sc
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # initialize output arrays 
     p_np_s_dtype = np.dtype(('S', _default_len_out))
     p_np_u_dtype = np.dtype(('U', _default_len_out))
     cdef np.ndarray[np.uint8_t, ndim=2, mode='c'] p_sclkchs = np.zeros((n, _default_len_out), dtype=np.uint8, order='C')
     cdef np.uint8_t[:,::1] c_sclkchs = p_sclkchs
+    cdef char* base = <char*> &c_sclkchs[0,0]
     for i in range(n):
         sce2s_c(
             c_sc, 
             c_ets[i], 
             _default_len_out, 
-            <char*> &c_sclkchs[i, 0],
+            base + i*_default_len_out
         )
     # return values
     py_sclkchs = p_sclkchs.view(p_np_s_dtype).reshape(n)
@@ -1357,7 +1386,7 @@ def sct2e_v(
     :param sclkdps: SCLKs, encoded as ticks since spacecraft clock start.
     :return: Ephemeris time, seconds past J2000.
     """
-    cdef const np.double_t[::1] c_sclkdps = np.ascontiguousarray(sclkdps)
+    cdef const np.double_t[::1] c_sclkdps = np.ascontiguousarray(sclkdps, dtype=np.double)
     cdef Py_ssize_t i, n = c_sclkdps.shape[0]
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ets = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_ets = p_ets
@@ -1441,7 +1470,7 @@ def spkapo_v(
             One way light time between observer and target in seconds.
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_ref    = ref
@@ -1536,7 +1565,7 @@ def spkez_v(
             One way light time between observer and target in seconds.
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_epochs = np.ascontiguousarray(epochs)
+    cdef const np.double_t[::1] c_epochs = np.ascontiguousarray(epochs, dtype=np.double)
     cdef Py_ssize_t i, n = c_epochs.shape[0]
     # convert the strings to pointers once
     cdef int c_target   = target
@@ -1635,7 +1664,7 @@ def spkezp_v(
             Position of target in km,
             One way light time between observer and target in seconds.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # initialize c variables
     # convert the strings to pointers once
@@ -1728,7 +1757,7 @@ def spkezr_v(
             One way light time between observer and target in seconds.
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_epochs = np.ascontiguousarray(epochs)
+    cdef const np.double_t[::1] c_epochs = np.ascontiguousarray(epochs, dtype=np.double)
     cdef Py_ssize_t i, n = c_epochs.shape[0]
     # convert the strings to pointers once
     cdef const char* c_target   = target
@@ -1849,7 +1878,7 @@ def spkcpo_v(
             State of target with respect to observer in km and km/sec,
             One way light time between target and observer.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_target   = target
@@ -1977,7 +2006,7 @@ def spkcpt_v(
             One way light time between target and observer.
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_trgctr   = trgctr
@@ -2110,7 +2139,7 @@ def spkcvo_v(
             One way light time between target and observer.
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_target   = target
@@ -2242,7 +2271,7 @@ def spkcvt_v(
             One way light time between target and observer.
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_trgctr   = trgctr
@@ -2346,7 +2375,7 @@ def spkgeo_v(
     """
     # initialize c variables
     cdef int c_targ = targ
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef int c_obs  = obs
     # convert the strings to pointers once
@@ -2437,7 +2466,7 @@ def spkgps_v(
     """
     # initialize c variables
     cdef int c_targ = targ
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef int c_obs  = obs
     # convert the strings to pointers once
@@ -2536,7 +2565,7 @@ def spkpos_v(
             One way light time between observer and target in seconds.
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_targ   = targ
@@ -2713,7 +2742,7 @@ def spkssb_v(
     :return: States of target.
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_ref   = ref
@@ -2893,7 +2922,7 @@ def sincpt_v(
             Vector from observer to intercept point in km.
     """
     # get size of input array
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert strings 
     cdef const char* c_method = method
@@ -3022,7 +3051,7 @@ def subpnt_v(
             Vector from observer to sub-observer point.
     """
     # get size of input array
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert strings 
     cdef const char* c_method = method
@@ -3145,7 +3174,7 @@ def subslr_v(
             Vector from observer to sub-solar point in km.
     """
     # get size of input array
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert strings 
     cdef const char* c_method = method
@@ -3230,7 +3259,7 @@ def sxform_v(
     :param et: Epochs of the state transformation matrix.
     :return: A state transformation matrix.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef const char* c_fromstring = fromstring
     cdef const char* c_tostring = tostring
@@ -3373,7 +3402,7 @@ def tangpt_v(
      correction locus, Vector from observer to surface point `srfpt'.
     """
     # allocate sizes
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert strings to ascii
     cdef const char* c_method = method
@@ -3464,7 +3493,7 @@ def timout_v(
     :param pictur: A format specification for the output string.
     :return: A string representation of the input epoch.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef const char* c_pictur = pictur 
     # initialize output arrays 
@@ -3472,12 +3501,13 @@ def timout_v(
     p_np_u_dtype = np.dtype(('U', TIMELEN))
     cdef np.ndarray[np.uint8_t, ndim=2, mode='c'] p_outputs = np.zeros((n, TIMELEN), dtype=np.uint8, order='C')
     cdef np.uint8_t[:,::1] c_outputs = p_outputs 
+    cdef char* base = <char*> &c_outputs[0,0]
     for i in range(n):
         timout_c(
             c_ets[i], 
             c_pictur, 
             TIMELEN, 
-            <char*> &c_outputs[i, 0],
+            base + i*TIMELEN
         )
     # return values
     py_outputs = p_outputs.view(p_np_s_dtype).reshape(n)
@@ -3566,7 +3596,7 @@ def trgsep_v(
     :param abcorr: Aberration corrections flag.
     :return: angular separation in radians.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0] 
     cdef const char* c_targ1   = targ1
     cdef const char* c_shape1  = shape1
@@ -3640,7 +3670,7 @@ def unitim_v(
             The float in outsys that is equivalent
             to the epoch on the insys time scale.
     """
-    cdef const np.double_t[::1] c_epochs = np.ascontiguousarray(epochs)
+    cdef const np.double_t[::1] c_epochs = np.ascontiguousarray(epochs, dtype=np.double)
     cdef Py_ssize_t i, n = c_epochs.shape[0]
     cdef const char* c_insys = insys
     cdef const char* c_outsys = outsys
