@@ -17,7 +17,7 @@ from libc.stdlib cimport malloc, free
 from libc.string cimport memcpy, strlen
 from cython cimport boundscheck, wraparound
 from cython.parallel import prange
-from cpython.unicode cimport PyUnicode_DecodeUTF8, PyUnicode_DecodeASCII, PyUnicode_DecodeCharmap
+from cpython.unicode cimport PyUnicode_DecodeUTF8, PyUnicode_AsUTF8, PyUnicode_AsASCIIString, PyUnicode_DecodeASCII, PyUnicode_DecodeCharmap, PyUnicode_EncodeASCII, PyUnicode_EncodeCharmap
 import numpy as np
 cimport numpy as np
 np.import_array()
@@ -26,18 +26,15 @@ DEF _default_len_out = 256
 
 DEF TIMELEN = 64
 
-ctypedef np.double_t DOUBLE_t
-ctypedef np.uint64_t INT_t 
-ctypedef np.uint8_t CHAR_t
-ctypedef np.uint8_t BOOL_t
-
 ctypedef fused double_arr_t:
    np.double_t[:]
    np.double_t[::1]
 
 ctypedef fused int_arr_t:
-   np.uint64_t[:]
-   np.uint64_t[::1]
+   np.int32_t[:]
+   np.int32_t[::1]
+   np.int64_t[:]
+   np.int64_t[::1]
 
 ctypedef fused char_arr_t:
    np.uint8_t[:]
@@ -273,7 +270,11 @@ def ckgpav_v(
     return p_cmat, p_av, p_clkout, p_found
 
 
-def convrt(double x, str inunit, str outunit):
+def convrt(
+    double x, 
+    str inunit, 
+    str outunit
+    )-> float:
     """
     Take a measurement X, the units associated with
     X, and units to which X should be converted; return Y
@@ -286,11 +287,17 @@ def convrt(double x, str inunit, str outunit):
     :param outunit: Desired units for the measurement.
     :return: The measurment in the desired units.
     """
-    cdef double out = 0.0
+    cdef double c_x = x
+    cdef double c_out = 0.0
     cdef const char* c_inunit = inunit
     cdef const char* c_outunit = outunit
-    convrt_c(x, c_inunit, c_outunit, &out)
-    return out
+    convrt_c(
+        c_x, 
+        c_inunit, 
+        c_outunit, 
+        &c_out
+    )
+    return c_out
 
 
 @boundscheck(False)
@@ -314,7 +321,8 @@ def convrt_v(
     :param outunit: Desired units for the measurement.
     :return: The measurment in the desired units.
     """
-    cdef Py_ssize_t i, n = x.shape[0]
+    cdef const np.double_t[::1] c_x = np.ascontiguousarray(x, dtype=np.double)
+    cdef Py_ssize_t i, n = c_x.shape[0]
     cdef const char* c_inunit = inunit
     cdef const char* c_outunit = outunit
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_outs = np.empty(n, dtype=np.double, order='C')
@@ -322,7 +330,7 @@ def convrt_v(
     # main loop
     for i in range(n):
         convrt_c(
-            x[i], 
+            c_x[i], 
             c_inunit,
             c_outunit, 
             &c_outs[i]
@@ -336,7 +344,7 @@ def convrt_v(
 def deltet(
     double epoch, 
     str eptype
-    ):
+    )-> float:
     """
     Return the value of Delta ET (ET-UTC) for an input epoch.
 
@@ -346,14 +354,15 @@ def deltet(
     :param eptype: Type of input epoch ("UTC" or "ET").
     :return: Delta ET (ET-UTC) at input epoch.
     """
-    cdef double delta = 0.0
+    cdef double c_epoch = epoch
+    cdef double c_delta = 0.0
     cdef const char* c_eptype = eptype
     deltet_c(
-        epoch, 
+        c_epoch, 
         c_eptype, 
-        &delta
+        &c_delta
     )
-    return delta
+    return c_delta
 
 
 # new rule: always use type name style if accepting arrays as input
@@ -418,9 +427,9 @@ def et2lst(
             String giving local time on 24 hour clock,
             String giving time on A.M. / P.M. scale.
     """
-    cdef int hr = 0
-    cdef int mn = 0
-    cdef int sc = 0
+    cdef int c_hr = 0
+    cdef int c_mn = 0
+    cdef int c_sc = 0
     cdef char[TIMELEN] time
     cdef char[TIMELEN] ampm
     cdef const char* c_typein = typein
@@ -431,13 +440,15 @@ def et2lst(
         c_typein,
         TIMELEN,
         TIMELEN,
-        &hr,
-        &mn,
-        &sc,
+        &c_hr,
+        &c_mn,
+        &c_sc,
         time,
         ampm
     )
-    return hr, mn, sc, PyUnicode_DecodeUTF8(time, strlen(time), "strict"), PyUnicode_DecodeUTF8(ampm, strlen(ampm), "strict")
+    p_time = PyUnicode_DecodeUTF8(time, strlen(time), "strict")
+    p_ampm = PyUnicode_DecodeUTF8(ampm, strlen(ampm), "strict")
+    return c_hr, c_mn, c_sc, p_time, p_ampm 
 
 
 @boundscheck(False)
@@ -590,7 +601,9 @@ def et2utc_v(
     return py_utcstr
 
 
-def etcal(double et):
+def etcal(
+    double et
+    ):
     """
     Convert from an ephemeris epoch measured in seconds past
     the epoch of J2000 to a calendar string format using a
@@ -609,12 +622,15 @@ def etcal(double et):
         &c_buffer[0]
     )
     # Convert the C char* to a Python string
-    return PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
+    p_cal = PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
+    return p_cal
 
 
 @boundscheck(False)
 @wraparound(False)
-def etcal_v(double[::1] ets):
+def etcal_v(
+    double[::1] ets
+    ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.etcal`
 
@@ -749,7 +765,7 @@ def fovray_v(
             c_rframe,
             c_abcorr,
             c_obsrvr,
-            &ets[i],
+            <SpiceDouble *> &c_ets[i], # I got a warning converting const double * to SpiceDouble related to discard qualifiers without the cast here
             <SpiceBoolean *> &c_visibl[i]
         )
     # return
@@ -855,14 +871,16 @@ def fovtrg_v(
             c_tframe,
             c_abcorr,
             c_obsrvr,
-            &ets[i],
+            <SpiceDouble *> &c_ets[i], # I got a warning converting const double * to SpiceDouble related to discard qualifiers without the cast here
             <SpiceBoolean *> &c_visibl[i]
         )
     # return
     return p_visibl
 
 
-def furnsh(str file):
+def furnsh(
+    str file
+    ):
     """
     Load one or more SPICE kernels into a program.
 
@@ -871,6 +889,8 @@ def furnsh(str file):
     :param path: one or more paths to kernels
     """
     cdef const char* c_file = file
+    if c_file == NULL:
+        raise UnicodeError("Failed to encode file path in furnsh")
     furnsh_c(c_file)
     
 
@@ -999,7 +1019,9 @@ def lspcn_v(
 
 # Q
 
-def qcktrc(int tracelen):
+def qcktrc(
+    int tracelen
+    ):
     """
     Return a string containing a traceback.
 
@@ -1043,7 +1065,10 @@ def reset() -> None:
 
 #S
 
-def scdecd(int sc, double sclkdp):
+def scdecd(
+    int sc, 
+    double sclkdp
+    )-> str:
     """
     Convert double precision encoding of spacecraft clock time into
     a character representation.
@@ -1055,14 +1080,16 @@ def scdecd(int sc, double sclkdp):
     :return: Character representation of a clock count.
     """
     cdef int c_sc = sc
+    cdef double c_sclkdp = sclkdp
     cdef char[_default_len_out] c_buffer 
     scdecd_c(
         c_sc, 
-        sclkdp, 
+        c_sclkdp, 
         _default_len_out, 
         &c_buffer[0]
     )
-    return PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
+    p_clkout = PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
+    return p_clkout
 
 
 @boundscheck(False)
@@ -1108,7 +1135,7 @@ def scdecd_v(
 def scencd(
     int sc, 
     str sclkch
-    ):
+    )-> float:
     """
     Encode character representation of spacecraft clock time into a
     double precision number.
@@ -1120,14 +1147,14 @@ def scencd(
     :return: Encoded representation of the clock count.
     """
     cdef int c_sc = sc
-    cdef double sclkdp = 0.0
+    cdef double c_sclkdp = 0.0
     cdef const char* c_sclkch = sclkch
     scencd_c(
         c_sc, 
         c_sclkch, 
-        &sclkdp
+        &c_sclkdp
     )
-    return sclkdp
+    return c_sclkdp
 
 
 @boundscheck(False)
@@ -1179,13 +1206,14 @@ def sce2c(
             sclkdp need not be integral.
     """
     cdef int c_sc = sc
-    cdef double sclkdp = 0.0
+    cdef double c_et = et
+    cdef double c_sclkdp = 0.0
     sce2c_c(
         c_sc, 
-        et, 
-        &sclkdp
+        c_et, 
+        &c_sclkdp
     )
-    return sclkdp
+    return c_sclkdp
 
 
 @boundscheck(False)
@@ -1246,7 +1274,8 @@ def sce2s(
         _default_len_out, 
         &c_buffer[0]
     )
-    return PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
+    p_sclks = PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
+    return p_sclks
 
 
 @boundscheck(False)
@@ -1254,7 +1283,7 @@ def sce2s(
 def sce2s_v(
     int sc, 
     double[::1] ets
-):
+    ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sce2s`
 
@@ -1293,7 +1322,7 @@ def sce2s_v(
 def scs2e(
     int sc,
     str sclkch
-    ):
+    )-> float:
     """
     Convert a spacecraft clock string to ephemeris seconds past J2000 (ET).
 
@@ -1318,7 +1347,7 @@ def scs2e(
 @wraparound(False)
 def scs2e_v(
     int sc, 
-    np.ndarray sclkchs
+    list[str] sclkchs
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.scs2e`
@@ -1332,7 +1361,7 @@ def scs2e_v(
     :return: Ephemeris time, seconds past J2000.
     """
     cdef int c_sc = sc
-    cdef Py_ssize_t i, n = sclkchs.shape[0]
+    cdef Py_ssize_t i, n = len(sclkchs)
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ets = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_ets = p_ets
     for i in range(n):
@@ -1347,7 +1376,7 @@ def scs2e_v(
 def sct2e(
     int sc, 
     double sclkdp
-    ):
+    )-> float:
     """
     Convert encoded spacecraft clock ("ticks") to ephemeris
     seconds past J2000 (ET).
@@ -1358,11 +1387,12 @@ def sct2e(
     :param sclkdp: SCLK, encoded as ticks since spacecraft clock start.
     :return: Ephemeris time, seconds past J2000.
     """
+    cdef double c_sclkdp = sclkdp
     cdef int c_sc = sc
     cdef double et = 0.0
     sct2e_c(
         c_sc, 
-        sclkdp, 
+        c_sclkdp, 
         &et
     )
     return et
@@ -1386,13 +1416,14 @@ def sct2e_v(
     :param sclkdps: SCLKs, encoded as ticks since spacecraft clock start.
     :return: Ephemeris time, seconds past J2000.
     """
+    cdef int c_sc = sc
     cdef const np.double_t[::1] c_sclkdps = np.ascontiguousarray(sclkdps, dtype=np.double)
     cdef Py_ssize_t i, n = c_sclkdps.shape[0]
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ets = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_ets = p_ets
     for i in range(n):
         sct2e_c(
-            sc, 
+            c_sc, 
             c_sclkdps[i], 
             &c_ets[i]
         )
@@ -1424,7 +1455,10 @@ def spkapo(
             One way light time between observer and target in seconds.
     """
     # initialize c variables
+    cdef int c_targ = targ
+    cdef double c_et = et
     cdef double c_lt = 0.0
+    cdef const double* c_sobs = &sobs[0]
     # convert the strings to pointers once
     cdef const char* c_ref    = ref
     cdef const char* c_abcorr = abcorr
@@ -1432,10 +1466,10 @@ def spkapo(
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ptarg = np.empty(3, dtype=np.double, order='C')
     cdef np.double_t[::1] c_ptarg = p_ptarg
     spkapo_c(
-        targ, 
-        et, 
+        c_targ, 
+        c_et, 
         c_ref, 
-        &sobs[0],
+        c_sobs,
         c_abcorr, 
         &c_ptarg[0], 
         &c_lt
@@ -1470,8 +1504,10 @@ def spkapo_v(
             One way light time between observer and target in seconds.
     """
     # initialize c variables
+    cdef int c_targ = targ
     cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
+    cdef const double* c_sobs = &sobs[0]
     # convert the strings to pointers once
     cdef const char* c_ref    = ref
     cdef const char* c_abcorr = abcorr
@@ -1483,16 +1519,556 @@ def spkapo_v(
     # perform the call
     for i in range(n):
         spkapo_c(
-            targ, 
+            c_targ, 
             c_ets[i], 
             c_ref, 
-            &sobs[0],
+            c_sobs,
             c_abcorr, 
             &c_ptargs[i,0], 
             &c_lts[i]
         )
     return p_ptargs, p_lts
 
+
+@boundscheck(False)
+@wraparound(False)
+def spkcpo(
+    str target,
+    double et,
+    str outref,
+    str refloc,
+    str abcorr,
+    double[::1] obspos,
+    str obsctr,
+    str obsref
+    ):
+    """
+    Return the state of a specified target relative to an "observer,"
+    where the observer has constant position in a specified reference
+    frame. The observer's position is provided by the calling program
+    rather than by loaded SPK files.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpo_c.html
+
+    :param target: Name of target ephemeris object.
+    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
+    :param outref: Reference frame of output state.
+    :param refloc: Output reference frame evaluation locus.
+    :param abcorr: Aberration correction.
+    :param obspos: Observer position relative to center of motion.
+    :param obsctr: Center of motion of observer.
+    :param obsref: Frame of observer position.
+    :return:
+            State of target with respect to observer in km and km/sec,
+            One way light time between target and observer.
+    """
+    # convert the strings to pointers once
+    cdef const char* c_target   = target
+    cdef const char* c_outref   = outref
+    cdef const char* c_refloc   = refloc
+    cdef const char* c_abcorr   = abcorr
+    cdef const char* c_obsctr   = obsctr
+    cdef const char* c_obsref   = obsref
+    # convert input c arrays
+    cdef const double* c_obspos = &obspos[0]
+    # initialize output arrays
+    cdef double c_et = et
+    cdef double c_lt = 0.0
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_state = p_state
+    # perform the call
+    spkcpo_c(
+        c_target,
+        c_et,
+        c_outref,
+        c_refloc,
+        c_abcorr,
+        c_obspos,
+        c_obsctr,
+        c_obsref,
+        &c_state[0],
+        &c_lt
+    )
+    # return output
+    return p_state, c_lt
+
+
+@boundscheck(False)
+@wraparound(False)
+def spkcpo_v(
+    str target,
+    double[::1] ets,
+    str outref,
+    str refloc,
+    str abcorr,
+    double[::1] obspos,
+    str obsctr,
+    str obsref):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkcpo`
+    
+    Return the state of a specified target relative to an "observer,"
+    where the observer has constant position in a specified reference
+    frame. The observer's position is provided by the calling program
+    rather than by loaded SPK files.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpo_c.html
+
+    :param target: Name of target ephemeris object.
+    :param ets: Observation epochs in ephemeris seconds past J2000 TDB.
+    :param outref: Reference frame of output state.
+    :param refloc: Output reference frame evaluation locus.
+    :param abcorr: Aberration correction.
+    :param obspos: Observer position relative to center of motion.
+    :param obsctr: Center of motion of observer.
+    :param obsref: Frame of observer position.
+    :return:
+            State of target with respect to observer in km and km/sec,
+            One way light time between target and observer.
+    """
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef Py_ssize_t i, n = c_ets.shape[0]
+    # convert the strings to pointers once
+    cdef const char* c_target   = target
+    cdef const char* c_outref   = outref
+    cdef const char* c_refloc   = refloc
+    cdef const char* c_abcorr   = abcorr
+    cdef const char* c_obsctr   = obsctr
+    cdef const char* c_obsref   = obsref
+    # convert input c arrays
+    cdef const double* c_obspos = &obspos[0]
+    # initialize output arrays
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_states = p_states
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_lts = p_lts
+    # perform the call
+    for i in range(n):
+        spkcpo_c(
+            c_target,
+            c_ets[i],
+            c_outref,
+            c_refloc,
+            c_abcorr,
+            c_obspos,
+            c_obsctr,
+            c_obsref,
+            &c_states[i,0],
+            &c_lts[i]
+        )
+    # return output
+    return p_states, p_lts
+
+
+@boundscheck(False)
+@wraparound(False)
+def spkcpt(
+    double[::1] trgpos,
+    str trgctr,
+    str trgref,
+    double et,
+    str outref,
+    str refloc,
+    str abcorr,
+    str obsrvr
+    ):
+    """
+    Return the state, relative to a specified observer, of a target
+    having constant position in a specified reference frame. The
+    target's position is provided by the calling program rather than by
+    loaded SPK files.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpt_c.html
+
+    :param trgpos: Target position relative to center of motion.
+    :param trgctr: Center of motion of target.
+    :param trgref: Observation epoch.
+    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
+    :param outref: Reference frame of output state.
+    :param refloc: Output reference frame evaluation locus.
+    :param abcorr: Aberration correction.
+    :param obsrvr: Name of observing ephemeris object.
+    :return:
+            State of target with respect to observer in km and km/sec,
+            One way light time between target and observer.
+    """
+    # initialize c variables
+    cdef double c_lt = 0.0
+    cdef double c_et = et
+    # convert the strings to pointers once
+    cdef const char* c_trgctr   = trgctr
+    cdef const char* c_trgref   = trgref
+    cdef const char* c_outref   = outref
+    cdef const char* c_refloc   = refloc
+    cdef const char* c_abcorr   = abcorr
+    cdef const char* c_obsrvr   = obsrvr
+    # convert input c arrays
+    cdef const double* c_trgpos = &trgpos[0]
+    # initialize output arrays
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_state = p_state
+    # perform the call
+    spkcpt_c(
+        c_trgpos,
+        c_trgctr,
+        c_trgref,
+        c_et,
+        c_outref,
+        c_refloc,
+        c_abcorr,
+        c_obsrvr,
+        &c_state[0],
+        &c_lt
+    )
+    # return output
+    return p_state, c_lt
+
+
+@boundscheck(False)
+@wraparound(False)
+def spkcpt_v(
+    double[::1] trgpos,
+    str trgctr,
+    str trgref,
+    double[::1] ets,
+    str outref,
+    str refloc,
+    str abcorr,
+    str obsrvr
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkcpt`
+    
+    Return the state, relative to a specified observer, of a target
+    having constant position in a specified reference frame. The
+    target's position is provided by the calling program rather than by
+    loaded SPK files.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpt_c.html
+
+    :param trgpos: Target position relative to center of motion.
+    :param trgctr: Center of motion of target.
+    :param trgref: Observation epoch.
+    :param ets: Observation epochs in ephemeris seconds past J2000 TDB.
+    :param outref: Reference frame of output state.
+    :param refloc: Output reference frame evaluation locus.
+    :param abcorr: Aberration correction.
+    :param obsrvr: Name of observing ephemeris object.
+    :return:
+            State of target with respect to observer in km and km/sec,
+            One way light time between target and observer.
+    """
+    # initialize c variables
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef Py_ssize_t i, n = c_ets.shape[0]
+    # convert the strings to pointers once
+    cdef const char* c_trgctr   = trgctr
+    cdef const char* c_trgref   = trgref
+    cdef const char* c_outref   = outref
+    cdef const char* c_refloc   = refloc
+    cdef const char* c_abcorr   = abcorr
+    cdef const char* c_obsrvr   = obsrvr
+    # convert input c arrays
+    cdef const double* c_trgpos = &trgpos[0]
+    # initialize output arrays
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_states = p_states
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_lts = p_lts
+    # perform the call
+    for i in range(n):
+        spkcpt_c(
+            c_trgpos,
+            c_trgctr,
+            c_trgref,
+            c_ets[i],
+            c_outref,
+            c_refloc,
+            c_abcorr,
+            c_obsrvr,
+            &c_states[i,0],
+            &c_lts[i]
+        )
+    # return output
+    return p_states, p_lts
+
+
+@boundscheck(False)
+@wraparound(False)
+def spkcvo(
+    str target,
+    double et,
+    str outref,
+    str refloc,
+    str abcorr,
+    double[::1] obssta,
+    double obsepc,
+    str obsctr,
+    str obsref):
+    """
+    Return the state of a specified target relative to an "observer,"
+    where the observer has constant velocity in a specified reference
+    frame.  The observer's state is provided by the calling program
+    rather than by loaded SPK files.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvo_c.html
+
+    :param target: Name of target ephemeris object.
+    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
+    :param outref: Reference frame of output state.
+    :param refloc: Output reference frame evaluation locus.
+    :param abcorr: Aberration correction.
+    :param obssta: Observer state relative to center of motion.
+    :param obsepc: Epoch of observer state.
+    :param obsctr: Center of motion of observer.
+    :param obsref: Frame of observer state.
+    :return:
+            State of target with respect to observer in km and km/sec,
+            One way light time between target and observer.
+    """
+    # initialize c variables
+    cdef double c_et = et
+    cdef double c_obsepc = obsepc
+    cdef double c_lt = 0.0
+    # convert the strings to pointers once
+    cdef const char* c_target   = target
+    cdef const char* c_outref   = outref
+    cdef const char* c_refloc   = refloc
+    cdef const char* c_abcorr   = abcorr
+    cdef const char* c_obsctr   = obsctr
+    cdef const char* c_obsref   = obsref
+    # convert input c arrays
+    cdef const double* c_obssta = &obssta[0]
+    # initialize output arrays
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_state = p_state
+    # perform the call
+    spkcvo_c(
+        c_target,
+        c_et,
+        c_outref,
+        c_refloc,
+        c_abcorr,
+        c_obssta,
+        c_obsepc,
+        c_obsctr,
+        c_obsref,
+        &c_state[0],
+        &c_lt
+    )
+    # return output
+    return p_state, c_lt
+
+
+@boundscheck(False)
+@wraparound(False)
+def spkcvo_v(
+    str target,
+    double[::1] ets,
+    str outref,
+    str refloc,
+    str abcorr,
+    double[::1] obssta, # TODO vectorize here?
+    double obsepc,    # TODO vectorize here?
+    str obsctr,
+    str obsref):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkcvo`
+    
+    Return the state of a specified target relative to an "observer,"
+    where the observer has constant velocity in a specified reference
+    frame.  The observer's state is provided by the calling program
+    rather than by loaded SPK files.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvo_c.html
+
+    :param target: Name of target ephemeris object.
+    :param ets: Observation epochs in ephemeris seconds past J2000 TDB.
+    :param outref: Reference frame of output state.
+    :param refloc: Output reference frame evaluation locus.
+    :param abcorr: Aberration correction.
+    :param obssta: Observer state relative to center of motion.
+    :param obsepc: Epoch of observer state.
+    :param obsctr: Center of motion of observer.
+    :param obsref: Frame of observer state.
+    :return:
+            State of target with respect to observer in km and km/sec,
+            One way light time between target and observer.
+    """
+    # initialize c variables
+    cdef double c_obsepc = obsepc
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef Py_ssize_t i, n = c_ets.shape[0]
+    # convert the strings to pointers once
+    cdef const char* c_target   = target
+    cdef const char* c_outref   = outref
+    cdef const char* c_refloc   = refloc
+    cdef const char* c_abcorr   = abcorr
+    cdef const char* c_obsctr   = obsctr
+    cdef const char* c_obsref   = obsref
+    # convert input c arrays
+    cdef const double* c_obssta = &obssta[0]
+    # initialize output arrays
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_states = p_states
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_lts = p_lts
+    # perform the call
+    for i in range(n):
+        spkcvo_c(
+            c_target,
+            c_ets[i],
+            c_outref,
+            c_refloc,
+            c_abcorr,
+            c_obssta,
+            c_obsepc,
+            c_obsctr,
+            c_obsref,
+            &c_states[i,0],
+            &c_lts[i]
+        )
+    # return output
+    return p_states, p_lts
+
+
+@boundscheck(False)
+@wraparound(False)
+def spkcvt(
+    double[::1] trgsta,
+    double trgepc,
+    str trgctr,
+    str trgref,
+    double et,
+    str outref,
+    str refloc,
+    str abcorr,
+    str obsrvr):
+    """
+    Return the state, relative to a specified observer, of a target
+    having constant velocity in a specified reference frame. The
+    target's state is provided by the calling program rather than by
+    loaded SPK files.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvt_c.html
+
+    :param trgsta: Target state relative to center of motion.
+    :param trgepc: Epoch of target state.
+    :param trgctr: Center of motion of target.
+    :param trgref: Frame of target state.
+    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
+    :param outref: Reference frame of output state.
+    :param refloc: Output reference frame evaluation locus.
+    :param abcorr: Aberration correction.
+    :param obsrvr: Name of observing ephemeris object.
+    :return:
+            State of target with respect to observer in km and km/sec,
+            One way light time between target and observer.
+    """
+    # initialize c variables
+    cdef double c_trgepc = trgepc
+    cdef double c_et = et
+    cdef double c_lt = 0.0
+    # convert the strings to pointers once
+    cdef const char* c_trgctr   = trgctr
+    cdef const char* c_trgref   = trgref
+    cdef const char* c_outref   = outref
+    cdef const char* c_refloc   = refloc
+    cdef const char* c_abcorr   = abcorr
+    cdef const char* c_obsrvr   = obsrvr
+    # convert input c arrays
+    cdef const double* c_trgsta = &trgsta[0]
+    # initialize output arrays
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_state = p_state
+    # perform the call
+    spkcvt_c(
+        c_trgsta,
+        c_trgepc,
+        c_trgctr,
+        c_trgref,
+        c_et,
+        c_outref,
+        c_refloc,
+        c_abcorr,
+        c_obsrvr,
+        &c_state[0],
+        &c_lt
+    )
+    # return output
+    return p_state, c_lt
+
+
+@boundscheck(False)
+@wraparound(False)
+def spkcvt_v(
+    double[::1] trgsta,
+    double trgepc,
+    str trgctr,
+    str trgref,
+    double[::1] ets,
+    str outref,
+    str refloc,
+    str abcorr,
+    str obsrvr):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkcvt`
+    
+    Return the state, relative to a specified observer, of a target
+    having constant velocity in a specified reference frame. The
+    target's state is provided by the calling program rather than by
+    loaded SPK files.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvt_c.html
+
+    :param trgsta: Target state relative to center of motion.
+    :param trgepc: Epoch of target state.
+    :param trgctr: Center of motion of target.
+    :param trgref: Frame of target state.
+    :param ets: Observation epochs in ephemeris seconds past J2000 TDB.
+    :param outref: Reference frame of output state.
+    :param refloc: Output reference frame evaluation locus.
+    :param abcorr: Aberration correction.
+    :param obsrvr: Name of observing ephemeris object.
+    :return:
+            State of target with respect to observer in km and km/sec,
+            One way light time between target and observer.
+    """
+    # initialize c variables
+    cdef double c_trgepc = trgepc
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef Py_ssize_t i, n = c_ets.shape[0]
+    # convert the strings to pointers once
+    cdef const char* c_trgctr   = trgctr
+    cdef const char* c_trgref   = trgref
+    cdef const char* c_outref   = outref
+    cdef const char* c_refloc   = refloc
+    cdef const char* c_abcorr   = abcorr
+    cdef const char* c_obsrvr   = obsrvr
+    # convert input c arrays
+    cdef const double* c_trgsta = &trgsta[0]
+    # initialize output arrays
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_states = p_states
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_lts = p_lts
+    # perform the call
+    for i in range(n):
+        spkcvt_c(
+            c_trgsta,
+            c_trgepc,
+            c_trgctr,
+            c_trgref,
+            c_ets[i],
+            c_outref,
+            c_refloc,
+            c_abcorr,
+            c_obsrvr,
+            &c_states[i,0],
+            &c_lts[i]
+        )
+    # return output
+    return p_states, p_lts
 
 
 @boundscheck(False)
@@ -1520,6 +2096,10 @@ def spkez(
             State of target in km and km/sec,
             One way light time between observer and target in seconds.
     """
+    # initialize c variables
+    cdef int c_target = target
+    cdef double c_epoch = epoch
+    cdef int c_observer = observer
     # convert the strings to pointers once
     cdef const char* c_ref    = ref
     cdef const char* c_abcorr = abcorr
@@ -1528,11 +2108,11 @@ def spkez(
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
     spkez_c(
-        target, 
-        epoch, 
+        c_target, 
+        c_epoch, 
         c_ref, 
         c_abcorr, 
-        observer, 
+        c_observer, 
         &c_state[0], 
         &c_lt)
     return p_state, c_lt
@@ -1617,18 +2197,20 @@ def spkezp(
             Position of target in km,
             One way light time between observer and target in seconds.
     """
+    # initialize c variables
+    cdef int c_targ = targ
+    cdef double c_et = et
+    cdef int c_obs = obs
+    cdef double c_lt = 0.0
     # convert the strings to pointers once
     cdef const char* c_ref    = ref
     cdef const char* c_abcorr = abcorr
-    cdef int c_targ = targ
-    cdef int c_obs = obs
-    cdef double c_lt = 0.0
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ptarg = np.empty(3, dtype=np.double, order='C')
     cdef np.double_t[::1] c_ptarg = p_ptarg
     spkezp_c(
         c_targ, 
-        et, 
+        c_et, 
         c_ref, 
         c_abcorr, 
         c_obs, 
@@ -1645,7 +2227,8 @@ def spkezp_v(
     double[::1] ets, 
     str ref, 
     str abcorr, 
-    int obs):
+    int obs
+    ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkezp`
 
@@ -1666,12 +2249,11 @@ def spkezp_v(
     """
     cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
-    # initialize c variables
     # convert the strings to pointers once
     cdef const char* c_ref    = ref
     cdef const char* c_abcorr = abcorr
     cdef int c_targ = targ
-    cdef int c_obs = obs
+    cdef int c_obs  = obs
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_ptargs = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_ptargs = p_ptargs
@@ -1699,7 +2281,8 @@ def spkezr(
     double epoch, 
     str frame, 
     str abcorr, 
-    str observer):
+    str observer
+    ):
     """
     Return the state (position and velocity) of a target body
     relative to an observing body, optionally corrected for light
@@ -1716,18 +2299,25 @@ def spkezr(
             State of target in km and km/sec,
             One way light time between observer and target in seconds.
     """
-    cdef double lt = 0.0
+    cdef double c_epoch = epoch
+    cdef double c_lt = 0.0
+    # convert the strings to pointers once
+    cdef const char* c_target   = target
+    cdef const char* c_frame    = frame
+    cdef const char* c_abcorr   = abcorr
+    cdef const char* c_observer = observer
+    # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
     spkezr_c(
-        target, 
-        epoch,
-        frame, 
-        abcorr, 
-        observer, 
+        c_target, 
+        c_epoch,
+        c_frame, 
+        c_abcorr, 
+        c_observer, 
         &c_state[0], 
-        &lt)
-    return p_state, lt
+        &c_lt)
+    return p_state, c_lt
 
 
 @boundscheck(False)
@@ -1782,525 +2372,6 @@ def spkezr_v(
         )
 
     # return results
-    return p_states, p_lts
-
-
-@boundscheck(False)
-@wraparound(False)
-def spkcpo(
-    str target,
-    double et,
-    str outref,
-    str refloc,
-    str abcorr,
-    double[::1] obspos,
-    str obsctr,
-    str obsref
-    ):
-    """
-    Return the state of a specified target relative to an "observer,"
-    where the observer has constant position in a specified reference
-    frame. The observer's position is provided by the calling program
-    rather than by loaded SPK files.
-
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpo_c.html
-
-    :param target: Name of target ephemeris object.
-    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
-    :param outref: Reference frame of output state.
-    :param refloc: Output reference frame evaluation locus.
-    :param abcorr: Aberration correction.
-    :param obspos: Observer position relative to center of motion.
-    :param obsctr: Center of motion of observer.
-    :param obsref: Frame of observer position.
-    :return:
-            State of target with respect to observer in km and km/sec,
-            One way light time between target and observer.
-    """
-    # convert the strings to pointers once
-    cdef const char* c_target   = target
-    cdef const char* c_outref   = outref
-    cdef const char* c_refloc   = refloc
-    cdef const char* c_abcorr   = abcorr
-    cdef const char* c_obsctr   = obsctr
-    cdef const char* c_obsref   = obsref
-    # initialize output arrays
-    cdef double c_lt = 0.0
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
-    cdef np.double_t[::1] c_state = p_state
-    # perform the call
-    spkcpo_c(
-        c_target,
-        et,
-        c_outref,
-        c_refloc,
-        c_abcorr,
-        &obspos[0],
-        c_obsctr,
-        c_obsref,
-        &c_state[0],
-        &c_lt
-    )
-    # return output
-    return p_state, c_lt
-
-
-@boundscheck(False)
-@wraparound(False)
-def spkcpo_v(
-    str target,
-    double[::1] ets,
-    str outref,
-    str refloc,
-    str abcorr,
-    double[::1] obspos,
-    str obsctr,
-    str obsref):
-    """
-    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkcpo`
-    
-    Return the state of a specified target relative to an "observer,"
-    where the observer has constant position in a specified reference
-    frame. The observer's position is provided by the calling program
-    rather than by loaded SPK files.
-
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpo_c.html
-
-    :param target: Name of target ephemeris object.
-    :param ets: Observation epochs in ephemeris seconds past J2000 TDB.
-    :param outref: Reference frame of output state.
-    :param refloc: Output reference frame evaluation locus.
-    :param abcorr: Aberration correction.
-    :param obspos: Observer position relative to center of motion.
-    :param obsctr: Center of motion of observer.
-    :param obsref: Frame of observer position.
-    :return:
-            State of target with respect to observer in km and km/sec,
-            One way light time between target and observer.
-    """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
-    cdef Py_ssize_t i, n = c_ets.shape[0]
-    # convert the strings to pointers once
-    cdef const char* c_target   = target
-    cdef const char* c_outref   = outref
-    cdef const char* c_refloc   = refloc
-    cdef const char* c_abcorr   = abcorr
-    cdef const char* c_obsctr   = obsctr
-    cdef const char* c_obsref   = obsref
-    # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
-    cdef np.double_t[:,::1] c_states = p_states
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
-    cdef np.double_t[::1] c_lts = p_lts
-    # perform the call
-    for i in range(n):
-        spkcpo_c(
-            c_target,
-            c_ets[i],
-            c_outref,
-            c_refloc,
-            c_abcorr,
-            &obspos[0],
-            c_obsctr,
-            c_obsref,
-            &c_states[i][0],
-            &c_lts[i]
-        )
-    # return output
-    return p_states, p_lts
-
-
-@boundscheck(False)
-@wraparound(False)
-def spkcpt(
-    double[::1] trgpos,
-    str trgctr,
-    str trgref,
-    double et,
-    str outref,
-    str refloc,
-    str abcorr,
-    str obsrvr
-    ):
-    """
-    Return the state, relative to a specified observer, of a target
-    having constant position in a specified reference frame. The
-    target's position is provided by the calling program rather than by
-    loaded SPK files.
-
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpt_c.html
-
-    :param trgpos: Target position relative to center of motion.
-    :param trgctr: Center of motion of target.
-    :param trgref: Observation epoch.
-    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
-    :param outref: Reference frame of output state.
-    :param refloc: Output reference frame evaluation locus.
-    :param abcorr: Aberration correction.
-    :param obsrvr: Name of observing ephemeris object.
-    :return:
-            State of target with respect to observer in km and km/sec,
-            One way light time between target and observer.
-    """
-    # initialize c variables
-    cdef double c_lt = 0.0
-    # convert the strings to pointers once
-    cdef const char* c_trgctr   = trgctr
-    cdef const char* c_trgref   = trgref
-    cdef const char* c_outref   = outref
-    cdef const char* c_refloc   = refloc
-    cdef const char* c_abcorr   = abcorr
-    cdef const char* c_obsrvr   = obsrvr
-    # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
-    cdef np.double_t[::1] c_state = p_state
-    # perform the call
-    spkcpt_c(
-        &trgpos[0],
-        c_trgctr,
-        c_trgref,
-        et,
-        c_outref,
-        c_refloc,
-        c_abcorr,
-        c_obsrvr,
-        &c_state[0],
-        &c_lt
-    )
-    # return output
-    return p_state, c_lt
-
-
-@boundscheck(False)
-@wraparound(False)
-def spkcpt_v(
-    double[::1] trgpos,
-    str trgctr,
-    str trgref,
-    double[::1] ets,
-    str outref,
-    str refloc,
-    str abcorr,
-    str obsrvr
-    ):
-    """
-    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkcpt`
-    
-    Return the state, relative to a specified observer, of a target
-    having constant position in a specified reference frame. The
-    target's position is provided by the calling program rather than by
-    loaded SPK files.
-
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpt_c.html
-
-    :param trgpos: Target position relative to center of motion.
-    :param trgctr: Center of motion of target.
-    :param trgref: Observation epoch.
-    :param ets: Observation epochs in ephemeris seconds past J2000 TDB.
-    :param outref: Reference frame of output state.
-    :param refloc: Output reference frame evaluation locus.
-    :param abcorr: Aberration correction.
-    :param obsrvr: Name of observing ephemeris object.
-    :return:
-            State of target with respect to observer in km and km/sec,
-            One way light time between target and observer.
-    """
-    # initialize c variables
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
-    cdef Py_ssize_t i, n = c_ets.shape[0]
-    # convert the strings to pointers once
-    cdef const char* c_trgctr   = trgctr
-    cdef const char* c_trgref   = trgref
-    cdef const char* c_outref   = outref
-    cdef const char* c_refloc   = refloc
-    cdef const char* c_abcorr   = abcorr
-    cdef const char* c_obsrvr   = obsrvr
-    # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
-    cdef np.double_t[:,::1] c_states = p_states
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
-    cdef np.double_t[::1] c_lts = p_lts
-    # perform the call
-    for i in range(n):
-        spkcpt_c(
-            &trgpos[0],
-            c_trgctr,
-            c_trgref,
-            c_ets[i],
-            c_outref,
-            c_refloc,
-            c_abcorr,
-            c_obsrvr,
-            &c_states[i,0],
-            &c_lts[i]
-        )
-    # return output
-    return p_states, p_lts
-
-
-@boundscheck(False)
-@wraparound(False)
-def spkcvo(
-    str target,
-    double et,
-    str outref,
-    str refloc,
-    str abcorr,
-    double[::1] obssta,
-    double obsepc,
-    str obsctr,
-    str obsref):
-    """
-    Return the state of a specified target relative to an "observer,"
-    where the observer has constant velocity in a specified reference
-    frame.  The observer's state is provided by the calling program
-    rather than by loaded SPK files.
-
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvo_c.html
-
-    :param target: Name of target ephemeris object.
-    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
-    :param outref: Reference frame of output state.
-    :param refloc: Output reference frame evaluation locus.
-    :param abcorr: Aberration correction.
-    :param obssta: Observer state relative to center of motion.
-    :param obsepc: Epoch of observer state.
-    :param obsctr: Center of motion of observer.
-    :param obsref: Frame of observer state.
-    :return:
-            State of target with respect to observer in km and km/sec,
-            One way light time between target and observer.
-    """
-    # initialize c variables
-    cdef double c_et = et
-    cdef double c_obsepc = obsepc
-    cdef double c_lt = 0.0
-    # convert the strings to pointers once
-    cdef const char* c_target   = target
-    cdef const char* c_outref   = outref
-    cdef const char* c_refloc   = refloc
-    cdef const char* c_abcorr   = abcorr
-    cdef const char* c_obsctr   = obsctr
-    cdef const char* c_obsref   = obsref
-    # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
-    cdef np.double_t[::1] c_state = p_state
-    # perform the call
-    spkcvo_c(
-        c_target,
-        c_et,
-        c_outref,
-        c_refloc,
-        c_abcorr,
-        &obssta[0],
-        c_obsepc,
-        c_obsctr,
-        c_obsref,
-        &c_state[0],
-        &c_lt
-    )
-    # return output
-    return p_state, c_lt
-
-
-@boundscheck(False)
-@wraparound(False)
-def spkcvo_v(
-    str target,
-    double[::1] ets,
-    str outref,
-    str refloc,
-    str abcorr,
-    double[::1] obssta, # TODO vectorize here?
-    double obsepc,    # TODO vectorize here?
-    str obsctr,
-    str obsref):
-    """
-    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkcvo`
-    
-    Return the state of a specified target relative to an "observer,"
-    where the observer has constant velocity in a specified reference
-    frame.  The observer's state is provided by the calling program
-    rather than by loaded SPK files.
-
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvo_c.html
-
-    :param target: Name of target ephemeris object.
-    :param ets: Observation epochs in ephemeris seconds past J2000 TDB.
-    :param outref: Reference frame of output state.
-    :param refloc: Output reference frame evaluation locus.
-    :param abcorr: Aberration correction.
-    :param obssta: Observer state relative to center of motion.
-    :param obsepc: Epoch of observer state.
-    :param obsctr: Center of motion of observer.
-    :param obsref: Frame of observer state.
-    :return:
-            State of target with respect to observer in km and km/sec,
-            One way light time between target and observer.
-    """
-    # initialize c variables
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
-    cdef Py_ssize_t i, n = c_ets.shape[0]
-    # convert the strings to pointers once
-    cdef const char* c_target   = target
-    cdef const char* c_outref   = outref
-    cdef const char* c_refloc   = refloc
-    cdef const char* c_abcorr   = abcorr
-    cdef const char* c_obsctr   = obsctr
-    cdef const char* c_obsref   = obsref
-    # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
-    cdef np.double_t[:,::1] c_states = p_states
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
-    cdef np.double_t[::1] c_lts = p_lts
-    # perform the call
-    for i in range(n):
-        spkcvo_c(
-            c_target,
-            c_ets[i],
-            c_outref,
-            c_refloc,
-            c_abcorr,
-            &obssta[0],
-            obsepc,
-            c_obsctr,
-            c_obsref,
-            &c_states[i,0],
-            &c_lts[i]
-        )
-    # return output
-    return p_states, p_lts
-
-
-@boundscheck(False)
-@wraparound(False)
-def spkcvt(
-    double[::1] trgsta,
-    double trgepc,
-    str trgctr,
-    str trgref,
-    double et,
-    str outref,
-    str refloc,
-    str abcorr,
-    str obsrvr):
-    """
-    Return the state, relative to a specified observer, of a target
-    having constant velocity in a specified reference frame. The
-    target's state is provided by the calling program rather than by
-    loaded SPK files.
-
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvt_c.html
-
-    :param trgsta: Target state relative to center of motion.
-    :param trgepc: Epoch of target state.
-    :param trgctr: Center of motion of target.
-    :param trgref: Frame of target state.
-    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
-    :param outref: Reference frame of output state.
-    :param refloc: Output reference frame evaluation locus.
-    :param abcorr: Aberration correction.
-    :param obsrvr: Name of observing ephemeris object.
-    :return:
-            State of target with respect to observer in km and km/sec,
-            One way light time between target and observer.
-    """
-    # initialize c variables
-    cdef double c_lt = 0.0
-    # convert the strings to pointers once
-    cdef const char* c_trgctr   = trgctr
-    cdef const char* c_trgref   = trgref
-    cdef const char* c_outref   = outref
-    cdef const char* c_refloc   = refloc
-    cdef const char* c_abcorr   = abcorr
-    cdef const char* c_obsrvr   = obsrvr
-    # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
-    cdef np.double_t[::1] c_state = p_state
-    # perform the call
-    spkcvt_c(
-        &trgsta[0],
-        trgepc,
-        c_trgctr,
-        c_trgref,
-        et,
-        c_outref,
-        c_refloc,
-        c_abcorr,
-        c_obsrvr,
-        &c_state[0],
-        &c_lt
-    )
-    # return output
-    return p_state, c_lt
-
-
-@boundscheck(False)
-@wraparound(False)
-def spkcvt_v(
-    double[::1] trgsta,
-    double trgepc,
-    str trgctr,
-    str trgref,
-    double[::1] ets,
-    str outref,
-    str refloc,
-    str abcorr,
-    str obsrvr):
-    """
-    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkcvt`
-    
-    Return the state, relative to a specified observer, of a target
-    having constant velocity in a specified reference frame. The
-    target's state is provided by the calling program rather than by
-    loaded SPK files.
-
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvt_c.html
-
-    :param trgsta: Target state relative to center of motion.
-    :param trgepc: Epoch of target state.
-    :param trgctr: Center of motion of target.
-    :param trgref: Frame of target state.
-    :param ets: Observation epochs in ephemeris seconds past J2000 TDB.
-    :param outref: Reference frame of output state.
-    :param refloc: Output reference frame evaluation locus.
-    :param abcorr: Aberration correction.
-    :param obsrvr: Name of observing ephemeris object.
-    :return:
-            State of target with respect to observer in km and km/sec,
-            One way light time between target and observer.
-    """
-    # initialize c variables
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
-    cdef Py_ssize_t i, n = c_ets.shape[0]
-    # convert the strings to pointers once
-    cdef const char* c_trgctr   = trgctr
-    cdef const char* c_trgref   = trgref
-    cdef const char* c_outref   = outref
-    cdef const char* c_refloc   = refloc
-    cdef const char* c_abcorr   = abcorr
-    cdef const char* c_obsrvr   = obsrvr
-    # initialize output arrays
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
-    cdef np.double_t[:,::1] c_states = p_states
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_lts = np.empty(n, dtype=np.double, order='C')
-    cdef np.double_t[::1] c_lts = p_lts
-    # perform the call
-    for i in range(n):
-        spkcvt_c(
-            &trgsta[0],
-            trgepc,
-            c_trgctr,
-            c_trgref,
-            c_ets[i],
-            c_outref,
-            c_refloc,
-            c_abcorr,
-            c_obsrvr,
-            &c_states[i,0],
-            &c_lts[i]
-        )
-    # return output
     return p_states, p_lts
 
 
@@ -2425,10 +2496,10 @@ def spkgps(
     cdef double c_lt = 0.0
     cdef int c_obs  = obs
     # convert the strings to pointers once
-    cdef const char* c_ref   = ref
+    cdef const char* c_ref = ref
     # initialize output arrays
-    p_pos = np.empty(3, dtype=np.double, order='C')
-    cdef double[::1] c_pos = p_pos
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_pos = np.empty(3, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_pos = p_pos
     # perform the call
     spkgeo_c(
         c_targ,
@@ -2470,7 +2541,7 @@ def spkgps_v(
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef int c_obs  = obs
     # convert the strings to pointers once
-    cdef const char* c_ref   = ref
+    cdef const char* c_ref = ref
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_pos = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_pos = p_pos
@@ -2516,7 +2587,8 @@ def spkpos(
             One way light time between observer and target in seconds.
     """
     # initialize c variables
-    cdef double lt = 0.0
+    cdef double c_et = et
+    cdef double c_lt = 0.0
     # convert the strings to pointers once
     cdef const char* c_targ   = target
     cdef const char* c_ref    = ref
@@ -2527,14 +2599,14 @@ def spkpos(
     cdef np.double_t[::1] c_ptarg = p_ptarg
     spkpos_c(
         c_targ, 
-        et, 
+        c_et, 
         c_ref, 
         c_abcorr, 
         c_obs, 
         &c_ptarg[0], 
-        &lt
+        &c_lt
     )
-    return p_ptarg, lt
+    return p_ptarg, c_lt
     
 
 @boundscheck(False)
@@ -2620,13 +2692,15 @@ def spkpvn(
     # inititalize output variables
     cdef int c_ref = 0
     cdef int c_center = 0
+    # convert input c arrays
+    cdef const double* c_descr = &descr[0]
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
     # perform the call
     spkpvn_c(
         c_handle,
-        &descr[0],
+        c_descr,
         c_et,
         &c_ref,
         &c_state[0],
@@ -2664,6 +2738,8 @@ def spkpvn_v(
     cdef np.double_t[::1] c_ets = np.ascontiguousarray(ets)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef int c_handle = handle
+    # convert input c arrays
+    cdef const double* c_descr = &descr[0]
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_states = p_states
@@ -2675,7 +2751,7 @@ def spkpvn_v(
     for i in range(n):
         spkpvn_c(
             c_handle,
-            &descr[0],
+            c_descr,
             c_ets[i],
             <SpiceInt *> &c_refs[i],
             &c_states[i,0],
@@ -2704,15 +2780,16 @@ def spkssb(
     :return: State of target.
     """
     # initialize c variables
+    cdef int c_targ = targ
     cdef double c_et = et
     # convert the strings to pointers once
-    cdef const char* c_ref   = ref
+    cdef const char* c_ref = ref
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
     # perform the call
     spkssb_c(
-        targ,
+        c_targ,
         c_et,
         c_ref,
         &c_state[0],
@@ -2742,6 +2819,7 @@ def spkssb_v(
     :return: States of target.
     """
     # initialize c variables
+    cdef int c_targ = targ
     cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
@@ -2752,7 +2830,7 @@ def spkssb_v(
     # perform the call
     for i in range(n):
         spkssb_c(
-            targ,
+            c_targ,
             c_ets[i],
             c_ref,
             &c_states[i,0],
@@ -2774,13 +2852,14 @@ def str2et(
     :param time: A string representing an epoch.
     :return: The equivalent value in seconds past J2000, TDB.
     """
-    cdef double et = 0.0
+    # initialize c variables
+    cdef double c_et = 0.0
     cdef const char* c_time = time
     str2et_c(
         c_time, 
-        &et
+        &c_et
     )
-    return et
+    return c_et
     
 
 @boundscheck(False)
@@ -2800,6 +2879,7 @@ def str2et_v(
     :param times: Strings representing an epoch.
     :return: The equivalent values in seconds past J2000, TDB.
     """
+    # initialize c variables
     cdef Py_ssize_t i, n = times.shape[0]
     # initialize output
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ets = np.empty(n, dtype=np.double, order='C')
@@ -2850,6 +2930,8 @@ def sincpt(
             Intercept epoch,
             Vector from observer to intercept point in km.
     """
+    # initialize c variables
+    cdef double c_et = et
     # convert strings 
     cdef const char* c_method = method
     cdef const char* c_target = target
@@ -2868,7 +2950,7 @@ def sincpt(
     sincpt_c(
         c_method,
         c_target,
-        et,
+        c_et,
         c_fixref,
         c_abcorr,
         c_obsrvr,
@@ -3264,15 +3346,18 @@ def sxform_v(
     cdef const char* c_fromstring = fromstring
     cdef const char* c_tostring = tostring
     # initialize output
-    cdef np.ndarray[dtype=DOUBLE_t, ndim=3, mode="c"] p_xform = np.empty((n, 6, 6), dtype=np.double)
+    cdef np.ndarray[np.double_t, ndim=3, mode="c"] p_xform = np.empty((n, 6, 6), dtype=np.double, order='C')
     cdef np.double_t[:,:,::1] c_xform = p_xform
-    for i in range(n):
-        sxform_c(
-            c_fromstring, 
-            c_tostring, 
-            c_ets[i], 
-            <SpiceDouble (*)[6]> &c_xform[i,0,0]
-        )
+    # pointer to element [0,0,0]
+    cdef SpiceDouble* base = &c_xform[0,0,0]
+    with nogil:
+        for i in range(n):
+            sxform_c(
+                c_fromstring, 
+                c_tostring, 
+                c_ets[i], 
+                <SpiceDouble (*)[6]> (base + i*36)
+            )
     return p_xform
 
 # T
