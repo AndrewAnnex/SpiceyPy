@@ -1,6 +1,6 @@
 # cython: language_level = 3
 # cython: embedsignature = True
-# cython: c_string_type = bytes
+# cython: c_string_type = unicode
 # cython: c_string_encoding = ascii
 # cython: cdivision = True
 # cython: profile = False
@@ -43,7 +43,6 @@ ctypedef fused char_arr_t:
 ctypedef fused bool_arr_t:
    np.uint8_t[:]
    np.uint8_t[::1]
-
 
 
 from .cyice cimport *

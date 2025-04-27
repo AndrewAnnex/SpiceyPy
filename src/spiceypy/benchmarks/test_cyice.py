@@ -970,7 +970,7 @@ def test_str2et(function, grouped_benchmark, load_core_kernels):
 @pytest.mark.parametrize('grouped_benchmark', ["str2et_v"], indirect=True)
 def test_str2et_v(function, grouped_benchmark, load_core_kernels):
     date = "Thu Mar 20 12:53:29 PST 1997"
-    dates = np.array([date] * 100, dtype=np.str_)
+    dates = [date,] * 100
     grouped_benchmark(function, dates)
     expected_ets = np.ones(100) * -87836728.81438904
     ets = function(dates)
@@ -1235,7 +1235,7 @@ def test_utc2et(function, grouped_benchmark, load_core_kernels):
 @pytest.mark.parametrize('grouped_benchmark', ["utc2et_v"], indirect=True)
 def test_utc2et_v(function, grouped_benchmark, load_core_kernels):
     date = "December 1, 2004 15:04:11"
-    dates = np.array([date] * 100, dtype=np.str_)
+    dates = [date,] * 100
     grouped_benchmark(function, dates)
     res = function(dates)
     assert isinstance(res, np.ndarray)
