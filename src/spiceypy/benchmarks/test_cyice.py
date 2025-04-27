@@ -288,7 +288,9 @@ def test_fovray(function, grouped_benchmark, load_cassini_kernels):
     et = spice.str2et("2013 FEB 25 11:50:00 UTC")
     raydir = np.array([0.0, 0.0, 1.0], dtype=np.double)
     grouped_benchmark(function, "CASSINI_ISS_NAC", raydir, frame, "S", "CASSINI", et)
-    assert function("CASSINI_ISS_NAC", raydir, frame, "S", "CASSINI", et)
+    res = function("CASSINI_ISS_NAC", raydir, frame, "S", "CASSINI", et)
+    assert res
+    assert isinstance(res, bool)
 
 
 @pytest.mark.parametrize('function', [cyice.fovray_v], ids=get_module_name)

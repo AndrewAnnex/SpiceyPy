@@ -12,14 +12,19 @@
 # distutils: define_macros=NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
 
 cdef extern from "SpiceUsr.h" nogil:
-    ctypedef bint SpiceBoolean
     ctypedef char SpiceChar
     ctypedef int SpiceInt
     ctypedef double SpiceDouble
-    ctypedef const int ConstSpiceBool
     ctypedef const char ConstSpiceChar
     ctypedef const int ConstSpiceInt
     ctypedef const double ConstSpiceDouble
+
+    # Bool
+    ctypedef enum SpiceBoolean:
+        SPICEFALSE  # = 0
+        SPICETRUE   # = 1
+    # const SpiceBoolean
+    ctypedef const SpiceBoolean ConstSpiceBoolean
 
     # Cells
     cdef enum SpiceCellDataType:

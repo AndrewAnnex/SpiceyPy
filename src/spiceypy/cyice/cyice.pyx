@@ -111,7 +111,7 @@ def ckgp(
         c_ref,
         <SpiceDouble (*)[3]> &c_cmat[0,0],
         &c_clkout,
-        &c_found
+        <SpiceBoolean *> &c_found
     )
     # return results
     return p_cmat, c_clkout, c_found
@@ -209,7 +209,7 @@ def ckgpav(
         <SpiceDouble (*)[3]> &c_cmat[0,0],
         &c_av[0],
         &c_clkout,
-        &c_found
+        <SpiceBoolean *> &c_found
     )
     # return results
     return p_cmat, p_av, c_clkout, c_found
@@ -252,8 +252,8 @@ def ckgpav_v(
     cdef np.double_t[:,::1]   c_av = p_av
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_clkout = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_clkout = p_clkout
-    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.bool_, order='C')
-    cdef np.uint8_t[::1] c_found = p_found
+    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.int32, order='C')
+    cdef np.int32_t[::1] c_found = p_found
     # perform the call
     for i in range(n):
         ckgpav_c(
@@ -267,7 +267,7 @@ def ckgpav_v(
             <SpiceBoolean *> &c_found[i]
         )
     # return results
-    return p_cmat, p_av, p_clkout, p_found
+    return p_cmat, p_av, p_clkout, p_found.astype(np.bool_)
 
 
 def convrt(
@@ -714,7 +714,7 @@ def fovray(
         c_abcorr,
         c_obsrvr,
         &c_et,
-        &c_visibl
+        <SpiceBoolean *> &c_visibl
     )
     # return
     return c_visibl
@@ -755,8 +755,8 @@ def fovray_v(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # initialize output arrays
-    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_visibl = np.empty(n, dtype=np.bool_, order='C')
-    cdef np.uint8_t[::1] c_visibl = p_visibl
+    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_visibl = np.empty(n, dtype=np.int32, order='C')
+    cdef np.int32_t[::1] c_visibl = p_visibl
     # perform the call
     for i in range(n):
         fovray_c(
@@ -769,7 +769,7 @@ def fovray_v(
             <SpiceBoolean *> &c_visibl[i]
         )
     # return
-    return p_visibl
+    return p_visibl.astype(np.bool_)
   
 
 def fovtrg(
@@ -815,7 +815,7 @@ def fovtrg(
         c_abcorr,
         c_obsrvr,
         &c_et,
-        &c_visibl
+        <SpiceBoolean *> &c_visibl
     )
     # return
     return c_visibl
@@ -860,8 +860,8 @@ def fovtrg_v(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # initialize output arrays
-    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_visibl = np.empty(n, dtype=np.bool_, order='C')
-    cdef np.uint8_t[::1] c_visibl = p_visibl
+    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_visibl = np.empty(n, dtype=np.int32, order='C')
+    cdef np.int32_t[::1] c_visibl = p_visibl
     # perform the call
     for i in range(n):
         fovtrg_c(
@@ -875,7 +875,7 @@ def fovtrg_v(
             <SpiceBoolean *> &c_visibl[i]
         )
     # return
-    return p_visibl
+    return p_visibl.astype(np.bool_)
 
 
 def furnsh(
@@ -2895,8 +2895,8 @@ def str2et_v(
     return p_ets
 
 # TODO need error check, need found exception thrower in cython
-@wraparound(False)
 @boundscheck(False)
+@wraparound(False)
 def sincpt(
     str method,
     str target,
@@ -2959,15 +2959,15 @@ def sincpt(
         &c_spoint[0],
         &c_trgepc,
         &c_srfvec[0],
-        &c_found
+        <SpiceBoolean *> &c_found
     )
     # return results
     return p_spoint, c_trgepc, p_srfvec, c_found
 
 
 # TODO need error check, need found exception thrower in cython
-@wraparound(False)
 @boundscheck(False)
+@wraparound(False)
 def sincpt_v(
     str method,
     str target,
@@ -3020,8 +3020,8 @@ def sincpt_v(
     cdef np.double_t[:,::1] c_srfvec = p_srfvec 
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_trgepc = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1]   c_trgepc = p_trgepc 
-    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.bool_, order='C')
-    cdef np.uint8_t[::1] c_found = p_found
+    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.int32, order='C')
+    cdef np.int32_t[::1] c_found = p_found
     # perform the call
     for i in range(n):
         sincpt_c(
@@ -3039,11 +3039,11 @@ def sincpt_v(
             <SpiceBoolean *> &c_found[i]
         )
         # return results
-    return p_spoint, p_trgepc, p_srfvec, p_found
+    return p_spoint, p_trgepc, p_srfvec, p_found.astype(np.bool_)
 
 
-@wraparound(False)
 @boundscheck(False)
+@wraparound(False)
 def subpnt(
     str method,
     str target, 
@@ -3165,8 +3165,8 @@ def subpnt_v(
     return p_spoint, p_trgepc, p_srfvec
 
 
-@wraparound(False)
 @boundscheck(False)
+@wraparound(False)
 def subslr(
     str method,
     str target, 
@@ -3362,8 +3362,8 @@ def sxform_v(
 
 # T
 
-@wraparound(False)
 @boundscheck(False)
+@wraparound(False)
 def tangpt(
     str method,
     str target,
