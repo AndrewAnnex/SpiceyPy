@@ -21,8 +21,8 @@ cdef extern from "SpiceUsr.h" nogil:
 
     # Bool
     ctypedef enum SpiceBoolean:
-        SPICEFALSE  # = 0
-        SPICETRUE   # = 1
+        SPICEFALSE = 0
+        SPICETRUE  = 1
     # const SpiceBoolean
     ctypedef const SpiceBoolean ConstSpiceBoolean
 
