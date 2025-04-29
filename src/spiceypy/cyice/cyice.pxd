@@ -11,6 +11,30 @@
 # cython: show_performance_hints = True
 # distutils: define_macros=NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
 
+"""
+The MIT License (MIT)
+
+Copyright (c) [2015-2025] [Andrew Annex]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
 cdef extern from "SpiceUsr.h" nogil:
     ctypedef char SpiceChar
     ctypedef int SpiceInt
@@ -27,26 +51,27 @@ cdef extern from "SpiceUsr.h" nogil:
     ctypedef const SpiceBoolean ConstSpiceBoolean
 
     # Cells
-    cdef enum SpiceCellDataType:
-        char = 0,
-        double = 1,
-        int = 2,
-        time = 3,
-        bool = 4
+    # TODO I was overriding stuff in here with this enum! rename each kind to a unique name
+    # cdef enum SpiceCellDataType:
+    #     char = 0,
+    #     double = 1,
+    #     int = 2,
+    #     time = 3,
+    #     bool = 4
 
-    cdef struct _SpiceCell:
-        SpiceCellDataType dtype
-        SpiceInt           length
-        SpiceInt           size
-        SpiceInt           card
-        SpiceBoolean       isSet
-        SpiceBoolean       adjust
-        SpiceBoolean       init
-        void * base
-        void * data
+    # cdef struct _SpiceCell:
+    #     SpiceCellDataType dtype
+    #     SpiceInt           length
+    #     SpiceInt           size
+    #     SpiceInt           card
+    #     SpiceBoolean       isSet
+    #     SpiceBoolean       adjust
+    #     SpiceBoolean       init
+    #     void * base
+    #     void * data
 
-    ctypedef _SpiceCell SpiceCell
-    ctypedef const SpiceCell ConstSpiceCell
+    # ctypedef _SpiceCell SpiceCell
+    # ctypedef const SpiceCell ConstSpiceCell
 
     # start of function defs
     cdef SpiceDouble b1900_c()

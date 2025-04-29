@@ -864,31 +864,31 @@ def test_spkgeo_v(function, grouped_benchmark, load_core_kernels):
     assert isinstance(lt, np.ndarray)
 
 
-# @pytest.mark.parametrize('function', [cyice.spkgps, spice.spkgps], ids=get_module_name)
-# @pytest.mark.parametrize('grouped_benchmark', ["spkgps"], indirect=True)
-# def test_spkgps(function, grouped_benchmark, load_core_kernels):
-#     et = spice.str2et("July 4, 2003 11:00 AM PST")
-#     grouped_benchmark(function, 499, et, "J2000", 399)
-#     pos, lt = function(499, et, "J2000", 399)
-#     expected_lt = 269.70264751151603
-#     expected_pos = [
-#         73826216.41455599665641784668,
-#         -27128030.55243116617202758789,
-#         -18741973.88497525453567504883,
-#     ]
-#     assert isinstance(pos, np.ndarray)
-#     npt.assert_almost_equal(lt, expected_lt)
-#     npt.assert_array_almost_equal(pos, expected_pos)
+@pytest.mark.parametrize('function', [cyice.spkgps, spice.spkgps], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["spkgps"], indirect=True)
+def test_spkgps(function, grouped_benchmark, load_core_kernels):
+    et = spice.str2et("July 4, 2003 11:00 AM PST")
+    grouped_benchmark(function, 499, et, "J2000", 399)
+    pos, lt = function(499, et, "J2000", 399)
+    expected_lt = 269.70264751151603
+    expected_pos = [
+        73826216.41455599665641784668,
+        -27128030.55243116617202758789,
+        -18741973.88497525453567504883,
+    ]
+    assert isinstance(pos, np.ndarray)
+    npt.assert_almost_equal(lt, expected_lt)
+    npt.assert_array_almost_equal(pos, expected_pos)
 
 
-# @pytest.mark.parametrize('function', [cyice.spkgps_v], ids=get_module_name)
-# @pytest.mark.parametrize('grouped_benchmark', ["spkgps_v"], indirect=True)
-# def test_spkgps_v(function, grouped_benchmark, load_core_kernels):
-#     et = np.repeat(spice.str2et("July 4, 2003 11:00 AM PST"),100)
-#     grouped_benchmark(function, 499, et, "J2000", 399)
-#     pos, lt = function(499, et, "J2000", 399)
-#     assert isinstance(pos, np.ndarray)
-#     assert isinstance(lt, np.ndarray)
+@pytest.mark.parametrize('function', [cyice.spkgps_v], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["spkgps_v"], indirect=True)
+def test_spkgps_v(function, grouped_benchmark, load_core_kernels):
+    et = np.repeat(spice.str2et("July 4, 2003 11:00 AM PST"),100)
+    grouped_benchmark(function, 499, et, "J2000", 399)
+    pos, lt = function(499, et, "J2000", 399)
+    assert isinstance(pos, np.ndarray)
+    assert isinstance(lt, np.ndarray)
 
 
 @pytest.mark.parametrize('function', [cyice.spkpvn, spice.spkpvn], ids=get_module_name)

@@ -10,9 +10,31 @@
 # cython: warn.multiple_declarators = True
 # cython: show_performance_hints = True
 # distutils: define_macros=NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
+
 """
-main cython wrapper code
+The MIT License (MIT)
+
+Copyright (c) [2015-2025] [Andrew Annex]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 """
+
 from libc.stdlib cimport malloc, free
 from libc.string cimport memcpy, strlen
 from cython cimport boundscheck, wraparound
@@ -25,6 +47,11 @@ np.import_array()
 DEF _default_len_out = 256
 
 DEF TIMELEN = 64
+
+DEF SHORTLEN = 26
+DEF EXPLAINLEN = 100
+DEF LONGLEN = 1841
+DEF TRACELEN = 200
 
 ctypedef fused double_arr_t:
    np.double_t[:]
@@ -46,6 +73,32 @@ ctypedef fused bool_arr_t:
 
 
 from .cyice cimport *
+#from .exceptions cimport dynamically_instantiate_spiceyerror
+
+
+# support functions
+
+cdef void check_for_spice_error():
+    """
+    Internal decorator function to check spice error system for failed calls
+
+    :param f: function
+    :raise stypes.SpiceyError:
+    """
+    if failed():
+        short = getmsg("SHORT", SHORTLEN)
+        explain = getmsg("EXPLAIN", EXPLAINLEN).strip()
+        long = getmsg("LONG", LONGLEN).strip()
+        traceback = qcktrc(TRACELEN)
+        reset()
+        #raise dynamically_instantiate_spiceyerror(
+        #   short, explain, long, traceback
+        #)
+
+
+
+
+#A
 
 
 #B
@@ -675,7 +728,7 @@ def etcal_v(
     return py_results
 # F
 
-def failed():
+cpdef SpiceBoolean failed():
     """
     True if an error condition has been signalled via sigerr_c.
 
@@ -683,7 +736,7 @@ def failed():
 
     :return: a boolean
     """
-    return failed_c() == SPICETRUE
+    return failed_c()
 
 
 @boundscheck(False)
@@ -907,10 +960,10 @@ def furnsh(
     
 
 # G
-def getmsg(
+cpdef str getmsg(
     str option, 
     int msglen
-    ):
+    ) except * :
     """
     Retrieve the current short error message,
     the explanation of the short error message, or the
@@ -1031,9 +1084,9 @@ def lspcn_v(
 
 # Q
 
-def qcktrc(
+cpdef str qcktrc(
     int tracelen
-    ):
+    ) except * :
     """
     Return a string containing a traceback.
 
@@ -1064,7 +1117,7 @@ def qcktrc(
 # R
 
 
-def reset() -> None:
+cpdef void reset() noexcept:
     """
     Reset the SPICE error status to a value of "no error."
     As a result, the status routine, :py:meth:`~spiceypy.cyice.cyice.failed`, will return a value
@@ -1268,7 +1321,7 @@ def sce2c_v(
 def sce2s(
     int sc, 
     double et
-    ):
+    )-> str:
     """
     Convert an epoch specified as ephemeris seconds past J2000 (ET) to a
     character string representation of a spacecraft clock value (SCLK).
@@ -2517,7 +2570,7 @@ def spkgps(
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_pos = np.empty(3, dtype=np.double, order='C')
     cdef np.double_t[::1] c_pos = p_pos
     # perform the call
-    spkgeo_c(
+    spkgps_c(
         c_targ,
         c_et,
         c_ref,
