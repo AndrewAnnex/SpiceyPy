@@ -86,13 +86,13 @@ cdef void check_for_spice_error():
     :raise stypes.SpiceyError:
     """
     if failed():
-        short = getmsg("SHORT", SHORTLEN)
+        shortmsg = getmsg("SHORT", SHORTLEN)
         explain = getmsg("EXPLAIN", EXPLAINLEN).strip()
-        long = getmsg("LONG", LONGLEN).strip()
+        longmsg = getmsg("LONG", LONGLEN).strip()
         traceback = qcktrc(TRACELEN)
         reset()
         #raise dynamically_instantiate_spiceyerror(
-        #   short, explain, long, traceback
+        #   shortmsg, explain, longmsg, traceback
         #)
 
 
@@ -249,7 +249,7 @@ def ckgpav(
     """
     # initialize c variables
     cdef int c_inst = inst
-    cdef c_sclkdp = sclkdp
+    cdef double c_sclkdp = sclkdp
     cdef double c_tol = tol
     cdef double c_clkout = 0.0
     cdef SpiceBoolean c_found = SPICEFALSE
