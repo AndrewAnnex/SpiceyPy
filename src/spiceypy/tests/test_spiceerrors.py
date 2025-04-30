@@ -24,6 +24,8 @@ SOFTWARE.
 
 import pytest
 import spiceypy as spice
+from spiceypy.cyice import cyice
+import spiceypy.found_catcher
 from spiceypy.tests.gettestkernels import cwd
 import os
 
@@ -41,6 +43,15 @@ def test_geterror():
     spice.reset()
 
 
+def test_cyice_geterror():
+    spice.setmsg("some error occured")
+    spice.sigerr("error")
+    assert cyice.failed()
+    assert cyice.getmsg("SHORT", 40) == "error"
+    assert cyice.getmsg("LONG", 200) == "some error occured"
+    spice.reset()
+
+
 def test_get_spiceypy_exceptions():
     with pytest.raises(
         (
@@ -53,6 +64,29 @@ def test_get_spiceypy_exceptions():
     spice.reset()
 
 
+def test_get_cyice_exceptions():
+    with pytest.raises(
+        (
+            spice.exceptions.SpiceyError,
+            spice.exceptions.SpiceyPyError,
+            spice.exceptions.SpiceyPyIOError,
+        )
+    ):
+        cyice.furnsh(os.path.join(cwd, "_null_kernel.txt"))
+    spice.reset()
+    with pytest.raises(
+        (
+            spice.exceptions.SpiceyError,
+            spice.exceptions.SpiceyPyError,
+            spice.exceptions.SpiceyPyIOError,
+        )
+    ):
+        # make a very long name that's too long for the buffer
+        silly_long_name = 'a'*1842 
+        cyice.furnsh(silly_long_name)
+    spice.reset()
+
+
 def test_no_loaded_files_exception():
     with pytest.raises(spice.SpiceyError):
         spice.ckgp(0, 0, 0, "blah")
@@ -60,7 +94,7 @@ def test_no_loaded_files_exception():
     with pytest.raises(spice.NotFoundError):
         spice.ckgp(0, 0, 0, "blah")
     spice.reset()
-    with spice.no_found_check():
+    with spiceypy.found_catcher.no_found_check():
         with pytest.raises(spice.SpiceyPyIOError):
             spice.ckgp(0, 0, 0, "blah")
         spice.reset()
@@ -90,7 +124,7 @@ def test_error_to_str():
 
 def test_disable_found_catch():
     spice.kclear()
-    with spice.no_found_check():
+    with spiceypy.found_catcher.no_found_check():
         name, found = spice.bodc2n(-9991)
         assert not found
     with pytest.raises(spice.SpiceyError):
@@ -111,7 +145,7 @@ def test_recursive_disable_found_catch():
         if i <= 0:
             return
         else:
-            with spice.no_found_check():
+            with spiceypy.found_catcher.no_found_check():
                 name, found = spice.bodc2n(-9991)
                 assert not found
                 _recursive_call(i - 1)
@@ -148,7 +182,7 @@ def test_multiple_founds():
     failed = spice.NotFoundError(message="test", found=(True, False))
     assert not all(failed.found)
     # def test_fun
-    @spice.spice_found_exception_thrower
+    @spiceypy.found_catcher.spice_found_exception_thrower
     def test_fun():
         return [0, 0], [False, True]
 

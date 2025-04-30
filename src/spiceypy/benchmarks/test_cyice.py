@@ -355,7 +355,7 @@ def test_lspcn(function, grouped_benchmark, load_core_kernels):
 
 
 @pytest.mark.parametrize('function', [cyice.lspcn_v], ids=get_module_name)
-@pytest.mark.parametrize('grouped_benchmark', ["lspcn"], indirect=True)
+@pytest.mark.parametrize('grouped_benchmark', ["lspcn_v"], indirect=True)
 def test_lspcn_v(function, grouped_benchmark, load_core_kernels):
     ets = np.repeat(spice.str2et("21 march 2005"),100)
     grouped_benchmark(function, "EARTH", ets, "NONE")

@@ -41,6 +41,7 @@ from cython cimport boundscheck, wraparound
 from cython.parallel import prange
 from cpython.unicode cimport PyUnicode_DecodeUTF8, PyUnicode_AsUTF8, PyUnicode_AsASCIIString, PyUnicode_DecodeASCII, PyUnicode_DecodeCharmap, PyUnicode_EncodeASCII, PyUnicode_EncodeCharmap
 import numpy as np
+import functools
 cimport numpy as np
 np.import_array()
 
@@ -48,10 +49,10 @@ DEF _default_len_out = 256
 
 DEF TIMELEN = 64
 
-DEF SHORTLEN = 26
-DEF EXPLAINLEN = 100
-DEF LONGLEN = 1841
-DEF TRACELEN = 200
+DEF SHORTLEN = 32
+DEF EXPLAINLEN = 128
+DEF LONGLEN = 2048
+DEF TRACELEN = 256
 
 ctypedef fused double_arr_t:
    np.double_t[:]
@@ -73,12 +74,17 @@ ctypedef fused bool_arr_t:
 
 
 from .cyice cimport *
-#from .exceptions cimport dynamically_instantiate_spiceyerror
+from spiceypy.utils.exceptions import dynamically_instantiate_spiceyerror
+from spiceypy.found_catcher import spice_found_exception_thrower
 
 
 # support functions
+cdef char[SHORTLEN]   shortmsg
+cdef char[EXPLAINLEN] explain
+cdef char[LONGLEN]    longmsg
+cdef char[TRACELEN]   traceback
 
-cdef void check_for_spice_error():
+cpdef void check_for_spice_error():
     """
     Internal decorator function to check spice error system for failed calls
 
@@ -86,16 +92,36 @@ cdef void check_for_spice_error():
     :raise stypes.SpiceyError:
     """
     if failed():
-        shortmsg = getmsg("SHORT", SHORTLEN)
-        explain = getmsg("EXPLAIN", EXPLAINLEN).strip()
-        longmsg = getmsg("LONG", LONGLEN).strip()
-        traceback = qcktrc(TRACELEN)
-        reset()
-        #raise dynamically_instantiate_spiceyerror(
-        #   shortmsg, explain, longmsg, traceback
-        #)
+        with nogil:
+            getmsg_c("SHORT", SHORTLEN, shortmsg)
+            getmsg_c("EXPLAIN", EXPLAINLEN, explain)
+            getmsg_c("LONG", LONGLEN, longmsg)
+            qcktrc_c(TRACELEN, traceback)
+            reset_c()
+        raise dynamically_instantiate_spiceyerror(
+          shortmsg, 
+          explain, 
+          longmsg, 
+          traceback
+        )
 
+def spice_error_check(f):
+    """
+    Decorator for spiceypy hooking into spice error system.
+    If an error is detected, an output similar to outmsg
 
+    :return:
+    """
+
+    @functools.wraps(f)
+    def with_errcheck(*args, **kwargs):
+        try:
+            res = f(*args, **kwargs)
+            check_for_spice_error()
+            return res
+        except BaseException:
+            raise
+    return with_errcheck
 
 
 #A
@@ -103,7 +129,7 @@ cdef void check_for_spice_error():
 
 #B
 
-def b1900():
+cpdef b1900():
     """
     Return the Julian Date corresponding to Besselian Date 1900.0.
 
@@ -114,7 +140,7 @@ def b1900():
     return b1900_c()
 
 
-def b1950():
+cpdef b1950():
     """
     Return the Julian Date corresponding to Besselian Date 1950.0.
 
@@ -128,6 +154,7 @@ def b1950():
 
 @boundscheck(False)
 @wraparound(False)
+@spice_found_exception_thrower
 def ckgp(
     int inst,
     double sclkdp,
@@ -168,12 +195,14 @@ def ckgp(
         &c_clkout,
         <SpiceBoolean *> &c_found
     )
+    check_for_spice_error()
     # return results
     return p_cmat, c_clkout, c_found == SPICETRUE
 
 
 @boundscheck(False)
 @wraparound(False)
+@spice_found_exception_thrower
 def ckgp_v(
     int inst,
     double[::1] sclkdps,
@@ -220,12 +249,14 @@ def ckgp_v(
             &c_clkout[i],
             <SpiceBoolean *> &c_found[i]
         )
+    check_for_spice_error()
     # return results
     return p_cmat, p_clkout, p_found
 
 
 @boundscheck(False)
 @wraparound(False)
+@spice_found_exception_thrower
 def ckgpav(
     int    inst,
     double sclkdp,
@@ -271,12 +302,14 @@ def ckgpav(
         &c_clkout,
         <SpiceBoolean *> &c_found
     )
+    check_for_spice_error()
     # return results
     return p_cmat, p_av, c_clkout, c_found == SPICETRUE
 
 
 @boundscheck(False)
 @wraparound(False)
+@spice_found_exception_thrower
 def ckgpav_v(
     int    inst,
     double[::1] sclkdps,
@@ -328,6 +361,7 @@ def ckgpav_v(
             &c_clkout[i],
             <SpiceBoolean *> &c_found[i]
         )
+    check_for_spice_error()
     # return results
     return p_cmat, p_av, p_clkout, p_found.astype(np.bool_)
 
@@ -359,12 +393,13 @@ def convrt(
         c_outunit, 
         &c_out
     )
+    check_for_spice_error()
     return c_out
 
 
 @boundscheck(False)
 @wraparound(False)
-def convrt_v(
+cpdef convrt_v(
     double[::1] x, 
     str inunit, 
     str outunit
@@ -390,13 +425,15 @@ def convrt_v(
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_outs = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_outs = p_outs
     # main loop
-    for i in range(n):
-        convrt_c(
-            c_x[i], 
-            c_inunit,
-            c_outunit, 
-            &c_outs[i]
-        )
+    with nogil:
+        for i in range(n):
+            convrt_c(
+                c_x[i], 
+                c_inunit,
+                c_outunit, 
+                &c_outs[i]
+            )
+    check_for_spice_error()
     return p_outs
 
 
@@ -424,6 +461,7 @@ def deltet(
         c_eptype, 
         &c_delta
     )
+    check_for_spice_error()
     return c_delta
 
 
@@ -458,6 +496,7 @@ def deltet_v(
             c_eptype, 
             &c_deltas[i]
         )
+    check_for_spice_error()
     # return results
     return p_deltas
 
@@ -511,6 +550,7 @@ def et2lst(
         time,
         ampm
     )
+    check_for_spice_error()
     p_time = PyUnicode_DecodeUTF8(time, strlen(time), "strict")
     p_ampm = PyUnicode_DecodeUTF8(ampm, strlen(ampm), "strict")
     return c_hr, c_mn, c_sc, p_time, p_ampm 
@@ -580,6 +620,7 @@ def et2lst_v(
             _c_times + i*TIMELEN, 
             _c_ampms + i*TIMELEN
         )
+    check_for_spice_error()
     # return values
     py_times = p_times.view(p_np_s_dtype).reshape(n)
     py_times = np.char.rstrip(py_times).astype(p_np_u_dtype)
@@ -616,6 +657,7 @@ def et2utc(
         TIMELEN, 
         &c_buffer[0]
     ) 
+    check_for_spice_error()
     return PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
 
 
@@ -660,6 +702,7 @@ def et2utc_v(
             TIMELEN, 
             base + i*TIMELEN,
         )
+    check_for_spice_error()
     # return values
     py_utcstr = p_utcstr.view(p_np_s_dtype).reshape(n)
     py_utcstr = np.char.rstrip(py_utcstr).astype(p_np_u_dtype)
@@ -686,6 +729,7 @@ def etcal(
         TIMELEN, 
         &c_buffer[0]
     )
+    check_for_spice_error()
     # Convert the C char* to a Python string
     p_cal = PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
     return p_cal
@@ -722,6 +766,7 @@ def etcal_v(
             25, 
             base + i*25
         )
+    check_for_spice_error()
     # return values
     py_results = p_results.view(p_np_s_dtype).reshape(n)
     py_results = np.char.rstrip(py_results).astype(p_np_u_dtype)
@@ -781,6 +826,7 @@ def fovray(
         &c_et,
         <SpiceBoolean *> &c_visibl
     )
+    check_for_spice_error()
     # return
     return c_visibl == SPICETRUE
 
@@ -833,6 +879,7 @@ def fovray_v(
             <SpiceDouble *> &c_ets[i], # I got a warning converting const double * to SpiceDouble related to discard qualifiers without the cast here
             <SpiceBoolean *> &c_visibl[i]
         )
+    check_for_spice_error()
     # return
     return p_visibl.astype(np.bool_)
   
@@ -882,6 +929,7 @@ def fovtrg(
         &c_et,
         <SpiceBoolean *> &c_visibl
     )
+    check_for_spice_error()
     # return
     return c_visibl == SPICETRUE
 
@@ -939,6 +987,7 @@ def fovtrg_v(
             <SpiceDouble *> &c_ets[i], # I got a warning converting const double * to SpiceDouble related to discard qualifiers without the cast here
             <SpiceBoolean *> &c_visibl[i]
         )
+    check_for_spice_error()
     # return
     return p_visibl.astype(np.bool_)
 
@@ -957,13 +1006,14 @@ def furnsh(
     if c_file == NULL:
         raise UnicodeError("Failed to encode file path in furnsh")
     furnsh_c(c_file)
+    check_for_spice_error()
     
 
 # G
 cpdef str getmsg(
     str option, 
     int msglen
-    ) except * :
+    ):
     """
     Retrieve the current short error message,
     the explanation of the short error message, or the
@@ -975,11 +1025,9 @@ cpdef str getmsg(
     :param lenout: Available space in the output string msg.
     :return: The error message to be retrieved.
     """
-    cdef const char* c_option = option
-    if c_option == NULL:
-        raise UnicodeError("Failed to encode option")
-    cdef int c_msglen = msglen
     cdef Py_ssize_t length = _default_len_out
+    cdef const char* c_option = option
+    cdef int c_msglen = msglen
     if c_msglen <= 0:
         raise ValueError("msglen must be positive")
     cdef char* c_msgstr = <char*> malloc((msglen) * sizeof(char))
@@ -1037,6 +1085,7 @@ def lspcn(
         c_et, 
         c_abcorr
     )
+    check_for_spice_error()
     return l_s
 
 
@@ -1072,6 +1121,7 @@ def lspcn_v(
             c_ets[i], 
             c_abcorr
         )
+    check_for_spice_error()
     return p_l_s_s
 
 #M 
@@ -1086,7 +1136,7 @@ def lspcn_v(
 
 cpdef str qcktrc(
     int tracelen
-    ) except * :
+    ):
     """
     Return a string containing a traceback.
 
@@ -1153,6 +1203,7 @@ def scdecd(
         _default_len_out, 
         &c_buffer[0]
     )
+    check_for_spice_error()
     p_clkout = PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
     return p_clkout
 
@@ -1191,6 +1242,7 @@ def scdecd_v(
             _default_len_out, 
             base + i*_default_len_out
         )
+    check_for_spice_error()
     # return values
     py_sclkchs = p_sclkchs.view(p_np_s_dtype).reshape(n)
     py_sclkchs = np.char.rstrip(py_sclkchs).astype(p_np_u_dtype)
@@ -1219,6 +1271,7 @@ def scencd(
         c_sclkch, 
         &c_sclkdp
     )
+    check_for_spice_error()
     return c_sclkdp
 
 
@@ -1252,6 +1305,7 @@ def scencd_v(
             c_sclkchs, 
             &c_sclkdps[i]
         )
+    check_for_spice_error()
     return p_sclkdps
 
 
@@ -1280,6 +1334,7 @@ def sce2c(
         c_et, 
         &c_sclkdp
     )
+    check_for_spice_error()
     return c_sclkdp
 
 
@@ -1315,6 +1370,7 @@ def sce2c_v(
             c_ets[i], 
             &c_sclkdps[i]
         )
+    check_for_spice_error()
     return p_sclkdps
 
 
@@ -1341,6 +1397,7 @@ def sce2s(
         _default_len_out, 
         &c_buffer[0]
     )
+    check_for_spice_error()
     p_sclks = PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
     return p_sclks
 
@@ -1380,6 +1437,7 @@ def sce2s_v(
             _default_len_out, 
             base + i*_default_len_out
         )
+    check_for_spice_error()
     # return values
     py_sclkchs = p_sclkchs.view(p_np_s_dtype).reshape(n)
     py_sclkchs = np.char.rstrip(py_sclkchs).astype(p_np_u_dtype)
@@ -1407,6 +1465,7 @@ def scs2e(
         c_sclkch, 
         &c_et
     )
+    check_for_spice_error()
     return c_et
 
 
@@ -1439,6 +1498,7 @@ def scs2e_v(
             c_sclkchs,
             &c_ets[i]
         )
+    check_for_spice_error()
     return p_ets
 
 
@@ -1464,6 +1524,7 @@ def sct2e(
         c_sclkdp, 
         &et
     )
+    check_for_spice_error()
     return et
 
 
@@ -1496,6 +1557,7 @@ def sct2e_v(
             c_sclkdps[i], 
             &c_ets[i]
         )
+    check_for_spice_error()
     return p_ets
 
 
@@ -1543,6 +1605,7 @@ def spkapo(
         &c_ptarg[0], 
         &c_lt
     )
+    check_for_spice_error()
     return p_ptarg, c_lt
 
 
@@ -1596,6 +1659,7 @@ def spkapo_v(
             &c_ptargs[i,0], 
             &c_lts[i]
         )
+    check_for_spice_error()
     return p_ptargs, p_lts
 
 
@@ -1658,6 +1722,7 @@ def spkcpo(
         &c_state[0],
         &c_lt
     )
+    check_for_spice_error()
     # return output
     return p_state, c_lt
 
@@ -1725,6 +1790,7 @@ def spkcpo_v(
             &c_states[i,0],
             &c_lts[i]
         )
+    check_for_spice_error()
     # return output
     return p_states, p_lts
 
@@ -1789,6 +1855,7 @@ def spkcpt(
         &c_state[0],
         &c_lt
     )
+    check_for_spice_error()
     # return output
     return p_state, c_lt
 
@@ -1858,6 +1925,7 @@ def spkcpt_v(
             &c_states[i,0],
             &c_lts[i]
         )
+    check_for_spice_error()
     # return output
     return p_states, p_lts
 
@@ -1925,6 +1993,7 @@ def spkcvo(
         &c_state[0],
         &c_lt
     )
+    check_for_spice_error()
     # return output
     return p_state, c_lt
 
@@ -1997,6 +2066,7 @@ def spkcvo_v(
             &c_states[i,0],
             &c_lts[i]
         )
+    check_for_spice_error()
     # return output
     return p_states, p_lts
 
@@ -2064,6 +2134,7 @@ def spkcvt(
         &c_state[0],
         &c_lt
     )
+    check_for_spice_error()
     # return output
     return p_state, c_lt
 
@@ -2136,6 +2207,7 @@ def spkcvt_v(
             &c_states[i,0],
             &c_lts[i]
         )
+    check_for_spice_error()
     # return output
     return p_states, p_lts
 
@@ -2183,7 +2255,9 @@ def spkez(
         c_abcorr, 
         c_observer, 
         &c_state[0], 
-        &c_lt)
+        &c_lt
+    )
+    check_for_spice_error()
     return p_state, c_lt
 
 
@@ -2237,6 +2311,7 @@ def spkez_v(
             &c_states[i,0], 
             &c_lts[i]
         )
+    check_for_spice_error()
     # return results
     return p_states, p_lts
 
@@ -2286,6 +2361,7 @@ def spkezp(
         &c_ptarg[0], 
         &c_lt
     )
+    check_for_spice_error()
     return p_ptarg, c_lt
     
 
@@ -2339,6 +2415,7 @@ def spkezp_v(
             &c_ptargs[i,0], 
             &c_lts[i]
         )
+    check_for_spice_error()
     # return results
     return p_ptargs, p_lts
 
@@ -2385,7 +2462,9 @@ def spkezr(
         c_abcorr, 
         c_observer, 
         &c_state[0], 
-        &c_lt)
+        &c_lt
+    )
+    check_for_spice_error()
     return p_state, c_lt
 
 
@@ -2439,7 +2518,7 @@ def spkezr_v(
             &c_states[i,0], 
             &c_lts[i]
         )
-
+    check_for_spice_error()
     # return results
     return p_states, p_lts
 
@@ -2485,6 +2564,7 @@ def spkgeo(
         &c_state[0],
         &c_lt
     )
+    check_for_spice_error()
     # return output
     return p_state, c_lt
 
@@ -2535,6 +2615,7 @@ def spkgeo_v(
             &c_states[i,0],
             &c_lts[i]
         )
+    check_for_spice_error()
     # return output
     return p_states, p_lts
 
@@ -2578,6 +2659,7 @@ def spkgps(
         &c_pos[0],
         &c_lt
     )
+    check_for_spice_error()
     # return output
     return p_pos, c_lt
 
@@ -2626,6 +2708,7 @@ def spkgps_v(
             &c_pos[i,0],
             &c_lts[i]
         )
+    check_for_spice_error()
     # return output
     return p_pos, p_lts
 
@@ -2675,6 +2758,7 @@ def spkpos(
         &c_ptarg[0], 
         &c_lt
     )
+    check_for_spice_error()
     return p_ptarg, c_lt
     
 
@@ -2729,6 +2813,7 @@ def spkpos_v(
             &c_ptargs[i,0], 
             &c_lts[i]
         )
+    check_for_spice_error()
     # return results
     return p_ptargs, p_lts
 
@@ -2775,6 +2860,7 @@ def spkpvn(
         &c_state[0],
         &c_center
     )
+    check_for_spice_error()
     # return output 
     return c_ref, p_state, c_center
 
@@ -2826,6 +2912,7 @@ def spkpvn_v(
             &c_states[i,0],
             <SpiceInt *> &c_centers[i]
         )
+    check_for_spice_error()
     # return output 
     return p_refs, p_states, p_centers
 
@@ -2863,6 +2950,7 @@ def spkssb(
         c_ref,
         &c_state[0],
     )
+    check_for_spice_error()
     # return output
     return p_state
 
@@ -2904,6 +2992,7 @@ def spkssb_v(
             c_ref,
             &c_states[i,0],
         )
+    check_for_spice_error()
     # return output
     return p_states
 
@@ -2928,6 +3017,7 @@ def str2et(
         c_time, 
         &c_et
     )
+    check_for_spice_error()
     return c_et
     
 
@@ -2961,12 +3051,14 @@ def str2et_v(
             c_time, 
             &c_ets[i]
         )
+    check_for_spice_error()
     # return results
     return p_ets
 
 # TODO need error check, need found exception thrower in cython
 @boundscheck(False)
 @wraparound(False)
+@spice_found_exception_thrower
 def sincpt(
     str method,
     str target,
@@ -3031,6 +3123,7 @@ def sincpt(
         &c_srfvec[0],
         <SpiceBoolean *> &c_found
     )
+    check_for_spice_error()
     # return results
     return p_spoint, c_trgepc, p_srfvec, c_found == SPICETRUE
 
@@ -3038,6 +3131,7 @@ def sincpt(
 # TODO need error check, need found exception thrower in cython
 @boundscheck(False)
 @wraparound(False)
+@spice_found_exception_thrower
 def sincpt_v(
     str method,
     str target,
@@ -3108,7 +3202,8 @@ def sincpt_v(
             &c_srfvec[i,0],
             <SpiceBoolean *> &c_found[i]
         )
-        # return results
+    check_for_spice_error()
+    # return results
     return p_spoint, p_trgepc, p_srfvec, p_found.astype(np.bool_)
 
 
@@ -3167,6 +3262,7 @@ def subpnt(
         &c_trgepc,
         &c_srfvec[0]
         )
+    check_for_spice_error()
     # return results
     return p_spoint, c_trgepc, p_srfvec
 
@@ -3232,6 +3328,7 @@ def subpnt_v(
             &c_trgepc[i],
             &c_srfvec[i,0]
         )
+    check_for_spice_error()
     # return results
     return p_spoint, p_trgepc, p_srfvec
 
@@ -3292,6 +3389,7 @@ def subslr(
         &c_trgepc,
         &c_srfvec[0]
         )
+    check_for_spice_error()
     # return results
     return p_spoint, c_trgepc, p_srfvec
 
@@ -3357,6 +3455,7 @@ def subslr_v(
             &c_trgepc[i],
             &c_srfvec[i,0]
         )
+    check_for_spice_error()
     # return results
     return p_spoint, p_trgepc, p_srfvec
 
@@ -3392,6 +3491,7 @@ def sxform(
         c_et, 
         <SpiceDouble (*)[6]> &c_xform[0,0]
     )
+    check_for_spice_error()
     return p_xform
 
 
@@ -3433,6 +3533,7 @@ def sxform_v(
                 c_ets[i], 
                 <SpiceDouble (*)[6]> (base + i*36)
             )
+    check_for_spice_error()
     return p_xform
 
 # T
@@ -3516,6 +3617,7 @@ def tangpt(
         &c_trgepc,
         &c_srfvec[0]
     )
+    check_for_spice_error()
     # return values
     return p_tanpt, c_alt, c_vrange, p_srfpt, c_trgepc, p_srfvec
 
@@ -3606,6 +3708,7 @@ def tangpt_v(
             &c_trgepc[i],
             &c_srfvec[i,0]
         )
+    check_for_spice_error()
     # return values
     return p_tanpt, p_alt, p_vrange, p_srfpt, p_trgepc, p_srfvec
 
@@ -3635,6 +3738,7 @@ def timout(
         TIMELEN, 
         &c_buffer[0]
     )
+    check_for_spice_error()
     return PyUnicode_DecodeUTF8(c_buffer, strlen(c_buffer), "strict")
 
 
@@ -3673,6 +3777,7 @@ def timout_v(
             TIMELEN, 
             base + i*TIMELEN
         )
+    check_for_spice_error()
     # return values
     py_outputs = p_outputs.view(p_np_s_dtype).reshape(n)
     py_outputs = np.char.rstrip(py_outputs).astype(p_np_u_dtype)
@@ -3707,6 +3812,7 @@ def trgsep(
     :param abcorr: Aberration corrections flag.
     :return: angular separation in radians.
     """
+    cdef double c_angsep = 0.0
     cdef double c_et = et
     cdef const char* c_targ1   = targ1
     cdef const char* c_shape1  = shape1
@@ -3716,7 +3822,7 @@ def trgsep(
     cdef const char* c_frame2  = frame2
     cdef const char* c_obsrvr  = obsrvr
     cdef const char* c_abcorr  = abcorr
-    return trgsep_c(
+    c_angsep = trgsep_c(
         c_et, 
         c_targ1, 
         c_shape1, 
@@ -3727,6 +3833,8 @@ def trgsep(
         c_obsrvr, 
         c_abcorr
     )
+    check_for_spice_error()
+    return c_angsep
 
 
 @boundscheck(False)
@@ -3786,6 +3894,7 @@ def trgsep_v(
             c_obsrvr, 
             c_abcorr
         )
+    check_for_spice_error()
     return p_angseps
 
 # U
@@ -3808,14 +3917,17 @@ def unitim(
             The float in outsys that is equivalent
             to the epoch on the insys time scale.
     """
+    cdef double c_unitim = 0.0
     cdef double c_epoch = epoch
     cdef const char* c_insys = insys
     cdef const char* c_outsys = outsys
-    return unitim_c(
+    c_unitim = unitim_c(
         c_epoch, 
         c_insys, 
         c_outsys
     )
+    check_for_spice_error()
+    return c_unitim
 
 
 @boundscheck(False)
@@ -3854,6 +3966,7 @@ def unitim_v(
             c_insys, 
             c_outsys
         )
+    check_for_spice_error()
     return p_unitims
 
 
@@ -3885,6 +3998,7 @@ def utc2et(str utcstr)-> float:
         c_utcstr, 
         &c_et
     )
+    check_for_spice_error()
     return c_et
 
 
@@ -3915,4 +4029,5 @@ def utc2et_v(
             c_utcstr, 
             &c_ets[i]
         )
+    check_for_spice_error()
     return p_ets
