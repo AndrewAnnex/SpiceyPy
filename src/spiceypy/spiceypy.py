@@ -32,12 +32,11 @@ from typing import Callable, Iterator, Iterable, Optional, Tuple, Union, Sequenc
 import numpy
 from numpy import ndarray, str_
 
-from spiceypy.found_catcher import spice_found_exception_thrower
 
 from .utils import support_types as stypes
 from .utils.libspicehelper import libspice
 from .utils.exceptions import *
-from .found_catcher import *
+from .found_catcher import found_check_off, found_check_on, found_check, get_found_catch_state, spice_found_exception_thrower
 from . import config
 
 from .utils.callbacks import (

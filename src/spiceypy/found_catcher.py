@@ -1,3 +1,4 @@
+__all__ = ['found_check_off', 'found_check_on', 'found_check', 'get_found_catch_state', 'spice_found_exception_thrower']
 from contextlib import contextmanager
 import functools
 from typing import Callable, Iterator
@@ -39,6 +40,35 @@ def spice_found_exception_thrower(f: Callable) -> Callable:
 
     return wrapper
 
+@contextmanager
+def found_check() -> Iterator[None]:
+    """
+    Temporarily enables spiceypy default behavior which raises exceptions for
+    false found flags for certain spice functions. All spice
+    functions executed within the context manager will check the found
+    flag return parameter and the found flag will be removed from the return for
+    the given function.
+    For Example bodc2n in spiceypy is normally called like::
+
+        name = spice.bodc2n(399)
+
+    With the possibility that an exception is thrown in the even of a invalid ID::
+
+        name = spice.bodc2n(-999991) # throws a SpiceyError
+
+    With this function however, we can use it as a context manager to do this::
+
+        with spice.found_check():
+            found = spice.bodc2n(-999991) # will raise an exception!
+
+    Within the context any spice functions called that normally check the found
+    flags will pass through the check without raising an exception if they are false.
+
+    """
+    current_catch_state = config.catch_false_founds
+    config.catch_false_founds = True
+    yield
+    config.catch_false_founds = current_catch_state
 
 @contextmanager
 def no_found_check() -> Iterator[None]:
