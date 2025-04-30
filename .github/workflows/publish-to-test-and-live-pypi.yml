@@ -98,7 +98,7 @@ jobs:
           ) 
       - name: Test 🧪 with coverage 📈
         run: |
-          python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --ignore=src/spiceypy/benchmarks/test_cyice.py
+          python -m coverage run --source spiceypy -m pytest --pyargs spiceypy -m "not optional" --ignore=spiceypy/benchmarks/test_cyice.py
       - name: Upload 🆙 coverage 📈 report to codecov 
         uses: codecov/codecov-action@v4
         with:

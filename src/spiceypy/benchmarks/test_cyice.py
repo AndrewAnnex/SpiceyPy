@@ -3,6 +3,7 @@ import time
 import timeit
 
 import pytest
+pytestmark = pytest.mark.optional
 
 from spiceypy.tests.gettestkernels import (
     download_kernels,
