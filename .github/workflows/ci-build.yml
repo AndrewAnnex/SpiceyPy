@@ -173,7 +173,7 @@ jobs:
       - name: Run Benchmarks on latest Python Version
         if: ${{ matrix.python-version == '3.13' }}
         run: |
-          python -m pytest spiceypy/benchmarks/test_cyice.py
+          python -m pytest --pyargs spiceypy -m "optional" 
       - name: Upload 🆙 coverage 📈 report to codecov 
         uses: codecov/codecov-action@v4
         with:
