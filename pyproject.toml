@@ -96,5 +96,5 @@ before-test = [
     "pip install -r ci-requirements.txt"
 ]
 test-command = [
-    "coverage run --source spiceypy -m pytest --pyargs {project}",
+    "coverage run --source spiceypy -m pytest --pyargs {project} --ignore=src/spiceypy/benchmarks/test_cyice.py",
 ]

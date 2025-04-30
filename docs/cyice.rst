@@ -12,13 +12,13 @@ up to an order of magnitude faster for certain functions.
 Vectorized functions will also be implemented for a majority of the Cyice wrappers.
 
 Critically, because Cyice uses the same underlying shared library for CSPICE as SpiceyPy, 
-Cyice and SpiceyPy functions can be used interchangeably in a program.
-For example, you can load a kernel using SpiceyPy's furnsh function, then call spkpos from Cyice and use the same kernel pool. 
+Cyice and SpiceyPy functions can be used interchangeably in a Python program.
+For example, you can load a kernel using SpiceyPy's furnsh function, then call spkpos from Cyice using the same kernel pool. 
 
-This aspect of the design enables the development of Cyice to occur in phases with minimal to no user disruption. 
-Cyice is not replacing SpiceyPy, and will remain a submodule to SpiceyPy. 
+This enables the gradual development of Cyice to occur in phases with minimal to no user disruption. 
+Cyice is not replacing SpiceyPy, exactly, and will remain a submodule to SpiceyPy. 
 
-Think of it like remodeling a house or replacing the drive train in a car.
+Think of it like remodeling a house or replacing the drivetrain in a car.
 
 As Cyice functions are being constructed in a new sub module, existing codes will not use these functions unless they are explicitly imported. 
 A majority of Cyice functions will follow the existing SpiceyPy API and functionality, so breaking changes, if any, will be minimal and preceded by major version releases. 

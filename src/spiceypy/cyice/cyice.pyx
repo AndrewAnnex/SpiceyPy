@@ -37,7 +37,7 @@ SOFTWARE.
 
 from libc.stdlib cimport malloc, free
 from libc.string cimport memcpy, strlen
-from cython cimport boundscheck, wraparound
+from cython cimport boundscheck, wraparound, ufunc
 from cython.parallel import prange
 from cpython.unicode cimport PyUnicode_DecodeUTF8, PyUnicode_AsUTF8, PyUnicode_AsASCIIString, PyUnicode_DecodeASCII, PyUnicode_DecodeCharmap, PyUnicode_EncodeASCII, PyUnicode_EncodeCharmap
 import numpy as np
