@@ -1628,7 +1628,7 @@ def spkapo_v(
     int targ,  
     double[::1] ets, 
     str ref,
-    double[::1] sobs, 
+    double[:,::1] sobs, 
     str abcorr
     ):
     """
@@ -1651,8 +1651,14 @@ def spkapo_v(
     # initialize c variables
     cdef int c_targ = targ
     cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
-    cdef Py_ssize_t i, n = c_ets.shape[0]
-    cdef const double* c_sobs = &sobs[0]
+    cdef Py_ssize_t j, m, i, n = c_ets.shape[0]
+    cdef const np.double_t[:,::1] c_sobs = np.ascontiguousarray(sobs, dtype=np.double)
+    m = c_sobs.shape[0]
+    j = c_sobs.shape[1]
+    if n != m:
+        raise RuntimeError("ets length doesn't match sobs length")
+    if j != 6:
+        raise RuntimeError("sobs are not length 6")
     # convert the strings to pointers once
     cdef const char* c_ref    = ref
     cdef const char* c_abcorr = abcorr
@@ -1668,7 +1674,7 @@ def spkapo_v(
                 c_targ, 
                 c_ets[i], 
                 c_ref, 
-                c_sobs,
+                &c_sobs[i,0],
                 c_abcorr, 
                 &c_ptargs[i,0], 
                 &c_lts[i]
@@ -1775,7 +1781,14 @@ def spkcpo_v(
             One way light time between target and observer.
     """
     cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
-    cdef Py_ssize_t i, n = c_ets.shape[0]
+    cdef Py_ssize_t j, m, i, n = c_ets.shape[0]
+    cdef const np.double_t[:,::1] c_obspos = np.ascontiguousarray(obspos, dtype=np.double)
+    m = c_obspos.shape[0]
+    j = c_obspos.shape[1]
+    if n != m:
+        raise RuntimeError("ets length doesn't match sobs length")
+    if j != 3:
+        raise RuntimeError("sobs are not length 6")
     # convert the strings to pointers once
     cdef const char* c_target   = target
     cdef const char* c_outref   = outref
@@ -1783,8 +1796,6 @@ def spkcpo_v(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsctr   = obsctr
     cdef const char* c_obsref   = obsref
-    # convert input c arrays
-    cdef const double* c_obspos = &obspos[0]
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_states = p_states
@@ -1799,7 +1810,7 @@ def spkcpo_v(
                 c_outref,
                 c_refloc,
                 c_abcorr,
-                c_obspos,
+                &c_obspos[i,0],
                 c_obsctr,
                 c_obsref,
                 &c_states[i,0],

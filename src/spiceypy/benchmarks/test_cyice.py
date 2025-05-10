@@ -516,8 +516,9 @@ def test_spkapo_v(function, grouped_benchmark, load_core_kernels):
     et = spice.str2et("Jan 1 2004 5:00 PM")
     state = spice.spkssb(MOON, et, "J2000")
     ets = np.repeat(et, 100)
-    grouped_benchmark(function, MARS, ets, "J2000", state,"LT+S")
-    pos_vec, ltime = function(MARS, ets, "J2000", state, "LT+S")
+    states = np.repeat([state], 100, axis=0)
+    grouped_benchmark(function, MARS, ets, "J2000", states,"LT+S")
+    pos_vec, ltime = function(MARS, ets, "J2000", states, "LT+S")
     assert isinstance(pos_vec, np.ndarray)
     assert isinstance(ltime, np.ndarray)
 
