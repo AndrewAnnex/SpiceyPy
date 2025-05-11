@@ -22,7 +22,13 @@ from spiceypy.cyice import cyice
 
 
 def get_module_name(func):
-    return f"{func.__module__.split('.')[-1]}"
+    module = f"{func.__module__.split('.')[-1]}"
+    if module == 'cyice':
+        if '_s' in func.__name__:
+            return module+'_s'
+        elif '_v' in func.__name__:
+            return module+'_v'
+    return module
 
 # https://pytest-benchmark.readthedocs.io/en/latest/pedantic.html
 
@@ -92,7 +98,7 @@ def test_b1950(function, grouped_benchmark):
 
 # C
 
-@pytest.mark.parametrize('function', [cyice.ckgp, spice.ckgp], ids=get_module_name)
+@pytest.mark.parametrize('function', [cyice.ckgp_s, cyice.ckgp, spice.ckgp], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["ckgp"], indirect=True)
 def test_ckgp(function, grouped_benchmark, load_cassini_kernels):
     ckid  = -82000
@@ -112,7 +118,7 @@ def test_ckgp(function, grouped_benchmark, load_cassini_kernels):
     npt.assert_array_almost_equal(cmat, expected_cmat)
 
 
-@pytest.mark.parametrize('function', [cyice.ckgp_v], ids=get_module_name)
+@pytest.mark.parametrize('function', [cyice.ckgp, cyice.ckgp_v], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["ckgp_v"], indirect=True)
 def test_ckgp_v(function, grouped_benchmark, load_cassini_kernels):
     ckid  = -82000

@@ -9,6 +9,7 @@
 # cython: warn.maybe_uninitialized = True
 # cython: warn.multiple_declarators = True
 # cython: show_performance_hints = True
+# cython: always_allow_keywords = False
 # distutils: define_macros=NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
 
 """
@@ -37,9 +38,13 @@ SOFTWARE.
 
 from libc.stdlib cimport malloc, free
 from libc.string cimport memcpy, strlen
-from cython cimport boundscheck, wraparound, ufunc
+from cython cimport boundscheck, wraparound, ufunc, memoryview
 from cython.parallel import prange
-from cpython.unicode cimport PyUnicode_DecodeUTF8, PyUnicode_AsUTF8, PyUnicode_AsASCIIString, PyUnicode_DecodeASCII, PyUnicode_DecodeCharmap, PyUnicode_EncodeASCII, PyUnicode_EncodeCharmap
+from cpython.float cimport PyFloat_Check
+from cpython.unicode cimport PyUnicode_DecodeUTF8
+from cpython.bool       cimport PyBool_Check
+from cpython.tuple      cimport PyTuple_GET_SIZE
+
 import numpy as np
 import functools
 cimport numpy as np
@@ -74,8 +79,8 @@ ctypedef fused bool_arr_t:
 
 
 from .cyice cimport *
-from spiceypy.utils.exceptions import dynamically_instantiate_spiceyerror
-from spiceypy.found_catcher import spice_found_exception_thrower
+from spiceypy import config
+from spiceypy.utils.exceptions import dynamically_instantiate_spiceyerror, NotFoundError
 
 
 # support functions
@@ -83,6 +88,7 @@ cdef char[SHORTLEN]   shortmsg
 cdef char[EXPLAINLEN] explain
 cdef char[LONGLEN]    longmsg
 cdef char[TRACELEN]   traceback
+
 
 cpdef void check_for_spice_error():
     """
@@ -105,6 +111,7 @@ cpdef void check_for_spice_error():
           traceback
         )
 
+
 def spice_error_check(f):
     """
     Decorator for spiceypy hooking into spice error system.
@@ -124,12 +131,76 @@ def spice_error_check(f):
     return with_errcheck
 
 
+@boundscheck(False)
+@wraparound(False)
+cdef inline bint _all(np.uint8_t[::1] arr) nogil:
+    cdef Py_ssize_t i
+    cdef Py_ssize_t n = arr.shape[0]
+    for i in prange(n, nogil=True):
+        if arr[i] == 0:
+            return False
+    return True
+
+
+def cyice_found_exception_thrower(f):
+    """
+    Decorator for wrapping functions that use status codes
+    """
+
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        cdef object py_res = f(*args, **kwargs)
+        cdef object found
+        cdef np.uint8_t[::1] found_arr
+        cdef Py_ssize_t n
+        cdef bint all_true = True
+        # first check if the config to see if shortcut can be run. TODO move config to cyice?
+        if not config.catch_false_founds:
+            return py_res
+        else:
+            # get the last value which is the 
+            found = py_res[-1]
+            # if we have a scalar boolean
+            if PyBool_Check(<object>found):
+                # cast to bint
+                all_true = <bint> found
+                # and perform the bool test
+                if all_true < 1:
+                    # if true raise the exception
+                    raise NotFoundError(
+                        "Spice returns not found for function: {}".format(f.__name__),
+                        found=found,
+                    )
+            else:
+                # else assume we have a numpy array, so cast it to np.uint8_t
+                found_arr = found
+                # compute if all true using cython optimized version and prange
+                all_true = _all(found_arr)
+                # and perform the bool test
+                if all_true < 1:
+                    # if true raise exception
+                    raise NotFoundError(
+                        f"Spice returns not found in a series of calls for function: {f.__name__}",
+                        found=found,
+                    )
+            # at this point we know all found flags were true, so get the length of the tuple
+            n = PyTuple_GET_SIZE(py_res)
+            # slice off the "found" flag
+            if n - 1 == 1:
+                # return single value unwrapped
+                return py_res[0]
+            else:
+                # return the remaining elements
+                return py_res[0:n-1]
+    return wrapper
+
+
 #A
 
 
 #B
 
-cpdef b1900():
+def b1900():
     """
     Return the Julian Date corresponding to Besselian Date 1900.0.
 
@@ -140,7 +211,7 @@ cpdef b1900():
     return b1900_c()
 
 
-cpdef b1950():
+def b1950():
     """
     Return the Julian Date corresponding to Besselian Date 1950.0.
 
@@ -154,12 +225,12 @@ cpdef b1950():
 
 @boundscheck(False)
 @wraparound(False)
-@spice_found_exception_thrower
-def ckgp(
+@cyice_found_exception_thrower
+def ckgp_s(
     int inst,
     double sclkdp,
     double tol,
-    str ref
+    const char* ref
     ):
     """
     Get pointing (attitude) for a specified spacecraft clock time.
@@ -175,22 +246,17 @@ def ckgp(
             Output encoded spacecraft clock time
     """
     # initialize c variables
-    cdef int c_inst = inst
-    cdef double c_sclkdp = sclkdp
-    cdef double c_tol = tol
     cdef double c_clkout = 0.0
     cdef SpiceBoolean c_found = SPICEFALSE
-    # convert the strings to pointers once
-    cdef const char* c_ref = ref
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_cmat = np.empty((3,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_cmat = p_cmat
     # perform the call
     ckgp_c(
-        c_inst,
-        c_sclkdp,
-        c_tol,
-        c_ref,
+        inst,
+        sclkdp,
+        tol,
+        ref,
         <SpiceDouble (*)[3]> &c_cmat[0,0],
         &c_clkout,
         <SpiceBoolean *> &c_found
@@ -202,12 +268,12 @@ def ckgp(
 
 @boundscheck(False)
 @wraparound(False)
-@spice_found_exception_thrower
+@cyice_found_exception_thrower
 def ckgp_v(
     int inst,
     double[::1] sclkdps,
     double tol,
-    str ref
+    const char* c_ref
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.ckgp`
@@ -225,12 +291,8 @@ def ckgp_v(
             Output encoded spacecraft clock time
     """
     # initialize c variables
-    cdef int c_inst = inst
     cdef const np.double_t[::1] c_sclkdps = np.ascontiguousarray(sclkdps, dtype=np.double)
     cdef Py_ssize_t i, n = c_sclkdps.shape[0]
-    cdef double c_tol = tol
-    # convert the strings to pointers once
-    cdef const char* c_ref = ref
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_cmat   = np.empty((n,3,3), dtype=np.double, order='C')
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_clkout = np.empty(n, dtype=np.double, order='C')
@@ -242,9 +304,9 @@ def ckgp_v(
     with nogil:
         for i in range(n):
             ckgp_c(
-                c_inst,
+                inst,
                 c_sclkdps[i],
-                c_tol,
+                tol,
                 c_ref,
                 <SpiceDouble (*)[3]> &c_cmat[i,0,0],
                 &c_clkout[i],
@@ -255,9 +317,38 @@ def ckgp_v(
     return p_cmat, p_clkout, p_found
 
 
+
+def ckgp(
+    inst: int,
+    sclkdp: float | float[::1],
+    tol: float,
+    ref: str
+    ):
+    """
+    Get pointing (attitude) for specified spacecraft clock times.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckgp_c.html
+
+    :param inst: NAIF ID of instrument, spacecraft, or structure.
+    :param sclkdps: Encoded spacecraft clock times.
+    :param tol: Time tolerance.
+    :param ref: Reference frame.
+    :return:
+            C-matrix pointing data,
+            Output encoded spacecraft clock time
+    """
+    cdef int c_inst = inst
+    cdef double c_tol = tol
+    cdef const char* c_ref = ref
+    if PyFloat_Check(sclkdp):
+        return ckgp_s(c_inst, sclkdp, c_tol, c_ref)
+    else:
+        return ckgp_v(c_inst, sclkdp, c_tol, c_ref)
+
+
 @boundscheck(False)
 @wraparound(False)
-@spice_found_exception_thrower
+@cyice_found_exception_thrower
 def ckgpav(
     int    inst,
     double sclkdp,
@@ -310,7 +401,7 @@ def ckgpav(
 
 @boundscheck(False)
 @wraparound(False)
-@spice_found_exception_thrower
+@cyice_found_exception_thrower
 def ckgpav_v(
     int    inst,
     double[::1] sclkdps,
@@ -3095,7 +3186,7 @@ def str2et_v(
 # TODO need error check, need found exception thrower in cython
 @boundscheck(False)
 @wraparound(False)
-@spice_found_exception_thrower
+@cyice_found_exception_thrower
 def sincpt(
     str method,
     str target,
@@ -3168,7 +3259,7 @@ def sincpt(
 # TODO need error check, need found exception thrower in cython
 @boundscheck(False)
 @wraparound(False)
-@spice_found_exception_thrower
+@cyice_found_exception_thrower
 def sincpt_v(
     str method,
     str target,
