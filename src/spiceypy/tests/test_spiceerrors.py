@@ -94,12 +94,24 @@ def test_no_loaded_files_exception():
     with pytest.raises(spice.NotFoundError):
         spice.ckgp(0, 0, 0, "blah")
     spice.reset()
+    # with pytest.raises(spice.SpiceyError):
+    #     cyice.ckgp(0, 0.0, 0, "blah")
+    # spice.reset()
+    # with pytest.raises(spice.NotFoundError):
+    #     cyice.ckgp(0, 0.0, 0, "blah")
+    # spice.reset()
     with spiceypy.found_catcher.no_found_check():
         with pytest.raises(spice.SpiceyPyIOError):
             spice.ckgp(0, 0, 0, "blah")
         spice.reset()
         with pytest.raises(spice.exceptions.SpiceNOLOADEDFILES):
             spice.ckgp(0, 0, 0, "blah")
+        spice.reset()
+        with pytest.raises(spice.SpiceyPyIOError):
+            cyice.ckgp(0, 0.0, 0, "blah")
+        spice.reset()
+        with pytest.raises(spice.exceptions.SpiceNOLOADEDFILES):
+            cyice.ckgp(0, 0.0, 0, "blah")
         spice.reset()
 
 

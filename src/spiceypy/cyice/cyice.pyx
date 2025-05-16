@@ -45,8 +45,10 @@ from cpython.unicode cimport PyUnicode_DecodeUTF8
 from cpython.bool       cimport PyBool_Check
 from cpython.tuple      cimport PyTuple_GET_SIZE
 
-import numpy as np
 import functools
+from typing import Annotated, Literal
+
+import numpy as np
 cimport numpy as np
 np.import_array()
 
@@ -78,6 +80,25 @@ ctypedef fused bool_arr_t:
    np.uint8_t[::1]
 
 
+# typing stuff
+BoolArray   = np.typing.NDArray[np.uint8]
+IntArray    = np.typing.NDArray[np.int32]
+DoubleArray = np.typing.NDArray[np.double]
+Found_N     = Annotated[BoolArray, Literal["N"]]
+Int_N       = Annotated[IntArray, Literal["N"]]
+Double_N    = Annotated[DoubleArray, Literal["N"]]
+Vector      = Annotated[DoubleArray, Literal[3]]
+Vector_N    = Annotated[DoubleArray, Literal["N",3]]
+State       = Annotated[DoubleArray, Literal[6]]
+State_N     = Annotated[DoubleArray, Literal["N",6]]
+Matrix      = Annotated[DoubleArray, Literal[3,3]]
+Matrix_3    = Annotated[DoubleArray, Literal[3,3]]
+Matrix_6    = Annotated[DoubleArray, Literal[6,6]]
+Matrix_N    = Annotated[DoubleArray, Literal["N",3,3]]
+Matrix_N_3  = Annotated[DoubleArray, Literal["N",3,3]]
+Matrix_N_6  = Annotated[DoubleArray, Literal["N",6,6]]
+
+
 from .cyice cimport *
 from spiceypy import config
 from spiceypy.utils.exceptions import dynamically_instantiate_spiceyerror, NotFoundError
@@ -97,7 +118,7 @@ cpdef void check_for_spice_error():
     :param f: function
     :raise stypes.SpiceyError:
     """
-    if failed():
+    if failed_c():
         with nogil:
             getmsg_c("SHORT", SHORTLEN, shortmsg)
             getmsg_c("EXPLAIN", EXPLAINLEN, explain)
@@ -112,36 +133,17 @@ cpdef void check_for_spice_error():
         )
 
 
-def spice_error_check(f):
-    """
-    Decorator for spiceypy hooking into spice error system.
-    If an error is detected, an output similar to outmsg
-
-    :return:
-    """
-
-    @functools.wraps(f)
-    def with_errcheck(*args, **kwargs):
-        try:
-            res = f(*args, **kwargs)
-            check_for_spice_error()
-            return res
-        except BaseException:
-            raise
-    return with_errcheck
-
-
 @boundscheck(False)
 @wraparound(False)
 cdef inline bint _all(np.uint8_t[::1] arr) nogil:
-    cdef Py_ssize_t i
-    cdef Py_ssize_t n = arr.shape[0]
+    cdef Py_ssize_t i, n = arr.shape[0]
     for i in prange(n, nogil=True):
         if arr[i] == 0:
             return False
     return True
 
-
+@wraparound(False)
+@boundscheck(False)
 def cyice_found_exception_thrower(f):
     """
     Decorator for wrapping functions that use status codes
@@ -149,23 +151,27 @@ def cyice_found_exception_thrower(f):
 
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
-        cdef object py_res = f(*args, **kwargs)
+        cdef tuple py_res = f(*args, **kwargs)
         cdef object found
+        cdef np.uint8_t c_found
         cdef np.uint8_t[::1] found_arr
-        cdef Py_ssize_t n
+        cdef Py_ssize_t n, last
         cdef bint all_true = True
         # first check if the config to see if shortcut can be run. TODO move config to cyice?
         if not config.catch_false_founds:
             return py_res
         else:
+            n = PyTuple_GET_SIZE(py_res)
+            last = n - 1
             # get the last value which is the 
-            found = py_res[-1]
+            found = py_res[last]
             # if we have a scalar boolean
             if PyBool_Check(<object>found):
                 # cast to bint
-                all_true = <bint> found
+                #all_true = <bint> found
                 # and perform the bool test
-                if all_true < 1:
+                c_found = found
+                if c_found == 0:
                     # if true raise the exception
                     raise NotFoundError(
                         "Spice returns not found for function: {}".format(f.__name__),
@@ -184,14 +190,14 @@ def cyice_found_exception_thrower(f):
                         found=found,
                     )
             # at this point we know all found flags were true, so get the length of the tuple
-            n = PyTuple_GET_SIZE(py_res)
+
             # slice off the "found" flag
-            if n - 1 == 1:
+            if last == 1:
                 # return single value unwrapped
                 return py_res[0]
             else:
                 # return the remaining elements
-                return py_res[0:n-1]
+                return py_res[0:last]
     return wrapper
 
 
@@ -231,7 +237,7 @@ def ckgp_s(
     double sclkdp,
     double tol,
     const char* ref
-    ):
+    ) -> tuple[Matrix_3, float, bool] | tuple[Matrix_3, float]:
     """
     Get pointing (attitude) for a specified spacecraft clock time.
 
@@ -244,6 +250,7 @@ def ckgp_s(
     :return:
             C-matrix pointing data,
             Output encoded spacecraft clock time
+            Found flag (possibly)
     """
     # initialize c variables
     cdef double c_clkout = 0.0
@@ -274,7 +281,7 @@ def ckgp_v(
     double[::1] sclkdps,
     double tol,
     const char* c_ref
-    ):
+    )-> tuple[Matrix_N, Double_N, Found_N] | tuple[Matrix_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.ckgp`
 
@@ -289,6 +296,7 @@ def ckgp_v(
     :return:
             C-matrix pointing data,
             Output encoded spacecraft clock time
+            Found flags (possibly)
     """
     # initialize c variables
     cdef const np.double_t[::1] c_sclkdps = np.ascontiguousarray(sclkdps, dtype=np.double)
@@ -317,13 +325,12 @@ def ckgp_v(
     return p_cmat, p_clkout, p_found
 
 
-
 def ckgp(
     inst: int,
     sclkdp: float | float[::1],
     tol: float,
     ref: str
-    ):
+    )-> tuple[Matrix_3, float, bool] | tuple[Matrix_3, float] | tuple[Matrix_N, Vector, Found_N] | tuple[Matrix_N, Vector_N]:
     """
     Get pointing (attitude) for specified spacecraft clock times.
 
@@ -336,6 +343,7 @@ def ckgp(
     :return:
             C-matrix pointing data,
             Output encoded spacecraft clock time
+            Found flag(s) (possibly)
     """
     cdef int c_inst = inst
     cdef double c_tol = tol
@@ -349,12 +357,12 @@ def ckgp(
 @boundscheck(False)
 @wraparound(False)
 @cyice_found_exception_thrower
-def ckgpav(
+def ckgpav_s(
     int    inst,
     double sclkdp,
     double tol,
-    str    ref
-    ):
+    const char* c_ref
+    ) -> tuple[Matrix_3, Vector, float, bool] | tuple[Matrix_3, Vector, float]:
     """
     Get pointing (attitude) and angular velocity
     for a specified spacecraft clock time.
@@ -376,8 +384,6 @@ def ckgpav(
     cdef double c_tol = tol
     cdef double c_clkout = 0.0
     cdef SpiceBoolean c_found = SPICEFALSE
-    # convert the strings to pointers once
-    cdef const char* c_ref = ref
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_cmat = np.empty((3,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_cmat = p_cmat
@@ -406,8 +412,8 @@ def ckgpav_v(
     int    inst,
     double[::1] sclkdps,
     double tol,
-    str    ref
-    ):
+    const char* c_ref
+    ) -> tuple[Matrix_N, Vector_N, Double_N, Found_N] | tuple[Matrix_N, Vector_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.ckgpav`
 
@@ -430,8 +436,6 @@ def ckgpav_v(
     cdef double c_tol = tol
     cdef const np.double_t[::1] c_sclkdps = np.ascontiguousarray(sclkdps, dtype=np.double)
     cdef Py_ssize_t i, n = c_sclkdps.shape[0]
-    # convert the strings to pointers once
-    cdef const char* c_ref = ref
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_cmat = np.empty((n,3,3), dtype=np.double, order='C')
     cdef np.double_t[:,:,::1] c_cmat = p_cmat
@@ -439,8 +443,8 @@ def ckgpav_v(
     cdef np.double_t[:,::1]   c_av = p_av
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_clkout = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_clkout = p_clkout
-    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.int32, order='C')
-    cdef np.int32_t[::1] c_found = p_found
+    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.uint8, order='C')
+    cdef np.uint8_t[::1] c_found = p_found
     # perform the call
     with nogil:
         for i in range(n):
@@ -456,7 +460,38 @@ def ckgpav_v(
             )
     check_for_spice_error()
     # return results
-    return p_cmat, p_av, p_clkout, p_found.astype(np.bool_)
+    return p_cmat, p_av, p_clkout, p_found
+
+
+def ckgpav(
+    inst: int,
+    sclkdp: float | float[::1],
+    tol: float,
+    ref: str
+    ) -> tuple[Matrix_3, Vector, float, bool] | tuple[Matrix_3, Vector, float] | tuple[Matrix_N, Vector_N, Double_N, Found_N] | tuple[Matrix_N, Vector_N, Double_N]:
+    """
+    Get pointing (attitude) and angular velocity
+    for a specified spacecraft clock time.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckgpav_c.html
+
+    :param inst: NAIF ID of instrument, spacecraft, or structure.
+    :param sclkdp: Encoded spacecraft clock time.
+    :param tol: Time tolerance.
+    :param ref: Reference frame.
+    :return:
+            C-matrix pointing data,
+            Angular velocity vector,
+            Output encoded spacecraft clock time.
+    """
+    # initialize c variables
+    cdef int c_inst = inst
+    cdef double c_tol = tol
+    cdef const char* c_ref = ref
+    if PyFloat_Check(sclkdp):
+        return ckgpav_s(c_inst, sclkdp, c_tol, c_ref)
+    else:
+        return ckgpav_v(c_inst, sclkdp, c_tol, c_ref)
 
 
 def convrt(
@@ -492,11 +527,11 @@ def convrt(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef convrt_v(
+def convrt_v(
     double[::1] x, 
     str inunit, 
     str outunit
-    ):
+    ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.convrt`
 
@@ -564,7 +599,7 @@ def deltet(
 def deltet_v(
     double[::1] epochs, 
     str eptype
-    ):
+    ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.deltet`
 
@@ -602,7 +637,7 @@ def et2lst(
     int body,
     double lon,
     str typein
-):
+) -> tuple[int, int, int, str, str]:
     """
     Given an ephemeris epoch, compute the local solar time for
     an object on the surface of a body at a specified longitude.
@@ -728,7 +763,7 @@ def et2utc(
     double et, 
     str format_str, 
     int prec
-):
+) -> str:
     """
     Convert an input time from ephemeris seconds past J2000
     to Calendar, Day-of-Year, or Julian Date format, UTC.
@@ -807,7 +842,7 @@ def et2utc_v(
 
 def etcal(
     double et
-    ):
+    ) -> str:
     """
     Convert from an ephemeris epoch measured in seconds past
     the epoch of J2000 to a calendar string format using a
@@ -870,7 +905,7 @@ def etcal_v(
     return py_results
 # F
 
-cpdef SpiceBoolean failed():
+cpdef SpiceBoolean failed() noexcept:
     """
     True if an error condition has been signalled via sigerr_c.
 
@@ -890,7 +925,7 @@ def fovray(
     str abcorr,
     str obsrvr,
     double et
-):
+) -> bool:
     """
     Determine if a specified ray is within the field-of-view (FOV) of a
     specified instrument at a given time.
@@ -937,7 +972,7 @@ def fovray_v(
     str abcorr,
     str obsrvr,
     double[::1] ets
-):
+) -> BoolArray:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.fovray`
 
@@ -990,7 +1025,7 @@ def fovtrg(
     str abcorr,
     str obsrvr,
     double et
-):
+) -> bool:
     """
     Determine if a specified ephemeris object is within the field-of-view (FOV)
     of a specified instrument at a given time.
@@ -1042,7 +1077,7 @@ def fovtrg_v(
     str abcorr,
     str obsrvr,
     np.double_t[::1] ets
-):
+) -> BoolArray:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.fovtrg`
 
@@ -1093,7 +1128,7 @@ def fovtrg_v(
 
 def furnsh(
     str file
-    ):
+    ) -> None:
     """
     Load one or more SPICE kernels into a program.
 
@@ -1163,7 +1198,7 @@ def lspcn(
     str body, 
     double et, 
     str abcorr
-    ):
+    ) -> float:
     """
     Compute L_s, the planetocentric longitude of the sun, as seen
     from a specified body.
@@ -1194,7 +1229,7 @@ def lspcn_v(
     str body, 
     double[::1] ets, 
     str abcorr
-    ):
+    ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.lspcn`
 
@@ -1283,7 +1318,7 @@ cpdef void reset() noexcept:
 def scdecd(
     int sc, 
     double sclkdp
-    )-> str:
+    ) -> str:
     """
     Convert double precision encoding of spacecraft clock time into
     a character representation.
@@ -1353,7 +1388,7 @@ def scdecd_v(
 def scencd(
     int sc, 
     str sclkch
-    )-> float:
+    ) -> float:
     """
     Encode character representation of spacecraft clock time into a
     double precision number.
@@ -1381,7 +1416,7 @@ def scencd(
 def scencd_v(
     int sc, 
     list[str] sclkchs
-    ):
+    ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.scencd`
 
@@ -1413,7 +1448,7 @@ def scencd_v(
 def sce2c(
     int sc, 
     double et
-    ):
+    ) -> float:
     """
     Convert ephemeris seconds past J2000 (ET) to continuous encoded
     spacecraft clock "ticks".  Non-integral tick values may be
@@ -1444,7 +1479,7 @@ def sce2c(
 def sce2c_v(
     int sc, 
     double[::1] ets
-):
+) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sce2c`
 
@@ -1479,7 +1514,7 @@ def sce2c_v(
 def sce2s(
     int sc, 
     double et
-    )-> str:
+    ) -> str:
     """
     Convert an epoch specified as ephemeris seconds past J2000 (ET) to a
     character string representation of a spacecraft clock value (SCLK).
@@ -1550,7 +1585,7 @@ def sce2s_v(
 def scs2e(
     int sc,
     str sclkch
-    )-> float:
+    ) -> float:
     """
     Convert a spacecraft clock string to ephemeris seconds past J2000 (ET).
 
@@ -1577,7 +1612,7 @@ def scs2e(
 def scs2e_v(
     int sc, 
     list[str] sclkchs
-    ):
+    ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.scs2e`
 
@@ -1608,7 +1643,7 @@ def scs2e_v(
 def sct2e(
     int sc, 
     double sclkdp
-    )-> float:
+    ) -> float:
     """
     Convert encoded spacecraft clock ("ticks") to ephemeris
     seconds past J2000 (ET).
@@ -1636,7 +1671,7 @@ def sct2e(
 def sct2e_v(
     int sc, 
     double[::1] sclkdps
-    ):
+    ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sct2e`
 
@@ -1673,7 +1708,7 @@ def spkapo(
     str ref,
     double[::1] sobs, 
     str abcorr
-    ):
+    ) -> tuple[Vector, float]:
     """
     Return the position of a target body relative to an observer,
     optionally corrected for light time and stellar aberration.
@@ -1721,7 +1756,7 @@ def spkapo_v(
     str ref,
     double[:,::1] sobs, 
     str abcorr
-    ):
+    ) -> tuple[Vector_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkapo`
 
@@ -1785,7 +1820,7 @@ def spkcpo(
     double[::1] obspos,
     str obsctr,
     str obsref
-    ):
+    ) -> tuple[State, float]:
     """
     Return the state of a specified target relative to an "observer,"
     where the observer has constant position in a specified reference
@@ -1848,7 +1883,7 @@ def spkcpo_v(
     str abcorr,
     double[::1] obspos,
     str obsctr,
-    str obsref):
+    str obsref) -> tuple[State_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkcpo`
     
@@ -1923,7 +1958,7 @@ def spkcpt(
     str refloc,
     str abcorr,
     str obsrvr
-    ):
+    ) -> tuple[State, float]:
     """
     Return the state, relative to a specified observer, of a target
     having constant position in a specified reference frame. The
@@ -1988,7 +2023,7 @@ def spkcpt_v(
     str refloc,
     str abcorr,
     str obsrvr
-    ):
+    ) -> tuple[State_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkcpt`
     
@@ -2059,7 +2094,7 @@ def spkcvo(
     double[::1] obssta,
     double obsepc,
     str obsctr,
-    str obsref):
+    str obsref)-> tuple[State, float]:
     """
     Return the state of a specified target relative to an "observer,"
     where the observer has constant velocity in a specified reference
@@ -2127,7 +2162,7 @@ def spkcvo_v(
     double[::1] obssta, # TODO vectorize here?
     double obsepc,    # TODO vectorize here?
     str obsctr,
-    str obsref):
+    str obsref)-> tuple[State_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkcvo`
     
@@ -2201,7 +2236,7 @@ def spkcvt(
     str outref,
     str refloc,
     str abcorr,
-    str obsrvr):
+    str obsrvr)-> tuple[State, float]:
     """
     Return the state, relative to a specified observer, of a target
     having constant velocity in a specified reference frame. The
@@ -2269,7 +2304,7 @@ def spkcvt_v(
     str outref,
     str refloc,
     str abcorr,
-    str obsrvr):
+    str obsrvr)-> tuple[State_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkcvt`
     
@@ -2340,7 +2375,7 @@ def spkez(
     str ref, 
     str abcorr, 
     int observer
-    ):
+    )-> tuple[State, float]:
     """
     Return the state (position and velocity) of a target body
     relative to an observing body, optionally corrected for light
@@ -2388,7 +2423,7 @@ def spkez_v(
     double[::1] epochs, 
     str ref, 
     str abcorr, 
-    int observer):
+    int observer)-> tuple[State_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkez`
 
@@ -2445,7 +2480,7 @@ def spkezp(
     str ref, 
     str abcorr, 
     int obs
-    ):
+    ) -> tuple[Vector, float]:
     """
     Return the position of a target body relative to an observing
     body, optionally corrected for light time (planetary aberration)
@@ -2494,7 +2529,7 @@ def spkezp_v(
     str ref, 
     str abcorr, 
     int obs
-    ):
+    )-> tuple[Vector_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkezp`
 
@@ -2550,7 +2585,7 @@ def spkezr(
     str frame, 
     str abcorr, 
     str observer
-    ):
+    )-> tuple[State, float]:
     """
     Return the state (position and velocity) of a target body
     relative to an observing body, optionally corrected for light
@@ -2597,7 +2632,7 @@ def spkezr_v(
     double[::1] epochs, 
     str frame, 
     str abcorr, 
-    str observer):
+    str observer)-> tuple[State_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkezr`
 
@@ -2653,7 +2688,7 @@ def spkgeo(
     double et,
     str ref,
     int obs
-    ):
+    )-> tuple[State, float]:
     """
     Compute the geometric state (position and velocity) of a target
     body relative to an observing body.
@@ -2699,7 +2734,7 @@ def spkgeo_v(
     double[::1] ets,
     str ref,
     int obs,
-    ):
+    )-> tuple[State_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkgeo`
     
@@ -2751,7 +2786,7 @@ def spkgps(
     double et,
     str ref,
     int obs
-    ):
+    ) -> tuple[Vector, float]:
     """
     Compute the geometric position of a target body relative to an
     observing body.
@@ -2795,7 +2830,7 @@ def spkgps_v(
     double[::1] ets,
     str ref,
     int obs,
-    ):
+    ) -> tuple[Vector_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkgps`
     
@@ -2846,7 +2881,7 @@ def spkpos(
     str ref, 
     str abcorr, 
     str obs
-    ):
+    ) -> tuple[Vector, float]:
     """
     Return the position of a target body relative to an observing
     body, optionally corrected for light time (planetary aberration)
@@ -2895,7 +2930,7 @@ def spkpos_v(
     str ref, 
     str abcorr, 
     str obs
-    ):
+    )-> tuple[Vector_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkpos`
     
@@ -2950,7 +2985,7 @@ def spkpvn(
     int handle,
     double[::1] descr,
     double et
-    ):
+    ) -> tuple[int, State, int]:
     """
     For a specified SPK segment and time, return the state (position and
     velocity) of the segment's target body relative to its center of
@@ -2997,7 +3032,7 @@ def spkpvn_v(
     int handle,
     double[::1] descr,
     double[::1] ets
-    ):
+    ) -> tuple[Int_N, State_N, Int_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkpvn`
     
@@ -3050,7 +3085,7 @@ def spkssb(
     int targ,
     double et,
     str ref,
-    ):
+    ) -> State:
     """
     Return the state (position and velocity) of a target body
     relative to the solar system barycenter.
@@ -3088,7 +3123,7 @@ def spkssb_v(
     int targ,
     double[::1] ets,
     str ref,
-    ):
+    ) -> State_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkssb`
     
@@ -3127,7 +3162,7 @@ def spkssb_v(
 
 def str2et(
     str time
-    ):
+    ) -> float:
     """
     Convert a string representing an epoch to a double precision
     value representing the number of TDB seconds past the J2000
@@ -3153,7 +3188,7 @@ def str2et(
 @wraparound(False)
 def str2et_v(
     list[str] times
-    ):
+    ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.str2et`
     
@@ -3196,7 +3231,7 @@ def sincpt(
     str obsrvr,
     str dref,
     double[::1] dvec
-    ):
+    ) -> tuple[Vector, float, Vector, bool]:
     """
     Given an observer and a direction vector defining a ray, compute
     the surface intercept of the ray on a target body at a specified
@@ -3269,7 +3304,7 @@ def sincpt_v(
     str obsrvr,
     str dref,
     double[::1] dvec
-    ):
+    ) -> tuple[Vector_N, Double_N, Vector_N, Found_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sincpt`
     
@@ -3345,7 +3380,7 @@ def subpnt(
     str fixref, 
     str abcorr, 
     str obsrvr
-    ):
+    ) -> tuple[Vector, float, Vector]:
     """
     Compute the rectangular coordinates of the sub-observer point on
     a target body at a specified epoch, optionally corrected for
@@ -3405,7 +3440,7 @@ def subpnt_v(
     str fixref, 
     str abcorr, 
     str obsrvr
-    ):
+    ) -> tuple[Vector_N, Double_N, Vector_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.subpnt`
     
@@ -3472,7 +3507,7 @@ def subslr(
     str fixref, 
     str abcorr, 
     str obsrvr
-    ):
+    ) -> tuple[Vector, float, Vector]:
     """
     Compute the rectangular coordinates of the sub-solar point on
     a target body at a specified epoch, optionally corrected for
@@ -3533,7 +3568,7 @@ def subslr_v(
     str fixref, 
     str abcorr, 
     str obsrvr
-    ):
+    ) -> tuple[Vector_N, Double_N, Vector_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.subslr`
     
@@ -3596,7 +3631,7 @@ def sxform(
     str fromstring, 
     str tostring, 
     double et
-    ):
+    ) -> Matrix_6:
     """
     Return the state transformation matrix from one frame to
     another at a specified epoch.
@@ -3632,7 +3667,7 @@ def sxform_v(
     str fromstring, 
     str tostring, 
     double[::1] ets
-):
+) -> Matrix_N_6:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sxform`
     
@@ -3848,7 +3883,7 @@ def tangpt_v(
 def timout(
     double et, 
     str pictur
-    ):
+    ) -> str:
     """
     This vectorized routine converts an input epoch represented in TDB seconds
     past the TDB epoch of J2000 to a character string formatted to
@@ -3927,7 +3962,7 @@ def trgsep(
     str frame2, 
     str obsrvr, 
     str abcorr
-    ):
+    ) -> float:
     """
     Compute the angular separation in radians between two spherical
     or point objects.
@@ -3982,7 +4017,7 @@ def trgsep_v(
     str frame2, 
     str obsrvr, 
     str abcorr
-):
+    ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.trgsep`
     
@@ -4037,7 +4072,7 @@ def unitim(
         double epoch,
         str insys,
         str outsys,
-    )-> float:
+    ) -> float:
     """
     Transform time from one uniform scale to another.  The uniform
     time scales are TAI, TDT, TDB, ET, JED, JDTDB, JDTDT.
@@ -4070,7 +4105,7 @@ def unitim_v(
         double[::1] epochs,
         insys: str,
         outsys: str,
-    ):
+    ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.unitim`
     
@@ -4105,7 +4140,7 @@ def unitim_v(
     return p_unitims
 
 
-def unload(str file):
+def unload(str file) -> None:
     """
     Unload a SPICE kernel.
 
@@ -4141,7 +4176,7 @@ def utc2et(str utcstr)-> float:
 @wraparound(False)
 def utc2et_v(
     list[str] utcstr
-    ):
+    ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.utc2et`
     
