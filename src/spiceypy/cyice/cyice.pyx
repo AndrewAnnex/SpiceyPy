@@ -136,8 +136,8 @@ cpdef void check_for_spice_error():
 @boundscheck(False)
 @wraparound(False)
 cdef inline bint _all(np.uint8_t[::1] arr) nogil:
-    cdef Py_ssize_t i, n = arr.shape[0]
-    for i in prange(n, nogil=True):
+    cdef Py_ssize_t i
+    for i in prange(arr.shape[0], nogil=True):
         if arr[i] == 0:
             return False
     return True
@@ -1038,7 +1038,7 @@ cpdef SpiceBoolean failed() noexcept:
 
 @boundscheck(False)
 @wraparound(False)
-def fovray(
+def fovray_s(
     str inst,
     double[::1] raydir,
     str rframe,
@@ -1047,6 +1047,8 @@ def fovray(
     double et
 ) -> bool:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.fovray`
+
     Determine if a specified ray is within the field-of-view (FOV) of a
     specified instrument at a given time.
 
@@ -1137,7 +1139,35 @@ def fovray_v(
     return p_visibl.astype(np.bool_)
   
 
-def fovtrg(
+def fovray(
+    inst: str,
+    raydir: float[::1],
+    rframe: str,
+    abcorr: str,
+    obsrvr: str,
+    et: float | float[::1]
+) -> bool | BoolArray:
+    """
+    Determine if a specified ray is within the field-of-view (FOV) of a
+    specified instrument at a given time.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/fovray_c.html
+
+    :param inst: Name or ID code string of the instrument.
+    :param raydir: Ray's direction vector.
+    :param rframe: Body-fixed, body-centered frame for target body.
+    :param abcorr: Aberration correction flag.
+    :param observer: Name or ID code string of the observer.
+    :param et: Time of the observation (seconds past J2000).
+    :return: Visibility flag
+    """
+    if PyFloat_Check(et):
+        return fovray_s(inst, raydir, rframe, abcorr, obsrvr, et)
+    else:
+        return fovray_v(inst, raydir, rframe, abcorr, obsrvr, et)
+
+
+def fovtrg_s(
     str inst,   
     str target,
     str tshape,
@@ -1145,8 +1175,10 @@ def fovtrg(
     str abcorr,
     str obsrvr,
     double et
-) -> bool:
+    ) -> bool:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.fovtrg`
+
     Determine if a specified ephemeris object is within the field-of-view (FOV)
     of a specified instrument at a given time.
 
@@ -1196,8 +1228,8 @@ def fovtrg_v(
     str tframe,
     str abcorr,
     str obsrvr,
-    np.double_t[::1] ets
-) -> BoolArray:
+    np.double_t[::1] ets    
+    ) -> BoolArray:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.fovtrg`
 
@@ -1244,6 +1276,36 @@ def fovtrg_v(
     check_for_spice_error()
     # return
     return p_visibl.astype(np.bool_)
+
+
+def fovtrg(
+    inst:   str, 
+    target: str,
+    tshape: str,
+    tframe: str,
+    abcorr: str,
+    obsrvr: str,
+    et: float | float[::1]
+    ) -> bool | BoolArray:
+    """
+    Determine if a specified ephemeris object is within the field-of-view (FOV)
+    of a specified instrument at a given time.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/fovtrg_c.html
+
+    :param inst: Name or ID code string of the instrument.
+    :param target: Name or ID code string of the target.
+    :param tshape: Type of shape model used for the target.
+    :param tframe: Body-fixed, body-centered frame for target body.
+    :param abcorr: Aberration correction flag.
+    :param observer: Name or ID code string of the observer.
+    :param et: Time of the observation (seconds past J2000).
+    :return: Visibility flag
+    """
+    if PyFloat_Check(et):
+        return fovtrg_s(inst, target, tshape, tframe, abcorr, obsrvr, et)
+    else:
+        return fovtrg_v(inst, target, tshape, tframe, abcorr, obsrvr, et)
 
 
 def furnsh(
@@ -1314,12 +1376,14 @@ cpdef str getmsg(
 
 # L
 
-def lspcn(
+def lspcn_s(
     str body, 
     double et, 
     str abcorr
     ) -> float:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.lspcn`
+
     Compute L_s, the planetocentric longitude of the sun, as seen
     from a specified body.
 
@@ -1379,6 +1443,28 @@ def lspcn_v(
     check_for_spice_error()
     return p_l_s_s
 
+
+def lspcn(
+    body: str, 
+    et: float | float[::1], 
+    abcorr: str
+    ) -> float | Double_N:
+    """
+    Compute L_s, the planetocentric longitude of the sun, as seen
+    from a specified body.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lspcn_c.html
+
+    :param body: Name of central body.
+    :param et: Epoch in seconds past J2000 TDB.
+    :param abcorr: Aberration correction.
+    :return: planetocentric longitude of the sun in radians
+    """
+    if PyFloat_Check(et):
+        return lspcn_s(body, et, abcorr)
+    else:
+        return lspcn_v(body, et, abcorr)
+
 #M 
 
 #N 
@@ -1435,11 +1521,13 @@ cpdef void reset() noexcept:
 
 #S
 
-def scdecd(
+def scdecd_s(
     int sc, 
     double sclkdp
     ) -> str:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.scdecd`
+
     Convert double precision encoding of spacecraft clock time into
     a character representation.
 
@@ -1505,11 +1593,33 @@ def scdecd_v(
     return py_sclkchs
 
 
-def scencd(
+def scdecd(
+    sc: int, 
+    sclkdp: float | float[::1]
+    ):
+    """
+    Convert double precision encoding of spacecraft clock time into
+    a character representation.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scdecd_c.html
+
+    :param sc: NAIF spacecraft identification code.
+    :param sclkdp: Encoded representation of a spacecraft clock count.
+    :return: Character representation of a clock count.
+    """
+    if PyFloat_Check(sclkdp):
+        return scdecd_s(sc, sclkdp)
+    else:
+        return scdecd_v(sc, sclkdp)
+
+
+def scencd_s(
     int sc, 
     str sclkch
     ) -> float:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.scencd`
+
     Encode character representation of spacecraft clock time into a
     double precision number.
 
@@ -1565,11 +1675,33 @@ def scencd_v(
     return p_sclkdps
 
 
-def sce2c(
+def scencd(
+    sc: int, 
+    sclkch: str | list[str]
+    ) -> float | Double_N:
+    """
+    Encode character representation of spacecraft clock time into a
+    double precision number.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scencd_c.html
+
+    :param sc: NAIF spacecraft identification code.
+    :param sclkch: Character representation of a spacecraft clock.
+    :return: Encoded representation of the clock count.
+    """
+    if PyUnicode_Check(sclkch):
+        return scencd_s(sc, sclkch)
+    else:
+        return scencd_v(sc, sclkch)
+
+
+def sce2c_s(
     int sc, 
     double et
     ) -> float:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.sce2c`
+
     Convert ephemeris seconds past J2000 (ET) to continuous encoded
     spacecraft clock "ticks".  Non-integral tick values may be
     returned.
@@ -1631,11 +1763,36 @@ def sce2c_v(
     return p_sclkdps
 
 
-def sce2s(
+def sce2c(
+    sc: int, 
+    et: float | float[::1]
+    ) -> float | Double_N:
+    """
+    Convert ephemeris seconds past J2000 (ET) to continuous encoded
+    spacecraft clock "ticks".  Non-integral tick values may be
+    returned.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sce2c_c.html
+
+    :param sc: NAIF spacecraft ID code.
+    :param et: Ephemeris time, seconds past J2000 TDB.
+    :return:
+            SCLK, encoded as ticks since spacecraft clock start.
+            sclkdp need not be integral.
+    """
+    if PyFloat_Check(et):
+        return sce2c_s(sc, et)
+    else:
+        return sce2c_v(sc, et)
+
+
+def sce2s_s(
     int sc, 
     double et
     ) -> str:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.sce2s`
+
     Convert an epoch specified as ephemeris seconds past J2000 (ET) to a
     character string representation of a spacecraft clock value (SCLK).
 
@@ -1702,11 +1859,33 @@ def sce2s_v(
     return py_sclkchs
 
 
-def scs2e(
+def sce2s(
+    sc: int, 
+    et: float | float[::1]
+    ):
+    """
+    Convert an epoch specified as ephemeris seconds past J2000 (ET) to a
+    character string representation of a spacecraft clock value (SCLK).
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sce2s_c.html
+
+    :param sc: NAIF spacecraft clock ID code.
+    :param et: Ephemeris time, specified as seconds past J2000 TDB.
+    :return: An SCLK string.
+    """
+    if PyFloat_Check(et):
+        return sce2s_s(sc, et)
+    else:
+        return sce2s_v(sc, et)
+
+
+def scs2e_s(
     int sc,
     str sclkch
     ) -> float:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.scs2e`
+
     Convert a spacecraft clock string to ephemeris seconds past J2000 (ET).
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scs2e_c.html
@@ -1760,11 +1939,32 @@ def scs2e_v(
     return p_ets
 
 
-def sct2e(
+def scs2e(
+    sc: int,
+    sclkch: str | list[str]
+    ) -> float | Double_N:
+    """
+    Convert a spacecraft clock string to ephemeris seconds past J2000 (ET).
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scs2e_c.html
+
+    :param sc: NAIF integer code for a spacecraft.
+    :param sclkch: An SCLK string.
+    :return: Ephemeris time, seconds past J2000.
+    """
+    if PyUnicode_Check(sclkch):
+        return scs2e_s(sc, sclkch)
+    else:
+        return scs2e_v(sc, sclkch)
+
+
+def sct2e_s(
     int sc, 
     double sclkdp
     ) -> float:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.sct2e`
+
     Convert encoded spacecraft clock ("ticks") to ephemeris
     seconds past J2000 (ET).
 
@@ -1820,9 +2020,29 @@ def sct2e_v(
     return p_ets
 
 
+def sct2e(
+    sc: int, 
+    sclkdp: float | float[::1]
+    ) -> float | Double_N:
+    """
+    Convert encoded spacecraft clock ("ticks") to ephemeris
+    seconds past J2000 (ET).
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sct2e_c.html
+
+    :param sc: NAIF spacecraft ID code.
+    :param sclkdp: SCLK, encoded as ticks since spacecraft clock start.
+    :return: Ephemeris time, seconds past J2000.
+    """
+    if PyFloat_Check(sclkdp):
+        return sct2e_s(sc, sclkdp)
+    else:
+        return sct2e_v(sc, sclkdp)
+
+
 @boundscheck(False)
 @wraparound(False)
-def spkapo(
+def spkapo_s(
     int targ,  
     double et, 
     str ref,
@@ -1830,6 +2050,8 @@ def spkapo(
     str abcorr
     ) -> tuple[Vector, float]:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkapo`
+
     Return the position of a target body relative to an observer,
     optionally corrected for light time and stellar aberration.
 
@@ -1923,9 +2145,37 @@ def spkapo_v(
     return p_ptargs, p_lts
 
 
+def spkapo(
+    targ: int,  
+    et: float | float[::1], 
+    ref: str,
+    sobs: float[::1], 
+    abcorr: str
+    ) -> tuple[Vector, float] | tuple[Vector_N, Double_N]:
+    """
+    Return the position of a target body relative to an observer,
+    optionally corrected for light time and stellar aberration.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkapo_c.html
+
+    :param targ: Target body.
+    :param et: Observer epoch in seconds past J2000 TDB..
+    :param ref: Inertial reference frame of observer's state.
+    :param sobs: State of observer wrt. solar system barycenter.
+    :param abcorr: Aberration correction flag.
+    :return:
+            Position of target in km,
+            One way light time between observer and target in seconds.
+    """
+    if PyFloat_Check(et):
+        return spkapo_s(targ, et, ref, sobs, abcorr)
+    else:
+        return spkapo_v(targ, et, ref, sobs, abcorr)
+
+
 @boundscheck(False)
 @wraparound(False)
-def spkcpo(
+def spkcpo_s(
     str target,
     double et,
     str outref,
@@ -1936,6 +2186,8 @@ def spkcpo(
     str obsref
     ) -> tuple[State, float]:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkcpo`
+
     Return the state of a specified target relative to an "observer,"
     where the observer has constant position in a specified reference
     frame. The observer's position is provided by the calling program
@@ -2055,9 +2307,45 @@ def spkcpo_v(
     return p_states, p_lts
 
 
+def spkcpo(
+    target: str,
+    et: float | float[::1],
+    outref: str,
+    refloc: str,
+    abcorr: str,
+    obspos: float[::1],
+    obsctr: str,
+    obsref: str
+    ) -> tuple[State, float] | tuple[State_N, Double_N]:
+    """
+    Return the state of a specified target relative to an "observer,"
+    where the observer has constant position in a specified reference
+    frame. The observer's position is provided by the calling program
+    rather than by loaded SPK files.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpo_c.html
+
+    :param target: Name of target ephemeris object.
+    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
+    :param outref: Reference frame of output state.
+    :param refloc: Output reference frame evaluation locus.
+    :param abcorr: Aberration correction.
+    :param obspos: Observer position relative to center of motion.
+    :param obsctr: Center of motion of observer.
+    :param obsref: Frame of observer position.
+    :return:
+            State of target with respect to observer in km and km/sec,
+            One way light time between target and observer.
+    """
+    if PyFloat_Check(et):
+        return spkcpo_s(target, et, outref, refloc, abcorr, obspos, obsctr, obsref)
+    else:
+        return spkcpo_v(target, et, outref, refloc, abcorr, obspos, obsctr, obsref)
+
+
 @boundscheck(False)
 @wraparound(False)
-def spkcpt(
+def spkcpt_s(
     double[::1] trgpos,
     str trgctr,
     str trgref,
@@ -2191,9 +2479,46 @@ def spkcpt_v(
     return p_states, p_lts
 
 
+def spkcpt(
+    trgpos: float[::1],
+    trgctr: str,
+    trgref: str,
+    et: float | float[::1],
+    outref: str,
+    refloc: str,
+    abcorr: str,
+    obsrvr: str
+    ) -> tuple[State, float] | tuple[State_N, Double_N]:
+    """
+    Return the state, relative to a specified observer, of a target
+    having constant position in a specified reference frame. The
+    target's position is provided by the calling program rather than by
+    loaded SPK files.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpt_c.html
+
+    :param trgpos: Target position relative to center of motion.
+    :param trgctr: Center of motion of target.
+    :param trgref: Observation epoch.
+    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
+    :param outref: Reference frame of output state.
+    :param refloc: Output reference frame evaluation locus.
+    :param abcorr: Aberration correction.
+    :param obsrvr: Name of observing ephemeris object.
+    :return:
+            State of target with respect to observer in km and km/sec,
+            One way light time between target and observer.
+    """
+    if PyFloat_Check(et):
+        return spkcpt_s(trgpos, trgctr, trgref, et, outref, refloc, abcorr, obsrvr)
+    else:
+        return spkcpt_v(trgpos, trgctr, trgref, et, outref, refloc, abcorr, obsrvr)
+
+
+
 @boundscheck(False)
 @wraparound(False)
-def spkcvo(
+def spkcvo_s(
     str target,
     double et,
     str outref,
@@ -2204,6 +2529,8 @@ def spkcvo(
     str obsctr,
     str obsref)-> tuple[State, float]:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkcvo`
+
     Return the state of a specified target relative to an "observer,"
     where the observer has constant velocity in a specified reference
     frame.  The observer's state is provided by the calling program
@@ -2267,8 +2594,8 @@ def spkcvo_v(
     str outref,
     str refloc,
     str abcorr,
-    double[::1] obssta, # TODO vectorize here?
-    double obsepc,    # TODO vectorize here?
+    double[::1] obssta, 
+    double obsepc,   
     str obsctr,
     str obsref)-> tuple[State_N, Double_N]:
     """
@@ -2333,9 +2660,47 @@ def spkcvo_v(
     return p_states, p_lts
 
 
+def spkcvo(
+    target: str,
+    et: float | float[::1],
+    outref: str,
+    refloc: str,
+    abcorr: str,
+    obssta: float[::1],
+    obsepc: float,
+    obsctr: str,
+    obsref: str
+    )-> tuple[State, float] | tuple[State_N, Double_N]:
+    """
+    Return the state of a specified target relative to an "observer,"
+    where the observer has constant velocity in a specified reference
+    frame.  The observer's state is provided by the calling program
+    rather than by loaded SPK files.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvo_c.html
+
+    :param target: Name of target ephemeris object.
+    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
+    :param outref: Reference frame of output state.
+    :param refloc: Output reference frame evaluation locus.
+    :param abcorr: Aberration correction.
+    :param obssta: Observer state relative to center of motion.
+    :param obsepc: Epoch of observer state.
+    :param obsctr: Center of motion of observer.
+    :param obsref: Frame of observer state.
+    :return:
+            State of target with respect to observer in km and km/sec,
+            One way light time between target and observer.
+    """
+    if PyFloat_Check(et):
+        return spkcvo_s(target, et, outref, refloc, abcorr, obssta, obsepc, obsctr, obsref)
+    else:
+        return spkcvo_v(target, et, outref, refloc, abcorr, obssta, obsepc, obsctr, obsref)
+
+
 @boundscheck(False)
 @wraparound(False)
-def spkcvt(
+def spkcvt_s(
     double[::1] trgsta,
     double trgepc,
     str trgctr,
@@ -2346,6 +2711,8 @@ def spkcvt(
     str abcorr,
     str obsrvr)-> tuple[State, float]:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkcvt`
+
     Return the state, relative to a specified observer, of a target
     having constant velocity in a specified reference frame. The
     target's state is provided by the calling program rather than by
@@ -2473,6 +2840,44 @@ def spkcvt_v(
     check_for_spice_error()
     # return output
     return p_states, p_lts
+
+
+def spkcvt(
+    trgsta: float[::1],
+    trgepc: float,
+    trgctr: str,
+    trgref: str,
+    et: float | float[::1],
+    outref: str,
+    refloc: str,
+    abcorr: str,
+    obsrvr: str
+    )-> tuple[State, float] | tuple[State_N, Double_N]:
+    """
+    Return the state, relative to a specified observer, of a target
+    having constant velocity in a specified reference frame. The
+    target's state is provided by the calling program rather than by
+    loaded SPK files.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvt_c.html
+
+    :param trgsta: Target state relative to center of motion.
+    :param trgepc: Epoch of target state.
+    :param trgctr: Center of motion of target.
+    :param trgref: Frame of target state.
+    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
+    :param outref: Reference frame of output state.
+    :param refloc: Output reference frame evaluation locus.
+    :param abcorr: Aberration correction.
+    :param obsrvr: Name of observing ephemeris object.
+    :return:
+            State of target with respect to observer in km and km/sec,
+            One way light time between target and observer.
+    """
+    if PyFloat_Check(et):
+        return spkcvt_s(trgsta, trgepc, trgctr, trgref, et, outref, refloc, abcorr, obsrvr)
+    else:
+        return spkcvt_v(trgsta, trgepc, trgctr, trgref, et, outref, refloc, abcorr, obsrvr)
 
 
 @boundscheck(False)
@@ -3369,7 +3774,7 @@ def spkpvn_v(
 
 def spkpvn(
     handle: int,
-    descr: double[::1],
+    descr: float[::1],
     et: float | float[::1]
     ) -> tuple[int, State, int] | tuple[Int_N, State_N, Int_N]:
     """
@@ -3739,7 +4144,7 @@ def sincpt(
     abcorr: str,
     obsrvr: str,
     dref: str,
-    dvec: double[::1] 
+    dvec: float[::1] 
     ) -> tuple[Vector, float, Vector, bool] | tuple[Vector_N, Double_N, Vector_N, Found_N]:
     """
     Given an observer and a direction vector defining a ray, compute
