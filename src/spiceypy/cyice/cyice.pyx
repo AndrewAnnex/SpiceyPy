@@ -41,7 +41,7 @@ from libc.string cimport memcpy, strlen
 from cython cimport boundscheck, wraparound, ufunc, memoryview
 from cython.parallel import prange
 from cpython.float cimport PyFloat_Check
-from cpython.unicode cimport PyUnicode_DecodeUTF8
+from cpython.unicode cimport PyUnicode_DecodeUTF8, PyUnicode_Check
 from cpython.bool       cimport PyBool_Check
 from cpython.tuple      cimport PyTuple_GET_SIZE
 
@@ -345,13 +345,10 @@ def ckgp(
             Output encoded spacecraft clock time
             Found flag(s) (possibly)
     """
-    cdef int c_inst = inst
-    cdef double c_tol = tol
-    cdef const char* c_ref = ref
     if PyFloat_Check(sclkdp):
-        return ckgp_s(c_inst, sclkdp, c_tol, c_ref)
+        return ckgp_s(inst, sclkdp, tol, ref)
     else:
-        return ckgp_v(c_inst, sclkdp, c_tol, c_ref)
+        return ckgp_v(inst, sclkdp, tol, ref)
 
 
 @boundscheck(False)
@@ -484,22 +481,20 @@ def ckgpav(
             Angular velocity vector,
             Output encoded spacecraft clock time.
     """
-    # initialize c variables
-    cdef int c_inst = inst
-    cdef double c_tol = tol
-    cdef const char* c_ref = ref
     if PyFloat_Check(sclkdp):
-        return ckgpav_s(c_inst, sclkdp, c_tol, c_ref)
+        return ckgpav_s(inst, sclkdp, tol, ref)
     else:
-        return ckgpav_v(c_inst, sclkdp, c_tol, c_ref)
+        return ckgpav_v(inst, sclkdp, tol, ref)
 
 
-def convrt(
+def convrt_s(
     double x, 
     str inunit, 
     str outunit
     )-> float:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.convrt`
+
     Take a measurement X, the units associated with
     X, and units to which X should be converted; return Y
     the value of the measurement in the output units.
@@ -565,14 +560,39 @@ def convrt_v(
     return p_outs
 
 
+def convrt(
+    x: float | float[::1], 
+    inunit:  str, 
+    outunit: str
+    )-> float | Double_N:
+    """
+    Take a measurement X, the units associated with
+    X, and units to which X should be converted; return Y
+    the value of the measurement in the output units.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/convrt_c.html
+
+    :param x: Number representing a measurement in some units.
+    :param inunit: The units in which x is measured.
+    :param outunit: Desired units for the measurement.
+    :return: The measurment in the desired units.
+    """
+    if PyFloat_Check(x):
+        return convrt_s(x, inunit, outunit)
+    else:
+        return convrt_v(x, inunit, outunit)
+
+
 #D
 
 
-def deltet(
+def deltet_s(
     double epoch, 
     str eptype
     )-> float:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.deltet`
+
     Return the value of Delta ET (ET-UTC) for an input epoch.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/deltet_c.html
@@ -629,16 +649,37 @@ def deltet_v(
     # return results
     return p_deltas
 
+
+def deltet(
+    epoch: float | float[::1], 
+    eptype: str
+    )-> float | Double_N:
+    """
+    Return the value of Delta ET (ET-UTC) for an input epoch.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/deltet_c.html
+
+    :param epoch: Input epoch (seconds past J2000).
+    :param eptype: Type of input epoch ("UTC" or "ET").
+    :return: Delta ET (ET-UTC) at input epoch.
+    """
+    if PyFloat_Check(epoch):
+        return deltet_s(epoch, eptype)
+    else:
+        return deltet_v(epoch, eptype)
+
 #E 
 
 
-def et2lst(
+def et2lst_s(
     double et,
     int body,
     double lon,
     str typein
-) -> tuple[int, int, int, str, str]:
+    ) -> tuple[int, int, int, str, str]:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.et2lst`
+
     Given an ephemeris epoch, compute the local solar time for
     an object on the surface of a body at a specified longitude.
 
@@ -688,11 +729,11 @@ def et2lst(
 @boundscheck(False)
 @wraparound(False)
 def et2lst_v(
-   double[::1] ets,
-   int body,
-   double lon,
-   str typein
-):
+    double[::1] ets,
+    int body,
+    double lon,
+    str typein
+    ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.et2lst`
 
@@ -759,12 +800,45 @@ def et2lst_v(
     return p_hrs, p_mns, p_scs, py_times, py_ampms
 
 
-def et2utc(
+def et2lst(
+    et: float | float[::1],
+    body: int,
+    lon: float,
+    typein: str
+    ):
+    """
+    Given an ephemeris epoch, compute the local solar time for
+    an object on the surface of a body at a specified longitude.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/et2lst_c.html
+
+    :param et: Epoch in seconds past J2000 epoch.
+    :param body: ID-code of the body of interest.
+    :param lon: Longitude of surface point (RADIANS).
+    :param typein: Type of longitude "PLANETOCENTRIC", etc.
+    :param timlen: Available room in output time string.
+    :param ampmlen: Available room in output ampm string.
+    :return:
+            Local hour on a "24 hour" clock,
+            Minutes past the hour,
+            Seconds past the minute,
+            String giving local time on 24 hour clock,
+            String giving time on A.M. / P.M. scale.
+    """
+    if PyFloat_Check(et):
+        return et2lst_s(et, body, lon, typein)
+    else:
+        return et2lst_v(et, body, lon, typein)
+
+
+def et2utc_s(
     double et, 
     str format_str, 
     int prec
 ) -> str:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.et2utc`
+
     Convert an input time from ephemeris seconds past J2000
     to Calendar, Day-of-Year, or Julian Date format, UTC.
 
@@ -840,10 +914,35 @@ def et2utc_v(
     return py_utcstr
 
 
-def etcal(
+def et2utc(
+    et: float | float[::1], 
+    format_str: str, 
+    prec: int
+    ):
+    """
+    Convert an input time from ephemeris seconds past J2000
+    to Calendar, Day-of-Year, or Julian Date format, UTC.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/et2utc_c.html
+
+    :param et: Input epoch, given in ephemeris seconds past J2000.
+    :param format_str: Format of output epoch.
+    :param prec: Digits of precision in fractional seconds or days.
+    :param lenout: The length of the output string plus 1.
+    :return: Output time string in UTC
+    """
+    if PyFloat_Check(et):
+        return et2utc_s(et, format_str, prec)
+    else:
+        return et2utc_v(et, format_str, prec)
+
+
+def etcal_s(
     double et
     ) -> str:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.etcal`
+
     Convert from an ephemeris epoch measured in seconds past
     the epoch of J2000 to a calendar string format using a
     formal calendar free of leapseconds.
@@ -903,7 +1002,28 @@ def etcal_v(
     py_results = p_results.view(p_np_s_dtype).reshape(n)
     py_results = np.char.rstrip(py_results).astype(p_np_u_dtype)
     return py_results
+
+
+def etcal(
+    et: float | float[::1]
+    ):
+    """
+    Convert from an ephemeris epoch measured in seconds past
+    the epoch of J2000 to a calendar string format using a
+    formal calendar free of leapseconds.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/etcal_c.html
+
+    :param et: Ephemeris time measured in seconds past J2000 TDB.
+    :return: A standard calendar representation of et.
+    """
+    if PyFloat_Check(et):
+        return etcal_s(et)
+    else:
+        return etcal_v(et)
+
 # F
+
 
 cpdef SpiceBoolean failed() noexcept:
     """
@@ -1754,7 +1874,7 @@ def spkapo_v(
     int targ,  
     double[::1] ets, 
     str ref,
-    double[:,::1] sobs, 
+    double[::1] sobs, 
     str abcorr
     ) -> tuple[Vector_N, Double_N]:
     """
@@ -1777,14 +1897,8 @@ def spkapo_v(
     # initialize c variables
     cdef int c_targ = targ
     cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
-    cdef Py_ssize_t j, m, i, n = c_ets.shape[0]
-    cdef const np.double_t[:,::1] c_sobs = np.ascontiguousarray(sobs, dtype=np.double)
-    m = c_sobs.shape[0]
-    j = c_sobs.shape[1]
-    if n != m:
-        raise RuntimeError("ets length doesn't match sobs length")
-    if j != 6:
-        raise RuntimeError("sobs are not length 6")
+    cdef Py_ssize_t i, n = c_ets.shape[0]
+    cdef const np.double_t[::1] c_sobs = np.ascontiguousarray(sobs, dtype=np.double)
     # convert the strings to pointers once
     cdef const char* c_ref    = ref
     cdef const char* c_abcorr = abcorr
@@ -1800,7 +1914,7 @@ def spkapo_v(
                 c_targ, 
                 c_ets[i], 
                 c_ref, 
-                &c_sobs[i,0],
+                &c_sobs[0],
                 c_abcorr, 
                 &c_ptargs[i,0], 
                 &c_lts[i]
@@ -1907,14 +2021,8 @@ def spkcpo_v(
             One way light time between target and observer.
     """
     cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
-    cdef Py_ssize_t j, m, i, n = c_ets.shape[0]
-    cdef const np.double_t[:,::1] c_obspos = np.ascontiguousarray(obspos, dtype=np.double)
-    m = c_obspos.shape[0]
-    j = c_obspos.shape[1]
-    if n != m:
-        raise RuntimeError("ets length doesn't match sobs length")
-    if j != 3:
-        raise RuntimeError("sobs are not length 6")
+    cdef Py_ssize_t i, n = c_ets.shape[0]
+    cdef const np.double_t[::1] c_obspos = np.ascontiguousarray(obspos, dtype=np.double)
     # convert the strings to pointers once
     cdef const char* c_target   = target
     cdef const char* c_outref   = outref
@@ -1936,7 +2044,7 @@ def spkcpo_v(
                 c_outref,
                 c_refloc,
                 c_abcorr,
-                &c_obspos[i,0],
+                &c_obspos[0],
                 c_obsctr,
                 c_obsref,
                 &c_states[i,0],
@@ -2369,7 +2477,7 @@ def spkcvt_v(
 
 @boundscheck(False)
 @wraparound(False)    
-def spkez(
+def spkez_s(
     int target, 
     double epoch, 
     str ref, 
@@ -2377,6 +2485,8 @@ def spkez(
     int observer
     )-> tuple[State, float]:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkez`
+
     Return the state (position and velocity) of a target body
     relative to an observing body, optionally corrected for light
     time (planetary aberration) and stellar aberration.
@@ -2472,9 +2582,38 @@ def spkez_v(
     return p_states, p_lts
 
 
+def spkez(
+    target: int, 
+    epoch: float | float[::1], 
+    ref:      str,
+    abcorr:   str,
+    observer: int,
+    )-> tuple[State, float] | tuple[State_N, Double_N]:
+    """
+    Return the state (position and velocity) of a target body
+    relative to an observing body, optionally corrected for light
+    time (planetary aberration) and stellar aberration.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkez_c.html
+
+    :param target: Target body.
+    :param et: Observer epoch in seconds past J2000 TDB.
+    :param ref: Reference frame of output state vector.
+    :param abcorr: Aberration correction flag.
+    :param observer: Observing body.
+    :return:
+            State of target in km and km/sec,
+            One way light time between observer and target in seconds.
+    """
+    if PyFloat_Check(epoch):
+        return spkez_s(target, epoch, ref, abcorr, observer)
+    else:
+        return spkez_v(target, epoch, ref, abcorr, observer)
+
+
 @boundscheck(False)
 @wraparound(False)
-def spkezp(
+def spkezp_s(
     int targ,  
     double et, 
     str ref, 
@@ -2482,6 +2621,8 @@ def spkezp(
     int obs
     ) -> tuple[Vector, float]:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkezp`
+
     Return the position of a target body relative to an observing
     body, optionally corrected for light time (planetary aberration)
     and stellar aberration.
@@ -2577,9 +2718,38 @@ def spkezp_v(
     return p_ptargs, p_lts
 
 
+def spkezp(
+    target: int, 
+    epoch: float | float[::1], 
+    ref:      str,
+    abcorr:   str,
+    observer: int,
+    )-> tuple[Vector, float] | tuple[Vector_N, Double_N]:
+    """
+    Return the position of a target body relative to an observing
+    body, optionally corrected for light time (planetary aberration)
+    and stellar aberration.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkezp_c.html
+
+    :param targ: Target body NAIF ID code.
+    :param et: Observer epoch in seconds past J2000 TDB.
+    :param ref: Reference frame of output position vector.
+    :param abcorr: Aberration correction flag.
+    :param obs: Observing body NAIF ID code.
+    :return:
+            Position of target in km,
+            One way light time between observer and target in seconds.
+    """
+    if PyFloat_Check(epoch):
+        return spkezp_s(target, epoch, ref, abcorr, observer)
+    else:
+        return spkezp_v(target, epoch, ref, abcorr, observer)
+
+
 @boundscheck(False)
 @wraparound(False)    
-def spkezr(
+def spkezr_s(
     str target, 
     double epoch, 
     str frame, 
@@ -2587,6 +2757,8 @@ def spkezr(
     str observer
     )-> tuple[State, float]:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkezr`
+
     Return the state (position and velocity) of a target body
     relative to an observing body, optionally corrected for light
     time (planetary aberration) and stellar aberration.
@@ -2681,15 +2853,47 @@ def spkezr_v(
     return p_states, p_lts
 
 
+def spkezr(
+    target:   str, 
+    epoch: float | float[::1], 
+    frame:    str,
+    abcorr:   str,
+    observer: str,
+    )-> tuple[State, float]:
+    """
+    Return the state (position and velocity) of a target body
+    relative to an observing body, optionally corrected for light
+    time (planetary aberration) and stellar aberration.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkezr_c.html
+
+    :param target: Target body name.
+    :param epoch: Observer epoch in seconds past J2000 TDB.
+    :param frame: Reference frame of output state vector.
+    :param abcorr: Aberration correction flag.
+    :param observer: Observing body name.
+    :return:
+            State of target in km and km/sec,
+            One way light time between observer and target in seconds.
+    """
+    if PyFloat_Check(epoch):
+        return spkezr_s(target, epoch, frame, abcorr, observer)
+    else:
+        return spkezr_v(target, epoch, frame, abcorr, observer)
+
+
+
 @boundscheck(False)
 @wraparound(False)
-def spkgeo(
+def spkgeo_s(
     int targ,
     double et,
     str ref,
     int obs
     )-> tuple[State, float]:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkgeo`
+
     Compute the geometric state (position and velocity) of a target
     body relative to an observing body.
 
@@ -2779,15 +2983,43 @@ def spkgeo_v(
     return p_states, p_lts
 
 
+def spkgeo(
+    targ: int,
+    et: float | float[::1],
+    ref: str,
+    obs: int
+    )-> tuple[State, float] | tuple[State_N, Double_N]:
+    """
+    Compute the geometric state (position and velocity) of a target
+    body relative to an observing body.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkgeo_c.html
+
+    :param targ: Target body.
+    :param et: Target epoch.
+    :param ref: Target reference frame.
+    :param obs: Observing body.
+    :return: 
+        State of target in km and km/sec, 
+        One way light time between observer and target in seconds.
+    """
+    if PyFloat_Check(et):
+        return spkgeo_s(targ, et, ref, obs)
+    else:
+        return spkgeo_v(targ, et, ref, obs)
+
+
 @boundscheck(False)
 @wraparound(False)
-def spkgps(
+def spkgps_s(
     int targ,
     double et,
     str ref,
     int obs
     ) -> tuple[Vector, float]:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkgps`
+
     Compute the geometric position of a target body relative to an
     observing body.
 
@@ -2873,9 +3105,32 @@ def spkgps_v(
     return p_pos, p_lts
 
 
+def spkgps(
+    targ: int,
+    et: float | float[::1],
+    ref: str,
+    obs: int
+    ) -> tuple[Vector, float] | tuple[Vector_N, Double_N]:
+    """
+    Compute the geometric position of a target body relative to an
+    observing body.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkgps_c.html
+
+    :param targ: Target body.
+    :param et: Target epoch.
+    :param ref: Target reference frame.
+    :param obs: Observing body.
+    :return: Position of target in km, Light time.
+    """
+    if PyFloat_Check(et):
+        return spkgps_s(targ, et, ref, obs)
+    else:
+        return spkgps_v(targ, et, ref, obs)
+
 @boundscheck(False)
 @wraparound(False)
-def spkpos(
+def spkpos_s(
     str target, 
     double et, 
     str ref, 
@@ -2883,6 +3138,8 @@ def spkpos(
     str obs
     ) -> tuple[Vector, float]:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkpos`
+
     Return the position of a target body relative to an observing
     body, optionally corrected for light time (planetary aberration)
     and stellar aberration.
@@ -2979,14 +3236,45 @@ def spkpos_v(
     return p_ptargs, p_lts
 
 
+def spkpos(
+    target: str, 
+    et: float | float[::1], 
+    ref:    str, 
+    abcorr: str, 
+    obs:    str
+    ) -> tuple[Vector, float] | tuple[Vector_N, Double_N]:
+    """
+    Return the position of a target body relative to an observing
+    body, optionally corrected for light time (planetary aberration)
+    and stellar aberration.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpos_c.html
+
+    :param targ: Target body name.
+    :param et: Observer epoch in seconds past J2000 TDB.
+    :param ref: Reference frame of output position vector.
+    :param abcorr: Aberration correction flag.
+    :param obs: Observing body name.
+    :return:
+            Position of target in km,
+            One way light time between observer and target in seconds.
+    """
+    if PyFloat_Check(et):
+        return spkpos_s(target, et, ref, abcorr, obs)
+    else:
+        return spkpos_v(target, et, ref, abcorr, obs)
+
+
 @boundscheck(False)
 @wraparound(False)
-def spkpvn(
+def spkpvn_s(
     int handle,
     double[::1] descr,
     double et
     ) -> tuple[int, State, int]:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkpvn`
+
     For a specified SPK segment and time, return the state (position and
     velocity) of the segment's target body relative to its center of
     motion.
@@ -3079,14 +3367,43 @@ def spkpvn_v(
     return p_refs, p_states, p_centers
 
 
+def spkpvn(
+    handle: int,
+    descr: double[::1],
+    et: float | float[::1]
+    ) -> tuple[int, State, int] | tuple[Int_N, State_N, Int_N]:
+    """
+    For a specified SPK segment and time, return the state (position and
+    velocity) of the segment's target body relative to its center of
+    motion.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpvn_c.html
+
+    :param handle: File handle.
+    :param descr: Segment descriptor.
+    :param et: Evaluation epoch.
+    :return:
+            Segment reference frame ID code,
+            Output state vector,
+            Center of state.
+    """
+    if PyFloat_Check(et):
+        return spkpvn_s(handle, descr, et)
+    else: 
+        return spkpvn_v(handle, descr, et)
+
+
+
 @boundscheck(False)
 @wraparound(False)
-def spkssb(
+def spkssb_s(
     int targ,
     double et,
     str ref,
     ) -> State:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkssb`
+
     Return the state (position and velocity) of a target body
     relative to the solar system barycenter.
 
@@ -3160,10 +3477,34 @@ def spkssb_v(
     return p_states
 
 
-def str2et(
-    str time
+def spkssb(
+    targ: int,
+    et: float | float[::1],
+    ref: str,
+    ) -> State | State_N:
+    """
+    Return the state (position and velocity) of a target body
+    relative to the solar system barycenter.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkssb_c.html
+
+    :param targ: Target body.
+    :param et: Target epoch.
+    :param ref: Target reference frame.
+    :return: State of target.
+    """
+    if PyFloat_Check(et):
+        return spkssb_s(targ, et, ref)
+    else:
+        return spkssb_v(targ, et, ref)
+
+
+def str2et_s(
+    const char* time
     ) -> float:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.str2et`
+
     Convert a string representing an epoch to a double precision
     value representing the number of TDB seconds past the J2000
     epoch corresponding to the input epoch.
@@ -3175,9 +3516,8 @@ def str2et(
     """
     # initialize c variables
     cdef double c_et = 0.0
-    cdef const char* c_time = time
     str2et_c(
-        c_time, 
+        time, 
         &c_et
     )
     check_for_spice_error()
@@ -3218,11 +3558,30 @@ def str2et_v(
     # return results
     return p_ets
 
-# TODO need error check, need found exception thrower in cython
+
+def str2et(
+    time: str | list[str]
+    ) -> float | Double_N:
+    """
+    Convert a string representing an epoch to a double precision
+    value representing the number of TDB seconds past the J2000
+    epoch corresponding to the input epoch.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/str2et_c.html
+
+    :param time: A string representing an epoch.
+    :return: The equivalent value in seconds past J2000, TDB.
+    """
+    if PyUnicode_Check(time):
+        return str2et_s(time)
+    else:
+        return str2et_v(time)
+
+
 @boundscheck(False)
 @wraparound(False)
 @cyice_found_exception_thrower
-def sincpt(
+def sincpt_s(
     str method,
     str target,
     double et,
@@ -3233,6 +3592,8 @@ def sincpt(
     double[::1] dvec
     ) -> tuple[Vector, float, Vector, bool]:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.sincpt`
+
     Given an observer and a direction vector defining a ray, compute
     the surface intercept of the ray on a target body at a specified
     epoch, optionally corrected for light time and stellar
@@ -3291,7 +3652,6 @@ def sincpt(
     return p_spoint, c_trgepc, p_srfvec, c_found == SPICETRUE
 
 
-# TODO need error check, need found exception thrower in cython
 @boundscheck(False)
 @wraparound(False)
 @cyice_found_exception_thrower
@@ -3371,9 +3731,48 @@ def sincpt_v(
     return p_spoint, p_trgepc, p_srfvec, p_found.astype(np.bool_)
 
 
+def sincpt(
+    method: str,
+    target: str,
+    et: float | float[::1],
+    fixref: str, 
+    abcorr: str,
+    obsrvr: str,
+    dref: str,
+    dvec: double[::1] 
+    ) -> tuple[Vector, float, Vector, bool] | tuple[Vector_N, Double_N, Vector_N, Found_N]:
+    """
+    Given an observer and a direction vector defining a ray, compute
+    the surface intercept of the ray on a target body at a specified
+    epoch, optionally corrected for light time and stellar
+    aberration.
+
+    This routine supersedes :func:`srfxpt`.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sincpt_c.html
+
+    :param method: Computation method.
+    :param target: Name of target body.
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :param fixref: Body-fixed, body-centered target body frame.
+    :param abcorr: Aberration correction.
+    :param obsrvr: Name of observing body.
+    :param dref: Reference frame of ray's direction vector.
+    :param dvec: Ray's direction vector.
+    :return:
+            Surface intercept point on the target body in km,
+            Intercept epoch,
+            Vector from observer to intercept point in km.
+    """
+    if PyFloat_Check(et):
+        return sincpt_s(method, target, et, fixref, abcorr, obsrvr, dref, dvec)
+    else:
+        return sincpt_v(method, target, et, fixref, abcorr, obsrvr, dref, dvec)
+
+
 @boundscheck(False)
 @wraparound(False)
-def subpnt(
+def subpnt_s(
     str method,
     str target, 
     double et, 
@@ -3382,6 +3781,8 @@ def subpnt(
     str obsrvr
     ) -> tuple[Vector, float, Vector]:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.subpnt`
+
     Compute the rectangular coordinates of the sub-observer point on
     a target body at a specified epoch, optionally corrected for
     light time and stellar aberration.
@@ -3498,9 +3899,43 @@ def subpnt_v(
     return p_spoint, p_trgepc, p_srfvec
 
 
+def subpnt(
+    method: str,
+    target: str, 
+    et: float | float[::1], 
+    fixref: str, 
+    abcorr: str, 
+    obsrvr: str
+    ) -> tuple[Vector, float, Vector] | tuple[Vector_N, Double_N, Vector_N]:
+    """
+    Compute the rectangular coordinates of the sub-observer point on
+    a target body at a specified epoch, optionally corrected for
+    light time and stellar aberration.
+
+    This routine supersedes :func:`subpt`.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subpnt_c.html
+
+    :param method: Computation method.
+    :param target: Name of target body.
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :param fixref: Body-fixed, body-centered target body frame.
+    :param abcorr: Aberration correction.
+    :param obsrvr: Name of observing body.
+    :return:
+            Sub-observer point on the target body,
+            Sub-observer point epoch,
+            Vector from observer to sub-observer point.
+    """
+    if PyFloat_Check(et):
+        return subpnt_s(method, target, et, fixref, abcorr, obsrvr)
+    else:
+        return subpnt_v(method, target, et, fixref, abcorr, obsrvr)
+
+
 @boundscheck(False)
 @wraparound(False)
-def subslr(
+def subslr_s(
     str method,
     str target, 
     double et, 
@@ -3509,6 +3944,8 @@ def subslr(
     str obsrvr
     ) -> tuple[Vector, float, Vector]:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.subslr`
+
     Compute the rectangular coordinates of the sub-solar point on
     a target body at a specified epoch, optionally corrected for
     light time and stellar aberration.
@@ -3625,14 +4062,51 @@ def subslr_v(
     # return results
     return p_spoint, p_trgepc, p_srfvec
 
+
+def subslr(
+    method: str,
+    target: str, 
+    et: float | float[::1], 
+    fixref: str, 
+    abcorr: str, 
+    obsrvr: str
+    ) -> tuple[Vector, float, Vector] | tuple[Vector_N, Double_N, Vector_N]:
+    """
+    Compute the rectangular coordinates of the sub-solar point on
+    a target body at a specified epoch, optionally corrected for
+    light time and stellar aberration.
+
+    This routine supersedes subsol_c.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subslr_c.html
+
+    :param method: Computation method.
+    :param target: Name of target body.
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :param fixref: Body-fixed, body-centered target body frame.
+    :param abcorr: Aberration correction.
+    :param obsrvr: Name of observing body.
+    :return:
+            Sub-solar point on the target body in km,
+            Sub-solar point epoch,
+            Vector from observer to sub-solar point in km.
+    """
+    if PyFloat_Check(et):
+        return subslr_s(method, target, et, fixref, abcorr, obsrvr)
+    else:
+        return subslr_v(method, target, et, fixref, abcorr, obsrvr)
+
+
 @boundscheck(False)
 @wraparound(False)
-def sxform(
+def sxform_s(
     str fromstring, 
     str tostring, 
     double et
     ) -> Matrix_6:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.sxform`
+
     Return the state transformation matrix from one frame to
     another at a specified epoch.
 
@@ -3667,7 +4141,7 @@ def sxform_v(
     str fromstring, 
     str tostring, 
     double[::1] ets
-) -> Matrix_N_6:
+    ) -> Matrix_N_6:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sxform`
     
@@ -3702,11 +4176,35 @@ def sxform_v(
     check_for_spice_error()
     return p_xform
 
+
+def sxform(
+    fromstring: str, 
+    tostring:   str,  
+    et: float | float[::1]
+    ) -> Matrix_6:
+    """
+    Return the state transformation matrix from one frame to
+    another at a specified epoch.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sxform_c.html
+
+
+    :param instring: Name of the frame to transform from.
+    :param tostring: Name of the frame to transform to.
+    :param et: Epoch of the state transformation matrix.
+    :return: A state transformation matrix.
+    """
+    if PyFloat_Check(et):
+        return sxform_s(fromstring, tostring, et)
+    else:
+        return sxform_v(fromstring, tostring, et)
+
+
 # T
 
 @boundscheck(False)
 @wraparound(False)
-def tangpt(
+def tangpt_s(
     str method,
     str target,
     double et,
@@ -3800,7 +4298,7 @@ def tangpt_v(
     str obsrvr,
     str dref,
     double[::1] dvec
-):
+    ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.tangpt`
     
@@ -3880,11 +4378,58 @@ def tangpt_v(
     return p_tanpt, p_alt, p_vrange, p_srfpt, p_trgepc, p_srfvec
 
 
-def timout(
+def tangpt(
+    method: str,
+    target: str,
+    et: float | float[::1],
+    fixref: str,
+    abcorr: str,
+    corloc: str,
+    obsrvr: str,
+    dref: str,
+    dvec: float[::1]
+    ):
+    """
+    Compute, for a given observer, ray emanating from the observer,
+    and target, the "tangent point": the point on the ray nearest
+    to the target's surface. Also compute the point on the target's
+    surface nearest to the tangent point.
+
+    The locations of both points are optionally corrected for light
+    time and stellar aberration.
+
+    The surface shape is modeled as a triaxial ellipsoid.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tangpt_c.html
+
+    :param method: Computation method.
+    :param target: Name of target body.
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :param fixref: Body-fixed, body-centered target body frame.
+    :param abcorr: Aberration correction.
+    :param corloc: Aberration correction locus: "TANGENT POINT" or
+                   "SURFACE POINT".
+    :param obsrvr: Name of observing body.
+    :param dref: Reference frame of ray direction vector.
+    :param dvec: Ray direction vector.
+    :return: "Tangent point": point on ray nearest to surface, Altitude of
+     tangent point above surface, Distance of tangent point from observer,
+     Point on surface nearest to tangent point, Epoch associated with
+     correction locus, Vector from observer to surface point `srfpt'.
+    """
+    if PyFloat_Check(et):
+        return tangpt_s(method, target, et, fixref, abcorr, corloc, obsrvr, dref, dvec)
+    else:
+        return tangpt_v(method, target, et, fixref, abcorr, corloc, obsrvr, dref, dvec)
+
+
+def timout_s(
     double et, 
     str pictur
     ) -> str:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.timout`
+
     This vectorized routine converts an input epoch represented in TDB seconds
     past the TDB epoch of J2000 to a character string formatted to
     the specifications of a user's format picture.
@@ -3914,7 +4459,7 @@ def timout(
 def timout_v(
     double[::1] ets, 
     str pictur
-):
+    ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.timout`
     
@@ -3952,7 +4497,29 @@ def timout_v(
     return py_outputs
 
 
-def trgsep(
+def timout(
+    et: float | float[::1], 
+    pictur: str
+    ):
+    """
+    This vectorized routine converts an input epoch represented in TDB seconds
+    past the TDB epoch of J2000 to a character string formatted to
+    the specifications of a user's format picture.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/timout_c.html
+
+    :param et: An epoch in seconds past the ephemeris epoch J2000.
+    :param pictur: A format specification for the output string.
+    :return: A string representation of the input epoch.
+    """
+    if PyFloat_Check(et):
+        return timout_s(et, pictur)
+    else:
+        return timout_v(et, pictur)
+
+
+
+def trgsep_s(
     double et, 
     str targ1, 
     str shape1, 
@@ -3964,6 +4531,8 @@ def trgsep(
     str abcorr
     ) -> float:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.trgsep`
+
     Compute the angular separation in radians between two spherical
     or point objects.
 
@@ -4066,14 +4635,50 @@ def trgsep_v(
     check_for_spice_error()
     return p_angseps
 
+
+def trgsep(
+    et: float | float[::1], 
+    targ1:  str, 
+    shape1: str, 
+    frame1: str, 
+    targ2:  str, 
+    shape2: str, 
+    frame2: str, 
+    obsrvr: str, 
+    abcorr: str
+    ) -> float:
+    """
+    Compute the angular separation in radians between two spherical
+    or point objects.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/trgsep_c.html
+
+    :param et: Ephemeris seconds past J2000 TDB.
+    :param targ1: First target body name.
+    :param shape1: First target body shape.
+    :param frame1: Reference frame of first target (UNUSED).
+    :param targ2: Second target body name.
+    :param shape2: First target body shape.
+    :param frame2: Reference frame of second target (UNUSED).
+    :param obsrvr: Observing body name.
+    :param abcorr: Aberration corrections flag.
+    :return: angular separation in radians.
+    """
+    if PyFloat_Check(et):
+        return trgsep_s(et, targ1, shape1, frame1, targ2, shape2, frame2, obsrvr, abcorr)
+    else:
+        return trgsep_v(et, targ1, shape1, frame1, targ2, shape2, frame2, obsrvr, abcorr)
+
 # U
 
-def unitim(
+def unitim_s(
         double epoch,
         str insys,
         str outsys,
     ) -> float:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.unitim`
+
     Transform time from one uniform scale to another.  The uniform
     time scales are TAI, TDT, TDB, ET, JED, JDTDB, JDTDT.
 
@@ -4140,6 +4745,30 @@ def unitim_v(
     return p_unitims
 
 
+def unitim(
+        epoch: float | float[::1],
+        insys: str,
+        outsys: str,
+    ) -> float | Double_N:
+    """
+    Transform time from one uniform scale to another.  The uniform
+    time scales are TAI, TDT, TDB, ET, JED, JDTDB, JDTDT.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unitim_c.html
+
+    :param epoch: An epoch to be converted.
+    :param insys: The time scale associated with the input epoch.
+    :param outsys: The time scale associated with the function value.
+    :return:
+            The float in outsys that is equivalent
+            to the epoch on the insys time scale.
+    """
+    if PyFloat_Check(epoch):
+        return unitim_s(epoch, insys, outsys)
+    else:
+        return unitim_v(epoch, insys, outsys)
+
+
 def unload(str file) -> None:
     """
     Unload a SPICE kernel.
@@ -4152,8 +4781,10 @@ def unload(str file) -> None:
     unload_c(c_file)
 
 
-def utc2et(str utcstr)-> float:
+def utc2et_s(const char* utcstr)-> float:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.utc2et`
+
     Convert an input time from Calendar or Julian Date format, UTC,
     to ephemeris seconds past J2000.
 
@@ -4162,10 +4793,9 @@ def utc2et(str utcstr)-> float:
     :param utcstr: Input time string, UTC.
     :return: Output epoch, ephemeris seconds past J2000.
     """
-    cdef const char* c_utcstr = utcstr
     cdef double c_et = 0.0
     utc2et_c(
-        c_utcstr, 
+        utcstr, 
         &c_et
     )
     check_for_spice_error()
@@ -4201,3 +4831,19 @@ def utc2et_v(
         )
     check_for_spice_error()
     return p_ets
+
+
+def utc2et(utcstr: str | list[str])-> float | Double_N:
+    """
+    Convert an input time from Calendar or Julian Date format, UTC,
+    to ephemeris seconds past J2000.
+
+    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/utc2et_c.html
+
+    :param utcstr: Input time string, UTC.
+    :return: Output epoch, ephemeris seconds past J2000.
+    """
+    if PyUnicode_Check(utcstr):
+        return utc2et_s(utcstr)
+    else:
+        return utc2et_v(utcstr)

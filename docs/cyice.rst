@@ -74,9 +74,26 @@ pos, lt = cyice.spkgps(499, et, "J2000", 399)
 # lt is a scalar python float, pos is a double precision NumPy array
 ```
 
-Vectorized functions are currently always postfixed by `_v` to differentiate them.
+Vectorized functions
+---------------------
 
-For example for `cyice.convrt`, the vectorized function equivalent is `cyice.convrt_v`
+Most Cyice functions provide "vectorized" interfaces that can be used implicitly if the appropriate variable 
+is provided to the function as a numpy array.
+
+For example 
+
+```python
+dates = np.repeat(["Thu Mar 20 12:53:29 PST 1997"], 2)
+ets = cyice.str2et(dates) # ets is a NumPy double array of length 2
+```
+
+Underneath, Cyice provides both "vectorized" (`_v` postfix) and "scalar" (`_s` postfix) functions for most functions, 
+with the normal function delegating to one or the other as needed. 
+
+For example for `cyice.convrt`, the vectorized function equivalent is `cyice.convrt_v` while the normal single-input version is `cyice.convrt_s`, with the `cyice.convrt` being the default function for users to call.
+
+In practice, `cyice.convrt` should be within a few percent as fast as calling `cyice.convrt_v` or `cyice.convrt_s`, but if you know the expected cardinality ahead of time using the correct function may result in slight performance improvements.
+
 
 For vectorized functions Cyice will always return NumPy arrays,
 one per scalar or array output, similar to how vectorized SpiceyPy functions behaved.
@@ -100,34 +117,34 @@ The first phase will introduce Cyice wrapper functions for the following CSPICE 
    * ckgp	
    * ckgpav	
    * deltet	
-   * etcal	
    * et2lst	
    * et2utc	
+   * etcal	
    * fovray	
    * fovtrg	
    * furnsh	
    * lspcn	
-   * str2et	
-   * scs2e	
-   * sce2s	
-   * sct2e	
-   * sce2c	
-   * scencd	
    * scdecd	
-   * spkezr	
-   * spkez	
-   * spkezp	
-   * spkpos	
+   * sce2c	
+   * sce2s	
+   * scencd	
+   * scs2e	
+   * sct2e	
+   * sincpt	
    * spkapo	
-   * spkpvn	
-   * spkssb	
-   * spkgeo	
-   * spkgps	
    * spkcpo	
    * spkcpt	
    * spkcvo	
    * spkcvt	
-   * sincpt	
+   * spkez	
+   * spkezp	
+   * spkezr	
+   * spkgeo	
+   * spkgps	
+   * spkpos	
+   * spkpvn	
+   * spkssb	
+   * str2et	
    * subpnt	
    * subslr	
    * tangpt	
@@ -141,14 +158,35 @@ The second phase will then add the following functions:
 
    * azlcpo
    * azlrec
+   * b1900
+   * b1950
+   * clight
+   * conics
    * cyllat
    * cylrec
    * cylsph
+   * dpr
+   * evsgp4
    * georec
+   * getelm
+   * halfpi
+   * illumf
+   * illumg
+   * ilumin
+   * j1900
+   * j1950
+   * j2000
+   * j2100
+   * jyear
    * latcyl
    * latrec
    * latsph
+   * limpt
+   * occult
+   * oscelt
    * pgrrec
+   * phaseq
+   * pi
    * radrec
    * recazl
    * reccyl
@@ -157,39 +195,19 @@ The second phase will then add the following functions:
    * recpgr
    * recrad
    * recsph
+   * rpd
+   * spd
    * sphcyl
    * sphlat
    * sphrec
    * srfrec
-   * xfmsta  
-   * ilumin
-   * illumg
-   * illumf
-   * phaseq
-   * limpt
    * termpt
-   * occult
-   * conics
-   * oscelt
-   * getelm
-   * evsgp4
-   * halfpi
-   * pi
    * twopi
-   * dpr
-   * rpd
-   * spd
-   * jyear
    * tyear
-   * clight
-   * b1900
-   * b1950
-   * j1900
-   * j1950
-   * j2000
-   * j2100
+   * xfmsta  
 
 
 Benchmarks
 -----------
 
+TODO 
