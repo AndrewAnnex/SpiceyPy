@@ -34,12 +34,16 @@ def try_get_spice():
         print("already built libcspice")
         return
     try:
-        thisfile = Path(__file__).resolve(strict=False)
-        curdir = thisfile.parent
-        sys.path.append(str(curdir))
-        from get_spice import main
-
-        main()
+        # first attempt to locate existing shared libraries and headers for cspice
+        cspice_header_include_dir, cspice_shared_library_dir = get_cspice_headers_and_lib_dirs()
+        # if either is none we need to actually call get_spice.py
+        if not cspice_header_include_dir or not cspice_shared_library_dir:
+            thisfile = Path(__file__).resolve(strict=False)
+            curdir = thisfile.parent
+            sys.path.append(str(curdir))
+            from get_spice import main
+            main()
+        # else we are probably done
         passnumber += 1
     except Exception as e:
         print("Caught file not found")
