@@ -128,11 +128,11 @@ def get_cspice_headers_include_dir():
     for can in header_candidates:
         if can.exists():
             _path_to_spice_header = can.resolve() / 'SpiceUsr.h'
-        if _path_to_spice_header.exists():
-            # we found the header folder 
-            cspice_header_include_dir = str(_path_to_spice_header.parent)
-            # now we can exit the loop
-            break
+            if _path_to_spice_header.exists():
+                # we found the header folder 
+                cspice_header_include_dir = str(_path_to_spice_header.parent)
+                # now we can exit the loop
+                break
     # finally return whatever we got
     return cspice_header_include_dir
 
