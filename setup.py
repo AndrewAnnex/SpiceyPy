@@ -51,28 +51,139 @@ def try_get_spice():
     return
 
 
-def get_cyice_extension(default_path: str = "./src/cspice/"):
-    try_get_spice()
+def path_to_folder(path:Path) -> Path:
+    """
+    Resolve a path or path to a file to a path
+      (the parent of the file if a file)
+    """
+    path = path.resolve()
+    if path.is_file():
+        return path.parent
+    return path
 
-    cspice_dir = Path(os.environ.get("CSPICE_SRC_DIR", default_path))
+def folder_has_libcspice(path: Path):
+    # first check to ensure the path exists
+    if not path.exists():
+        # if the path doesn't even exist just short cut to "no"
+        return None
+    # resolve to a path
+    path = path_to_folder(path)
+    # define the extensions we care about
+    exts = {'.so', '.dylib', '.dll'} 
+    # glob anything with cspice in the name
+    results = list(path.glob('*cspice*'))
+    # return the first file that matches an extension we care about, else none
+    for ext in exts:
+        for r in results:
+            if r.suffix == ext:
+                return r.absolute()
+    # else we never found it, so return None
+    return None
 
+def get_cspice_lib_dir():
+    # set the variables to start
+    cspice_shared_library_dir = None
+    # set the system prefix, if we are in a conda environment use it instead
+    prefix = Path(os.environ.get("CONDA_PREFIX", sys.prefix))
+    src_dir = Path(os.environ.get("CSPICE_SRC_DIR", "./src/cspice/"))
+    utils_dir = Path("./src/spiceypy/utils/").resolve()
+    _shared_lib_var = os.environ.get("CSPICE_SHARED_LIB")
+    # try :
+    #    1) the user provided path to the shared library, 
+    #    2) the src dir for the project
+    #    3) lib
+    #    4) lib64
+    lib_candidates: list[Path] = [
+        src_dir,
+        utils_dir,
+        prefix / "lib", 
+        prefix / "lib64"
+    ]
+    if _shared_lib_var:
+        lib_candidates = [Path(_shared_lib_var), *lib_candidates]
+    # try each possibility for cspice shared library
+    for can in lib_candidates:
+        _path_to_cspice = folder_has_libcspice(can)
+        if _path_to_cspice is not None:
+            # we found the cspice shared library, so grab the parent path and continue
+            cspice_shared_library_dir = str(_path_to_cspice.parent)
+            # we can break
+            break
+    # finally return whatever we got
+    return cspice_shared_library_dir
+
+
+def get_cspice_headers_include_dir():
+    # set the variables to start
+    cspice_header_include_dir = None
+    # set the system prefix, if we are in a conda environment use it instead
+    prefix = Path(os.environ.get("CONDA_PREFIX", sys.prefix))
+    src_dir = Path(os.environ.get("CSPICE_SRC_DIR", "./src/cspice/"))
+    # locate the cspice header folder (should be prefix/include/cspice folder and look for SpiceUsr.h inside that)
+    header_candidates: list[Path] = [
+        src_dir / "include/",
+        prefix / "include/cspice/"
+    ]
+    # try each possible header location and look for SpiceUsr.h
+    for can in header_candidates:
+        if can.exists():
+            _path_to_spice_header = can.resolve() / 'SpiceUsr.h'
+        if _path_to_spice_header.exists():
+            # we found the header folder 
+            cspice_header_include_dir = str(_path_to_spice_header.parent)
+            # now we can exit the loop
+            break
+    # finally return whatever we got
+    return cspice_header_include_dir
+
+
+def get_cspice_headers_and_lib_dirs():
+    """
+    Get the cspice header and shared library locations for the installation
+    """
+    # attempt to find the headers folder
+    cspice_header_include_dir = get_cspice_headers_include_dir()
+    # now attempt to locate the shared library folder
+    cspice_shared_library_dir = get_cspice_lib_dir()
+    # now we are done! 
+    return cspice_header_include_dir, cspice_shared_library_dir
+
+
+def get_cyice_extension():
+    """
+    Build the cyice extension
+    """
+    # first attempt to locate existing shared libraries and headers for cspice
+    cspice_header_include_dir, cspice_shared_library_dir = get_cspice_headers_and_lib_dirs()
+    # if not both of these try to get spice manually
+    if not cspice_header_include_dir or not cspice_shared_library_dir:
+        # try and get spice
+        try_get_spice()
+        # attempt to re-get the paths
+        cspice_header_include_dir, cspice_shared_library_dir = get_cspice_headers_and_lib_dirs()
+    # at this point both the shared library and headers should be found, if not we have a problem
+    if not cspice_header_include_dir:
+        # raise an error
+        raise RuntimeError('Could not locate a suitable header folder for cspice in setup.py for SpiceyPy')
+    if not cspice_shared_library_dir:
+        # raise an error 
+        raise RuntimeError('Could not locate a suitable libcspice file in setup.py for SpiceyPy')
+    # else we can proceed
+    # set the expected lib names
     libraries = ["cspice" if is_unix else "libcspice"]
-    library_dirs = ["./src/spiceypy/utils"]
-
+    library_dirs = [cspice_shared_library_dir, ]
+    include_dirs = [
+        numpy.get_include(),
+        cspice_header_include_dir
+    ]
     extra_link_args =  [
 
     ]
     if is_unix:
         extra_link_args.append('-lm')
-
-    include_dirs = [
-        numpy.get_include(),
-        f"{cspice_dir / 'include/'}",
-    ]
     extra_compile_args = [
         
     ]
-
     ext_options = {
         "include_dirs": include_dirs,
         "libraries": libraries,
@@ -82,7 +193,6 @@ def get_cyice_extension(default_path: str = "./src/cspice/"):
         "extra_compile_args": extra_compile_args,
         "extra_link_args": extra_link_args
     }
-
     cyice_ext = Extension(
         name="spiceypy.cyice.cyice",
         sources=[
