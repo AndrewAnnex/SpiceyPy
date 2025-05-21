@@ -93,6 +93,8 @@ CSPICE_NO_BUILD = "CSPICE_NO_BUILD"
 
 host_OS = platform.system()
 host_arch = platform.machine()
+# get the Conda environment prefix if present else get the python prefix
+prefix = Path(os.environ.get("CONDA_PREFIX", sys.prefix))
 # Check if platform is supported
 os_supported = host_OS in ("Linux", "Darwin", "FreeBSD", "Windows")
 # Get platform is Unix-like OS or not
@@ -102,6 +104,8 @@ is_macos = host_OS == "Darwin"
 root_dir = str(Path(os.path.realpath(__file__)).parent)
 # Make the directory path for cspice
 cspice_dir = os.environ.get(CSPICE_SRC_DIR, os.path.join(root_dir, "src", "cspice"))
+# get the spiceypy utils folder
+utils_dir = Path("./src/spiceypy/utils/").resolve()
 # and make a global tmp cspice directory
 tmp_cspice_root_dir = None
 # macos builds can occur on x86 or arm64 machines.
@@ -130,6 +134,87 @@ if is_macos:
     print(f"build_macox_x86: {build_macos_x86}")
     print(f"build_macos_arm: {build_macos_arm}")
     print(f"is_macos_arm: {is_macos_arm}")
+
+# TODO de-duplicate from setup.py
+
+def path_to_folder(path:Path) -> Path:
+    """
+    Resolve a path or path to a file to a path
+      (the parent of the file if a file)
+    """
+    path = path.resolve()
+    if path.is_file():
+        return path.parent
+    return path
+
+def folder_has_libcspice(path: Path):
+    # first check to ensure the path exists
+    if not path.exists():
+        # if the path doesn't even exist just short cut to "no"
+        return None
+    # resolve to a path
+    path = path_to_folder(path)
+    # define the extensions we care about
+    exts = {'.so', '.dylib', '.dll'} 
+    # glob anything with cspice in the name
+    results = list(path.glob('*cspice*'))
+    # return the first file that matches an extension we care about, else none
+    for ext in exts:
+        for r in results:
+            if r.suffix == ext:
+                return r.absolute()
+    # else we never found it, so return None
+    return None
+
+def get_cspice_lib_dir():
+    # set the variables to start
+    cspice_shared_library_dir = None
+    # try :
+    #    1) the user provided path to the shared library, 
+    #    2) the src dir for the project
+    #    3) lib
+    #    4) lib64
+    lib_candidates: list[Path] = [
+        Path(cspice_dir),
+        utils_dir,
+        prefix / "lib", 
+        prefix / "lib64"
+    ]
+    _shared_lib_var = os.environ.get(CSPICE_SHARED_LIB)
+    if _shared_lib_var:
+        lib_candidates = [Path(_shared_lib_var), *lib_candidates]
+    # try each possibility for cspice shared library
+    for can in lib_candidates:
+        _path_to_cspice = folder_has_libcspice(can)
+        if _path_to_cspice is not None:
+            # we found the cspice shared library, so grab the parent path and continue
+            cspice_shared_library_dir = str(_path_to_cspice.parent)
+            # we can break
+            break
+    # finally return whatever we got
+    return cspice_shared_library_dir
+
+
+def get_cspice_headers_include_dir():
+    # set the variables to start
+    cspice_header_include_dir = None
+    # set the system prefix, if we are in a conda environment use it instead
+    # locate the cspice header folder (should be prefix/include/cspice folder and look for SpiceUsr.h inside that)
+    header_candidates: list[Path] = [
+        Path(cspice_dir) / "include/",
+        prefix / "include/cspice/"
+    ]
+    # try each possible header location and look for SpiceUsr.h
+    for can in header_candidates:
+        if can.exists():
+            _path_to_spice_header = can.resolve() / 'SpiceUsr.h'
+            if _path_to_spice_header.exists():
+                # we found the header folder 
+                cspice_header_include_dir = str(_path_to_spice_header.parent)
+                # now we can exit the loop
+                break
+    # finally return whatever we got
+    return cspice_header_include_dir
 
 
 class GetCSPICE(object):
@@ -437,6 +522,18 @@ def main(build: bool = True) -> None:
     :param build: if true build the shared library, if false just download the source code
     :return: None
     """
+    # first look for existing shared library and src headers
+    # attempt to find the headers folder
+    cspice_header_include_dir = get_cspice_headers_include_dir()
+    # now attempt to locate the shared library folder
+    cspice_shared_library_dir = get_cspice_lib_dir()
+    # now actually check if both are true
+    if cspice_header_include_dir and cspice_shared_library_dir:
+        print(
+            "Done! shared library and headers for cspice are found. Done!",
+            flush=True,
+        )
+        return
     build = os.environ.get(CSPICE_NO_BUILD) is None  # if false (var is set) don't build
     cwd = os.getcwd()
     # set final destination for cspice dynamic library
