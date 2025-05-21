@@ -534,6 +534,10 @@ def main(build: bool = True) -> None:
             flush=True,
         )
         return
+    else:
+        print(
+            f"Could not locate cspice headers and or shared library from apriori locations: Shared: {cspice_shared_library_dir} Headers: {cspice_shared_library_dir}"
+        )
     build = os.environ.get(CSPICE_NO_BUILD) is None  # if false (var is set) don't build
     cwd = os.getcwd()
     # set final destination for cspice dynamic library
