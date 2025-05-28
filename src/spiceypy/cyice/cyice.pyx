@@ -41,8 +41,8 @@ from libc.string cimport memcpy, strlen
 from cython cimport boundscheck, wraparound, ufunc, memoryview
 from cython.parallel import prange
 from cpython.float cimport PyFloat_Check
-from cpython.unicode cimport PyUnicode_DecodeUTF8, PyUnicode_Check
-from cpython.bool       cimport PyBool_Check
+from cpython.unicode cimport PyUnicode_AsUTF8, PyUnicode_DecodeUTF8, PyUnicode_Check
+from cpython.bool       cimport PyBool_Check, PyBool_FromLong
 from cpython.tuple      cimport PyTuple_GET_SIZE
 
 import functools
@@ -81,9 +81,11 @@ ctypedef fused bool_arr_t:
 
 
 # typing stuff
+StringArray = np.typing.NDArray[np.str_]
 BoolArray   = np.typing.NDArray[np.uint8]
 IntArray    = np.typing.NDArray[np.int32]
 DoubleArray = np.typing.NDArray[np.double]
+String_N    = Annotated[StringArray, Literal["N"]]
 Found_N     = Annotated[BoolArray, Literal["N"]]
 Int_N       = Annotated[IntArray, Literal["N"]]
 Double_N    = Annotated[DoubleArray, Literal["N"]]
@@ -105,10 +107,7 @@ from spiceypy.utils.exceptions import dynamically_instantiate_spiceyerror, NotFo
 
 
 # support functions
-cdef char[SHORTLEN]   shortmsg
-cdef char[EXPLAINLEN] explain
-cdef char[LONGLEN]    longmsg
-cdef char[TRACELEN]   traceback
+
 
 
 cpdef void check_for_spice_error():
@@ -118,6 +117,14 @@ cpdef void check_for_spice_error():
     :param f: function
     :raise stypes.SpiceyError:
     """
+    cdef char[SHORTLEN]   shortmsg
+    cdef char[EXPLAINLEN] explain
+    cdef char[LONGLEN]    longmsg
+    cdef char[TRACELEN]   traceback
+    cdef object py_shortmsg 
+    cdef object py_explain  
+    cdef object py_longmsg  
+    cdef object py_traceback
     if failed_c():
         with nogil:
             getmsg_c("SHORT", SHORTLEN, shortmsg)
@@ -125,11 +132,15 @@ cpdef void check_for_spice_error():
             getmsg_c("LONG", LONGLEN, longmsg)
             qcktrc_c(TRACELEN, traceback)
             reset_c()
+        py_shortmsg  = PyUnicode_DecodeUTF8(shortmsg, strlen(shortmsg), 'replace') 
+        py_explain   = PyUnicode_DecodeUTF8(explain, strlen(explain), 'replace')
+        py_longmsg   = PyUnicode_DecodeUTF8(longmsg, strlen(longmsg), 'replace')
+        py_traceback = PyUnicode_DecodeUTF8(traceback, strlen(traceback), 'replace')
         raise dynamically_instantiate_spiceyerror(
-          shortmsg, 
-          explain, 
-          longmsg, 
-          traceback
+          py_shortmsg, 
+          py_explain, 
+          py_longmsg, 
+          py_traceback
         )
 
 
@@ -270,7 +281,7 @@ def ckgp_s(
     )
     check_for_spice_error()
     # return results
-    return p_cmat, c_clkout, c_found == SPICETRUE
+    return p_cmat, c_clkout, PyBool_FromLong(c_found)
 
 
 @boundscheck(False)
@@ -399,7 +410,7 @@ def ckgpav_s(
     )
     check_for_spice_error()
     # return results
-    return p_cmat, p_av, c_clkout, c_found == SPICETRUE
+    return p_cmat, p_av, c_clkout, PyBool_FromLong(c_found)
 
 
 @boundscheck(False)
@@ -733,7 +744,7 @@ def et2lst_v(
     int body,
     double lon,
     str typein
-    ):
+    ) -> tuple[Int_N, Int_N, Int_N, String_N, String_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.et2lst`
 
@@ -805,7 +816,7 @@ def et2lst(
     body: int,
     lon: float,
     typein: str
-    ):
+    ) -> tuple[int, int, int, str, str] | tuple[Int_N, Int_N, Int_N, String_N, String_N]:
     """
     Given an ephemeris epoch, compute the local solar time for
     an object on the surface of a body at a specified longitude.
@@ -835,7 +846,7 @@ def et2utc_s(
     double et, 
     str format_str, 
     int prec
-) -> str:
+    ) -> str:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.et2utc`
 
@@ -871,7 +882,7 @@ def et2utc_v(
     double[::1] ets,
     str format_str, 
     int prec
-    ):
+    ) -> String_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.et2utc`
 
@@ -918,7 +929,7 @@ def et2utc(
     et: float | float[::1], 
     format_str: str, 
     prec: int
-    ):
+    ) -> str | String_N:
     """
     Convert an input time from ephemeris seconds past J2000
     to Calendar, Day-of-Year, or Julian Date format, UTC.
@@ -969,7 +980,7 @@ def etcal_s(
 @wraparound(False)
 def etcal_v(
     double[::1] ets
-    ):
+    ) -> String_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.etcal`
 
@@ -1006,7 +1017,7 @@ def etcal_v(
 
 def etcal(
     et: float | float[::1]
-    ):
+    ) -> str | String_N:
     """
     Convert from an ephemeris epoch measured in seconds past
     the epoch of J2000 to a calendar string format using a
@@ -1082,7 +1093,7 @@ def fovray_s(
     )
     check_for_spice_error()
     # return
-    return c_visibl == SPICETRUE
+    return PyBool_FromLong(c_visibl)
 
 
 @boundscheck(False)
@@ -1216,7 +1227,7 @@ def fovtrg_s(
     )
     check_for_spice_error()
     # return
-    return c_visibl == SPICETRUE
+    return PyBool_FromLong(c_visibl)
 
 
 @boundscheck(False)
@@ -1356,7 +1367,7 @@ cpdef str getmsg(
             c_msgstr
         )
         length = strlen(c_msgstr)
-        p_msgstr = PyUnicode_DecodeUTF8(c_msgstr, length, "strict")
+        p_msgstr = PyUnicode_DecodeUTF8(c_msgstr, length, "replace")
         return p_msgstr
     finally:
         free(c_msgstr)
@@ -1556,7 +1567,7 @@ def scdecd_s(
 def scdecd_v(
     int sc, 
     double[::1] sclkdps
-    ):
+    ) -> String_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.scdecd`
 
@@ -1596,7 +1607,7 @@ def scdecd_v(
 def scdecd(
     sc: int, 
     sclkdp: float | float[::1]
-    ):
+    ) -> str | String_N:
     """
     Convert double precision encoding of spacecraft clock time into
     a character representation.
@@ -1645,7 +1656,7 @@ def scencd_s(
 @wraparound(False)
 def scencd_v(
     int sc, 
-    list[str] sclkchs
+    np.ndarray sclkchs
     ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.scencd`
@@ -1660,10 +1671,13 @@ def scencd_v(
     :return: Encoded representations of the clock count.
     """
     cdef int c_sc = sc
-    cdef Py_ssize_t i, n = len(sclkchs)
+    cdef Py_ssize_t i, n = sclkchs.shape[0]
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_sclkdps = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_sclkdps = p_sclkdps
     cdef const char* c_sclkchs
+    # coerce unicode to a byte-string array
+    if sclkchs.dtype.kind == 'U':
+        sclkchs = np.char.encode(sclkchs, 'ascii')
     for i in range(n):
         c_sclkchs = sclkchs[i]
         scencd_c(
@@ -1677,7 +1691,7 @@ def scencd_v(
 
 def scencd(
     sc: int, 
-    sclkch: str | list[str]
+    sclkch: str | String_N
     ) -> float | Double_N:
     """
     Encode character representation of spacecraft clock time into a
@@ -1821,7 +1835,7 @@ def sce2s_s(
 def sce2s_v(
     int sc, 
     double[::1] ets
-    ):
+    ) -> String_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sce2s`
 
@@ -1862,7 +1876,7 @@ def sce2s_v(
 def sce2s(
     sc: int, 
     et: float | float[::1]
-    ):
+    ) -> str | String_N:
     """
     Convert an epoch specified as ephemeris seconds past J2000 (ET) to a
     character string representation of a spacecraft clock value (SCLK).
@@ -1910,7 +1924,7 @@ def scs2e_s(
 @wraparound(False)
 def scs2e_v(
     int sc, 
-    list[str] sclkchs
+    np.ndarray sclkchs
     ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.scs2e`
@@ -1924,10 +1938,13 @@ def scs2e_v(
     :return: Ephemeris time, seconds past J2000.
     """
     cdef int c_sc = sc
-    cdef Py_ssize_t i, n = len(sclkchs)
+    cdef Py_ssize_t i, n = sclkchs.shape[0]
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ets = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_ets = p_ets
     cdef const char* c_sclkchs
+    # coerce unicode to a byte-string array
+    if sclkchs.dtype.kind == 'U':
+        sclkchs = np.char.encode(sclkchs, 'ascii')
     for i in range(n):
         c_sclkchs = sclkchs[i]
         scs2e_c(
@@ -1941,7 +1958,7 @@ def scs2e_v(
 
 def scs2e(
     sc: int,
-    sclkch: str | list[str]
+    sclkch: str | np.ndarray
     ) -> float | Double_N:
     """
     Convert a spacecraft clock string to ephemeris seconds past J2000 (ET).
@@ -3932,7 +3949,7 @@ def str2et_s(
 @boundscheck(False)
 @wraparound(False)
 def str2et_v(
-    list[str] times
+    np.ndarray times
     ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.str2et`
@@ -3947,11 +3964,14 @@ def str2et_v(
     :return: The equivalent values in seconds past J2000, TDB.
     """
     # initialize c variables
-    cdef Py_ssize_t i, n = len(times)
+    cdef Py_ssize_t i, n = times.shape[0]
     # initialize output
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ets = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_ets = p_ets
     cdef const char* c_time
+    # coerce unicode to a byte-string array
+    if times.dtype.kind == 'U':
+        times = np.char.encode(times, 'ascii')
     #main loop
     for i in range(n):
         c_time = times[i]
@@ -3965,7 +3985,7 @@ def str2et_v(
 
 
 def str2et(
-    time: str | list[str]
+    time: str | String_N
     ) -> float | Double_N:
     """
     Convert a string representing an epoch to a double precision
@@ -4054,7 +4074,7 @@ def sincpt_s(
     )
     check_for_spice_error()
     # return results
-    return p_spoint, c_trgepc, p_srfvec, c_found == SPICETRUE
+    return p_spoint, c_trgepc, p_srfvec, PyBool_FromLong(c_found)
 
 
 @boundscheck(False)
@@ -4864,7 +4884,7 @@ def timout_s(
 def timout_v(
     double[::1] ets, 
     str pictur
-    ):
+    ) -> String_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.timout`
     
@@ -4905,7 +4925,7 @@ def timout_v(
 def timout(
     et: float | float[::1], 
     pictur: str
-    ):
+    ) -> str | String_N:
     """
     This vectorized routine converts an input epoch represented in TDB seconds
     past the TDB epoch of J2000 to a character string formatted to
@@ -5210,7 +5230,7 @@ def utc2et_s(const char* utcstr)-> float:
 @boundscheck(False)
 @wraparound(False)
 def utc2et_v(
-    list[str] utcstr
+    np.ndarray utcstr
     ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.utc2et`
@@ -5223,11 +5243,14 @@ def utc2et_v(
     :param utcstr: Input time strings, UTC.
     :return: Output epochs, ephemeris seconds past J2000.
     """
-    cdef Py_ssize_t i, n = len(utcstr)
+    cdef Py_ssize_t i, n = utcstr.shape[0]
     # initialize output
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ets = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_ets = p_ets
     cdef const char* c_utcstr
+    # coerce unicode to a byte-string array
+    if utcstr.dtype.kind == 'U':
+        utcstr = np.char.encode(utcstr, 'ascii')
     for i in range(n):
         c_utcstr = utcstr[i]
         utc2et_c(
@@ -5238,7 +5261,7 @@ def utc2et_v(
     return p_ets
 
 
-def utc2et(utcstr: str | list[str])-> float | Double_N:
+def utc2et(utcstr: str | String_N)-> float | Double_N:
     """
     Convert an input time from Calendar or Julian Date format, UTC,
     to ephemeris seconds past J2000.

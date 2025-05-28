@@ -36,6 +36,8 @@ def try_get_spice():
     try:
         # first attempt to locate existing shared libraries and headers for cspice
         cspice_header_include_dir, cspice_shared_library_dir = get_cspice_headers_and_lib_dirs()
+        print(cspice_header_include_dir, ' header')
+        print(cspice_shared_library_dir, ' shared')
         # if either is none we need to actually call get_spice.py
         if not cspice_header_include_dir or not cspice_shared_library_dir:
             thisfile = Path(__file__).resolve(strict=False)
@@ -98,10 +100,10 @@ def get_cspice_lib_dir():
     #    3) lib
     #    4) lib64
     lib_candidates: list[Path] = [
+        prefix / "lib", 
+        prefix / "lib64",
         src_dir,
         utils_dir,
-        prefix / "lib", 
-        prefix / "lib64"
     ]
     if _shared_lib_var:
         lib_candidates = [Path(_shared_lib_var), *lib_candidates]
@@ -125,8 +127,8 @@ def get_cspice_headers_include_dir():
     src_dir = Path(os.environ.get("CSPICE_SRC_DIR", "./src/cspice/"))
     # locate the cspice header folder (should be prefix/include/cspice folder and look for SpiceUsr.h inside that)
     header_candidates: list[Path] = [
+        prefix / "include/cspice/",
         src_dir / "include/",
-        prefix / "include/cspice/"
     ]
     # try each possible header location and look for SpiceUsr.h
     for can in header_candidates:
@@ -260,7 +262,7 @@ class SpiceyPyWheelBuild(_bdist_wheel):
 cmd_class = dict(
     install=InstallSpiceyPy,
     build_py=BuildPyCommand,
-    bdist_wheel=SpiceyPyWheelBuild,
+    bdist_wheel=SpiceyPyWheelBuild
 )
 
 ext_modules = [get_cyice_extension()]

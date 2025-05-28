@@ -424,7 +424,7 @@ def test_scencd(function, grouped_benchmark, load_voyager_kernels):
 @pytest.mark.parametrize('function', [cyice.scencd_v, cyice.scencd], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["scencd_v"], indirect=True)
 def test_scencd_v(function, grouped_benchmark, load_voyager_kernels):
-    timein = np.repeat(b"2/20538:39:768", 100).tolist()
+    timein = np.repeat("2/20538:39:768", 100)
     grouped_benchmark(function, -32,  timein)
     res = function(-32, timein)
     assert isinstance(res, np.ndarray)
@@ -475,7 +475,7 @@ def test_scs2e(function, grouped_benchmark, load_voyager_kernels):
 @pytest.mark.parametrize('function', [cyice.scs2e_v, cyice.scs2e], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["scs2e_v"], indirect=True)
 def test_scs2e_v(function, grouped_benchmark, load_voyager_kernels):
-    timein = np.repeat("2/20538:39:768", 100).tolist()
+    timein = np.repeat("2/20538:39:768", 100)
     grouped_benchmark(function, -32, timein)
     res = function(-32, timein)
     assert isinstance(res, np.ndarray)
@@ -977,9 +977,9 @@ def test_str2et(function, grouped_benchmark, load_core_kernels):
 @pytest.mark.parametrize('grouped_benchmark', ["str2et_v"], indirect=True)
 def test_str2et_v(function, grouped_benchmark, load_core_kernels):
     date = "Thu Mar 20 12:53:29 PST 1997"
-    dates = [date,] * 100
+    dates = np.repeat(date, 100)
     grouped_benchmark(function, dates)
-    expected_ets = np.ones(100) * -87836728.81438904
+    expected_ets = np.repeat(-87836728.81438904, 100)
     ets = function(dates)
     assert isinstance(ets, np.ndarray)
     npt.assert_array_almost_equal(ets, expected_ets)
@@ -1241,8 +1241,7 @@ def test_utc2et(function, grouped_benchmark, load_core_kernels):
 @pytest.mark.parametrize('function', [cyice.utc2et_v, cyice.utc2et], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["utc2et_v"], indirect=True)
 def test_utc2et_v(function, grouped_benchmark, load_core_kernels):
-    date = "December 1, 2004 15:04:11"
-    dates = [date,] * 100
+    dates = np.repeat("December 1, 2004 15:04:11", 100)
     grouped_benchmark(function, dates)
     res = function(dates)
     assert isinstance(res, np.ndarray)
