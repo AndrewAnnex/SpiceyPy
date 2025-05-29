@@ -83,13 +83,13 @@ source = [
 
 # Linux Cleanup
 [tool.cibuildwheel.linux]
-before-build = "rm {project}/src/cyice/*.so"
+before-build = "rm -f {project}/src/cyice/*.so"
 
 # Macos Cleanup
 [tool.cibuildwheel.macos]
 before-build = [
-    "rm {project}/src/cyice/*.so",
-    "rm {project}/src/cyice/*.dylib"
+    "rm -f project}/src/cyice/*.so",
+    "rm -f {project}/src/cyice/*.dylib"
 ]
 
 
