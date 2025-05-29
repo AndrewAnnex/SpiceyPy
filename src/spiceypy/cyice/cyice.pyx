@@ -77,8 +77,8 @@ ctypedef fused char_arr_t:
     np.uint8_t[::1]
 
 ctypedef fused bool_arr_t:
-    cnp.uint8_t[:]
-    cnp.uint8_t[::1]
+    np.uint8_t[:]
+    np.uint8_t[::1]
 
 
 # typing stuff
