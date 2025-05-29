@@ -81,16 +81,30 @@ source = [
     "work/SpiceyPy/SpiceyPy/",
 ]
 
+# Linux Cleanup
+[tool.cibuildwheel.linux]
+before-build = "rm {project}/src/cyice/*.so"
+
+# Macos Cleanup
+[tool.cibuildwheel.macos]
+before-build = [
+    "rm {project}/src/cyice/*.so",
+    "rm {project}/src/cyice/*.dylib"
+]
+
+# Windows Cleanup
+[tool.cibuildwheel.windows]
+before-build = "del {project}\src\cyice\*.pyd"
+
 # all CIbuildwheel stuff goes here
 [tool.cibuildwheel]
 # use build instead of pip to build wheels
 build-frontend = "build"
-# environment vairables for building wheels
+# environment variables for building wheels
 environment = { CSPICE_NO_TEMP = 'YES', LD_LIBRARY_PATH = 'src/spiceypy/utils/' }
 # build libcspice inside cibuildwheel before running python build steps
 before-build = [
     "python -m pip install -r {project}/ci-requirements.txt",
-    "python {project}/get_spice.py",
     "python {project}/setup.py build_ext -j 2 --inplace",
 ]
 # Specify Python Versions to build
@@ -98,8 +112,6 @@ build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
 # Skip 32-bit builds, pypy, and musllinux
 skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "pypy*", "pp*", "*-musllinux_aarch64", "*-musllinux_x86_64"]
 # other options
-build-verbosity = 2
-repair-wheel-command = ""
 before-test = [
     "pip install -r ci-requirements.txt"
 ]
