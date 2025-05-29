@@ -66,6 +66,11 @@ markers = [
     "optional: mark tests as optional"
 ]
 
+# cython lint things
+[tool.cython-lint]
+max-line-length = 180
+ignore = ['E221', 'E125']
+
 # coverage things
 [tool.coverage.run]
 relative_files = true

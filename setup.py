@@ -40,6 +40,7 @@ def try_get_spice():
         print(cspice_shared_library_dir, ' shared')
         # if either is none we need to actually call get_spice.py
         if not cspice_header_include_dir or not cspice_shared_library_dir:
+            print('Did not locate either the cspice shared library or headers, attempting to build.')
             thisfile = Path(__file__).resolve(strict=False)
             curdir = thisfile.parent
             sys.path.append(str(curdir))
