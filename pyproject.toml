@@ -83,13 +83,16 @@ source = [
 
 # Linux Cleanup
 [tool.cibuildwheel.linux]
-before-build = "rm -f {project}/src/cyice/*.so"
+before-build = [
+    "rm -f {project}/src/cyice/cyice.c",
+    "rm -f {project}/src/cyice/*.so",
+]
 
 # Macos Cleanup
 [tool.cibuildwheel.macos]
 before-build = [
-    "rm -f project}/src/cyice/*.so",
-    "rm -f {project}/src/cyice/*.dylib"
+    "rm -f {project}/src/cyice/cyice.c",
+    "rm -f {project}/src/cyice/*.so",
 ]
 
 
@@ -102,6 +105,7 @@ environment = { CSPICE_NO_TEMP = 'YES', LD_LIBRARY_PATH = 'src/spiceypy/utils/' 
 # build libcspice inside cibuildwheel before running python build steps
 before-build = [
     "python -m pip install -r {project}/ci-requirements.txt",
+    "python {project}/get_spice.py",
     "python {project}/setup.py build_ext -j 2 --inplace",
 ]
 # Specify Python Versions to build
