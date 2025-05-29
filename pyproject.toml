@@ -92,9 +92,6 @@ before-build = [
     "rm {project}/src/cyice/*.dylib"
 ]
 
-# Windows Cleanup
-[tool.cibuildwheel.windows]
-before-build = "del {project}\src\cyice\*.pyd"
 
 # all CIbuildwheel stuff goes here
 [tool.cibuildwheel]
