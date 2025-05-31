@@ -20,7 +20,9 @@ except ImportError:
 host_OS = platform.system()
 host_arch = platform.machine()
 # Get platform is Unix-like OS or not
-is_unix = host_OS in ("Linux", "Darwin", "FreeBSD")
+is_linux = host_OS == 'Linux'
+is_macos = host_OS in ("Darwin", "FreeBSD")
+is_unix = is_linux or is_macos
 
 # https://setuptools.pypa.io/en/latest/userguide/ext_modules.html
 
@@ -183,13 +185,18 @@ def get_cyice_extension():
         numpy.get_include(),
         cspice_header_include_dir
     ]
-    extra_link_args =  [
-
-    ]
+    runtime_library_dirs = []
+    extra_link_args =  []
+    if is_linux:
+        extra_link_args.append("-Wl,-rpath,$ORIGIN/../utils")
+        runtime_library_dirs = ["$ORIGIN/../utils"]
+    elif is_macos:
+        extra_link_args.append("-Wl,-rpath,@loader_path/../utils")
+        runtime_library_dirs = ["@loader_path/../utils"]
     if is_unix:
         extra_link_args.append('-lm')
     extra_compile_args = [
-        
+
     ]
     ext_options = {
         "include_dirs": include_dirs,
@@ -198,7 +205,8 @@ def get_cyice_extension():
         "language": "c",
         "define_macros": [],
         "extra_compile_args": extra_compile_args,
-        "extra_link_args": extra_link_args
+        "extra_link_args": extra_link_args,
+        "runtime_library_dirs": runtime_library_dirs
     }
     cyice_ext = Extension(
         name="spiceypy.cyice.cyice",
