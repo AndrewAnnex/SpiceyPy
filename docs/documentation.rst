@@ -9,6 +9,15 @@ spiceypy module
     :undoc-members:
     :show-inheritance:
 
+spiceypy.cyice.cyice module
+------------------------------
+
+.. automodule:: spiceypy.cyice.cyice
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 spiceypy.utils.support_types module
 -----------------------------------
 

@@ -32,9 +32,11 @@ from typing import Callable, Iterator, Iterable, Optional, Tuple, Union, Sequenc
 import numpy
 from numpy import ndarray, str_
 
+
 from .utils import support_types as stypes
 from .utils.libspicehelper import libspice
 from .utils.exceptions import *
+from .found_catcher import found_check_off, found_check_on, found_check, get_found_catch_state, spice_found_exception_thrower
 from . import config
 
 from .utils.callbacks import (
@@ -142,127 +144,6 @@ def spice_error_check(f):
             raise
 
     return with_errcheck
-
-
-def spice_found_exception_thrower(f: Callable) -> Callable:
-    """
-    Decorator for wrapping functions that use status codes
-    """
-
-    @functools.wraps(f)
-    def wrapper(*args, **kwargs):
-        res = f(*args, **kwargs)
-        if config.catch_false_founds:
-            found = res[-1]
-            if isinstance(found, bool) and not found:
-                raise NotFoundError(
-                    "Spice returns not found for function: {}".format(f.__name__),
-                    found=found,
-                )
-            elif stypes.is_iterable(found) and not all(found):
-                raise NotFoundError(
-                    "Spice returns not found in a series of calls for function: {}".format(
-                        f.__name__
-                    ),
-                    found=found,
-                )
-            else:
-                actualres = res[0:-1]
-                if len(actualres) == 1:
-                    return actualres[0]
-                else:
-                    return actualres
-        else:
-            return res
-
-    return wrapper
-
-
-@contextmanager
-def no_found_check() -> Iterator[None]:
-    """
-    Temporarily disables spiceypy default behavior which raises exceptions for
-    false found flags for certain spice functions. All spice
-    functions executed within the context manager will no longer check the found
-    flag return parameter and the found flag will be included in the return for
-    the given function.
-    For Example bodc2n in spiceypy is normally called like::
-
-        name = spice.bodc2n(399)
-
-    With the possibility that an exception is thrown in the even of a invalid ID::
-
-        name = spice.bodc2n(-999991) # throws a SpiceyError
-
-    With this function however, we can use it as a context manager to do this::
-
-        with spice.no_found_check():
-            name, found = spice.bodc2n(-999991) # found is false, no exception raised!
-
-    Within the context any spice functions called that normally check the found
-    flags will pass through the check without raising an exception if they are false.
-
-    """
-    current_catch_state = config.catch_false_founds
-    config.catch_false_founds = False
-    yield
-    config.catch_false_founds = current_catch_state
-
-
-@contextmanager
-def found_check() -> Iterator[None]:
-    """
-    Temporarily enables spiceypy default behavior which raises exceptions for
-    false found flags for certain spice functions. All spice
-    functions executed within the context manager will check the found
-    flag return parameter and the found flag will be removed from the return for
-    the given function.
-    For Example bodc2n in spiceypy is normally called like::
-
-        name = spice.bodc2n(399)
-
-    With the possibility that an exception is thrown in the even of a invalid ID::
-
-        name = spice.bodc2n(-999991) # throws a SpiceyError
-
-    With this function however, we can use it as a context manager to do this::
-
-        with spice.found_check():
-            found = spice.bodc2n(-999991) # will raise an exception!
-
-    Within the context any spice functions called that normally check the found
-    flags will pass through the check without raising an exception if they are false.
-
-    """
-    current_catch_state = config.catch_false_founds
-    config.catch_false_founds = True
-    yield
-    config.catch_false_founds = current_catch_state
-
-
-def found_check_off() -> None:
-    """
-    Method that turns off found catching
-
-    """
-    config.catch_false_founds = False
-
-
-def found_check_on() -> None:
-    """
-    Method that turns on found catching
-
-    """
-    config.catch_false_founds = True
-
-
-def get_found_catch_state() -> bool:
-    """
-    Returns the current found catch state
-
-    :return:
-    """
-    return config.catch_false_founds
 
 
 def cell_double(cell_size: int) -> SpiceCell:
@@ -1155,7 +1036,9 @@ def chkout(module: str) -> None:
 
 @spice_error_check
 @spice_found_exception_thrower
-def cidfrm(cent: int, lenout: int = _default_len_out) -> Union[Tuple[int, str, bool], Tuple[int, str]]:
+def cidfrm(
+    cent: int, lenout: int = _default_len_out
+) -> Union[Tuple[int, str, bool], Tuple[int, str]]:
     """
     Retrieve frame ID code and name to associate with a frame center.
 
@@ -1229,7 +1112,9 @@ def ckcov(
 
 @spice_error_check
 @spice_found_exception_thrower
-def ckfrot(inst: int, et: float) -> Union[Tuple[ndarray, int, bool], Tuple[ndarray, int]]:
+def ckfrot(
+    inst: int, et: float
+) -> Union[Tuple[ndarray, int, bool], Tuple[ndarray, int]]:
     """
     Find the rotation from a C-kernel Id to the native
     frame at the time requested.
@@ -1257,7 +1142,9 @@ def ckfrot(inst: int, et: float) -> Union[Tuple[ndarray, int, bool], Tuple[ndarr
 
 @spice_error_check
 @spice_found_exception_thrower
-def ckfxfm(inst: int, et: float) -> Union[Tuple[ndarray, int, bool], Tuple[ndarray, int]]:
+def ckfxfm(
+    inst: int, et: float
+) -> Union[Tuple[ndarray, int, bool], Tuple[ndarray, int]]:
     """
     Find the state transformation matrix from a C-kernel (CK) frame
     with the specified frame class ID (CK ID) to the base frame of
@@ -1840,7 +1727,9 @@ def cmprss(delim: str, n: int, instr: str, lenout: int = _default_len_out) -> st
 
 @spice_error_check
 @spice_found_exception_thrower
-def cnmfrm(cname: str, lenout: int = _default_len_out) -> Union[Tuple[int, str, bool], Tuple[int, str]]:
+def cnmfrm(
+    cname: str, lenout: int = _default_len_out
+) -> Union[Tuple[int, str, bool], Tuple[int, str]]:
     """
     Retrieve frame ID code and name to associate with an object.
 
@@ -2290,7 +2179,9 @@ def dafgs(n: int = 125) -> ndarray:
 
 @spice_error_check
 @spice_found_exception_thrower
-def dafgsr(handle: int, recno: int, begin: int, end: int) -> Union[Tuple[ndarray, bool], ndarray]:
+def dafgsr(
+    handle: int, recno: int, begin: int, end: int
+) -> Union[Tuple[ndarray, bool], ndarray]:
     """
     Read a portion of the contents of (words in) a summary record in a DAF file.
 
@@ -3176,7 +3067,9 @@ def dlaopn(fname: str, ftype: str, ifname: str, ncomch: int) -> int:
 
 @spice_error_check
 @spice_found_exception_thrower
-def dlafns(handle: int, descr: SpiceDLADescr) -> Union[Tuple[SpiceDLADescr, bool], SpiceDLADescr]:
+def dlafns(
+    handle: int, descr: SpiceDLADescr
+) -> Union[Tuple[SpiceDLADescr, bool], SpiceDLADescr]:
     """
     Find the segment following a specified segment in a DLA file.
 
@@ -3198,7 +3091,9 @@ def dlafns(handle: int, descr: SpiceDLADescr) -> Union[Tuple[SpiceDLADescr, bool
 
 @spice_error_check
 @spice_found_exception_thrower
-def dlafps(handle: int, descr: SpiceDLADescr) -> Union[Tuple[SpiceDLADescr, bool], SpiceDLADescr]:
+def dlafps(
+    handle: int, descr: SpiceDLADescr
+) -> Union[Tuple[SpiceDLADescr, bool], SpiceDLADescr]:
     """
     Find the segment preceding a specified segment in a DLA file.
 
@@ -4885,7 +4780,9 @@ def ekgc(
 
 @spice_error_check
 @spice_found_exception_thrower
-def ekgd(selidx: int, row: int, element: int) -> Union[Tuple[float, int, bool], Tuple[float, int]]:
+def ekgd(
+    selidx: int, row: int, element: int
+) -> Union[Tuple[float, int, bool], Tuple[float, int]]:
     """
     Return an element of an entry in a column of double precision type in a
     specified row.
@@ -4918,7 +4815,9 @@ def ekgd(selidx: int, row: int, element: int) -> Union[Tuple[float, int, bool], 
 
 @spice_error_check
 @spice_found_exception_thrower
-def ekgi(selidx: int, row: int, element: int) -> Union[Tuple[int, int, bool], Tuple[int, int]]:
+def ekgi(
+    selidx: int, row: int, element: int
+) -> Union[Tuple[int, int, bool], Tuple[int, int]]:
     """
     Return an element of an entry in a column of integer type in a specified
     row.
@@ -5867,7 +5766,7 @@ def etcal(
             libspice.etcal_c(t, lenout, string)
             check_for_spice_error(None)
             strings.append(stypes.to_python_string(string))
-        return strings
+        return numpy.asarray(strings)
     else:
         et = ctypes.c_double(et)
         libspice.etcal_c(et, lenout, string)
@@ -8172,7 +8071,9 @@ def ilumin(
 
 @spice_error_check
 @spice_found_exception_thrower
-def inedpl(a: float, b: float, c: float, plane: Plane) -> Union[Tuple[Ellipse, bool], Ellipse]:
+def inedpl(
+    a: float, b: float, c: float, plane: Plane
+) -> Union[Tuple[Ellipse, bool], Ellipse]:
     """
     Find the intersection of a triaxial ellipsoid and a plane.
 
@@ -12995,7 +12896,7 @@ def spkezr(
             check_for_spice_error(None)
             states.append(stypes.c_vector_to_python(starg))
             times.append(lt.value)
-        return states, times
+        return numpy.vstack(states), numpy.asarray(times)
     else:
         libspice.spkezr_c(
             targ, ctypes.c_double(et), ref, abcorr, obs, starg, ctypes.byref(lt)
@@ -13259,7 +13160,9 @@ def spkpvn(handle: int, descr: ndarray, et: float) -> Tuple[int, ndarray, int]:
 
 @spice_error_check
 @spice_found_exception_thrower
-def spksfs(body: int, et: float, idlen: int) -> Union[Tuple[int, ndarray, str, bool], Tuple[int, ndarray, str]]:
+def spksfs(
+    body: int, et: float, idlen: int
+) -> Union[Tuple[int, ndarray, str, bool], Tuple[int, ndarray, str]]:
     # spksfs has a Parameter SIDLEN,
     # sounds like an optional but is that possible?
     """
@@ -14106,7 +14009,9 @@ def spkw20(
 
 @spice_error_check
 @spice_found_exception_thrower
-def srfc2s(code: int, bodyid: int, srflen: int = _default_len_out) -> Union[Tuple[str, bool], str]:
+def srfc2s(
+    code: int, bodyid: int, srflen: int = _default_len_out
+) -> Union[Tuple[str, bool], str]:
     """
     Translate a surface ID code, together with a body ID code, to the
     corresponding surface name. If no such name exists, return a
@@ -14133,7 +14038,9 @@ def srfc2s(code: int, bodyid: int, srflen: int = _default_len_out) -> Union[Tupl
 
 @spice_error_check
 @spice_found_exception_thrower
-def srfcss(code: int, bodstr: str, srflen: int = _default_len_out) -> Union[Tuple[str, bool], str]:
+def srfcss(
+    code: int, bodstr: str, srflen: int = _default_len_out
+) -> Union[Tuple[str, bool], str]:
     """
     Translate a surface ID code, together with a body string, to the
     corresponding surface name. If no such surface name exists,
@@ -14266,7 +14173,7 @@ def srfxpt(
     Tuple[ndarray, float, float, ndarray, bool],
     Tuple[ndarray, float, float, ndarray],
     Tuple[ndarray, ndarray, ndarray, ndarray, ndarray],
-    Tuple[ndarray, ndarray, ndarray, ndarray]
+    Tuple[ndarray, ndarray, ndarray, ndarray],
 ]:
     """
     Deprecated: This routine has been superseded by the CSPICE

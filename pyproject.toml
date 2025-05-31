@@ -1,21 +1,123 @@
 [build-system]
-requires = ["setuptools >= 46.4.0", "wheel"]
+requires = [
+    "setuptools>=76.0.0",
+    "Cython>=3.0.12",
+    "numpy>=2.0,<3",
+]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = 'spiceypy'
+dynamic = ["version"]
+description = 'A Python Wrapper for the NAIF CSPICE Toolkit'
+readme = {file = "README.rst", content-type = "text/x-rst"}
+requires-python = ">=3.10"
+authors = [
+    {name = 'Andrew M. Annex', email='ama6fy@virginia.edu'}
+]
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ['spiceypy', 'spice', 'cspice', 'naif', 'jpl', 'space', 'geometry', 'ephemeris']
+classifiers = [
+     'Development Status :: 5 - Production/Stable',
+     'Natural Language :: English',
+     'Topic :: Scientific/Engineering',
+     'Topic :: Scientific/Engineering :: Astronomy',
+     'Programming Language :: Python :: 3.10',
+     'Programming Language :: Python :: 3.11',
+     'Programming Language :: Python :: 3.12',
+     'Programming Language :: Python :: 3.13',
+     'Operating System :: MacOS :: MacOS X',
+     'Operating System :: POSIX :: Linux',
+     'Operating System :: POSIX :: BSD :: FreeBSD',
+     'Operating System :: Microsoft :: Windows',
+]
+
+[project.optional-dependencies]
+tests = ['numpy>=2.0,<3', 'pytest>=7.0.0', 'pandas>=0.24.0']
+dev = ['numpy>=2.0,<3', 'Cython>=3.0.12', 'pytest>=7.0.0', 'pytest-benchmark', 'pandas>=2.2.2', 'coverage>=7.0.0', 'twine>=3.3.0', 'build', 'black']
+
+[project.urls]
+'Homepage'      = 'https://github.com/AndrewAnnex/SpiceyPy'
+'Repository'    = 'https://github.com/AndrewAnnex/SpiceyPy'
+'Source'        = 'https://github.com/AndrewAnnex/SpiceyPy'
+'Conda-Forge'   = 'https://anaconda.org/conda-forge/spiceypy'
+'Documentation' = 'https://spiceypy.readthedocs.io'
+'Bug Tracker'   =  'https://github.com/AndrewAnnex/SpiceyPy/issues'
+'Changelog'     = 'https://github.com/AndrewAnnex/SpiceyPy/blob/main/CHANGELOG.md'
+
+
+[tool.setuptools.dynamic]
+version = {attr = "spiceypy.__version__"}
+readme = {file = "README.rst"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ['get_spice.py', 'LICENSE', 'README.rst']
+spiceypy = [ 'utils/*.so', 'utils/*.dylib', 'utils/*.dll', 'cyice/*.so', 'cyice/*.dylib', 'cyice/*.dll']
+
+# pytest things
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "--benchmark-autosave"
+markers = [
+    "optional: mark tests as optional"
+]
+
+# cython lint things
+[tool.cython-lint]
+max-line-length = 180
+ignore = ['E221', 'E125']
+
+# coverage things
+[tool.coverage.run]
+relative_files = true
+
+[tool.coverage.paths]
+source = [
+    "src/spiceypy/",
+    "work/SpiceyPy/SpiceyPy/",
+]
+
+
+# all CI build wheel stuff goes here
+
+# Linux Cleanup
+[tool.cibuildwheel.linux]
+before-build = [
+    "rm -f {project}/src/cyice/cyice.c",
+    "rm -f {project}/src/cyice/*.so",
+]
+
+# Macos Cleanup
+[tool.cibuildwheel.macos]
+before-build = [
+    "rm -f {project}/src/cyice/cyice.c",
+    "rm -f {project}/src/cyice/*.so",
+]
 
 [tool.cibuildwheel]
 # use build instead of pip to build wheels
 build-frontend = "build"
+# environment variables for building wheels
+environment = { CSPICE_NO_TEMP = 'YES', LD_LIBRARY_PATH = 'src/spiceypy/utils/' }
 # build libcspice inside cibuildwheel before running python build steps
-before-build = "python {project}/get_spice.py"
-# Only build on CPython 3.13
-build = "cp313-*"
+before-build = [
+    "python -m pip install -r {project}/ci-requirements.txt",
+    "python {project}/get_spice.py",
+]
+# Specify Python Versions to build
+build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
 # Skip 32-bit builds, pypy, and musllinux
 skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "pypy*", "pp*", "*-musllinux_aarch64", "*-musllinux_x86_64"]
 # other options
 build-verbosity = 2
+
 before-test = [
     "pip install -r ci-requirements.txt"
 ]
 test-command = [
-    "coverage run --source {package} -m pytest --pyargs {project}",
+    "coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable"
 ]

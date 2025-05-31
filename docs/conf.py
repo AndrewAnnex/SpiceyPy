@@ -61,7 +61,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "SpiceyPy"
-copyright = "2014-2022, Andrew Annex"
+copyright = "2014-2023, Andrew Annex"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

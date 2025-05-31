@@ -11,10 +11,7 @@ on:
 jobs:
   build_sdist:
     name: Make SpiceyPy 🌶️ 🥧 Python 🐍 source distribution
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
+    runs-on: "ubuntu-latest"
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v4
@@ -29,27 +26,85 @@ jobs:
           python -m pip install --upgrade pip
       - name: Install CI dependencies
         run: |
-          python -m pip install -r ci-requirements.txt
-      - name: Build 🛠️ sdist source and Install SpiceyPy 🌶️ 🥧
+          python -m pip install -U -r ci-requirements.txt
+      - name: Build 🛠️ sdist source for 🌶️ 🥧 SpiceyPy
+        env:
+          CSPICE_NO_TEMP: "YES"
         run: |
+          echo "Get CSPICE"
+          python get_spice.py
+          ls ./src/
+          ls ./src/spiceypy/utils/
+          echo "Building Cython Extension"
+          python setup.py build_ext -j 2 --inplace
+          ls ./src/spiceypy/cyice/
+          echo "Running build for sdist"
           python -m build --sdist
-          echo "Running Pip install from sdist"
-          python -m pip install dist/*.tar.gz --user
-      - name: Test 🧪 with coverage 📈
-        run: |
-          coverage run --source spiceypy -m pytest --pyargs spiceypy
-      - name: Upload 🆙 coverage 📈 report to codecov 
-        uses: codecov/codecov-action@v4
-        with:
-          fail_ci_if_error: false
-          verbose: true
-          use_oidc: true
+          echo "contents of dist folder: "
+          ls dist/
       - name: Check dists
         run: |
           twine check dist/*
       - uses: actions/upload-artifact@v4
         with:
           path: dist/*.tar.gz
+  test_sdist:
+    name: Test SpiceyPy 🌶️ 🥧 Python 🐍 source distribution
+    needs: [build_sdist]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false 
+      matrix:
+        os: [ubuntu-latest, macos-14, windows-latest]
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout 🌶️ 🥧
+        uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: dist
+      - name: Display structure of downloaded files
+        run: ls dist/ 
+      - name: Setup windows msvc
+        if: ${{ matrix.os == 'windows-latest' }}
+        uses: ilammy/msvc-dev-cmd@v1.13.0
+      - name: Set up Python 🐍 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Display Python 🐍 
+        run: python -c "import sys; print(sys.version)"
+      - name: Update pip
+        run: |
+          python -m pip install --upgrade pip
+      - name: Install CI dependencies
+        run: |
+          python -m pip install --user -r ci-requirements.txt
+      - name: Install SpiceyPy 🌶️ 🥧 from sdist on Mac/Linux
+        if: ${{ matrix.os != 'windows-latest' }}
+        shell: bash
+        run: |
+          echo "Running Pip install from sdist"
+          python -m pip install dist/*.tar.gz --user --no-build-isolation -vvvv
+      - name: Install SpiceyPy 🌶️ 🥧 from sdist on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: |
+          for /f %%f in ('dir /b dist\*.tar.gz') do (
+            python -m pip install dist\%%f --user --no-build-isolation -vvvv
+          ) 
+      - name: Test 🧪 with coverage 📈
+        run: |
+          python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
+      - name: Upload 🆙 coverage 📈 report to codecov 
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: false
+          verbose: true
+          use_oidc: true
   build_wheels:
     strategy:
       matrix:
@@ -74,17 +129,20 @@ jobs:
         if: runner.os == 'macOS' && matrix.config.arch == 'arm64'
         run: |
           echo "CIBW_ARCHS_MACOS=arm64" >> $GITHUB_ENV
-          echo "ARCHFLAGS='-arch arm64'" >> $GITHUB_ENV
+          echo "ARCHFLAGS=-arch arm64" >> $GITHUB_ENV
       - name: set additional environment variables for macOS x86
         if: runner.os == 'macOS' && matrix.config.arch == 'x86_64'
         run: |
           echo "CIBW_ARCHS_MACOS=x86_64" >> $GITHUB_ENV
-          echo "ARCHFLAGS='-arch x86_64'" >> $GITHUB_ENV
+          echo "ARCHFLAGS=-arch x86_64" >> $GITHUB_ENV
       - name: set additional environment variables for linux aarch64
         if: runner.os == 'Linux' && matrix.config.arch == 'aarch64'
         run: |
           echo "CIBW_ARCHS_LINUX=aarch64" >> $GITHUB_ENV
-          echo "ARCHFLAGS='-arch aarch64'" >> $GITHUB_ENV
+          echo "ARCHFLAGS=-arch aarch64" >> $GITHUB_ENV
+      - name: Print ARCHFLAGS
+        run: |
+          echo "ARCHFLAGS is: $ARCHFLAGS"
       - name: Set up Python 🐍 3.13
         uses: actions/setup-python@v5
         with:
@@ -95,7 +153,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r ci-requirements.txt
-          python -m pip install cibuildwheel==2.22.0
+          python -m pip install cibuildwheel==2.23.3
       - name: Build wheels for SpiceyPy 🌶️ 🥧
         timeout-minutes: 120
         run: |
@@ -112,7 +170,7 @@ jobs:
           path: ./wheelhouse/*.whl
   publish_to_pypi:
     name: Publish SpiceyPy 🌶️ 🥧 Python 🐍 distributions 📦 to PyPI and TestPyPI
-    needs: [build_wheels, build_sdist]
+    needs: [build_wheels, test_sdist]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -137,6 +195,7 @@ jobs:
         run: |
           twine check dist/*
       - name: Publish distribution 📦 to Test PyPI
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}

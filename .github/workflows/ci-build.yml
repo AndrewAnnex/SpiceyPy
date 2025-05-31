@@ -10,8 +10,8 @@ on:
 env:
   # increment to rebuild cspice manually
   CSPICE_VERSION: 67
-  CSPICE_CACHE_NUMBER: 0
-  PYPI_CACHE_NUMBER: 0
+  CSPICE_CACHE_NUMBER: 9
+  PYPI_CACHE_NUMBER: 1
 
 jobs:
   build:
@@ -25,8 +25,11 @@ jobs:
         id: cache-libcspice
         uses: actions/cache@v4
         with:
-          path: ./src/spiceypy/utils/libcspice.*
-          key: ${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
+          path: |
+            ./src/spiceypy/utils/libcspice.*
+            ./src/cspice/include
+            ./src/cspice/src/cspice
+          key: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
       - name: Setup 🔬🍦🏗️
         if: ${{ matrix.os == 'windows-latest' && steps.cache-libcspice.outputs.cache-hit != 'true' }}
         uses: ilammy/msvc-dev-cmd@v1.13.0
@@ -45,13 +48,23 @@ jobs:
         run: python -c "import sys; print(sys.version)"
       - name: Build libcspice 🌶️ 📚
         if: steps.cache-libcspice.outputs.cache-hit != 'true'
+        env: 
+          CSPICE_NO_TEMP: "YES"
         run: |
+          python -m pip install -r ci-requirements.txt
           python get_spice.py
+          ls ./src/spiceypy/utils/
+          ls ./src
+          ls ./src/cspice
       - name: Upload built 🏗️ libcspice 🌶️ 📚
+        if: steps.cache-libcspice.outputs.cache-hit != 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: artifact-${{ matrix.os }}
-          path: ./src/spiceypy/utils/libcspice.*
+          name: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
+          path: |
+            ./src/spiceypy/utils/libcspice.*
+            ./src/cspice/include
+            ./src/cspice/src/cspice
   test:
     name: Test SpiceyPy 🌶️ 🥧
     needs: build
@@ -62,17 +75,34 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-14, windows-latest]
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.10', '3.11', '3.12', '3.13']
     steps:
+      - name: Setup windows msvc
+        if: ${{ matrix.os == 'windows-latest'}}
+        uses: ilammy/msvc-dev-cmd@v1.13.0
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Download built 🏗️ libcspice 🌶️ 📚
-        uses: actions/download-artifact@v4
+        uses: actions/cache@v4
         with:
-          name: artifact-${{ matrix.os }}
-          path: ./src/spiceypy/utils/
+          path: |
+            ./src/spiceypy/utils/libcspice.*
+            ./src/cspice/include
+            ./src/cspice/src/cspice
+          key: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
+      - name: Verify cache 
+        run: |
+          echo "check src dir \n"
+          ls ./src
+          echo "check cspice dir \n"
+          ls ./src/cspice
+          ls ./src/cspice/include/
+          ls ./src/cspice/src/
+          echo "check for libcspice \n"
+          ls ./src/spiceypy/utils/
+          echo "done"
       - name: Set up Python 🐍 ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
@@ -113,12 +143,37 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install -r ci-requirements.txt
+      - name: Build Cyice
+        env:
+          CSPICE_NO_TEMP: "YES"
+          CSPICE_NO_BUILD: "YES"
+          SYSTEM_VERSION_COMPAT: 0
+        run: |
+          ls ./src/
+          ls ./src/cspice/include/
+          ls ./src/cspice/src/
+          ls ./src/spiceypy/utils/
+          echo ""
+          python setup.py build_ext -j 2 --inplace
+          echo ""
+          python -m build --wheel
+          echo ""
+          ls ./src/spiceypy/cyice/
+          ls ./dist/
       - name: Install SpiceyPy 🌶️ 🥧
+        env:
+          CSPICE_NO_TEMP: "YES"
+          CSPICE_NO_BUILD: "YES"
+          SYSTEM_VERSION_COMPAT: 0
         run: |
           python -m pip install .
       - name: Test 🧪 with coverage 📈
         run: |
-          coverage run --source spiceypy -m pytest --pyargs spiceypy
+          coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
+      - name: Run Benchmarks on latest Python Version
+        if: ${{ matrix.python-version == '3.13' }}
+        run: |
+          python -m pytest --pyargs spiceypy --benchmark-only  
       - name: Upload 🆙 coverage 📈 report to codecov 
         uses: codecov/codecov-action@v4
         with:
@@ -165,12 +220,20 @@ jobs:
       - name: Install SpiceyPy 🌶️ 🥧
         env:
           CSPICE_SHARED_LIB: "/tmp/cspice/lib/libcspice.so"
+          CSPICE_NO_TEMP: "YES"
+          CSPICE_NO_BUILD: "YES"
         run: |
           python get_spice.py
-          python -m pip install .
+          ls ./src/
+          ls ./src/spiceypy/utils/
+          python setup.py build_ext -j 2 --inplace
+          python -m build --wheel
+          ls ./src/spiceypy/cyice/
+          ls ./dist/
+          python -m pip install . --user
       - name: Test 🧪 with coverage 📈
         run: |
-          coverage run --source spiceypy -m pytest --pyargs spiceypy
+          coverage run --source spiceypy -m pytest -vv --pyargs spiceypy --benchmark-disable
       - name: Upload 🆙 coverage 📈 report to codecov 
         uses: codecov/codecov-action@v4
         with:
@@ -218,10 +281,14 @@ jobs:
           CSPICE_SRC_DIR: "/tmp/cspice"
         run: |
           python get_spice.py
-          python -m pip install .
+          ls ./src/
+          ls ./src/spiceypy/utils/
+          python setup.py build_ext -j 2 --inplace
+          ls ./src/spiceypy/cyice/
+          python -m pip install . --user
       - name: Test 🧪 with coverage 📈
         run: |
-          coverage run --source spiceypy -m pytest --pyargs spiceypy
+          coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
       - name: Upload 🆙 coverage 📈 report to codecov 
         uses: codecov/codecov-action@v4
         with:

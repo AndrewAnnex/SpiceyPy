@@ -6,6 +6,7 @@
 .zip
 *.pyc
 *.so
+.vscode/
 
 # Spice Kernels
 *.bsp
@@ -20,8 +21,25 @@
 *.ti
 *.bc
 
+# Cyice things, exclude the c file and html annotation
+src/spiceypy/cyice/cyice.html
+src/spiceypy/cyice/cyice.c
+
+# ignore benchmark folder
+.benchmarks/
+
+# ignore any benchmark svgs created for now
+benchmark_*.svg
+
+# ignore patch files that end up in src
+src/*.patch
+
+# ignore .benchmark folder
+.benchmark/
+
 # Cspice
 cspice/
+src/cspice/
 
 # Test meta kernels
 src/spiceypy/tests/*.txt
@@ -32,6 +50,7 @@ docs/_build
 
 # Pycharm specific things
 .idea/
+.fleet/
 
 # python things
 *.egg-info*
