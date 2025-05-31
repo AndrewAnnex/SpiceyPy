@@ -132,6 +132,10 @@ cpdef void check_for_spice_error():
             getmsg_c("LONG", LONGLEN, longmsg)
             qcktrc_c(TRACELEN, traceback)
             reset_c()
+            shortmsg[SHORTLEN - 1] = b'\0'
+            explain[EXPLAINLEN - 1] = b'\0'
+            longmsg[LONGLEN - 1] = b'\0'
+            traceback[TRACELEN - 1] = b'\0'
         py_shortmsg  = PyUnicode_DecodeUTF8(shortmsg, strlen(shortmsg), 'replace')
         py_explain   = PyUnicode_DecodeUTF8(explain, strlen(explain), 'replace')
         py_longmsg   = PyUnicode_DecodeUTF8(longmsg, strlen(longmsg), 'replace')
