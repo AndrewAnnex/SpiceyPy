@@ -1,7 +1,7 @@
 Cython Enhancement to SpiceyPy: Cyice
 =====================================
 
-A recent NASA PDART grant award (80NSSC25K7040) has funded work to significantly enhance SpiceyPy by implementing Cython (`cython.org` <https://www.cython.org>_)-based wrapper functions to CSPICE within SpiceyPy.
+A recent NASA PDART grant award (80NSSC25K7040) has funded work to significantly enhance SpiceyPy by implementing Cython (`cython.org` <https://cython.org>_)-based wrapper functions to CSPICE within SpiceyPy.
 This new submodule is called Cyice (pronounced “syce”). 
 
 Cyice wrapper functions are much faster than the corresponding existing c-types wrappers in SpiceyPy,

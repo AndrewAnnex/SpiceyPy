@@ -613,7 +613,7 @@ Julian Ephemeris Date 2447751.8293,
 
 where the function :py:meth:`~spiceypy.spiceypy.j2000` returns the
 epoch of the J2000 frame (Julian Ephemeris Date 2451545.0) and the
-function `spd_c <../cspice/spd_c.html>`__ returns the number of
+function :py:meth:`~spiceypy.spiceypy.spd` returns the number of
 seconds per Julian day (86400.0).
 The ephemeris data in an SPK file may be referenced to a number of
 different reference frames. States returned by
@@ -1194,7 +1194,7 @@ The :py:meth:`~spiceypy.spiceypy.spkcov` function provides an API
 via which an application can find the time periods for which a
 specified SPK file provides data for an body of interest. The
 coverage information is a set of disjoint time intervals returned in
-a SPICE `window` data structure (see `other stuff tutorial <../other_stuff.html>`__ and
+a SPICE `window` data structure (see `other stuff tutorial <./other_stuff.html>`__ and
 `windows.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/windows.html>`__).
 
 Refer to the headers of :py:meth:`~spiceypy.spiceypy.spkobj` and

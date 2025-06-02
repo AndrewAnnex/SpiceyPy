@@ -86,8 +86,7 @@ def to_int_matrix(x):
 
 def is_iterable(i) -> bool:
     """
-    From stackoverflow
-    https://stackoverflow.com/questions/1055360/how-to-tell-a-variable-is-iterable-but-not-a-string/44328500#44328500
+    From stackoverflow "how-to-tell-a-variable-is-iterable-but-not-a-string"
     :param i: input collection
     :return: if the input is iterable but not a string
     """

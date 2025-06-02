@@ -374,7 +374,7 @@ Creating a Frame Kernel
 
 | To create a frame kernel you will need to understand the SPICE text
   kernel file format described in detail in the Kernel Required
-  Reading document, `kernel.req <../kernel.html>`__. When making
+  Reading document, `kernel.req <./kernel.html>`__. When making
   a new frame kernel, make sure that the first line of the file
   contains the proper SPICE file identification word for the FK files
   -- `KPL/FK` -- left-justified, on a line by itself.
@@ -784,7 +784,7 @@ PCK Frames
 | If you specify a PCK frame, you will need to load either a text or
   binary PCK file for the body with which the frame is associated.
   The construction of PC kernels is discussed in the SPICE document
-  PCK Required Reading (`pck <../pck.html>`__.)
+  PCK Required Reading (`pck <./pck.html>`__.)
 
 
 
@@ -2591,7 +2591,7 @@ A concrete example is:
 
 The calendar time string is assumed to represent a TDB epoch.
 See the discussion in the section `Freeze Epoch` above or the
-Kernel Required Reading, `kernel.req <../req/kernel.html>`__, for
+Kernel Required Reading, `kernel.req <./kernel.html>`__, for
 further information.
 
 
@@ -3154,7 +3154,7 @@ text kernel time format are interpreted as TDB calendar dates. Use of
 times in either of these formats does not require a leapseconds
 kernel.
 
-See the Kernel Required Reading `kernel.req <../req/kernel.html>`__
+See the Kernel Required Reading `kernel.req <./kernel.html>`__
 for details concerning the text kernel time format and accepted
 formats of double precision values.
 
@@ -3512,7 +3512,7 @@ ID for the J2000 frame is 1)
          mxv_c   ( rot  , old, new )
 
 (\`rot' is a 3-by-3 matrix, \`old' and \`new' are 3-vectors;
-subroutine `mxv_c <../cspice/mxv_c.html>`__ multiplies a matrix and a
+subroutine :py:meth:`~spiceypy.spiceypy.mxv` multiplies a matrix and a
 vector to produce a vector.)
 Two additional subroutines can be used to convert a frame name to ID
 and vice versa. This example shows how to find the index of the

@@ -84,7 +84,7 @@ SCLK kernels
   itself on the first line of a text SCLK file is `KPL/SCLK`. Both
   the NAIF text kernel format and SPICE file identification word are
   described in detail in the Kernel Required Reading document,
-  `kernel <../kernel.html>`__.
+  `kernel <./kernel.html>`__.
 
 To use any of the SCLK conversion functions, your program must first
 load a SCLK kernel file. The code fragment
@@ -109,7 +109,7 @@ Normally, you will load these kernels at just one point in your
 application program, prior to using any time conversion functions.
 
 Details concerning the kernel pool are covered in the KERNEL required
-reading document, `kernel <../kernel.html>`__.
+reading document, `kernel <./kernel.html>`__.
 
 Partitions, briefly
 -------------------
@@ -205,10 +205,8 @@ You can obtain encoded SCLK values from SCLK strings via the function
 
       sclkdp = scencd( sc, clkstr )
 
-encodes the SCLK string `clkstr' as the double precision value
-`sclkdp'.
-Encoded SCLK values can be converted to strings using the code
-fragment
+encodes the SCLK string 'clkstr' as the double precision value 'sclkdp'.
+Encoded SCLK values can be converted to strings using the code fragment
 
 .. code-block:: python
 
@@ -238,7 +236,7 @@ The inverse conversion is provided by the routine
 SCT2E handles integral or continuous tick values as inputs.
 There is a special function that is used for encoding `tolerance`
 values for the CK readers. (See the CK Required Reading,
-`ck <../ck.html>`__, document for a discussion of the CK
+`ck <./ck.html>`__, document for a discussion of the CK
 readers.)
 
 The code fragment
@@ -391,7 +389,7 @@ file. Note, however, that you only have to load the SCLK kernel file
 once in your program, no matter how many calls to
 :py:meth:`~spiceypy.spiceypy.scencd` and
 :py:meth:`~spiceypy.spiceypy.scdecd` are made afterwards. See the
-KERNEL required reading file, `kernel.req <../req/kernel.html>`__,
+KERNEL required reading file, `kernel.req <./kernel.html>`__,
 for information about `loading` miscellaneous kernel files into
 the kernel pool.
 

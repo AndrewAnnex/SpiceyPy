@@ -43,7 +43,7 @@ References
 
    * See Chapter 5, 'Eigenvalues of Operators Acting on Euclidean Spaces'.
 
-#. Planes required reading  (`planes <../planes.html>`__).
+#. Planes required reading  (`planes <./planes.html>`__).
 
 
 
@@ -349,7 +349,7 @@ Use of ellipses with planes
 | The nature of geometry problems involving planes often includes use
   of the SPICE ellipse data type. The example C code listed in the
   headers of the routines `inelpl_c <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/inelpl_c.html>`__ and
-  `pjelpl_c <.https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pjelpl_c.html>`__ show examples of problems
+  `pjelpl_c <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pjelpl_c.html>`__ show examples of problems
   solved using both the ellipse and plane data type that can be converted into the equivalent python by readers.
 
 

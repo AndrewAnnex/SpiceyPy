@@ -104,7 +104,7 @@ Matrix_N_6  = Annotated[DoubleArray, Literal["N", 6, 6]]
 
 from .cyice cimport *
 from spiceypy import config
-from spiceypy.utils.exceptions import dynamically_instantiate_spiceyerror, NotFoundError
+from spiceypy.utils.exceptions import dynamically_instantiate_spiceyerror, NotFoundError, SpiceyError
 
 
 # support functions
@@ -115,7 +115,7 @@ cpdef void check_for_spice_error():
     Internal decorator function to check spice error system for failed calls
 
     :param f: function
-    :raise stypes.SpiceyError:
+    :raise SpiceyError:
     """
     cdef char[SHORTLEN]   shortmsg
     cdef char[EXPLAINLEN] explain
@@ -4019,8 +4019,6 @@ def sincpt_s(
     epoch, optionally corrected for light time and stellar
     aberration.
 
-    This routine supersedes :func:`srfxpt`.
-
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sincpt_c.html
 
     :param method: Computation method.
@@ -4092,8 +4090,6 @@ def sincpt_v(
     the surface intercept of the ray on a target body at a specified
     epoch, optionally corrected for light time and stellar
     aberration.
-
-    This routine supersedes :func:`srfxpt`.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sincpt_c.html
 
@@ -4167,8 +4163,6 @@ def sincpt(
     epoch, optionally corrected for light time and stellar
     aberration.
 
-    This routine supersedes :func:`srfxpt`.
-
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sincpt_c.html
 
     :param method: Computation method.
@@ -4206,8 +4200,6 @@ def subpnt_s(
     Compute the rectangular coordinates of the sub-observer point on
     a target body at a specified epoch, optionally corrected for
     light time and stellar aberration.
-
-    This routine supersedes :func:`subpt`.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subpnt_c.html
 
@@ -4269,8 +4261,6 @@ def subpnt_v(
     a target body at a specified epoch, optionally corrected for
     light time and stellar aberration.
 
-    This routine supersedes :func:`subpt`.
-
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subpnt_c.html
 
     :param method: Computation method.
@@ -4331,8 +4321,6 @@ def subpnt(
     Compute the rectangular coordinates of the sub-observer point on
     a target body at a specified epoch, optionally corrected for
     light time and stellar aberration.
-
-    This routine supersedes :func:`subpt`.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subpnt_c.html
 
@@ -4636,6 +4624,8 @@ def tangpt_s(
     double[::1] dvec
     ):
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.tangpt`
+
     Compute, for a given observer, ray emanating from the observer,
     and target, the "tangent point": the point on the ray nearest
     to the target's surface. Also compute the point on the target's
@@ -4661,7 +4651,7 @@ def tangpt_s(
     :return: "Tangent point": point on ray nearest to surface, Altitude of
      tangent point above surface, Distance of tangent point from observer,
      Point on surface nearest to tangent point, Epoch associated with
-     correction locus, Vector from observer to surface point `srfpt'.
+     correction locus, Vector from observer to surface point 'srfpt'.
     """
     # initialize c variables
     cdef double c_et = et
@@ -4747,7 +4737,7 @@ def tangpt_v(
     :return: "Tangent point": point on ray nearest to surface, Altitude of
      tangent point above surface, Distance of tangent point from observer,
      Point on surface nearest to tangent point, Epoch associated with
-     correction locus, Vector from observer to surface point `srfpt'.
+     correction locus, Vector from observer to surface point 'srfpt'.
     """
     # allocate sizes
     cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
@@ -4835,7 +4825,7 @@ def tangpt(
     :return: "Tangent point": point on ray nearest to surface, Altitude of
      tangent point above surface, Distance of tangent point from observer,
      Point on surface nearest to tangent point, Epoch associated with
-     correction locus, Vector from observer to surface point `srfpt'.
+     correction locus, Vector from observer to surface point 'srfpt'.
     """
     if PyFloat_Check(et):
         return tangpt_s(method, target, et, fixref, abcorr, corloc, obsrvr, dref, dvec)

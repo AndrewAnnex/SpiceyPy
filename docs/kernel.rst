@@ -135,8 +135,8 @@ Binary Kernels
 
 | Binary kernels store large data sets of primarily non-ASCII data,
   using either the DAF or DAS format (see the technical reference
-  documents `daf.req <../req/daf.html>`__ and
-  `das.req <../req/das.html>`__ for details). For all but EK binary
+  documents `daf.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/daf.html>`__ and
+  `das.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/das.html>`__ for details). For all but EK binary
   kernels, loading the binary kernel does not cause the subsystem
   associated with the kernel's type to read the principal kernel
   data; rather only a small amount of descriptive data are read so

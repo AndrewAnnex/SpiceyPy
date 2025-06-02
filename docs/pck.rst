@@ -23,15 +23,15 @@ References
 
 
 #. KERNEL Required Reading
-   (`kernel.req <../kernel.html>`__).
+   (`kernel.req <./kernel.html>`__).
 
 #. NAIF IDS Required Reading
-   (`naif_ids.req <../naif_ids.html>`__).
+   (`naif_ids.req <./naif_ids.html>`__).
 
 #. FRAMES Required Reading
-   (`frames.req <../frames.html>`__).
+   (`frames.req <./frames.html>`__).
 
-#. SPK Required Reading (`spk.req <../spk.html>`__).
+#. SPK Required Reading (`spk.req <./spk.html>`__).
 
 #. TIME Required Reading (`time.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/time.html>`__).
 
@@ -86,7 +86,7 @@ Body Codes
  | NAIF software uses a system of integer codes to conveniently
    represent celestial bodies, locations such as barycenters, Lagrange
    points, and spacecraft. The NAIF IDS Required Reading document,
-   `naif_ids <../naif_ids.html>`__, describes this system in
+   `naif_ids <./naif_ids.html>`__, describes this system in
    detail.
 
  In this document, the following features of the code system will be
@@ -146,11 +146,11 @@ Epochs and Reference Frames
  this rule are body-fixed reference frames associated with
  high-precision orientation provided in binary PCK files. For more
  details see FRAMES Required Reading,
- `frames <../frames.html>`__.
+ `frames <./frames.html>`__.
 
  However, SPICE also has a system of integer codes used by some
  routines to specify reference frames. This coding system is also
- described in detail in `frames <../frames.html>`__.
+ described in detail in `frames <./frames.html>`__.
 
 Planetocentric Coordinates
 --------------------------
@@ -267,7 +267,7 @@ where
  denotes the matrix that rotates a coordinate system by W radians
  about the ith coordinate axis (or rotates vectors by -W radians about
  the same axis), using the right hand rule. (This notation is
- explained in detail in `rotation.req <../req/rotation.html>`__).
+ explained in detail in `rotation.req <./req/rotation.html>`__).
  In PCK files, the time arguments of functions that define orientation
  always refer to Barycentric Dynamical Time (TDB), measured in
  centuries or days past a specified epoch such as J2000, which is
@@ -323,7 +323,7 @@ DAF Run-Time Binary File Format Translation
    information to the comment area, or appending additional ephemeris
    data, for example) require prior conversion of the file to the
    native binary file format. See the Convert User's Guide,
-   `convert.ug <../ug/convert.html>`__, for details.
+   `convert.ug <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/ug/convert.html>`__, for details.
 
 NAIF Text Kernel Format
 -----------------------
@@ -345,7 +345,7 @@ NAIF Text Kernel Format
  leftmost column, is `KPL/PCK`. Both the NAIF text kernel format
  and SPICE file identification word are described in detail in the
  Kernel Required Reading document,
- `kernel.req <../kernel.html>`__. For the reader's convenience, an
+ `kernel.req <./kernel.html>`__. For the reader's convenience, an
  overview of the NAIF text kernel format is provided here.
 
  NAIF text kernels are, first of all, ASCII files. As such, they are
@@ -435,7 +435,7 @@ NAIF Text Kernel Format
 
        SCLK_KERNEL_ID            = ( @01-MAY-1991/16:25 )
 
- See `kernel.req <../kernel.html>`__ for a complete discussion of
+ See `kernel.req <./kernel.html>`__ for a complete discussion of
  the allowed form of assignments.
  The effect of an assignment in a text PCK file is to associate values
  with a name. The name is referred to as a `kernel variable.` When
@@ -534,7 +534,7 @@ Reference Ellipsoid Orientation Offsets
  corresponding PCK reference frame. When this is not the case, a new
  TK reference frame can be defined that provides the correct reference
  ellipsoid orientation relative to the PCK frame. See the Frames
- Required Reading document `frames <../frames.html>`__ for
+ Required Reading document `frames <./frames.html>`__ for
  more information on TK frames.
 
  Defining a TK frame for reference ellipsoid orientation relative to
@@ -900,7 +900,7 @@ Binary PCK Kernel Format
    identification word occupying the first eight bytes of a properly
    created binary PCK file is `DAF/PCK`. For more information on
    SPICE identification words refer to the Kernel Required Reading
-   document, `kernel.req <../kernel.html>`__. Most users will not
+   document, `kernel.req <./kernel.html>`__. Most users will not
    need to understand the details of the structure of binary PCK
    files.
 
@@ -927,7 +927,7 @@ Segments--The Fundamental PCK Building Blocks
 
 #. The frame class ID of the PCK reference frame for which the
    segment provides orientation data. See the Frames Required Reading
-   document `frames <../frames.html>`__ for further
+   document `frames <./frames.html>`__ for further
    information on frame class IDs.
 
  - Some older SPICE documentation refers to this ID code as as a
@@ -1522,7 +1522,7 @@ Binary PCK Coverage Summary Routines
  via which an application can find the time periods for which a
  specified binary PCK file provides data for a reference frame of
  interest. The coverage information is a set of disjoint time
- intervals returned in a SPICE `window` data structure (see `other stuff tutorial <../other_stuff.html>`__ and
+ intervals returned in a SPICE `window` data structure (see `other stuff tutorial <./other_stuff.html>`__ and
  `windows.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/windows.html>`__).
 
  Refer to the headers of :py:meth:`~spiceypy.spiceypy.pckfrm` and
@@ -1840,7 +1840,7 @@ Appendix B --- Epoch and Frame Specifications in Text PCK Kernels
 
  are the frames IDs for the inertial reference frames coded into the
  Frames subsystem. Refer to the Frames Required Reading document,
- `frames.req <../req/frames.html>`__, for a list of the inertial
+ `frames.req <./frames.html>`__, for a list of the inertial
  reference frames and the corresponding frame IDs.
  For example, to use constants referenced to the FK4 frame (frame ID
  1) for the asteroid Gaspra (ID code = 9511010), the PCK file

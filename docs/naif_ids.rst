@@ -23,7 +23,7 @@ Introduction
 The reference frame ID-name mappings routines constitute a subsystem
 separate from the body ID-name mapping routines. Please refer to the
 Frames Required Reading document
-(`frames <../frames.html>`__) for specific information.
+(`frames <./frames.html>`__) for specific information.
 
 Likewise, the surface ID-name mappings routines constitute a
 subsystem separate from the body ID-name mapping routines. Please
@@ -106,7 +106,7 @@ code:
 
          bodn2c( name )
 
-:py:meth:`~spiceypy.spiceypy.boddef_c` performs a run-time assignment
+:py:meth:`~spiceypy.spiceypy.boddef` performs a run-time assignment
 of a name/code mapping for later translation by
 :py:meth:`~spiceypy.spiceypy.bodc2n` and
 :py:meth:`~spiceypy.spiceypy.bodn2c`:
@@ -132,8 +132,8 @@ Spaces between words are significant.
 
 
 SpiceyPy by default does not return `found` boolean variables for functions from CSPICE functions
-and instead raises a :py:exc:`NotFoundError` when the flag is `False`. This behavior can be configured
-or disabled as described in `Exceptions in SpiceyPy <../exceptions.html>`__.
+and instead raises a :py:exc:`spiceypy.utils.exceptions.NotFoundError` when the flag is `False`. This behavior can be configured
+or disabled as described in `Exceptions in SpiceyPy <./exceptions.html>`__.
 
 
 Use of an External Mapping Definition Kernel
@@ -1029,7 +1029,7 @@ Comets
   the NAIF ID code for any named periodic comet, and vice-versa, by
   using a webpage managed by JPL's Solar System Dynamics Group:
 
-      http://ssd.jpl.nasa.gov/sbdb.cgi
+      https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html
 
 .. note::
    Note that the partial listing shown below has an alphabetic ordering
@@ -1261,7 +1261,7 @@ the most commonly requested asteroids. One may look up the NAIF ID
 code for any named asteroid, or vice-versa, by using a webpage
 managed by JPL's Solar System Dynamics Group:
 
-      http://ssd.jpl.nasa.gov/sbdb.cgi
+      https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html
 
 .. code-block:: text
 
@@ -1375,7 +1375,7 @@ Inertial and Non-inertial Reference Frames
 -------------------------------------------
 
 | Please refer to the Frames Required Reading document,
-  `frames <..frames.html>`__, for detailed information on
+  `frames <./frames.html>`__, for detailed information on
   the implementation of reference frames in the SPICE system.
 
 

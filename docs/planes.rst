@@ -28,7 +28,7 @@ References
    * See Chapter 5, 'Eigenvalues of Operators Acting on Euclidean Spaces'.
 
 #. Ellipses required reading
-   (`ellipses <../ellipses.html>`__).
+   (`ellipses <./ellipses.html>`__).
 
 
 

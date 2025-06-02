@@ -113,7 +113,7 @@ def check_for_spice_error(f: Optional[Callable]) -> None:
     Internal decorator function to check spice error system for failed calls
 
     :param f: function
-    :raise stypes.SpiceyError:
+    :raise SpiceyError:
     """
     if failed():
         short = getmsg("SHORT", 26)
@@ -938,9 +938,9 @@ def chbder(
 def chbigr(degp: int, cp: ndarray, x2s: ndarray, x: float) -> Tuple[float, float]:
     """
     Evaluate an indefinite integral of a Chebyshev expansion at a
-    specified point `x' and return the value of the input expansion at
-    `x' as well. The constant of integration is selected to make the
-    integral zero when `x' equals the abscissa value x2s[0].
+    specified point 'x' and return the value of the input expansion at
+    'x' as well. The constant of integration is selected to make the
+    integral zero when 'x' equals the abscissa value x2s[0].
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/chbigr_c.html
 
@@ -964,7 +964,7 @@ def chbigr(degp: int, cp: ndarray, x2s: ndarray, x: float) -> Tuple[float, float
 def chbint(cp: ndarray, degp: int, x2s: ndarray, x: float) -> Tuple[float, float]:
     """
     Return the value of a polynomial and its derivative, evaluated at
-    the input `x', using the coefficients of the Chebyshev expansion of
+    the input 'x', using the coefficients of the Chebyshev expansion of
     the polynomial.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/chbint_c.html
@@ -988,7 +988,7 @@ def chbint(cp: ndarray, degp: int, x2s: ndarray, x: float) -> Tuple[float, float
 @spice_error_check
 def chbval(cp: ndarray, degp: int, x2s: ndarray, x: float) -> float:
     """
-    Return the value of a polynomial evaluated at the input `x' using
+    Return the value of a polynomial evaluated at the input 'x' using
     the coefficients for the Chebyshev expansion of the polynomial.
 
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/chbval_c.html
@@ -4272,7 +4272,7 @@ def ednmpt(a: float, b: float, c: float, normal: ndarray) -> ndarray:
     :param b: Length of the ellipsoid semi-axis along the Y-axis.
     :param c: Length of the ellipsoid semi-axis along the Z-axis.
     :param normal: Outward normal direction.
-    :return: Point where outward normal is parallel to `normal'.
+    :return: Point where outward normal is parallel to 'normal'.
     """
     _a = ctypes.c_double(a)
     _b = ctypes.c_double(b)
@@ -8303,7 +8303,7 @@ def invstm(mat: ndarray) -> ndarray:
     https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/invstm_c.html
 
     :param mat: A state transformation matrix.
-    :return: The inverse of `mat'.
+    :return: The inverse of 'mat'.
     """
     _mat = stypes.to_double_matrix(mat)
     mout = stypes.empty_double_matrix(6, 6)
@@ -8974,7 +8974,7 @@ def lgresp(first: float, step: float, yvals: ndarray, x: float) -> float:
     :param step: Step Size.
     :param yvals: Ordinate Values.
     :param x: Point at which to interpolate the polynomial.
-    :return: The function returns the value at `x' of the unique polynomial of degree n-1 that fits the points in the plane defined by `first', `step', and `yvals'.
+    :return: The function returns the value at 'x' of the unique polynomial of degree n-1 that fits the points in the plane defined by 'first', 'step', and 'yvals'.
     """
     n = ctypes.c_int(len(yvals))
     _first = ctypes.c_double(first)
@@ -9022,7 +9022,7 @@ def lgrint(xvals: ndarray, yvals: ndarray, x: float) -> float:
     :param xvals: Abscissa values.
     :param yvals: Ordinate values.
     :param x: Point at which to interpolate the polynomial.
-    :return: The function returns the value at `x' of the unique polynomial of degree n-1 that fits the points in the plane defined by `xvals' and `yvals'.
+    :return: The function returns the value at 'x' of the unique polynomial of degree n-1 that fits the points in the plane defined by 'xvals' and 'yvals'.
     """
     n = ctypes.c_int(len(xvals))
     _xvals = stypes.to_double_vector(xvals)
@@ -14859,7 +14859,7 @@ def tangpt(
     :return: "Tangent point": point on ray nearest to surface, Altitude of
      tangent point above surface, Distance of tangent point from observer,
      Point on surface nearest to tangent point, Epoch associated with
-     correction locus, Vector from observer to surface point `srfpt'.
+     correction locus, Vector from observer to surface point 'srfpt'.
     """
     _method = stypes.string_to_char_p(method)
     _target = stypes.string_to_char_p(target)

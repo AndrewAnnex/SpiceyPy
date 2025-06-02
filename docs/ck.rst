@@ -22,10 +22,10 @@ References
     (`daf.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/daf.html>`__)
 
 #. [349] FRAMES Required Reading
-    (`frames.req <../frames.html>`__).
+    (`frames.req <./frames.html>`__).
 
 #. [222] Spacecraft Clock Time Required Reading
-    (`sclk.req <../sclk.html>`__)
+    (`sclk.req <./sclk.html>`__)
 
 #. [214] Rotations Required Reading
     (`rotation.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/rotation.html>`__)
@@ -242,7 +242,7 @@ CSPICE includes functions to convert between character SCLK format
 and the double precision encoding. There are also functions to
 convert between SCLK and standard time systems such as ET and UTC.
 
-The SCLK Required Reading, `sclk.req <../sclk.html>`__, contains
+The SCLK Required Reading, `sclk.req <./sclk.html>`__, contains
 a full description of SCLK including the clock formats for individual
 spacecraft. You should read that document before writing any C-kernel
 programs. A brief description of SCLK is included here because many
@@ -284,7 +284,7 @@ example, -77 for Galileo).
 
 Each spacecraft may have a different format for its clock counts, so
 the encoding scheme may be different for each. The SCLK Required
-Reading, `sclk.req <../sclk.html>`__, indicates the expected
+Reading, `sclk.req <./sclk.html>`__, indicates the expected
 clock string formats for each mission.
 
 To convert from ET to continuous encoded SCLK, use
@@ -533,7 +533,7 @@ Inputs are:
    instrument-fixed coordinates.
 
    See the FRAMES Required Reading,
-   `frames.req <../frames.html>`__, for a list of those frames
+   `frames.req <./frames.html>`__, for a list of those frames
    supported by the SPICE system, along with the accepted mnemonics
    for those frames.
 
@@ -679,13 +679,13 @@ CK Coverage Summary Routines
 The :py:meth:`~spiceypy.spiceypy.ckobj` function provides an API via
 which an application can find the set of instruments for which a
 specified CK file contains data. The instrument IDs are returned in a
-SPICE "set" data structure (see `sets.req <../req/sets.html>`__).
+SPICE "set" data structure (see `sets.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/sets.html>`__).
 
 The :py:meth:`~spiceypy.spiceypy.ckcov` function provides an API via
 which an application can find the time periods for which a specified
 CK file provides data for an instrument of interest. The coverage
 information is a set of disjoint time intervals returned in a SPICE
-"window" data structure (see `other stuff tutorial <../other_stuff.html>`__ and
+"window" data structure (see `other stuff tutorial <./other_stuff.html>`__ and
 `windows.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/windows.html>`__)
 
 Refer to the headers of :py:meth:`~spiceypy.spiceypy.ckobj` and
@@ -782,7 +782,7 @@ Each segment descriptor contains two double precision components
    The NAIF integer ID of the base reference frame for the segment
    data. (For example, J2000, B1950, and so on --- to see which ID
    represents which coordinate system, see the Frames Required
-   Reading, `frames.req <../frames.html>`__.)
+   Reading, `frames.req <./frames.html>`__.)
 
 **ICD(3)**
    The data type of the segment. This indicates how the data is
@@ -864,7 +864,7 @@ files from binary format to SPICE transfer format and back to binary
 again.
 
 The SPC functions and their purposes are described in detail in the
-SPC Required Reading, `spc.req <../req/spc.html>`__.
+SPC Required Reading, `spc.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/spc.html>`__.
 
 
 A CK file is a DAF
@@ -891,7 +891,7 @@ SPICE File Identification Word in CK Files
 | The SPICE file identification word occupying the first eight bytes
   of a properly created binary CK file is `DAF/CK` . For more
   information on SPICE file identification words refer to the Kernel
-  Required Reading document, `kernel.req <../req/kernel.html>`__.
+  Required Reading document, `kernel.req <./kernel.html>`__.
 
 
 How the CK Readers Work
@@ -1187,7 +1187,7 @@ frame, there is nothing to be done. Otherwise, the C-matrix and
 angular velocity vector have to be transformed.
 
 Recall that the C-matrix returned by ckpfs_c is a rotation matrix
-from a base frame (call it `refseg`) to instrument-fixed
+from a base frame (call it 'refseg') to instrument-fixed
 coordinates:
 
 .. code-block:: text
@@ -1315,7 +1315,7 @@ u2, u3), and the angle is T, then the quaternion Q is given by:
 The details of quaternion representations of rotations, and the
 derivations of those representations are documented in the CSPICE
 Required Reading file ROTATIONS,
-`rotation.req <../req/rotation.html>`__.
+`rotation.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/rotation.html>`__.
 Data type 1 provides the option of including angular velocity data.
 If such data is included, the angular velocity vector A = (a1, a2, a3
 ) corresponding to each pointing instance will be stored as itself.
@@ -2602,8 +2602,8 @@ Mini-segments
 The mini-segments of a type 6 segment need not use the same packet
 counts, subtypes, clock rates, or interpolation degrees.
 
-The time coverage of a mini-segment is called a `mini-segment
-interval.` `  The mini-segment intervals of a type 6 segment have no
+The time coverage of a mini-segment is called a 'mini-segment
+interval'.  The mini-segment intervals of a type 6 segment have no
 intervening gaps (gaps may occur only within mini-segment intervals)
 and overlap only at single points. The stop time of each mini-segment
 interval is the start time of the next. The start time of a type 6
@@ -2625,7 +2625,7 @@ Each mini-segment contains a time ordered, strictly increasing
 sequence of epochs (no two epochs of the same mini-segment may
 coincide) and an associated sequence of attitude data sets called
 "packets." The epoch associated with a packet is also called a
-`time tag.` The composition of a packet depends on the subtype of
+'time tag.' The composition of a packet depends on the subtype of
 the mini-segment to which the packet belongs; subtypes are discussed
 in more detail below.
 The start time of each mini-segment interval must be greater than or
@@ -2637,10 +2637,10 @@ have a coverage gap between its last time tag and its stop time.
 There cannot be a gap between a mini-segment interval's stop time and
 the start time of the next mini-segment interval.
 
-The interpolation interval associated with a mini-segment is the time
+The interpolation interval associated with a minisegment is the time 
 interval over which the mini-segment can satisfy a pointing request.
 The interpolation interval extends from the start time of the
-corresponding `mini-segment interval to the minimum of the stop
+corresponding mini-segment interval to the minimum of the stop
 time of the mini-segment interval and the last time tag of the
 mini-segment's time tag sequence.
 
@@ -2654,7 +2654,7 @@ cannot occur to the right of a gap. Padding does not contribute to a
 mini-segment's time coverage.
 
 The relationships between the time coverage of a mini-segment (the
-`mini-segment interval`), the time tags of the pointing instances
+'mini-segment interval'), the time tags of the pointing instances
 it contains, and the mini-segment's interpolation interval are shown
 below.
 
