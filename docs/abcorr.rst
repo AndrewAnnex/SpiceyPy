@@ -252,6 +252,7 @@ Geometric case
     lt = \frac{\lVert T(t) - O(t) \rVert}{c}
 
  | The geometric relationship between the observer, target, and solar system barycenter is as shown:
+
  ::
 
              SSB ---> O(t)
