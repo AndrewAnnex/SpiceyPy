@@ -1,11 +1,8 @@
 Cython Enhancement to SpiceyPy: Cyice
 =====================================
 
-.. |ipa319| unicode:: U+026A
-    :trim:
-
 A recent NASA PDART grant award (80NSSC25K7040) has funded work to significantly enhance SpiceyPy by implementing Cython (`cython.org` <https://www.cython.org>_)-based wrapper functions to CSPICE within SpiceyPy.
-This new submodule is called Cyice (pronounced “syce” or /sa|ipa319|s/). 
+This new submodule is called Cyice (pronounced “syce”). 
 
 Cyice wrapper functions are much faster than the corresponding existing c-types wrappers in SpiceyPy,
 up to an order of magnitude faster for certain functions. 
@@ -92,6 +89,19 @@ For example
       dates = np.repeat(["Thu Mar 20 12:53:29 PST 1997"], 2)
       ets = cyice.str2et(dates) # ets is a NumPy double array of length 2
 
+For vectorized functions Cyice will always return NumPy arrays,
+one per scalar or array output, similar to how vectorized SpiceyPy functions behaved.
+
+Cyice also expects inputs for vectorization to be NumPy arrays, even for lists of strings, these must be turned into NumPy arrays.
+
+.. code-block:: python
+
+      dates = np.repeat(["Thu Mar 20 12:53:29 PST 1997"], 2)
+      ets = cyice.str2et_v(dates) # ets is a NumPy double array of length 2
+
+
+Vectorized functions are generally advisable when running a function more than 100 times.
+This is due to the overhead with creating NumPy arrays, which has a small cost that is irrelevant when thousands to millions of calls occur.
 
 Underneath, Cyice provides both "vectorized" (`_v` postfix) and "scalar" (`_s` postfix) functions for most functions, 
 with the normal function delegating to one or the other as needed. 
@@ -109,23 +119,8 @@ In practice, the non-postfixed call should be within a few percent as fast as ca
       ets = cyice.str2et_v(dates)
       # if manually looping, scalar function would be faster (but not faster than not looping at all!)
       for date in dates:
-         # this would be faster than calling str2et directly
-         et = cyice.str2et_s(date)
-
-
-For vectorized functions Cyice will always return NumPy arrays,
-one per scalar or array output, similar to how vectorized SpiceyPy functions behaved.
-
-Cyice also expects inputs for vectorization to be NumPy arrays, even for lists of strings, these must be turned into NumPy arrays.
-
-.. code-block:: python
-
-      dates = np.repeat(["Thu Mar 20 12:53:29 PST 1997"], 2)
-      ets = cyice.str2et_v(dates) # ets is a NumPy double array of length 2
-
-
-Vectorized functions are generally advisable when running a function more than 100 times.
-This is due to the overhead with creating NumPy arrays, which has a small cost that is irrelevant when thousands to millions of calls occur.
+          # this would be faster than calling str2et directly
+          et = cyice.str2et_s(date)
 
 
 Development Plan

@@ -1288,7 +1288,7 @@ are described in detail in the sections that follow.
 
 
 Data Type 1
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------------------------------------------
 
 | The following method of storing and evaluating discrete pointing
   and angular rate values defines C-kernel data type 1.
@@ -1423,7 +1423,7 @@ Type 1 functions
 
 
 Data Type 2
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------------------------------------------
 
 | The following method of storing and evaluating continuous pointing
   data for a spacecraft structure defines C-kernel data type 2.
@@ -1590,7 +1590,7 @@ Type 2 functions
 
 
 Data Type 3
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------------------------------------------
 
 | The following method of storing and evaluating discrete pointing
   data for a spacecraft structure defines C-kernel data type 3.
@@ -1917,7 +1917,7 @@ Type 3 functions
 
 
 Data Type 4
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------------------------------------------
 
 | The following method of storing and evaluating continuous pointing
   data for a spacecraft structure defines C-kernel data Type 4.
@@ -2166,7 +2166,7 @@ Type 4 functions
 
 
 Data Type 5
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------------------------------------------
 
 | CK type 5 has been provided to support accurate duplication within
   the CK system of spacecraft attitude data used by the European
@@ -2544,7 +2544,7 @@ Type 5 functions
 
 
 Type 6: ESOC/DDID Piecewise Interpolation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------------------------------------------
 
 | CK type 6 has been provided to support accurate duplication by the
   SPICE CK subsystem of spacecraft attitude data used by the European
@@ -3144,7 +3144,7 @@ Appendix A --- Summary of C-kernel Functions
 
 
 Summary of Mnemonics
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------------------------------------------
 
 | Each C-kernel function name consists of a mnemonic which translates
   into a short description of the function's purpose. Those beginning
