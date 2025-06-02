@@ -25,6 +25,9 @@ sys.setrecursionlimit(15000)
 
 # -- General configuration ------------------------------------------------
 
+# enable for more verbose warnings such as bad links and etc
+nitpicky = True
+
 # If your documentation needs a minimal Sphinx version, state it here.
 # needs_sphinx = '1.0'
 
@@ -282,7 +285,7 @@ texinfo_documents = [
 epub_title = "SpiceyPy"
 epub_author = "Andrew Annex"
 epub_publisher = "Andrew Annex"
-epub_copyright = "2014-2022, Andrew Annex"
+epub_copyright = "2014-2025, Andrew Annex"
 
 # The basename for the epub file. It defaults to the project name.
 # epub_basename = 'SpiceyPy'
