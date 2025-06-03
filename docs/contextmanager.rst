@@ -1,7 +1,6 @@
 .. _KernelPool:
 
 The KernelPool context manager 
-
 ========================================= 
 
 The :py:exc:`KernelPool<spiceypy.spiceypy.KernelPool>` context manager provides a convenient way to load, and unload SPICE kernels, guaranteeing that the kernel database will still be cleared if an exception is raised.
