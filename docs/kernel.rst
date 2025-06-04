@@ -10,6 +10,8 @@ document available at `https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N006
    These pages may not be updated as frequently as the CSPICE version, and so may be out of date.
    Please consult the changelog_ for more information. 
 
+.. _changelog: ./changelog.html
+
 .. important::
    NOTE any functions postfixed by "_" mentioned below are
    Fortan-SPICE functions unavailable in SpiceyPy
