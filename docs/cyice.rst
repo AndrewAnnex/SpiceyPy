@@ -31,10 +31,12 @@ Cyice is a submodule to SpiceyPy and can be imported via `from spiceypy import c
 
       # do the regular import
       import spiceypy
+
       # call a spiceypy function
       spiceypy.b1900()
       # now import Cyice
       from spiceypy import cyice
+
       # now call the equivalent cyice function
       cyice.b1900()
 
@@ -45,7 +47,7 @@ For example:
 .. code-block:: python
 
       # load a kernel with SpiceyPy
-      spiceypy.furnsh('path/to/kernel.txt')
+      spiceypy.furnsh("path/to/kernel.txt")
       # call str2et from cyice using the same populated kernel pool
       et = cyice.str2et("July 4, 2003 11:00 AM PST")
 
@@ -56,7 +58,7 @@ Scalar values and strings work just like with SpiceyPy, accepting conventional P
 
 .. code-block:: python
 
-      cyice.convrt(1.0, "parsecs", "lightyears") # returns ~482.8032
+      cyice.convrt(1.0, "parsecs", "lightyears")  # returns ~482.8032
 
 
 Numeric arrays, vectors, and matrices however must be provided as NumPy arrays, typically with the double (float64) datatype:
@@ -87,7 +89,7 @@ For example
 .. code-block:: python
 
       dates = np.repeat(["Thu Mar 20 12:53:29 PST 1997"], 2)
-      ets = cyice.str2et(dates) # ets is a NumPy double array of length 2
+      ets = cyice.str2et(dates)  # ets is a NumPy double array of length 2
 
 For vectorized functions Cyice will always return NumPy arrays,
 one per scalar or array output, similar to how vectorized SpiceyPy functions behaved.
@@ -97,7 +99,7 @@ Cyice also expects inputs for vectorization to be NumPy arrays, even for lists o
 .. code-block:: python
 
       dates = np.repeat(["Thu Mar 20 12:53:29 PST 1997"], 2)
-      ets = cyice.str2et_v(dates) # ets is a NumPy double array of length 2
+      ets = cyice.str2et_v(dates)  # ets is a NumPy double array of length 2
 
 
 Vectorized functions are generally advisable when running a function more than 100 times.

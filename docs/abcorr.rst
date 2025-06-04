@@ -3,7 +3,7 @@ Aberration Corrections Required Reading
 ***************************************
 
 This required reading document is reproduced from the original NAIF
-document available at `https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/abcorr.html <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/abcorr.html>`_
+document available at `https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/abcorr.html <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/abcorr.html>`_
 
 .. note::
    These required readings documents were translated from documentation for N67 CSPICE.

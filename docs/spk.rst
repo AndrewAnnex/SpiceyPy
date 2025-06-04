@@ -3,7 +3,7 @@ SPK Required Reading
 *********************
 
 This required reading document is reproduced from the original NAIF
-document available at `https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/spk.html <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/spk.html>`_
+document available at `https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/spk.html <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/spk.html>`_
 
 .. note::
    These required readings documents were translated from documentation for N67 CSPICE.
@@ -78,10 +78,10 @@ References
    Underwood; 11 Dec 1989
 
 #. [167] Double Precision Array Files (DAF) - Required
-   Reading; latest version (`daf.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/daf.html>`__)
+   Reading; latest version (`daf.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/daf.html>`__)
 
 #. [212] COMMNT User's Guide
-   (`commnt.ug <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/ug/commnt.html>`__)
+   (`commnt.ug <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/ug/commnt.html>`__)
 
 
 
@@ -96,7 +96,7 @@ DAF Run-Time Binary File Format Translation
   comment area, or appending additional ephemeris data, for example)
   require prior conversion of the file to the native binary file
   format. See the Convert User's Guide,
-  `convert.ug <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/ug/convert.html>`__, for details.
+  `convert.ug <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/ug/convert.html>`__, for details.
 
 Detection of Non-native Text Files
 -----------------------------------
@@ -353,7 +353,7 @@ SPK Files
   structured in a NAIF developed abstract file architecture called
   Double Precision Array File (DAF). The DAF architecture and
   supporting software is discussed in the DAF Required Reading
-  document, `daf.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/daf.html>`__. The SPICE file
+  document, `daf.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/daf.html>`__. The SPICE file
   identification word occupying the first eight bytes of a properly
   created binary SPK file is `DAF/SPK` . For more information on
   SPICE identification words refer to the Kernel Required Reading
@@ -457,7 +457,7 @@ Warning: If you add comments to an SPK (or other binary kernel) using
 COMMNT, you must wait for the program to complete the task before
 exiting the program. Failure to wait for COMMNT to finish its work
 will result in irreparable corruption of the binary kernel. (See the
-COMMNT User's Guide, `commnt.ug <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/ug/commnt.html>`__, [212] for
+COMMNT User's Guide, `commnt.ug <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/ug/commnt.html>`__, [212] for
 details on the use of COMMNT).
 
 Terminology
@@ -517,7 +517,7 @@ Terminology
    particular epoch---the epoch of the J2000 reference frame. This
    reference epoch is within a second or two of the UTC epoch:
    12:01:02.184 Jan 1, 2000 UTC. (See the document
-   `time.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/time.html>`__ for a more thorough discussion of
+   `time.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/time.html>`__ for a more thorough discussion of
    the J2000 epoch). Epochs prior to this epoch are represented as
    negative numbers. The `units` of ET are designated in several
    different ways: seconds past 2000, seconds past J2000, seconds
@@ -1201,14 +1201,14 @@ Getting Coverage Summary
 The :py:meth:`~spiceypy.spiceypy.spkobj` function provides an API
 via which an application can find the set of bodies for which a
 specified SPK file contains data. The body IDs are returned in a
-SPICE `set` data structure (see `sets.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/sets.html>`__).
+SPICE `set` data structure (see `sets.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/sets.html>`__).
 
 The :py:meth:`~spiceypy.spiceypy.spkcov` function provides an API
 via which an application can find the time periods for which a
 specified SPK file provides data for an body of interest. The
 coverage information is a set of disjoint time intervals returned in
 a SPICE `window` data structure (see `other stuff tutorial <./other_stuff.html>`__ and
-`windows.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/windows.html>`__).
+`windows.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/windows.html>`__).
 
 Refer to the headers of :py:meth:`~spiceypy.spiceypy.spkobj` and
 :py:meth:`~spiceypy.spiceypy.spkcov` for details on the use of
@@ -1480,7 +1480,7 @@ commented files from binary format to SPICE transfer format and back
 to binary again.
 
 The SPC functions and their functions are described in detail in the
-SPC Required Reading, `spc <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/spc.html>`__.
+SPC Required Reading, `spc <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/spc.html>`__.
 
 SPK Data Types
 ------------------------------------------------------------------------------------------------------------
@@ -4111,7 +4111,7 @@ descriptive documentation in the comments portion of the SPK file.
 You can use the utility program COMMNT to insert comments into the
 file, or you may use the functions in the SPC family to insert the
 comments when you create the SPK file. (See
-`commnt.ug <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/ug/commnt.html>`__ or `spc.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/spc.html>`__
+`commnt.ug <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/ug/commnt.html>`__ or `spc.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/spc.html>`__
 for further details.)
 
 This appendix addresses the contents of your comments. What will

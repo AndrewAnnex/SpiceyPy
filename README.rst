@@ -84,7 +84,7 @@ Documentation
 The SpiceyPy docs are available at:
 `spiceypy.readthedocs.org <http://spiceypy.readthedocs.org>`__.
 The documentation for SpiceyPy is intentionally abridged so as to utilize the excellent `documentation provided by the
-NAIF. <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/index.html>`__
+NAIF. <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/index.html>`__
 Please refer to C and IDL documentation available on the NAIF website
 for in-depth explanations. Each function docstring has a link to the
 corresponding C function in the NAIF docs at a minimum.

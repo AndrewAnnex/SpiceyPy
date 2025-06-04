@@ -224,7 +224,7 @@ def b1900():
     """
     Return the Julian Date corresponding to Besselian Date 1900.0.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/b1900_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/b1900_c.html
 
     :return: The Julian Date corresponding to Besselian Date 1900.0.
     """
@@ -235,7 +235,7 @@ def b1950():
     """
     Return the Julian Date corresponding to Besselian Date 1950.0.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/b1950_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/b1950_c.html
 
     :return: The Julian Date corresponding to Besselian Date 1950.0.
     """
@@ -256,7 +256,7 @@ def ckgp_s(
     """
     Get pointing (attitude) for a specified spacecraft clock time.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckgp_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/ckgp_c.html
 
     :param inst: NAIF ID of instrument, spacecraft, or structure.
     :param sclkdp: Encoded spacecraft clock time.
@@ -302,7 +302,7 @@ def ckgp_v(
 
     Get pointing (attitude) for specified spacecraft clock times.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckgp_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/ckgp_c.html
 
     :param inst: NAIF ID of instrument, spacecraft, or structure.
     :param sclkdps: Encoded spacecraft clock times.
@@ -349,7 +349,7 @@ def ckgp(
     """
     Get pointing (attitude) for specified spacecraft clock times.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckgp_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/ckgp_c.html
 
     :param inst: NAIF ID of instrument, spacecraft, or structure.
     :param sclkdps: Encoded spacecraft clock times.
@@ -379,7 +379,7 @@ def ckgpav_s(
     Get pointing (attitude) and angular velocity
     for a specified spacecraft clock time.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckgpav_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/ckgpav_c.html
 
     :param inst: NAIF ID of instrument, spacecraft, or structure.
     :param sclkdp: Encoded spacecraft clock time.
@@ -432,7 +432,7 @@ def ckgpav_v(
     Get pointing (attitude) and angular velocity
     for specified spacecraft clock times.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckgpav_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/ckgpav_c.html
 
     :param inst: NAIF ID of instrument, spacecraft, or structure.
     :param sclkdp: Encoded spacecraft clock times.
@@ -485,7 +485,7 @@ def ckgpav(
     Get pointing (attitude) and angular velocity
     for a specified spacecraft clock time.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/ckgpav_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/ckgpav_c.html
 
     :param inst: NAIF ID of instrument, spacecraft, or structure.
     :param sclkdp: Encoded spacecraft clock time.
@@ -514,7 +514,7 @@ def convrt_s(
     X, and units to which X should be converted; return Y
     the value of the measurement in the output units.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/convrt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/convrt_c.html
 
     :param x: Number representing a measurement in some units.
     :param inunit: The units in which x is measured.
@@ -549,7 +549,7 @@ def convrt_v(
     X, and units to which each X should be converted; return Y
     the values of the measurements in the output units.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/convrt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/convrt_c.html
 
     :param x: Numbers representing a measurement in some units.
     :param inunit: The units in which x is measured.
@@ -585,7 +585,7 @@ def convrt(
     X, and units to which X should be converted; return Y
     the value of the measurement in the output units.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/convrt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/convrt_c.html
 
     :param x: Number representing a measurement in some units.
     :param inunit: The units in which x is measured.
@@ -610,7 +610,7 @@ def deltet_s(
 
     Return the value of Delta ET (ET-UTC) for an input epoch.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/deltet_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/deltet_c.html
 
     :param epoch: Input epoch (seconds past J2000).
     :param eptype: Type of input epoch ("UTC" or "ET").
@@ -640,7 +640,7 @@ def deltet_v(
 
     Return the values of Delta ET (ET-UTC) for all input epochs.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/deltet_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/deltet_c.html
 
     :param epochs: Input epoch (seconds past J2000).
     :param eptype: Type of input epoch ("UTC" or "ET").
@@ -672,7 +672,7 @@ def deltet(
     """
     Return the value of Delta ET (ET-UTC) for an input epoch.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/deltet_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/deltet_c.html
 
     :param epoch: Input epoch (seconds past J2000).
     :param eptype: Type of input epoch ("UTC" or "ET").
@@ -698,7 +698,7 @@ def et2lst_s(
     Given an ephemeris epoch, compute the local solar time for
     an object on the surface of a body at a specified longitude.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/et2lst_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/et2lst_c.html
 
     :param et: Epoch in seconds past J2000 epoch.
     :param body: ID-code of the body of interest.
@@ -755,7 +755,7 @@ def et2lst_v(
     Given ephemeris epochs, compute the local solar time for
     an object on the surface of a body at a specified longitude.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/et2lst_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/et2lst_c.html
 
     :param ets: Epochs in seconds past J2000 epoch.
     :param body: ID-code of the body of interest.
@@ -825,7 +825,7 @@ def et2lst(
     Given an ephemeris epoch, compute the local solar time for
     an object on the surface of a body at a specified longitude.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/et2lst_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/et2lst_c.html
 
     :param et: Epoch in seconds past J2000 epoch.
     :param body: ID-code of the body of interest.
@@ -857,7 +857,7 @@ def et2utc_s(
     Convert an input time from ephemeris seconds past J2000
     to Calendar, Day-of-Year, or Julian Date format, UTC.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/et2utc_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/et2utc_c.html
 
     :param et: Input epoch, given in ephemeris seconds past J2000.
     :param format_str: Format of output epoch.
@@ -893,7 +893,7 @@ def et2utc_v(
     Convert an input time from ephemeris seconds past J2000
     to Calendar, Day-of-Year, or Julian Date format, UTC.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/et2utc_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/et2utc_c.html
 
     :param ets: Input epochs, given in ephemeris seconds past J2000.
     :param format_str: Format of output epoch.
@@ -938,7 +938,7 @@ def et2utc(
     Convert an input time from ephemeris seconds past J2000
     to Calendar, Day-of-Year, or Julian Date format, UTC.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/et2utc_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/et2utc_c.html
 
     :param et: Input epoch, given in ephemeris seconds past J2000.
     :param format_str: Format of output epoch.
@@ -962,7 +962,7 @@ def etcal_s(
     the epoch of J2000 to a calendar string format using a
     formal calendar free of leapseconds.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/etcal_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/etcal_c.html
 
     :param et: Ephemeris time measured in seconds past J2000 TDB.
     :return: A standard calendar representation of et.
@@ -992,7 +992,7 @@ def etcal_v(
     the epoch of J2000 to a calendar string format using a
     formal calendar free of leapseconds.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/etcal_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/etcal_c.html
 
     :param ets: Ephemeris times measured in seconds past J2000 TDB.
     :return: A standard calendar representation of et.
@@ -1027,7 +1027,7 @@ def etcal(
     the epoch of J2000 to a calendar string format using a
     formal calendar free of leapseconds.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/etcal_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/etcal_c.html
 
     :param et: Ephemeris time measured in seconds past J2000 TDB.
     :return: A standard calendar representation of et.
@@ -1044,7 +1044,7 @@ cpdef SpiceBoolean failed() noexcept:
     """
     True if an error condition has been signalled via sigerr_c.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/failed_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/failed_c.html
 
     :return: a boolean
     """
@@ -1067,7 +1067,7 @@ def fovray_s(
     Determine if a specified ray is within the field-of-view (FOV) of a
     specified instrument at a given time.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/fovray_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/fovray_c.html
 
     :param inst: Name or ID code string of the instrument.
     :param raydir: Ray's direction vector.
@@ -1116,7 +1116,7 @@ def fovray_v(
     Determine if a specified ray is within the field-of-view (FOV) of a
     specified instrument at a given time.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/fovray_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/fovray_c.html
 
     :param inst: Name or ID code string of the instrument.
     :param raydir: Ray's direction vector.
@@ -1166,7 +1166,7 @@ def fovray(
     Determine if a specified ray is within the field-of-view (FOV) of a
     specified instrument at a given time.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/fovray_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/fovray_c.html
 
     :param inst: Name or ID code string of the instrument.
     :param raydir: Ray's direction vector.
@@ -1197,7 +1197,7 @@ def fovtrg_s(
     Determine if a specified ephemeris object is within the field-of-view (FOV)
     of a specified instrument at a given time.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/fovtrg_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/fovtrg_c.html
 
     :param inst: Name or ID code string of the instrument.
     :param target: Name or ID code string of the target.
@@ -1251,7 +1251,7 @@ def fovtrg_v(
     Determine if a specified ephemeris object is within the field-of-view (FOV)
     of a specified instrument at a given time.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/fovtrg_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/fovtrg_c.html
 
     :param inst: Name or ID code string of the instrument.
     :param target: Name or ID code string of the target.
@@ -1306,7 +1306,7 @@ def fovtrg(
     Determine if a specified ephemeris object is within the field-of-view (FOV)
     of a specified instrument at a given time.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/fovtrg_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/fovtrg_c.html
 
     :param inst: Name or ID code string of the instrument.
     :param target: Name or ID code string of the target.
@@ -1329,7 +1329,7 @@ def furnsh(
     """
     Load one or more SPICE kernels into a program.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/furnsh_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/furnsh_c.html
 
     :param path: one or more paths to kernels
     """
@@ -1350,7 +1350,7 @@ cpdef str getmsg(
     the explanation of the short error message, or the
     long error message.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/getmsg_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/getmsg_c.html
 
     :param option: Indicates type of error message.
     :param lenout: Available space in the output string msg.
@@ -1398,7 +1398,7 @@ def lspcn_s(
     Compute L_s, the planetocentric longitude of the sun, as seen
     from a specified body.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lspcn_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/lspcn_c.html
 
     :param body: Name of central body.
     :param et: Epoch in seconds past J2000 TDB.
@@ -1431,7 +1431,7 @@ def lspcn_v(
     Compute L_s, the planetocentric longitude of the sun, as seen
     from a specified body.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lspcn_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/lspcn_c.html
 
     :param body: Name of central body.
     :param ets: Epochs in seconds past J2000 TDB.
@@ -1464,7 +1464,7 @@ def lspcn(
     Compute L_s, the planetocentric longitude of the sun, as seen
     from a specified body.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/lspcn_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/lspcn_c.html
 
     :param body: Name of central body.
     :param et: Epoch in seconds past J2000 TDB.
@@ -1493,7 +1493,7 @@ cpdef str qcktrc(
     """
     Return a string containing a traceback.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/qcktrc_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/qcktrc_c.html
 
     :param tracelen: Maximum length of output traceback string.
     :return: A traceback string.
@@ -1523,7 +1523,7 @@ cpdef void reset() noexcept:
     As a result, the status routine, :py:meth:`~spiceypy.cyice.cyice.failed`, will return a value
     of False
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/reset_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/reset_c.html
 
     """
     reset_c()
@@ -1540,7 +1540,7 @@ def scdecd_s(
     Convert double precision encoding of spacecraft clock time into
     a character representation.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scdecd_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/scdecd_c.html
 
     :param sc: NAIF spacecraft identification code.
     :param sclkdp: Encoded representation of a spacecraft clock count.
@@ -1572,7 +1572,7 @@ def scdecd_v(
     Convert double precision encoding of spacecraft clock time into
     a character representation.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scdecd_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/scdecd_c.html
 
     :param sc: NAIF spacecraft identification code.
     :param sclkdps: Encoded representations of a spacecraft clock count.
@@ -1610,7 +1610,7 @@ def scdecd(
     Convert double precision encoding of spacecraft clock time into
     a character representation.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scdecd_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/scdecd_c.html
 
     :param sc: NAIF spacecraft identification code.
     :param sclkdp: Encoded representation of a spacecraft clock count.
@@ -1632,7 +1632,7 @@ def scencd_s(
     Encode character representation of spacecraft clock time into a
     double precision number.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scencd_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/scencd_c.html
 
     :param sc: NAIF spacecraft identification code.
     :param sclkch: Character representation of a spacecraft clock.
@@ -1662,7 +1662,7 @@ def scencd_v(
     Encode character representation of spacecraft clock time into a
     double precision number.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scencd_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/scencd_c.html
 
     :param sc: NAIF spacecraft identification code.
     :param sclkchs: Character representations of a spacecraft clock.
@@ -1695,7 +1695,7 @@ def scencd(
     Encode character representation of spacecraft clock time into a
     double precision number.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scencd_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/scencd_c.html
 
     :param sc: NAIF spacecraft identification code.
     :param sclkch: Character representation of a spacecraft clock.
@@ -1718,7 +1718,7 @@ def sce2c_s(
     spacecraft clock "ticks".  Non-integral tick values may be
     returned.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sce2c_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sce2c_c.html
 
     :param sc: NAIF spacecraft ID code.
     :param et: Ephemeris time, seconds past J2000 TDB.
@@ -1751,7 +1751,7 @@ def sce2c_v(
     spacecraft clock "ticks".  Non-integral tick values may be
     returned.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sce2c_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sce2c_c.html
 
     :param sc: NAIF spacecraft ID code.
     :param ets: Ephemeris times, seconds past J2000 TDB.
@@ -1784,7 +1784,7 @@ def sce2c(
     spacecraft clock "ticks".  Non-integral tick values may be
     returned.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sce2c_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sce2c_c.html
 
     :param sc: NAIF spacecraft ID code.
     :param et: Ephemeris time, seconds past J2000 TDB.
@@ -1808,7 +1808,7 @@ def sce2s_s(
     Convert an epoch specified as ephemeris seconds past J2000 (ET) to a
     character string representation of a spacecraft clock value (SCLK).
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sce2s_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sce2s_c.html
 
     :param sc: NAIF spacecraft clock ID code.
     :param et: Ephemeris time, specified as seconds past J2000 TDB.
@@ -1840,7 +1840,7 @@ def sce2s_v(
     Convert an epoch specified as ephemeris seconds past J2000 (ET) to a
     character string representation of a spacecraft clock value (SCLK).
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sce2s_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sce2s_c.html
 
     :param sc: NAIF spacecraft clock ID code.
     :param ets: Ephemeris times, specified as seconds past J2000 TDB.
@@ -1879,7 +1879,7 @@ def sce2s(
     Convert an epoch specified as ephemeris seconds past J2000 (ET) to a
     character string representation of a spacecraft clock value (SCLK).
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sce2s_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sce2s_c.html
 
     :param sc: NAIF spacecraft clock ID code.
     :param et: Ephemeris time, specified as seconds past J2000 TDB.
@@ -1900,7 +1900,7 @@ def scs2e_s(
 
     Convert a spacecraft clock string to ephemeris seconds past J2000 (ET).
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scs2e_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/scs2e_c.html
 
     :param sc: NAIF integer code for a spacecraft.
     :param sclkch: An SCLK string.
@@ -1929,7 +1929,7 @@ def scs2e_v(
 
     Convert a spacecraft clock string to ephemeris seconds past J2000 (ET).
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scs2e_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/scs2e_c.html
 
     :param sc: NAIF integer code for a spacecraft.
     :param sclkchs: SCLK strings.
@@ -1961,7 +1961,7 @@ def scs2e(
     """
     Convert a spacecraft clock string to ephemeris seconds past J2000 (ET).
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/scs2e_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/scs2e_c.html
 
     :param sc: NAIF integer code for a spacecraft.
     :param sclkch: An SCLK string.
@@ -1983,7 +1983,7 @@ def sct2e_s(
     Convert encoded spacecraft clock ("ticks") to ephemeris
     seconds past J2000 (ET).
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sct2e_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sct2e_c.html
 
     :param sc: NAIF spacecraft ID code.
     :param sclkdp: SCLK, encoded as ticks since spacecraft clock start.
@@ -2013,7 +2013,7 @@ def sct2e_v(
     Convert encoded spacecraft clock ("ticks") to ephemeris
     seconds past J2000 (ET).
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sct2e_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sct2e_c.html
 
     :param sc: NAIF spacecraft ID code.
     :param sclkdps: SCLKs, encoded as ticks since spacecraft clock start.
@@ -2043,7 +2043,7 @@ def sct2e(
     Convert encoded spacecraft clock ("ticks") to ephemeris
     seconds past J2000 (ET).
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sct2e_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sct2e_c.html
 
     :param sc: NAIF spacecraft ID code.
     :param sclkdp: SCLK, encoded as ticks since spacecraft clock start.
@@ -2070,7 +2070,7 @@ def spkapo_s(
     Return the position of a target body relative to an observer,
     optionally corrected for light time and stellar aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkapo_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkapo_c.html
 
     :param targ: Target body.
     :param et: Observer epoch in seconds past J2000 TDB..
@@ -2120,7 +2120,7 @@ def spkapo_v(
     Return the position of a target body relative to an observer,
     optionally corrected for light time and stellar aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkapo_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkapo_c.html
 
     :param targ: Target body.
     :param ets: Observer epochs in seconds past J2000 TDB..
@@ -2171,7 +2171,7 @@ def spkapo(
     Return the position of a target body relative to an observer,
     optionally corrected for light time and stellar aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkapo_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkapo_c.html
 
     :param targ: Target body.
     :param et: Observer epoch in seconds past J2000 TDB..
@@ -2208,7 +2208,7 @@ def spkcpo_s(
     frame. The observer's position is provided by the calling program
     rather than by loaded SPK files.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpo_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkcpo_c.html
 
     :param target: Name of target ephemeris object.
     :param et: Observation epoch in ephemeris seconds past J2000 TDB.
@@ -2273,7 +2273,7 @@ def spkcpo_v(
     frame. The observer's position is provided by the calling program
     rather than by loaded SPK files.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpo_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkcpo_c.html
 
     :param target: Name of target ephemeris object.
     :param ets: Observation epochs in ephemeris seconds past J2000 TDB.
@@ -2338,7 +2338,7 @@ def spkcpo(
     frame. The observer's position is provided by the calling program
     rather than by loaded SPK files.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpo_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkcpo_c.html
 
     :param target: Name of target ephemeris object.
     :param et: Observation epoch in ephemeris seconds past J2000 TDB.
@@ -2376,7 +2376,7 @@ def spkcpt_s(
     target's position is provided by the calling program rather than by
     loaded SPK files.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkcpt_c.html
 
     :param trgpos: Target position relative to center of motion.
     :param trgctr: Center of motion of target.
@@ -2443,7 +2443,7 @@ def spkcpt_v(
     target's position is provided by the calling program rather than by
     loaded SPK files.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkcpt_c.html
 
     :param trgpos: Target position relative to center of motion.
     :param trgctr: Center of motion of target.
@@ -2510,7 +2510,7 @@ def spkcpt(
     target's position is provided by the calling program rather than by
     loaded SPK files.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcpt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkcpt_c.html
 
     :param trgpos: Target position relative to center of motion.
     :param trgctr: Center of motion of target.
@@ -2550,7 +2550,7 @@ def spkcvo_s(
     frame.  The observer's state is provided by the calling program
     rather than by loaded SPK files.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvo_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkcvo_c.html
 
     :param target: Name of target ephemeris object.
     :param et: Observation epoch in ephemeris seconds past J2000 TDB.
@@ -2620,7 +2620,7 @@ def spkcvo_v(
     frame.  The observer's state is provided by the calling program
     rather than by loaded SPK files.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvo_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkcvo_c.html
 
     :param target: Name of target ephemeris object.
     :param ets: Observation epochs in ephemeris seconds past J2000 TDB.
@@ -2691,7 +2691,7 @@ def spkcvo(
     frame.  The observer's state is provided by the calling program
     rather than by loaded SPK files.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvo_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkcvo_c.html
 
     :param target: Name of target ephemeris object.
     :param et: Observation epoch in ephemeris seconds past J2000 TDB.
@@ -2732,7 +2732,7 @@ def spkcvt_s(
     target's state is provided by the calling program rather than by
     loaded SPK files.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkcvt_c.html
 
     :param trgsta: Target state relative to center of motion.
     :param trgepc: Epoch of target state.
@@ -2802,7 +2802,7 @@ def spkcvt_v(
     target's state is provided by the calling program rather than by
     loaded SPK files.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkcvt_c.html
 
     :param trgsta: Target state relative to center of motion.
     :param trgepc: Epoch of target state.
@@ -2873,7 +2873,7 @@ def spkcvt(
     target's state is provided by the calling program rather than by
     loaded SPK files.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkcvt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkcvt_c.html
 
     :param trgsta: Target state relative to center of motion.
     :param trgepc: Epoch of target state.
@@ -2910,7 +2910,7 @@ def spkez_s(
     relative to an observing body, optionally corrected for light
     time (planetary aberration) and stellar aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkez_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkez_c.html
 
     :param target: Target body.
     :param et: Observer epoch in seconds past J2000 TDB.
@@ -2960,7 +2960,7 @@ def spkez_v(
     relative to an observing body, optionally corrected for light
     time (planetary aberration) and stellar aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkez_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkez_c.html
 
     :param target: Target body.
     :param epochs: Observer epoch in seconds past J2000 TDB.
@@ -3013,7 +3013,7 @@ def spkez(
     relative to an observing body, optionally corrected for light
     time (planetary aberration) and stellar aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkez_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkez_c.html
 
     :param target: Target body.
     :param et: Observer epoch in seconds past J2000 TDB.
@@ -3046,7 +3046,7 @@ def spkezp_s(
     body, optionally corrected for light time (planetary aberration)
     and stellar aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkezp_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkezp_c.html
 
     :param targ: Target body NAIF ID code.
     :param et: Observer epoch in seconds past J2000 TDB.
@@ -3097,7 +3097,7 @@ def spkezp_v(
     body, optionally corrected for light time (planetary aberration)
     and stellar aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkezp_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkezp_c.html
 
     :param targ: Target body NAIF ID code.
     :param ets: Observer epochs in seconds past J2000 TDB.
@@ -3149,7 +3149,7 @@ def spkezp(
     body, optionally corrected for light time (planetary aberration)
     and stellar aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkezp_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkezp_c.html
 
     :param targ: Target body NAIF ID code.
     :param et: Observer epoch in seconds past J2000 TDB.
@@ -3182,7 +3182,7 @@ def spkezr_s(
     relative to an observing body, optionally corrected for light
     time (planetary aberration) and stellar aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkezr_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkezr_c.html
 
     :param target: Target body name.
     :param epoch: Observer epoch in seconds past J2000 TDB.
@@ -3231,7 +3231,7 @@ def spkezr_v(
     relative to an observing body, optionally corrected for light
     time (planetary aberration) and stellar aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkezr_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkezr_c.html
 
     :param target: Target body name.
     :param epochs: Observer epochs in seconds past J2000 TDB.
@@ -3284,7 +3284,7 @@ def spkezr(
     relative to an observing body, optionally corrected for light
     time (planetary aberration) and stellar aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkezr_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkezr_c.html
 
     :param target: Target body name.
     :param epoch: Observer epoch in seconds past J2000 TDB.
@@ -3315,7 +3315,7 @@ def spkgeo_s(
     Compute the geometric state (position and velocity) of a target
     body relative to an observing body.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkgeo_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkgeo_c.html
 
     :param targ: Target body.
     :param et: Target epoch.
@@ -3363,7 +3363,7 @@ def spkgeo_v(
     Compute the geometric state (position and velocity) of a target
     body relative to an observing body.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkgeo_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkgeo_c.html
 
     :param targ: Target body.
     :param ets: Target epochs.
@@ -3411,7 +3411,7 @@ def spkgeo(
     Compute the geometric state (position and velocity) of a target
     body relative to an observing body.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkgeo_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkgeo_c.html
 
     :param targ: Target body.
     :param et: Target epoch.
@@ -3441,7 +3441,7 @@ def spkgps_s(
     Compute the geometric position of a target body relative to an
     observing body.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkgps_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkgps_c.html
 
     :param targ: Target body.
     :param et: Target epoch.
@@ -3487,7 +3487,7 @@ def spkgps_v(
     Compute the geometric position of a target body relative to an
     observing body.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkgps_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkgps_c.html
 
     :param targ: Target body.
     :param ets: Target epochs.
@@ -3533,7 +3533,7 @@ def spkgps(
     Compute the geometric position of a target body relative to an
     observing body.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkgps_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkgps_c.html
 
     :param targ: Target body.
     :param et: Target epoch.
@@ -3563,7 +3563,7 @@ def spkpos_s(
     body, optionally corrected for light time (planetary aberration)
     and stellar aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpos_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkpos_c.html
 
     :param targ: Target body name.
     :param et: Observer epoch in seconds past J2000 TDB.
@@ -3614,7 +3614,7 @@ def spkpos_v(
     body, optionally corrected for light time (planetary aberration)
     and stellar aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpos_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkpos_c.html
 
     :param targ: Target body name.
     :param ets: Observer epochs in seconds past J2000 TDB.
@@ -3667,7 +3667,7 @@ def spkpos(
     body, optionally corrected for light time (planetary aberration)
     and stellar aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpos_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkpos_c.html
 
     :param targ: Target body name.
     :param et: Observer epoch in seconds past J2000 TDB.
@@ -3698,7 +3698,7 @@ def spkpvn_s(
     velocity) of the segment's target body relative to its center of
     motion.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpvn_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkpvn_c.html
 
     :param handle: File handle.
     :param descr: Segment descriptor.
@@ -3747,7 +3747,7 @@ def spkpvn_v(
     velocity) of the segment's target body relative to its center of
     motion.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpvn_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkpvn_c.html
 
     :param handle: File handle.
     :param descr: Segment descriptor.
@@ -3796,7 +3796,7 @@ def spkpvn(
     velocity) of the segment's target body relative to its center of
     motion.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpvn_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkpvn_c.html
 
     :param handle: File handle.
     :param descr: Segment descriptor.
@@ -3825,7 +3825,7 @@ def spkssb_s(
     Return the state (position and velocity) of a target body
     relative to the solar system barycenter.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkssb_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkssb_c.html
 
     :param targ: Target body.
     :param et: Target epoch.
@@ -3865,7 +3865,7 @@ def spkssb_v(
     Return the state (position and velocity) of a target body
     relative to the solar system barycenter.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkssb_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkssb_c.html
 
     :param targ: Target body.
     :param ets: Target epochs.
@@ -3904,7 +3904,7 @@ def spkssb(
     Return the state (position and velocity) of a target body
     relative to the solar system barycenter.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkssb_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkssb_c.html
 
     :param targ: Target body.
     :param et: Target epoch.
@@ -3927,7 +3927,7 @@ def str2et_s(
     value representing the number of TDB seconds past the J2000
     epoch corresponding to the input epoch.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/str2et_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/str2et_c.html
 
     :param time: A string representing an epoch.
     :return: The equivalent value in seconds past J2000, TDB.
@@ -3954,7 +3954,7 @@ def str2et_v(
     value representing the number of TDB seconds past the J2000
     epoch corresponding to the input epoch.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/str2et_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/str2et_c.html
 
     :param times: Strings representing an epoch.
     :return: The equivalent values in seconds past J2000, TDB.
@@ -3987,7 +3987,7 @@ def str2et(
     value representing the number of TDB seconds past the J2000
     epoch corresponding to the input epoch.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/str2et_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/str2et_c.html
 
     :param time: A string representing an epoch.
     :return: The equivalent value in seconds past J2000, TDB.
@@ -4019,7 +4019,7 @@ def sincpt_s(
     epoch, optionally corrected for light time and stellar
     aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sincpt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sincpt_c.html
 
     :param method: Computation method.
     :param target: Name of target body.
@@ -4091,7 +4091,7 @@ def sincpt_v(
     epoch, optionally corrected for light time and stellar
     aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sincpt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sincpt_c.html
 
     :param method: Computation method.
     :param target: Name of target body.
@@ -4163,7 +4163,7 @@ def sincpt(
     epoch, optionally corrected for light time and stellar
     aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sincpt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sincpt_c.html
 
     :param method: Computation method.
     :param target: Name of target body.
@@ -4201,7 +4201,7 @@ def subpnt_s(
     a target body at a specified epoch, optionally corrected for
     light time and stellar aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subpnt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/subpnt_c.html
 
     :param method: Computation method.
     :param target: Name of target body.
@@ -4261,7 +4261,7 @@ def subpnt_v(
     a target body at a specified epoch, optionally corrected for
     light time and stellar aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subpnt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/subpnt_c.html
 
     :param method: Computation method.
     :param target: Name of target body.
@@ -4322,7 +4322,7 @@ def subpnt(
     a target body at a specified epoch, optionally corrected for
     light time and stellar aberration.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subpnt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/subpnt_c.html
 
     :param method: Computation method.
     :param target: Name of target body.
@@ -4360,7 +4360,7 @@ def subslr_s(
 
     This routine supersedes subsol_c.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subslr_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/subslr_c.html
 
     :param method: Computation method.
     :param target: Name of target body.
@@ -4423,7 +4423,7 @@ def subslr_v(
 
     This routine supersedes subsol_c.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subslr_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/subslr_c.html
 
     :param method: Computation method.
     :param target: Name of target body.
@@ -4486,7 +4486,7 @@ def subslr(
 
     This routine supersedes subsol_c.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/subslr_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/subslr_c.html
 
     :param method: Computation method.
     :param target: Name of target body.
@@ -4518,7 +4518,7 @@ def sxform_s(
     Return the state transformation matrix from one frame to
     another at a specified epoch.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sxform_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sxform_c.html
 
 
     :param instring: Name of the frame to transform from.
@@ -4556,7 +4556,7 @@ def sxform_v(
     Return the state transformation matrix from one frame to
     another at a specified epoch.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sxform_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sxform_c.html
 
 
     :param instring: Name of the frame to transform from.
@@ -4594,7 +4594,7 @@ def sxform(
     Return the state transformation matrix from one frame to
     another at a specified epoch.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/sxform_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sxform_c.html
 
 
     :param instring: Name of the frame to transform from.
@@ -4636,7 +4636,7 @@ def tangpt_s(
 
     The surface shape is modeled as a triaxial ellipsoid.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tangpt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/tangpt_c.html
 
     :param method: Computation method.
     :param target: Name of target body.
@@ -4722,7 +4722,7 @@ def tangpt_v(
 
     The surface shape is modeled as a triaxial ellipsoid.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tangpt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/tangpt_c.html
 
     :param method: Computation method.
     :param target: Name of target body.
@@ -4810,7 +4810,7 @@ def tangpt(
 
     The surface shape is modeled as a triaxial ellipsoid.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/tangpt_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/tangpt_c.html
 
     :param method: Computation method.
     :param target: Name of target body.
@@ -4844,7 +4844,7 @@ def timout_s(
     past the TDB epoch of J2000 to a character string formatted to
     the specifications of a user's format picture.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/timout_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/timout_c.html
 
     :param et: An epoch in seconds past the ephemeris epoch J2000.
     :param pictur: A format specification for the output string.
@@ -4877,7 +4877,7 @@ def timout_v(
     past the TDB epoch of J2000 to a character string formatted to
     the specifications of a user's format picture.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/timout_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/timout_c.html
 
     :param ets: Epochs in seconds past the ephemeris epoch J2000.
     :param pictur: A format specification for the output string.
@@ -4916,7 +4916,7 @@ def timout(
     past the TDB epoch of J2000 to a character string formatted to
     the specifications of a user's format picture.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/timout_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/timout_c.html
 
     :param et: An epoch in seconds past the ephemeris epoch J2000.
     :param pictur: A format specification for the output string.
@@ -4945,7 +4945,7 @@ def trgsep_s(
     Compute the angular separation in radians between two spherical
     or point objects.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/trgsep_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/trgsep_c.html
 
     :param et: Ephemeris seconds past J2000 TDB.
     :param targ1: First target body name.
@@ -5002,7 +5002,7 @@ def trgsep_v(
     Compute the angular separation in radians between two spherical
     or point objects.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/trgsep_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/trgsep_c.html
 
     :param ets: Ephemeris seconds past J2000 TDB.
     :param targ1: First target body name.
@@ -5060,7 +5060,7 @@ def trgsep(
     Compute the angular separation in radians between two spherical
     or point objects.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/trgsep_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/trgsep_c.html
 
     :param et: Ephemeris seconds past J2000 TDB.
     :param targ1: First target body name.
@@ -5092,7 +5092,7 @@ def unitim_s(
     Transform time from one uniform scale to another.  The uniform
     time scales are TAI, TDT, TDB, ET, JED, JDTDB, JDTDT.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unitim_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/unitim_c.html
 
     :param epoch: An epoch to be converted.
     :param insys: The time scale associated with the input epoch.
@@ -5127,7 +5127,7 @@ def unitim_v(
     Transform time from one uniform scale to another.  The uniform
     time scales are TAI, TDT, TDB, ET, JED, JDTDB, JDTDT.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unitim_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/unitim_c.html
 
     :param epochs: Epochs to be converted.
     :param insys: The time scale associated with the input epoch.
@@ -5164,7 +5164,7 @@ def unitim(
     Transform time from one uniform scale to another.  The uniform
     time scales are TAI, TDT, TDB, ET, JED, JDTDB, JDTDT.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unitim_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/unitim_c.html
 
     :param epoch: An epoch to be converted.
     :param insys: The time scale associated with the input epoch.
@@ -5183,7 +5183,7 @@ def unload(str file) -> None:
     """
     Unload a SPICE kernel.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/unload_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/unload_c.html
 
     :param filename: The name of a kernel to unload.
     """
@@ -5198,7 +5198,7 @@ def utc2et_s(const char* utcstr)-> float:
     Convert an input time from Calendar or Julian Date format, UTC,
     to ephemeris seconds past J2000.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/utc2et_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/utc2et_c.html
 
     :param utcstr: Input time string, UTC.
     :return: Output epoch, ephemeris seconds past J2000.
@@ -5223,7 +5223,7 @@ def utc2et_v(
     Convert an input time from Calendar or Julian Date format, UTC,
     to ephemeris seconds past J2000.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/utc2et_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/utc2et_c.html
 
     :param utcstr: Input time strings, UTC.
     :return: Output epochs, ephemeris seconds past J2000.
@@ -5251,7 +5251,7 @@ def utc2et(utcstr: str | String_N)-> float | Double_N:
     Convert an input time from Calendar or Julian Date format, UTC,
     to ephemeris seconds past J2000.
 
-    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/utc2et_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/utc2et_c.html
 
     :param utcstr: Input time string, UTC.
     :return: Output epoch, ephemeris seconds past J2000.

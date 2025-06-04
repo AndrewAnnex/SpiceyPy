@@ -30,7 +30,7 @@ Exception Contents
 
 The exception message is a string that follows the format used elsewhere in spice and
 includes the toolkit version, the short description, explanation, long format description,
-and traceback (of spice calls). `Read the NAIF tutorial on exceptions here. <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/Tutorials/pdf/individual_docs/32_exceptions.pdf>`_
+and traceback (of spice calls). `Read the NAIF tutorial on exceptions here. <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/Tutorials/pdf/individual_docs/32_exceptions.pdf>`_
 These values are stored in parameters of the exception object.
 
 Here is an example of the exception message text:
@@ -83,13 +83,13 @@ functions, the found parameter of the exception will contain an iterable of the 
 
     import spiceypy as spice
 
-    spice.bodc2n(-9991) # will raise an exception
+    spice.bodc2n(-9991)  # will raise an exception
 
     with spice.no_found_check():
-        name, found = spice.bodc2n(-9991) # found is now available, no exception raised!
-        assert not found # found is going to be False in this case.
+        name, found = spice.bodc2n(-9991)  # found is now available, no exception raised!
+        assert not found  # found is going to be False in this case.
 
-    spice.bodc2n(-9991) # will raise an exception again
+    spice.bodc2n(-9991)  # will raise an exception again
 
 There is also an accompanying context manager for enabling the default SpiceyPy behavior within a code block like so:
 
@@ -97,10 +97,10 @@ There is also an accompanying context manager for enabling the default SpiceyPy 
 
     import spiceypy as spice
 
-    spice.bodc2n(-9991) # will raise an exception
+    spice.bodc2n(-9991)  # will raise an exception
 
     with spice.found_check():
-        name = spice.bodc2n(-9991) # will also raise an exception
+        name = spice.bodc2n(-9991)  # will also raise an exception
 
 
 In addition, for advanced users there are two functions :py:meth:`spiceypy.spiceypy.found_check_off` and :py:meth:`spiceypy.spiceypy.found_check_on`

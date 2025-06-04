@@ -3,7 +3,7 @@ Cells Explained
 ===============
 
 Spice Cells are data structures included in SPICE and serve as the equivalents to lists and sets for CSPICE.
-For more primary documentation on cells, please see the `Cells required reading <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/cells.html>`_.
+For more primary documentation on cells, please see the `Cells required reading <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/cells.html>`_.
 For SpiceyPy, cells can be constructed in a variety of ways, shown below.
 
 .. code:: python
