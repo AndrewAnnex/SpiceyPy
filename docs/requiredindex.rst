@@ -16,6 +16,7 @@ for additional material naifrequired_.
 Contents:
 
 .. toctree::
+   :titlesonly:
    :maxdepth: 0
 
    abcorr 
