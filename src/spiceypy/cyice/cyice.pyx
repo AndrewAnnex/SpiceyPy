@@ -254,6 +254,8 @@ def ckgp_s(
     const char* ref
     ) -> tuple[Matrix_3, float, bool] | tuple[Matrix_3, float]:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.ckgp_s`
+    
     Get pointing (attitude) for a specified spacecraft clock time.
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/ckgp_c.html
@@ -376,6 +378,8 @@ def ckgpav_s(
     const char* c_ref
     ) -> tuple[Matrix_3, Vector, float, bool] | tuple[Matrix_3, Vector, float]:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.ckgpav`
+
     Get pointing (attitude) and angular velocity
     for a specified spacecraft clock time.
 
@@ -2371,6 +2375,8 @@ def spkcpt_s(
     str obsrvr
     ) -> tuple[State, float]:
     """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkcpt`
+
     Return the state, relative to a specified observer, of a target
     having constant position in a specified reference frame. The
     target's position is provided by the calling program rather than by
