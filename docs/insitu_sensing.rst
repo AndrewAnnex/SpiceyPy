@@ -41,16 +41,14 @@ this lesson:
 
 These tutorials are available from the NAIF ftp server at JPL:
 
-::
-
-      https://naif.jpl.nasa.gov/naif/tutorials.html
+`https://naif.jpl.nasa.gov/naif/tutorials.html <https://naif.jpl.nasa.gov/naif/tutorials.html>`_
 
 Required Readings
 ^^^^^^^^^^^^^^^^^^
 
 .. tip::
-   The `Required Readings <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html>`_ are also available on the NAIF website at:
-      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html.
+   The `Required Readings <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/index.html>`_ are also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/index.html.
 
 The Required Reading documents are provided with the Toolkit and are
 located under the "cspice/doc" directory in the CSPICE Toolkit
@@ -70,8 +68,8 @@ The Permuted Index
 ^^^^^^^^^^^^^^^^^^^
 
 .. tip::
-   The `Permuted Index <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/info/cspice_idx.html>`_ is also available on the NAIF website at:
-      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/info/cspice_idx.html.
+   The `Permuted Index <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/info/cspice_idx.html>`_ is also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/info/cspice_idx.html.
 
 Another useful document distributed with the Toolkit is the permuted
 index. This is located under the "cspice/doc" directory in the C
@@ -89,16 +87,14 @@ built-in Python help system.
 
 For example, the Python help function
 
-::
+.. code-block:: python
 
-      >>> import spiceypy
-      >>> help(spiceypy.str2et)
+     import spiceypy
+     help(spiceypy.str2et)
 
 describes of the str2et function's parameters, while the document
 
-::
-
-      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/str2et_c.html
+`https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/str2et_c.html <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/str2et_c.html>`_
 
 describes extensively the str2et functionality.
 
@@ -124,9 +120,8 @@ The following kernels are used in examples provided in this lesson:
 These SPICE kernels are included in the lesson package available from
 the NAIF server at JPL:
 
-::
+`http://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/Lessons/ <http://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/Lessons/>`_
 
-      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/Lessons/
 
 SpiceyPy Modules Used
 ---------------------

@@ -57,16 +57,14 @@ this lesson:
 
 These tutorials are available from the NAIF ftp server at JPL:
 
-::
-
-      https://naif.jpl.nasa.gov/naif/tutorials.html
+`https://naif.jpl.nasa.gov/naif/tutorials.html <https://naif.jpl.nasa.gov/naif/tutorials.html>`_
 
 Required Readings
 ^^^^^^^^^^^^^^^^^^
 
 .. tip::
-   The `Required Readings <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html>`_ are also available on the NAIF website at:
-      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html.
+   The `Required Readings <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/index.html>`_ are also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/index.html.
 
 The Required Reading documents are provided with the Toolkit and are
 located under the "cspice/doc" directory in the CSPICE Toolkit
@@ -86,8 +84,8 @@ The Permuted Index
 ^^^^^^^^^^^^^^^^^^^
 
 .. tip::
-   The `Permuted Index <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/info/cspice_idx.html>`_ is also available on the NAIF website at:
-      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/info/cspice_idx.html.
+   The `Permuted Index <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/info/cspice_idx.html>`_ is also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/info/cspice_idx.html.
 
 Another useful document distributed with the Toolkit is the permuted
 index. This is located under the "cspice/doc" directory in the C
@@ -105,16 +103,15 @@ built-in Python help system.
 
 For example, the Python help function
 
-::
 
-      >>> import spiceypy
-      >>> help(spiceypy.str2et)
+.. code-block:: python
+
+      import spiceypy
+      help(spiceypy.str2et)
 
 describes of the str2et function's parameters, while the document
 
-::
-
-      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/str2et_c.html
+`https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/str2et_c.html <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/str2et_c.html>`_
 
 describes extensively the str2et functionality.
 
@@ -134,9 +131,7 @@ The following kernels are used in examples provided in this lesson:
 These SPICE kernels are included in the lesson package available from
 the NAIF server at JPL:
 
-::
-
-      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/Lessons/
+`https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/Lessons/ <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/Lessons/>`_
 
 SpiceyPy Modules Used
 ---------------------
@@ -223,10 +218,10 @@ needing information concerning SPICE are:
 Required Reading and Users Guides
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. tip::
-   The `Required Readings <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html>`_ are also available on the NAIF website at:
-      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html.
-   The `User Guides <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/ug/index.html>`_ are also available on the NAIF website at:
-      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/ug/index.html
+   The `Required Readings <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/index.html>`_ are also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/index.html.
+   The `User Guides <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/ug/index.html>`_ are also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/ug/index.html
 
 NAIF Required Reading (\*.req) documents introduce the functionality of
 particular Spice subsystems:
@@ -287,22 +282,6 @@ tools:
       tobin.ug
       toxfr.ug
       version.ug
-
-These text documents exist in the 'doc' directory of the main CSPICE
-Toolkit directory:
-
-::
-
-         ../cspice/doc/
-
-HTML format documentation
-
-The SpiceyPy distributions include HTML versions of Required Readings
-and Users Guides, accessible from the HTML documentation directory:
-
-::
-
-         ../cspice/doc/html/index.html
 
 Library Source Code Documentation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -370,9 +349,8 @@ API Documentation
 
 The SpiceyPy package is documented in "readthedocs" website:
 
-::
 
-      https://spiceypy.readthedocs.io/en/main/index.html
+`https://spiceypy.readthedocs.io/en/main/index.html <https://spiceypy.readthedocs.io/en/main/index.html>`_
 
 Each API documentation page is in large part copied from the
 "Abstract" and" Brief_I/O" sections of the corresponding CSPICE
@@ -400,16 +378,6 @@ system:
           :return: The equivalent value in seconds past J2000, TDB.
           :rtype: float
 
-In order to have offline access to the documentation it is recommended
-to have the CSPICE Toolkit installed locally. The CSPICE package
-includes the CSPICE Reference Guide, an index of all CSPICE wrapper APIs
-with hyperlinks to API specific documentation. Each API documentation
-page includes cross-links to any other wrapper API mentioned in the
-document and links to the wrapper source code.
-
-::
-
-         ...cspice/doc/html/cspice/index.html
 
 Text kernels
 ------------

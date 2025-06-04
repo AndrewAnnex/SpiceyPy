@@ -35,7 +35,7 @@ and "Brief_I/O" sections of the corresponding CSPICE function documentation.
 Each wrapper function has a link back to the corresponding original CSPICE
 function documentation hosted at the NAIF website. For more in-depth information
 about SPICE, please visit the NAIF website or
-`click here <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/>`_
+`click here <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/>`_
 to view the entire CSPICE documentation.
 
 The intent of the function doc-strings is to serve only as a quick reference to

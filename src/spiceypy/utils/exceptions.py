@@ -58,7 +58,7 @@ class SpiceyError(Exception):
 
         More information regarding the error system internal to spice can be found at the naif website.
 
-        https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/error.html
+        https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/error.html
 
         :param short: A short, descriptive message.
         :param explain: An expanded form of the short message if present.
