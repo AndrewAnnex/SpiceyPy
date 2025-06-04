@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) [2015-2022] [Andrew Annex]
+Copyright (c) [2015-2025] [Andrew Annex]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -1624,7 +1624,7 @@ def test_dafrda():
         # - A count of [segmentN] Chebyshev polynomial records @ RSIZE words per Cheby. poly. record
         # - A four-word directory at the end of the segment
         # So ((RSIZE * N) + 4) == (1 + END - BEGIN)
-        # - cf. https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/spk.html#Type%202:%20Chebyshev%20%28position%20only%29
+        # - cf. https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/spk.html#Type%202:%20Chebyshev%20%28position%20only%29
         assert (3 + (segmentRsize * segmentN)) == (ic[5] - ic[4])
         # Setup for next segment:  advance BEGIN word of next single summary
         firstWord += ss
@@ -5422,7 +5422,7 @@ def test_ktotal():
 
 
 def test_kxtrct():
-    # Tests from examples at this URL:  https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/kxtrct_c.html#Examples
+    # Tests from examples at this URL:  https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/kxtrct_c.html#Examples
     i = 0
     while i < 500:
         i += 1

@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) [2015-2022] [Andrew Annex]
+Copyright (c) [2015-2025] [Andrew Annex]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -58,7 +58,7 @@ class SpiceyError(Exception):
 
         More information regarding the error system internal to spice can be found at the naif website.
 
-        https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/error.html
+        https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/error.html
 
         :param short: A short, descriptive message.
         :param explain: An expanded form of the short message if present.

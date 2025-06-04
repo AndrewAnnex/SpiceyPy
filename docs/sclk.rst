@@ -3,7 +3,21 @@ SCLK Required Reading
 *********************
 
 This required reading document is reproduced from the original NAIF
-document available at `https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/sclk.html <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/sclk.html>`_
+document available at `https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/sclk.html <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/sclk.html>`_
+
+.. note::
+   These required readings documents were translated from documentation for N67 CSPICE.
+   These pages may not be updated as frequently as the CSPICE version, and so may be out of date.
+   Please consult the changelog_ for more information. 
+
+.. important::
+   NOTE any functions postfixed by "_" mentioned below are
+   Fortan-SPICE functions unavailable in SpiceyPy
+   as the NAIF does not officially support these with "_c" function
+   wrappers within the CSPICE API.
+   If these functions are necessary for your work
+   please contact the NAIF to request that they be added to
+   the CSPICE API
 
 Abstract
 ========
@@ -91,7 +105,7 @@ load a SCLK kernel file. The code fragment
 
 ::
 
-      furnsh( <path to the SCLK kernel file goes here> )
+      furnsh("path to the SCLK kernel file goes here")
 
 accomplishes this. You must supply the actual name of the kernel file
 you want to load.
@@ -101,10 +115,10 @@ an SCLK and a leapseconds kernel be loaded. The code fragment
 
 ::
 
-      furnsh( <path to the LEAPSECONDS kernel file goes here> )
+      furnsh("path to the LEAPSECONDS kernel file goes here")
 
 loads a leapseconds kernel. Leapseconds kernels are described in the
-TIME required reading document, `time.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/time.html>`__.
+TIME required reading document, `time.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/time.html>`__.
 Normally, you will load these kernels at just one point in your
 application program, prior to using any time conversion functions.
 
@@ -157,15 +171,16 @@ the function call
 .. code-block:: python
 
       from spiceypy import *
-      et = scs2e( sc, clkstr )
+
+      et = scs2e(sc, clkstr)
 
 To convert a SCLK string to a UTC string, you can use the code
 fragment
 
 .. code-block:: python
 
-      et = scs2e( sc, clkstr )
-      utc = timout( et, pictur )
+      et = scs2e(sc, clkstr)
+      utc = timout(et, pictur)
 
 where
 
@@ -185,8 +200,8 @@ The inverse conversion is performed by the code fragment
 
 .. code-block:: python
 
-      et = str2et( utc )
-      clkstr = sce2s( sc,  et )
+      et = str2et(utc)
+      clkstr = sce2s(sc, et)
 
 
 
@@ -203,21 +218,21 @@ You can obtain encoded SCLK values from SCLK strings via the function
 
 .. code-block:: python
 
-      sclkdp = scencd( sc, clkstr )
+      sclkdp = scencd(sc, clkstr)
 
 encodes the SCLK string 'clkstr' as the double precision value 'sclkdp'.
 Encoded SCLK values can be converted to strings using the code fragment
 
 .. code-block:: python
 
-      clkstr = scdecd( sc, sclkdp )
+      clkstr = scdecd(sc, sclkdp)
 
 You can obtain continuous encoded SCLK values from ET via the
 function :py:meth:`~spiceypy.spiceypy.sce2c`. The code fragment
 
 .. code-block:: python
 
-      clkdp = sce2c( sc, et )
+      clkdp = sce2c(sc, et)
 
 encodes the ephemeris time ET as the double precision value
 `sclkdp`. SCLKDP need not be integral; even though non-integral tick
@@ -231,7 +246,7 @@ The inverse conversion is provided by the routine
 
 .. code-block:: python
 
-      et = sct2e( sc, sclkdp )
+      et = sct2e(sc, sclkdp)
 
 SCT2E handles integral or continuous tick values as inputs.
 There is a special function that is used for encoding `tolerance`
@@ -243,7 +258,7 @@ The code fragment
 
 .. code-block:: python
 
-      ticks = sctiks( sc, clkstr )
+      ticks = sctiks(sc, clkstr)
 
 produces an encoded tolerance value.
 :py:meth:`~spiceypy.spiceypy.sctiks` takes SCLK strings WITHOUT
@@ -277,7 +292,7 @@ its double precision encoding `sclkdp`, use the function
 
 .. code-block:: python
 
-      sclkdp = scencd( sc, sclkch )
+      sclkdp = scencd(sc, sclkch)
 
 The function :py:meth:`~spiceypy.spiceypy.scdecd` (Decode SCLK)
 recovers the character representation of spacecraft clock from its
@@ -285,7 +300,7 @@ double precision encoding.
 
 .. code-block:: python
 
-      sclkch = scdecd( sc, sclkdp )
+      sclkch = scdecd(sc, sclkdp)
 
 The first argument to both functions, `sc`, is the NAIF integer ID
 for the spacecraft whose clock count is being encoded or decoded (for
@@ -404,7 +419,7 @@ If you want to read partition start and stop times for yourself, use
 the function :py:meth:`~spiceypy.spiceypy.scpart`:
 ::
 
-      nparts, pstart, pstop = scpart( sc )
+      nparts, pstart, pstop = scpart(sc)
 
 
 
@@ -538,16 +553,6 @@ functions:
       ET to continuous ticks, type cc
 
 
-.. important::
-   NOTE all functions postfixed by "_" mentioned above are
-   Fortan-SPICE functions unavailable in SpiceyPy
-   as the NAIF does not officially support these with "_c" function
-   wrappers within the CSPICE API.
-   If these functions are necessary for your work
-   please contact the NAIF to request that they be added to
-   the CSPICE API
-
-
 Spacecraft-Specific Parameters
 -------------------------------
 
@@ -576,7 +581,7 @@ pool):
 
 ::
 
-      furnsh( "path_to_SCLK_kernel_file" )
+      furnsh("path_to_SCLK_kernel_file")
 
 An application must also load the leapseconds kernel file if there
 are any conversions to be performed between ET and UTC. This is
@@ -727,20 +732,16 @@ An Example Using SCLK Functions
    """
    import spiceypy as spice
 
+
    def main():
        # Instrument, reference frame, and spacecraft ID.
-       INST = -32001   # Voyager 2 narrow angle camera.
-       REF  = "J2000"
-       SC   = -32     # Spacecraft clock ID for Voyager 2.
+       INST = -32001  # Voyager 2 narrow angle camera.
+       REF = "J2000"
+       SC = -32  # Spacecraft clock ID for Voyager 2.
 
        # Clock tolerance string and array of input spacecraft clock counts.
        clktol = "0:01:001"
-       sclkin = [
-           "2/20538:39:768",
-           "2/20543:21:768",
-           "2/20550:37",
-           "2/20564:19"
-       ]
+       sclkin = ["2/20538:39:768", "2/20543:21:768", "2/20550:37", "2/20564:19"]
 
        # Load the required kernels.
        spice.furnsh("VGR2NA.BC")
@@ -776,7 +777,8 @@ An Example Using SCLK Functions
        # (Optional) Unload the kernels when done.
        spice.kclear()
 
-   if __name__ == '__main__':
+
+   if __name__ == "__main__":
        main()
 
 The output from this program looks like this:
@@ -1229,15 +1231,6 @@ The last two functions sc01\_ and sclu01\_ are `umbrella`
 functions which exist for the purpose of allowing their entry points
 to share data. These functions should not be called directly.
 
-
-.. important::
-   NOTE all functions postfixed by "_" mentioned above are
-   Fortan-SPICE functions unavailable in SpiceyPy
-   as the NAIF does not officially support these with "_c" function
-   wrappers within the CSPICE API.
-   If these functions are necessary for your work
-   please contact the NAIF to request that they be added to
-   the CSPICE API
 
 
 The type 1 SCLK kernel file

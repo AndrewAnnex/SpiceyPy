@@ -33,7 +33,7 @@ from the NAIF servers via the links provided. After the kernels have been downlo
 to a common directory write a metakernel containing the file names for each downloaded
 kernel (provided after the links).
 I named the metakernel 'cassMetaK.txt' for this example. For more on defining
-meta kernels in spice, please consult the `Kernel Required Reading <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/kernel.html>`_.
+meta kernels in spice, please consult the `Kernel Required Reading <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/kernel.html>`_.
 
 - `naif0009.tls <https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/a_old_versions/naif0009.tls>`_
 - `cas00084.tsc <https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/sclk/cas00084.tsc>`_
@@ -81,7 +81,7 @@ meta kernels in spice, please consult the `Kernel Required Reading <https://naif
 
     step = 4000
     # we are going to get positions between these two dates
-    utc = ['Jun 20, 2004', 'Dec 1, 2005']
+    utc = ["Jun 20, 2004", "Dec 1, 2005"]
 
     # get et values one and two, we could vectorize str2et
     etOne = spice.str2et(utc[0])
@@ -97,7 +97,7 @@ meta kernels in spice, please consult the `Kernel Required Reading <https://naif
 .. code:: python
 
     # get times
-    times = [x*(etTwo-etOne)/step + etOne for x in range(step)]
+    times = [x * (etTwo - etOne) / step + etOne for x in range(step)]
 
     # check first few times:
     print(times[0:3])
@@ -123,7 +123,7 @@ meta kernels in spice, please consult the `Kernel Required Reading <https://naif
         body, optionally corrected for light time (planetary aberration)
         and stellar aberration.
 
-        https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/spkpos_c.html
+        https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkpos_c.html
 
         :param targ: Target body name.
         :param et: Observer epoch.
@@ -139,8 +139,10 @@ meta kernels in spice, please consult the `Kernel Required Reading <https://naif
 
 .. code:: python
 
-    #Run spkpos as a vectorized function
-    positions, lightTimes = spice.spkpos('Cassini', times, 'J2000', 'NONE', 'SATURN BARYCENTER')
+    # Run spkpos as a vectorized function
+    positions, lightTimes = spice.spkpos(
+        "Cassini", times, "J2000", "NONE", "SATURN BARYCENTER"
+    )
 
     # Positions is a 3xN vector of XYZ positions
     print("Positions: ")
@@ -169,11 +171,13 @@ positions list to a 2D numpy array for easier indexing in the plot.
 
 .. code:: python
 
-    positions = positions.T # positions is shaped (4000, 3), let's transpose to (3, 4000) for easier indexing
+    positions = (
+        positions.T
+    )  # positions is shaped (4000, 3), let's transpose to (3, 4000) for easier indexing
     fig = plt.figure(figsize=(9, 9))
-    ax  = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot(111, projection="3d")
     ax.plot(positions[0], positions[1], positions[2])
-    plt.title('SpiceyPy Cassini Position Example from Jun 20, 2004 to Dec 1, 2005')
+    plt.title("SpiceyPy Cassini Position Example from Jun 20, 2004 to Dec 1, 2005")
     plt.show()
 
 .. image:: images/exampleoneplot_min.png

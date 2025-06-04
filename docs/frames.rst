@@ -3,7 +3,21 @@ Reference Frames
 ****************
 
 This required reading document is reproduced from the original NAIF
-document available at `https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/frames.html <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/frames.html>`_
+document available at `https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/frames.html <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/frames.html>`_
+
+.. note::
+   These required readings documents were translated from documentation for N67 CSPICE.
+   These pages may not be updated as frequently as the CSPICE version, and so may be out of date.
+   Please consult the changelog_ for more information. 
+
+.. important::
+   NOTE any functions postfixed by "_" mentioned below are
+   Fortan-SPICE functions unavailable in SpiceyPy
+   as the NAIF does not officially support these with "_c" function
+   wrappers within the CSPICE API.
+   If these functions are necessary for your work
+   please contact the NAIF to request that they be added to
+   the CSPICE API
 
 Abstract
 =========
@@ -1107,7 +1121,7 @@ quaternion. The quaternion must be a unit quaternion.
 
 A more detailed discussion of quaternions is available in the
 reference document `Rotations Required Reading`
-(`rotation.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/rotation.html>`__), and in a `Quaternions
+(`rotation.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/rotation.html>`__), and in a `Quaternions
 White Paper` available from NAIF.
 
 
@@ -2533,7 +2547,7 @@ be the polynomial coefficients for the ith angle, we have
                     3,0   3,1                  3,n3
 
 See the Rotation Required Reading,
-`rotation.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/rotation.html>`__, or the header of the CSPICE
+`rotation.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/rotation.html>`__, or the header of the CSPICE
 function :py:meth:`~spiceypy.spiceypy.eul2m` for details concerning
 definition of rotations via Euler angles. Note however that the
 referenced document and source code use a different convention for

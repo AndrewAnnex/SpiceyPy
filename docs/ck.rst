@@ -3,7 +3,12 @@ C-Kernel Required Reading
 **************************
 
 This required reading document is reproduced from the original NAIF
-document available at `https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/ck.html <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/ck.html>`_
+document available at `https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/ck.html <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/ck.html>`_
+
+.. note::
+   These required readings documents were translated from documentation for N67 CSPICE.
+   These pages may not be updated as frequently as the CSPICE version, and so may be out of date.
+   Please consult the changelog_ for more information. 
 
 Abstract
 =============
@@ -19,7 +24,7 @@ References
   NAIF document number.
 
 #. [167] Double Precision Array Files Required Reading
-    (`daf.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/daf.html>`__)
+    (`daf.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/daf.html>`__)
 
 #. [349] FRAMES Required Reading
     (`frames.req <./frames.html>`__).
@@ -28,10 +33,10 @@ References
     (`sclk.req <./sclk.html>`__)
 
 #. [214] Rotations Required Reading
-    (`rotation.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/rotation.html>`__)
+    (`rotation.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/rotation.html>`__)
 
 #. [211] SPC Required Reading: Comments in SPK and CK Files
-    (`spc.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/spc.html>`__)
+    (`spc.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/spc.html>`__)
 
 
 
@@ -46,7 +51,7 @@ DAF Run-Time Binary File Format Translation
   comment area, or appending additional ephemeris data, for example)
   require prior conversion of the file to the native binary file
   format. See the Convert User's Guide,
-  `convert.ug <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/ug/convert.html>`__, for details.
+  `convert.ug <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/ug/convert.html>`__, for details.
 
 
 Detection of Non-native Text Files
@@ -679,14 +684,14 @@ CK Coverage Summary Routines
 The :py:meth:`~spiceypy.spiceypy.ckobj` function provides an API via
 which an application can find the set of instruments for which a
 specified CK file contains data. The instrument IDs are returned in a
-SPICE "set" data structure (see `sets.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/sets.html>`__).
+SPICE "set" data structure (see `sets.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/sets.html>`__).
 
 The :py:meth:`~spiceypy.spiceypy.ckcov` function provides an API via
 which an application can find the time periods for which a specified
 CK file provides data for an instrument of interest. The coverage
 information is a set of disjoint time intervals returned in a SPICE
 "window" data structure (see `other stuff tutorial <./other_stuff.html>`__ and
-`windows.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/windows.html>`__)
+`windows.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/windows.html>`__)
 
 Refer to the headers of :py:meth:`~spiceypy.spiceypy.ckobj` and
 :py:meth:`~spiceypy.spiceypy.ckcov` for details on the use of those
@@ -864,7 +869,7 @@ files from binary format to SPICE transfer format and back to binary
 again.
 
 The SPC functions and their purposes are described in detail in the
-SPC Required Reading, `spc.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/spc.html>`__.
+SPC Required Reading, `spc.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/spc.html>`__.
 
 
 A CK file is a DAF
@@ -1315,7 +1320,7 @@ u2, u3), and the angle is T, then the quaternion Q is given by:
 The details of quaternion representations of rotations, and the
 derivations of those representations are documented in the CSPICE
 Required Reading file ROTATIONS,
-`rotation.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/rotation.html>`__.
+`rotation.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/rotation.html>`__.
 Data type 1 provides the option of including angular velocity data.
 If such data is included, the angular velocity vector A = (a1, a2, a3
 ) corresponding to each pointing instance will be stored as itself.

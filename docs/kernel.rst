@@ -3,7 +3,21 @@ SPICE Kernel Required Reading
 *****************************
 
 This required reading document is reproduced from the original NAIF
-document available at `https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/kernel.html <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/kernel.html>`_
+document available at `https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/kernel.html <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/kernel.html>`_
+
+.. note::
+   These required readings documents were translated from documentation for N67 CSPICE.
+   These pages may not be updated as frequently as the CSPICE version, and so may be out of date.
+   Please consult the changelog_ for more information. 
+
+.. important::
+   NOTE any functions postfixed by "_" mentioned below are
+   Fortan-SPICE functions unavailable in SpiceyPy
+   as the NAIF does not officially support these with "_c" function
+   wrappers within the CSPICE API.
+   If these functions are necessary for your work
+   please contact the NAIF to request that they be added to
+   the CSPICE API
 
 Abstract
 ========
@@ -135,8 +149,8 @@ Binary Kernels
 
 | Binary kernels store large data sets of primarily non-ASCII data,
   using either the DAF or DAS format (see the technical reference
-  documents `daf.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/daf.html>`__ and
-  `das.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/das.html>`__ for details). For all but EK binary
+  documents `daf.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/daf.html>`__ and
+  `das.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/das.html>`__ for details). For all but EK binary
   kernels, loading the binary kernel does not cause the subsystem
   associated with the kernel's type to read the principal kernel
   data; rather only a small amount of descriptive data are read so
@@ -223,8 +237,8 @@ name of the format (e.g. "DAFETF NAIF DAF ENCODED TRANSFER FILE").
 The correct kernel type identifier is written to a transfer format
 file automatically when the file is created by the SPICE utility
 programs TOXFR or SPACIT. See their user guides,
-`toxfr.ug <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/ug/toxfr.html>`__ and
-`spacit.ug <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/ug/spacit.html>`__, for details.
+`toxfr.ug <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/ug/toxfr.html>`__ and
+`spacit.ug <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/ug/spacit.html>`__, for details.
 
 The SPICE kernel type identifiers used in modern SPICE kernels are as
 follows.
@@ -869,12 +883,13 @@ instead of loading kernels using the code fragment:
 
 
       from spiceypy import *
-      furnsh( "leapseconds.tls"  )
-      furnsh( "mgs.tsc"          )
-      furnsh( "generic.bsp"      )
-      furnsh( "mgs.bc"           )
-      furnsh( "earth.bpc"        )
-      furnsh( "mgs.bes"          )
+
+      furnsh("leapseconds.tls")
+      furnsh("mgs.tsc")
+      furnsh("generic.bsp")
+      furnsh("mgs.bc")
+      furnsh("earth.bpc")
+      furnsh("mgs.bes")
 
 
 
@@ -883,7 +898,8 @@ one may now write
 .. code-block:: python
 
       from spiceypy import *
-      furnsh( "kernels.tm" )
+
+      furnsh("kernels.tm")
 
 
 where the file "kernels.tm" is a SPICE text meta-kernel containing
@@ -914,11 +930,11 @@ kernels to be loaded as input arguments via a list or other iterable to
 
       kernels = [
           "leapseconds.tls",
-           "mgs.tsc",
-           "generic.bsp",
-           "mgs.bc",
-           "earth.bpc",
-           "mgs.bes"
+          "mgs.tsc",
+          "generic.bsp",
+          "mgs.bc",
+          "earth.bpc",
+          "mgs.bes",
       ]
 
       furnsh(kernels)
@@ -1125,6 +1141,7 @@ information on the currently loaded SPK files:
 
     import spiceypy as spice
 
+
     def main():
         # Get the total number of loaded SPK kernels.
         count = spice.ktotal("spk")
@@ -1137,6 +1154,7 @@ information on the currently loaded SPK files:
             # kdata returns a tuple: (file, file type, source, handle)
             file, file_type, source, handle = spice.kdata(which, "spk")
             print(file)
+
 
     if __name__ == "__main__":
         main()
@@ -1176,7 +1194,7 @@ about a kernel whose name is already known.
 .. code-block:: python
 
         # will throw a NotFoundError if file is not found
-        filtyp, source, handle = kinfo( file )
+        filtyp, source, handle = kinfo(file)
 
 
 Unloading Kernels
@@ -1213,7 +1231,7 @@ Call :py:meth:`~spiceypy.spiceypy.unload` as follows:
 
 .. code-block:: python
 
-         unload( kernel )
+         unload(kernel)
 
 
 Unloading a meta-kernel involves unloading all the kernels referenced
@@ -1315,6 +1333,7 @@ leapseconds kernel (LSK) could be loaded using
 
     import spiceypy as spice
 
+
     def main():
         text = [
             "DELTET/DELTA_T_A = 32.184",
@@ -1345,12 +1364,13 @@ leapseconds kernel (LSK) could be loaded using
             "                     31, @1997-JUL-1",
             "                     32, @1999-JAN-1",
             "                     33, @2006-JAN-1",
-            "                     34, @2009-JAN-1  )"
+            "                     34, @2009-JAN-1  )",
         ]
         #
         # Add the contents of the buffer to the kernel pool:
         #
         spice.lmpool(text)
+
 
     if __name__ == "__main__":
         main()

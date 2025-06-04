@@ -3,7 +3,21 @@ NAIF Integer ID codes
 *********************
 
 This required reading document is reproduced from the original NAIF
-document available at `https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/naif_ids.html <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/naif_ids.html>`_
+document available at `https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/naif_ids.html <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/naif_ids.html>`_
+
+.. note::
+   These required readings documents were translated from documentation for N67 CSPICE.
+   These pages may not be updated as frequently as the CSPICE version, and so may be out of date.
+   Please consult the changelog_ for more information. 
+
+.. important::
+   NOTE any functions postfixed by "_" mentioned below are
+   Fortan-SPICE functions unavailable in SpiceyPy
+   as the NAIF does not officially support these with "_c" function
+   wrappers within the CSPICE API.
+   If these functions are necessary for your work
+   please contact the NAIF to request that they be added to
+   the CSPICE API
 
 Abstract
 ========
@@ -28,7 +42,7 @@ Frames Required Reading document
 Likewise, the surface ID-name mappings routines constitute a
 subsystem separate from the body ID-name mapping routines. Please
 refer to the DSK Required Reading document
-(`dsk.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/dsk.html>`__) for specific information.
+(`dsk.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/dsk.html>`__) for specific information.
 
 An ephemeris object is any object that may have ephemeris or
 trajectory data such as a planet, natural satellite, tracking

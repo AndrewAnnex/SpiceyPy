@@ -57,8 +57,8 @@ Required Readings
 ^^^^^^^^^^^^^^^^^^
 
 .. tip::
-   The `Required Readings <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html>`_ are also available on the NAIF website at:
-      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/index.html.
+   The `Required Readings <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/index.html>`_ are also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/index.html.
 
 The Required Reading documents are provided with the Toolkit and are
 located under the "cspice/doc" directory in the CSPICE Toolkit
@@ -82,8 +82,8 @@ The Permuted Index
 ^^^^^^^^^^^^^^^^^^^
 
 .. tip::
-   The `Permuted Index <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/info/cspice_idx.html>`_ is also available on the NAIF website at:
-      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/info/cspice_idx.html.
+   The `Permuted Index <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/info/cspice_idx.html>`_ is also available on the NAIF website at:
+      https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/info/cspice_idx.html.
 
 Another useful document distributed with the Toolkit is the permuted
 index. This is located under the "cspice/doc" directory in the C
@@ -110,7 +110,7 @@ describes of the str2et function's parameters, while the document
 
 .. code-block:: text
 
-      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/str2et_c.html
+      https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/str2et_c.html
 
 describes extensively the str2et functionality.
 
@@ -141,7 +141,7 @@ the NAIF server at JPL:
 
 .. code-block:: text
 
-      https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/Lessons/
+      https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/Lessons/
 
 SpiceyPy Modules Used
 ---------------------

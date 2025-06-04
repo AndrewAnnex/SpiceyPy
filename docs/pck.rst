@@ -3,7 +3,21 @@ PCK Required Reading
 ********************
 
 This required reading document is reproduced from the original NAIF
-document available at `https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/pck.html <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/pck.html>`_
+document available at `https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/pck.html <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/pck.html>`_
+
+.. note::
+   These required readings documents were translated from documentation for N67 CSPICE.
+   These pages may not be updated as frequently as the CSPICE version, and so may be out of date.
+   Please consult the changelog_ for more information. 
+
+.. important::
+   NOTE any functions postfixed by "_" mentioned below are
+   Fortan-SPICE functions unavailable in SpiceyPy
+   as the NAIF does not officially support these with "_c" function
+   wrappers within the CSPICE API.
+   If these functions are necessary for your work
+   please contact the NAIF to request that they be added to
+   the CSPICE API
 
 Abstract
 ========
@@ -33,13 +47,13 @@ References
 
 #. SPK Required Reading (`spk.req <./spk.html>`__).
 
-#. TIME Required Reading (`time.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/time.html>`__).
+#. TIME Required Reading (`time.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/time.html>`__).
 
 #. ROTATIONS Required Reading
-   (`rotation.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/rotation.html>`__).
+   (`rotation.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/rotation.html>`__).
 
 #. Double Precision Array Files Required Reading
-   (`daf.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/daf.html>`__).
+   (`daf.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/daf.html>`__).
 
 #. ''Planetary Geodetic Control Using Satellite Imaging,''
    Journal of Geophysical Research, Vol. 84, No. B3, March 10, 1979,
@@ -323,7 +337,7 @@ DAF Run-Time Binary File Format Translation
    information to the comment area, or appending additional ephemeris
    data, for example) require prior conversion of the file to the
    native binary file format. See the Convert User's Guide,
-   `convert.ug <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/ug/convert.html>`__, for details.
+   `convert.ug <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/ug/convert.html>`__, for details.
 
 NAIF Text Kernel Format
 -----------------------
@@ -894,7 +908,7 @@ Binary PCK Kernel Format
  | The binary PCK file format is built upon the SPICE DAF (Double
    precision Array File) architecture. Readers who are not familiar
    with this architecture are referred to the DAF Required Reading
-   document, `daf.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/daf.html>`__, which describes the common
+   document, `daf.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/daf.html>`__, which describes the common
    aspects of all DAF formats, as well as a collection of CSPICE
    subroutines that support the DAF architecture. The SPICE file
    identification word occupying the first eight bytes of a properly
@@ -1335,9 +1349,9 @@ Creating Binary PCKs
  is the handle of the opened SPK file. We use `i` for the number of
  records to reserve for comments.
 
- .. code-block:: text
+ .. code-block:: python
 
-       pckopn( file, ifname, i, &handle );
+      handle = pckopn(file, ifname, i)
 
  The method for beginning the segment, adding data to the segment and
  closing the segment differs with the PCK type.
@@ -1351,10 +1365,9 @@ Creating Binary PCKs
 
  An example of a call to :py:meth:`~spiceypy.spiceypy.pckw02`:
 
- ::
+ .. code-block:: python
 
-       pckw02( handle, clssid, frame,  first, last, segid,
-                  intlen, n,      polydg, cdata, btime       )
+      pckw02(handle, clssid, frame, first, last, segid, intlen, n, polydg, cdata, btime)
 
  For type 3, there are three subroutines used in creating a binary PCK
  file. They are pck03b\_, which begins a type 3 segment, PCK03A, which
@@ -1363,19 +1376,18 @@ Creating Binary PCKs
  data to the segment. Here is a code fragment that begins a type 3
  segment, writes data to that segment in a loop, and then closes the
  segment.
- ::
 
-          pck03b_ ( &handle, segid, &body, frame, &first, &last,
-                   chbdeg , strlen(segid), strlen(frame));
+ .. code-block:: python
 
-          do
-             {
-             ...
-             pck03a_ ( &handle, &n, coeffs, epochs);
-             ...
-             } while ( <a condition> );
+          pck03b_(handle, segid, body, frame, first, last, chbdeg, len(segid), len(frame))
 
-          pck03e_ ( &handle);
+          while something_true:
+              ...
+              pck03a_(handle, n, coeffs, epochs)
+              ...
+
+
+          pck03e_(handle)
 
  For type 20, CSPICE includes a segment writing routine called
  pckw20\_. takes as input arguments the handle of a PCK file that is
@@ -1385,21 +1397,34 @@ Creating Binary PCKs
  and an example of its usage.
  An example of a call to pckw20\_:
 
- ::
+ .. code-block:: python
 
-          pckw20_ ( &handle, &clssid, frame,
-                    &first,  &last,   segid,  &intlen,
-                    &n,      &polydg, &cdata, &ascale,
-                    &tscale, &initjd, &initfr,
-                    strlen(frame), strlen(segid) );
+          pckw20_(
+              handle,
+              clssid,
+              frame,
+              first,
+              last,
+              segid,
+              intlen,
+              n,
+              polydg,
+              cdata,
+              ascale,
+              tscale,
+              initjd,
+              initfr,
+              len(frame),
+              len(segid),
+          )
 
  When a user finishes writing segments of any type to a binary PCK,
  the PCK must be closed with the subroutine
  :py:meth:`~spiceypy.spiceypy.pckcls`.
 
- ::
+ .. code-block:: python
 
-       pckcls_c( handle );
+       pckcls_c(handle)
 
 
 
@@ -1438,7 +1463,7 @@ Loading Text PCK Kernels
 
  ::
 
-       furnsh( "example_pck.tcp" )
+       furnsh("example_pck.tcp")
 
  File names supplied to :py:meth:`~spiceypy.spiceypy.furnsh` will
  generally be system-dependent. It is good programming practice to not
@@ -1476,7 +1501,7 @@ Loading Binary PCK Kernels
 
  ::
 
-       furnsh( "example_binary_pck.tcp" )
+       furnsh("example_binary_pck.tcp")
 
  Once an PCK file has been loaded, it may be accessed by the PCK
  software. Each set of constants is computed from a distinct segment.
@@ -1502,7 +1527,7 @@ Unloading Binary PCK Kernels
 
  ::
 
-       unload( "example_binary_pck.tcp" )
+       unload("example_binary_pck.tcp")
 
 
 
@@ -1516,14 +1541,14 @@ Binary PCK Coverage Summary Routines
  via which an application can find the set of reference frames for
  which a specified binary PCK file contains data. The reference frame
  class ID codes are returned in a SPICE `set` data structure (see
- `sets.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/sets.html>`__).
+ `sets.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/sets.html>`__).
 
  The :py:meth:`~spiceypy.spiceypy.pckcov` function provides an API
  via which an application can find the time periods for which a
  specified binary PCK file provides data for a reference frame of
  interest. The coverage information is a set of disjoint time
  intervals returned in a SPICE `window` data structure (see `other stuff tutorial <./other_stuff.html>`__ and
- `windows.req <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/windows.html>`__).
+ `windows.req <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/windows.html>`__).
 
  Refer to the headers of :py:meth:`~spiceypy.spiceypy.pckfrm` and
  :py:meth:`~spiceypy.spiceypy.pckcov` for details on the use of
@@ -1555,7 +1580,7 @@ High-Level PCK Data Access
 
  .. code-block:: python
 
-       rotate = pxform( f_from, to_f,  et )
+       rotate = pxform(f_from, to_f, et)
 
  In the argument list for :py:meth:`~spiceypy.spiceypy.pxform`:
 
@@ -1590,7 +1615,7 @@ High-Level PCK Data Access
 
  .. code-block:: python
 
-       ra, dec, w, lam = bodeul( body, et )
+       ra, dec, w, lam = bodeul(body, et)
 
  **body**
     is the NAIF integer code of the body defining the planetocentric
@@ -1628,7 +1653,7 @@ High-Level PCK Data Access
 
  .. code-block:: python
 
-       rotate = sxform( f_from, to_f, et )
+       rotate = sxform(f_from, to_f, et)
 
  The input arguments `f_from`, `to_f`, and `et` have the same
  meanings as in the argument list of
@@ -1666,9 +1691,9 @@ Low-Level PCK Data Access
 
  .. code-block:: python
 
-       vals = gcpool( name, start, room )
-       vals = gdpool( name, start, room )
-       vals = gipool( name, start, room )
+       vals = gcpool(name, start, room)
+       vals = gdpool(name, start, room)
+       vals = gipool(name, start, room)
 
  The meanings of the arguments are follows:
 
@@ -1718,7 +1743,7 @@ Low-Level PCK Data Access
 
  .. code-block:: python
 
-      dim, values = bodvrd( bodynm, item, maxn )
+      dim, values = bodvrd(bodynm, item, maxn)
 
  :py:meth:`~spiceypy.spiceypy.bodvcd` functions in the same manner
  as :py:meth:`~spiceypy.spiceypy.bodvrd` except bodvcd_c accepts as
@@ -1727,7 +1752,7 @@ Low-Level PCK Data Access
 
  .. code-block:: python
 
-      dim, values = bodvcd( bodyid, item, maxn )
+      dim, values = bodvcd(bodyid, item, maxn)
 
  It is possible to test whether a kernel variable has been loaded by
  calling the SPICE logical function
@@ -1736,7 +1761,7 @@ Low-Level PCK Data Access
 
  .. code-block:: python
 
-       found = bodfnd( body, item )
+       found = bodfnd(body, item)
 
  where body is the NAIF integer code of the body, and `item` is the
  string making up the portion of the item's name following the prefix

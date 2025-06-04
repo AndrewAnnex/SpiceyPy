@@ -3,7 +3,21 @@ Ellipses and Ellipsoids Required Reading
 ****************************************
 
 This required reading document is reproduced from the original NAIF
-document available at `https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/ellipses.html <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/req/ellipses.html>`_
+document available at `https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/ellipses.html <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/ellipses.html>`_
+
+.. note::
+   These required readings documents were translated from documentation for N67 CSPICE.
+   These pages may not be updated as frequently as the CSPICE version, and so may be out of date.
+   Please consult the changelog_ for more information. 
+
+.. important::
+   NOTE any functions postfixed by "_" mentioned below are
+   Fortan-SPICE functions unavailable in SpiceyPy
+   as the NAIF does not officially support these with "_c" function
+   wrappers within the CSPICE API.
+   If these functions are necessary for your work
+   please contact the NAIF to request that they be added to
+   the CSPICE API
 
 Abstract
 ========
@@ -348,8 +362,8 @@ Use of ellipses with planes
 
 | The nature of geometry problems involving planes often includes use
   of the SPICE ellipse data type. The example C code listed in the
-  headers of the routines `inelpl_c <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/inelpl_c.html>`__ and
-  `pjelpl_c <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/pjelpl_c.html>`__ show examples of problems
+  headers of the routines `inelpl_c <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/inelpl_c.html>`__ and
+  `pjelpl_c <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/pjelpl_c.html>`__ show examples of problems
   solved using both the ellipse and plane data type that can be converted into the equivalent python by readers.
 
 
@@ -658,7 +672,7 @@ Some examples:
   intersection (when the intersection is non-trivial), and the
   ellipse of intersection of the original plane and ellipsoid
   results. This procedure is used in the CSPICE routine
-  `inedpl_c <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/C/cspice/inedpl_c.html>`__.
+  `inedpl_c <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/inedpl_c.html>`__.
 
 - To find the image under gnomonic projection onto a plane
   (camera projection) of an ellipsoid, given a focal point, we must
