@@ -220,7 +220,7 @@ def cyice_found_exception_thrower(f):
 
 # B
 
-def b1900():
+def b1900() -> float:
     """
     Return the Julian Date corresponding to Besselian Date 1900.0.
 
@@ -231,7 +231,7 @@ def b1900():
     return b1900_c()
 
 
-def b1950():
+def b1950() -> float:
     """
     Return the Julian Date corresponding to Besselian Date 1950.0.
 
@@ -506,6 +506,17 @@ def ckgpav(
         return ckgpav_v(inst, sclkdp, tol, ref)
 
 
+def clight() -> float:
+    """
+    Return the speed of light in a vacuum (IAU official value, in km/sec).
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/clight_c.html
+
+    :return: The function returns the speed of light in vacuum (km/sec).
+    """
+    return clight_c()
+
+
 def convrt_s(
     double x,
     str inunit,
@@ -686,6 +697,18 @@ def deltet(
         return deltet_s(epoch, eptype)
     else:
         return deltet_v(epoch, eptype)
+
+
+def dpr() -> float:
+    """
+    Return the number of degrees per radian.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/dpr_c.html
+
+    :return: The number of degrees per radian.
+    """
+    return dpr_c()
+
 
 # E
 
@@ -1382,14 +1405,82 @@ cpdef str getmsg(
 
 # H
 
-# i
+def halfpi() -> float:
+    """
+    Return half the value of pi (the ratio of the circumference of
+    a circle to its diameter).
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/halfpi_c.html
+
+    :return: Half the value of pi.
+    """
+    return halfpi_c()
+
+# I
 
 # J
+
+
+def j1900() -> float:
+    """
+    Return the Julian Date of 1899 DEC 31 12:00:00 (1900 JAN 0.5).
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/j1900_c.html
+
+    :return: Julian Date of 1899 DEC 31 12:00:00
+    """
+    return j1900_c()
+
+
+
+def j1950() -> float:
+    """
+    Return the Julian Date of 1950 JAN 01 00:00:00 (1950 JAN 1.0).
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/j1950_c.html
+
+    :return: Julian Date of 1950 JAN 01 00:00:00
+    """
+    return j1950_c()
+
+
+
+def j2000() -> float:
+    """
+    Return the Julian Date of 2000 JAN 01 12:00:00 (2000 JAN 1.5).
+    
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/j2000_c.html
+
+    :return: Julian Date of 2000 JAN 01 12:00:00
+    """
+    return j2000_c()
+
+
+
+def j2100() -> float:
+    """
+    Return the Julian Date of 2100 JAN 01 12:00:00 (2100 JAN 1.5).
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/j2100_c.html
+
+    :return: Julian Date of 2100 JAN 01 12:00:00
+    """
+    return j2100_c()
+
+
+def jyear() -> float:
+    """
+    Return the number of seconds in a julian year.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/jyear_c.html
+
+    :return: number of seconds in a julian year
+    """
+    return jyear_c()
 
 # K
 
 # L
-
 
 def lspcn_s(
     str body,
@@ -1488,6 +1579,17 @@ def lspcn(
 
 # P
 
+def pi() -> float:
+    """
+    Return the value of pi (the ratio of the circumference of
+    a circle to its diameter).
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/pi_c.html
+
+    :return: value of pi.
+    """
+    return pi_c()
+
 # Q
 
 
@@ -1531,6 +1633,17 @@ cpdef void reset() noexcept:
 
     """
     reset_c()
+
+
+def rpd() -> float:
+    """
+    Return the number of radians per degree.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/rpd_c.html
+
+    :return: The number of radians per degree, pi/180.
+    """
+    return rpd_c()
 
 
 # S
@@ -2057,6 +2170,17 @@ def sct2e(
         return sct2e_s(sc, sclkdp)
     else:
         return sct2e_v(sc, sclkdp)
+
+
+def spd() -> float:
+    """
+    Return the number of seconds in a day.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spd_c.html
+
+    :return: The number of seconds in a day.
+    """
+    return spd_c()
 
 
 @boundscheck(False)
@@ -5083,6 +5207,29 @@ def trgsep(
         return trgsep_s(et, targ1, shape1, frame1, targ2, shape2, frame2, obsrvr, abcorr)
     else:
         return trgsep_v(et, targ1, shape1, frame1, targ2, shape2, frame2, obsrvr, abcorr)
+
+
+def twopi() -> float:
+    """
+    Return twice the value of pi
+    (the ratio of the circumference of a circle to its diameter).
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/twopi_c.html
+
+    :return: Twice the value of pi.
+    """
+    return twopi_c()
+
+
+def tyear() -> float:
+    """
+    Return the number of seconds in a tropical year.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/tyear_c.html
+
+    :return: The number of seconds in a tropical year.
+    """
+    return tyear_c()
 
 # U
 

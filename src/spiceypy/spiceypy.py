@@ -1650,7 +1650,6 @@ def ckw05(
     )
 
 
-@spice_error_check
 def clight() -> float:
     """
     Return the speed of light in a vacuum (IAU official value, in km/sec).
@@ -3217,7 +3216,6 @@ def dpgrdr(body: str, x: float, y: float, z: int, re: float, f: float) -> ndarra
     return stypes.c_matrix_to_numpy(jacobi)
 
 
-@spice_error_check
 def dpmax() -> float:
     """
     Return the value of the largest (positive) number representable
@@ -3232,7 +3230,6 @@ def dpmax() -> float:
     return libspice.dpmax_c()
 
 
-@spice_error_check
 def dpmin() -> float:
     """
     Return the value of the smallest (negative) number representable
@@ -3247,7 +3244,6 @@ def dpmin() -> float:
     return libspice.dpmin_c()
 
 
-@spice_error_check
 def dpr() -> float:
     """
     Return the number of degrees per radian.
@@ -7693,7 +7689,6 @@ def gnpool(
 # H
 
 
-@spice_error_check
 def halfpi() -> float:
     """
     Return half the value of pi (the ratio of the circumference of
@@ -8517,9 +8512,10 @@ def iswhsp(string: str) -> bool:
 # J
 
 
-@spice_error_check
 def j1900() -> float:
     """
+    Return the Julian Date of 1899 DEC 31 12:00:00 (1900 JAN 0.5).
+
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/j1900_c.html
 
     :return: Julian Date of 1899 DEC 31 12:00:00
@@ -8527,9 +8523,10 @@ def j1900() -> float:
     return libspice.j1900_c()
 
 
-@spice_error_check
 def j1950() -> float:
     """
+    Return the Julian Date of 1950 JAN 01 00:00:00 (1950 JAN 1.0).
+
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/j1950_c.html
 
     :return: Julian Date of 1950 JAN 01 00:00:00
@@ -8537,9 +8534,10 @@ def j1950() -> float:
     return libspice.j1950_c()
 
 
-@spice_error_check
 def j2000() -> float:
     """
+    Return the Julian Date of 2000 JAN 01 12:00:00 (2000 JAN 1.5).
+
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/j2000_c.html
 
     :return: Julian Date of 2000 JAN 01 12:00:00
@@ -8547,9 +8545,10 @@ def j2000() -> float:
     return libspice.j2000_c()
 
 
-@spice_error_check
 def j2100() -> float:
     """
+    Return the Julian Date of 2100 JAN 01 12:00:00 (2100 JAN 1.5).
+
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/j2100_c.html
 
     :return: Julian Date of 2100 JAN 01 12:00:00
@@ -8557,9 +8556,10 @@ def j2100() -> float:
     return libspice.j2100_c()
 
 
-@spice_error_check
 def jyear() -> float:
     """
+    Return the number of seconds in a julian year.
+
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/jyear_c.html
 
     :return: number of seconds in a julian year
@@ -10527,7 +10527,6 @@ def phaseq(et: float, target: str, illmn: str, obsrvr: str, abcorr: str) -> floa
     return libspice.phaseq_c(et, target, illmn, obsrvr, abcorr)
 
 
-@spice_error_check
 def pi() -> float:
     """
     Return the value of pi (the ratio of the circumference of
@@ -11701,7 +11700,6 @@ def rotvec(v1: Iterable[Union[float, float]], angle: float, iaxis: int) -> ndarr
     return stypes.c_vector_to_python(vout)
 
 
-@spice_error_check
 def rpd() -> float:
     """
     Return the number of radians per degree.
@@ -12219,7 +12217,6 @@ def size(cell: SpiceCell) -> int:
     return libspice.size_c(ctypes.byref(cell))
 
 
-@spice_error_check
 def spd() -> float:
     """
     Return the number of seconds in a day.
@@ -15332,7 +15329,6 @@ def tsetyr(year: int) -> None:
     libspice.tsetyr_c(year)
 
 
-@spice_error_check
 def twopi() -> float:
     """
     Return twice the value of pi
@@ -15423,7 +15419,6 @@ def txtopn(fname: str) -> int:
     return unit_out.value
 
 
-@spice_error_check
 def tyear() -> float:
     """
     Return the number of seconds in a tropical year.

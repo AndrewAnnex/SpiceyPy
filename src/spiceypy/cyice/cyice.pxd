@@ -99,6 +99,9 @@ cdef extern from "SpiceUsr.h" nogil:
                        SpiceBoolean      * found      )
 
 
+    cdef SpiceDouble clight_c()
+
+
     cdef void convrt_c(SpiceDouble      x,
                        ConstSpiceChar * inunit,
                        ConstSpiceChar * outunit,
@@ -110,6 +113,8 @@ cdef extern from "SpiceUsr.h" nogil:
     cdef void deltet_c(SpiceDouble      epoch,
                        ConstSpiceChar * eptype,
                        SpiceDouble    * delta )
+
+    cdef SpiceDouble dpr_c()
 
     #E
 
@@ -169,12 +174,47 @@ cdef extern from "SpiceUsr.h" nogil:
     cdef void getmsg_c(ConstSpiceChar * option,
                        SpiceInt         msglen,
                        SpiceChar      * msg)
+
+    #H 
+
+    cdef SpiceDouble halfpi_c()
+
+    #I 
+
+    #J 
+
+    cdef SpiceDouble j1900_c()
+
+    cdef SpiceDouble j1950_c()
+
+    cdef SpiceDouble j2000_c()
+
+    cdef SpiceDouble j2100_c()
+
+    cdef SpiceDouble jyear_c()
+
+    #K 
+
+    #L   
+
+    #M
+
+    #N  
+
+    #O
+
+    #P
+
+    cdef SpiceDouble pi_c()
+
     #Q
     cdef void qcktrc_c(SpiceInt         tracelen,
                        SpiceChar      * trace)
     
     #R
     cdef void reset_c()
+
+    cdef SpiceDouble rpd_c()
 
     #S
     
@@ -203,6 +243,8 @@ cdef extern from "SpiceUsr.h" nogil:
     cdef void sct2e_c(SpiceInt       sc,
                       SpiceDouble    sclkdp,
                       SpiceDouble  * et     )
+
+    cdef SpiceDouble spd_c()
 
     cdef void spkez_c(SpiceInt         target,
                       SpiceDouble      epoch,
@@ -390,6 +432,11 @@ cdef extern from "SpiceUsr.h" nogil:
                               ConstSpiceChar    * frame2,
                               ConstSpiceChar    * obsrvr,
                               ConstSpiceChar    * abcorr)
+
+    cdef SpiceDouble twopi_c()
+
+
+    cdef SpiceDouble tyear_c()
 
     # U
 

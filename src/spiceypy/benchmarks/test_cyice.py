@@ -173,6 +173,13 @@ def test_ckgpav_v(function, grouped_benchmark, load_cassini_kernels):
     assert clkout[0] == 267832537952.0
 
 
+@pytest.mark.parametrize('function', [cyice.clight, spice.clight], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["clight"], indirect=True)
+def test_clight(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == 299792.458
+
+
 @pytest.mark.parametrize('function', [cyice.convrt_s, cyice.convrt, spice.convrt], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["convrt"], indirect=True)
 def test_convrt(function, grouped_benchmark):
@@ -204,6 +211,13 @@ def test_deltet_v(function, grouped_benchmark, load_core_kernels):
     grouped_benchmark(function, ets_2004, "ET")
     res = function(ets_2004, "ET")
     assert isinstance(res, np.ndarray)
+
+
+@pytest.mark.parametrize('function', [cyice.dpr, spice.dpr], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["dpr"], indirect=True)
+def test_dpr(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == 180.0 / np.arccos(-1.0)
 
 # # E
 
@@ -346,9 +360,49 @@ def test_getmsg(function, grouped_benchmark):
 
 # # H
 
+@pytest.mark.parametrize('function', [cyice.halfpi, spice.halfpi], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["halfpi"], indirect=True)
+def test_halfpi(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == np.pi / 2
+
 # # I
 
 # # J
+
+@pytest.mark.parametrize('function', [cyice.j1900, spice.j1900], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["j1900"], indirect=True)
+def test_j1900(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == 2415020.0
+
+
+@pytest.mark.parametrize('function', [cyice.j1950, spice.j1950], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["j1950"], indirect=True)
+def test_j1950(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == 2433282.5
+
+
+@pytest.mark.parametrize('function', [cyice.j2000, spice.j2000], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["j2000"], indirect=True)
+def test_j2000(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == 2451545.0
+
+
+@pytest.mark.parametrize('function', [cyice.j2100, spice.j2100], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["j2100"], indirect=True)
+def test_j2100(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == 2488070.0
+
+
+@pytest.mark.parametrize('function', [cyice.jyear, spice.jyear], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["jyear"], indirect=True)
+def test_jyear(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == 31557600.0
 
 # # K
 
@@ -377,6 +431,12 @@ def test_lspcn_v(function, grouped_benchmark, load_core_kernels):
 
 # # P
 
+@pytest.mark.parametrize('function', [cyice.pi, spice.pi], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["pi"], indirect=True)
+def test_pi(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == np.pi 
+
 # # Q 
 @pytest.mark.parametrize('function', [cyice.qcktrc, spice.qcktrc], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["qcktrc"], indirect=True)
@@ -397,6 +457,12 @@ def test_qcktrc(function, grouped_benchmark):
 def test_reset(function, grouped_benchmark):
    grouped_benchmark(function)
 
+
+@pytest.mark.parametrize('function', [cyice.rpd, spice.rpd], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["rpd"], indirect=True)
+def test_rpd(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == np.arccos(-1.0) / 180.0
 
 # # S
 @pytest.mark.parametrize('function', [cyice.scdecd_s, cyice.scdecd, spice.scdecd], ids=get_module_name)
@@ -494,6 +560,13 @@ def test_sct2e_v(function, grouped_benchmark, load_voyager_kernels):
     grouped_benchmark(function, -32, sclkdps)
     res = function(-32, sclkdps)
     assert isinstance(res, np.ndarray)
+
+
+@pytest.mark.parametrize('function', [cyice.spd, spice.spd], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["spd"], indirect=True)
+def test_spd(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == 86400.0
 
 
 @pytest.mark.parametrize('function', [cyice.spkapo_s, cyice.spkapo, spice.spkapo], ids=get_module_name)
@@ -1203,6 +1276,20 @@ def test_trgsep_v(function, grouped_benchmark, load_core_kernels):
     grouped_benchmark(function, ets, "MOON", "POINT", "IAU_MOON", "EARTH", "POINT", "IAU_EARTH", "SUN", "LT+S")  
     res = function(ets, "MOON", "POINT", "IAU_MOON", "EARTH", "POINT", "IAU_EARTH", "SUN", "LT+S")
     assert isinstance(res, np.ndarray)
+
+
+@pytest.mark.parametrize('function', [cyice.twopi, spice.twopi], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["twopi"], indirect=True)
+def test_twopi(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == (np.pi * 2)
+
+
+@pytest.mark.parametrize('function', [cyice.tyear, spice.tyear], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["tyear"], indirect=True)
+def test_tyear(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == 31556925.9747
 
 
 @pytest.mark.parametrize('function', [cyice.unitim_s, cyice.unitim, spice.unitim], ids=get_module_name)
