@@ -92,6 +92,7 @@ Int_N       = Annotated[IntArray, Literal["N"]]
 Double_N    = Annotated[DoubleArray, Literal["N"]]
 Vector      = Annotated[DoubleArray, Literal[3]]
 Vector_N    = Annotated[DoubleArray, Literal["N", 3]]
+Cylindrical_N    = Annotated[DoubleArray, Literal["N", 3]]
 State       = Annotated[DoubleArray, Literal[6]]
 State_N     = Annotated[DoubleArray, Literal["N", 6]]
 Matrix      = Annotated[DoubleArray, Literal[3, 3]]
@@ -1481,6 +1482,278 @@ def jyear() -> float:
 # K
 
 # L
+
+cpdef tuple[float, float, float] latcyl_s(
+    radius: float, 
+    lon: float, 
+    lat: float
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.latcyl`
+
+    Convert from latitudinal coordinates to cylindrical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/latcyl_c.html
+
+    :param radius: Distance of a point from the origin.
+    :param lon: Angle of the point from the XZ plane in radians.
+    :param lat: Angle of the point from the XY plane in radians.
+    :return: (r, lonc, z)
+    """
+    cdef double r    = 0.0
+    cdef double lonc = 0.0
+    cdef double z    = 0.0
+    latcyl_c(
+        radius, 
+        lon, 
+        lat, 
+        &r, 
+        &lonc,
+        &z
+    )
+    return r, lonc, z
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:,::1] latcyl_v(
+    const double[::1] radius, 
+    const double[::1] lon, 
+    const double[::1] lat
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.latcyl`
+
+    Convert from latitudinal coordinates to cylindrical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/latcyl_c.html
+
+    :param radius: Distance of a point from the origin.
+    :param lon: Angle of the point from the XZ plane in radians.
+    :param lat: Angle of the point from the XY plane in radians.
+    :return: (r, lonc, z)
+    """
+    cdef const np.double_t[::1] c_radius = np.ascontiguousarray(radius, dtype=np.double)
+    cdef Py_ssize_t i, n = c_radius.shape[0]
+    cdef const np.double_t[::1] c_lon = np.ascontiguousarray(lon, dtype=np.double)
+    cdef const np.double_t[::1] c_lat = np.ascontiguousarray(lat, dtype=np.double)
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_cyl = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_cyl = p_cyl
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            latcyl_c(
+                c_radius[i], 
+                c_lon[i], 
+                c_lat[i], 
+                <SpiceDouble *> &c_cyl[i,0], 
+                <SpiceDouble *> &c_cyl[i,1],
+                <SpiceDouble *> &c_cyl[i,2]
+            )
+    return p_cyl
+
+
+def latcyl(
+    radius: float | double[::1], 
+    lon: float | double[::1], 
+    lat: float | double[::1]
+    ) -> tuple[float, float, float] | Cylindrical_N:
+    """
+    Convert from latitudinal coordinates to cylindrical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/latcyl_c.html
+
+    :param radius: Distance of a point from the origin.
+    :param lon: Angle of the point from the XZ plane in radians.
+    :param lat: Angle of the point from the XY plane in radians.
+    :return: (r, lonc, z)
+    """
+    if PyFloat_Check(radius):
+        return latcyl_s(radius, lon, lat)
+    else:
+        return latcyl_v(radius, lon, lat)
+
+
+cpdef double[::1] latrec_s(
+    radius: float, 
+    lon: float, 
+    lat: float
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.latrec`
+
+    Convert from latitudinal coordinates to rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/latrec_c.html
+
+    :param radius: Distance of a point from the origin.
+    :param longitude: Longitude of point in radians.
+    :param latitude: Latitude of point in radians.
+    :return: Rectangular coordinates of the point.
+    """
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_rec = np.empty(3, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_rec = p_rec
+    latrec_c(
+        radius, 
+        lon, 
+        lat, 
+        &c_rec[0],
+    )
+    return p_rec
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:,::1] latrec_v(
+    const double[::1] radius, 
+    const double[::1] lon, 
+    const double[::1] lat
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.latrec`
+
+    Convert from latitudinal coordinates to cylindrical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/latrec_c.html
+
+    :param radius: Distance of a point from the origin.
+    :param lon: Angle of the point from the XZ plane in radians.
+    :param lat: Angle of the point from the XY plane in radians.
+    :return: (r, lonc, z)
+    """
+    cdef const np.double_t[::1] c_radius = np.ascontiguousarray(radius, dtype=np.double)
+    cdef Py_ssize_t i, n = c_radius.shape[0]
+    cdef const np.double_t[::1] c_lon = np.ascontiguousarray(lon, dtype=np.double)
+    cdef const np.double_t[::1] c_lat = np.ascontiguousarray(lat, dtype=np.double)
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_rec = p_rec
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            latrec_c(
+                c_radius[i], 
+                c_lon[i], 
+                c_lat[i], 
+                &c_rec[i, 0]
+            )
+    return p_rec
+
+
+def latrec(
+    radius: float | double[::1], 
+    lon: float | double[::1], 
+    lat: float | double[::1]
+    ) -> tuple[float, float, float] | Cylindrical_N:
+    """
+    Convert from latitudinal coordinates to cylindrical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/latrec_c.html
+
+    :param radius: Distance of a point from the origin.
+    :param lon: Angle of the point from the XZ plane in radians.
+    :param lat: Angle of the point from the XY plane in radians.
+    :return: (r, lonc, z)
+    """
+    if PyFloat_Check(radius):
+        return latrec_s(radius, lon, lat)
+    else:
+        return latrec_v(radius, lon, lat)
+
+
+cpdef tuple[float, float, float] latsph_s(
+    radius: float, 
+    lon: float, 
+    lat: float
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.latsph`
+
+    Convert from latitudinal coordinates to spherical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/latsph_c.html
+
+    :param radius: Distance of a point from the origin.
+    :param lon: Angle of the point from the XZ plane in radians.
+    :param lat: Angle of the point from the XY plane in radians.
+    :return: (rho colat, lons)
+    """
+    cdef double rho    = 0.0
+    cdef double colat  = 0.0
+    cdef double lons   = 0.0
+    latsph_c(
+        radius, 
+        lon, 
+        lat, 
+        &rho, 
+        &colat,
+        &lons
+    )
+    return rho, colat, lons
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:,::1] latsph_v(
+    const double[::1] radius, 
+    const double[::1] lon, 
+    const double[::1] lat
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.latsph`
+
+    Convert from latitudinal coordinates to spherical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/latsph_c.html
+
+    :param radius: Distance of a point from the origin.
+    :param lon: Angle of the point from the XZ plane in radians.
+    :param lat: Angle of the point from the XY plane in radians.
+    :return: (rho colat, lons)
+    """
+    cdef const np.double_t[::1] c_radius = np.ascontiguousarray(radius, dtype=np.double)
+    cdef Py_ssize_t i, n = c_radius.shape[0]
+    cdef const np.double_t[::1] c_lon = np.ascontiguousarray(lon, dtype=np.double)
+    cdef const np.double_t[::1] c_lat = np.ascontiguousarray(lat, dtype=np.double)
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_sph = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_sph = p_sph
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            latsph_c(
+                c_radius[i], 
+                c_lon[i], 
+                c_lat[i], 
+                <SpiceDouble *> &c_sph[i,0], 
+                <SpiceDouble *> &c_sph[i,1],
+                <SpiceDouble *> &c_sph[i,2]
+            )
+    return p_sph
+
+
+def latsph(
+    radius: float | double[::1], 
+    lon: float | double[::1], 
+    lat: float | double[::1]
+    ) -> tuple[float, float, float] | Cylindrical_N:
+    """
+    Convert from latitudinal coordinates to spherical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/latsph_c.html
+
+    :param radius: Distance of a point from the origin.
+    :param lon: Angle of the point from the XZ plane in radians.
+    :param lat: Angle of the point from the XY plane in radians.
+    :return: (rho colat, lons)
+    """
+    if PyFloat_Check(radius):
+        return latsph_s(radius, lon, lat)
+    else:
+        return latsph_v(radius, lon, lat)
+
 
 def lspcn_s(
     str body,

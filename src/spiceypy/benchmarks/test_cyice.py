@@ -408,16 +408,71 @@ def test_jyear(function, grouped_benchmark):
 
 # # L
 
+@pytest.mark.parametrize('function', [cyice.latcyl_s, cyice.latcyl, spice.latcyl], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["latcyl"], indirect=True)
+def test_latcyl(function, grouped_benchmark):
+    r   = 1.0
+    lon = 90.0 * spice.rpd()
+    lat = 0.0
+    res = grouped_benchmark(function, r, lon, lat)
+    expected = np.array([r, lon, lat])
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.latcyl_v, cyice.latcyl], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["latcyl_v"], indirect=True)
+def test_latcyl_v(function, grouped_benchmark):
+    r   = np.ones(100, order='C')
+    lon = np.repeat(90.0, 100) * spice.rpd()
+    lat = np.zeros(100, order='C')
+    res = grouped_benchmark(function, r, lon, lat)
+    expected = np.vstack([r, lon, lat]).T
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.latrec_s, cyice.latrec, spice.latrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["latrec"], indirect=True)
+def test_latrec(function, grouped_benchmark):
+    r   = 1.0
+    lon = 90.0 * spice.rpd()
+    lat = 0.0
+    res = grouped_benchmark(function, r, lon, lat)
+    expected = np.array([0.0, 1.0, 0.0])
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.latrec_v, cyice.latrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["latrec_v"], indirect=True)
+def test_latrec_v(function, grouped_benchmark):
+    r   = np.ones(100, order='C')
+    lon = np.repeat(90.0, 100) * spice.rpd()
+    lat = np.zeros(100, order='C')
+    res = grouped_benchmark(function, r, lon, lat)
+    expected = np.repeat([[0.0, 1.0, 0.0]], 100, axis=0)
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.latsph_s, cyice.latsph, spice.latsph], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["latsph"], indirect=True)
+def test_latsph(function, grouped_benchmark):
+    r   = 1.0
+    lon = 90.0 * spice.rpd()
+    lat = 0.0
+    res = grouped_benchmark(function, r, lon, lat)
+    expected = np.array([r, 90.0 * spice.rpd(), 90.0 * spice.rpd()])
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
 @pytest.mark.parametrize('function', [cyice.lspcn_s, cyice.lspcn, spice.lspcn], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["lspcn"], indirect=True)
-def test_lspcn(function, grouped_benchmark, load_core_kernels):
+def test_lspcn(function, grouped_benchmark):
     et = spice.str2et("21 march 2005")
     grouped_benchmark(function, "EARTH", et, "NONE")
 
 
 @pytest.mark.parametrize('function', [cyice.lspcn_v, cyice.lspcn], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["lspcn_v"], indirect=True)
-def test_lspcn_v(function, grouped_benchmark, load_core_kernels):
+def test_lspcn_v(function, grouped_benchmark):
     ets = np.repeat(spice.str2et("21 march 2005"),100)
     grouped_benchmark(function, "EARTH", ets, "NONE")
     res = function("EARTH", ets, "NONE")
@@ -435,9 +490,9 @@ def test_lspcn_v(function, grouped_benchmark, load_core_kernels):
 @pytest.mark.parametrize('grouped_benchmark', ["pi"], indirect=True)
 def test_pi(function, grouped_benchmark):
     grouped_benchmark(function)
-    assert function() == np.pi 
+    assert function() == np.pi
 
-# # Q 
+# # Q
 @pytest.mark.parametrize('function', [cyice.qcktrc, spice.qcktrc], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["qcktrc"], indirect=True)
 def test_qcktrc(function, grouped_benchmark):
@@ -477,7 +532,7 @@ def test_scdecd(function, grouped_benchmark, load_voyager_kernels):
 def test_scdecd_v(function, grouped_benchmark, load_voyager_kernels):
     timein = np.repeat(spice.scencd(-32, "2/20538:39:768"), 100)
     grouped_benchmark(function, -32, timein)
-    res = function(-32, timein) 
+    res = function(-32, timein)
     assert isinstance(res, np.ndarray)
 
 
@@ -1273,7 +1328,7 @@ def test_trgsep(function, grouped_benchmark, load_core_kernels):
 @pytest.mark.parametrize('grouped_benchmark', ["trgsep_v"], indirect=True)
 def test_trgsep_v(function, grouped_benchmark, load_core_kernels):
     ets = np.repeat(spice.str2et("2007-JAN-11 11:21:20.213872 (TDB)"),100)
-    grouped_benchmark(function, ets, "MOON", "POINT", "IAU_MOON", "EARTH", "POINT", "IAU_EARTH", "SUN", "LT+S")  
+    grouped_benchmark(function, ets, "MOON", "POINT", "IAU_MOON", "EARTH", "POINT", "IAU_EARTH", "SUN", "LT+S")
     res = function(ets, "MOON", "POINT", "IAU_MOON", "EARTH", "POINT", "IAU_EARTH", "SUN", "LT+S")
     assert isinstance(res, np.ndarray)
 

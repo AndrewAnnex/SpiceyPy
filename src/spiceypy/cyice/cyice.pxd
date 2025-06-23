@@ -142,6 +142,25 @@ cdef extern from "SpiceUsr.h" nogil:
 
     #L 
 
+    cdef void latcyl_c(SpiceDouble    radius,
+                       SpiceDouble    lon,
+                       SpiceDouble    lat,
+                       SpiceDouble *  r,
+                       SpiceDouble *  clon,
+                       SpiceDouble *  z )
+
+    cdef void latrec_c(SpiceDouble    radius,
+                       SpiceDouble    lon,
+                       SpiceDouble    lat,
+                       SpiceDouble[3] rectan )
+
+    cdef void latsph_c(SpiceDouble    radius,
+                       SpiceDouble    lon,
+                       SpiceDouble    lat,
+                       SpiceDouble *  rho,
+                       SpiceDouble *  colat,
+                       SpiceDouble *  slon )
+
     cdef SpiceDouble lspcn_c(ConstSpiceChar   * body,
                              SpiceDouble        et,
                              ConstSpiceChar   * abcorr )

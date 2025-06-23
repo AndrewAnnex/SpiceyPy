@@ -8828,7 +8828,6 @@ def lastnb(string: str) -> int:
     return libspice.lastnb_c(string)
 
 
-@spice_error_check
 def latcyl(radius: float, lon: float, lat: float) -> Tuple[float, float, float]:
     """
     Convert from latitudinal coordinates to cylindrical coordinates.
@@ -8852,10 +8851,7 @@ def latcyl(radius: float, lon: float, lat: float) -> Tuple[float, float, float]:
     return r.value, lonc.value, z.value
 
 
-@spice_error_check
-def latrec(
-    radius: float, longitude: Union[float, float], latitude: Union[float, float]
-) -> ndarray:
+def latrec(radius: float, longitude: float, latitude: float) -> ndarray:
     """
     Convert from latitudinal coordinates to rectangular coordinates.
 
@@ -8874,7 +8870,6 @@ def latrec(
     return stypes.c_vector_to_python(rectan)
 
 
-@spice_error_check
 def latsph(radius: float, lon: float, lat: float) -> Tuple[float, float, float]:
     """
     Convert from latitudinal coordinates to spherical coordinates.
