@@ -1931,14 +1931,14 @@ def cylrec(r: float, lon: float, z: float) -> ndarray:
     return stypes.c_vector_to_python(rectan)
 
 
-def cylsph(r: float, lonc: float, z: float) -> Tuple[float, float, float]:
+def cylsph(r: float, clon: float, z: float) -> Tuple[float, float, float]:
     """
     Convert from cylindrical to spherical coordinates.
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/cylsph_c.html
 
     :param r: Rectangular coordinates of the point.
-    :param lonc: Angle (radians) of point from XZ plane.
+    :param clon: Angle (radians) of point from XZ plane.
     :param z: Height of point above XY plane.
     :return:
             Distance of point from origin,
@@ -1946,20 +1946,20 @@ def cylsph(r: float, lonc: float, z: float) -> Tuple[float, float, float]:
             Azimuthal angle (longitude) of point (radians).
     """
     r = ctypes.c_double(r)
-    lonc = ctypes.c_double(lonc)
+    clon = ctypes.c_double(clon)
     z = ctypes.c_double(z)
     radius = ctypes.c_double()
     colat = ctypes.c_double()
-    lon = ctypes.c_double()
-    libspice.cyllat_c(
+    slon = ctypes.c_double()
+    libspice.cylsph_c(
         r, 
-        lonc, 
+        clon, 
         z, 
         ctypes.byref(radius), 
         ctypes.byref(colat), 
-        ctypes.byref(lon)
+        ctypes.byref(slon)
     )
-    return radius.value, colat.value, lon.value
+    return radius.value, colat.value, slon.value
 
 
 ################################################################################
@@ -12225,11 +12225,9 @@ def spd() -> float:
     return libspice.spd_c()
 
 
-@spice_error_check
 def sphcyl(radius: float, colat: float, slon: float) -> Tuple[float, float, float]:
     """
-    This routine converts from spherical coordinates to cylindrical
-    coordinates.
+    Convert from spherical coordinates to cylindrical coordinates.
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sphcyl_c.html
 
@@ -12245,15 +12243,14 @@ def sphcyl(radius: float, colat: float, slon: float) -> Tuple[float, float, floa
     colat = ctypes.c_double(colat)
     slon = ctypes.c_double(slon)
     r = ctypes.c_double()
-    lon = ctypes.c_double()
+    clon = ctypes.c_double()
     z = ctypes.c_double()
     libspice.sphcyl_c(
-        radius, colat, slon, ctypes.byref(r), ctypes.byref(lon), ctypes.byref(z)
+        radius, colat, slon, ctypes.byref(r), ctypes.byref(clon), ctypes.byref(z)
     )
-    return r.value, lon.value, z.value
+    return r.value, clon.value, z.value
 
 
-@spice_error_check
 def sphlat(r: float, colat: float, lons: float) -> Tuple[float, float, float]:
     """
     Convert from spherical coordinates to latitudinal coordinates.

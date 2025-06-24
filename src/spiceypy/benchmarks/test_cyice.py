@@ -245,7 +245,7 @@ def test_cylrec_v(function, grouped_benchmark):
 @pytest.mark.parametrize('grouped_benchmark', ["cylsph"], indirect=True)
 def test_cylsph(function, grouped_benchmark):
     res = grouped_benchmark(function, 1.0, np.deg2rad(180.0), 1.0)
-    expected = np.array([1.4142, np.deg2rad(180.0), np.deg2rad(45.0)])
+    expected = np.array([1.4142, np.deg2rad(45.0), np.deg2rad(180.0)])
     npt.assert_array_almost_equal(res, expected, decimal=4)
 
 
@@ -256,7 +256,7 @@ def test_cylsph_v(function, grouped_benchmark):
     clon = np.repeat(np.deg2rad(180.0), 100)
     z = np.ones(100, order='C')
     res = grouped_benchmark(function, r, clon, z)
-    expected = np.array([[1.4142, np.deg2rad(180.0), np.deg2rad(45.0)]])
+    expected = np.array([[1.4142, np.deg2rad(45.0), np.deg2rad(180.0)]])
     expected_v = np.repeat(expected, 100, axis=0)
     npt.assert_array_almost_equal(res, expected_v, decimal=4)
 
@@ -687,6 +687,66 @@ def test_sct2e_v(function, grouped_benchmark, load_voyager_kernels):
 def test_spd(function, grouped_benchmark):
     grouped_benchmark(function)
     assert function() == 86400.0
+
+
+@pytest.mark.parametrize('function', [cyice.sphcyl_s, cyice.sphcyl, spice.sphcyl], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["sphcyl"], indirect=True)
+def test_sphcyl(function, grouped_benchmark):
+    res = grouped_benchmark(function, 1.4142, np.deg2rad(180.0), np.deg2rad(45.0))
+    expected = np.array([0.0, np.deg2rad(45.0), -np.sqrt(2)])
+    npt.assert_array_almost_equal(res, expected, decimal=4)
+
+
+@pytest.mark.parametrize('function', [cyice.sphcyl_v, cyice.sphcyl], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["sphcyl_v"], indirect=True)
+def test_sphcyl_v(function, grouped_benchmark):
+    radius = np.repeat(1.4142, 100)
+    colat  = np.repeat(np.deg2rad(180.0), 100)
+    slon   = np.repeat(np.deg2rad(45.0), 100)
+    res = grouped_benchmark(function, radius, colat, slon)
+    expected = np.array([[0.0, np.deg2rad(45.0), -np.sqrt(2)]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v, decimal=4)
+
+
+@pytest.mark.parametrize('function', [cyice.sphlat_s, cyice.sphlat, spice.sphlat], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["sphlat"], indirect=True)
+def test_sphlat(function, grouped_benchmark):
+    res = grouped_benchmark(function, 1.0, spice.pi(), spice.halfpi())
+    expected = np.array([1.0, spice.halfpi(), -spice.halfpi()])
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.sphlat_v, cyice.sphlat], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["sphlat_v"], indirect=True)
+def test_sphlat_v(function, grouped_benchmark):
+    r   = np.ones(100, order='C')
+    colat = np.repeat(spice.pi(), 100) 
+    slon = np.repeat(spice.halfpi(), 100)
+    res = grouped_benchmark(function, r, colat, slon)
+    expected = np.array([[1.0, spice.halfpi(), -spice.halfpi()]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.sphrec_s, cyice.sphrec, spice.sphrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["sphrec"], indirect=True)
+def test_sphrec(function, grouped_benchmark):
+    res = grouped_benchmark(function, 1.0, np.radians(90.0), 0.0)
+    expected = np.array([1.0, 0.0, 0.0])
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.sphrec_v, cyice.sphrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["sphrec_v"], indirect=True)
+def test_sphrec_v(function, grouped_benchmark):
+    r     = np.ones(100, order='C')
+    colat = np.repeat(np.radians(90.0), 100)
+    slon  = np.zeros(100, order='C')
+    res = grouped_benchmark(function, r, colat, slon)
+    expected = np.array([[1.0, 0.0, 0.0]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v, decimal=7)
 
 
 @pytest.mark.parametrize('function', [cyice.spkapo_s, cyice.spkapo, spice.spkapo], ids=get_module_name)

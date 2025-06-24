@@ -92,7 +92,10 @@ Int_N       = Annotated[IntArray, Literal["N"]]
 Double_N    = Annotated[DoubleArray, Literal["N"]]
 Vector      = Annotated[DoubleArray, Literal[3]]
 Vector_N    = Annotated[DoubleArray, Literal["N", 3]]
-Cylindrical_N    = Annotated[DoubleArray, Literal["N", 3]]
+Cylindrical_N   = Annotated[DoubleArray, Literal["N", 3]]
+Latitudinal_N   = Annotated[DoubleArray, Literal["N", 3]]
+Rectangular_N   = Annotated[DoubleArray, Literal["N", 3]]
+Spherical_N     = Annotated[DoubleArray, Literal["N", 3]]
 State       = Annotated[DoubleArray, Literal[6]]
 State_N     = Annotated[DoubleArray, Literal["N", 6]]
 Matrix      = Annotated[DoubleArray, Literal[3, 3]]
@@ -777,7 +780,7 @@ def cylrec(
     radius: float | double[::1], 
     lon: float | double[::1], 
     lat: float | double[::1]
-    ) -> tuple[float, float, float] | Vector_N:
+    ) -> Vector | Vector_N:
     """
     Convert from cylindrical to rectangular coordinates.
 
@@ -816,16 +819,16 @@ cpdef tuple[float, float, float] cylsph_s(
     """
     cdef double radius = 0.0
     cdef double colat  = 0.0
-    cdef double lon    = 0.0
+    cdef double slon   = 0.0
     cylsph_c(
         r, 
         clon,
         z,
         &radius, 
         &colat, 
-        &lon, 
+        &slon, 
     )
-    return radius, colat, lon
+    return radius, colat, slon
 
 
 @boundscheck(False)
@@ -1927,7 +1930,7 @@ def latrec(
     radius: float | double[::1], 
     lon: float | double[::1], 
     lat: float | double[::1]
-    ) -> tuple[float, float, float] | Cylindrical_N:
+    ) -> Vector | Vector_N:
     """
     Convert from latitudinal coordinates to cylindrical coordinates.
 
@@ -2735,6 +2738,296 @@ def spd() -> float:
     :return: The number of seconds in a day.
     """
     return spd_c()
+
+
+cpdef tuple[float, float, float] sphcyl_s(
+    radius: float, 
+    colat: float, 
+    slon: float
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.sphcyl`
+
+    Convert from spherical coordinates to cylindrical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sphcyl_c.html
+
+    :param radius: Distance of point from origin.
+    :param colat: Polar angle (co-latitude in radians) of point.
+    :param slon: Azimuthal angle (longitude) of point (radians).
+    :return:
+            Distance of point from z axis,
+            angle (radians) of point from XZ plane,
+            Height of point above XY plane.
+    """
+    cdef double r    = 0.0
+    cdef double clon = 0.0
+    cdef double z    = 0.0
+    sphcyl_c(
+        radius, 
+        colat, 
+        slon, 
+        &r, 
+        &clon,
+        &z,
+    )
+    return r, clon, z
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:,::1] sphcyl_v(
+    const double[::1] radius, 
+    const double[::1] colat, 
+    const double[::1] slon
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sphcyl`
+
+    Convert from spherical coordinates to cylindrical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sphcyl_c.html
+
+    :param radius: Distance of point from origin.
+    :param colat: Polar angle (co-latitude in radians) of point.
+    :param slon: Azimuthal angle (longitude) of point (radians).
+    :return:
+            Distance of point from z axis,
+            angle (radians) of point from XZ plane,
+            Height of point above XY plane.
+    """
+    cdef const np.double_t[::1] c_radius = np.ascontiguousarray(radius, dtype=np.double)
+    cdef Py_ssize_t i, n = c_radius.shape[0]
+    cdef const np.double_t[::1] c_colat = np.ascontiguousarray(colat, dtype=np.double)
+    cdef const np.double_t[::1] c_slon = np.ascontiguousarray(slon, dtype=np.double)
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_cyl = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_cyl = p_cyl
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            sphcyl_c(
+                c_radius[i], 
+                c_colat[i], 
+                c_slon[i], 
+                <SpiceDouble *> &c_cyl[i,0], 
+                <SpiceDouble *> &c_cyl[i,1],
+                <SpiceDouble *> &c_cyl[i,2]
+            )
+    return p_cyl
+
+
+def sphcyl(
+    radius: float | double[::1], 
+    colat: float | double[::1], 
+    slon: float | double[::1]
+    ) -> tuple[float, float, float] | Vector_N:
+    """
+    Convert from spherical coordinates to cylindrical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sphcyl_c.html
+
+    :param radius: Distance of point from origin.
+    :param colat: Polar angle (co-latitude in radians) of point.
+    :param slon: Azimuthal angle (longitude) of point (radians).
+    :return:
+            Distance of point from z axis,
+            angle (radians) of point from XZ plane,
+            Height of point above XY plane.
+    """
+    if PyFloat_Check(radius):
+        return sphcyl_s(radius, colat, slon)
+    else:
+        return sphcyl_v(radius, colat, slon)
+
+
+cpdef tuple[float, float, float] sphlat_s(
+    r: float, 
+    colat: float, 
+    slon: float
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.sphlat`
+
+    Convert from spherical coordinates to latitudinal coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sphlat_c.html
+
+    :param r: Distance of the point from the origin.
+    :param colat: Angle of the point from positive z axis (radians).
+    :param slon: Angle of the point from the XZ plane (radians).
+    :return:
+            Distance of a point from the origin,
+            Angle of the point from the XZ plane in radians,
+            Angle of the point from the XY plane in radians.
+    """
+    cdef double radius = 0.0
+    cdef double lon    = 0.0
+    cdef double lat    = 0.0
+    sphlat_c(
+        r, 
+        colat,
+        slon,
+        &radius, 
+        &lon, 
+        &lat, 
+    )
+    return radius, lon, lat
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:,::1] sphlat_v(
+    const double[::1] r, 
+    const double[::1] colat, 
+    const double[::1] slon
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sphlat`
+
+    Convert from spherical coordinates to latitudinal coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sphlat_c.html
+
+    :param r: Distance of the point from the origin.
+    :param colat: Angle of the point from positive z axis (radians).
+    :param slon: Angle of the point from the XZ plane (radians).
+    :return:
+            Distance of a point from the origin,
+            Angle of the point from the XZ plane in radians,
+            Angle of the point from the XY plane in radians.
+    """
+    cdef const np.double_t[::1] c_r = np.ascontiguousarray(r, dtype=np.double)
+    cdef Py_ssize_t i, n = c_r.shape[0]
+    cdef const np.double_t[::1] c_colat = np.ascontiguousarray(colat, dtype=np.double)
+    cdef const np.double_t[::1] c_slon = np.ascontiguousarray(slon, dtype=np.double)
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_lat = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_lat = p_lat
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            sphlat_c(
+                c_r[i], 
+                c_colat[i], 
+                c_slon[i], 
+                <SpiceDouble *> &c_lat[i,0], 
+                <SpiceDouble *> &c_lat[i,1],
+                <SpiceDouble *> &c_lat[i,2]
+            )
+    return p_lat
+
+
+def sphlat(
+    r: float | double[::1], 
+    colat: float | double[::1], 
+    slon: float | double[::1]
+    ) -> tuple[float, float, float] | Vector_N:
+    """
+    Convert from spherical coordinates to latitudinal coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sphlat_c.html
+
+    :param r: Distance of the point from the origin.
+    :param colat: Angle of the point from positive z axis (radians).
+    :param slon: Angle of the point from the XZ plane (radians).
+    :return:
+            Distance of a point from the origin,
+            Angle of the point from the XZ plane in radians,
+            Angle of the point from the XY plane in radians.
+    """
+    if PyFloat_Check(r):
+        return sphlat_s(r, colat, slon)
+    else:
+        return sphlat_v(r, colat, slon)
+
+
+cpdef double[::1] sphrec_s(
+    r: float, 
+    colat: float, 
+    slon: float
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.sphrec`
+
+    Convert from spherical coordinates to rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sphrec_c.html
+
+    :param r: Distance of a point from the origin.
+    :param colat: Angle of the point from the positive Z-axis.
+    :param slon: Angle of the point from the XZ plane in radians.
+    :return: Rectangular coordinates of the point.
+    """
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_rec = np.empty(3, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_rec = p_rec
+    sphrec_c(
+        r, 
+        colat, 
+        slon, 
+        &c_rec[0],
+    )
+    return p_rec
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:,::1] sphrec_v(
+    const double[::1] r, 
+    const double[::1] colat, 
+    const double[::1] slon
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sphrec`
+
+    Convert from spherical coordinates to rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sphrec_c.html
+
+    :param r: Distance of a point from the origin.
+    :param colat: Angle of the point from the positive Z-axis.
+    :param slon: Angle of the point from the XZ plane in radians.
+    :return: Rectangular coordinates of the point.
+    """
+    cdef const np.double_t[::1] c_r = np.ascontiguousarray(r, dtype=np.double)
+    cdef Py_ssize_t i, n = c_r.shape[0]
+    cdef const np.double_t[::1] c_colat = np.ascontiguousarray(colat, dtype=np.double)
+    cdef const np.double_t[::1] c_slon = np.ascontiguousarray(slon, dtype=np.double)
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_rec = p_rec
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            sphrec_c(
+                c_r[i], 
+                c_colat[i], 
+                c_slon[i], 
+                &c_rec[i, 0]
+            )
+    return p_rec
+
+
+def sphrec(
+    r: float | double[::1], 
+    colat: float | double[::1], 
+    slon: float | double[::1]
+    ) -> Vector | Vector_N:
+    """
+    Convert from spherical coordinates to rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sphrec_c.html
+
+    :param r: Distance of a point from the origin.
+    :param colat: Angle of the point from the positive Z-axis.
+    :param slon: Angle of the point from the XZ plane in radians.
+    :return: Rectangular coordinates of the point.
+    """
+    if PyFloat_Check(r):
+        return sphrec_s(r, colat, slon)
+    else:
+        return sphrec_v(r, colat, slon)
 
 
 @boundscheck(False)
