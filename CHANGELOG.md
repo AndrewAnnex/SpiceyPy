@@ -23,7 +23,7 @@ Backport release of various small fixes and typo corrections
 
 ### Fixed
 - various readthedocs and docs issues
-- cylsph was fixed as it was calling the wrong cspice function
+- cylsph was fixed as it was calling the wrong cspice function #496
 - various typos
 
 ## [6.0.0] - 2023-08-31
