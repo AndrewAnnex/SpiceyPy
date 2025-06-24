@@ -1226,7 +1226,7 @@ def test_cylrec():
 
 def test_cylsph():
     a = np.array(spice.cylsph(1.0, np.deg2rad(180.0), 1.0))
-    b = np.array([1.4142, np.deg2rad(180.0), np.deg2rad(45.0)])
+    b = np.array([1.4142, np.deg2rad(45.0), np.deg2rad(180.0)])
     np.testing.assert_almost_equal(b, a, decimal=4)
 
 
