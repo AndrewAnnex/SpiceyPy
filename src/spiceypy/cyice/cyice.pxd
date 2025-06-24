@@ -98,14 +98,31 @@ cdef extern from "SpiceUsr.h" nogil:
                        SpiceDouble       * clkout,
                        SpiceBoolean      * found      )
 
-
     cdef SpiceDouble clight_c()
-
 
     cdef void convrt_c(SpiceDouble      x,
                        ConstSpiceChar * inunit,
                        ConstSpiceChar * outunit,
                        SpiceDouble    * y)
+
+    cdef void cyllat_c(SpiceDouble    r,
+                       SpiceDouble    clon,
+                       SpiceDouble    z,
+                       SpiceDouble *  radius,
+                       SpiceDouble *  lon,
+                       SpiceDouble *  lat )
+    
+    cdef void cylrec_c(SpiceDouble r,
+                       SpiceDouble clon,
+                       SpiceDouble z,
+                       SpiceDouble[3] rectan)
+
+    cdef void cylsph_c(SpiceDouble    r,
+                       SpiceDouble    clon,
+                       SpiceDouble    z,
+                       SpiceDouble *  radius,
+                       SpiceDouble *  colat,
+                       SpiceDouble *  slon )
 
     #D
     # deltet

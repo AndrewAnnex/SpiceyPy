@@ -1889,31 +1889,29 @@ def cvpool(agent: str) -> bool:
     return bool(update.value)
 
 
-@spice_error_check
-def cyllat(r: float, lonc: float, z: float) -> Tuple[float, float, float]:
+def cyllat(r: float, clon: float, z: float) -> Tuple[float, float, float]:
     """
     Convert from cylindrical to latitudinal coordinates.
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/cyllat_c.html
 
     :param r: Distance of point from z axis.
-    :param lonc: Cylindrical angle of point from XZ plane(radians).
+    :param clon: Cylindrical angle of point from XZ plane (radians).
     :param z: Height of point above XY plane.
     :return: Distance, Longitude (radians), and Latitude of point (radians).
     """
     r = ctypes.c_double(r)
-    lonc = ctypes.c_double(lonc)
+    clon = ctypes.c_double(clon)
     z = ctypes.c_double(z)
     radius = ctypes.c_double()
     lon = ctypes.c_double()
     lat = ctypes.c_double()
     libspice.cyllat_c(
-        r, lonc, z, ctypes.byref(radius), ctypes.byref(lon), ctypes.byref(lat)
+        r, clon, z, ctypes.byref(radius), ctypes.byref(lon), ctypes.byref(lat)
     )
     return radius.value, lon.value, lat.value
 
 
-@spice_error_check
 def cylrec(r: float, lon: float, z: float) -> ndarray:
     """
     Convert from cylindrical to rectangular coordinates.
@@ -1933,7 +1931,6 @@ def cylrec(r: float, lon: float, z: float) -> ndarray:
     return stypes.c_vector_to_python(rectan)
 
 
-@spice_error_check
 def cylsph(r: float, lonc: float, z: float) -> Tuple[float, float, float]:
     """
     Convert from cylindrical to spherical coordinates.
@@ -1955,7 +1952,12 @@ def cylsph(r: float, lonc: float, z: float) -> Tuple[float, float, float]:
     colat = ctypes.c_double()
     lon = ctypes.c_double()
     libspice.cyllat_c(
-        r, lonc, z, ctypes.byref(radius), ctypes.byref(colat), ctypes.byref(lon)
+        r, 
+        lonc, 
+        z, 
+        ctypes.byref(radius), 
+        ctypes.byref(colat), 
+        ctypes.byref(lon)
     )
     return radius.value, colat.value, lon.value
 

@@ -614,6 +614,287 @@ def convrt(
         return convrt_v(x, inunit, outunit)
 
 
+cpdef tuple[float, float, float] cyllat_s(
+    r: float, 
+    clon: float, 
+    z: float
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.cyllat`
+
+    Convert from cylindrical to latitudinal coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/cyllat_c.html
+
+    :param r: Distance of point from z axis.
+    :param clon: Cylindrical angle of point from XZ plane (radians).
+    :param z: Height of point above XY plane.
+    :return: Distance, Longitude (radians), and Latitude of point (radians).
+    """
+    cdef double radius = 0.0
+    cdef double lon    = 0.0
+    cdef double lat    = 0.0
+    cyllat_c(
+        r, 
+        clon,
+        z,
+        &radius, 
+        &lon, 
+        &lat, 
+    )
+    return radius, lon, lat
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:,::1] cyllat_v(
+    const double[::1] r, 
+    const double[::1] clon, 
+    const double[::1] z
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.cyllat`
+
+    Convert from cylindrical to latitudinal coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/cyllat_c.html
+
+    :param r: Distance of point from z axis.
+    :param clon: Cylindrical angle of point from XZ plane (radians).
+    :param z: Height of point above XY plane.
+    :return: Distance, Longitude (radians), and Latitude of point (radians).
+    """
+    cdef const np.double_t[::1] c_r = np.ascontiguousarray(r, dtype=np.double)
+    cdef Py_ssize_t i, n = c_r.shape[0]
+    cdef const np.double_t[::1] c_clon = np.ascontiguousarray(clon, dtype=np.double)
+    cdef const np.double_t[::1] c_z = np.ascontiguousarray(z, dtype=np.double)
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_lat = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_lat = p_lat
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            cyllat_c(
+                c_r[i], 
+                c_clon[i], 
+                c_z[i], 
+                <SpiceDouble *> &c_lat[i,0], 
+                <SpiceDouble *> &c_lat[i,1],
+                <SpiceDouble *> &c_lat[i,2]
+            )
+    return p_lat
+
+
+def cyllat(
+    r: float | double[::1], 
+    clon: float | double[::1], 
+    z: float | double[::1]
+    ) -> tuple[float, float, float] | Vector_N:
+    """
+    Convert from cylindrical to latitudinal coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/cyllat_c.html
+
+    :param r: Distance of point from z axis.
+    :param clon: Cylindrical angle of point from XZ plane (radians).
+    :param z: Height of point above XY plane.
+    :return: Distance, Longitude (radians), and Latitude of point (radians).
+    """
+    if PyFloat_Check(r):
+        return cyllat_s(r, clon, z)
+    else:
+        return cyllat_v(r, clon, z)
+
+
+cpdef double[::1] cylrec_s(
+    r: float, 
+    lon: float, 
+    z: float
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.cylrec`
+
+    Convert from cylindrical to rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/cylrec_c.html
+
+    :param r: Distance of a point from z axis.
+    :param lon: Angle (radians) of a point from xZ plane.
+    :param z: Height of a point above xY plane.
+    :return: Rectangular coordinates of the point.
+    """
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_rec = np.empty(3, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_rec = p_rec
+    cylrec_c(
+        r, 
+        lon, 
+        z, 
+        &c_rec[0],
+    )
+    return p_rec
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:,::1] cylrec_v(
+    const double[::1] r, 
+    const double[::1] lon, 
+    const double[::1] z
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.cylrec`
+
+    Convert from cylindrical to rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/cylrec_c.html
+
+    :param r: Distance of a point from z axis.
+    :param lon: Angle (radians) of a point from xZ plane.
+    :param z: Height of a point above xY plane.
+    :return: Rectangular coordinates of the point.
+    """
+    cdef const np.double_t[::1] c_r = np.ascontiguousarray(r, dtype=np.double)
+    cdef Py_ssize_t i, n = c_r.shape[0]
+    cdef const np.double_t[::1] c_lon = np.ascontiguousarray(lon, dtype=np.double)
+    cdef const np.double_t[::1] c_z   = np.ascontiguousarray(z, dtype=np.double)
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_rec = p_rec
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            cylrec_c(
+                c_r[i], 
+                c_lon[i], 
+                c_z[i], 
+                &c_rec[i, 0]
+            )
+    return p_rec
+
+
+def cylrec(
+    radius: float | double[::1], 
+    lon: float | double[::1], 
+    lat: float | double[::1]
+    ) -> tuple[float, float, float] | Vector_N:
+    """
+    Convert from cylindrical to rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/cylrec_c.html
+
+    :param r: Distance of a point from z axis.
+    :param lon: Angle (radians) of a point from xZ plane.
+    :param z: Height of a point above xY plane.
+    :return: Rectangular coordinates of the point.
+    """
+    if PyFloat_Check(radius):
+        return cylrec_s(radius, lon, lat)
+    else:
+        return cylrec_v(radius, lon, lat)
+
+
+cpdef tuple[float, float, float] cylsph_s(
+    r: float, 
+    clon: float, 
+    z: float
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.cylsph`
+
+    Convert from cylindrical to spherical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/cylsph_c.html
+
+    :param r: Rectangular coordinates of the point.
+    :param lonc: Angle (radians) of point from XZ plane.
+    :param z: Height of point above XY plane.
+    :return:
+            Distance of point from origin,
+            Polar angle (co-latitude in radians) of point,
+            Azimuthal angle (longitude) of point (radians).
+    """
+    cdef double radius = 0.0
+    cdef double colat  = 0.0
+    cdef double lon    = 0.0
+    cylsph_c(
+        r, 
+        clon,
+        z,
+        &radius, 
+        &colat, 
+        &lon, 
+    )
+    return radius, colat, lon
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:,::1] cylsph_v(
+    const double[::1] r, 
+    const double[::1] clon, 
+    const double[::1] z
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.cylsph`
+
+    Convert from cylindrical to spherical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/cylsph_c.html
+
+    :param r: Rectangular coordinates of the point.
+    :param lonc: Angle (radians) of point from XZ plane.
+    :param z: Height of point above XY plane.
+    :return:
+            Distance of point from origin,
+            Polar angle (co-latitude in radians) of point,
+            Azimuthal angle (longitude) of point (radians).
+    """
+    cdef const np.double_t[::1] c_r = np.ascontiguousarray(r, dtype=np.double)
+    cdef Py_ssize_t i, n = c_r.shape[0]
+    cdef const np.double_t[::1] c_clon = np.ascontiguousarray(clon, dtype=np.double)
+    cdef const np.double_t[::1] c_z = np.ascontiguousarray(z, dtype=np.double)
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_sph = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_sph = p_sph
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            cylsph_c(
+                c_r[i], 
+                c_clon[i], 
+                c_z[i], 
+                <SpiceDouble *> &c_sph[i,0], 
+                <SpiceDouble *> &c_sph[i,1],
+                <SpiceDouble *> &c_sph[i,2]
+            )
+    return p_sph
+
+
+def cylsph(
+    r: float | double[::1], 
+    clon: float | double[::1], 
+    z: float | double[::1]
+    ) -> tuple[float, float, float] | Cylindrical_N:
+    """
+    Convert from cylindrical to spherical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/cylsph_c.html
+
+    :param r: Rectangular coordinates of the point.
+    :param lonc: Angle (radians) of point from XZ plane.
+    :param z: Height of point above XY plane.
+    :return:
+            Distance of point from origin,
+            Polar angle (co-latitude in radians) of point,
+            Azimuthal angle (longitude) of point (radians).
+    """
+    if PyFloat_Check(r):
+        return cylsph_s(r, clon, z)
+    else:
+        return cylsph_v(r, clon, z)
+
+
 # D
 
 

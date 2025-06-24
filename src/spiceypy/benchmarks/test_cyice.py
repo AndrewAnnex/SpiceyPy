@@ -196,6 +196,71 @@ def test_convrt_v(function, grouped_benchmark):
     assert isinstance(res, np.ndarray)
 
 
+@pytest.mark.parametrize('function', [cyice.cyllat_s, cyice.cyllat, spice.cyllat], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["cyllat"], indirect=True)
+def test_cyllat(function, grouped_benchmark):
+    r   = 1.0
+    clon = 180.0 * spice.rpd()
+    z = -1.0
+    res = grouped_benchmark(function, r, clon, z)
+    expected = np.array([np.sqrt(2), np.pi, -np.pi / 4])
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.cyllat_v, cyice.cyllat], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["cyllat_v"], indirect=True)
+def test_cyllat_v(function, grouped_benchmark):
+    r   = np.ones(100, order='C')
+    clon = np.repeat(180.0, 100) * spice.rpd()
+    z = -np.ones(100, order='C')
+    res = grouped_benchmark(function, r, clon, z)
+    expected = np.array([[np.sqrt(2), np.pi, -np.pi / 4]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.cylrec_s, cyice.cylrec, spice.cylrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["cylrec"], indirect=True)
+def test_cylrec(function, grouped_benchmark):
+    r   = 0.0
+    clon = np.radians(33.0)
+    z = 0.0
+    res = grouped_benchmark(function, r, clon, z)
+    expected = np.array([0.0, 0.0, 0.0])
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.cylrec_v, cyice.cylrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["cylrec_v"], indirect=True)
+def test_cylrec_v(function, grouped_benchmark):
+    r    = np.zeros(100, order='C')
+    clon = np.repeat(np.radians(33.0), 100)
+    z    = np.zeros(100, order='C')
+    res = grouped_benchmark(function, r, clon, z)
+    expected_v = np.zeros((100,3))
+    npt.assert_array_almost_equal(res, expected_v, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.cylsph_s, cyice.cylsph, spice.cylsph], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["cylsph"], indirect=True)
+def test_cylsph(function, grouped_benchmark):
+    res = grouped_benchmark(function, 1.0, np.deg2rad(180.0), 1.0)
+    expected = np.array([1.4142, np.deg2rad(180.0), np.deg2rad(45.0)])
+    npt.assert_array_almost_equal(res, expected, decimal=4)
+
+
+@pytest.mark.parametrize('function', [cyice.cylsph_v, cyice.cylsph], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["cylsph_v"], indirect=True)
+def test_cylsph_v(function, grouped_benchmark):
+    r   = np.ones(100, order='C')
+    clon = np.repeat(np.deg2rad(180.0), 100)
+    z = np.ones(100, order='C')
+    res = grouped_benchmark(function, r, clon, z)
+    expected = np.array([[1.4142, np.deg2rad(180.0), np.deg2rad(45.0)]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v, decimal=4)
+
+
 # # D
 @pytest.mark.parametrize('function', [cyice.deltet_s, cyice.deltet, spice.deltet], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["deltet"], indirect=True)
