@@ -1955,7 +1955,7 @@ def cylsph(r: float, lonc: float, z: float) -> Tuple[float, float, float]:
     radius = ctypes.c_double()
     colat = ctypes.c_double()
     lon = ctypes.c_double()
-    libspice.cyllat_c(
+    libspice.cylsph_c(
         r, lonc, z, ctypes.byref(radius), ctypes.byref(colat), ctypes.byref(lon)
     )
     return radius.value, colat.value, lon.value
