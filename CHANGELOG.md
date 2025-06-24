@@ -4,12 +4,27 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## [?.?.?] - 2025-??-??
+## [6.0.1] - 2025-06-24
+Backport release of various small fixes and typo corrections
+### Added
+- python 3.13 builds
+- missing exceptions from cspice #494
+- new required readings docs #489
+
+### Removed
+- cirrus ci was removed
+- gitter chat info
 
 ### Changed
 - Added units to many parameter descriptions in function docstrings to address #350
+- updated various aspects of ci builds
+- copyright date ranges updated to 2025
+- moved naif doc urls to versioned 
 
-
+### Fixed
+- various readthedocs and docs issues
+- cylsph was fixed as it was calling the wrong cspice function
+- various typos
 
 ## [6.0.0] - 2023-08-31
 Fixed several major typos and fortran array ordering issues in tkfram, zzdynrot as well as failing tests on arm64 macos. 

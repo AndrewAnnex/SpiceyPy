@@ -3,7 +3,9 @@ name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
 on:
   pull_request: 
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - 'backport*'
     tags: [ 'v*' ]
   release:
     types: [ published ]
