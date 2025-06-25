@@ -2761,6 +2761,180 @@ def recpgr(
         raise RuntimeError(f'Rectan provided wrong shape of {ndim}')
 
 
+@boundscheck(False)
+cpdef tuple[float, float, float] recrad_s(
+    double[::1] rectan
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.recrad`
+
+    Convert rectangular coordinates to range, right ascension, and declination.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/recrad_c.html
+
+    :param rectan: Rectangular coordinates of a point.
+    :return:
+            Distance of the point from the origin,
+            Right ascension in radians,
+            Declination in radians
+    """
+    cdef const double* c_rectan = &rectan[0]
+    cdef double orange = 0.0
+    cdef double ra = 0.0
+    cdef double dec = 0.0
+    recrad_c(
+        c_rectan, 
+        &orange,
+        &ra,
+        &dec
+    )
+    return orange, ra, dec
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:,::1] recrad_v(
+    const double[:,::1] rectan
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.recrad`
+
+    Convert rectangular coordinates to range, right ascension, and declination.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/recrad_c.html
+
+    :param rectan: Rectangular coordinates of a point.
+    :return:
+            Distance of the point from the origin,
+            Right ascension in radians,
+            Declination in radians
+    """
+    cdef Py_ssize_t i, n = rectan.shape[0]
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rad = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_rad = p_rad
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            recrad_c(
+                &rectan[i, 0],  
+                &c_rad[i, 0],
+                &c_rad[i, 1],
+                &c_rad[i, 2]
+            )
+    return p_rad
+
+
+def recrad(
+    rectan: double[::1] | double[:,::1]
+    ) -> tuple[float, float, float] | Vector_N:
+    """
+    Convert rectangular coordinates to range, right ascension, and declination.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/recrad_c.html
+
+    :param rectan: Rectangular coordinates of a point.
+    :return:
+            Distance of the point from the origin,
+            Right ascension in radians,
+            Declination in radians
+    """
+    cdef Py_ssize_t ndim = rectan.ndim
+    if ndim == 1:
+        return recrad_s(rectan)
+    elif ndim == 2:
+        return recrad_v(rectan)
+    else:
+        raise RuntimeError(f'Rectan provided wrong shape of {ndim}')
+
+
+@boundscheck(False)
+cpdef tuple[float, float, float] recsph_s(
+    double[::1] rectan
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.recsph`
+
+    Convert from rectangular coordinates to spherical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/recrad_c.html
+
+    :param rectan: Rectangular coordinates of a point.
+    :return:
+            Distance from the origin,
+            Angle from the positive Z-axis,
+            Longitude in radians.
+    """
+    cdef const double* c_rectan = &rectan[0]
+    cdef double r = 0.0
+    cdef double colat = 0.0
+    cdef double slon = 0.0
+    recsph_c(
+        c_rectan, 
+        &r,
+        &colat,
+        &slon
+    )
+    return r, colat, slon
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:,::1] recsph_v(
+    const double[:,::1] rectan
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.recsph`
+
+    Convert from rectangular coordinates to spherical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/recrad_c.html
+
+    :param rectan: Rectangular coordinates of a point.
+    :return:
+            Distance from the origin,
+            Angle from the positive Z-axis,
+            Longitude in radians.
+    """
+    cdef Py_ssize_t i, n = rectan.shape[0]
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_sph = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_sph = p_sph
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            recsph_c(
+                &rectan[i, 0],  
+                &c_sph[i, 0],
+                &c_sph[i, 1],
+                &c_sph[i, 2]
+            )
+    return p_sph
+
+
+def recsph(
+    rectan: double[::1] | double[:,::1]
+    ) -> tuple[float, float, float] | Spherical_N:
+    """
+    Convert from rectangular coordinates to spherical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/recrad_c.html
+
+    :param rectan: Rectangular coordinates of a point.
+    :return:
+            Distance from the origin,
+            Angle from the positive Z-axis,
+            Longitude in radians.
+    """
+    cdef Py_ssize_t ndim = rectan.ndim
+    if ndim == 1:
+        return recsph_s(rectan)
+    elif ndim == 2:
+        return recsph_v(rectan)
+    else:
+        raise RuntimeError(f'Rectan provided wrong shape of {ndim}')
+
+
 cpdef void reset() noexcept:
     """
     Reset the SPICE error status to a value of "no error."

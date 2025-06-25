@@ -704,6 +704,47 @@ def test_recpgr_v(function, grouped_benchmark, load_core_kernels):
     npt.assert_array_almost_equal(res, expected_v)
 
 
+@pytest.mark.parametrize('function', [cyice.recrad_s, cyice.recrad, spice.recrad], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["recrad"], indirect=True)
+def test_recrad(function, grouped_benchmark):
+    rectan = np.array([0.0, 1.0, 0.0])
+    res = grouped_benchmark(function, rectan)
+    expected = np.array([1.0, np.radians(90.0), 0.0])
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.recrad_v, cyice.recrad], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["recrad_v"], indirect=True)
+def test_recrad_v(function, grouped_benchmark):
+    rectan = np.array([[0.0, 1.0, 0.0]])
+    rectan_v = np.repeat(rectan, 100, axis=0)
+    res = grouped_benchmark(function, rectan_v)
+    expected = np.array([[1.0, np.radians(90.0), 0.0]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v)
+
+
+@pytest.mark.parametrize('function', [cyice.recsph_s, cyice.recsph, spice.recsph], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["recsph"], indirect=True)
+def test_recsph(function, grouped_benchmark):
+    rectan = np.array([-1.0, 0.0, 0.0])
+    res = grouped_benchmark(function, rectan)
+    expected = np.array([1.0, np.pi / 2, np.pi])
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.recsph_v, cyice.recsph], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["recsph_v"], indirect=True)
+def test_recsph_v(function, grouped_benchmark):
+    rectan = np.array([[-1.0, 0.0, 0.0]])
+    rectan_v = np.repeat(rectan, 100, axis=0)
+    res = grouped_benchmark(function, rectan_v)
+    expected = np.array([[1.0, np.pi / 2, np.pi]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v)
+
+
+
 @pytest.mark.parametrize('function', [cyice.reset, spice.reset], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["reset"], indirect=True)
 def test_reset(function, grouped_benchmark):
