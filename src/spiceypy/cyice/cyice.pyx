@@ -779,9 +779,9 @@ cpdef double[:,::1] cylrec_v(
 
 
 def cylrec(
-    radius: float | double[::1], 
+    r: float | double[::1], 
     lon: float | double[::1], 
-    lat: float | double[::1]
+    z: float | double[::1]
     ) -> Vector | Vector_N:
     """
     Convert from cylindrical to rectangular coordinates.
@@ -793,10 +793,10 @@ def cylrec(
     :param z: Height of a point above xY plane.
     :return: Rectangular coordinates of the point.
     """
-    if PyFloat_Check(radius):
-        return cylrec_s(radius, lon, lat)
+    if PyFloat_Check(r):
+        return cylrec_s(r, lon, z)
     else:
-        return cylrec_v(radius, lon, lat)
+        return cylrec_v(r, lon, z)
 
 
 cpdef tuple[float, float, float] cylsph_s(
@@ -5914,6 +5914,98 @@ def sincpt(
         return sincpt_s(method, target, et, fixref, abcorr, obsrvr, dref, dvec)
     else:
         return sincpt_v(method, target, et, fixref, abcorr, obsrvr, dref, dvec)
+
+
+cpdef double[::1] srfrec_s(
+    body: int, 
+    lon: float, 
+    lat: float
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.srfrec`
+
+    Convert planetocentric latitude and longitude of a surface
+    point on a specified body to rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/srfrec_c.html
+
+    :param body: NAIF integer code of an extended body.
+    :param lon: Longitude of point in radians.
+    :param lat: Latitude of point in radians.
+    :return: Rectangular coordinates of the point, same units as used in radii definition (typically km).
+    """
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_rec = np.empty(3, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_rec = p_rec
+    srfrec_c(
+        body, 
+        lon, 
+        lat, 
+        &c_rec[0],
+    )
+    return p_rec
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:,::1] srfrec_v(
+    int body, 
+    const double[::1] lon, 
+    const double[::1] lat
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.srfrec`
+
+    Convert planetocentric latitude and longitude of a surface
+    point on a specified body to rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/srfrec_c.html
+
+    :param body: NAIF integer code of an extended body.
+    :param lon: Longitude of point in radians.
+    :param lat: Latitude of point in radians.
+    :return: Rectangular coordinates of the point, same units as used in radii definition (typically km).
+    """
+    cdef SpiceInt c_body = body
+    cdef const np.double_t[::1] c_lon = np.ascontiguousarray(lon, dtype=np.double)
+    cdef Py_ssize_t i, n = c_lon.shape[0]
+    cdef const np.double_t[::1] c_lat   = np.ascontiguousarray(lat, dtype=np.double)
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_rec = p_rec
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            srfrec_c(
+                c_body, 
+                c_lon[i], 
+                c_lat[i], 
+                &c_rec[i, 0]
+            )
+    return p_rec
+
+
+def srfrec(
+    body: int, 
+    lon: float | double[::1], 
+    lat: float | double[::1]
+    ) -> Vector | Vector_N:
+    """
+    Convert planetocentric latitude and longitude of a surface
+    point on a specified body to rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/srfrec_c.html
+
+    :param body: NAIF integer code of an extended body.
+    :param longitude: Longitude of point in radians.
+    :param latitude: Latitude of point in radians.
+    :return: Rectangular coordinates of the point, same units as used in radii definition (typically km).
+    :return: Rectangular coordinates of the point.
+    """
+    if PyFloat_Check(lon):
+        return srfrec_s(body, lon, lat)
+    else:
+        return srfrec_v(body, lon, lat)
 
 
 @boundscheck(False)

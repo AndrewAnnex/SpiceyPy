@@ -1440,6 +1440,27 @@ def test_sincpt_v(function, grouped_benchmark, load_cassini_kernels):
     npt.assert_almost_equal(trgepc[0], 415065064.9055491)
 
 
+@pytest.mark.parametrize('function', [cyice.srfrec_s, cyice.srfrec, spice.srfrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["srfrec"], indirect=True)
+def test_srfrec(function, grouped_benchmark, load_core_kernels):
+    lon = np.radians(100.0)
+    lat = np.radians(35.0)
+    res = grouped_benchmark(function, 399, lon, lat)
+    expected = np.array([-906.24919474, 5139.59458217, 3654.29989637])
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.srfrec_v, cyice.srfrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["srfrec_v"], indirect=True)
+def test_srfrec_v(function, grouped_benchmark, load_core_kernels):
+    lon = np.repeat(np.radians(100.0), 100)
+    lat = np.repeat(np.radians(35.0),  100)
+    res = grouped_benchmark(function, 399, lon, lat)
+    expected = np.array([[-906.24919474, 5139.59458217, 3654.29989637]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v, decimal=7)
+
+
 @pytest.mark.parametrize('function', [cyice.subpnt_s, cyice.subpnt, spice.subpnt], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["subpnt"], indirect=True)
 def test_subpnt(function, grouped_benchmark, load_core_kernels):

@@ -473,6 +473,11 @@ cdef extern from "SpiceUsr.h" nogil:
                        SpiceDouble[3]        srfvec,
                        SpiceBoolean        * found       )
 
+    cdef void srfrec_c(SpiceInt      body,
+                       SpiceDouble   lon,
+                       SpiceDouble   lat,
+                       SpiceDouble[3]   rectan)
+
     cdef void subpnt_c(ConstSpiceChar       * method,
                        ConstSpiceChar       * target,
                        SpiceDouble            et,
