@@ -98,11 +98,31 @@ cdef extern from "SpiceUsr.h" nogil:
                        SpiceDouble       * clkout,
                        SpiceBoolean      * found      )
 
+    cdef SpiceDouble clight_c()
 
     cdef void convrt_c(SpiceDouble      x,
                        ConstSpiceChar * inunit,
                        ConstSpiceChar * outunit,
                        SpiceDouble    * y)
+
+    cdef void cyllat_c(SpiceDouble    r,
+                       SpiceDouble    clon,
+                       SpiceDouble    z,
+                       SpiceDouble *  radius,
+                       SpiceDouble *  lon,
+                       SpiceDouble *  lat )
+    
+    cdef void cylrec_c(SpiceDouble r,
+                       SpiceDouble clon,
+                       SpiceDouble z,
+                       SpiceDouble[3] rectan)
+
+    cdef void cylsph_c(SpiceDouble    r,
+                       SpiceDouble    clon,
+                       SpiceDouble    z,
+                       SpiceDouble *  radius,
+                       SpiceDouble *  colat,
+                       SpiceDouble *  slon )
 
     #D
     # deltet
@@ -110,6 +130,8 @@ cdef extern from "SpiceUsr.h" nogil:
     cdef void deltet_c(SpiceDouble      epoch,
                        ConstSpiceChar * eptype,
                        SpiceDouble    * delta )
+
+    cdef SpiceDouble dpr_c()
 
     #E
 
@@ -135,13 +157,6 @@ cdef extern from "SpiceUsr.h" nogil:
                       SpiceInt      callen,
                       SpiceChar   * calstr)
 
-    #L 
-
-    cdef SpiceDouble lspcn_c(ConstSpiceChar   * body,
-                             SpiceDouble        et,
-                             ConstSpiceChar   * abcorr )
-
-
     #F 
     cdef SpiceBoolean failed_c()
     
@@ -166,15 +181,128 @@ cdef extern from "SpiceUsr.h" nogil:
     cdef void furnsh_c(ConstSpiceChar * file)
     
     #G
+
+    cdef void georec_c(SpiceDouble lon,
+                       SpiceDouble lat,
+                       SpiceDouble alt,
+                       SpiceDouble re,
+                       SpiceDouble f,
+                       SpiceDouble[3] rectan)
+
     cdef void getmsg_c(ConstSpiceChar * option,
                        SpiceInt         msglen,
                        SpiceChar      * msg)
+
+    #H 
+
+    cdef SpiceDouble halfpi_c()
+
+    #I 
+
+    #J 
+
+    cdef SpiceDouble j1900_c()
+
+    cdef SpiceDouble j1950_c()
+
+    cdef SpiceDouble j2000_c()
+
+    cdef SpiceDouble j2100_c()
+
+    cdef SpiceDouble jyear_c()
+
+    #K 
+
+    #L   
+
+    cdef void latcyl_c(SpiceDouble    radius,
+                       SpiceDouble    lon,
+                       SpiceDouble    lat,
+                       SpiceDouble *  r,
+                       SpiceDouble *  clon,
+                       SpiceDouble *  z )
+
+    cdef void latrec_c(SpiceDouble    radius,
+                       SpiceDouble    lon,
+                       SpiceDouble    lat,
+                       SpiceDouble[3] rectan )
+
+    cdef void latsph_c(SpiceDouble    radius,
+                       SpiceDouble    lon,
+                       SpiceDouble    lat,
+                       SpiceDouble *  rho,
+                       SpiceDouble *  colat,
+                       SpiceDouble *  slon )
+
+    cdef SpiceDouble lspcn_c(ConstSpiceChar   * body,
+                             SpiceDouble        et,
+                             ConstSpiceChar   * abcorr )
+
+    #M
+
+    #N  
+
+    #O
+
+    #P
+
+    cdef SpiceDouble pi_c()
+
     #Q
-    cdef void qcktrc_c(SpiceInt         tracelen,
-                       SpiceChar      * trace)
+    cdef void qcktrc_c(SpiceInt    tracelen,
+                       SpiceChar * trace)
     
     #R
+    cdef void radrec_c(SpiceDouble range,
+                       SpiceDouble ra,
+                       SpiceDouble dec,
+                       SpiceDouble[3] rectan)
+
+    cdef void recazl_c(ConstSpiceDouble[3] rectan,
+                       SpiceBoolean        azccw,
+                       SpiceBoolean        elplsz,
+                       SpiceDouble       * range,
+                       SpiceDouble       * az,
+                       SpiceDouble       * el         )
+
+    cdef void reccyl_c(ConstSpiceDouble[3]  rectan,
+                       SpiceDouble        * r,
+                       SpiceDouble        * clon,
+                       SpiceDouble        * z         )
+
+    cdef void recgeo_c(ConstSpiceDouble[3]  rectan,
+                       SpiceDouble          re,
+                       SpiceDouble          f,
+                       SpiceDouble        * lon,
+                       SpiceDouble        * lat,
+                       SpiceDouble        * alt        )
+
+    cdef void reclat_c(ConstSpiceDouble[3] rectan,
+                       SpiceDouble       * radius,
+                       SpiceDouble       * lon,
+                       SpiceDouble       * lat      )               
+
+    cdef void recpgr_c(ConstSpiceChar   * body,
+                       SpiceDouble[3]     rectan,
+                       SpiceDouble        re,
+                       SpiceDouble        f,
+                       SpiceDouble      * lon,
+                       SpiceDouble      * lat,
+                       SpiceDouble      * alt       )
+
+    cdef void recrad_c(ConstSpiceDouble[3] rectan,
+                       SpiceDouble       * range,
+                       SpiceDouble       * ra,
+                       SpiceDouble       * dec      )
+
+    cdef void recsph_c(ConstSpiceDouble[3]  rectan,
+                       SpiceDouble        * r,
+                       SpiceDouble        * colat,
+                       SpiceDouble        * slon      )
+
     cdef void reset_c()
+
+    cdef SpiceDouble rpd_c()
 
     #S
     
@@ -204,6 +332,27 @@ cdef extern from "SpiceUsr.h" nogil:
                       SpiceDouble    sclkdp,
                       SpiceDouble  * et     )
 
+    cdef SpiceDouble spd_c()
+
+    cdef void sphcyl_c(SpiceDouble   radius,
+                       SpiceDouble   colat,
+                       SpiceDouble   slon,
+                       SpiceDouble * r,
+                       SpiceDouble * clon,
+                       SpiceDouble * z )
+
+    cdef void sphlat_c(SpiceDouble   r,
+                       SpiceDouble   colat,
+                       SpiceDouble   slon,
+                       SpiceDouble * radius,
+                       SpiceDouble * lon,
+                       SpiceDouble * lat )
+
+    cdef void sphrec_c(SpiceDouble    r,
+                       SpiceDouble    colat,
+                       SpiceDouble    slon,
+                       SpiceDouble[3] rectan )
+
     cdef void spkez_c(SpiceInt         target,
                       SpiceDouble      epoch,
                       ConstSpiceChar * frame,
@@ -212,13 +361,13 @@ cdef extern from "SpiceUsr.h" nogil:
                       SpiceDouble[6]   state,
                       SpiceDouble    * lt)
 
-    cdef void spkezp_c(SpiceInt            targ,
-                       SpiceDouble         et,
-                       ConstSpiceChar    * ref,
-                       ConstSpiceChar    * abcorr,
-                       SpiceInt            obs,
-                       SpiceDouble[3]      ptarg,
-                       SpiceDouble       * lt        )
+    cdef void spkezp_c(SpiceInt         targ,
+                       SpiceDouble      et,
+                       ConstSpiceChar * ref,
+                       ConstSpiceChar * abcorr,
+                       SpiceInt         obs,
+                       SpiceDouble[3]   ptarg,
+                       SpiceDouble    * lt        )
     
     cdef void spkezr_c(ConstSpiceChar * target,
                        SpiceDouble      epoch,
@@ -329,6 +478,11 @@ cdef extern from "SpiceUsr.h" nogil:
                        SpiceDouble[3]        srfvec,
                        SpiceBoolean        * found       )
 
+    cdef void srfrec_c(SpiceInt      body,
+                       SpiceDouble   lon,
+                       SpiceDouble   lat,
+                       SpiceDouble[3]   rectan)
+
     cdef void subpnt_c(ConstSpiceChar       * method,
                        ConstSpiceChar       * target,
                        SpiceDouble            et,
@@ -390,6 +544,11 @@ cdef extern from "SpiceUsr.h" nogil:
                               ConstSpiceChar    * frame2,
                               ConstSpiceChar    * obsrvr,
                               ConstSpiceChar    * abcorr)
+
+    cdef SpiceDouble twopi_c()
+
+
+    cdef SpiceDouble tyear_c()
 
     # U
 
