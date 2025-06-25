@@ -2546,25 +2546,105 @@ cpdef double[:,::1] recgeo_v(
 
 def recgeo(
     rectan: double[::1] | double[:,::1],
-    re: double,
-    f: double,
+    re: float,
+    f: float,
     ) -> tuple[float, float, float] | Geodetic_N:
     """
-    Convert from rectangular to cylindrical coordinates.
+    Convert from rectangular coordinates to geodetic coordinates.
 
-    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/reccyl_c.html
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/recgeo_c.html
 
     :param rectan: Rectangular coordinates of a point.
+    :param re: Equatorial radius of the reference spheroid.
+    :param f: Flattening coefficient.
     :return:
-            Distance from z axis,
-            Angle (radians) from xZ plane,
-            Height above xY plane.
+            Geodetic longitude (radians),
+            Geodetic latitude (radians),
+            Altitude above reference spheroid
     """
     cdef Py_ssize_t ndim = rectan.ndim
     if ndim == 1:
         return recgeo_s(rectan, re, f)
     elif ndim == 2:
         return recgeo_v(rectan, re, f)
+    else:
+        raise RuntimeError(f'Rectan provided wrong shape of {ndim}')
+
+
+@boundscheck(False)
+cpdef tuple[float, float, float] reclat_s(
+    double[::1] rectan
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.reclat`
+
+    Convert from rectangular coordinates to latitudinal coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/reclat_c.html
+
+    :param rectan: Rectangular coordinates of a point.
+    :return: Distance from the origin, Longitude in radians, Latitude in radians
+    """
+    cdef const double* c_rectan = &rectan[0]
+    cdef double radius = 0.0
+    cdef double lon = 0.0
+    cdef double lat = 0.0
+    reclat_c(
+        c_rectan, 
+        &radius,
+        &lon,
+        &lat
+    )
+    return radius, lon, lat
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:,::1] reclat_v(
+    const double[:,::1] rectan
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.reclat`
+
+    Convert from rectangular coordinates to latitudinal coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/reclat_c.html
+
+    :param rectan: Rectangular coordinates of a point.
+    :return: Distance from the origin, Longitude in radians, Latitude in radians
+    """
+    cdef Py_ssize_t i, n = rectan.shape[0]
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_lat = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_lat = p_lat
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            reclat_c(
+                &rectan[i, 0],  
+                &c_lat[i, 0],
+                &c_lat[i, 1],
+                &c_lat[i, 2]
+            )
+    return p_lat
+
+
+def reclat(
+    rectan: double[::1] | double[:,::1]
+    ) -> tuple[float, float, float] | Latitudinal_N:
+    """
+    Convert from rectangular coordinates to latitudinal coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/reclat_c.html
+
+    :param rectan: Rectangular coordinates of a point.
+    :return: Distance from the origin, Longitude in radians, Latitude in radians
+    """
+    cdef Py_ssize_t ndim = rectan.ndim
+    if ndim == 1:
+        return reclat_s(rectan)
+    elif ndim == 2:
+        return reclat_v(rectan)
     else:
         raise RuntimeError(f'Rectan provided wrong shape of {ndim}')
 

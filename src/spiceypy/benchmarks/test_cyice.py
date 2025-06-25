@@ -658,6 +658,26 @@ def test_recgeo_v(function, grouped_benchmark, load_core_kernels):
     npt.assert_array_almost_equal(res, expected_v)
 
 
+@pytest.mark.parametrize('function', [cyice.reclat_s, cyice.reclat, spice.reclat], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["reclat"], indirect=True)
+def test_reclat(function, grouped_benchmark):
+    rectan = np.array([0.0, 1.0, 0.0])
+    res = grouped_benchmark(function, rectan)
+    expected = np.array([1.0, np.radians(90.0), 0.0])
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.reclat_v, cyice.reclat], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["reclat_v"], indirect=True)
+def test_reclat_v(function, grouped_benchmark):
+    rectan = np.array([[0.0, 1.0, 0.0]])
+    rectan_v = np.repeat(rectan, 100, axis=0)
+    res = grouped_benchmark(function, rectan_v)
+    expected = np.array([[1.0, np.radians(90.0), 0.0]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v)
+
+
 @pytest.mark.parametrize('function', [cyice.reset, spice.reset], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["reset"], indirect=True)
 def test_reset(function, grouped_benchmark):
