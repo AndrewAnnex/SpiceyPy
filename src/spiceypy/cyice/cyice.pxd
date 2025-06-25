@@ -244,10 +244,57 @@ cdef extern from "SpiceUsr.h" nogil:
     cdef SpiceDouble pi_c()
 
     #Q
-    cdef void qcktrc_c(SpiceInt         tracelen,
-                       SpiceChar      * trace)
+    cdef void qcktrc_c(SpiceInt    tracelen,
+                       SpiceChar * trace)
     
     #R
+    cdef void radrec_c(SpiceDouble range,
+                       SpiceDouble ra,
+                       SpiceDouble dec,
+                       SpiceDouble[3] rectan)
+
+    cdef void recazl_c(ConstSpiceDouble[3] rectan,
+                       SpiceBoolean        azccw,
+                       SpiceBoolean        elplsz,
+                       SpiceDouble       * range,
+                       SpiceDouble       * az,
+                       SpiceDouble       * el         )
+
+    cdef void reccyl_c(ConstSpiceDouble[3]  rectan,
+                       SpiceDouble        * r,
+                       SpiceDouble        * clon,
+                       SpiceDouble        * z         )
+
+    cdef void recgeo_c(ConstSpiceDouble[3]  rectan,
+                       SpiceDouble          re,
+                       SpiceDouble          f,
+                       SpiceDouble        * lon,
+                       SpiceDouble        * lat,
+                       SpiceDouble        * alt        )
+
+    cdef void reclat_c(ConstSpiceDouble[3] rectan,
+                       SpiceDouble       * radius,
+                       SpiceDouble       * lon,
+                       SpiceDouble       * lat      )               
+
+    cdef void recpgr_c(ConstSpiceChar   * body,
+                       SpiceDouble[3]     rectan,
+                       SpiceDouble        re,
+                       SpiceDouble        f,
+                       SpiceDouble      * lon,
+                       SpiceDouble      * lat,
+                       SpiceDouble      * alt       )
+
+    cdef void recrad_c(ConstSpiceDouble[3] rectan,
+                       SpiceDouble       * range,
+                       SpiceDouble       * ra,
+                       SpiceDouble       * dec      )
+
+    cdef void recsph_c(ConstSpiceDouble[3]  rectan,
+                       SpiceDouble        * r,
+                       SpiceDouble        * colat,
+                       SpiceDouble        * slon      )
+
     cdef void reset_c()
 
     cdef SpiceDouble rpd_c()

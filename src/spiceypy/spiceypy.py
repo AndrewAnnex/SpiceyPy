@@ -11043,7 +11043,7 @@ def qxq(
 
 
 @spice_error_check
-def radrec(inrange: float, re: float, dec: float) -> ndarray:
+def radrec(inrange: float, ra: float, dec: float) -> ndarray:
     """
     Convert from range, right ascension, and declination to rectangular
     coordinates.
@@ -11051,15 +11051,15 @@ def radrec(inrange: float, re: float, dec: float) -> ndarray:
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/radrec_c.html
 
     :param inrange: Distance of a point from the origin.
-    :param re: Right ascension of point in radians.
+    :param ra: Right ascension of point in radians.
     :param dec: Declination of point in radians.
     :return: Rectangular coordinates of the point.
     """
     inrange = ctypes.c_double(inrange)
-    re = ctypes.c_double(re)
+    ra = ctypes.c_double(ra)
     dec = ctypes.c_double(dec)
     rectan = stypes.empty_double_vector(3)
-    libspice.radrec_c(inrange, re, dec, rectan)
+    libspice.radrec_c(inrange, ra, dec, rectan)
     return stypes.c_vector_to_python(rectan)
 
 

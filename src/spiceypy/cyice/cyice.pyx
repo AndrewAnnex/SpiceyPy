@@ -2180,6 +2180,206 @@ cpdef str qcktrc(
         free(c_tracestr)
 
 # R
+@boundscheck(False)
+cpdef double[::1] radrec_s(
+    inrange: float, 
+    ra: float, 
+    dec: float
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.radrec`
+
+    Convert from range, right ascension, and declination to rectangular
+    coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/radrec_c.html
+
+    :param inrange: Distance of a point from the origin.
+    :param ra: Right ascension of point in radians.
+    :param dec: Declination of point in radians.
+    :return: Rectangular coordinates of the point.
+    """
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_rec = np.empty(3, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_rec = p_rec
+    radrec_c(
+        inrange, 
+        ra, 
+        dec, 
+        &c_rec[0],
+    )
+    return p_rec
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:,::1] radrec_v(
+    const double[::1] inrange, 
+    const double[::1] ra, 
+    const double[::1] dec
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.radrec`
+
+    Convert from range, right ascension, and declination to rectangular
+    coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/radrec_c.html
+
+    :param inrange: Distance of a point from the origin.
+    :param ra: Right ascension of point in radians.
+    :param dec: Declination of point in radians.
+    :return: Rectangular coordinates of the point.
+    """
+    cdef const np.double_t[::1] c_range = np.ascontiguousarray(inrange, dtype=np.double)
+    cdef Py_ssize_t i, n = c_range.shape[0]
+    cdef const np.double_t[::1] c_ra = np.ascontiguousarray(ra, dtype=np.double)
+    cdef const np.double_t[::1] c_dec = np.ascontiguousarray(dec, dtype=np.double)
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_rec = p_rec
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            radrec_c(
+                c_range[i], 
+                c_ra[i], 
+                c_dec[i], 
+                &c_rec[i, 0]
+            )
+    return p_rec
+
+
+def radrec(
+    inrange: float | double[::1], 
+    ra: float | double[::1], 
+    dec: float | double[::1]
+    ) -> Vector | Rectangular_N:
+    """
+    Convert from range, right ascension, and declination to rectangular
+    coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/radrec_c.html
+
+    :param inrange: Distance of a point from the origin.
+    :param ra: Right ascension of point in radians.
+    :param dec: Declination of point in radians.
+    :return: Rectangular coordinates of the point.
+    """
+    if PyFloat_Check(inrange):
+        return radrec_s(inrange, ra, dec)
+    else:
+        return radrec_v(inrange, ra, dec)
+
+
+@boundscheck(False)
+cpdef recazl_s(
+    double[::1] rectan,
+    SpiceBoolean azccw,
+    SpiceBoolean elplsz
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.recazl`
+
+    Convert rectangular coordinates of a point to range, azimuth and
+    elevation.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/recazl_c.html
+
+    :param rectan: Rectangular coordinates of a point.
+    :param azccw: Flag indicating how Azimuth is measured.
+    :param elplsz: Flag indicating how Elevation is measured.
+    :return:
+            Distance of the point from the origin,
+            Azimuth in radians,
+            Elevation in radians.
+    """
+    cdef const double* c_rectan = &rectan[0]
+    cdef double orange = 0.0
+    cdef double az = 0.0
+    cdef double el = 0.0
+    recazl_c(
+        c_rectan, 
+        <SpiceBoolean> azccw, 
+        <SpiceBoolean> elplsz, 
+        &orange,
+        &az,
+        &el
+    )
+    return orange, az, el
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:,::1] recazl_v(
+    const double[:,::1] rectan, 
+    const SpiceBoolean azccw, 
+    const SpiceBoolean elplsz
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.recazl`
+
+    Convert rectangular coordinates points to range, azimuth and
+    elevation.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/recazl_c.html
+
+    :param rectan: Rectangular coordinates of points.
+    :param azccw: Flag indicating how Azimuth is measured.
+    :param elplsz: Flag indicating how Elevation is measured.
+    :return:
+            Distance of the point from the origin,
+            Azimuth in radians,
+            Elevation in radians.
+    """
+    cdef Py_ssize_t i, n = rectan.shape[0]
+    cdef SpiceBoolean c_azccw  = <SpiceBoolean> azccw 
+    cdef SpiceBoolean c_elplsz = <SpiceBoolean> elplsz
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_azl = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_azl = p_azl
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            recazl_c(
+                &rectan[i, 0], 
+                c_azccw,
+                c_elplsz, 
+                &c_azl[i, 0],
+                &c_azl[i, 1],
+                &c_azl[i, 2]
+            )
+    return p_azl
+
+
+def recazl(
+    rectan: double[::1] | double[:,::1], 
+    azccw: bool | SpiceBoolean, 
+    elplsz: bool | SpiceBoolean
+    ) -> tuple[float, float, float] | Rectangular_N:
+    """
+    Convert rectangular coordinates points to range, azimuth and
+    elevation.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/recazl_c.html
+
+    :param rectan: Rectangular coordinates of points.
+    :param azccw: Flag indicating how Azimuth is measured.
+    :param elplsz: Flag indicating how Elevation is measured.
+    :return:
+            Distance of the point from the origin,
+            Azimuth in radians,
+            Elevation in radians.
+    """
+    cdef Py_ssize_t ndim = rectan.ndim
+    if ndim == 1:
+        return recazl_s(rectan, azccw, elplsz)
+    elif ndim == 2:
+        return recazl_v(rectan, azccw, elplsz)
+    else:
+        raise RuntimeError(f'Rectan provided wrong shape of {ndim}')
+
+
 cpdef void reset() noexcept:
     """
     Reset the SPICE error status to a value of "no error."
