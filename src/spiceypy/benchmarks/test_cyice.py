@@ -415,6 +415,35 @@ def test_furnsh(function, grouped_benchmark):
 
 # # G
 
+@pytest.mark.parametrize('function', [cyice.georec_s, cyice.georec, spice.georec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["georec"], indirect=True)
+def test_georec(function, grouped_benchmark, load_core_kernels):
+    num_vals, radii = spice.bodvrd("EARTH", "RADII", 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    radius = radii[0]
+    lon = np.radians(118.0)
+    lat = np.radians(32.0)
+    alt = 0.0
+    res = grouped_benchmark(function, lon, lat, alt, radius, flat)
+    expected = np.array([-2541.74621567, 4780.329376, 3360.4312092])
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.georec_v, cyice.georec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["georec_v"], indirect=True)
+def test_georec_v(function, grouped_benchmark, load_core_kernels):
+    num_vals, radii = spice.bodvrd("EARTH", "RADII", 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    radius = radii[0]
+    lon = np.repeat(np.radians(118.0), 100, axis=0) 
+    lat = np.repeat(np.radians(32.0), 100, axis=0) 
+    alt = np.zeros(100, order='C')
+    res = grouped_benchmark(function, lon, lat, alt, radius, flat)
+    expected = np.array([[-2541.74621567, 4780.329376, 3360.4312092]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v)
+
+
 @pytest.mark.parametrize('function', [cyice.getmsg, spice.getmsg], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["getmsg"], indirect=True)
 def test_getmsg(function, grouped_benchmark):

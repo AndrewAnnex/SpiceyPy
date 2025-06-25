@@ -157,32 +157,6 @@ cdef extern from "SpiceUsr.h" nogil:
                       SpiceInt      callen,
                       SpiceChar   * calstr)
 
-    #L 
-
-    cdef void latcyl_c(SpiceDouble    radius,
-                       SpiceDouble    lon,
-                       SpiceDouble    lat,
-                       SpiceDouble *  r,
-                       SpiceDouble *  clon,
-                       SpiceDouble *  z )
-
-    cdef void latrec_c(SpiceDouble    radius,
-                       SpiceDouble    lon,
-                       SpiceDouble    lat,
-                       SpiceDouble[3] rectan )
-
-    cdef void latsph_c(SpiceDouble    radius,
-                       SpiceDouble    lon,
-                       SpiceDouble    lat,
-                       SpiceDouble *  rho,
-                       SpiceDouble *  colat,
-                       SpiceDouble *  slon )
-
-    cdef SpiceDouble lspcn_c(ConstSpiceChar   * body,
-                             SpiceDouble        et,
-                             ConstSpiceChar   * abcorr )
-
-
     #F 
     cdef SpiceBoolean failed_c()
     
@@ -207,6 +181,14 @@ cdef extern from "SpiceUsr.h" nogil:
     cdef void furnsh_c(ConstSpiceChar * file)
     
     #G
+
+    cdef void georec_c(SpiceDouble lon,
+                       SpiceDouble lat,
+                       SpiceDouble alt,
+                       SpiceDouble re,
+                       SpiceDouble f,
+                       SpiceDouble[3] rectan)
+
     cdef void getmsg_c(ConstSpiceChar * option,
                        SpiceInt         msglen,
                        SpiceChar      * msg)
@@ -232,6 +214,29 @@ cdef extern from "SpiceUsr.h" nogil:
     #K 
 
     #L   
+
+    cdef void latcyl_c(SpiceDouble    radius,
+                       SpiceDouble    lon,
+                       SpiceDouble    lat,
+                       SpiceDouble *  r,
+                       SpiceDouble *  clon,
+                       SpiceDouble *  z )
+
+    cdef void latrec_c(SpiceDouble    radius,
+                       SpiceDouble    lon,
+                       SpiceDouble    lat,
+                       SpiceDouble[3] rectan )
+
+    cdef void latsph_c(SpiceDouble    radius,
+                       SpiceDouble    lon,
+                       SpiceDouble    lat,
+                       SpiceDouble *  rho,
+                       SpiceDouble *  colat,
+                       SpiceDouble *  slon )
+
+    cdef SpiceDouble lspcn_c(ConstSpiceChar   * body,
+                             SpiceDouble        et,
+                             ConstSpiceChar   * abcorr )
 
     #M
 

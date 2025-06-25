@@ -1655,6 +1655,110 @@ def furnsh(
 
 
 # G
+@boundscheck(False)
+cpdef double[::1] georec_s(
+    double lon,
+    double lat,
+    double alt,
+    double re,
+    double f,
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.georec`
+
+    Convert geodetic coordinates to rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/georec_c.html
+
+    :param lon: Geodetic longitude of point (radians).
+    :param lat: Geodetic latitude  of point (radians).
+    :param alt: Altitude of point above the reference spheroid.
+    :param re: Equatorial radius of the reference spheroid.
+    :param f: Flattening coefficient.
+    :return: Rectangular coordinates of point.
+    """
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_rec = np.empty(3, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_rec = p_rec
+    georec_c(
+        lon,
+        lat,
+        alt,
+        re,
+        f,
+        &c_rec[0]
+    )
+    return p_rec
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:,::1] georec_v(
+    const double[::1] lon,
+    const double[::1] lat,
+    const double[::1] alt,
+    double re,
+    double f,
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.georec`
+
+    Convert geodetic coordinates to rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/georec_c.html
+
+    :param lon: Geodetic longitude of point (radians).
+    :param lat: Geodetic latitude  of point (radians).
+    :param alt: Altitude of point above the reference spheroid.
+    :param re: Equatorial radius of the reference spheroid.
+    :param f: Flattening coefficient.
+    :return: Rectangular coordinates of point.
+    """
+    cdef const np.double_t[::1] c_lon = np.ascontiguousarray(lon, dtype=np.double)
+    cdef Py_ssize_t i, n = lon.shape[0]
+    cdef const np.double_t[::1] c_lat = np.ascontiguousarray(lat, dtype=np.double)
+    cdef const np.double_t[::1] c_alt = np.ascontiguousarray(alt, dtype=np.double)
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_rec = p_rec
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            georec_c(
+                c_lon[i],
+                c_lat[i],
+                c_alt[i],
+                re,
+                f,  
+                &c_rec[i, 0]
+            )
+    return p_rec
+
+
+def georec(
+    lon: float | double[::1],
+    lat: float | double[::1],
+    alt: float | double[::1],
+    re: float,
+    f: float
+    ) -> Vector | Geodetic_N:
+    """
+    Convert geodetic coordinates to rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/georec_c.html
+
+    :param lon: Geodetic longitude of point (radians).
+    :param lat: Geodetic latitude  of point (radians).
+    :param alt: Altitude of point above the reference spheroid.
+    :param re: Equatorial radius of the reference spheroid.
+    :param f: Flattening coefficient.
+    :return: Rectangular coordinates of point.
+    """
+    if PyFloat_Check(lon):
+        return georec_s(lon, lat, alt, re, f)
+    else:
+        return georec_v(lon, lat, alt, re, f)
+
+
 cpdef str getmsg(
     str option,
     int msglen
