@@ -2380,6 +2380,93 @@ def recazl(
         raise RuntimeError(f'Rectan provided wrong shape of {ndim}')
 
 
+@boundscheck(False)
+cpdef tuple[float, float, float] reccyl_s(
+    double[::1] rectan
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.reccyl`
+
+    Convert from rectangular to cylindrical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/reccyl_c.html
+
+    :param rectan: Rectangular coordinates of a point.
+    :return:
+            Distance from z axis,
+            Angle (radians) from xZ plane,
+            Height above xY plane.
+    """
+    cdef const double* c_rectan = &rectan[0]
+    cdef double r = 0.0
+    cdef double clon = 0.0
+    cdef double z = 0.0
+    reccyl_c(
+        c_rectan, 
+        &r,
+        &clon,
+        &z
+    )
+    return r, clon, z
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:,::1] reccyl_v(
+    const double[:,::1] rectan
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.reccyl`
+
+    Convert from rectangular to cylindrical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/reccyl_c.html
+
+    :param rectan: Rectangular coordinates of a point.
+    :return:
+            Distance from z axis,
+            Angle (radians) from xZ plane,
+            Height above xY plane.
+    """
+    cdef Py_ssize_t i, n = rectan.shape[0]
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_cyl = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_cyl = p_cyl
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            reccyl_c(
+                &rectan[i, 0],  
+                &c_cyl[i, 0],
+                &c_cyl[i, 1],
+                &c_cyl[i, 2]
+            )
+    return p_cyl
+
+
+def reccyl(
+    rectan: double[::1] | double[:,::1]
+    ) -> tuple[float, float, float] | Cylindrical_N:
+    """
+    Convert from rectangular to cylindrical coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/reccyl_c.html
+
+    :param rectan: Rectangular coordinates of a point.
+    :return:
+            Distance from z axis,
+            Angle (radians) from xZ plane,
+            Height above xY plane.
+    """
+    cdef Py_ssize_t ndim = rectan.ndim
+    if ndim == 1:
+        return reccyl_s(rectan)
+    elif ndim == 2:
+        return reccyl_v(rectan)
+    else:
+        raise RuntimeError(f'Rectan provided wrong shape of {ndim}')
+
+
 cpdef void reset() noexcept:
     """
     Reset the SPICE error status to a value of "no error."
