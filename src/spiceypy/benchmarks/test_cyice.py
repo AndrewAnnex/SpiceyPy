@@ -632,6 +632,32 @@ def test_reccyl_v(function, grouped_benchmark):
     npt.assert_array_almost_equal(res, expected_v)
 
 
+@pytest.mark.parametrize('function', [cyice.recgeo_s, cyice.recgeo, spice.recgeo], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["recgeo"], indirect=True)
+def test_recgeo(function, grouped_benchmark, load_core_kernels):
+    num_vals, radii = spice.bodvrd("EARTH", "RADII", 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    radius = radii[0]
+    rectan = np.array([-2541.748162, 4780.333036, 3360.428190])
+    res = grouped_benchmark(function, rectan, radius, flat)
+    expected = np.array([np.radians(118.0), np.radians(32.0), 0.001915518])
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.recgeo_v, cyice.recgeo], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["recgeo_v"], indirect=True)
+def test_recgeo_v(function, grouped_benchmark, load_core_kernels):
+    num_vals, radii = spice.bodvrd("EARTH", "RADII", 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    radius = radii[0]
+    rectan = np.array([[-2541.748162, 4780.333036, 3360.428190]])
+    rectan_v = np.repeat(rectan, 100, axis=0)
+    res = grouped_benchmark(function, rectan_v, radius, flat)
+    expected = np.array([[np.radians(118.0), np.radians(32.0), 0.001915518]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v)
+
+
 @pytest.mark.parametrize('function', [cyice.reset, spice.reset], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["reset"], indirect=True)
 def test_reset(function, grouped_benchmark):
