@@ -678,6 +678,32 @@ def test_reclat_v(function, grouped_benchmark):
     npt.assert_array_almost_equal(res, expected_v)
 
 
+@pytest.mark.parametrize('function', [cyice.recpgr_s, cyice.recpgr, spice.recpgr], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["recpgr"], indirect=True)
+def test_recpgr(function, grouped_benchmark, load_core_kernels):
+    num_vals, radii = spice.bodvrd("MARS", "RADII", 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    radius = radii[0]
+    rectan = np.array([0.0, -2620.678914818178, 2592.408908856967])
+    res = grouped_benchmark(function, "MARS", rectan, radius, flat)
+    expected = np.array([np.radians(90.0), np.radians(45.0), 300.0])
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.recpgr_v, cyice.recpgr], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["recpgr_v"], indirect=True)
+def test_recpgr_v(function, grouped_benchmark, load_core_kernels):
+    num_vals, radii = spice.bodvrd("MARS", "RADII", 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    radius = radii[0]
+    rectan = np.array([[0.0, -2620.678914818178, 2592.408908856967]])
+    rectan_v = np.repeat(rectan, 100, axis=0)
+    res = grouped_benchmark(function, "MARS", rectan_v, radius, flat)
+    expected = np.array([[np.radians(90.0), np.radians(45.0), 300.0]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v)
+
+
 @pytest.mark.parametrize('function', [cyice.reset, spice.reset], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["reset"], indirect=True)
 def test_reset(function, grouped_benchmark):

@@ -92,11 +92,12 @@ Int_N       = Annotated[IntArray, Literal["N"]]
 Double_N    = Annotated[DoubleArray, Literal["N"]]
 Vector      = Annotated[DoubleArray, Literal[3]]
 Vector_N    = Annotated[DoubleArray, Literal["N", 3]]
-Cylindrical_N   = Annotated[DoubleArray, Literal["N", 3]]
-Geodetic_N      = Annotated[DoubleArray, Literal["N", 3]]
-Latitudinal_N   = Annotated[DoubleArray, Literal["N", 3]]
-Rectangular_N   = Annotated[DoubleArray, Literal["N", 3]]
-Spherical_N     = Annotated[DoubleArray, Literal["N", 3]]
+Cylindrical_N    = Annotated[DoubleArray, Literal["N", 3]]
+Geodetic_N       = Annotated[DoubleArray, Literal["N", 3]]
+Latitudinal_N    = Annotated[DoubleArray, Literal["N", 3]]
+Planetographic_N = Annotated[DoubleArray, Literal["N", 3]]
+Rectangular_N    = Annotated[DoubleArray, Literal["N", 3]]
+Spherical_N      = Annotated[DoubleArray, Literal["N", 3]]
 State       = Annotated[DoubleArray, Literal[6]]
 State_N     = Annotated[DoubleArray, Literal["N", 6]]
 Matrix      = Annotated[DoubleArray, Literal[3, 3]]
@@ -2645,6 +2646,117 @@ def reclat(
         return reclat_s(rectan)
     elif ndim == 2:
         return reclat_v(rectan)
+    else:
+        raise RuntimeError(f'Rectan provided wrong shape of {ndim}')
+
+
+@boundscheck(False)
+cpdef tuple[float, float, float] recpgr_s(
+    const char* body,
+    double[::1] rectan,
+    double re,
+    double f,
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.recpgr`
+
+    Convert rectangular coordinates to planetographic coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/recpgr_c.html
+
+    :param body: Body with which coordinate system is associated.
+    :param rectan: Rectangular coordinates of a point.
+    :param re: Equatorial radius of the reference spheroid.
+    :param f: Flattening coefficient.
+    :return:
+            Planetographic longitude (radians),
+            Planetographic latitude (radians),
+            Altitude above reference spheroid
+    """
+    cdef double* c_rectan = &rectan[0]
+    cdef double lon = 0.0
+    cdef double lat = 0.0
+    cdef double alt = 0.0
+    recpgr_c(
+        body,
+        c_rectan, 
+        re,
+        f,
+        &lon,
+        &lat,
+        &alt
+    )
+    return lon, lat, alt
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef double[:,::1] recpgr_v(
+    const char* body,
+    double[:,::1] rectan,
+    double re,
+    double f,
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.recpgr`
+
+    Convert rectangular coordinates to planetographic coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/recpgr_c.html
+
+    :param body: Body with which coordinate system is associated.
+    :param rectan: Rectangular coordinates of a point.
+    :param re: Equatorial radius of the reference spheroid.
+    :param f: Flattening coefficient.
+    :return:
+            Planetographic longitude (radians),
+            Planetographic latitude (radians),
+            Altitude above reference spheroid
+    """
+    cdef Py_ssize_t i, n = rectan.shape[0]
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_pgr = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_pgr = p_pgr
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            recpgr_c(
+                body,
+                &rectan[i, 0],
+                re,
+                f,  
+                &c_pgr[i, 0],
+                &c_pgr[i, 1],
+                &c_pgr[i, 2]
+            )
+    return p_pgr
+
+
+def recpgr(
+    body: str,
+    rectan: double[::1] | double[:,::1],
+    re: float,
+    f: float,
+    ) -> tuple[float, float, float] | Planetographic_N:
+    """
+    Convert rectangular coordinates to planetographic coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/recpgr_c.html
+
+    :param body: Body with which coordinate system is associated.
+    :param rectan: Rectangular coordinates of a/the point(s).
+    :param re: Equatorial radius of the reference spheroid.
+    :param f: Flattening coefficient.
+    :return:
+            Planetographic longitude (radians),
+            Planetographic latitude (radians),
+            Altitude above reference spheroid
+    """
+    cdef Py_ssize_t ndim = rectan.ndim
+    if ndim == 1:
+        return recpgr_s(body, rectan, re, f)
+    elif ndim == 2:
+        return recpgr_v(body, rectan, re, f)
     else:
         raise RuntimeError(f'Rectan provided wrong shape of {ndim}')
 
