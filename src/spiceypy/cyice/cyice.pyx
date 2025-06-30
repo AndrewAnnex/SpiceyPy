@@ -7530,3 +7530,121 @@ def utc2et(utcstr: str | String_N)-> float | Double_N:
         return utc2et_s(utcstr)
     else:
         return utc2et_v(utcstr)
+
+
+#X 
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef np.ndarray[np.double_t, ndim=1, mode='c'] xfmsta_s(
+    const double[::1] istate, 
+    const char* icosys,
+    const char* ocosys,
+    const char* body,
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.xfmsta`
+
+    Transform a state between coordinate systems.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/xfmsta_c.html
+
+    :param istate: Input state.
+    :param icosys: Current (input) coordinate system.
+    :param ocosys: Desired (output) coordinate system.
+    :param body:
+                Name or NAIF ID of body with which coordinates
+                are associated (if applicable).
+    :return: Converted output state
+    """
+    # initialize c variables
+    cdef const np.double_t[::1] c_istate = np.ascontiguousarray(istate, dtype=np.double)
+    if c_istate.shape[0] != 6:
+        raise ValueError(f'in xfmsta_s, state vector had shape {c_istate.shape[0]}, not 6 as expected')
+    # initialize output
+    cdef np.ndarray[np.double_t, ndim=1, mode="c"] p_state = np.empty(6, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_state = p_state
+    xfmsta_c(
+        &c_istate[0],
+        icosys,
+        ocosys,
+        body,
+        &c_state[0]    
+    )
+    check_for_spice_error()
+    return p_state
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] xfmsta_v(
+    const double[:,::1] istate, 
+    const char* icosys,
+    const char* ocosys,
+    const char* body,
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.xfmsta`
+
+    Transform a state between coordinate systems.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/xfmsta_c.html
+
+    :param istate: Input states.
+    :param icosys: Current (input) coordinate system.
+    :param ocosys: Desired (output) coordinate system.
+    :param body:
+                Name or NAIF ID of body with which coordinates
+                are associated (if applicable).
+    :return: Converted output states
+    """
+    # initialize c variables
+    cdef np.double_t[:, ::1] c_istate = np.ascontiguousarray(istate, dtype=np.double)
+    if c_istate.shape[1] != 6:
+        raise ValueError(f'in xfmsta_v, state vector had shape {c_istate.shape[1]}, not 6 as expected')
+    cdef Py_ssize_t i, n = c_istate.shape[0]
+    # initialize output
+    cdef np.ndarray[np.double_t, ndim=2, mode="c"] p_states = np.empty((n,6), dtype=np.double, order='C')
+    cdef np.double_t[:, ::1] c_states = p_states
+    # pointer to element
+    with nogil:
+        for i in range(n):
+            xfmsta_c(
+                &c_istate[i, 0],
+                icosys,
+                ocosys,
+                body,
+                &c_states[i, 0]
+            )
+    check_for_spice_error()
+    return p_states
+
+
+def xfmsta(
+    istate: State | State_N,
+    icosys: str,
+    ocosys: str,
+    body:   str
+    ) -> State | State_N:
+    """
+    Transform a state between coordinate systems.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/xfmsta_c.html
+
+    :param istate: Input state or states.
+    :param icosys: Current (input) coordinate system.
+    :param ocosys: Desired (output) coordinate system.
+    :param body:
+                Name or NAIF ID of body with which coordinates
+                are associated (if applicable).
+    :return: Converted output state
+    """
+    cdef Py_ssize_t ndim = istate.ndim
+    if ndim == 1:
+        return xfmsta_s(istate, icosys, ocosys, body)
+    elif ndim == 2:
+        return xfmsta_v(istate, icosys, ocosys, body)
+    else:
+        raise RuntimeError(f'xfmsta provided wrong shape for state: {ndim}')
+

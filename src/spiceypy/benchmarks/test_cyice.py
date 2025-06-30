@@ -1851,3 +1851,44 @@ def test_utc2et_v(function, grouped_benchmark, load_core_kernels):
     grouped_benchmark(function, dates)
     res = function(dates)
     assert isinstance(res, np.ndarray)
+
+
+# X 
+
+@pytest.mark.parametrize('function', [cyice.xfmsta_s, cyice.xfmsta, spice.xfmsta], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["xfmsta"], indirect=True)
+def test_xfmsta(function, grouped_benchmark, load_core_kernels):
+    et = spice.str2et("July 4, 2003 11:00 AM PST")
+    state, lt = spice.spkezr("Mars", et, "J2000", "LT+S", "Earth")
+    grouped_benchmark(function, state, "rectangular", "latitudinal", " ")
+    res = function(state, "rectangular", "latitudinal", " ")
+    expected_lat_state = np.array([
+        8.08509924324866235256e07,
+        -3.52158255331780634112e-01,
+        -2.33928262716770696272e-01,
+        -9.43348972618204761886e00,
+        5.98157681117165682860e-08,
+        1.03575559016377728336e-08,
+    ])
+    npt.assert_array_almost_equal(res, expected_lat_state)
+
+
+@pytest.mark.parametrize('function', [cyice.xfmsta_v, cyice.xfmsta], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["xfmsta_v"], indirect=True)
+def test_xfmsta_v(function, grouped_benchmark, load_core_kernels):
+    et = spice.str2et("July 4, 2003 11:00 AM PST")
+    state, lt = spice.spkezr("Mars", et, "J2000", "LT+S", "Earth")
+    state_v = np.repeat([state], 100, axis=0)
+    grouped_benchmark(function, state_v, "rectangular", "latitudinal", " ")
+    res = function(state_v, "rectangular", "latitudinal", " ")
+    expected_lat_state = np.array([[
+        8.08509924324866235256e07,
+        -3.52158255331780634112e-01,
+        -2.33928262716770696272e-01,
+        -9.43348972618204761886e00,
+        5.98157681117165682860e-08,
+        1.03575559016377728336e-08,
+    ]])
+    expected_lat_state_v = np.repeat(expected_lat_state, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_lat_state_v)
+

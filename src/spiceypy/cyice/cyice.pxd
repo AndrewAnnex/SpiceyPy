@@ -580,3 +580,10 @@ cdef extern from "SpiceUsr.h" nogil:
     cdef void utc2et_c(ConstSpiceChar * utcstr, SpiceDouble * et)
 
 
+    # X 
+
+    cdef void xfmsta_c(ConstSpiceDouble[6]  istate,
+                       ConstSpiceChar     * icosys,
+                       ConstSpiceChar     * ocosys,
+                       ConstSpiceChar     * body,
+                       SpiceDouble[6]       ostate)
