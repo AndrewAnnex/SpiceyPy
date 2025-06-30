@@ -652,7 +652,7 @@ cpdef tuple[float, float, float] cyllat_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] cyllat_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] cyllat_v(
     const double[::1] r, 
     const double[::1] clon, 
     const double[::1] z
@@ -711,7 +711,7 @@ def cyllat(
         return cyllat_v(r, clon, z)
 
 
-cpdef double[::1] cylrec_s(
+cpdef np.ndarray[np.double_t, ndim=1, mode='c'] cylrec_s(
     r: float, 
     lon: float, 
     z: float
@@ -742,7 +742,7 @@ cpdef double[::1] cylrec_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] cylrec_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] cylrec_v(
     const double[::1] r, 
     const double[::1] lon, 
     const double[::1] z
@@ -835,7 +835,7 @@ cpdef tuple[float, float, float] cylsph_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] cylsph_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] cylsph_v(
     const double[::1] r, 
     const double[::1] clon, 
     const double[::1] z
@@ -1656,7 +1656,7 @@ def furnsh(
 
 # G
 @boundscheck(False)
-cpdef double[::1] georec_s(
+cpdef np.ndarray[np.double_t, ndim=1, mode='c'] georec_s(
     double lon,
     double lat,
     double alt,
@@ -1692,7 +1692,7 @@ cpdef double[::1] georec_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] georec_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] georec_v(
     const double[::1] lon,
     const double[::1] lat,
     const double[::1] alt,
@@ -1906,7 +1906,7 @@ cpdef tuple[float, float, float] latcyl_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] latcyl_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latcyl_v(
     const double[::1] radius, 
     const double[::1] lon, 
     const double[::1] lat
@@ -1965,7 +1965,7 @@ def latcyl(
         return latcyl_v(radius, lon, lat)
 
 
-cpdef double[::1] latrec_s(
+cpdef np.ndarray[np.double_t, ndim=1, mode='c'] latrec_s(
     radius: float, 
     lon: float, 
     lat: float
@@ -1996,7 +1996,7 @@ cpdef double[::1] latrec_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] latrec_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latrec_v(
     const double[::1] radius, 
     const double[::1] lon, 
     const double[::1] lat
@@ -2086,7 +2086,7 @@ cpdef tuple[float, float, float] latsph_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] latsph_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latsph_v(
     const double[::1] radius, 
     const double[::1] lon, 
     const double[::1] lat
@@ -2240,7 +2240,326 @@ def lspcn(
 
 # O
 
+@boundscheck(False)
+@wraparound(False)
+cpdef np.ndarray[np.double_t, ndim=1, mode='c'] oscelt_s(
+    const double[::1] state,
+    double et,
+    double mu,
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.oscelt`
+
+    Determine the set of osculating conic orbital elements that
+    corresponds to the state (position, velocity) of a body at
+    some epoch.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/oscelt_c.html
+
+    :param state: State of body at epoch of elements.
+    :param et: Epoch of elements in ephemeris seconds past J2000.
+    :param mu: Gravitational parameter (GM) of primary body in km**3/sec**2 units.
+    :return: Equivalent conic elements in  km, rad, rad/sec units.
+    """
+    cdef const np.double_t[::1] c_state = np.ascontiguousarray(state, dtype=np.double)
+    if c_state.shape[0] != 6:
+        raise ValueError(f'in oscelt_s, state vector had shape {c_state.shape[0]}, not 6 as expected')
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_elts = np.empty(8, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_elts = p_elts
+    oscelt_c(
+        &c_state[0],
+        et,
+        mu,
+        &c_elts[0]
+    )
+    check_for_spice_error()
+    return p_elts
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] oscelt_v(
+    const double[:,::1] state,
+    double[::1] et,
+    double mu,
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.oscelt`
+
+    Determine the set of osculating conic orbital elements that
+    corresponds to the state (position, velocity) of a body at
+    some epoch.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/oscelt_c.html
+
+    :param state: State of body at epoch of elements.
+    :param et: Epoch of elements in ephemeris seconds past J2000.
+    :param mu: Gravitational parameter (GM) of primary body in km**3/sec**2 units.
+    :return: Equivalent conic elements in  km, rad, rad/sec units.
+    """
+    cdef const np.double_t[:,::1] c_state = np.ascontiguousarray(state, dtype=np.double)
+    cdef const np.double_t[::1] c_et = np.ascontiguousarray(et, dtype=np.double)
+    if c_state.shape[1] != 6:
+        raise ValueError(f'in oscelt_v, state vector had shape {c_state.shape}, not Nx6 as expected')
+    cdef Py_ssize_t i, n = c_state.shape[0]
+    if c_et.shape[0] != n:
+        raise ValueError(f'in oscelt_v, state and et vectors did not have the same length, state: {c_state.shape[0]} et: {c_et.shape[1]}')
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_elts = np.empty((n,8), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_elts = p_elts
+    with nogil:
+        for i in range(n):
+            oscelt_c(
+            &c_state[i, 0],
+            et[i],
+            mu,
+            &c_elts[i, 0]
+        )
+    check_for_spice_error()
+    return p_elts
+
+
+cpdef oscelt(
+    state: double[::1] | double[:,::1],
+    et: float | double[::1],
+    mu: float
+    ):
+    """
+    Determine the set of osculating conic orbital elements that
+    corresponds to the state (position, velocity) of a body at
+    some epoch.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/oscelt_c.html
+
+    :param state: State of body at epoch of elements.
+    :param et: Epoch of elements in ephemeris seconds past J2000.
+    :param mu: Gravitational parameter (GM) of primary body in km**3/sec**2 units.
+    :return: Equivalent conic elements in  km, rad, rad/sec units.
+    """
+    cdef Py_ssize_t ndim = state.ndim
+    if ndim == 1:
+        return oscelt_s(state, et, mu)
+    elif ndim == 2:
+        return oscelt_v(state, et, mu)
+    else:
+        raise RuntimeError(f'Oscelt provided wrong shape for state: {ndim}')
+
 # P
+
+@boundscheck(False)
+cpdef np.ndarray[np.double_t, ndim=1, mode='c'] pgrrec_s(
+    const char* body,
+    double lon,
+    double lat,
+    double alt,
+    double re,
+    double f,
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.pgrrec`
+
+    Convert planetographic coordinates to rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/pgrrec_c.html
+
+    :param body: Body with which coordinate system is associated.
+    :param lon: Planetographic longitude of a point (radians).
+    :param lat: Planetographic latitude of a point (radians).
+    :param alt: Altitude of a point above reference spheroid.
+    :param re: Equatorial radius of the reference spheroid.
+    :param f: Flattening coefficient.
+    :return: Rectangular coordinates of the point.
+    """
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_rec = np.empty(3, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_rec = p_rec
+    pgrrec_c(
+        body,
+        lon,
+        lat,
+        alt,
+        re,
+        f,
+        &c_rec[0]
+    )
+    return p_rec
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] pgrrec_v(
+    const char* body,
+    const double[::1] lon,
+    const double[::1] lat,
+    const double[::1] alt,
+    double re,
+    double f,
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.pgrrec`
+
+    Convert planetographic coordinates to rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/pgrrec_c.html
+
+    :param body: Body with which coordinate system is associated.
+    :param lon: Planetographic longitude of each point (radians).
+    :param lat: Planetographic latitude of each point (radians).
+    :param alt: Altitude of each point above reference spheroid.
+    :param re: Equatorial radius of the reference spheroid.
+    :param f: Flattening coefficient.
+    :return: Rectangular coordinates of the point.
+    """
+    cdef const np.double_t[::1] c_lon = np.ascontiguousarray(lon, dtype=np.double)
+    cdef Py_ssize_t i, n = lon.shape[0]
+    cdef const np.double_t[::1] c_lat = np.ascontiguousarray(lat, dtype=np.double)
+    cdef const np.double_t[::1] c_alt = np.ascontiguousarray(alt, dtype=np.double)
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_rec = p_rec
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            pgrrec_c(
+                body,
+                c_lon[i],
+                c_lat[i],
+                c_alt[i],
+                re,
+                f,  
+                &c_rec[i, 0]
+            )
+    return p_rec
+
+
+def pgrrec(
+    body: str,
+    lon: float | double[::1],
+    lat: float | double[::1],
+    alt: float | double[::1],
+    re: float,
+    f: float
+    ) -> Vector | Geodetic_N:
+    """
+    Convert planetographic coordinates to rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/pgrrec_c.html
+
+    :param body: Body with which coordinate system is associated.
+    :param lon: Planetographic longitude of a point (radians).
+    :param lat: Planetographic latitude of a point (radians).
+    :param alt: Altitude of a point above reference spheroid.
+    :param re: Equatorial radius of the reference spheroid.
+    :param f: Flattening coefficient.
+    :return: Rectangular coordinates of the point.
+    """
+    cdef const char* c_body = body
+    if PyFloat_Check(lon):
+        return pgrrec_s(c_body, lon, lat, alt, re, f)
+    else:
+        return pgrrec_v(c_body, lon, lat, alt, re, f)
+
+
+cpdef double phaseq_s(
+    double et,
+    const char* target,
+    const char* illmn,
+    const char* obsrvr,
+    const char* abcorr
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.phaseq`
+
+    Compute the apparent phase angle for a target, observer,
+    illuminator set of ephemeris objects.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/phaseq_c.html
+
+    :param et: Ephemeris seconds past J2000 TDB.
+    :param target: Target body name.
+    :param illmn: Illuminating body name.
+    :param obsrvr: Observer body.
+    :param abcorr: Aberration correction flag.
+    :return: Value of phase angle in radians.
+    """
+    cdef double c_phase = 0.0
+    c_phase = phaseq_c(
+        et,
+        target,
+        illmn,
+        obsrvr,
+        abcorr
+    ) 
+    check_for_spice_error()
+    return c_phase
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef np.ndarray[np.double_t, ndim=1, mode='c'] phaseq_v(
+    double[::1] et,
+    const char* target,
+    const char* illmn,
+    const char* obsrvr,
+    const char* abcorr
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.phaseq`
+
+    Compute the apparent phase angle for a target, observer,
+    illuminator set of ephemeris objects.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/phaseq_c.html
+
+    :param et: Ephemeris seconds past J2000 TDB.
+    :param target: Target body name.
+    :param illmn: Illuminating body name.
+    :param obsrvr: Observer body.
+    :param abcorr: Aberration correction flag.
+    :return: Value of phase angle in radians.
+    """
+    cdef const np.double_t[::1] c_et = np.ascontiguousarray(et, dtype=np.double)
+    cdef Py_ssize_t i, n = c_et.shape[0]
+    # initialize output arrays
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_phase = np.empty(n, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_phase = p_phase
+    # perform the call
+    with nogil:
+        for i in range(n):
+            c_phase[i] = phaseq_c(
+                c_et[i],
+                target,
+                illmn,
+                obsrvr,
+                abcorr
+            ) 
+    check_for_spice_error()
+    return p_phase
+
+
+def phaseq(
+    et: float | double[::1] ,
+    target : str,
+    illmn  : str,
+    obsrvr : str,
+    abcorr : str
+    ) -> float | Double_N:
+    """
+    Compute the apparent phase angle for a target, observer,
+    illuminator set of ephemeris objects.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/phaseq_c.html
+
+    :param et: Ephemeris seconds past J2000 TDB.
+    :param target: Target body name.
+    :param illmn: Illuminating body name.
+    :param obsrvr: Observer body.
+    :param abcorr: Aberration correction flag.
+    :return: Value of phase angle in radians.
+    """
+    if PyFloat_Check(et):
+        return phaseq_s(et, target, illmn, obsrvr, abcorr)
+    else:
+        return phaseq_v(et, target, illmn, obsrvr, abcorr)
+
 
 def pi() -> float:
     """
@@ -2287,7 +2606,7 @@ cpdef str qcktrc(
 
 # R
 @boundscheck(False)
-cpdef double[::1] radrec_s(
+cpdef np.ndarray[np.double_t, ndim=1, mode='c'] radrec_s(
     inrange: float, 
     ra: float, 
     dec: float
@@ -2319,7 +2638,7 @@ cpdef double[::1] radrec_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] radrec_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] radrec_v(
     const double[::1] inrange, 
     const double[::1] ra, 
     const double[::1] dec
@@ -2379,7 +2698,7 @@ def radrec(
 
 
 @boundscheck(False)
-cpdef recazl_s(
+cpdef tuple[float, float, float] recazl_s(
     double[::1] rectan,
     SpiceBoolean azccw,
     SpiceBoolean elplsz
@@ -2417,7 +2736,7 @@ cpdef recazl_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] recazl_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recazl_v(
     const double[:,::1] rectan, 
     const SpiceBoolean azccw, 
     const SpiceBoolean elplsz
@@ -2518,7 +2837,7 @@ cpdef tuple[float, float, float] reccyl_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] reccyl_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] reccyl_v(
     const double[:,::1] rectan
     ):
     """
@@ -2611,7 +2930,7 @@ cpdef tuple[float, float, float] recgeo_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] recgeo_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recgeo_v(
     const double[:,::1] rectan,
     double re,
     double f,
@@ -2705,7 +3024,7 @@ cpdef tuple[float, float, float] reclat_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] reclat_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] reclat_v(
     const double[:,::1] rectan
     ):
     """
@@ -2795,7 +3114,7 @@ cpdef tuple[float, float, float] recpgr_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] recpgr_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recpgr_v(
     const char* body,
     double[:,::1] rectan,
     double re,
@@ -2897,7 +3216,7 @@ cpdef tuple[float, float, float] recrad_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] recrad_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recrad_v(
     const double[:,::1] rectan
     ):
     """
@@ -2984,7 +3303,7 @@ cpdef tuple[float, float, float] recsph_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] recsph_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recsph_v(
     const double[:,::1] rectan
     ):
     """
@@ -3635,7 +3954,7 @@ cpdef tuple[float, float, float] sphcyl_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] sphcyl_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphcyl_v(
     const double[::1] radius, 
     const double[::1] colat, 
     const double[::1] slon
@@ -3736,7 +4055,7 @@ cpdef tuple[float, float, float] sphlat_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] sphlat_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphlat_v(
     const double[::1] r, 
     const double[::1] colat, 
     const double[::1] slon
@@ -3801,7 +4120,7 @@ def sphlat(
         return sphlat_v(r, colat, slon)
 
 
-cpdef double[::1] sphrec_s(
+cpdef np.ndarray[np.double_t, ndim=1, mode='c'] sphrec_s(
     r: float, 
     colat: float, 
     slon: float
@@ -3832,7 +4151,7 @@ cpdef double[::1] sphrec_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] sphrec_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphrec_v(
     const double[::1] r, 
     const double[::1] colat, 
     const double[::1] slon
@@ -6020,7 +6339,7 @@ def sincpt(
         return sincpt_v(method, target, et, fixref, abcorr, obsrvr, dref, dvec)
 
 
-cpdef double[::1] srfrec_s(
+cpdef np.ndarray[np.double_t, ndim=1, mode='c'] srfrec_s(
     body: int, 
     lon: float, 
     lat: float
@@ -6052,7 +6371,7 @@ cpdef double[::1] srfrec_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef double[:,::1] srfrec_v(
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] srfrec_v(
     int body, 
     const double[::1] lon, 
     const double[::1] lat
