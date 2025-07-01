@@ -2240,6 +2240,145 @@ def lspcn(
 
 # O
 
+cpdef int occult_s(
+    const char* target1,
+    const char* shape1,
+    const char* frame1,
+    const char* target2,
+    const char* shape2,
+    const char* frame2,
+    const char* abcorr,
+    const char* observer,
+    double et,
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.occult`
+
+    Determines the occultation condition (not occulted, partially,
+    etc.) of one target relative to another target as seen by
+    an observer at a given time.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/occult_c.html
+
+    :param target1: Name or ID of first target.
+    :param shape1: Type of shape model used for first target.
+    :param frame1: Body-fixed, body-centered frame for first body.
+    :param target2: Name or ID of second target.
+    :param shape2: Type of shape model used for second target.
+    :param frame2: Body-fixed, body-centered frame for second body.
+    :param abcorr: Aberration correction flag.
+    :param observer: Name or ID of the observer.
+    :param et: Time of the observation (seconds past J2000).
+    :return: Occultation identification code.
+    """
+    cdef int c_ocltid = 0
+    occult_c(
+        target1,
+        shape1,
+        frame1,
+        target2,
+        shape2,
+        frame2,
+        abcorr,
+        observer,
+        et,
+        &c_ocltid
+    )
+    check_for_spice_error()
+    return c_ocltid
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef np.ndarray[np.int32_t, ndim=1, mode='c'] occult_v(
+    const char* target1,
+    const char* shape1,
+    const char* frame1,
+    const char* target2,
+    const char* shape2,
+    const char* frame2,
+    const char* abcorr,
+    const char* observer,
+    double[::1] ets,
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.occult`
+
+    Determines the occultation condition (not occulted, partially,
+    etc.) of one target relative to another target as seen by
+    an observer at a given time.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/occult_c.html
+
+    :param target1: Name or ID of first target.
+    :param shape1: Type of shape model used for first target.
+    :param frame1: Body-fixed, body-centered frame for first body.
+    :param target2: Name or ID of second target.
+    :param shape2: Type of shape model used for second target.
+    :param frame2: Body-fixed, body-centered frame for second body.
+    :param abcorr: Aberration correction flag.
+    :param observer: Name or ID of the observer.
+    :param ets: Time of the observation (seconds past J2000).
+    :return: Occultation identification code.
+    """
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef Py_ssize_t i, n = c_ets.shape[0]
+    # allocate output array
+    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_ocltids = np.empty(n, dtype=np.int32, order='C')
+    cdef SpiceInt[::1] c_ocltids = p_ocltids
+    with nogil:
+        for i in range(n):
+            occult_c(
+                target1,
+                shape1,
+                frame1,
+                target2,
+                shape2,
+                frame2,
+                abcorr,
+                observer,
+                c_ets[i],
+                &c_ocltids[i]
+            )
+    check_for_spice_error()
+    return p_ocltids
+
+
+def occult(
+    target1: str,
+    shape1: str,
+    frame1: str,
+    target2: str,
+    shape2: str,
+    frame2: str,
+    abcorr: str,
+    observer: str,
+    et: float | float[::1]
+    ) -> int | Int_N:
+    """
+    Determines the occultation condition (not occulted, partially,
+    etc.) of one target relative to another target as seen by
+    an observer at a given time.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/occult_c.html
+
+    :param target1: Name or ID of first target.
+    :param shape1: Type of shape model used for first target.
+    :param frame1: Body-fixed, body-centered frame for first body.
+    :param target2: Name or ID of second target.
+    :param shape2: Type of shape model used for second target.
+    :param frame2: Body-fixed, body-centered frame for second body.
+    :param abcorr: Aberration correction flag.
+    :param observer: Name or ID of the observer.
+    :param et: Time(s) of the observation (seconds past J2000).
+    :return: Occultation identification code.
+    """
+    if PyFloat_Check(et):
+        return occult_s(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer, et)
+    else:
+        return occult_v(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer, et)
+
+
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=1, mode='c'] oscelt_s(

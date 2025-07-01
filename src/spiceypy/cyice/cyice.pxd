@@ -244,6 +244,17 @@ cdef extern from "SpiceUsr.h" nogil:
 
     #O
 
+    cdef void occult_c(ConstSpiceChar * targ1,
+                       ConstSpiceChar * shape1,
+                       ConstSpiceChar * frame1,
+                       ConstSpiceChar * targ2,
+                       ConstSpiceChar * shape2,
+                       ConstSpiceChar * frame2,
+                       ConstSpiceChar * abcorr,
+                       ConstSpiceChar * obsrvr,
+                       SpiceDouble      et,
+                       SpiceInt       * ocltid)
+
     cdef void oscelt_c(ConstSpiceDouble[6] state,
                        SpiceDouble         et,
                        SpiceDouble         mu,

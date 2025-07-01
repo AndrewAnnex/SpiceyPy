@@ -580,11 +580,78 @@ def test_lspcn_v(function, grouped_benchmark, load_core_kernels):
     res = function("EARTH", ets, "NONE")
     assert isinstance(res, np.ndarray)
 
-# # M
+# M
 
-# # N
+# N
 
-# # O
+# O
+
+@pytest.mark.parametrize('function', [cyice.occult_s, cyice.occult, spice.occult], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["occult"], indirect=True)
+def test_occult(function, grouped_benchmark, load_core_kernels, load_earth_kernels):
+    # Mercury is in front of the Sun as seen by observer (DSS-13) ()
+    et = spice.str2et("2006-11-08T22:00")
+    grouped_benchmark(
+        function,
+        "MERCURY",
+        "point",
+        " ",
+        "SUN",
+        "ellipsoid",
+        "IAU_SUN",
+        "CN",
+        "DSS-13",
+        et
+    )
+    res = function(
+        "MERCURY",
+        "point",
+        " ",
+        "SUN",
+        "ellipsoid",
+        "IAU_SUN",
+        "CN",
+        "DSS-13",
+        et
+    )
+    assert res == 2
+    assert isinstance(res, int)
+
+
+@pytest.mark.parametrize('function', [cyice.occult_v, cyice.occult], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["occult_v"], indirect=True)
+def test_occult_v(function, grouped_benchmark, load_core_kernels, load_earth_kernels):
+    # Mercury is in front of the Sun as seen by observer (DSS-13) ()
+    et = spice.str2et("2006-11-08T22:00")
+    ets = np.repeat(et, 100)
+    grouped_benchmark(
+        function,
+        "MERCURY",
+        "point",
+        " ",
+        "SUN",
+        "ellipsoid",
+        "IAU_SUN",
+        "CN",
+        "DSS-13",
+        ets
+    )
+    res = function(
+        "MERCURY",
+        "point",
+        " ",
+        "SUN",
+        "ellipsoid",
+        "IAU_SUN",
+        "CN",
+        "DSS-13",
+        ets
+    )
+    expected = np.repeat(2, 100)
+    npt.assert_array_equal(res, expected)
+    assert isinstance(res, np.ndarray)
+
+
 
 @pytest.mark.parametrize('function', [cyice.oscelt_s, cyice.oscelt, spice.oscelt], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["oscelt"], indirect=True)
