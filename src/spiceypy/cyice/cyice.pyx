@@ -40,7 +40,7 @@ from libc.stdlib cimport malloc, free
 from libc.string cimport strlen, memcpy
 from cython      cimport boundscheck, wraparound
 from cpython.float      cimport PyFloat_Check
-from cpython.int        cimport PyInt_Check
+from cpython.long       cimport PyLong_Check
 from cpython.unicode    cimport PyUnicode_DecodeUTF8, PyUnicode_Check, PyUnicode_AsASCIIString
 from cpython.bool       cimport PyBool_Check, PyBool_FromLong
 from cpython.tuple      cimport PyTuple_GET_SIZE
@@ -242,6 +242,115 @@ def cyice_found_exception_thrower(f):
 
 
 # A
+
+@boundscheck(False)
+cpdef np.ndarray[np.double_t, ndim=1, mode='c'] azlrec_s(
+    double inrange, 
+    double az, 
+    double el,
+    SpiceBoolean azccw,
+    SpiceBoolean elplsz
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.azlrec`
+
+    Convert from range, azimuth and elevation of a point to
+    rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/azlrec_c.html
+
+    :param inrange: Distance of the point from the origin.
+    :param az: Azimuth in radians.
+    :param el: Elevation in radians.
+    :param azccw: Flag indicating how azimuth is measured.
+    :param elplsz: Flag indicating how elevation is measured.
+    :return: Rectangular coordinates of a point.
+    """
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_rec = np.empty(3, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_rec = p_rec
+    azlrec_c(
+        inrange, 
+        az, 
+        el, 
+        <SpiceBoolean> azccw, 
+        <SpiceBoolean> elplsz, 
+        &c_rec[0],
+    )
+    return p_rec
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] azlrec_v(
+    double[::1] inrange, 
+    double[::1] az, 
+    double[::1] el,
+    SpiceBoolean azccw,
+    SpiceBoolean elplsz
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.azlrec`
+
+    Convert from range, azimuth and elevation of a point to
+    rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/azlrec_c.html
+
+    :param range: Distance of the point from the origin.
+    :param az: Azimuth in radians.
+    :param el: Elevation in radians.
+    :param azccw: Flag indicating how azimuth is measured.
+    :param elplsz: Flag indicating how elevation is measured.
+    :return: Rectangular coordinates of a point.
+    """
+    cdef SpiceBoolean c_azccw  = <SpiceBoolean> azccw 
+    cdef SpiceBoolean c_elplsz = <SpiceBoolean> elplsz
+    cdef const np.double_t[::1] c_inrange = np.ascontiguousarray(inrange, dtype=np.double)
+    cdef Py_ssize_t i, n = inrange.shape[0]
+    cdef const np.double_t[::1] c_az = np.ascontiguousarray(az, dtype=np.double)
+    cdef const np.double_t[::1] c_el = np.ascontiguousarray(el, dtype=np.double)
+    # allocate output array
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_rec = p_rec
+    # TODO fix strides lookups below
+    with nogil:
+        for i in range(n):
+            azlrec_c(
+                c_inrange[i], 
+                c_az[i],
+                c_el[i],
+                c_azccw,
+                c_elplsz, 
+                &c_rec[i, 0]
+            )
+    return p_rec
+
+
+def azlrec(
+    inrange: float | double[:,::1],
+    az: float | double[:,::1], 
+    el: float | double[:,::1],  
+    azccw: bool | SpiceBoolean, 
+    elplsz: bool | SpiceBoolean
+    ) -> Vector | Rectangular_N:
+    """
+    Convert from range, azimuth and elevation of a point to
+    rectangular coordinates.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/azlrec_c.html
+
+    :param inrange: Distance of the point from the origin.
+    :param az: Azimuth in radians.
+    :param el: Elevation in radians.
+    :param azccw: Flag indicating how azimuth is measured.
+    :param elplsz: Flag indicating how elevation is measured.
+    :return: Rectangular coordinates of a point.
+    """
+    if PyFloat_Check(inrange):
+        return azlrec_s(inrange, az, el, azccw, elplsz)
+    else:
+        return azlrec_v(inrange, az, el, azccw, elplsz)
 
 
 # B
@@ -1845,7 +1954,7 @@ cpdef tuple[np.ndarray, np.ndarray] getelm_v(
     cdef np.double_t[::1] c_epochs = p_epochs
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_elems = np.empty((n,10), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_elems = p_elems
-    # ge the char memory view
+    # get the char memory view
     cdef char[:,::1] c_lines 
     cdef char* c_lines_ptr 
     # now call getelm in loop
@@ -1881,7 +1990,7 @@ def getelm(
             The epoch of the elements in seconds past J2000,
             The elements converted to SPICE units (see naif docs for units).
     """
-    if PyInt_Check(frstyr):
+    if PyLong_Check(frstyr):
         return getelm_s(frstyr, lines)
     else:
         return getelm_v(frstyr, lines)

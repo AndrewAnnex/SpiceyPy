@@ -82,6 +82,27 @@ def setup_module(module):
 
 #A
 
+@pytest.mark.parametrize('function', [cyice.azlrec_s, cyice.azlrec, spice.azlrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["azlrec"], indirect=True)
+def test_azlrec(function, grouped_benchmark):
+    res = grouped_benchmark(function, 1.0, np.radians(90.0), 0.0, True, True)
+    expected = np.array([0.0, 1.0, 0.0])
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.azlrec_v, cyice.azlrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["azlrec_v"], indirect=True)
+def test_azlrec_v(function, grouped_benchmark):
+    inrange = np.ones(100, dtype=float)
+    az = np.repeat(np.radians(90), 100)
+    el = np.zeros(100, dtype=float)
+    res = grouped_benchmark(function, inrange, az, el, True, True)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([[0.0, 1.0, 0.0]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v)
+
+
 #B
 
 @pytest.mark.parametrize('function', [cyice.b1900, spice.b1900], ids=get_module_name)

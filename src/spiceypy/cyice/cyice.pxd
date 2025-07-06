@@ -73,7 +73,16 @@ cdef extern from "SpiceUsr.h" nogil:
     # ctypedef _SpiceCell SpiceCell
     # ctypedef const SpiceCell ConstSpiceCell
 
-    # start of function defs
+    # A
+
+    cdef void azlrec_c(SpiceDouble    range,
+                       SpiceDouble    az,
+                       SpiceDouble    el,
+                       SpiceBoolean   azccw,
+                       SpiceBoolean   elplsz,
+                       SpiceDouble[3] rectan)
+
+    # B
     cdef SpiceDouble b1900_c()
 
     cdef SpiceDouble b1950_c()
