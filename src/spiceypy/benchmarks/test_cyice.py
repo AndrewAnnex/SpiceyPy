@@ -1,6 +1,7 @@
 import os
 import time
 import timeit
+import itertools
 
 import pytest
 pytestmark = pytest.mark.optional
@@ -443,11 +444,38 @@ def test_georec_v(function, grouped_benchmark, load_core_kernels):
     lon = np.repeat(np.radians(118.0), 100, axis=0) 
     lat = np.repeat(np.radians(32.0), 100, axis=0) 
     alt = np.zeros(100, order='C')
-    res = grouped_benchmark(function, lon, lat, alt, radius, flat)
+    grouped_benchmark(function, lon, lat, alt, radius, flat)
+    res = function(lon, lat, alt, radius, flat)
     assert isinstance(res, np.ndarray)
     expected = np.array([[-2541.74621567, 4780.329376, 3360.4312092]])
     expected_v = np.repeat(expected, 100, axis=0)
     npt.assert_array_almost_equal(res, expected_v)
+
+
+@pytest.mark.parametrize('function', [cyice.getelm_s, cyice.getelm, spice.getelm], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["getelm"], indirect=True)
+def test_getelm(function, grouped_benchmark, load_core_kernels):
+    tle = np.array([
+        "1 44420U 19036AC  19311.70264562  .00005403  00000-0  12176-2 0  9991",
+        "2 44420  24.0060  72.9267 0016343 241.6999 118.1833 14.53580129 17852",
+    ])
+    res = grouped_benchmark(function, 2019, tle)
+    assert isinstance(res[1], np.ndarray)
+    assert len(res[1]) == 10
+
+
+@pytest.mark.parametrize('function', [cyice.getelm_v, cyice.getelm], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["getelm_v"], indirect=True)
+def test_getelm_v(function, grouped_benchmark, load_core_kernels):
+    tl1 = "1 44420U 19036AC  19311.70264562  .00005403  00000-0  12176-2 0  9991"
+    tl2 = "2 44420  24.0060  72.9267 0016343 241.6999 118.1833 14.53580129 17852"
+    tles = np.array([[tl1, tl2] for _ in range(100)])
+    years = np.repeat(2019, 100).astype(np.int32)
+    res = grouped_benchmark(function, years, tles)
+    assert isinstance(res[0], np.ndarray)
+    assert isinstance(res[1], np.ndarray)
+    assert len(res[0]) == 100
+    assert res[1].shape == (100,10)
 
 
 @pytest.mark.parametrize('function', [cyice.getmsg, spice.getmsg], ids=get_module_name)

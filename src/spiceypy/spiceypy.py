@@ -6209,7 +6209,7 @@ def georec(lon: float, lat: float, alt: float, re: float, f: float) -> ndarray:
 
 
 @spice_error_check
-def getelm(frstyr: int, lineln: int, lines: Iterable[str]) -> Tuple[float, ndarray]:
+def getelm(frstyr: int, lines: Iterable[str]) -> Tuple[float, ndarray]:
     """
     Given a the "lines" of a two-line element set, parse the
     lines and return the elements in units suitable for use
@@ -6218,14 +6218,13 @@ def getelm(frstyr: int, lineln: int, lines: Iterable[str]) -> Tuple[float, ndarr
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/getelm_c.html
 
     :param frstyr: Year of earliest representable two-line elements.
-    :param lineln: Length of strings in lines array.
     :param lines: A pair of "lines" containing two-line elements.
     :return:
             The epoch of the elements in seconds past J2000,
             The elements converted to SPICE units (see naif docs for units).
     """
     frstyr = ctypes.c_int(frstyr)
-    lineln = ctypes.c_int(lineln)
+    lineln = ctypes.c_int(70)
     lines = stypes.list_to_char_array_ptr(lines, x_len=lineln, y_len=2)
     epoch = ctypes.c_double()
     elems = stypes.empty_double_vector(10)  # guess for length

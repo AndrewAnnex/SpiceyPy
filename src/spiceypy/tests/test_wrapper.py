@@ -3641,7 +3641,7 @@ def test_ev2lin():
         "2 44420  24.0060  72.9267 0016343 241.6999 118.1833 14.53580129 17852",
     ]
     spice.furnsh(CoreKernels.testMetaKernel)
-    epoch, elems = spice.getelm(2019, 75, tle)
+    epoch, elems = spice.getelm(2019, tle)
     # adding 3 seconds manually as something is wrong with provided tle epoch or the lsk kernel was not used when generating the expected output
     expected_elems = np.array(
         [
@@ -3721,7 +3721,7 @@ def test_evsgp4():
         "2 43908  97.2676  47.2136 0020001 220.6050 139.3698 15.24999521 78544",
     ]
     geophs = [spice.bodvcd(399, _, 1)[1] for _ in noadpn]
-    _, elems = spice.getelm(1957, 75, tle)
+    _, elems = spice.getelm(1957, tle)
     et = spice.str2et("2020-05-26 02:25:00")
     state = spice.evsgp4(et, geophs, elems)
     expected_state = np.array(
@@ -3896,7 +3896,7 @@ def test_getelm():
         "2 18123  98.8296 152.0074 0014950 168.7820 191.3688 14.12912554 21686",
     ]
     spice.furnsh(CoreKernels.testMetaKernel)
-    epoch, elems = spice.getelm(1950, 75, tle)
+    epoch, elems = spice.getelm(1950, tle)
     expected_elems = [
         -6.969196665949579e-13,
         0.0,
@@ -8616,7 +8616,7 @@ def test_spkw10():
     spice.furnsh(CoreKernels.testMetaKernel)
     for i in range(0, 18, 2):
         lines = [tle[i], tle[i + 1]]
-        epoch, elems = spice.getelm(1950, 75, lines)
+        epoch, elems = spice.getelm(1950, lines)
         epoch_x.append(epoch)
         elems_x.extend(elems)
     first = epoch_x[0] - 0.5 * spice.spd()

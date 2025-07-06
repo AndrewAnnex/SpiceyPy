@@ -189,6 +189,12 @@ cdef extern from "SpiceUsr.h" nogil:
                        SpiceDouble f,
                        SpiceDouble[3] rectan)
 
+    cdef void getelm_c(SpiceInt      frstyr,
+                       SpiceInt      lineln,
+                       const void  * lines,
+                       SpiceDouble * epoch,
+                       SpiceDouble * elems)
+
     cdef void getmsg_c(ConstSpiceChar * option,
                        SpiceInt         msglen,
                        SpiceChar      * msg)

@@ -37,10 +37,11 @@ SOFTWARE.
 """
 
 from libc.stdlib cimport malloc, free
-from libc.string cimport strlen
+from libc.string cimport strlen, memcpy
 from cython      cimport boundscheck, wraparound
 from cpython.float      cimport PyFloat_Check
-from cpython.unicode    cimport PyUnicode_DecodeUTF8, PyUnicode_Check
+from cpython.int        cimport PyInt_Check
+from cpython.unicode    cimport PyUnicode_DecodeUTF8, PyUnicode_Check, PyUnicode_AsASCIIString
 from cpython.bool       cimport PyBool_Check, PyBool_FromLong
 from cpython.tuple      cimport PyTuple_GET_SIZE
 
@@ -56,6 +57,7 @@ np.import_array()
 DEF _default_len_out = 256
 
 DEF TIMELEN = 64
+DEF TLELEN = 70
 
 DEF SHORTLEN = 32
 DEF EXPLAINLEN = 128
@@ -162,6 +164,24 @@ cdef inline bint _all(np.uint8_t[::1] arr) nogil:
         if arr[i] == 0:
             return False
     return True
+
+
+@boundscheck(False)
+@wraparound(False)
+cdef inline char[:, ::1] make_char_array(np.ndarray input_array, int max_len):
+    cdef const char *c_encoded
+    cdef bytes encoded
+    cdef Py_ssize_t elen, i, n = input_array.shape[0]
+    cdef char[:, ::1] output = np.zeros((n, max_len), dtype=np.uint8, order='C') 
+    for i in range(n):
+        encoded = input_array[i].encode('ascii') 
+        elen = len(encoded)
+        c_encoded = encoded 
+        if elen >= max_len:
+            raise ValueError(f"String at index {i} is too long for max_len={max_len}")
+        memcpy(&output[i, 0], c_encoded, min(elen, max_len - 1))
+        output[i, min(elen, max_len - 1)] = 0  # null-terminate
+    return output
 
 
 @wraparound(False)
@@ -1757,6 +1777,114 @@ def georec(
         return georec_s(lon, lat, alt, re, f)
     else:
         return georec_v(lon, lat, alt, re, f)
+
+
+cpdef tuple[float, np.ndarray] getelm_s(
+    int frstyr,  
+    np.ndarray lines
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.getelm`
+
+    Given a the "lines" of a two-line element set, parse the
+    lines and return the elements in units suitable for use
+    in SPICE software.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/getelm_c.html
+
+    :param frstyr: Year of earliest representable two-line elements.
+    :param lines: A pair of "lines" containing two-line elements.
+    :return:
+            The epoch of the elements in seconds past J2000,
+            The elements converted to SPICE units (see naif docs for units).
+    """
+    # allocate outputs
+    cdef double c_epoch = 0.0
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_elems = np.empty(10, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_elems = p_elems
+    # ge the char memory view
+    cdef const char[:,::1] c_lines = make_char_array(lines, TLELEN)
+    cdef const char* c_lines_ptr = &c_lines[0,0]
+    # now call getelm
+    getelm_c(
+        frstyr,
+        TLELEN,
+        c_lines_ptr,
+        &c_epoch,
+        &c_elems[0]
+    )
+    check_for_spice_error()
+    return c_epoch, p_elems
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef tuple[np.ndarray, np.ndarray] getelm_v(
+    int[::1] frstyr,  
+    np.ndarray lines
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.getelm`
+
+    Given a the "lines" of a two-line element set, parse the
+    lines and return the elements in units suitable for use
+    in SPICE software.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/getelm_c.html
+
+    :param frstyr: Year of earliest representable two-line elements.
+    :param lines: A array of pairs of "lines" containing two-line elements, shape is (2*n_pairs,70).
+    :return:
+            The epoch of the elements in seconds past J2000,
+            The elements converted to SPICE units (see naif docs for units).
+    """
+    # allocate outputs
+    cdef const np.uint32_t[::1] c_frstyr = np.ascontiguousarray(frstyr, dtype=np.uint32)
+    cdef Py_ssize_t i, n = c_frstyr.shape[0]
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_epochs = np.empty(n, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_epochs = p_epochs
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_elems = np.empty((n,10), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_elems = p_elems
+    # ge the char memory view
+    cdef char[:,::1] c_lines 
+    cdef char* c_lines_ptr 
+    # now call getelm in loop
+    for i in range(n):
+        c_lines = make_char_array(lines[i], TLELEN)
+        c_lines_ptr = &c_lines[0, 0]
+        getelm_c(
+            c_frstyr[i],
+            TLELEN,
+            c_lines_ptr,
+            &c_epochs[i],
+            &c_elems[i, 0]
+        )
+    check_for_spice_error()
+    return p_epochs, p_elems
+
+
+def getelm(
+    frstyr: int | int[::1],  
+    lines: np.ndarray,
+    )-> tuple[np.ndarray, np.ndarray]:
+    """
+
+    Given a the "lines" of a two-line element set, parse the
+    lines and return the elements in units suitable for use
+    in SPICE software.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/getelm_c.html
+
+    :param frstyr: Year of earliest representable two-line elements.
+    :param lines: A array of pairs of "lines" containing two-line elements, shape is (2*n_pairs,70).
+    :return:
+            The epoch of the elements in seconds past J2000,
+            The elements converted to SPICE units (see naif docs for units).
+    """
+    if PyInt_Check(frstyr):
+        return getelm_s(frstyr, lines)
+    else:
+        return getelm_v(frstyr, lines)
 
 
 cpdef str getmsg(
@@ -3663,15 +3791,15 @@ def scencd_v(
     cdef Py_ssize_t i, n = sclkchs.shape[0]
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_sclkdps = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_sclkdps = p_sclkdps
-    cdef const char* c_sclkchs
-    # coerce unicode to a byte-string array
-    if sclkchs.dtype.kind == 'U':
-        sclkchs = np.char.encode(sclkchs, 'ascii')
+    cdef const char* c_sclkchs_ptr
+    # TODO possibly this is faster than calling encode via numpy, but it calls a lot of python methods, so see if there is room to improve this
+    cdef bytes encoded
     for i in range(n):
-        c_sclkchs = sclkchs[i]
+        encoded = sclkchs[i].encode('ascii')
+        c_sclkchs_ptr = encoded
         scencd_c(
             c_sc,
-            c_sclkchs,
+            c_sclkchs_ptr,
             &c_sclkdps[i]
         )
     check_for_spice_error()
