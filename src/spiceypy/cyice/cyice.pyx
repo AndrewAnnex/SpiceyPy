@@ -652,6 +652,94 @@ def clight() -> float:
     return clight_c()
 
 
+@boundscheck(False)
+@wraparound(False)
+cpdef np.ndarray[np.double_t, ndim=1, mode='c'] conics_s(
+    double[::1] elts,
+    double et,
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.conics`
+
+    Determine the state (position, velocity) of an orbiting body
+    from a set of elliptic, hyperbolic, or parabolic orbital
+    elements.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/conics_c.html
+
+    :param elts: Conic elements, units are km, rad, rad/sec, km**3/sec**2.
+    :param et: Input time in ephemeris seconds J2000.
+    :return: State of orbiting body at et (x, y, z, dx/dt, dy/dt, dz/dt).
+    """
+    cdef const np.double_t[::1] c_elts = np.ascontiguousarray(elts, dtype=np.double)
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_state = p_state
+    conics_c(
+        &c_elts[0],
+        et,
+        &c_state[0],
+    )
+    check_for_spice_error()
+    return p_state
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] conics_v(
+    double[:,::1] elts,
+    double[::1] ets,
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.conics`
+
+    Determine the state (position, velocity) of an orbiting body
+    from a set of elliptic, hyperbolic, or parabolic orbital
+    elements.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/conics_c.html
+
+    :param elts: Conic elements, units are km, rad, rad/sec, km**3/sec**2. 1 per et
+    :param ets: Input times in ephemeris seconds J2000.
+    :return: State of orbiting body at et (x, y, z, dx/dt, dy/dt, dz/dt).
+    """
+    cdef const np.double_t[:,::1] c_elts = np.ascontiguousarray(elts, dtype=np.double)
+    cdef Py_ssize_t i, n = c_elts.shape[0]
+    cdef np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_states = p_states
+    # main loop
+    with nogil:
+        for i in range(n):
+            conics_c(
+                &c_elts[i,0],
+                c_ets[i],
+                &c_states[i,0],
+            )
+    check_for_spice_error()
+    return p_states
+
+
+def conics(
+    elts: double[::1] | double[:,::1],
+    et: float | double[::1],
+    )-> State | State_N:
+    """
+    Determine the state (position, velocity) of an orbiting body
+    from a set of elliptic, hyperbolic, or parabolic orbital
+    elements.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/conics_c.html
+
+    :param elts: Conic elements, units are km, rad, rad/sec, km**3/sec**2.
+    :param et: Input time in ephemeris seconds J2000.
+    :return: State of orbiting body at et (x, y, z, dx/dt, dy/dt, dz/dt).
+    """
+    if PyFloat_Check(et):
+        return conics_s(elts, et)
+    else:
+        return conics_v(elts, et)
+
+
 def convrt_s(
     double x,
     str inunit,

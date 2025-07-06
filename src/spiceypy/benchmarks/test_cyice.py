@@ -202,6 +202,58 @@ def test_clight(function, grouped_benchmark):
     assert function() == 299792.458
 
 
+@pytest.mark.parametrize('function', [cyice.conics_s, cyice.conics, spice.conics], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["conics"], indirect=True)
+def test_conics(function, grouped_benchmark, load_core_kernels):
+    et = spice.str2et("Dec 25, 2007")
+    state, ltime = spice.spkezr("Moon", et, "J2000", "NONE", "EARTH")
+    dim, mu = spice.bodvrd("EARTH", "GM", 1)
+    elts = spice.oscelt(state, et, mu[0])
+    later = et + 7.0 * spice.spd()
+    grouped_benchmark(function, elts, later)
+    # now test correctness
+    later_state = function(elts, later)
+    assert isinstance(later_state, np.ndarray)
+    state, ltime = spice.spkezr("Moon", later, "J2000", "NONE", "EARTH")
+    pert = np.array(later_state) - np.array(state)
+    expected_pert = [
+        -7.48885583081946242601e03,
+        3.97608014470621128567e02,
+        1.95744667259379639290e02,
+        -3.61527427787390887026e-02,
+        -1.27926899069508159812e-03,
+        -2.01458906615054056388e-03,
+    ]
+    npt.assert_array_almost_equal(pert, expected_pert, decimal=5)
+
+
+@pytest.mark.parametrize('function', [cyice.conics_v, cyice.conics], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["conics_v"], indirect=True)
+def test_conics_v(function, grouped_benchmark, load_core_kernels):
+    et = spice.str2et("Dec 25, 2007")
+    state, ltime = spice.spkezr("Moon", et, "J2000", "NONE", "EARTH")
+    dim, mu = spice.bodvrd("EARTH", "GM", 1)
+    elts = spice.oscelt(state, et, mu[0])
+    later = et + 7.0 * spice.spd()
+    elts_v = np.repeat([elts], 100, axis=0)
+    later_v = np.repeat(later, 100)
+    grouped_benchmark(function, elts_v, later_v)
+    # now test correctness
+    later_state = function(elts_v, later_v)
+    assert isinstance(later_state, np.ndarray)
+    state, ltime = spice.spkezr("Moon", later, "J2000", "NONE", "EARTH")
+    pert = np.array(later_state[0]) - np.array(state)
+    expected_pert = [
+        -7.48885583081946242601e03,
+        3.97608014470621128567e02,
+        1.95744667259379639290e02,
+        -3.61527427787390887026e-02,
+        -1.27926899069508159812e-03,
+        -2.01458906615054056388e-03,
+    ]
+    npt.assert_array_almost_equal(pert, expected_pert, decimal=5)
+
+
 @pytest.mark.parametrize('function', [cyice.convrt_s, cyice.convrt, spice.convrt], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["convrt"], indirect=True)
 def test_convrt(function, grouped_benchmark):

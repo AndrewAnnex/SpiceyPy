@@ -109,6 +109,10 @@ cdef extern from "SpiceUsr.h" nogil:
 
     cdef SpiceDouble clight_c()
 
+    cdef void conics_c(ConstSpiceDouble[8]  elts,
+                       SpiceDouble          et,
+                       SpiceDouble[6]       state)
+
     cdef void convrt_c(SpiceDouble      x,
                        ConstSpiceChar * inunit,
                        ConstSpiceChar * outunit,
