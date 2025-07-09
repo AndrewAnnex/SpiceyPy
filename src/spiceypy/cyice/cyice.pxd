@@ -170,6 +170,11 @@ cdef extern from "SpiceUsr.h" nogil:
                       SpiceInt      callen,
                       SpiceChar   * calstr)
 
+    cdef void evsgp4_c(SpiceDouble            et,
+                       ConstSpiceDouble[8]    geophs,
+                       ConstSpiceDouble[10]   elems,
+                       SpiceDouble[6]         state)
+
     #F
     cdef SpiceBoolean failed_c()
 

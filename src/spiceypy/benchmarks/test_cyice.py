@@ -430,6 +430,65 @@ def test_etcal_v(function, grouped_benchmark):
     res = function(data)
     assert isinstance(res, np.ndarray)
 
+@pytest.mark.parametrize('function', [cyice.evsgp4_s, cyice.evsgp4, spice.evsgp4], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["evsgp4"], indirect=True)
+def test_evsgp4(function, grouped_benchmark, load_core_kernels):
+    spice.furnsh(ExtraKernels.geophKer)
+    tle = np.array([
+        "1 43908U 18111AJ  20146.60805006  .00000806  00000-0  34965-4 0  9999",
+        "2 43908  97.2676  47.2136 0020001 220.6050 139.3698 15.24999521 78544",
+    ])
+    noadpn = ["J2", "J3", "J4", "KE", "QO", "SO", "ER", "AE"]
+    geophs = np.array([spice.bodvcd(399, _, 1)[1] for _ in noadpn]).ravel()
+    _, elems = spice.getelm(1957, tle)
+    et = spice.str2et("2020-05-26 02:25:00")
+    grouped_benchmark(function, et, geophs, elems)
+    res = function(et, geophs, elems)
+    expected_state = np.array(
+        [
+            -4644.60403398,
+            -5038.95025539,
+            -337.27141116,
+            -0.45719025,
+            0.92884817,
+            -7.55917355,
+        ]
+    )
+    assert isinstance(res, np.ndarray)
+    npt.assert_array_almost_equal(expected_state, res)
+
+
+@pytest.mark.parametrize('function', [cyice.evsgp4_v, cyice.evsgp4], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["evsgp4_v"], indirect=True)
+def test_evsgp4_v(function, grouped_benchmark, load_core_kernels):
+    spice.furnsh(ExtraKernels.geophKer)
+    tle = np.array([
+        "1 43908U 18111AJ  20146.60805006  .00000806  00000-0  34965-4 0  9999",
+        "2 43908  97.2676  47.2136 0020001 220.6050 139.3698 15.24999521 78544",
+    ])
+    noadpn = ["J2", "J3", "J4", "KE", "QO", "SO", "ER", "AE"]
+    geophs = np.array([spice.bodvcd(399, _, 1)[1] for _ in noadpn]).ravel()
+    _, elems = spice.getelm(1957, tle)
+    et = spice.str2et("2020-05-26 02:25:00")
+    # make vectorized versions
+    ets = np.repeat(et, 100)
+    elems_v = np.repeat([elems], 100, axis=0)
+    grouped_benchmark(function, ets, geophs, elems_v)
+    res = function(ets, geophs, elems_v)
+    expected_state = np.array(
+        [
+            -4644.60403398,
+            -5038.95025539,
+            -337.27141116,
+            -0.45719025,
+            0.92884817,
+            -7.55917355,
+        ]
+    )
+    assert isinstance(res, np.ndarray)
+    assert res.shape == (100, 6)
+    npt.assert_array_almost_equal(expected_state, res[0])
+
 # # F
 @pytest.mark.parametrize('function', [cyice.failed, spice.failed], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["failed"], indirect=True)

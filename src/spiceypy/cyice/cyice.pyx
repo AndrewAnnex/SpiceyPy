@@ -1568,6 +1568,110 @@ def etcal(
     else:
         return etcal_v(et)
 
+
+@boundscheck(False)
+@wraparound(False)
+cpdef np.ndarray[np.double_t, ndim=1, mode='c'] evsgp4_s(
+    double et,
+    double[::1] geophs,
+    double[::1] elems
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.evsgp4`
+
+    Evaluate NORAD two-line element data for earth orbiting
+    spacecraft. This evaluator uses algorithms as described
+    in Vallado 2006
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/evsgp4_c.html
+
+    :param et: Epoch in seconds past ephemeris epoch J2000.
+    :param geophs: Geophysical constants
+    :param elems: Two-line element data
+    :return: Evaluated state
+    """
+    cdef const np.double_t[::1] c_geophs = np.ascontiguousarray(geophs, dtype=np.double)
+    cdef const np.double_t[::1] c_elems  = np.ascontiguousarray(elems, dtype=np.double)
+    # initialize output arrays
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_state = p_state
+    # call 
+    evsgp4_c(
+        et,
+        &c_geophs[0],
+        &c_elems[0],
+        &c_state[0]
+    )
+    # return state
+    return p_state
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef np.ndarray[np.double_t, ndim=2, mode='c'] evsgp4_v(
+    double[::1] ets,
+    double[::1] geophs,
+    double[:,::1] elems
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.evsgp4`
+
+    Evaluate NORAD two-line element data for earth orbiting
+    spacecraft. This evaluator uses algorithms as described
+    in Vallado 2006
+
+    TODO does it make sense to assume 1 et per 1 geophs and 1 elems?
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/evsgp4_c.html
+
+    :param ets: Epochs in seconds past ephemeris epoch J2000.
+    :param geophs: Geophysical constants
+    :param elems: Two-line element data
+    :return: Evaluated state
+    """
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef Py_ssize_t i, n = c_ets.shape[0]
+    cdef const np.double_t[::1] c_geophs = np.ascontiguousarray(geophs, dtype=np.double)
+    cdef const double* c_geophs_ptr = &c_geophs[0]
+    cdef const np.double_t[:,::1] c_elems  = np.ascontiguousarray(elems, dtype=np.double)
+    # initialize output arrays
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_states = p_states
+    # call 
+    with nogil:
+        for i in range(n):
+            evsgp4_c(
+                c_ets[i],
+                c_geophs_ptr,
+                &c_elems[i, 0],
+                &c_states[i, 0]
+            )
+    # return states
+    return p_states
+
+
+def evsgp4(
+    et: float | double[::1],
+    geophs: double[::1],
+    elems: double[::1] | double[:,::1],
+    ):
+    """
+    Evaluate NORAD two-line element data for earth orbiting
+    spacecraft. This evaluator uses algorithms as described
+    in Vallado 2006
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/evsgp4_c.html
+
+    :param et: Epoch in seconds past ephemeris epoch J2000.
+    :param geophs: Geophysical constants
+    :param elems: Two-line element data
+    :return: Evaluated state
+    """
+    if PyFloat_Check(et):
+        return evsgp4_s(et, geophs, elems)
+    else:
+        return evsgp4_v(et, geophs, elems)
+
 # F
 
 
