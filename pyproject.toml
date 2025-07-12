@@ -36,7 +36,7 @@ test = [
     "pytest-benchmark"
 ]
 publish = [
-    "twine>=3.3.0"
+    "twine>=6.1.0"
 ]
 ci = [
     {include-group = "core"},
