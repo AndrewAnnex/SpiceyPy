@@ -169,7 +169,7 @@ jobs:
           python -m pip install . --user
       - name: Test 🧪 with coverage 📈
         run: |
-          coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
+          python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
       - name: Run Benchmarks on latest Python Version
         if: ${{ matrix.python-version == '3.13' }}
         run: |
@@ -233,7 +233,7 @@ jobs:
           python -m pip install . --user
       - name: Test 🧪 with coverage 📈
         run: |
-          coverage run --source spiceypy -m pytest -vv --pyargs spiceypy --benchmark-disable
+          python -m coverage run --source spiceypy -m pytest -vv --pyargs spiceypy --benchmark-disable
       - name: Upload 🆙 coverage 📈 report to codecov 
         uses: codecov/codecov-action@v4
         with:
@@ -288,7 +288,7 @@ jobs:
           python -m pip install . --user
       - name: Test 🧪 with coverage 📈
         run: |
-          coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
+          python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
       - name: Upload 🆙 coverage 📈 report to codecov 
         uses: codecov/codecov-action@v4
         with:
