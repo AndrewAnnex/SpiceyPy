@@ -4,6 +4,11 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [6.0.2] - 2025-07-12
+Backport fix to avoid numpy version change before v7.0.0 release
+### Changed
+- changed numpy version pin to be 'numpy>=1.23.5'
+
 ## [6.0.1] - 2025-06-24
 Backport release of various small fixes and typo corrections
 ### Added
