@@ -189,7 +189,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install --user --group publish
+          python -m pip install --user twine
       - name: Check dists
         run: |
           python -m twine check dist/*

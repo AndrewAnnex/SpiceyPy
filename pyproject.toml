@@ -22,12 +22,12 @@ maintainers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "numpy>=2.0,<3",
+    "numpy>=1.23.5",
 ]
 
 [dependency-groups]
 core = [
-    "numpy>=2.0,<3", 
+    "numpy>=1.23.5", 
 ]
 test = [
     {include-group = "core"},
