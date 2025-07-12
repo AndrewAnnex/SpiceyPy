@@ -59,7 +59,7 @@ dev = [
 doc = [
     {include-group = "dev"},
     "myst-parser==2.0.0",
-    "docutils,
+    "docutils",
     "graphviz",
     "sphinx<=7.0.0",
     "sphinx-copybutton",
