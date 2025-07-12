@@ -49,12 +49,15 @@ build = [
     "Cython>=3.0.12",
     "setuptools>=76.0.0",
     "build", 
-    "cibuildwheel==3.0.1",
 ]
 dev = [
     {include-group = "build"},
     {include-group = "test"},
     {include-group = "ci"},
+]
+devwheel = [
+    {include-group = "dev"},
+    "cibuildwheel==3.0.1",
 ]
 doc = [
     {include-group = "dev"},
