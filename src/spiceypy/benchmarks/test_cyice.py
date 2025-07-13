@@ -628,6 +628,47 @@ def test_halfpi(function, grouped_benchmark):
 
 # I
 
+@pytest.mark.parametrize('function', [cyice.illumg_s, cyice.illumg, spice.illumg], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["illumg"], indirect=True)
+def test_illumg(function, grouped_benchmark, load_core_kernels, load_cassini_kernels):
+    et = spice.str2et("2013 FEB 25 11:50:00 UTC")
+    spoint, trgepc, srfvec = spice.subpnt(
+        "Near Point/Ellipsoid", "Enceladus", et, "IAU_ENCELADUS", "CN+S", "Earth"
+    )
+    grouped_benchmark(function, "Ellipsoid", "Enceladus", "Sun", et, "IAU_ENCELADUS", "CN+S", "CASSINI", spoint)
+    trgepc2, srfvec2, phase, incid, emissn = function("Ellipsoid", "Enceladus", "Sun", et, "IAU_ENCELADUS", "CN+S", "CASSINI", spoint)
+    assert np.degrees(phase) == pytest.approx(161.859925246638)
+    assert np.degrees(incid) == pytest.approx(18.47670084384343)
+    assert np.degrees(emissn) == pytest.approx(143.6546170649875)
+    assert isinstance(srfvec2, np.ndarray)
+
+
+@pytest.mark.parametrize('function', [cyice.illumg_v, cyice.illumg], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["illumg_v"], indirect=True)
+def test_illumg_v(function, grouped_benchmark, load_core_kernels, load_cassini_kernels):
+    et = spice.str2et("2013 FEB 25 11:50:00 UTC")
+    spoint, trgepc, srfvec = spice.subpnt(
+        "Near Point/Ellipsoid", "Enceladus", et, "IAU_ENCELADUS", "CN+S", "Earth"
+    )
+    ets = np.repeat(et, 100)
+    spoints = np.repeat([spoint], 100, axis=0)
+    grouped_benchmark(function, "Ellipsoid", "Enceladus", "Sun", ets, "IAU_ENCELADUS", "CN+S", "CASSINI", spoints)
+    trgepc2, srfvec2, phase, incid, emissn = function("Ellipsoid", "Enceladus", "Sun", ets, "IAU_ENCELADUS", "CN+S", "CASSINI", spoints)
+    assert isinstance(trgepc2, np.ndarray)
+    assert isinstance(phase, np.ndarray)
+    assert isinstance(incid, np.ndarray)
+    assert isinstance(emissn, np.ndarray)
+    assert isinstance(srfvec2, np.ndarray)
+    assert trgepc2.shape == (100, 100)
+    assert phase.shape   == (100, 100)
+    assert incid.shape   == (100, 100)
+    assert emissn.shape  == (100, 100)
+    assert srfvec2.shape == (100, 100, 3)
+    assert np.degrees(phase[0,0]) == pytest.approx(161.859925246638)
+    assert np.degrees(incid[0,0]) == pytest.approx(18.47670084384343)
+    assert np.degrees(emissn[0,0]) == pytest.approx(143.6546170649875)
+
+
 @pytest.mark.parametrize('function', [cyice.ilumin_s, cyice.ilumin, spice.ilumin], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["ilumin"], indirect=True)
 def test_ilumin(function, grouped_benchmark, load_core_kernels):
@@ -655,7 +696,12 @@ def test_ilumin_v(function, grouped_benchmark, load_core_kernels):
     assert isinstance(phase0, np.ndarray)
     assert isinstance(solar0, np.ndarray)
     assert isinstance(emissn0, np.ndarray)
-    npt.assert_almost_equal(np.degrees(solar0[0][0]), 90.269765819)
+    assert phase0.shape  == (100, 100)
+    assert solar0.shape  == (100, 100)
+    assert emissn0.shape == (100, 100)
+    assert srfvec0.shape == (100, 100, 3)
+    npt.assert_almost_equal(np.degrees(solar0[0,0]), 90.269765819)
+
 
 
 # J
