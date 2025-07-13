@@ -2238,6 +2238,222 @@ def halfpi() -> float:
 
 # I
 
+@boundscheck(False)
+@wraparound(False)
+cpdef tuple[float, np.ndarray, float, float, float, bool, bool] illumf_s(
+    const char* method,
+    const char* target,
+    const char* ilusrc,
+    double et,
+    const char* fixref,
+    const char* abcorr,
+    const char* obsrvr,
+    double[::1] spoint,
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.illumf`
+
+    Compute the illumination angles---phase, incidence, and
+    emission---at a specified point on a target body. Return logical
+    flags indicating whether the surface point is visible from
+    the observer's position and whether the surface point is
+    illuminated.
+
+    The target body's surface is represented using topographic data
+    provided by DSK files, or by a reference ellipsoid.
+
+    The illumination source is a specified ephemeris object.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/illumf_c.html
+
+    :param method: Computation method.
+    :param target: Name of target body.
+    :param ilusrc: Name of illumination source.
+    :param et: Epoch in ephemeris seconds past J2000.
+    :param fixref: Body-fixed, body-centered target body frame.
+    :param abcorr: Desired aberration correction.
+    :param obsrvr: Name of observing body.
+    :param spoint: Body-fixed coordinates of a target surface point.
+    :return: 
+        Target surface point epoch in seconds past J2000 TDB, 
+        Vector from observer to target surface point in km,
+        Phase angle at the surface point in radians, 
+        Source incidence angle at the surface point in radians,
+        Emission angle at the surface point in radians,
+        Visibility flag, 
+        Illumination flag
+    """
+    cdef const np.double_t[::1] c_spoint = np.ascontiguousarray(spoint, dtype=np.double)
+    #allocate outputs
+    cdef SpiceBoolean c_visibl = SPICEFALSE
+    cdef SpiceBoolean c_lit = SPICEFALSE
+    cdef double trgepc = 0.0
+    cdef double phase  = 0.0
+    cdef double incdnc = 0.0
+    cdef double emissn = 0.0
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_srfvec = np.empty(3, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_srfvec = p_srfvec
+    # make the call
+    illumf_c(
+        method, 
+        target,
+        ilusrc,
+        et,
+        fixref,
+        abcorr,
+        obsrvr,
+        &c_spoint[0],
+        &trgepc,
+        &c_srfvec[0],
+        &phase,
+        &incdnc,
+        &emissn,
+        <SpiceBoolean *> &c_visibl,
+        <SpiceBoolean *> &c_lit
+    )
+    check_for_spice_error()
+    return trgepc, p_srfvec, phase, incdnc, emissn, PyBool_FromLong(c_visibl), PyBool_FromLong(c_lit) 
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray] illumf_v(
+    const char* method,
+    const char* target,
+    const char* ilusrc,
+    double[::1] ets,
+    const char* fixref,
+    const char* abcorr,
+    const char* obsrvr,
+    double[:,::1] spoints,
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.illumf`
+
+    Compute the illumination angles---phase, incidence, and
+    emission---at a specified point on a target body. Return logical
+    flags indicating whether the surface point is visible from
+    the observer's position and whether the surface point is
+    illuminated.
+
+    The target body's surface is represented using topographic data
+    provided by DSK files, or by a reference ellipsoid.
+
+    The illumination source is a specified ephemeris object.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/illumf_c.html
+
+    :param method: Computation method.
+    :param target: Name of target body.
+    :param ilusrc: Name of illumination source.
+    :param ets: Epochs in ephemeris seconds past J2000.
+    :param fixref: Body-fixed, body-centered target body frame.
+    :param abcorr: Desired aberration correction.
+    :param obsrvr: Name of observing body.
+    :param spoints: Body-fixed coordinates of target surface points.
+    :return: 
+        Target surface point epoch in seconds past J2000 TDB, 
+        Vector from observer to target surface point in km,
+        Phase angle at the surface point in radians, 
+        Source incidence angle at the surface point in radians,
+        Emission angle at the surface point in radians,
+        Visibility flag, 
+        Illumination flag
+    """
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[:,::1] c_spoints = np.ascontiguousarray(spoints, dtype=np.double)
+    cdef Py_ssize_t i, j, n, m = 0
+    n = c_ets.shape[0]
+    m = c_spoints.shape[0]
+    cdef double c_et_r = 0.0
+    #allocate outputs
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_trgepc = np.empty((n,m), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_trgepc = p_trgepc
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_phase  = np.empty((n,m), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_phase = p_phase
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_incdnc = np.empty((n,m), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_incdnc = p_incdnc
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_emissn = np.empty((n,m), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_emissn = p_emissn
+    cdef np.ndarray[np.int32_t, ndim=2, mode='c'] p_visibl = np.empty((n,m), dtype=np.int32, order='C')
+    cdef np.int32_t[:,::1] c_visibl = p_visibl
+    cdef np.ndarray[np.int32_t, ndim=2, mode='c'] p_lit    = np.empty((n,m), dtype=np.int32, order='C')
+    cdef np.int32_t[:,::1] c_lit = p_lit
+    cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_srfvec = np.empty((n,m,3), dtype=np.double, order='C')
+    cdef np.double_t[:,:,::1] c_srfvec = p_srfvec
+    # make the call
+    with nogil:
+        for i in range(n):
+            c_et_r = c_ets[i]
+            for j in range(m):
+                illumf_c(
+                    method, 
+                    target,
+                    ilusrc,
+                    c_et_r,
+                    fixref,
+                    abcorr,
+                    obsrvr,
+                    &c_spoints[j,0],
+                    &c_trgepc[i,j],
+                    &c_srfvec[i,j,0],
+                    &c_phase[i,j],
+                    &c_incdnc[i,j],
+                    &c_emissn[i,j],
+                    <SpiceBoolean *> &c_visibl[i,j],
+                    <SpiceBoolean *> &c_lit[i,j]
+                )
+    check_for_spice_error()
+    return p_trgepc, p_srfvec, p_phase, p_incdnc, p_emissn, p_visibl.astype(np.bool_), p_lit.astype(np.bool_) 
+
+
+def illumf(
+    method: str,
+    target: str,
+    ilusrc: str,
+    et: float | double[::1],
+    fixref: str,
+    abcorr: str,
+    obsrvr: str,
+    spoint: double[::1] | double[:,::1],
+    ) -> tuple[float, np.ndarray, float, float, float, bool, bool] | tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Compute the illumination angles---phase, incidence, and
+    emission---at a specified point on a target body. Return logical
+    flags indicating whether the surface point is visible from
+    the observer's position and whether the surface point is
+    illuminated.
+
+    The target body's surface is represented using topographic data
+    provided by DSK files, or by a reference ellipsoid.
+
+    The illumination source is a specified ephemeris object.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/illumf_c.html
+
+    :param method: Computation method.
+    :param target: Name of target body.
+    :param ilusrc: Name of illumination source.
+    :param et: Epoch in ephemeris seconds past J2000.
+    :param fixref: Body-fixed, body-centered target body frame.
+    :param abcorr: Desired aberration correction.
+    :param obsrvr: Name of observing body.
+    :param spoint: Body-fixed coordinates of a target surface point.
+    :return: 
+        Target surface point epoch in seconds past J2000 TDB, 
+        Vector from observer to target surface point in km,
+        Phase angle at the surface point in radians, 
+        Source incidence angle at the surface point in radians,
+        Emission angle at the surface point in radians,
+        Visibility flag, 
+        Illumination flag
+    """
+    if PyFloat_Check(et):
+        return illumf_s(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint)
+    else:
+        return illumf_v(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint)
+
+
 
 @boundscheck(False)
 @wraparound(False)

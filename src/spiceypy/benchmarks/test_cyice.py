@@ -628,6 +628,59 @@ def test_halfpi(function, grouped_benchmark):
 
 # I
 
+@pytest.mark.parametrize('function', [cyice.illumf_s, cyice.illumf, spice.illumf], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["illumf"], indirect=True)
+def test_illumf(function, grouped_benchmark, load_core_kernels, load_cassini_kernels):
+    et = spice.str2et("2013 FEB 25 11:50:00 UTC")
+    camid = spice.bodn2c("CASSINI_ISS_NAC")
+    shape, obsref, bsight, n, bounds = spice.getfov(camid, 4)
+    spoint, etemit, srfvec = spice.sincpt(
+        "Ellipsoid", "Enceladus", et, "IAU_ENCELADUS", "CN+S", "CASSINI", obsref, bsight
+    )
+    grouped_benchmark(function, "Ellipsoid", "Enceladus", "Sun", et, "IAU_ENCELADUS", "CN+S", "CASSINI", spoint)
+    trgepc2, srfvec2, phase, incid, emissn, visibl, lit = function("Ellipsoid", "Enceladus", "Sun", et, "IAU_ENCELADUS", "CN+S", "CASSINI", spoint)
+    assert np.degrees(phase) == pytest.approx(161.82854377660345)
+    assert np.degrees(incid) == pytest.approx(134.92108561449996)
+    assert np.degrees(emissn) == pytest.approx(63.23618556218115)
+    assert isinstance(srfvec2, np.ndarray)
+    assert not lit
+    assert visibl
+
+
+@pytest.mark.parametrize('function', [cyice.illumf_v, cyice.illumf], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["illumf_v"], indirect=True)
+def test_illumf_v(function, grouped_benchmark, load_core_kernels, load_cassini_kernels):
+    et = spice.str2et("2013 FEB 25 11:50:00 UTC")
+    camid = spice.bodn2c("CASSINI_ISS_NAC")
+    shape, obsref, bsight, n, bounds = spice.getfov(camid, 4)
+    spoint, etemit, srfvec = spice.sincpt(
+        "Ellipsoid", "Enceladus", et, "IAU_ENCELADUS", "CN+S", "CASSINI", obsref, bsight
+    )
+    ets = np.repeat(et, 100)
+    spoints = np.repeat([spoint], 100, axis=0)
+    grouped_benchmark(function, "Ellipsoid", "Enceladus", "Sun", ets, "IAU_ENCELADUS", "CN+S", "CASSINI", spoints)
+    trgepc2, srfvec2, phase, incid, emissn, visibl, lit = function("Ellipsoid", "Enceladus", "Sun", ets, "IAU_ENCELADUS", "CN+S", "CASSINI", spoints)
+    assert isinstance(trgepc2, np.ndarray)
+    assert isinstance(phase, np.ndarray)
+    assert isinstance(incid, np.ndarray)
+    assert isinstance(emissn, np.ndarray)
+    assert isinstance(srfvec2, np.ndarray)
+    assert isinstance(visibl, np.ndarray)
+    assert isinstance(lit, np.ndarray)
+    assert trgepc2.shape == (100, 100)
+    assert phase.shape   == (100, 100)
+    assert incid.shape   == (100, 100)
+    assert emissn.shape  == (100, 100)
+    assert visibl.shape  == (100, 100)
+    assert lit.shape  == (100, 100)    
+    assert srfvec2.shape == (100, 100, 3)
+    assert np.degrees(phase[0,0]) == pytest.approx(161.82854377660345)
+    assert np.degrees(incid[0,0]) == pytest.approx(134.92108561449996)
+    assert np.degrees(emissn[0,0]) == pytest.approx(63.23618556218115)
+    assert np.all(visibl)
+    assert not np.any(lit)
+
+
 @pytest.mark.parametrize('function', [cyice.illumg_s, cyice.illumg, spice.illumg], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["illumg"], indirect=True)
 def test_illumg(function, grouped_benchmark, load_core_kernels, load_cassini_kernels):
