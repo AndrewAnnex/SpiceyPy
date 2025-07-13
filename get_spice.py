@@ -399,11 +399,7 @@ def apply_patches() -> None:
     if int(spice_num_v) == 66:
         cwd = os.getcwd()
         os.chdir(cspice_dir)
-        iswin = "-windows" if host_OS == "Windows" else ""
-        patches = [
-            f"0001-patch-for-n66-dskx02.c{iswin}.patch",
-            f"0002-patch-for-n66-subpnt.c{iswin}.patch",
-        ]
+        patches = [ ]
         if is_macos_arm:
             patches.append("0004_inquire_unistd.patch")
         for p in patches:
