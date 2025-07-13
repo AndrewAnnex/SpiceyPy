@@ -26,7 +26,7 @@ jobs:
           python -m pip install --upgrade pip
       - name: Install CI dependencies
         run: |
-          python -m pip install -U -r ci-requirements.txt
+          python -m pip install --user --group dev
       - name: Build 🛠️ sdist source for 🌶️ 🥧 SpiceyPy
         env:
           CSPICE_NO_TEMP: "YES"
@@ -44,7 +44,7 @@ jobs:
           ls dist/
       - name: Check dists
         run: |
-          twine check dist/*
+          python -m twine check dist/*
       - uses: actions/upload-artifact@v4
         with:
           path: dist/*.tar.gz
@@ -82,7 +82,7 @@ jobs:
           python -m pip install --upgrade pip
       - name: Install CI dependencies
         run: |
-          python -m pip install --user -r ci-requirements.txt
+          python -m pip install --user --group dev
       - name: Install SpiceyPy 🌶️ 🥧 from sdist on Mac/Linux
         if: ${{ matrix.os != 'windows-latest' }}
         shell: bash
@@ -152,8 +152,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r ci-requirements.txt
-          python -m pip install cibuildwheel==2.23.3
+          python -m pip install --user --group devwheel
       - name: Build wheels for SpiceyPy 🌶️ 🥧
         timeout-minutes: 120
         run: |
@@ -162,7 +161,7 @@ jobs:
           python -m cibuildwheel --output-dir wheelhouse
       - name: Check dists
         run: |
-          twine check wheelhouse/*
+          python -m twine check wheelhouse/*
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
         uses: actions/upload-artifact@v4
         with:
@@ -190,10 +189,10 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install twine 
+          python -m pip install --user twine
       - name: Check dists
         run: |
-          twine check dist/*
+          python -m twine check dist/*
       - name: Publish distribution 📦 to Test PyPI
         if: startsWith(github.ref, 'refs/tags/v')
         env:

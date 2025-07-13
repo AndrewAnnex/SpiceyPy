@@ -395,27 +395,6 @@ def copy_supplements() -> None:
     pass
 
 
-def apply_patches() -> None:
-    if int(spice_num_v) == 66:
-        cwd = os.getcwd()
-        os.chdir(cspice_dir)
-        iswin = "-windows" if host_OS == "Windows" else ""
-        patches = [
-            f"0001-patch-for-n66-dskx02.c{iswin}.patch",
-            f"0002-patch-for-n66-subpnt.c{iswin}.patch",
-        ]
-        if is_macos_arm:
-            patches.append("0004_inquire_unistd.patch")
-        for p in patches:
-            try:
-                print(f"Applying Patch {p}", flush=True)
-                patch_cmd = subprocess.run(["git", "apply", "--reject", p], check=True)
-            except subprocess.CalledProcessError as cpe:
-                raise cpe
-        os.chdir(cwd)
-    pass
-
-
 def prepare_cspice() -> None:
     """
     Prepare temporary cspice source directory,
@@ -567,10 +546,6 @@ def main(build: bool = True) -> None:
         # add the patches
         print("Copying supplements", flush=True)
         copy_supplements()
-        # okay now that we have the source in a writeable directory we can apply patches
-        if CSPICE_NO_PATCH not in os.environ:
-            print("Apply patches", flush=True)
-            apply_patches()
         # now build, but not if you have the shared library path around
         if build and shared_library_path is None:
             print("Building cspice", flush=True)

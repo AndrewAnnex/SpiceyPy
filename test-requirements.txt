@@ -1,4 +1,0 @@
-numpy>=2.0,<3
-setuptools>=76.0.0
-pytest>=7.0.0
-pandas>=2.2.2
