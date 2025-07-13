@@ -2238,6 +2238,170 @@ def halfpi() -> float:
 
 # I
 
+@boundscheck(False)
+@wraparound(False)
+cpdef tuple[float, np.ndarray, float, float, float] ilumin_s(
+    const char* method,
+    const char* target,
+    double et,
+    const char* fixref,
+    const char* abcorr,
+    const char* obsrvr,
+    double[::1] spoint,
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.ilumin`
+
+    Find the illumination angles (phase, solar incidence, and
+    emission) at a specified surface point of a target body.
+
+    This routine supersedes illum.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/ilumin_c.html
+
+    :param method: Computation method.
+    :param target: Name of target body.
+    :param et: Epoch in ephemeris seconds past J2000.
+    :param fixref: Body-fixed, body-centered target body frame.
+    :param abcorr: Desired aberration correction.
+    :param obsrvr: Name of observing body.
+    :param spoint: Body-fixed coordinates of a target surface point.
+    :return: Target surface point epoch, Vector from observer to target
+     surface point, Phase angle, Solar incidence angle, and Emission
+     angle at the surface point.
+    """
+    cdef const np.double_t[::1] c_spoint = np.ascontiguousarray(spoint, dtype=np.double)
+    #allocate outputs
+    cdef double trgepc = 0.0
+    cdef double phase  = 0.0
+    cdef double incdnc = 0.0
+    cdef double emissn = 0.0
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_srfvec = np.empty(3, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_srfvec = p_srfvec
+    # make the call
+    ilumin_c(
+        method, 
+        target,
+        et,
+        fixref,
+        abcorr,
+        obsrvr,
+        &c_spoint[0],
+        &trgepc,
+        &c_srfvec[0],
+        &phase,
+        &incdnc,
+        &emissn
+    )
+    check_for_spice_error()
+    return trgepc, p_srfvec, phase, incdnc, emissn 
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray] ilumin_v(
+    const char* method,
+    const char* target,
+    double[::1] ets,
+    const char* fixref,
+    const char* abcorr,
+    const char* obsrvr,
+    double[:,::1] spoint,
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.ilumin`
+
+    Find the illumination angles (phase, solar incidence, and
+    emission) at a specified surface point of a target body.
+
+    This routine supersedes illum.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/ilumin_c.html
+
+    :param method: Computation method.
+    :param target: Name of target body.
+    :param ets: Epochs in ephemeris seconds past J2000.
+    :param fixref: Body-fixed, body-centered target body frame.
+    :param abcorr: Desired aberration correction.
+    :param obsrvr: Name of observing body.
+    :param spoint: Body-fixed coordinates of a target surface point.
+    :return: Target surface point epoch, Vector from observer to target
+     surface point, Phase angle, Solar incidence angle, and Emission
+     angle at the surface point.
+    """
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[:,::1] c_spoint = np.ascontiguousarray(spoint, dtype=np.double)
+    cdef Py_ssize_t i, j, n, m = 0
+    n = c_ets.shape[0]
+    m = c_spoint.shape[0]
+    cdef double c_et_r = 0.0
+    #allocate outputs
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_trgepc = np.empty((n,m), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_trgepc = p_trgepc
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_phase  = np.empty((n,m), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_phase = p_phase
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_incdnc = np.empty((n,m), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_incdnc = p_incdnc
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_emissn = np.empty((n,m), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_emissn = p_emissn
+    cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_srfvec = np.empty((n,m,3), dtype=np.double, order='C')
+    cdef np.double_t[:,:,::1] c_srfvec = p_srfvec
+    # make the call
+    with nogil:
+        for i in range(n):
+            c_et_r = c_ets[i]
+            for j in range(m):
+                ilumin_c(
+                    method, 
+                    target,
+                    c_et_r,
+                    fixref,
+                    abcorr,
+                    obsrvr,
+                    &c_spoint[j,0],
+                    &c_trgepc[i,j],
+                    &c_srfvec[i,j,0],
+                    &c_phase[i,j],
+                    &c_incdnc[i,j],
+                    &c_emissn[i,j]
+                )
+    check_for_spice_error()
+    return p_trgepc, p_srfvec, p_phase, p_incdnc, p_emissn 
+
+
+def ilumin(
+    method: str,
+    target: str,
+    et: float | double[::1],
+    fixref: str,
+    abcorr: str,
+    obsrvr: str,
+    spoint: double[::1] | double[:,::1],
+    ) -> tuple[float, np.ndarray, float, float, float] | tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Find the illumination angles (phase, solar incidence, and
+    emission) at a specified surface point of a target body.
+
+    This routine supersedes illum.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/ilumin_c.html
+
+    :param method: Computation method.
+    :param target: Name of target body.
+    :param et: Epoch in ephemeris seconds past J2000.
+    :param fixref: Body-fixed, body-centered target body frame.
+    :param abcorr: Desired aberration correction.
+    :param obsrvr: Name of observing body.
+    :param spoint: Body-fixed coordinates of a target surface point.
+    :return: Target surface point epoch, Vector from observer to target
+     surface point, Phase angle, Solar incidence angle, and Emission
+     angle 
+    """
+    if PyFloat_Check(et):
+        return ilumin_s(method, target, et, fixref, abcorr, obsrvr, spoint)
+    else:
+        return ilumin_v(method, target, et, fixref, abcorr, obsrvr, spoint)
+
 # J
 
 

@@ -223,6 +223,50 @@ cdef extern from "SpiceUsr.h" nogil:
 
     #I
 
+    cdef void illumf_c(ConstSpiceChar      * method,
+                       ConstSpiceChar      * target,
+                       ConstSpiceChar      * ilusrc,
+                       SpiceDouble           et,
+                       ConstSpiceChar      * fixref,
+                       ConstSpiceChar      * abcorr,
+                       ConstSpiceChar      * obsrvr,
+                       ConstSpiceDouble[3]   spoint,
+                       SpiceDouble         * trgepc,
+                       SpiceDouble[3]        srfvec,
+                       SpiceDouble         * phase,
+                       SpiceDouble         * incdnc,
+                       SpiceDouble         * emissn,
+                       SpiceBoolean        * visibl,
+                       SpiceBoolean        * lit)
+
+    cdef void illumg_c(ConstSpiceChar      * method,
+                       ConstSpiceChar      * target,
+                       ConstSpiceChar      * ilusrc,
+                       SpiceDouble           et,
+                       ConstSpiceChar      * fixref,
+                       ConstSpiceChar      * abcorr,
+                       ConstSpiceChar      * obsrvr,
+                       ConstSpiceDouble[3]   spoint,
+                       SpiceDouble         * trgepc,
+                       SpiceDouble[3]        srfvec,
+                       SpiceDouble         * phase,
+                       SpiceDouble         * incdnc,
+                       SpiceDouble         * emissn)
+
+    cdef void ilumin_c(ConstSpiceChar      * method,
+                       ConstSpiceChar      * target,
+                       SpiceDouble           et,
+                       ConstSpiceChar      * fixref,
+                       ConstSpiceChar      * abcorr,
+                       ConstSpiceChar      * obsrvr,
+                       ConstSpiceDouble[3]   spoint,
+                       SpiceDouble         * trgepc,
+                       SpiceDouble[3]        srfvec,
+                       SpiceDouble         * phase,
+                       SpiceDouble         * incdnc,
+                       SpiceDouble         * emissn)
+
+
     #J
 
     cdef SpiceDouble j1900_c()

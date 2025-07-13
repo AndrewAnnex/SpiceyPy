@@ -5848,6 +5848,7 @@ def ev2lin(et: float, geophs: Sequence[float], elems: Sequence[float]) -> ndarra
     return stypes.c_vector_to_python(state)
 
 
+@spice_error_check
 def evsgp4(et: float, geophs: Sequence[float], elems: Sequence[float]) -> ndarray:
     """
     Evaluate NORAD two-line element data for earth orbiting
