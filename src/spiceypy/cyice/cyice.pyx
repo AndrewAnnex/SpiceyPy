@@ -244,6 +244,170 @@ def cyice_found_exception_thrower(f):
 # A
 
 @boundscheck(False)
+@wraparound(False)
+cpdef tuple[np.ndarray, float] azlcpo_s(
+    const char* method,
+    const char* target,
+    double et,
+    const char* abcorr,
+    SpiceBoolean azccw,
+    SpiceBoolean elplsz,
+    double[::1] obspos,
+    const char* obsctr,
+    const char* obsref
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.azlcpo`
+
+    Return the azimuth/elevation coordinates of a specified target
+    relative to an "observer," where the observer has constant
+    position in a specified reference frame. The observer's position
+    is provided by the calling program rather than by loaded SPK
+    files.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/azlcpo_c.html
+
+    :param method: Method to obtain the surface normal vector.
+    :param target: Name of target ephemeris object.
+    :param et: Observation epoch in ephemeris seconds past J2000 TDB.
+    :param abcorr: Aberration correction.
+    :param azccw: Flag indicating how azimuth is measured.
+    :param elplsz: Flag indicating how elevation is measured.
+    :param obspos: Observer position relative to center of motion.
+    :param obsctr: Center of motion of observer.
+    :param obsref: Body fixed body centered frame of observer's center.
+    :return: State of target with respect to observer, in azimuth/elevation coordinates. and One way light time between target and observer.
+    """
+    # allocate outputs
+    cdef double c_lt = 0.0
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_state = p_state
+    azlcpo_c(
+        method,
+        target,
+        et,
+        abcorr,
+        <SpiceBoolean> azccw, 
+        <SpiceBoolean> elplsz, 
+        &obspos[0],
+        obsctr,
+        obsref,
+        &c_state[0],
+        &c_lt
+    )
+    check_for_spice_error()
+    return p_state, c_lt
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef tuple[np.ndarray, np.ndarray] azlcpo_v(
+    const char* method,
+    const char* target,
+    double[::1] ets,
+    const char* abcorr,
+    SpiceBoolean azccw,
+    SpiceBoolean elplsz,
+    double[:,::1] obspos,
+    const char* obsctr,
+    const char* obsref
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.azlcpo`
+
+    Return the azimuth/elevation coordinates of a specified target
+    relative to an "observer," where the observer has constant
+    position in a specified reference frame. The observer's position
+    is provided by the calling program rather than by loaded SPK
+    files.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/azlcpo_c.html
+
+    :param method: Method to obtain the surface normal vector.
+    :param target: Name of target ephemeris object.
+    :param ets: Observation epochs in ephemeris seconds past J2000 TDB.
+    :param abcorr: Aberration correction.
+    :param azccw: Flag indicating how azimuth is measured.
+    :param elplsz: Flag indicating how elevation is measured.
+    :param obspos: Observer positions relative to center of motion.
+    :param obsctr: Center of motion of observer.
+    :param obsref: Body fixed body centered frame of observer's center.
+    :return: States of target with respect to observer, in azimuth/elevation coordinates. and One way light times between target and observer.
+    """
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[:,::1] c_obspos = np.ascontiguousarray(obspos, dtype=np.double)
+    cdef Py_ssize_t i, j, n, m = 0
+    n = c_ets.shape[0]
+    m = c_obspos.shape[0]
+    cdef double c_et_r = 0.0
+    cdef SpiceBoolean c_azccw  = <SpiceBoolean> azccw
+    cdef SpiceBoolean c_elplsz = <SpiceBoolean> elplsz
+    # allocate outputs
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_lts = np.empty((n,m), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_lts = p_lts
+    cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_states = np.empty((n,m,6), dtype=np.double, order='C')
+    cdef np.double_t[:,:,::1] c_states = p_states
+    # make the call
+    with nogil:
+        for i in range(n):
+            c_et_r = c_ets[i]
+            for j in range(m):
+                azlcpo_c(
+                    method,
+                    target,
+                    c_et_r,
+                    abcorr,
+                    c_azccw, 
+                    c_elplsz, 
+                    &obspos[j,0],
+                    obsctr,
+                    obsref,
+                    &c_states[i,j,0],
+                    &c_lts[i,j]
+                )
+    check_for_spice_error()
+    return p_states, p_lts
+
+
+def azlcpo(
+    method: str,
+    target: str,
+    et: float | double[::1],
+    abcorr: str,
+    azccw: bool,
+    elplsz: bool,
+    obspos: double[::1] | double[:,::1],
+    obsctr: str,
+    obsref: str,
+    ) -> tuple[np.ndarray, float] | tuple[np.ndarray, np.ndarray]:
+    """
+    Return the azimuth/elevation coordinates of a specified target
+    relative to an "observer," where the observer has constant
+    position in a specified reference frame. The observer's position
+    is provided by the calling program rather than by loaded SPK
+    files.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/azlcpo_c.html
+
+    :param method: Method to obtain the surface normal vector.
+    :param target: Name of target ephemeris object.
+    :param ets: Observation epochs in ephemeris seconds past J2000 TDB.
+    :param abcorr: Aberration correction.
+    :param azccw: Flag indicating how azimuth is measured.
+    :param elplsz: Flag indicating how elevation is measured.
+    :param obspos: Observer positions relative to center of motion.
+    :param obsctr: Center of motion of observer.
+    :param obsref: Body fixed body centered frame of observer's center.
+    :return: States of target with respect to observer, in azimuth/elevation coordinates. and One way light times between target and observer.
+    """
+    if PyFloat_Check(et):
+        return azlcpo_s(method, target, et, abcorr, azccw, elplsz, obspos, obsctr, obsref)
+    else:
+        return azlcpo_v(method, target, et, abcorr, azccw, elplsz, obspos, obsctr, obsref)
+
+
+@boundscheck(False)
+@wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=1, mode='c'] azlrec_s(
     double inrange, 
     double az, 

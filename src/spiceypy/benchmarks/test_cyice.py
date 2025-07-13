@@ -82,6 +82,28 @@ def setup_module(module):
 
 #A
 
+@pytest.mark.parametrize('function', [cyice.azlcpo_s, cyice.azlcpo, spice.azlcpo], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["azlcpo"], indirect=True)
+def test_azlcpo(function, grouped_benchmark, load_core_kernels, load_earth_kernels):
+    et = spice.str2et("2003 Oct 13 06:00:00 UTC")
+    obspos = np.array([-2353.621419700, -4641.341471700, 3677.052317800])
+    azlsta, lt = grouped_benchmark(function, "ELLIPSOID", "VENUS", et, "CN+S", False, True, obspos, "EARTH", "ITRF93")
+    assert azlsta == pytest.approx([2.45721479e8, 5.13974044, -8.54270565e-1, -4.68189831, 7.02070016e-5, -5.39579640e-5])
+
+
+@pytest.mark.parametrize('function', [cyice.azlcpo_v, cyice.azlcpo], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["azlcpo_v"], indirect=True)
+def test_azlcpo_v(function, grouped_benchmark, load_core_kernels, load_earth_kernels):
+    et = spice.str2et("2003 Oct 13 06:00:00 UTC")
+    obspos = np.array([[-2353.621419700, -4641.341471700, 3677.052317800]])
+    ets = np.repeat(et, 100)
+    obsposs = np.repeat(obspos, 100, axis=0)
+    azlsta, lt = grouped_benchmark(function, "ELLIPSOID", "VENUS", ets, "CN+S", False, True, obsposs, "EARTH", "ITRF93")
+    assert azlsta[0,0] == pytest.approx([2.45721479e8, 5.13974044, -8.54270565e-1, -4.68189831, 7.02070016e-5, -5.39579640e-5])
+    assert azlsta.shape == (100, 100, 6)
+    assert lt.shape == (100, 100)
+
+
 @pytest.mark.parametrize('function', [cyice.azlrec_s, cyice.azlrec, spice.azlrec], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["azlrec"], indirect=True)
 def test_azlrec(function, grouped_benchmark):
