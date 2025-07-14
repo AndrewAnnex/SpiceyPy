@@ -9110,14 +9110,11 @@ def limbpt(
         epochs,
         tangts,
     )
-    # Clip the empty elements out of returned results
-    npts = stypes.c_vector_to_python(npts)
-    valid_points = numpy.where(npts >= 1)
     return (
-        npts[valid_points],
-        stypes.c_matrix_to_numpy(points)[valid_points],
-        stypes.c_vector_to_python(epochs)[valid_points],
-        stypes.c_matrix_to_numpy(tangts)[valid_points],
+        stypes.c_vector_to_python(npts),
+        stypes.c_matrix_to_numpy(points),
+        stypes.c_vector_to_python(epochs),
+        stypes.c_matrix_to_numpy(tangts),
     )
 
 

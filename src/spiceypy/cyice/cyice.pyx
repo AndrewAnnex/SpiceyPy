@@ -246,15 +246,15 @@ def cyice_found_exception_thrower(f):
 @boundscheck(False)
 @wraparound(False)
 cpdef tuple[np.ndarray, float] azlcpo_s(
-    const char* method,
-    const char* target,
+    const char * method,
+    const char * target,
     double et,
-    const char* abcorr,
+    const char * abcorr,
     SpiceBoolean azccw,
     SpiceBoolean elplsz,
     double[::1] obspos,
-    const char* obsctr,
-    const char* obsref
+    const char * obsctr,
+    const char * obsref
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.azlcpo`
@@ -2405,13 +2405,13 @@ def halfpi() -> float:
 @boundscheck(False)
 @wraparound(False)
 cpdef tuple[float, np.ndarray, float, float, float, bool, bool] illumf_s(
-    const char* method,
-    const char* target,
-    const char* ilusrc,
+    const char * method,
+    const char * target,
+    const char * ilusrc,
     double et,
-    const char* fixref,
-    const char* abcorr,
-    const char* obsrvr,
+    const char * fixref,
+    const char * abcorr,
+    const char * obsrvr,
     double[::1] spoint,
     ):
     """
@@ -3311,6 +3311,238 @@ def latsph(
         return latsph_s(radius, lon, lat)
     else:
         return latsph_v(radius, lon, lat)
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] limbpt_s(
+    const char * method,
+    const char * target,
+    double et,
+    const char * fixref,
+    const char * abcorr,
+    const char * corloc,
+    const char * obsrvr,
+    double[::1] refvec,
+    double rolstp,
+    int ncuts,
+    double schstp,
+    double soltol,
+    int maxn
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.limbpt`
+
+    Find limb points on a target body. The limb is the set of points
+    of tangency on the target of rays emanating from the observer.
+    The caller specifies half-planes bounded by the observer-target
+    center vector in which to search for limb points.
+
+    The surface of the target body may be represented either by a
+    triaxial ellipsoid or by topographic data.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/limbpt_c.html
+
+    :param method: Computation method.
+    :param target: Name of target body.
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :param fixref: Body-fixed, body-centered target body frame.
+    :param abcorr: Aberration correction.
+    :param corloc: Aberration correction locus.
+    :param obsrvr: Name of observing body.
+    :param refvec: Reference vector for cutting half-planes.
+    :param rolstp: Roll angular step for cutting half-planes.
+    :param ncuts: Number of cutting half-planes.
+    :param schstp: Angular step size for searching.
+    :param soltol: Solution convergence tolerance.
+    :param maxn: Maximum number of entries in output arrays.
+    :return: 
+        Counts of limb points corresponding to cuts
+        Limb points in km, 
+        Times associated with limb points in seconds, 
+        Tangent vectors emanating from the observer in km
+    """
+    # process inputs
+    cdef Py_ssize_t c_maxn = maxn
+    cdef const np.double_t[::1] c_refvec = np.ascontiguousarray(refvec, dtype=np.double)
+    # allocate outputs
+    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_npts = np.empty(c_maxn, dtype=np.int32, order='C')
+    cdef int[::1] c_npts = p_npts
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_points = np.empty((c_maxn, 3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_points = p_points
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_epochs = np.empty(c_maxn, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_epochs = p_epochs
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_tangts = np.empty((c_maxn, 3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_tangts = p_tangts
+    # call the c function
+    with nogil:
+        limbpt_c(
+            method,
+            target,
+            et,
+            fixref,
+            abcorr,
+            corloc,
+            obsrvr,
+            &c_refvec[0],
+            rolstp,
+            ncuts,
+            schstp,
+            soltol,
+            maxn,
+            &c_npts[0],
+            <SpiceDouble (*)[3]> &c_points[0, 0],
+            &c_epochs[0],
+            <SpiceDouble (*)[3]> &c_tangts[0, 0]
+        )
+    check_for_spice_error()
+    # return the results
+    return p_npts, p_points, p_epochs, p_tangts
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] limbpt_v(
+    const char * method,
+    const char * target,
+    double[::1] ets,
+    const char * fixref,
+    const char * abcorr,
+    const char * corloc,
+    const char * obsrvr,
+    double[::1] refvec,
+    double rolstp,
+    int ncuts,
+    double schstp,
+    double soltol,
+    int maxn
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.limbpt`
+
+    Find limb points on a target body. The limb is the set of points
+    of tangency on the target of rays emanating from the observer.
+    The caller specifies half-planes bounded by the observer-target
+    center vector in which to search for limb points.
+
+    The surface of the target body may be represented either by a
+    triaxial ellipsoid or by topographic data.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/limbpt_c.html
+
+    :param method: Computation method.
+    :param target: Name of target body.
+    :param ets: Epochs in ephemeris seconds past J2000 TDB.
+    :param fixref: Body-fixed, body-centered target body frame.
+    :param abcorr: Aberration correction.
+    :param corloc: Aberration correction locus.
+    :param obsrvr: Name of observing body.
+    :param refvec: Reference vector for cutting half-planes.
+    :param rolstp: Roll angular step for cutting half-planes.
+    :param ncuts: Number of cutting half-planes.
+    :param schstp: Angular step size for searching.
+    :param soltol: Solution convergence tolerance.
+    :param maxn: Maximum number of entries in output arrays.
+    :return: 
+        Counts of limb points corresponding to cuts
+        Limb points in km, 
+        Times associated with limb points in seconds, 
+        Tangent vectors emanating from the observer in km
+    """
+    # process inputs
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef Py_ssize_t i, n = c_ets.shape[0]
+    cdef Py_ssize_t c_maxn = maxn
+    cdef const np.double_t[::1] c_refvec = np.ascontiguousarray(refvec, dtype=np.double)
+    cdef const SpiceDouble* c_refvec_ptr = &c_refvec[0]
+    # allocate outputs
+    cdef np.ndarray[np.int32_t, ndim=2, mode='c'] p_npts = np.empty((n, c_maxn), dtype=np.int32, order='C')
+    cdef int[:,::1] c_npts = p_npts
+    cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_points = np.empty((n, c_maxn, 3), dtype=np.double, order='C')
+    cdef np.double_t[:,:,::1] c_points = p_points
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_epochs = np.empty((n, c_maxn), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_epochs = p_epochs
+    cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_tangts = np.empty((n, c_maxn, 3), dtype=np.double, order='C')
+    cdef np.double_t[:,:,::1] c_tangts = p_tangts
+    # call the c function
+    with nogil:
+        for i in range(n):
+            limbpt_c(
+                method,
+                target,
+                c_ets[i],
+                fixref,
+                abcorr,
+                corloc,
+                obsrvr,
+                c_refvec_ptr,
+                rolstp,
+                ncuts,
+                schstp,
+                soltol,
+                maxn,
+                &c_npts[i, 0],
+                <SpiceDouble (*)[3]> &c_points[i, 0, 0],
+                &c_epochs[i, 0],
+                <SpiceDouble (*)[3]> &c_tangts[i, 0, 0]
+            )
+    check_for_spice_error()
+    # return the results
+    return p_npts, p_points, p_epochs, p_tangts
+
+
+def limbpt(
+    method: str,
+    target: str,
+    et: float | double[::1],
+    fixref: str,
+    abcorr: str,
+    corloc: str,
+    obsrvr: str,
+    refvec: np.ndarray,
+    rolstp: float,
+    ncuts: int,
+    schstp: float,
+    soltol: float,
+    maxn: int,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Find limb points on a target body. The limb is the set of points
+    of tangency on the target of rays emanating from the observer.
+    The caller specifies half-planes bounded by the observer-target
+    center vector in which to search for limb points.
+
+    The surface of the target body may be represented either by a
+    triaxial ellipsoid or by topographic data.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/limbpt_c.html
+
+    :param method: Computation method.
+    :param target: Name of target body.
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :param fixref: Body-fixed, body-centered target body frame.
+    :param abcorr: Aberration correction.
+    :param corloc: Aberration correction locus.
+    :param obsrvr: Name of observing body.
+    :param refvec: Reference vector for cutting half-planes.
+    :param rolstp: Roll angular step for cutting half-planes.
+    :param ncuts: Number of cutting half-planes.
+    :param schstp: Angular step size for searching.
+    :param soltol: Solution convergence tolerance.
+    :param maxn: Maximum number of entries in output arrays.
+    :return: 
+        Counts of limb points corresponding to cuts
+        Limb points in km, 
+        Times associated with limb points in seconds, 
+        Tangent vectors emanating from the observer in km
+    """
+    if PyFloat_Check(et):
+        return limbpt_s(method, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp, ncuts, schstp, soltol, maxn)
+    else:
+        return limbpt_v(method, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp, ncuts, schstp, soltol, maxn)
+
+
+
 
 
 def lspcn_s(

@@ -3982,10 +3982,13 @@ def test_getmsg():
 
 
 def test_gfbail():
+    spice.reset()
+    spice.gfclrh()
     assert not spice.gfbail()
 
 
 def test_gfclrh():
+    spice.reset()
     spice.gfclrh()
     assert not spice.gfbail()
 
@@ -4086,6 +4089,7 @@ def test_gfevnt():
     if spice.gfbail():
         spice.gfclrh()  # pragma: no cover
     spice.gfsstp(0.5)
+    spice.gfclrh()
 
 
 def test_gffove():
@@ -4217,8 +4221,7 @@ def test_gfinth():
 
 
 def test_gfocce():
-    if spice.gfbail():
-        spice.gfclrh()  # pragma: no cover
+    spice.gfclrh()  # pragma: no cover
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et("2001 DEC 01 00:00:00 TDB")
     et1 = spice.str2et("2002 JAN 01 00:00:00 TDB")
@@ -4255,8 +4258,7 @@ def test_gfocce():
         cnfine,
         result,
     )
-    if spice.gfbail():
-        spice.gfclrh()  # pragma: no cover
+    spice.gfclrh()  # pragma: no cover
     count = spice.wncard(result)
     assert count == 1
 
@@ -5615,7 +5617,7 @@ def test_limbpt():
         3,
         1.0e-4,
         1.0e-7,
-        10000,
+        3,
     )
     assert points is not None
     assert len(points) == 3

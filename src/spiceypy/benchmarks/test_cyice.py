@@ -876,6 +876,59 @@ def test_latsph(function, grouped_benchmark):
     npt.assert_array_almost_equal(res, expected, decimal=7)
 
 
+@pytest.mark.parametrize('function', [cyice.limbpt_s, cyice.limbpt, spice.limbpt], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["limbpt"], indirect=True)
+def test_limbpt(function, grouped_benchmark, load_core_kernels):
+    spice.furnsh(ExtraKernels.marsSpk)
+    spice.furnsh(ExtraKernels.phobosDsk)
+    et = spice.str2et("1972 AUG 11 00:00:00")
+    args = (
+        "TANGENT/DSK/UNPRIORITIZED",
+        "Phobos",
+        et,
+        "IAU_PHOBOS",
+        "CN+S",
+        "CENTER",
+        "MARS",
+        np.array([0.0, 0.0, 1.0]),
+        spice.twopi() / 3.0,
+        3,
+        1.0e-4,
+        1.0e-7,
+        3,
+    )
+    npts, points, epochs, tangts = grouped_benchmark(function, *args)
+    assert npts.sum() == 3
+    assert len(points) == 3
+
+
+@pytest.mark.parametrize('function', [cyice.limbpt_v, cyice.limbpt], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["limbpt_v"], indirect=True)
+def test_limbpt_v(function, grouped_benchmark, load_core_kernels):
+    spice.furnsh(ExtraKernels.marsSpk)
+    spice.furnsh(ExtraKernels.phobosDsk)
+    et = spice.str2et("1972 AUG 11 00:00:00")
+    ets = np.linspace(et, et+1, 100)
+    args = (
+        "TANGENT/DSK/UNPRIORITIZED",
+        "Phobos",
+        ets,
+        "IAU_PHOBOS",
+        "CN+S",
+        "CENTER",
+        "MARS",
+        np.array([0.0, 0.0, 1.0]),
+        spice.twopi() / 3.0,
+        3,
+        1.0e-4,
+        1.0e-7,
+        3,
+    )
+    npts, points, epochs, tangts = grouped_benchmark(function, *args)
+    assert npts.shape == (100,3)
+    assert points.shape == (100, 3, 3)
+
+
 @pytest.mark.parametrize('function', [cyice.lspcn_s, cyice.lspcn, spice.lspcn], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["lspcn"], indirect=True)
 def test_lspcn(function, grouped_benchmark, load_core_kernels):

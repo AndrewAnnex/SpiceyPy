@@ -314,6 +314,24 @@ cdef extern from "SpiceUsr.h" nogil:
                        SpiceDouble *  colat,
                        SpiceDouble *  slon)
 
+    cdef void limbpt_c(ConstSpiceChar      * method,
+                       ConstSpiceChar      * target,
+                       SpiceDouble           et,
+                       ConstSpiceChar      * fixref,
+                       ConstSpiceChar      * abcorr,
+                       ConstSpiceChar      * corloc,
+                       ConstSpiceChar      * obsrvr,
+                       ConstSpiceDouble[3]   refvec,
+                       SpiceDouble           rolstp,
+                       SpiceInt              ncuts,
+                       SpiceDouble           schstp,
+                       SpiceDouble           soltol,
+                       SpiceInt              maxn,
+                       SpiceInt            * npts,
+                       void                * points,
+                       SpiceDouble         * epochs,
+                       void                * trmvcs)
+
     cdef SpiceDouble lspcn_c(ConstSpiceChar * body,
                              SpiceDouble      et,
                              ConstSpiceChar * abcorr)
@@ -639,6 +657,26 @@ cdef extern from "SpiceUsr.h" nogil:
                        SpiceDouble[3]      srfvec)
 
 
+    cdef void termpt_c(ConstSpiceChar      * method,
+                       ConstSpiceChar      * ilusrc,
+                       ConstSpiceChar      * target,
+                       SpiceDouble           et,
+                       ConstSpiceChar      * fixref,
+                       ConstSpiceChar      * abcorr,
+                       ConstSpiceChar      * corloc,
+                       ConstSpiceChar      * obsrvr,
+                       ConstSpiceDouble[3]   refvec,
+                       SpiceDouble           rolstp,
+                       SpiceInt              ncuts,
+                       SpiceDouble           schstp,
+                       SpiceDouble           soltol,
+                       SpiceInt              maxn,
+                       SpiceInt            * npts,
+                       void                * points,
+                       SpiceDouble         * epochs,
+                       void                * trmvcs)
+
+
     cdef void timout_c(SpiceDouble        et,
                        ConstSpiceChar   * pictur,
                        SpiceInt           outlen,
@@ -668,8 +706,8 @@ cdef extern from "SpiceUsr.h" nogil:
 
     cdef void unload_c(ConstSpiceChar * file)
 
-    cdef void utc2et_c(ConstSpiceChar * utcstr, SpiceDouble * et)
-
+    cdef void utc2et_c(ConstSpiceChar * utcstr, 
+                       SpiceDouble * et)
 
     # X 
 
