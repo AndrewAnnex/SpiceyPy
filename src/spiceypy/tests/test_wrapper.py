@@ -9526,7 +9526,7 @@ def test_termpt():
         3,
         1.0e-4,
         1.0e-7,
-        10000,
+        3,
     )
     assert points is not None
     assert len(points) == 3

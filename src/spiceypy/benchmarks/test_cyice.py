@@ -2184,6 +2184,61 @@ def test_tangpt_v(function, grouped_benchmark, load_core_kernels):
     grouped_benchmark(function, "ELLIPSOID", target, ets, fixref, "NONE", locus, obsrvr, rayfrm, raydir)
 
 
+@pytest.mark.parametrize('function', [cyice.termpt_s, cyice.termpt, spice.termpt], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["termpt"], indirect=True)
+def test_termpt(function, grouped_benchmark, load_core_kernels):
+    spice.furnsh(ExtraKernels.marsSpk)
+    spice.furnsh(ExtraKernels.phobosDsk)
+    et = spice.str2et("1972 AUG 11 00:00:00")
+    args = (
+        "UMBRAL/TANGENT/DSK/UNPRIORITIZED",
+        "SUN",
+        "Phobos",
+        et,
+        "IAU_PHOBOS",
+        "CN+S",
+        "CENTER",
+        "MARS",
+        np.array([0.0, 0.0, 1.0]),
+        spice.twopi() / 3.0,
+        3,
+        1.0e-4,
+        1.0e-7,
+        3,
+    )
+    npts, points, epochs, tangts = grouped_benchmark(function, *args)
+    assert npts.sum() == 3
+    assert len(points) == 3
+
+
+@pytest.mark.parametrize('function', [cyice.termpt_v, cyice.termpt], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["termpt_v"], indirect=True)
+def test_termpt_v(function, grouped_benchmark, load_core_kernels):
+    spice.furnsh(ExtraKernels.marsSpk)
+    spice.furnsh(ExtraKernels.phobosDsk)
+    et = spice.str2et("1972 AUG 11 00:00:00")
+    ets = np.linspace(et, et+1, 100)
+    args = (
+        "UMBRAL/TANGENT/DSK/UNPRIORITIZED",
+        "SUN",
+        "Phobos",
+        ets,
+        "IAU_PHOBOS",
+        "CN+S",
+        "CENTER",
+        "MARS",
+        np.array([0.0, 0.0, 1.0]),
+        spice.twopi() / 3.0,
+        3,
+        1.0e-4,
+        1.0e-7,
+        3,
+    )
+    npts, points, epochs, tangts = grouped_benchmark(function, *args)
+    assert npts.shape == (100,3)
+    assert points.shape == (100, 3, 3)
+
+
 @pytest.mark.parametrize('function', [cyice.timout_s, cyice.timout, spice.timout], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["timout"], indirect=True)
 def test_timout(function, grouped_benchmark, load_core_kernels):

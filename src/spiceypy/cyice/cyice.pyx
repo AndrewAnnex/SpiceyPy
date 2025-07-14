@@ -3542,9 +3542,6 @@ def limbpt(
         return limbpt_v(method, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp, ncuts, schstp, soltol, maxn)
 
 
-
-
-
 def lspcn_s(
     str body,
     double et,
@@ -8617,6 +8614,261 @@ def tangpt(
         return tangpt_s(method, target, et, fixref, abcorr, corloc, obsrvr, dref, dvec)
     else:
         return tangpt_v(method, target, et, fixref, abcorr, corloc, obsrvr, dref, dvec)
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] termpt_s(
+    const char * method,
+    const char * ilusrc,
+    const char * target,
+    double et,
+    const char * fixref,
+    const char * abcorr,
+    const char * corloc,
+    const char * obsrvr,
+    double[::1] refvec,
+    double rolstp,
+    int ncuts,
+    double schstp,
+    double soltol,
+    int maxn
+    ):
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.termpt`
+
+    Find terminator points on a target body. The caller specifies
+    half-planes, bounded by the illumination source center-target center
+    vector, in which to search for terminator points.
+
+    The terminator can be either umbral or penumbral. The umbral
+    terminator is the boundary of the region on the target surface
+    where no light from the source is visible. The penumbral
+    terminator is the boundary of the region on the target surface
+    where none of the light from the source is blocked by the target
+    itself.
+
+    The surface of the target body may be represented either by a
+    triaxial ellipsoid or by topographic data.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/termpt_c.html
+
+    :param method: Computation method.
+    :param ilusrc: Illumination source.
+    :param target: Name of target body.
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :param fixref: Body-fixed, body-centered target body frame.
+    :param abcorr: Aberration correction.
+    :param corloc: Aberration correction locus.
+    :param obsrvr: Name of observing body.
+    :param refvec: Reference vector for cutting half-planes.
+    :param rolstp: Roll angular step for cutting half-planes.
+    :param ncuts: Number of cutting half-planes.
+    :param schstp: Angular step size for searching.
+    :param soltol: Solution convergence tolerance.
+    :param maxn: Maximum number of entries in output arrays.
+    :return: 
+        Counts of terminator points corresponding to cuts, 
+        Terminator points in km, 
+        Times associated with terminator points in seconds, 
+        Terminator vectors emanating from the observer in km
+    """
+    # process inputs
+    cdef Py_ssize_t c_maxn = maxn
+    cdef const np.double_t[::1] c_refvec = np.ascontiguousarray(refvec, dtype=np.double)
+    # allocate outputs
+    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_npts = np.empty(c_maxn, dtype=np.int32, order='C')
+    cdef int[::1] c_npts = p_npts
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_points = np.empty((c_maxn, 3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_points = p_points
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_epochs = np.empty(c_maxn, dtype=np.double, order='C')
+    cdef np.double_t[::1] c_epochs = p_epochs
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_trmvcs = np.empty((c_maxn, 3), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_trmvcs = p_trmvcs
+    # call the c function
+    with nogil:
+        termpt_c(
+            method,
+            ilusrc,
+            target,
+            et,
+            fixref,
+            abcorr,
+            corloc,
+            obsrvr,
+            &c_refvec[0],
+            rolstp,
+            ncuts,
+            schstp,
+            soltol,
+            maxn,
+            &c_npts[0],
+            <SpiceDouble (*)[3]> &c_points[0, 0],
+            &c_epochs[0],
+            <SpiceDouble (*)[3]> &c_trmvcs[0, 0]
+        )
+    check_for_spice_error()
+    # return the results
+    return p_npts, p_points, p_epochs, p_trmvcs
+
+
+@boundscheck(False)
+@wraparound(False)
+cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] termpt_v(
+    const char * method,
+    const char * ilusrc,
+    const char * target,
+    double[::1] ets,
+    const char * fixref,
+    const char * abcorr,
+    const char * corloc,
+    const char * obsrvr,
+    double[::1] refvec,
+    double rolstp,
+    int ncuts,
+    double schstp,
+    double soltol,
+    int maxn
+    ):
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.termpt`
+
+    Find terminator points on a target body. The caller specifies
+    half-planes, bounded by the illumination source center-target center
+    vector, in which to search for terminator points.
+
+    The terminator can be either umbral or penumbral. The umbral
+    terminator is the boundary of the region on the target surface
+    where no light from the source is visible. The penumbral
+    terminator is the boundary of the region on the target surface
+    where none of the light from the source is blocked by the target
+    itself.
+
+    The surface of the target body may be represented either by a
+    triaxial ellipsoid or by topographic data.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/termpt_c.html
+
+    :param method: Computation method.
+    :param ilusrc: Illumination source.
+    :param target: Name of target body.
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :param fixref: Body-fixed, body-centered target body frame.
+    :param abcorr: Aberration correction.
+    :param corloc: Aberration correction locus.
+    :param obsrvr: Name of observing body.
+    :param refvec: Reference vector for cutting half-planes.
+    :param rolstp: Roll angular step for cutting half-planes.
+    :param ncuts: Number of cutting half-planes.
+    :param schstp: Angular step size for searching.
+    :param soltol: Solution convergence tolerance.
+    :param maxn: Maximum number of entries in output arrays.
+    :return: 
+        Counts of terminator points corresponding to cuts, 
+        Terminator points in km, 
+        Times associated with terminator points in seconds, 
+        Terminator vectors emanating from the observer in km
+    """
+    # process inputs
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef Py_ssize_t i, n = c_ets.shape[0]
+    cdef Py_ssize_t c_maxn = maxn
+    cdef const np.double_t[::1] c_refvec = np.ascontiguousarray(refvec, dtype=np.double)
+    cdef const SpiceDouble* c_refvec_ptr = &c_refvec[0]
+    # allocate outputs
+    cdef np.ndarray[np.int32_t, ndim=2, mode='c'] p_npts = np.empty((n, c_maxn), dtype=np.int32, order='C')
+    cdef int[:,::1] c_npts = p_npts
+    cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_points = np.empty((n, c_maxn, 3), dtype=np.double, order='C')
+    cdef np.double_t[:,:,::1] c_points = p_points
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_epochs = np.empty((n, c_maxn), dtype=np.double, order='C')
+    cdef np.double_t[:,::1] c_epochs = p_epochs
+    cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_trmvcs = np.empty((n, c_maxn, 3), dtype=np.double, order='C')
+    cdef np.double_t[:,:,::1] c_trmvcs = p_trmvcs
+    # call the c function
+    with nogil:
+        for i in range(n):
+            termpt_c(
+                method,
+                ilusrc,
+                target,
+                c_ets[i],
+                fixref,
+                abcorr,
+                corloc,
+                obsrvr,
+                c_refvec_ptr,
+                rolstp,
+                ncuts,
+                schstp,
+                soltol,
+                maxn,
+                &c_npts[i, 0],
+                <SpiceDouble (*)[3]> &c_points[i, 0, 0],
+                &c_epochs[i, 0],
+                <SpiceDouble (*)[3]> &c_trmvcs[i, 0, 0]
+            )
+    check_for_spice_error()
+    # return the results
+    return p_npts, p_points, p_epochs, p_trmvcs
+
+
+def termpt(
+    method: str,
+    ilusrc: str,
+    target: str,
+    et: float | double[::1],
+    fixref: str,
+    abcorr: str,
+    corloc: str,
+    obsrvr: str,
+    refvec: np.ndarray,
+    rolstp: float,
+    ncuts: int,
+    schstp: float,
+    soltol: float,
+    maxn: int,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Find terminator points on a target body. The caller specifies
+    half-planes, bounded by the illumination source center-target center
+    vector, in which to search for terminator points.
+
+    The terminator can be either umbral or penumbral. The umbral
+    terminator is the boundary of the region on the target surface
+    where no light from the source is visible. The penumbral
+    terminator is the boundary of the region on the target surface
+    where none of the light from the source is blocked by the target
+    itself.
+
+    The surface of the target body may be represented either by a
+    triaxial ellipsoid or by topographic data.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/termpt_c.html
+
+    :param method: Computation method.
+    :param ilusrc: Illumination source.
+    :param target: Name of target body.
+    :param et: Epoch in ephemeris seconds past J2000 TDB.
+    :param fixref: Body-fixed, body-centered target body frame.
+    :param abcorr: Aberration correction.
+    :param corloc: Aberration correction locus.
+    :param obsrvr: Name of observing body.
+    :param refvec: Reference vector for cutting half-planes.
+    :param rolstp: Roll angular step for cutting half-planes.
+    :param ncuts: Number of cutting half-planes.
+    :param schstp: Angular step size for searching.
+    :param soltol: Solution convergence tolerance.
+    :param maxn: Maximum number of entries in output arrays.
+    :return: 
+        Counts of terminator points corresponding to cuts, 
+        Terminator points in km, 
+        Times associated with terminator points in seconds, 
+        Terminator vectors emanating from the observer in km
+    """
+    if PyFloat_Check(et):
+        return termpt_s(method, ilusrc, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp, ncuts, schstp, soltol, maxn)
+    else:
+        return termpt_v(method, ilusrc, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp, ncuts, schstp, soltol, maxn)
 
 
 def timout_s(
