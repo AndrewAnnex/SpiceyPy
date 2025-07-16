@@ -58,9 +58,12 @@ def test_SpicePlane():
 
 def test_SpiceCell():
     test_cell = stypes.SPICEINT_CELL(8)
+    assert len(test_cell)==0,"len() functionality has changed"
+    assert not test_cell,"bool() functionality has changed"
     spice.appndi(1, test_cell)
     spice.appndi(2, test_cell)
     spice.appndi(3, test_cell)
+    assert len(test_cell)>0,"len() functionality has changed"
     assert [x for x in test_cell] == [1, 2, 3]
     assert len(test_cell) == 3
     assert 1 in test_cell
