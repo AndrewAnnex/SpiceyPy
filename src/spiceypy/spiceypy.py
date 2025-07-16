@@ -429,7 +429,7 @@ def bltfrm(frmcls: int, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     :return: Set of ID codes of frames of the specified class.
     """
     frmcls = ctypes.c_int(frmcls)
-    if not out_cell:
+    if out_cell is None:
         out_cell = stypes.SPICEINT_CELL(1000)
     libspice.bltfrm_c(frmcls, out_cell)
     return out_cell
@@ -1375,7 +1375,7 @@ def ckobj(ck: str, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     """
     assert isinstance(ck, str)
     ck = stypes.string_to_char_p(ck)
-    if not out_cell:
+    if out_cell is None:
         out_cell = stypes.SPICEINT_CELL(1000)
     assert isinstance(out_cell, stypes.SpiceCell)
     assert out_cell.dtype == 2
@@ -8707,7 +8707,7 @@ def kplfrm(frmcls: int, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     :param out_cell: Optional output Spice Int Cell
     :return: Set of ID codes of frames of the specified class.
     """
-    if not out_cell:
+    if out_cell is None:
         out_cell = stypes.SPICEINT_CELL(1000)
     frmcls = ctypes.c_int(frmcls)
     libspice.kplfrm_c(frmcls, ctypes.byref(out_cell))
@@ -13018,7 +13018,7 @@ def spkobj(spk: str, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     :param out_cell: Optional Spice Int Cell.
     """
     spk = stypes.string_to_char_p(spk)
-    if not out_cell:
+    if out_cell is None:
         out_cell = stypes.SPICEINT_CELL(1000)
     assert isinstance(out_cell, stypes.SpiceCell)
     assert out_cell.dtype == 2
