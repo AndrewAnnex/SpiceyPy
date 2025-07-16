@@ -547,6 +547,12 @@ def test_ckcov():
     assert [
         [cover[i * 2], cover[i * 2 + 1]] for i in range(spice.wncard(cover))
     ] == expected_intervals
+    
+    
+def test_ckcov2():
+    ckid = spice.ckobj(ExtraKernels.v1jCk)[0]
+    cover = spice.SPICEDOUBLE_CELL(200000)
+    cover = spice.ckcov(ExtraKernels.v1jCk, ckid, False, "INTERVAL", 0.0, "SCLK", cover)
 
 
 def test_ckfrot():
