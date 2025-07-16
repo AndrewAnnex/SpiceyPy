@@ -552,7 +552,7 @@ def test_ckcov():
     
 def test_ckcov2():
     ckid = spice.ckobj(ExtraKernels.v1jCk)[0]
-    cover = spice.SPICEDOUBLE_CELL(200000)
+    cover = SPICEDOUBLE_CELL(200000)
     cover = spice.ckcov(ExtraKernels.v1jCk, ckid, False, "INTERVAL", 0.0, "SCLK", cover)
 
 
