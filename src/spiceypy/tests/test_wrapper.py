@@ -42,6 +42,7 @@ from spiceypy.tests.gettestkernels import (
     cleanup_core_kernels,
     cwd,
 )
+from spiceypy.utils.support_types import SPICEDOUBLE_CELL
 
 
 @pytest.fixture(autouse=True)
