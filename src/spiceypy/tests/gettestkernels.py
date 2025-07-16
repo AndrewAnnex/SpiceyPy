@@ -85,6 +85,8 @@ def cleanup_cassini_kernels() -> None:
 class ExtraKernels(object):
     voyagerSclk_url = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/main/vg200022.tsc"
     voyagerSclk_md5 = "4bcaf22788efbd86707c4b3c4d63c0c3"
+    v1jCk_url = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/main/vg1_jup_version1_type1_iss_sedr.bc"
+    v1jCk_md5 = "92ac30ccb1c1de6149058aef342da593"
     earthTopoTf_url = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/main/earth_topo_050714.tf"
     earthTopoTf_md5 = "fbde06c5abc5da969db984bb4ce5e6e0"
     earthStnSpk_url = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/main/earthstns_itrf93_050714.bsp"
@@ -108,6 +110,7 @@ class ExtraKernels(object):
     v02swuck_url = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/main/vo2_swu_ck2.bc"
     v02swuck_md5 = "f59ef0556dfc63b55465e152f2d6f5a4"
     voyagerSclk = get_path_from_url(voyagerSclk_url)
+    v1jCk = get_path_from_url(v1jCk_url)
     earthTopoTf = get_path_from_url(earthTopoTf_url)
     earthStnSpk = get_path_from_url(earthStnSpk_url)
     earthHighPerPck = get_path_from_url(earthHighPerPck_url)
@@ -123,6 +126,7 @@ class ExtraKernels(object):
 
 def cleanup_extra_kernels() -> None:
     cleanup_file(ExtraKernels.voyagerSclk)
+    cleanup_file(ExtraKernels.v1jCk)
     cleanup_file(ExtraKernels.earthTopoTf)
     cleanup_file(ExtraKernels.earthStnSpk)
     cleanup_file(ExtraKernels.earthHighPerPck)
@@ -256,6 +260,7 @@ def get_standard_kernels() -> None:
 def get_extra_test_kernels() -> None:
     # these are test kernels not included in the standard meta kernel
     get_kernel(ExtraKernels.voyagerSclk_url, ExtraKernels.voyagerSclk_md5)
+    get_kernel(ExtraKernels.v1jCk_url, ExtraKernels.v1jCk_md5)
     get_kernel(ExtraKernels.earthTopoTf_url, ExtraKernels.earthTopoTf_md5)
     get_kernel(ExtraKernels.earthStnSpk_url, ExtraKernels.earthStnSpk_md5)
     get_kernel(ExtraKernels.earthHighPerPck_url, ExtraKernels.earthHighPerPck_md5)
