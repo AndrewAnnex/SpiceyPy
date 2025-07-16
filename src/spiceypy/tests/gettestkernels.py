@@ -85,7 +85,7 @@ def cleanup_cassini_kernels() -> None:
 class ExtraKernels(object):
     voyagerSclk_url = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/main/vg200022.tsc"
     voyagerSclk_md5 = "4bcaf22788efbd86707c4b3c4d63c0c3"
-    v1jCk_url = "https://pds-rings.seti.org/voyager/ck/vg1_jup_version1_type1_iss_sedr.bc"
+    v1jCk_url = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/main/vg1_jup_version1_type1_iss_sedr.bc"
     v1jCk_md5 = "92ac30ccb1c1de6149058aef342da593"
     earthTopoTf_url = "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/main/earth_topo_050714.tf"
     earthTopoTf_md5 = "fbde06c5abc5da969db984bb4ce5e6e0"
