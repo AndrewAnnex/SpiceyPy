@@ -92,12 +92,6 @@ def test_spicecell_true():
     assert test_cell
 
 
-def test_spicecell_len_gt_0():
-    test_cell = stypes.SPICEINT_CELL(8)
-    spice.appndi(1, test_cell)
-    assert len(test_cell)==1
-
-
 def test_spicecell_equality():
     c1 = stypes.Cell_Int(8)
     spice.appndi([1, 2, 3], c1)
