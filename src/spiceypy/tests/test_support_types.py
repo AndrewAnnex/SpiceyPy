@@ -58,8 +58,6 @@ def test_SpicePlane():
 
 def test_SpiceCell():
     test_cell = stypes.SPICEINT_CELL(8)
-    assert len(test_cell)==0,"len() functionality has changed"
-    assert not test_cell,"bool() functionality has changed"
     spice.appndi(1, test_cell)
     spice.appndi(2, test_cell)
     spice.appndi(3, test_cell)
@@ -76,6 +74,28 @@ def test_SpiceCell():
     with pytest.raises(IndexError):
         test_cell.__getitem__(3)
     assert str(test_cell).startswith("<SpiceCell")
+
+
+def test_spicecell_false():
+    test_cell = stypes.SPICEINT_CELL(8)
+    assert not test_cell
+
+
+def test_spicecell_len0():
+    test_cell = stypes.SPICEINT_CELL(8)
+    assert len(test_cell)==0
+
+
+def test_spicecell_true():
+    test_cell = stypes.SPICEINT_CELL(8)
+    spice.appndi(1, test_cell)
+    assert test_cell
+
+
+def test_spicecell_len_gt_0():
+    test_cell = stypes.SPICEINT_CELL(8)
+    spice.appndi(1, test_cell)
+    assert len(test_cell)==1
 
 
 def test_spicecell_equality():
