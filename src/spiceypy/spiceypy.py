@@ -1102,7 +1102,7 @@ def ckcov(
     level = stypes.string_to_char_p(level)
     tol = ctypes.c_double(tol)
     timsys = stypes.string_to_char_p(timsys)
-    if not cover:
+    if cover is None:
         cover = stypes.SPICEDOUBLE_CELL(20000)
     assert isinstance(cover, stypes.SpiceCell)
     assert cover.dtype == 1
