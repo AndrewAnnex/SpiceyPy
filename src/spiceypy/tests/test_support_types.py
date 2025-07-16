@@ -74,6 +74,22 @@ def test_SpiceCell():
     assert str(test_cell).startswith("<SpiceCell")
 
 
+def test_spicecell_false():
+    test_cell = stypes.SPICEINT_CELL(8)
+    assert not test_cell
+
+
+def test_spicecell_len0():
+    test_cell = stypes.SPICEINT_CELL(8)
+    assert len(test_cell)==0
+
+
+def test_spicecell_true():
+    test_cell = stypes.SPICEINT_CELL(8)
+    spice.appndi(1, test_cell)
+    assert test_cell
+
+
 def test_spicecell_equality():
     c1 = stypes.Cell_Int(8)
     spice.appndi([1, 2, 3], c1)

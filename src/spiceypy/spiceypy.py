@@ -548,8 +548,11 @@ def bltfrm(frmcls: int, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     :return: Set of ID codes of frames of the specified class.
     """
     frmcls = ctypes.c_int(frmcls)
-    if not out_cell:
+    if out_cell is None:
         out_cell = stypes.SPICEINT_CELL(1000)
+    else:
+        assert isinstance(out_cell, stypes.SpiceCell)
+        assert out_cell.is_int()
     libspice.bltfrm_c(frmcls, out_cell)
     return out_cell
 
@@ -1219,8 +1222,11 @@ def ckcov(
     level = stypes.string_to_char_p(level)
     tol = ctypes.c_double(tol)
     timsys = stypes.string_to_char_p(timsys)
-    if not cover:
+    if cover is None:
         cover = stypes.SPICEDOUBLE_CELL(20000)
+    else:
+        assert isinstance(cover, stypes.SpiceCell)
+        assert cover.is_double()
     assert isinstance(cover, stypes.SpiceCell)
     assert cover.dtype == 1
     libspice.ckcov_c(ck, idcode, needav, level, tol, timsys, ctypes.byref(cover))
@@ -1488,8 +1494,11 @@ def ckobj(ck: str, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     """
     assert isinstance(ck, str)
     ck = stypes.string_to_char_p(ck)
-    if not out_cell:
+    if out_cell is None:
         out_cell = stypes.SPICEINT_CELL(1000)
+    else:
+        assert isinstance(out_cell, stypes.SpiceCell)
+        assert out_cell.is_int()
     assert isinstance(out_cell, stypes.SpiceCell)
     assert out_cell.dtype == 2
     libspice.ckobj_c(ck, ctypes.byref(out_cell))
@@ -8806,8 +8815,11 @@ def kplfrm(frmcls: int, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     :param out_cell: Optional output Spice Int Cell
     :return: Set of ID codes of frames of the specified class.
     """
-    if not out_cell:
+    if out_cell is None:
         out_cell = stypes.SPICEINT_CELL(1000)
+    else:
+        assert isinstance(out_cell, stypes.SpiceCell)
+        assert out_cell.is_int()
     frmcls = ctypes.c_int(frmcls)
     libspice.kplfrm_c(frmcls, ctypes.byref(out_cell))
     return out_cell
@@ -13117,8 +13129,11 @@ def spkobj(spk: str, out_cell: Optional[SpiceCell] = None) -> SpiceCell:
     :param out_cell: Optional Spice Int Cell.
     """
     spk = stypes.string_to_char_p(spk)
-    if not out_cell:
+    if out_cell is None:
         out_cell = stypes.SPICEINT_CELL(1000)
+    else:
+        assert isinstance(out_cell, stypes.SpiceCell)
+        assert out_cell.is_int()
     assert isinstance(out_cell, stypes.SpiceCell)
     assert out_cell.dtype == 2
     libspice.spkobj_c(spk, ctypes.byref(out_cell))
