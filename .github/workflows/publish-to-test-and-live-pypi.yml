@@ -47,6 +47,7 @@ jobs:
           python -m twine check dist/*
       - uses: actions/upload-artifact@v4
         with:
+          name: artifact-sdist-${{ hashFiles('get_spice.py') }}-${{ hashFiles('pyproject.toml') }}
           path: dist/*.tar.gz
   test_sdist:
     name: Test SpiceyPy 🌶️ 🥧 Python 🐍 source distribution
@@ -165,7 +166,7 @@ jobs:
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
         uses: actions/upload-artifact@v4
         with:
-          name: artifact-${{ env.CSPICE_CACHE }}-${{ matrix.config.os }}-${{ matrix.config.arch }}-${{ hashFiles('get_spice.py') }}-${{ hashFiles('setup.cfg') }}
+          name: artifact-${{ env.CSPICE_CACHE }}-${{ matrix.config.os }}-${{ matrix.config.arch }}-${{ hashFiles('get_spice.py') }}-${{ hashFiles('pyproject.toml') }}
           path: ./wheelhouse/*.whl
   publish_to_pypi:
     name: Publish SpiceyPy 🌶️ 🥧 Python 🐍 distributions 📦 to PyPI and TestPyPI
