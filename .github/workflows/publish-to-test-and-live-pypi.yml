@@ -51,6 +51,7 @@ jobs:
           twine check dist/*
       - uses: actions/upload-artifact@v4
         with:
+          name: artifact-sdist-${{ hashFiles('get_spice.py') }}-${{ hashFiles('setup.cfg') }}
           path: dist/*.tar.gz
   build_wheels:
     strategy:

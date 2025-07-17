@@ -4,6 +4,17 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [6.0.3] - 2025-07-17
+Backport fix for spice cell functions
+
+### Added
+- Add assertions that passed-in SpiceCell is correct type for `bltfrm()`, `ckcov()`, `ckobj()`, `kplfrm()`, `spkobj()`
+
+### Fixed
+- Corrected bug where bool was used instead of is Null for specifying return SpiceCell in `bltfrm()`, `ckcov()`, `ckobj()`, `kplfrm()`, `spkobj()`
+- fixed sdist publishing issue in ci publish workflow
+
+
 ## [6.0.2] - 2025-07-12
 Backport fix to avoid numpy version change before v7.0.0 release
 ### Changed
