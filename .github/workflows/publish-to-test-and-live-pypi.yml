@@ -41,7 +41,7 @@ jobs:
         run: |
           coverage run --source spiceypy -m pytest --pyargs spiceypy
       - name: Upload 🆙 coverage 📈 report to codecov 
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: false
           verbose: true
