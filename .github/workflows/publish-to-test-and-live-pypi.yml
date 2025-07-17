@@ -177,7 +177,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          pattern: artifact-*
+          pattern: artifact*
           merge-multiple: true
           path: dist
       - name: Set up Python 🐍 3.13
