@@ -175,7 +175,7 @@ jobs:
         run: |
           python -m pytest --pyargs spiceypy --benchmark-only  
       - name: Upload 🆙 coverage 📈 report to codecov 
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: false
           verbose: true
@@ -235,7 +235,7 @@ jobs:
         run: |
           python -m coverage run --source spiceypy -m pytest -vv --pyargs spiceypy --benchmark-disable
       - name: Upload 🆙 coverage 📈 report to codecov 
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: false
           verbose: true
@@ -290,7 +290,7 @@ jobs:
         run: |
           python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
       - name: Upload 🆙 coverage 📈 report to codecov 
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: false
           verbose: true
