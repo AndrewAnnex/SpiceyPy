@@ -6,6 +6,7 @@
 .zip
 *.pyc
 *.so
+*.ipynb
 .vscode/
 
 # Spice Kernels
