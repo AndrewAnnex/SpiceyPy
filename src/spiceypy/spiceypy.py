@@ -12655,7 +12655,7 @@ def spkcpt(
 
     :param trgpos: Target position relative to center of motion.
     :param trgctr: Center of motion of target.
-    :param trgref: Observation epoch.
+    :param trgref: Frame of target position.
     :param et: Observation epoch in ephemeris seconds past J2000 TDB.
     :param outref: Reference frame of output state.
     :param refloc: Output reference frame evaluation locus.
