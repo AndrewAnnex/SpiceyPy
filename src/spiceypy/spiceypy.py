@@ -10327,12 +10327,14 @@ def pckcov(pck: str, idcode: int, cover: SpiceCell) -> None:
     :param pck: Name of PCK file.
     :param idcode: Class ID code of PCK reference frame.
     :param cover: Window giving coverage in pck for idcode.
+    :return: coverage window for a specified object in a specified PCK file
     """
     pck = stypes.string_to_char_p(pck)
     idcode = ctypes.c_int(idcode)
     assert isinstance(cover, stypes.SpiceCell)
     assert cover.dtype == 1
     libspice.pckcov_c(pck, idcode, ctypes.byref(cover))
+    return cover
 
 
 @spice_error_check
