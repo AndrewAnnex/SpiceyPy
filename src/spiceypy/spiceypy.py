@@ -10317,7 +10317,7 @@ def pckcls(handle: int) -> None:
 
 
 @spice_error_check
-def pckcov(pck: str, idcode: int, cover: SpiceCell) -> None:
+def pckcov(pck: str, idcode: int, cover: Optional[SpiceCell] = None) -> SpiceCell:
     """
     Find the coverage window for a specified reference frame in a
     specified binary PCK file.
@@ -10326,13 +10326,17 @@ def pckcov(pck: str, idcode: int, cover: SpiceCell) -> None:
 
     :param pck: Name of PCK file.
     :param idcode: Class ID code of PCK reference frame.
-    :param cover: Window giving coverage in pck for idcode.
-    :return: coverage window for a specified object in a specified PCK file
+    :param cover: Optional SPICE Window giving coverage in "pck" for "idcode".
+    :return: coverage window for a specified "idcode" in specified "pck" file
     """
     pck = stypes.string_to_char_p(pck)
     idcode = ctypes.c_int(idcode)
-    assert isinstance(cover, stypes.SpiceCell)
-    assert cover.dtype == 1
+    if cover is None:
+        cover = stypes.SPICEDOUBLE_CELL(20000)
+    else:
+        assert isinstance(cover, stypes.SpiceCell)
+        assert cover.dtype == 1
+        
     libspice.pckcov_c(pck, idcode, ctypes.byref(cover))
     return cover
 
@@ -12568,6 +12572,7 @@ def spkcov(spk: str, idcode: int, cover: Optional[SpiceCell] = None) -> SpiceCel
     :param spk: Name of SPK file.
     :param idcode: ID code of ephemeris object.
     :param cover: Optional SPICE Window giving coverage in "spk" for "idcode".
+    :return cover: Coverage window for a specified object in a specified SPK file
     """
     spk = stypes.string_to_char_p(spk)
     idcode = ctypes.c_int(idcode)
