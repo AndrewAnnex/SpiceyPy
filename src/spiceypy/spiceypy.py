@@ -10332,10 +10332,10 @@ def pckcov(pck: str, idcode: int, cover: Optional[SpiceCell] = None) -> SpiceCel
     pck = stypes.string_to_char_p(pck)
     idcode = ctypes.c_int(idcode)
     if cover is None:
-        cover = stypes.SPICEDOUBLE_CELL(20000)
-    else:
-        assert isinstance(cover, stypes.SpiceCell)
-        assert cover.dtype == 1
+        cover = stypes.SPICEDOUBLE_CELL(2000)
+        scard(0, cover)
+    assert isinstance(cover, stypes.SpiceCell)
+    assert cover.dtype == 1
     libspice.pckcov_c(pck, idcode, ctypes.byref(cover))
     return cover
 
