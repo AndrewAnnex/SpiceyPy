@@ -10336,7 +10336,6 @@ def pckcov(pck: str, idcode: int, cover: Optional[SpiceCell] = None) -> SpiceCel
     else:
         assert isinstance(cover, stypes.SpiceCell)
         assert cover.dtype == 1
-        
     libspice.pckcov_c(pck, idcode, ctypes.byref(cover))
     return cover
 
