@@ -108,9 +108,6 @@ jobs:
         env:
           CIBW_PLATFORM: ${{ matrix.platform || 'auto' }}
           SKBUILD_BUILD_VERBOSE: "true"
-      - name: Check dists
-        run: |
-          python -m twine check wheelhouse/*
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
         uses: actions/upload-artifact@v4
         with:

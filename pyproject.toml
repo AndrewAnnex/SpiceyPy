@@ -42,6 +42,7 @@ ci = [
 ]
 build = [
     {include-group = "core"},
+    "scikit-build-core",
     "Cython>=3.0.12",
 ]
 dev = [
