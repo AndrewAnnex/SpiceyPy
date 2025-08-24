@@ -37,7 +37,8 @@ publish = [
 ci = [
     {include-group = "core"},
     {include-group = "publish"},
-    "coverage>=7.0.0", 
+    "coverage>=7.0.0",
+    "certifi", 
     "black"
 ]
 build = [
@@ -154,10 +155,8 @@ build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
 # Skip 32-bit builds, pypy, and musllinux
 skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "pypy*", "pp*", "*-musllinux_aarch64", "*-musllinux_x86_64"]
 # other options
-build-verbosity = 2
-before-test = [
-    "pip install --group dev"
-]
+build-verbosity = 3
+test-groups = ["devwheel"]
 test-command = [
-    "python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable"
+    "pytest --pyargs spiceypy --benchmark-disable"
 ]
