@@ -52,7 +52,7 @@ dev = [
 ]
 devwheel = [
     {include-group = "dev"},
-    "cibuildwheel",
+    "cibuildwheel==3.1.4",
 ]
 doc = [
     {include-group = "dev"},
