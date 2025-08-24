@@ -114,7 +114,6 @@ sdist.exclude = [
     ".github",
     "*.cmake",
     "**/*.cmake",
-    "src/spiceypy/utils/*67.0.0*",
     "src/spiceypy/utils/cmake/",
     "src/spiceypy/utils/cmake/cspice/",
     "src/spiceypy/utils/cmake/cspice/*.cmake"

@@ -5,7 +5,6 @@
 .gz
 .zip
 *.pyc
-*.so
 .vscode/
 
 # Spice Kernels
@@ -70,4 +69,4 @@ src/spiceypy/utils/__pycache__/
 /badhashkernel.txt
 *.dll
 *.dylib
-*.so.*
+*.so

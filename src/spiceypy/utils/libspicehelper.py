@@ -50,7 +50,7 @@ else:
 if not libspice_path:
     # fallback to find file relative to current path
     host_OS = platform.system()
-    sharedLib = "libcspice.dll" if host_OS == "Windows" else "libcspice.so"
+    sharedLib = "cspice.dll" if host_OS == "Windows" else "libcspice.so"
     libspice_path = os.path.join(os.path.dirname(__file__), sharedLib)
 
 libspice = CDLL(libspice_path)
