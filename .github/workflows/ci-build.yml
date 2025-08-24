@@ -11,98 +11,27 @@ env:
   # increment to rebuild cspice manually
   CSPICE_VERSION: 67
   CSPICE_CACHE_NUMBER: 9
-  PYPI_CACHE_NUMBER: 2
+  PYPI_CACHE_NUMBER: 3
 
 jobs:
-  build:
-    name: Build libcspice 🌶️ 📚
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-14, windows-latest]
-    steps:
-      - name: Look for cached libcspice 🌶️ 📚
-        id: cache-libcspice
-        uses: actions/cache@v4
-        with:
-          path: |
-            ./src/spiceypy/utils/libcspice.*
-            ./src/cspice/include
-            ./src/cspice/src/cspice
-          key: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
-      - name: Setup 🔬🍦🏗️
-        if: ${{ matrix.os == 'windows-latest' && steps.cache-libcspice.outputs.cache-hit != 'true' }}
-        uses: ilammy/msvc-dev-cmd@v1.13.0
-      - name: Checkout 🌶️ 🥧
-        if: steps.cache-libcspice.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-      - name: Set up Python 🐍 3.13
-        if: steps.cache-libcspice.outputs.cache-hit != 'true'
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
-      - name: Display Python 🐍 version
-        if: steps.cache-libcspice.outputs.cache-hit != 'true'
-        run: python -c "import sys; print(sys.version)"
-      - name: Build libcspice 🌶️ 📚
-        if: steps.cache-libcspice.outputs.cache-hit != 'true'
-        env: 
-          CSPICE_NO_TEMP: "YES"
-        run: |
-          python -m pip install --user --group dev
-          python get_spice.py
-          ls ./src/spiceypy/utils/
-          ls ./src
-          ls ./src/cspice
-      - name: Upload built 🏗️ libcspice 🌶️ 📚
-        if: steps.cache-libcspice.outputs.cache-hit != 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
-          path: |
-            ./src/spiceypy/utils/libcspice.*
-            ./src/cspice/include
-            ./src/cspice/src/cspice
   test:
     name: Test SpiceyPy 🌶️ 🥧
-    needs: build
     runs-on: ${{ matrix.os }}
     permissions:
       id-token: write
       contents: read
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-14, windows-latest]
+        os: [ubuntu-22.04-arm, ubuntu-latest, macos-13, macos-14, windows-latest]
         python-version: ['3.10', '3.11', '3.12', '3.13']
     steps:
       - name: Setup windows msvc
         if: ${{ matrix.os == 'windows-latest'}}
         uses: ilammy/msvc-dev-cmd@v1.13.0
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Download built 🏗️ libcspice 🌶️ 📚
-        uses: actions/cache@v4
-        with:
-          path: |
-            ./src/spiceypy/utils/libcspice.*
-            ./src/cspice/include
-            ./src/cspice/src/cspice
-          key: artifact-${{ matrix.os }}-${{ env.CSPICE_VERSION }}-${{ env.CSPICE_CACHE_NUMBER }}-libcspice
-      - name: Verify cache 
-        run: |
-          echo "check src dir \n"
-          ls ./src
-          echo "check cspice dir \n"
-          ls ./src/cspice
-          ls ./src/cspice/include/
-          ls ./src/cspice/src/
-          echo "check for libcspice \n"
-          ls ./src/spiceypy/utils/
-          echo "done"
       - name: Set up Python 🐍 ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
@@ -143,34 +72,16 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --user --group dev
-      - name: Build Cyice
-        env:
-          CSPICE_NO_TEMP: "YES"
-          CSPICE_NO_BUILD: "YES"
-          SYSTEM_VERSION_COMPAT: 0
-        run: |
-          ls ./src/
-          ls ./src/cspice/include/
-          ls ./src/cspice/src/
-          ls ./src/spiceypy/utils/
-          echo ""
-          python setup.py build_ext -j 2 --inplace
-          echo ""
-          python -m build --wheel
-          echo ""
-          ls ./src/spiceypy/cyice/
-          ls ./dist/
+          python -m pip install --user pipx
+      - name: Build SpiceyPy 
+        run: pipx run build
       - name: Install SpiceyPy 🌶️ 🥧
-        env:
-          CSPICE_NO_TEMP: "YES"
-          CSPICE_NO_BUILD: "YES"
-          SYSTEM_VERSION_COMPAT: 0
-        run: |
-          python -m pip install . --user
+        run: pip install dist/*.whl
+        shell: bash
       - name: Test 🧪 with coverage 📈
         run: |
           python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
-      - name: Run Benchmarks on latest Python Version
+      - name: Run Benchmarks on latest Python Version Only
         if: ${{ matrix.python-version == '3.13' }}
         run: |
           python -m pytest --pyargs spiceypy --benchmark-only  
@@ -180,74 +91,74 @@ jobs:
           fail_ci_if_error: false
           verbose: true
           use_oidc: true
-  test_offline_shared:
+  # test_offline_shared:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     id-token: write
+  #     contents: read
+  #   steps:
+  #     - name: Checkout 🌶️ 🥧
+  #       uses: actions/checkout@v5
+  #       with:
+  #         ref: ${{ github.event.pull_request.head.sha }}
+  #     - name: Set up Python 🐍 3.13
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: '3.13'
+  #     - name: Display Python 🐍 version
+  #       run: python -c "import sys; print(sys.version)"
+  #     - name: Install pip
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #     - name: Get pip cache dir
+  #       id: pip-cache
+  #       run: |
+  #         echo "pip_cache_dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+  #     - name: Cache pip's cache dir
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: ${{ steps.pip-cache.outputs.pip_cache_dir }}
+  #         key: ${{ runner.os }}-3.13-test-pip-${{ hashFiles('**/pyproject.toml') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-3.13-test-pip-
+  #     - name: Install dependencies
+  #       run: | 
+  #         python -m pip install --user --group dev
+  #     - name: Download and extract the shared library for CSPICE 🌶️ 
+  #       run: |
+  #         mkdir -p /tmp/cspice/ 
+  #         wget -O - https://anaconda.org/conda-forge/cspice/67/download/linux-64/cspice-67-h7f98852_0.tar.bz2 | tar xjC /tmp/cspice/
+  #     - name: Install SpiceyPy 🌶️ 🥧
+  #       env:
+  #         CSPICE_SHARED_LIB: "/tmp/cspice/lib/libcspice.so"
+  #         CSPICE_NO_TEMP: "YES"
+  #         CSPICE_NO_BUILD: "YES"
+  #       run: |
+  #         python get_spice.py
+  #         ls ./src/
+  #         ls ./src/spiceypy/utils/
+  #         python setup.py build_ext -j 2 --inplace
+  #         python -m build --wheel
+  #         ls ./src/spiceypy/cyice/
+  #         ls ./dist/
+  #         python -m pip install . --user
+  #     - name: Test 🧪 with coverage 📈
+  #       run: |
+  #         python -m coverage run --source spiceypy -m pytest -vv --pyargs spiceypy --benchmark-disable
+  #     - name: Upload 🆙 coverage 📈 report to codecov 
+  #       uses: codecov/codecov-action@v5
+  #       with:
+  #         fail_ci_if_error: false
+  #         verbose: true
+  #         use_oidc: true
+  # test_offline_cspice_install:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-      - name: Set up Python 🐍 3.13
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
-      - name: Display Python 🐍 version
-        run: python -c "import sys; print(sys.version)"
-      - name: Install pip
-        run: |
-          python -m pip install --upgrade pip
-      - name: Get pip cache dir
-        id: pip-cache
-        run: |
-          echo "pip_cache_dir=$(pip cache dir)" >> $GITHUB_OUTPUT
-      - name: Cache pip's cache dir
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.pip-cache.outputs.pip_cache_dir }}
-          key: ${{ runner.os }}-3.13-test-pip-${{ hashFiles('**/pyproject.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-3.13-test-pip-
-      - name: Install dependencies
-        run: | 
-          python -m pip install --user --group dev
-      - name: Download and extract the shared library for CSPICE 🌶️ 
-        run: |
-          mkdir -p /tmp/cspice/ 
-          wget -O - https://anaconda.org/conda-forge/cspice/67/download/linux-64/cspice-67-h7f98852_0.tar.bz2 | tar xjC /tmp/cspice/
-      - name: Install SpiceyPy 🌶️ 🥧
-        env:
-          CSPICE_SHARED_LIB: "/tmp/cspice/lib/libcspice.so"
-          CSPICE_NO_TEMP: "YES"
-          CSPICE_NO_BUILD: "YES"
-        run: |
-          python get_spice.py
-          ls ./src/
-          ls ./src/spiceypy/utils/
-          python setup.py build_ext -j 2 --inplace
-          python -m build --wheel
-          ls ./src/spiceypy/cyice/
-          ls ./dist/
-          python -m pip install . --user
-      - name: Test 🧪 with coverage 📈
-        run: |
-          python -m coverage run --source spiceypy -m pytest -vv --pyargs spiceypy --benchmark-disable
-      - name: Upload 🆙 coverage 📈 report to codecov 
-        uses: codecov/codecov-action@v5
-        with:
-          fail_ci_if_error: false
-          verbose: true
-          use_oidc: true
-  test_offline_cspice_install:
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up Python 🐍 3.13

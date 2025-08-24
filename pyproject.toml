@@ -1,10 +1,6 @@
 [build-system]
-requires = [
-    "setuptools>=76.0.0",
-    "Cython>=3.0.12",
-    "numpy>=2.0,<3",
-]
-build-backend = "setuptools.build_meta"
+requires = ["scikit-build-core", "cython", "numpy"]
+build-backend = "scikit_build_core.build"
 
 [project]
 name = "spiceypy"
@@ -47,8 +43,6 @@ ci = [
 build = [
     {include-group = "core"},
     "Cython>=3.0.12",
-    "setuptools>=76.0.0",
-    "build", 
 ]
 dev = [
     {include-group = "build"},
@@ -57,7 +51,7 @@ dev = [
 ]
 devwheel = [
     {include-group = "dev"},
-    "cibuildwheel==3.0.1",
+    "cibuildwheel",
 ]
 doc = [
     {include-group = "dev"},
@@ -97,17 +91,36 @@ classifiers = [
 "Bug Tracker"   =  "https://github.com/AndrewAnnex/SpiceyPy/issues"
 "Changelog"     = "https://github.com/AndrewAnnex/SpiceyPy/blob/main/CHANGELOG.md"
 
+[tool.scikit-build.metadata.version]
+provider = "scikit_build_core.metadata.regex"
+input = "src/spiceypy/__init__.py"
 
-[tool.setuptools.dynamic]
-version = {attr = "spiceypy.__version__"}
-readme = {file = "README.rst"}
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.scikit-build]
+logging.level = "INFO"
+cmake.build-type = "Release"
+# TODO probably will want to consider excluding tests due to changing standards
+sdist.include = [
+    "src/spiceypy/*.py",
+    "src/spiceypy/benchmarks/*.py",
+    "src/spiceypy/test/*.py",
+    "src/spiceypy/utils/*.py",
+    "src/spiceypy/cyice/*.c",
+    "src/spiceypy/cyice/*.pyd",
+    "src/spiceypy/cyice/*.pyx",
+]
+sdist.exclude = [
+    ".github",
+    "*.cmake",
+    "**/*.cmake",
+    "src/spiceypy/utils/*67.0.0*",
+    "src/spiceypy/utils/cmake/",
+    "src/spiceypy/utils/cmake/cspice/",
+    "src/spiceypy/utils/cmake/cspice/*.cmake"
+]
+wheel.exclude = ["*.a"]
 
-[tool.setuptools.package-data]
-"*" = ["get_spice.py", "LICENSE", "README.rst"]
-spiceypy = [ "utils/*.so", "utils/*.dylib", "utils/*.dll", "cyice/*.so", "cyice/*.dylib", "cyice/*.dll"]
+
 
 # pytest things
 [tool.pytest.ini_options]
@@ -134,38 +147,13 @@ source = [
 
 
 # all CI build wheel stuff goes here
-
-# Linux Cleanup
-[tool.cibuildwheel.linux]
-before-build = [
-    "rm -f {project}/src/cyice/cyice.c",
-    "rm -f {project}/src/cyice/*.so",
-]
-
-# Macos Cleanup
-[tool.cibuildwheel.macos]
-before-build = [
-    "rm -f {project}/src/cyice/cyice.c",
-    "rm -f {project}/src/cyice/*.so",
-]
-
 [tool.cibuildwheel]
-# use build instead of pip to build wheels
-build-frontend = "build"
-# environment variables for building wheels
-environment = { CSPICE_NO_TEMP = "YES", LD_LIBRARY_PATH = "src/spiceypy/utils/" }
-# build libcspice inside cibuildwheel before running python build steps
-before-build = [
-    "python -m pip install --group dev",
-    "python {project}/get_spice.py",
-]
 # Specify Python Versions to build
 build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
 # Skip 32-bit builds, pypy, and musllinux
 skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "pypy*", "pp*", "*-musllinux_aarch64", "*-musllinux_x86_64"]
 # other options
 build-verbosity = 2
-
 before-test = [
     "pip install --group dev"
 ]
