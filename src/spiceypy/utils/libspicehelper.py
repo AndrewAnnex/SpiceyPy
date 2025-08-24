@@ -22,38 +22,105 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 __all__ = ["_tkversion", "libspice_path", "libspice"]
+from contextlib import contextmanager
 from ctypes import CDLL, POINTER, c_int, c_double, c_char, c_char_p, c_void_p
 from ctypes.util import find_library
 import os
+import sys
 import platform
+from pathlib import Path
+import logging
+
+if os.environ.get("SPICEYPY_LOGLEVEL"):
+    logging.basicConfig(level=os.environ["SPICEYPY_LOGLEVEL"].upper())
+
+logger = logging.getLogger(__name__)
 
 from . import support_types as stypes
 from . import callbacks
 
-if "CSPICE_SHARED_LIB" in os.environ.keys():
-    libspice_path = os.environ.get("CSPICE_SHARED_LIB", None)
-else:
-    # capture ld_library_path, todo windows uses PATH, but I cover that case below
-    _llp = os.environ.get("LD_LIBRARY_PATH")
-    # append CWD to ldd
-    os.environ["LD_LIBRARY_PATH"] = f"{f'{_llp}:' if _llp else ''}{os.getcwd()}"
-    # locate cspice
-    libspice_path = find_library("cspice")
-    # restore ld_library_path
-    if _llp:
-        # if it was defined before, restore it
-        os.environ["LD_LIBRARY_PATH"] = _llp
-    else:
-        # if not restore to None. Does not affect system level environment variable
-        os.environ.pop("LD_LIBRARY_PATH", None)
-# Try again on windows, todo combine with above to make it cleaner
-if not libspice_path:
-    # fallback to find file relative to current path
-    host_OS = platform.system()
-    sharedLib = "cspice.dll" if host_OS == "Windows" else "libcspice.so"
-    libspice_path = os.path.join(os.path.dirname(__file__), sharedLib)
 
-libspice = CDLL(libspice_path)
+@contextmanager
+def set_ld_library_path():
+    """
+    A context manager to temporarily set an environment variable.
+    """
+    # Store original value
+    original_value = os.environ.get("LD_LIBRARY_PATH")  
+    try:
+        # Set new value
+        os.environ["LD_LIBRARY_PATH"] = f"{f'{_llp}:' if _llp else ''}{os.getcwd()}"         
+        # Execute code within the 'with' block
+        yield  
+    finally:
+        # Restore original value or remove if it was not set initially
+        if original_value is None:
+            os.environ.pop("LD_LIBRARY_PATH", None)
+        else:
+            os.environ["LD_LIBRARY_PATH"] = original_value
+
+
+def _try_load(path: str, desc: str):
+    try:
+        return CDLL(path)
+    except OSError as e:
+        logger.debug(f"Failed to load CSPICE Shared Library via {desc} at {path}: {e}")
+        return None
+
+def load_cspice()-> tuple[CDLL, str]:
+    """
+    Load the CSPICE shared library with priority:
+      1. Explicit environment override (CSPICE_SHARED_LIB).
+      2. System/conda install (via ctypes.util.find_library).
+      3. Fallback to library file in the same folder as this script.
+
+    Notes:
+        - If the shared library is missing or corrupted, raises RuntimeError.
+    """
+    # 1. User override
+    if libspice_path := os.environ.get("CSPICE_SHARED_LIB"):
+        logger.info(f"Using override from CSPICE_SHARED_LIB: {libspice_path}")
+        if lib := _try_load(libspice_path, "override"):
+            return lib, libspice_path
+
+    # 2. System/conda install
+    with set_ld_library_path():
+        if libspice_path := find_library("cspice"):
+            logger.info(f"Using system/conda library via find_library: {libspice_path}")
+            if lib := _try_load(libspice_path, "system/conda"):
+                return lib, libspice_path
+        else:
+            logger.debug("find_library('cspice') returned None")
+
+    # 3. Fallback per host
+    match sys.platform:
+        case p if p.startswith("win"):
+            shared_name = "cspice.dll"
+        case "darwin":
+            shared_name = "libcspice.dylib"
+        case "emscripten":
+            shared_name = "libcspice.wasm"
+        case _:
+            shared_name = "libcspice.so"
+
+    relpath = Path(__file__).resolve().parent / shared_name
+    if relpath.exists():
+        libspice_path = str(relpath)
+        logger.info(f"Using fallback library next to module: {libspice_path}")
+        if lib := _try_load(libspice_path, "relative path fallback"):
+            return lib, libspice_path
+
+    msg = (
+        "Could not locate or load CSPICE shared library. "
+        "Set CSPICE_SHARED_LIB to override detection."
+    )
+    logger.error(msg)
+    raise RuntimeError(msg)
+
+
+# try to load cspice
+libspice, libspice_path = load_cspice()
+
 # cache the tkversion for exceptions
 libspice.tkvrsn_c.restype = c_char_p
 _tkversion = libspice.tkvrsn_c(b"toolkit").decode("utf-8")
