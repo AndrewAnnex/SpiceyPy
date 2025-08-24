@@ -11,7 +11,7 @@ env:
   # increment to rebuild cspice manually
   CSPICE_VERSION: 67
   CSPICE_CACHE_NUMBER: 9
-  PYPI_CACHE_NUMBER: 3
+  PYPI_CACHE_NUMBER: 4
 
 jobs:
   test:
