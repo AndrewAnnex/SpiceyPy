@@ -49,7 +49,7 @@ def set_ld_library_path():
     original_value = os.environ.get("LD_LIBRARY_PATH")  
     try:
         # Set new value
-        os.environ["LD_LIBRARY_PATH"] = f"{f'{_llp}:' if _llp else ''}{os.getcwd()}"         
+        os.environ["LD_LIBRARY_PATH"] = f"{f'{original_value}:' if original_value else ''}{os.getcwd()}"         
         # Execute code within the 'with' block
         yield  
     finally:
