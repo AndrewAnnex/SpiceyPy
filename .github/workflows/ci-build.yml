@@ -78,7 +78,7 @@ jobs:
         env:
           SYSTEM_VERSION_COMPAT: 0
         run: 
-          python -m pipx run build --python $(which python)
+          python -m pipx run --python $(which python) build 
       - name: Install SpiceyPy 🌶️ 🥧
         shell: bash
         env:
