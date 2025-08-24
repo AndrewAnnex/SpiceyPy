@@ -59,7 +59,6 @@ jobs:
       - name: Install CI dependencies
         run: |
           python -m pip install --user --group dev
-          python -m pip install --user pipx
       - name: Install SpiceyPy 🌶️ 🥧 from sdist on Mac/Linux
         if: ${{ matrix.os != 'windows-latest' }}
         shell: bash

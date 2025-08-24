@@ -71,8 +71,7 @@ jobs:
             ${{ runner.os }}-${{ matrix.python-version }}-${{ env.PYPI_CACHE_NUMBER }}-test-pip-
       - name: Install dependencies
         run: |
-          python -m pip install --user --group dev
-          python -m pip install --user build
+          python -m pip install --user --group devwheel
       - name: Build SpiceyPy 
         shell: bash
         env:
@@ -86,12 +85,15 @@ jobs:
         run: 
           python -m pip install dist/*.whl
       - name: Test 🧪 with coverage 📈
+        shell: bash
         run: |
           python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
+          # look for .coverage file
+          ls -lahtr
       - name: Run Benchmarks on latest Python Version Only
         if: ${{ matrix.python-version == '3.13' }}
         run: |
-          python -m pytest --pyargs spiceypy --benchmark-only  
+          python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-only  
       - name: Upload 🆙 coverage 📈 report to codecov 
         uses: codecov/codecov-action@v5
         with:

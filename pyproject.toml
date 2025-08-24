@@ -42,6 +42,7 @@ ci = [
 ]
 build = [
     {include-group = "core"},
+    "build",
     "scikit-build-core",
     "Cython>=3.0.12",
 ]
@@ -158,5 +159,5 @@ before-test = [
     "pip install --group dev"
 ]
 test-command = [
-    "coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable"
+    "python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable"
 ]
