@@ -74,14 +74,17 @@ jobs:
           python -m pip install --user --group dev
           python -m pip install --user pipx
       - name: Build SpiceyPy 
-        env:
-          SYSTEM_VERSION_COMPAT: 0
-        run: pipx run build
-      - name: Install SpiceyPy 🌶️ 🥧
-        env:
-          SYSTEM_VERSION_COMPAT: 0
-        run: pip install dist/*.whl
         shell: bash
+        env:
+          SYSTEM_VERSION_COMPAT: 0
+        run: 
+          python -m pipx run build --python $(which python)
+      - name: Install SpiceyPy 🌶️ 🥧
+        shell: bash
+        env:
+          SYSTEM_VERSION_COMPAT: 0
+        run: 
+          python -m pip install dist/*.whl
       - name: Test 🧪 with coverage 📈
         run: |
           python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
