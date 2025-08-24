@@ -83,6 +83,7 @@ jobs:
           use_oidc: true
   build_wheels:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "x86_64"}
