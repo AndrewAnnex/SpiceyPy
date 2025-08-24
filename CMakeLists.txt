@@ -59,12 +59,12 @@ endif()
 # Fix runtime search paths so extension finds libcspice in same dir
 if(APPLE)
   set_target_properties(cyice PROPERTIES
-    INSTALL_RPATH "@loader_path"
+    INSTALL_RPATH "@loader_path/../utils"
     BUILD_WITH_INSTALL_RPATH ON
   )
 elseif(UNIX)
   set_target_properties(cyice PROPERTIES
-    INSTALL_RPATH "$ORIGIN"
+    INSTALL_RPATH "$ORIGIN/../utils"
     BUILD_WITH_INSTALL_RPATH ON
   )
 endif()
