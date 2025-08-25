@@ -137,8 +137,8 @@ jobs:
         timeout-minutes: 120
         env:
           CIBW_PLATFORM: ${{ matrix.platform || 'auto' }}
+          CMAKE_TLS_VERIFY: ${{ runner.os == 'macos-13' && '0' || '1' }}
           SKBUILD_BUILD_VERBOSE: "true"
-          CMAKE_TLS_VERIFY: 0
         run: |
           env | grep CIBW
           env | grep ARCH
