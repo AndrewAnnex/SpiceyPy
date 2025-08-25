@@ -70,3 +70,5 @@ src/spiceypy/utils/__pycache__/
 *.dll
 *.dylib
 *.so
+
+wheelhouse/
