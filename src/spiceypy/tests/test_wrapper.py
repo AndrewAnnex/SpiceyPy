@@ -6304,10 +6304,9 @@ def test_pckopn_pckw02_pckcls():
 
 def test_pckcov():
     ids = spice.cell_int(1000)
-    temp_obj = ids[0]
 
     # Checks for defaults
-    cover = spice.pckcov(ExtraKernels.earthHighPerPck, temp_obj)
+    cover = spice.pckcov(ExtraKernels.earthHighPerPck, ids)
     result = list(cover)
     expected = [94305664.18380372, 757080064.1838132]
     npt.assert_array_almost_equal(result, expected)
