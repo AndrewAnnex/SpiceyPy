@@ -140,9 +140,9 @@ jobs:
           CIBW_PLATFORM: 'auto' 
           SKBUILD_BUILD_VERBOSE: "true"
         run: |
-          env | grep CIBW
-          env | grep ARCH
-          env | grep CMAKE
+          env | grep CIBW || true
+          env | grep ARCH || true
+          env | grep CMAKE || true
           python -m cibuildwheel --output-dir wheelhouse      
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
         uses: actions/upload-artifact@v4
