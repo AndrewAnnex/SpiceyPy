@@ -8,35 +8,46 @@ find_package(
 
 include(FetchContent)
 
+# Try system/conda first
+find_library(CSPICE_LIB cspice)
 
-# Put CSPICE libs inside our package, not top-level lib/
-set(CMAKE_INSTALL_LIBDIR "spiceypy/utils/" CACHE INTERNAL "")
+if(CSPICE_LIB)
+  message(STATUS "Found system CSPICE: ${CSPICE_LIB}")
+else()
+  message(STATUS "System CSPICE not found, falling back to FetchContent")
+  # Put CSPICE libs inside our package, not top-level lib/
+  set(CMAKE_INSTALL_LIBDIR "spiceypy/utils/" CACHE INTERNAL "")
+  
+  if(MSVC)
+    # Force DLLs to install alongside LIBs instead of bin/
+    set(CMAKE_INSTALL_BINDIR "spiceypy/utils/" CACHE INTERNAL "")
+  endif()
+  
+  # Put CSPICE headers somewhere harmless in our package
+  set(CMAKE_INSTALL_INCLUDEDIR ${SKBUILD_NULL_DIR} CACHE INTERNAL "")
+  
+  # Also redirect data root to avoid polluting share/ etc.
+  set(CMAKE_INSTALL_DATAROOTDIR ${SKBUILD_NULL_DIR} CACHE INTERNAL "")
+  
+  # Bring in your CSPICE CMake project 
+  FetchContent_Declare(
+    cspice
+    GIT_REPOSITORY https://github.com/AndrewAnnex/cspice-cmake-spiceypy.git
+    GIT_TAG        408c2b91c0792a12b642c5f9d014605dc85b0c40 # tag v0.0.1
+  )
+  FetchContent_MakeAvailable(cspice)
+  
+  # disable versioned/
+  set_target_properties(cspice PROPERTIES
+    VERSION ""      # no libmyclibrary.so.X.Y.Z
+    SOVERSION ""    # no libmyclibrary.so.X
+    NO_SONAME ON    # don't encode a soname
+  )
+  # The target name depends on your cspice CMake setup
+  set(CSPICE_LIB cspice)
 
-if(MSVC)
-  # Force DLLs to install alongside LIBs instead of bin/
-  set(CMAKE_INSTALL_BINDIR "spiceypy/utils/" CACHE INTERNAL "")
 endif()
 
-# Put CSPICE headers somewhere harmless in our package
-set(CMAKE_INSTALL_INCLUDEDIR ${SKBUILD_NULL_DIR} CACHE INTERNAL "")
-
-# Also redirect data root to avoid polluting share/ etc.
-set(CMAKE_INSTALL_DATAROOTDIR ${SKBUILD_NULL_DIR} CACHE INTERNAL "")
-
-# Bring in your CSPICE CMake project 
-FetchContent_Declare(
-  cspice
-  GIT_REPOSITORY https://github.com/AndrewAnnex/cspice-cmake-spiceypy.git
-  GIT_TAG        408c2b91c0792a12b642c5f9d014605dc85b0c40 # tag v0.0.1
-)
-FetchContent_MakeAvailable(cspice)
-
-# disable versioned/
-set_target_properties(cspice PROPERTIES
-  VERSION ""      # no libmyclibrary.so.X.Y.Z
-  SOVERSION ""    # no libmyclibrary.so.X
-  NO_SONAME ON        # don't encode a soname
-)
 
 # Convert pyx to c
 set(PYX_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/spiceypy/cyice/cyice.pyx)
@@ -58,9 +69,9 @@ target_include_directories(cyice PRIVATE ${Python_NumPy_INCLUDE_DIRS})
 
 # Link CSPICE + math lib (only on UNIX)
 if(UNIX AND NOT WIN32 AND NOT MINGW)
-    target_link_libraries(cyice PRIVATE cspice m)
+    target_link_libraries(cyice PRIVATE ${CSPICE_LIB} m)
 else()
-    target_link_libraries(cyice PRIVATE cspice)
+    target_link_libraries(cyice PRIVATE ${CSPICE_LIB})
 endif()
 
 # Fix runtime search paths so extension finds libcspice in same dir
