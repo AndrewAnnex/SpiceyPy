@@ -99,6 +99,9 @@ jobs:
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v5
+      - name: Update SSL Macos-Intel
+        if: matrix.config.os == 'macos-13'
+        run:  brew upgrade ca-certificates -f
       - name: Setup 🔬🍦🏗️
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1.13.0
