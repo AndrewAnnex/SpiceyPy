@@ -136,17 +136,18 @@ jobs:
       - name: Build wheels for SpiceyPy 🌶️ 🥧
         timeout-minutes: 120
         env:
-          CIBW_PLATFORM: ${{ matrix.platform || 'auto' }}
-          CMAKE_TLS_VERIFY: ${{ runner.os == 'macos-13' && '0' || '1' }}
+          CIBW_PLATFORM: 'auto' 
+          CMAKE_TLS_VERIFY: ${{ matrix.config.os == 'macos-13' && 0 || 1 }}
           SKBUILD_BUILD_VERBOSE: "true"
         run: |
           env | grep CIBW
           env | grep ARCH
+          env | grep CMAKE
           python -m cibuildwheel --output-dir wheelhouse      
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
         uses: actions/upload-artifact@v4
         with:
-          name: artifact-${{ env.CSPICE_CACHE }}-${{ matrix.config.os }}-${{ strategy.job-index }}-${{ hashFiles('pyproject.toml') }}
+          name: artifact-${{ matrix.config.os }}-${{ strategy.job-index }}-${{ hashFiles('pyproject.toml') }}
           path: ./wheelhouse/*.whl
   publish_to_pypi:
     name: Publish SpiceyPy 🌶️ 🥧 Python 🐍 distributions 📦 to PyPI and TestPyPI
