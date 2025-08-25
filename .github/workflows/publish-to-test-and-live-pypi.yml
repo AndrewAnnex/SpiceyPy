@@ -115,6 +115,7 @@ jobs:
         run: |
           echo "CIBW_ARCHS_MACOS=x86_64" >> $GITHUB_ENV
           echo "ARCHFLAGS=-arch x86_64" >> $GITHUB_ENV
+          echo "CMAKE_TLS_VERIFY=0" >> $GITHUB_ENV
       - name: set additional environment variables for linux aarch64
         if: runner.os == 'Linux' && matrix.config.arch == 'aarch64'
         run: |
@@ -137,7 +138,6 @@ jobs:
         timeout-minutes: 120
         env:
           CIBW_PLATFORM: 'auto' 
-          CMAKE_TLS_VERIFY: ${{ matrix.config.os == 'macos-13' && 0 || 1 }}
           SKBUILD_BUILD_VERBOSE: "true"
         run: |
           env | grep CIBW
