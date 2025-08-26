@@ -6305,6 +6305,10 @@ def test_pckopn_pckw02_pckcls():
 def test_pckcov():
     ids = spice.cell_int(1000)
 
+    # Call pckfrm to populate ids cell
+    spice.pckfrm(ExtraKernels.earthHighPerPck, ids)
+    assert ids[0] == 3000
+
     # Checks for defaults
     cover = spice.pckcov(ExtraKernels.earthHighPerPck, ids[0])
     result = list(cover)
@@ -6314,7 +6318,6 @@ def test_pckcov():
     # Checks for old way, where if cover is pre-set, it should remain set
     cover = spice.cell_double(2000)
     spice.scard(0, cover)
-    spice.pckfrm(ExtraKernels.earthHighPerPck, ids)
     spice.pckcov(ExtraKernels.earthHighPerPck, ids[0], cover)
     result = list(cover)
     expected = [94305664.18380372, 757080064.1838132]
