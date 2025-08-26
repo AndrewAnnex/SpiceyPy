@@ -14,7 +14,6 @@ keywords = ["spiceypy", "spice", "cspice", "naif", "jpl", "space", "geometry", "
 classifiers = [
      "Development Status :: 5 - Production/Stable",
      "Natural Language :: English",
-     "License :: OSI Approved :: MIT License",
      "Topic :: Scientific/Engineering",
      "Topic :: Scientific/Engineering :: Astronomy",
      "Programming Language :: Python :: 3 :: Only",
