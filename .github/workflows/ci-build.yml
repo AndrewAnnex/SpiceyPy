@@ -64,10 +64,6 @@ jobs:
           python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
           # look for .coverage file
           ls -lahtr
-      - name: Run Benchmarks on latest Python Version Only
-        if: ${{ matrix.python-version == '3.13' }}
-        run: |
-          python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-only  
       - name: Upload 🆙 coverage 📈 report to codecov 
         uses: codecov/codecov-action@v5
         with:
