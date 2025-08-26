@@ -3648,7 +3648,7 @@ def test_ev2lin():
         "2 44420  24.0060  72.9267 0016343 241.6999 118.1833 14.53580129 17852",
     ]
     spice.furnsh(CoreKernels.testMetaKernel)
-    epoch, elems = spice.getelm(2019, 75, tle)
+    epoch, elems = spice.getelm(2019, tle)
     # adding 3 seconds manually as something is wrong with provided tle epoch or the lsk kernel was not used when generating the expected output
     expected_elems = np.array(
         [
@@ -3728,7 +3728,7 @@ def test_evsgp4():
         "2 43908  97.2676  47.2136 0020001 220.6050 139.3698 15.24999521 78544",
     ]
     geophs = [spice.bodvcd(399, _, 1)[1] for _ in noadpn]
-    _, elems = spice.getelm(1957, 75, tle)
+    _, elems = spice.getelm(1957, tle)
     et = spice.str2et("2020-05-26 02:25:00")
     state = spice.evsgp4(et, geophs, elems)
     expected_state = np.array(
@@ -3903,7 +3903,7 @@ def test_getelm():
         "2 18123  98.8296 152.0074 0014950 168.7820 191.3688 14.12912554 21686",
     ]
     spice.furnsh(CoreKernels.testMetaKernel)
-    epoch, elems = spice.getelm(1950, 75, tle)
+    epoch, elems = spice.getelm(1950, tle)
     expected_elems = [
         -6.969196665949579e-13,
         0.0,
@@ -3989,10 +3989,13 @@ def test_getmsg():
 
 
 def test_gfbail():
+    spice.reset()
+    spice.gfclrh()
     assert not spice.gfbail()
 
 
 def test_gfclrh():
+    spice.reset()
     spice.gfclrh()
     assert not spice.gfbail()
 
@@ -4093,6 +4096,7 @@ def test_gfevnt():
     if spice.gfbail():
         spice.gfclrh()  # pragma: no cover
     spice.gfsstp(0.5)
+    spice.gfclrh()
 
 
 def test_gffove():
@@ -4224,8 +4228,7 @@ def test_gfinth():
 
 
 def test_gfocce():
-    if spice.gfbail():
-        spice.gfclrh()  # pragma: no cover
+    spice.gfclrh()  # pragma: no cover
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et("2001 DEC 01 00:00:00 TDB")
     et1 = spice.str2et("2002 JAN 01 00:00:00 TDB")
@@ -4262,8 +4265,7 @@ def test_gfocce():
         cnfine,
         result,
     )
-    if spice.gfbail():
-        spice.gfclrh()  # pragma: no cover
+    spice.gfclrh()  # pragma: no cover
     count = spice.wncard(result)
     assert count == 1
 
@@ -5622,7 +5624,7 @@ def test_limbpt():
         3,
         1.0e-4,
         1.0e-7,
-        10000,
+        3,
     )
     assert points is not None
     assert len(points) == 3
@@ -6304,11 +6306,22 @@ def test_pckopn_pckw02_pckcls():
 
 def test_pckcov():
     ids = spice.cell_int(1000)
-    cover = spice.cell_double(2000)
+
+    # Call pckfrm to populate ids cell
     spice.pckfrm(ExtraKernels.earthHighPerPck, ids)
+    assert ids[0] == 3000
+
+    # Checks for defaults
+    cover = spice.pckcov(ExtraKernels.earthHighPerPck, ids[0])
+    result = list(cover)
+    expected = [94305664.18380372, 757080064.1838132]
+    npt.assert_array_almost_equal(result, expected)
+
+    # Checks for old way, where if cover is pre-set, it should remain set
+    cover = spice.cell_double(2000)
     spice.scard(0, cover)
     spice.pckcov(ExtraKernels.earthHighPerPck, ids[0], cover)
-    result = [x for x in cover]
+    result = list(cover)
     expected = [94305664.18380372, 757080064.1838132]
     npt.assert_array_almost_equal(result, expected)
 
@@ -8623,7 +8636,7 @@ def test_spkw10():
     spice.furnsh(CoreKernels.testMetaKernel)
     for i in range(0, 18, 2):
         lines = [tle[i], tle[i + 1]]
-        epoch, elems = spice.getelm(1950, 75, lines)
+        epoch, elems = spice.getelm(1950, lines)
         epoch_x.append(epoch)
         elems_x.extend(elems)
     first = epoch_x[0] - 0.5 * spice.spd()
@@ -9531,7 +9544,7 @@ def test_termpt():
         3,
         1.0e-4,
         1.0e-7,
-        10000,
+        3,
     )
     assert points is not None
     assert len(points) == 3

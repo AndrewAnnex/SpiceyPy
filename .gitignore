@@ -5,6 +5,8 @@
 .gz
 .zip
 *.pyc
+*.ipynb
+
 .vscode/
 
 # Spice Kernels
