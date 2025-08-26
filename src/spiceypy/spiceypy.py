@@ -1659,7 +1659,6 @@ def ckw05(
     )
 
 
-@spice_error_check
 def clight() -> float:
     """
     Return the speed of light in a vacuum (IAU official value, in km/sec).
@@ -1899,31 +1898,29 @@ def cvpool(agent: str) -> bool:
     return bool(update.value)
 
 
-@spice_error_check
-def cyllat(r: float, lonc: float, z: float) -> Tuple[float, float, float]:
+def cyllat(r: float, clon: float, z: float) -> Tuple[float, float, float]:
     """
     Convert from cylindrical to latitudinal coordinates.
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/cyllat_c.html
 
     :param r: Distance of point from z axis.
-    :param lonc: Cylindrical angle of point from XZ plane(radians).
+    :param clon: Cylindrical angle of point from XZ plane (radians).
     :param z: Height of point above XY plane.
     :return: Distance, Longitude (radians), and Latitude of point (radians).
     """
     r = ctypes.c_double(r)
-    lonc = ctypes.c_double(lonc)
+    clon = ctypes.c_double(clon)
     z = ctypes.c_double(z)
     radius = ctypes.c_double()
     lon = ctypes.c_double()
     lat = ctypes.c_double()
     libspice.cyllat_c(
-        r, lonc, z, ctypes.byref(radius), ctypes.byref(lon), ctypes.byref(lat)
+        r, clon, z, ctypes.byref(radius), ctypes.byref(lon), ctypes.byref(lat)
     )
     return radius.value, lon.value, lat.value
 
 
-@spice_error_check
 def cylrec(r: float, lon: float, z: float) -> ndarray:
     """
     Convert from cylindrical to rectangular coordinates.
@@ -1943,15 +1940,14 @@ def cylrec(r: float, lon: float, z: float) -> ndarray:
     return stypes.c_vector_to_python(rectan)
 
 
-@spice_error_check
-def cylsph(r: float, lonc: float, z: float) -> Tuple[float, float, float]:
+def cylsph(r: float, clon: float, z: float) -> Tuple[float, float, float]:
     """
     Convert from cylindrical to spherical coordinates.
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/cylsph_c.html
 
     :param r: Rectangular coordinates of the point.
-    :param lonc: Angle (radians) of point from XZ plane.
+    :param clon: Angle (radians) of point from XZ plane.
     :param z: Height of point above XY plane.
     :return:
             Distance of point from origin,
@@ -1959,15 +1955,20 @@ def cylsph(r: float, lonc: float, z: float) -> Tuple[float, float, float]:
             Azimuthal angle (longitude) of point (radians).
     """
     r = ctypes.c_double(r)
-    lonc = ctypes.c_double(lonc)
+    clon = ctypes.c_double(clon)
     z = ctypes.c_double(z)
     radius = ctypes.c_double()
     colat = ctypes.c_double()
-    lon = ctypes.c_double()
+    slon = ctypes.c_double()
     libspice.cylsph_c(
-        r, lonc, z, ctypes.byref(radius), ctypes.byref(colat), ctypes.byref(lon)
+        r, 
+        clon, 
+        z, 
+        ctypes.byref(radius), 
+        ctypes.byref(colat), 
+        ctypes.byref(slon)
     )
-    return radius.value, colat.value, lon.value
+    return radius.value, colat.value, slon.value
 
 
 ################################################################################
@@ -3226,7 +3227,6 @@ def dpgrdr(body: str, x: float, y: float, z: int, re: float, f: float) -> ndarra
     return stypes.c_matrix_to_numpy(jacobi)
 
 
-@spice_error_check
 def dpmax() -> float:
     """
     Return the value of the largest (positive) number representable
@@ -3241,7 +3241,6 @@ def dpmax() -> float:
     return libspice.dpmax_c()
 
 
-@spice_error_check
 def dpmin() -> float:
     """
     Return the value of the smallest (negative) number representable
@@ -3256,7 +3255,6 @@ def dpmin() -> float:
     return libspice.dpmin_c()
 
 
-@spice_error_check
 def dpr() -> float:
     """
     Return the number of degrees per radian.
@@ -5859,6 +5857,7 @@ def ev2lin(et: float, geophs: Sequence[float], elems: Sequence[float]) -> ndarra
     return stypes.c_vector_to_python(state)
 
 
+@spice_error_check
 def evsgp4(et: float, geophs: Sequence[float], elems: Sequence[float]) -> ndarray:
     """
     Evaluate NORAD two-line element data for earth orbiting
@@ -6220,7 +6219,7 @@ def georec(lon: float, lat: float, alt: float, re: float, f: float) -> ndarray:
 
 
 @spice_error_check
-def getelm(frstyr: int, lineln: int, lines: Iterable[str]) -> Tuple[float, ndarray]:
+def getelm(frstyr: int, lines: Iterable[str]) -> Tuple[float, ndarray]:
     """
     Given a the "lines" of a two-line element set, parse the
     lines and return the elements in units suitable for use
@@ -6229,14 +6228,13 @@ def getelm(frstyr: int, lineln: int, lines: Iterable[str]) -> Tuple[float, ndarr
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/getelm_c.html
 
     :param frstyr: Year of earliest representable two-line elements.
-    :param lineln: Length of strings in lines array.
     :param lines: A pair of "lines" containing two-line elements.
     :return:
             The epoch of the elements in seconds past J2000,
             The elements converted to SPICE units (see naif docs for units).
     """
     frstyr = ctypes.c_int(frstyr)
-    lineln = ctypes.c_int(lineln)
+    lineln = ctypes.c_int(70)
     lines = stypes.list_to_char_array_ptr(lines, x_len=lineln, y_len=2)
     epoch = ctypes.c_double()
     elems = stypes.empty_double_vector(10)  # guess for length
@@ -7702,7 +7700,6 @@ def gnpool(
 # H
 
 
-@spice_error_check
 def halfpi() -> float:
     """
     Return half the value of pi (the ratio of the circumference of
@@ -8526,9 +8523,10 @@ def iswhsp(string: str) -> bool:
 # J
 
 
-@spice_error_check
 def j1900() -> float:
     """
+    Return the Julian Date of 1899 DEC 31 12:00:00 (1900 JAN 0.5).
+
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/j1900_c.html
 
     :return: Julian Date of 1899 DEC 31 12:00:00
@@ -8536,9 +8534,10 @@ def j1900() -> float:
     return libspice.j1900_c()
 
 
-@spice_error_check
 def j1950() -> float:
     """
+    Return the Julian Date of 1950 JAN 01 00:00:00 (1950 JAN 1.0).
+
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/j1950_c.html
 
     :return: Julian Date of 1950 JAN 01 00:00:00
@@ -8546,9 +8545,10 @@ def j1950() -> float:
     return libspice.j1950_c()
 
 
-@spice_error_check
 def j2000() -> float:
     """
+    Return the Julian Date of 2000 JAN 01 12:00:00 (2000 JAN 1.5).
+
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/j2000_c.html
 
     :return: Julian Date of 2000 JAN 01 12:00:00
@@ -8556,9 +8556,10 @@ def j2000() -> float:
     return libspice.j2000_c()
 
 
-@spice_error_check
 def j2100() -> float:
     """
+    Return the Julian Date of 2100 JAN 01 12:00:00 (2100 JAN 1.5).
+
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/j2100_c.html
 
     :return: Julian Date of 2100 JAN 01 12:00:00
@@ -8566,9 +8567,10 @@ def j2100() -> float:
     return libspice.j2100_c()
 
 
-@spice_error_check
 def jyear() -> float:
     """
+    Return the number of seconds in a julian year.
+
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/jyear_c.html
 
     :return: number of seconds in a julian year
@@ -8840,7 +8842,6 @@ def lastnb(string: str) -> int:
     return libspice.lastnb_c(string)
 
 
-@spice_error_check
 def latcyl(radius: float, lon: float, lat: float) -> Tuple[float, float, float]:
     """
     Convert from latitudinal coordinates to cylindrical coordinates.
@@ -8864,10 +8865,7 @@ def latcyl(radius: float, lon: float, lat: float) -> Tuple[float, float, float]:
     return r.value, lonc.value, z.value
 
 
-@spice_error_check
-def latrec(
-    radius: float, longitude: Union[float, float], latitude: Union[float, float]
-) -> ndarray:
+def latrec(radius: float, longitude: float, latitude: float) -> ndarray:
     """
     Convert from latitudinal coordinates to rectangular coordinates.
 
@@ -8886,7 +8884,6 @@ def latrec(
     return stypes.c_vector_to_python(rectan)
 
 
-@spice_error_check
 def latsph(radius: float, lon: float, lat: float) -> Tuple[float, float, float]:
     """
     Convert from latitudinal coordinates to spherical coordinates.
@@ -9125,14 +9122,11 @@ def limbpt(
         epochs,
         tangts,
     )
-    # Clip the empty elements out of returned results
-    npts = stypes.c_vector_to_python(npts)
-    valid_points = numpy.where(npts >= 1)
     return (
-        npts[valid_points],
-        stypes.c_matrix_to_numpy(points)[valid_points],
-        stypes.c_vector_to_python(epochs)[valid_points],
-        stypes.c_matrix_to_numpy(tangts)[valid_points],
+        stypes.c_vector_to_python(npts),
+        stypes.c_matrix_to_numpy(points),
+        stypes.c_vector_to_python(epochs),
+        stypes.c_matrix_to_numpy(tangts),
     )
 
 
@@ -10544,7 +10538,6 @@ def phaseq(et: float, target: str, illmn: str, obsrvr: str, abcorr: str) -> floa
     return libspice.phaseq_c(et, target, illmn, obsrvr, abcorr)
 
 
-@spice_error_check
 def pi() -> float:
     """
     Return the value of pi (the ratio of the circumference of
@@ -11064,7 +11057,7 @@ def qxq(
 
 
 @spice_error_check
-def radrec(inrange: float, re: float, dec: float) -> ndarray:
+def radrec(inrange: float, ra: float, dec: float) -> ndarray:
     """
     Convert from range, right ascension, and declination to rectangular
     coordinates.
@@ -11072,15 +11065,15 @@ def radrec(inrange: float, re: float, dec: float) -> ndarray:
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/radrec_c.html
 
     :param inrange: Distance of a point from the origin.
-    :param re: Right ascension of point in radians.
+    :param ra: Right ascension of point in radians.
     :param dec: Declination of point in radians.
     :return: Rectangular coordinates of the point.
     """
     inrange = ctypes.c_double(inrange)
-    re = ctypes.c_double(re)
+    ra = ctypes.c_double(ra)
     dec = ctypes.c_double(dec)
     rectan = stypes.empty_double_vector(3)
-    libspice.radrec_c(inrange, re, dec, rectan)
+    libspice.radrec_c(inrange, ra, dec, rectan)
     return stypes.c_vector_to_python(rectan)
 
 
@@ -11718,7 +11711,6 @@ def rotvec(v1: Iterable[Union[float, float]], angle: float, iaxis: int) -> ndarr
     return stypes.c_vector_to_python(vout)
 
 
-@spice_error_check
 def rpd() -> float:
     """
     Return the number of radians per degree.
@@ -12236,7 +12228,6 @@ def size(cell: SpiceCell) -> int:
     return libspice.size_c(ctypes.byref(cell))
 
 
-@spice_error_check
 def spd() -> float:
     """
     Return the number of seconds in a day.
@@ -12248,11 +12239,9 @@ def spd() -> float:
     return libspice.spd_c()
 
 
-@spice_error_check
 def sphcyl(radius: float, colat: float, slon: float) -> Tuple[float, float, float]:
     """
-    This routine converts from spherical coordinates to cylindrical
-    coordinates.
+    Convert from spherical coordinates to cylindrical coordinates.
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/sphcyl_c.html
 
@@ -12268,15 +12257,14 @@ def sphcyl(radius: float, colat: float, slon: float) -> Tuple[float, float, floa
     colat = ctypes.c_double(colat)
     slon = ctypes.c_double(slon)
     r = ctypes.c_double()
-    lon = ctypes.c_double()
+    clon = ctypes.c_double()
     z = ctypes.c_double()
     libspice.sphcyl_c(
-        radius, colat, slon, ctypes.byref(r), ctypes.byref(lon), ctypes.byref(z)
+        radius, colat, slon, ctypes.byref(r), ctypes.byref(clon), ctypes.byref(z)
     )
-    return r.value, lon.value, z.value
+    return r.value, clon.value, z.value
 
 
-@spice_error_check
 def sphlat(r: float, colat: float, lons: float) -> Tuple[float, float, float]:
     """
     Convert from spherical coordinates to latitudinal coordinates.
@@ -15017,13 +15005,11 @@ def termpt(
         trmvcs,
     )
     # Clip the empty elements out of returned results
-    npts = stypes.c_vector_to_python(npts)
-    valid_points = numpy.where(npts >= 1)
     return (
-        npts[valid_points],
-        stypes.c_matrix_to_numpy(points)[valid_points],
-        stypes.c_vector_to_python(epochs)[valid_points],
-        stypes.c_matrix_to_numpy(trmvcs)[valid_points],
+        stypes.c_vector_to_python(npts),
+        stypes.c_matrix_to_numpy(points),
+        stypes.c_vector_to_python(epochs),
+        stypes.c_matrix_to_numpy(trmvcs),
     )
 
 
@@ -15353,7 +15339,6 @@ def tsetyr(year: int) -> None:
     libspice.tsetyr_c(year)
 
 
-@spice_error_check
 def twopi() -> float:
     """
     Return twice the value of pi
@@ -15444,7 +15429,6 @@ def txtopn(fname: str) -> int:
     return unit_out.value
 
 
-@spice_error_check
 def tyear() -> float:
     """
     Return the number of seconds in a tropical year.

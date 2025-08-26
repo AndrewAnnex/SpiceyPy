@@ -1,6 +1,7 @@
 import os
 import time
 import timeit
+import itertools
 
 import pytest
 pytestmark = pytest.mark.optional
@@ -80,6 +81,49 @@ def setup_module(module):
     download_kernels()
 
 #A
+
+@pytest.mark.parametrize('function', [cyice.azlcpo_s, cyice.azlcpo, spice.azlcpo], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["azlcpo"], indirect=True)
+def test_azlcpo(function, grouped_benchmark, load_core_kernels, load_earth_kernels):
+    et = spice.str2et("2003 Oct 13 06:00:00 UTC")
+    obspos = np.array([-2353.621419700, -4641.341471700, 3677.052317800])
+    azlsta, lt = grouped_benchmark(function, "ELLIPSOID", "VENUS", et, "CN+S", False, True, obspos, "EARTH", "ITRF93")
+    assert azlsta == pytest.approx([2.45721479e8, 5.13974044, -8.54270565e-1, -4.68189831, 7.02070016e-5, -5.39579640e-5])
+
+
+@pytest.mark.parametrize('function', [cyice.azlcpo_v, cyice.azlcpo], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["azlcpo_v"], indirect=True)
+def test_azlcpo_v(function, grouped_benchmark, load_core_kernels, load_earth_kernels):
+    et = spice.str2et("2003 Oct 13 06:00:00 UTC")
+    obspos = np.array([[-2353.621419700, -4641.341471700, 3677.052317800]])
+    ets = np.repeat(et, 100)
+    obsposs = np.repeat(obspos, 100, axis=0)
+    azlsta, lt = grouped_benchmark(function, "ELLIPSOID", "VENUS", ets, "CN+S", False, True, obsposs, "EARTH", "ITRF93")
+    assert azlsta[0,0] == pytest.approx([2.45721479e8, 5.13974044, -8.54270565e-1, -4.68189831, 7.02070016e-5, -5.39579640e-5])
+    assert azlsta.shape == (100, 100, 6)
+    assert lt.shape == (100, 100)
+
+
+@pytest.mark.parametrize('function', [cyice.azlrec_s, cyice.azlrec, spice.azlrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["azlrec"], indirect=True)
+def test_azlrec(function, grouped_benchmark):
+    res = grouped_benchmark(function, 1.0, np.radians(90.0), 0.0, True, True)
+    expected = np.array([0.0, 1.0, 0.0])
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.azlrec_v, cyice.azlrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["azlrec_v"], indirect=True)
+def test_azlrec_v(function, grouped_benchmark):
+    inrange = np.ones(100, dtype=float)
+    az = np.repeat(np.radians(90), 100)
+    el = np.zeros(100, dtype=float)
+    res = grouped_benchmark(function, inrange, az, el, True, True)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([[0.0, 1.0, 0.0]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v)
+
 
 #B
 
@@ -173,6 +217,65 @@ def test_ckgpav_v(function, grouped_benchmark, load_cassini_kernels):
     assert clkout[0] == 267832537952.0
 
 
+@pytest.mark.parametrize('function', [cyice.clight, spice.clight], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["clight"], indirect=True)
+def test_clight(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == 299792.458
+
+
+@pytest.mark.parametrize('function', [cyice.conics_s, cyice.conics, spice.conics], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["conics"], indirect=True)
+def test_conics(function, grouped_benchmark, load_core_kernels):
+    et = spice.str2et("Dec 25, 2007")
+    state, ltime = spice.spkezr("Moon", et, "J2000", "NONE", "EARTH")
+    dim, mu = spice.bodvrd("EARTH", "GM", 1)
+    elts = spice.oscelt(state, et, mu[0])
+    later = et + 7.0 * spice.spd()
+    grouped_benchmark(function, elts, later)
+    # now test correctness
+    later_state = function(elts, later)
+    assert isinstance(later_state, np.ndarray)
+    state, ltime = spice.spkezr("Moon", later, "J2000", "NONE", "EARTH")
+    pert = np.array(later_state) - np.array(state)
+    expected_pert = [
+        -7.48885583081946242601e03,
+        3.97608014470621128567e02,
+        1.95744667259379639290e02,
+        -3.61527427787390887026e-02,
+        -1.27926899069508159812e-03,
+        -2.01458906615054056388e-03,
+    ]
+    npt.assert_array_almost_equal(pert, expected_pert, decimal=5)
+
+
+@pytest.mark.parametrize('function', [cyice.conics_v, cyice.conics], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["conics_v"], indirect=True)
+def test_conics_v(function, grouped_benchmark, load_core_kernels):
+    et = spice.str2et("Dec 25, 2007")
+    state, ltime = spice.spkezr("Moon", et, "J2000", "NONE", "EARTH")
+    dim, mu = spice.bodvrd("EARTH", "GM", 1)
+    elts = spice.oscelt(state, et, mu[0])
+    later = et + 7.0 * spice.spd()
+    elts_v = np.repeat([elts], 100, axis=0)
+    later_v = np.repeat(later, 100)
+    grouped_benchmark(function, elts_v, later_v)
+    # now test correctness
+    later_state = function(elts_v, later_v)
+    assert isinstance(later_state, np.ndarray)
+    state, ltime = spice.spkezr("Moon", later, "J2000", "NONE", "EARTH")
+    pert = np.array(later_state[0]) - np.array(state)
+    expected_pert = [
+        -7.48885583081946242601e03,
+        3.97608014470621128567e02,
+        1.95744667259379639290e02,
+        -3.61527427787390887026e-02,
+        -1.27926899069508159812e-03,
+        -2.01458906615054056388e-03,
+    ]
+    npt.assert_array_almost_equal(pert, expected_pert, decimal=5)
+
+
 @pytest.mark.parametrize('function', [cyice.convrt_s, cyice.convrt, spice.convrt], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["convrt"], indirect=True)
 def test_convrt(function, grouped_benchmark):
@@ -189,7 +292,76 @@ def test_convrt_v(function, grouped_benchmark):
     assert isinstance(res, np.ndarray)
 
 
-# # D
+@pytest.mark.parametrize('function', [cyice.cyllat_s, cyice.cyllat, spice.cyllat], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["cyllat"], indirect=True)
+def test_cyllat(function, grouped_benchmark):
+    r   = 1.0
+    clon = 180.0 * spice.rpd()
+    z = -1.0
+    res = grouped_benchmark(function, r, clon, z)
+    expected = np.array([np.sqrt(2), np.pi, -np.pi / 4])
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.cyllat_v, cyice.cyllat], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["cyllat_v"], indirect=True)
+def test_cyllat_v(function, grouped_benchmark):
+    r   = np.ones(100, order='C')
+    clon = np.repeat(180.0, 100) * spice.rpd()
+    z = -np.ones(100, order='C')
+    res = grouped_benchmark(function, r, clon, z)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([[np.sqrt(2), np.pi, -np.pi / 4]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.cylrec_s, cyice.cylrec, spice.cylrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["cylrec"], indirect=True)
+def test_cylrec(function, grouped_benchmark):
+    r   = 0.0
+    clon = np.radians(33.0)
+    z = 0.0
+    res = grouped_benchmark(function, r, clon, z)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([0.0, 0.0, 0.0])
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.cylrec_v, cyice.cylrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["cylrec_v"], indirect=True)
+def test_cylrec_v(function, grouped_benchmark):
+    r    = np.zeros(100, order='C')
+    clon = np.repeat(np.radians(33.0), 100)
+    z    = np.zeros(100, order='C')
+    res = grouped_benchmark(function, r, clon, z)
+    assert isinstance(res, np.ndarray)
+    expected_v = np.zeros((100,3))
+    npt.assert_array_almost_equal(res, expected_v, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.cylsph_s, cyice.cylsph, spice.cylsph], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["cylsph"], indirect=True)
+def test_cylsph(function, grouped_benchmark):
+    res = grouped_benchmark(function, 1.0, np.deg2rad(180.0), 1.0)
+    expected = np.array([1.4142, np.deg2rad(45.0), np.deg2rad(180.0)])
+    npt.assert_array_almost_equal(res, expected, decimal=4)
+
+
+@pytest.mark.parametrize('function', [cyice.cylsph_v, cyice.cylsph], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["cylsph_v"], indirect=True)
+def test_cylsph_v(function, grouped_benchmark):
+    r   = np.ones(100, order='C')
+    clon = np.repeat(np.deg2rad(180.0), 100)
+    z = np.ones(100, order='C')
+    res = grouped_benchmark(function, r, clon, z)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([[1.4142, np.deg2rad(45.0), np.deg2rad(180.0)]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v, decimal=4)
+
+
+# D
 @pytest.mark.parametrize('function', [cyice.deltet_s, cyice.deltet, spice.deltet], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["deltet"], indirect=True)
 def test_deltet(function, grouped_benchmark, load_core_kernels):
@@ -205,7 +377,14 @@ def test_deltet_v(function, grouped_benchmark, load_core_kernels):
     res = function(ets_2004, "ET")
     assert isinstance(res, np.ndarray)
 
-# # E
+
+@pytest.mark.parametrize('function', [cyice.dpr, spice.dpr], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["dpr"], indirect=True)
+def test_dpr(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == 180.0 / np.arccos(-1.0)
+
+# E
 
 @pytest.mark.parametrize('function', [cyice.et2lst_s, cyice.et2lst, spice.et2lst], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["et2lst"], indirect=True)
@@ -273,7 +452,66 @@ def test_etcal_v(function, grouped_benchmark):
     res = function(data)
     assert isinstance(res, np.ndarray)
 
-# # F
+@pytest.mark.parametrize('function', [cyice.evsgp4_s, cyice.evsgp4, spice.evsgp4], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["evsgp4"], indirect=True)
+def test_evsgp4(function, grouped_benchmark, load_core_kernels):
+    spice.furnsh(ExtraKernels.geophKer)
+    tle = np.array([
+        "1 43908U 18111AJ  20146.60805006  .00000806  00000-0  34965-4 0  9999",
+        "2 43908  97.2676  47.2136 0020001 220.6050 139.3698 15.24999521 78544",
+    ])
+    noadpn = ["J2", "J3", "J4", "KE", "QO", "SO", "ER", "AE"]
+    geophs = np.array([spice.bodvcd(399, _, 1)[1] for _ in noadpn]).ravel()
+    _, elems = spice.getelm(1957, tle)
+    et = spice.str2et("2020-05-26 02:25:00")
+    grouped_benchmark(function, et, geophs, elems)
+    res = function(et, geophs, elems)
+    expected_state = np.array(
+        [
+            -4644.60403398,
+            -5038.95025539,
+            -337.27141116,
+            -0.45719025,
+            0.92884817,
+            -7.55917355,
+        ]
+    )
+    assert isinstance(res, np.ndarray)
+    npt.assert_array_almost_equal(expected_state, res)
+
+
+@pytest.mark.parametrize('function', [cyice.evsgp4_v, cyice.evsgp4], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["evsgp4_v"], indirect=True)
+def test_evsgp4_v(function, grouped_benchmark, load_core_kernels):
+    spice.furnsh(ExtraKernels.geophKer)
+    tle = np.array([
+        "1 43908U 18111AJ  20146.60805006  .00000806  00000-0  34965-4 0  9999",
+        "2 43908  97.2676  47.2136 0020001 220.6050 139.3698 15.24999521 78544",
+    ])
+    noadpn = ["J2", "J3", "J4", "KE", "QO", "SO", "ER", "AE"]
+    geophs = np.array([spice.bodvcd(399, _, 1)[1] for _ in noadpn]).ravel()
+    _, elems = spice.getelm(1957, tle)
+    et = spice.str2et("2020-05-26 02:25:00")
+    # make vectorized versions
+    ets = np.repeat(et, 100)
+    elems_v = np.repeat([elems], 100, axis=0)
+    grouped_benchmark(function, ets, geophs, elems_v)
+    res = function(ets, geophs, elems_v)
+    expected_state = np.array(
+        [
+            -4644.60403398,
+            -5038.95025539,
+            -337.27141116,
+            -0.45719025,
+            0.92884817,
+            -7.55917355,
+        ]
+    )
+    assert isinstance(res, np.ndarray)
+    assert res.shape == (100, 6)
+    npt.assert_array_almost_equal(expected_state, res[0])
+
+# F
 @pytest.mark.parametrize('function', [cyice.failed, spice.failed], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["failed"], indirect=True)
 def test_failed(function, grouped_benchmark):
@@ -334,7 +572,65 @@ def test_furnsh(function, grouped_benchmark):
     grouped_benchmark(function, CoreKernels.testMetaKernel)
 
 
-# # G
+# G
+
+@pytest.mark.parametrize('function', [cyice.georec_s, cyice.georec, spice.georec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["georec"], indirect=True)
+def test_georec(function, grouped_benchmark, load_core_kernels):
+    num_vals, radii = spice.bodvrd("EARTH", "RADII", 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    radius = radii[0]
+    lon = np.radians(118.0)
+    lat = np.radians(32.0)
+    alt = 0.0
+    res = grouped_benchmark(function, lon, lat, alt, radius, flat)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([-2541.74621567, 4780.329376, 3360.4312092])
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.georec_v, cyice.georec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["georec_v"], indirect=True)
+def test_georec_v(function, grouped_benchmark, load_core_kernels):
+    num_vals, radii = spice.bodvrd("EARTH", "RADII", 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    radius = radii[0]
+    lon = np.repeat(np.radians(118.0), 100, axis=0) 
+    lat = np.repeat(np.radians(32.0), 100, axis=0) 
+    alt = np.zeros(100, order='C')
+    grouped_benchmark(function, lon, lat, alt, radius, flat)
+    res = function(lon, lat, alt, radius, flat)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([[-2541.74621567, 4780.329376, 3360.4312092]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v)
+
+
+@pytest.mark.parametrize('function', [cyice.getelm_s, cyice.getelm, spice.getelm], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["getelm"], indirect=True)
+def test_getelm(function, grouped_benchmark, load_core_kernels):
+    tle = np.array([
+        "1 44420U 19036AC  19311.70264562  .00005403  00000-0  12176-2 0  9991",
+        "2 44420  24.0060  72.9267 0016343 241.6999 118.1833 14.53580129 17852",
+    ])
+    res = grouped_benchmark(function, 2019, tle)
+    assert isinstance(res[1], np.ndarray)
+    assert len(res[1]) == 10
+
+
+@pytest.mark.parametrize('function', [cyice.getelm_v, cyice.getelm], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["getelm_v"], indirect=True)
+def test_getelm_v(function, grouped_benchmark, load_core_kernels):
+    tl1 = "1 44420U 19036AC  19311.70264562  .00005403  00000-0  12176-2 0  9991"
+    tl2 = "2 44420  24.0060  72.9267 0016343 241.6999 118.1833 14.53580129 17852"
+    tles = np.array([[tl1, tl2] for _ in range(100)])
+    years = np.repeat(2019, 100).astype(np.int32)
+    res = grouped_benchmark(function, years, tles)
+    assert isinstance(res[0], np.ndarray)
+    assert isinstance(res[1], np.ndarray)
+    assert len(res[0]) == 100
+    assert res[1].shape == (100,10)
+
 
 @pytest.mark.parametrize('function', [cyice.getmsg, spice.getmsg], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["getmsg"], indirect=True)
@@ -344,15 +640,294 @@ def test_getmsg(function, grouped_benchmark):
     grouped_benchmark(function, "SHORT", 200)
     cyice.reset()
 
-# # H
+# H
 
-# # I
+@pytest.mark.parametrize('function', [cyice.halfpi, spice.halfpi], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["halfpi"], indirect=True)
+def test_halfpi(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == np.pi / 2
 
-# # J
+# I
 
-# # K
+@pytest.mark.parametrize('function', [cyice.illumf_s, cyice.illumf, spice.illumf], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["illumf"], indirect=True)
+def test_illumf(function, grouped_benchmark, load_core_kernels, load_cassini_kernels):
+    et = spice.str2et("2013 FEB 25 11:50:00 UTC")
+    camid = spice.bodn2c("CASSINI_ISS_NAC")
+    shape, obsref, bsight, n, bounds = spice.getfov(camid, 4)
+    spoint, etemit, srfvec = spice.sincpt(
+        "Ellipsoid", "Enceladus", et, "IAU_ENCELADUS", "CN+S", "CASSINI", obsref, bsight
+    )
+    grouped_benchmark(function, "Ellipsoid", "Enceladus", "Sun", et, "IAU_ENCELADUS", "CN+S", "CASSINI", spoint)
+    trgepc2, srfvec2, phase, incid, emissn, visibl, lit = function("Ellipsoid", "Enceladus", "Sun", et, "IAU_ENCELADUS", "CN+S", "CASSINI", spoint)
+    assert np.degrees(phase) == pytest.approx(161.82854377660345)
+    assert np.degrees(incid) == pytest.approx(134.92108561449996)
+    assert np.degrees(emissn) == pytest.approx(63.23618556218115)
+    assert isinstance(srfvec2, np.ndarray)
+    assert not lit
+    assert visibl
 
-# # L
+
+@pytest.mark.parametrize('function', [cyice.illumf_v, cyice.illumf], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["illumf_v"], indirect=True)
+def test_illumf_v(function, grouped_benchmark, load_core_kernels, load_cassini_kernels):
+    et = spice.str2et("2013 FEB 25 11:50:00 UTC")
+    camid = spice.bodn2c("CASSINI_ISS_NAC")
+    shape, obsref, bsight, n, bounds = spice.getfov(camid, 4)
+    spoint, etemit, srfvec = spice.sincpt(
+        "Ellipsoid", "Enceladus", et, "IAU_ENCELADUS", "CN+S", "CASSINI", obsref, bsight
+    )
+    ets = np.repeat(et, 100)
+    spoints = np.repeat([spoint], 100, axis=0)
+    grouped_benchmark(function, "Ellipsoid", "Enceladus", "Sun", ets, "IAU_ENCELADUS", "CN+S", "CASSINI", spoints)
+    trgepc2, srfvec2, phase, incid, emissn, visibl, lit = function("Ellipsoid", "Enceladus", "Sun", ets, "IAU_ENCELADUS", "CN+S", "CASSINI", spoints)
+    assert isinstance(trgepc2, np.ndarray)
+    assert isinstance(phase, np.ndarray)
+    assert isinstance(incid, np.ndarray)
+    assert isinstance(emissn, np.ndarray)
+    assert isinstance(srfvec2, np.ndarray)
+    assert isinstance(visibl, np.ndarray)
+    assert isinstance(lit, np.ndarray)
+    assert trgepc2.shape == (100, 100)
+    assert phase.shape   == (100, 100)
+    assert incid.shape   == (100, 100)
+    assert emissn.shape  == (100, 100)
+    assert visibl.shape  == (100, 100)
+    assert lit.shape  == (100, 100)    
+    assert srfvec2.shape == (100, 100, 3)
+    assert np.degrees(phase[0,0]) == pytest.approx(161.82854377660345)
+    assert np.degrees(incid[0,0]) == pytest.approx(134.92108561449996)
+    assert np.degrees(emissn[0,0]) == pytest.approx(63.23618556218115)
+    assert np.all(visibl)
+    assert not np.any(lit)
+
+
+@pytest.mark.parametrize('function', [cyice.illumg_s, cyice.illumg, spice.illumg], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["illumg"], indirect=True)
+def test_illumg(function, grouped_benchmark, load_core_kernels, load_cassini_kernels):
+    et = spice.str2et("2013 FEB 25 11:50:00 UTC")
+    spoint, trgepc, srfvec = spice.subpnt(
+        "Near Point/Ellipsoid", "Enceladus", et, "IAU_ENCELADUS", "CN+S", "Earth"
+    )
+    grouped_benchmark(function, "Ellipsoid", "Enceladus", "Sun", et, "IAU_ENCELADUS", "CN+S", "CASSINI", spoint)
+    trgepc2, srfvec2, phase, incid, emissn = function("Ellipsoid", "Enceladus", "Sun", et, "IAU_ENCELADUS", "CN+S", "CASSINI", spoint)
+    assert np.degrees(phase) == pytest.approx(161.859925246638)
+    assert np.degrees(incid) == pytest.approx(18.47670084384343)
+    assert np.degrees(emissn) == pytest.approx(143.6546170649875)
+    assert isinstance(srfvec2, np.ndarray)
+
+
+@pytest.mark.parametrize('function', [cyice.illumg_v, cyice.illumg], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["illumg_v"], indirect=True)
+def test_illumg_v(function, grouped_benchmark, load_core_kernels, load_cassini_kernels):
+    et = spice.str2et("2013 FEB 25 11:50:00 UTC")
+    spoint, trgepc, srfvec = spice.subpnt(
+        "Near Point/Ellipsoid", "Enceladus", et, "IAU_ENCELADUS", "CN+S", "Earth"
+    )
+    ets = np.repeat(et, 100)
+    spoints = np.repeat([spoint], 100, axis=0)
+    grouped_benchmark(function, "Ellipsoid", "Enceladus", "Sun", ets, "IAU_ENCELADUS", "CN+S", "CASSINI", spoints)
+    trgepc2, srfvec2, phase, incid, emissn = function("Ellipsoid", "Enceladus", "Sun", ets, "IAU_ENCELADUS", "CN+S", "CASSINI", spoints)
+    assert isinstance(trgepc2, np.ndarray)
+    assert isinstance(phase, np.ndarray)
+    assert isinstance(incid, np.ndarray)
+    assert isinstance(emissn, np.ndarray)
+    assert isinstance(srfvec2, np.ndarray)
+    assert trgepc2.shape == (100, 100)
+    assert phase.shape   == (100, 100)
+    assert incid.shape   == (100, 100)
+    assert emissn.shape  == (100, 100)
+    assert srfvec2.shape == (100, 100, 3)
+    assert np.degrees(phase[0,0]) == pytest.approx(161.859925246638)
+    assert np.degrees(incid[0,0]) == pytest.approx(18.47670084384343)
+    assert np.degrees(emissn[0,0]) == pytest.approx(143.6546170649875)
+
+
+@pytest.mark.parametrize('function', [cyice.ilumin_s, cyice.ilumin, spice.ilumin], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["ilumin"], indirect=True)
+def test_ilumin(function, grouped_benchmark, load_core_kernels):
+    et = spice.str2et("2007 FEB 3 00:00:00.000")
+    trgepc, obspos, trmpts = spice.edterm(
+        "UMBRAL", "SUN", "MOON", et, "IAU_MOON", "LT+S", "EARTH", 3
+    )
+    grouped_benchmark(function, "Ellipsoid", "MOON", et, "IAU_MOON", "LT+S", "EARTH", trmpts[0])
+    iluet0, srfvec0, phase0, solar0, emissn0 = function("Ellipsoid", "MOON", et, "IAU_MOON", "LT+S", "EARTH", trmpts[0])
+    npt.assert_almost_equal(np.degrees(solar0), 90.269765819)
+    
+
+@pytest.mark.parametrize('function', [cyice.ilumin_v, cyice.ilumin], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["ilumin_v"], indirect=True)
+def test_ilumin_v(function, grouped_benchmark, load_core_kernels):
+    et = spice.str2et("2007 FEB 3 00:00:00.000")
+    ets = np.repeat(et, 100)
+    trgepc, obspos, trmpts = spice.edterm(
+        "UMBRAL", "SUN", "MOON", et, "IAU_MOON", "LT+S", "EARTH", 100
+    )
+    grouped_benchmark(function, "Ellipsoid", "MOON", ets, "IAU_MOON", "LT+S", "EARTH", trmpts)
+    iluet0, srfvec0, phase0, solar0, emissn0 = function("Ellipsoid", "MOON", ets, "IAU_MOON", "LT+S", "EARTH", trmpts)
+    assert isinstance(iluet0, np.ndarray)
+    assert isinstance(srfvec0, np.ndarray)
+    assert isinstance(phase0, np.ndarray)
+    assert isinstance(solar0, np.ndarray)
+    assert isinstance(emissn0, np.ndarray)
+    assert phase0.shape  == (100, 100)
+    assert solar0.shape  == (100, 100)
+    assert emissn0.shape == (100, 100)
+    assert srfvec0.shape == (100, 100, 3)
+    npt.assert_almost_equal(np.degrees(solar0[0,0]), 90.269765819)
+
+
+
+# J
+
+@pytest.mark.parametrize('function', [cyice.j1900, spice.j1900], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["j1900"], indirect=True)
+def test_j1900(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == 2415020.0
+
+
+@pytest.mark.parametrize('function', [cyice.j1950, spice.j1950], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["j1950"], indirect=True)
+def test_j1950(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == 2433282.5
+
+
+@pytest.mark.parametrize('function', [cyice.j2000, spice.j2000], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["j2000"], indirect=True)
+def test_j2000(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == 2451545.0
+
+
+@pytest.mark.parametrize('function', [cyice.j2100, spice.j2100], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["j2100"], indirect=True)
+def test_j2100(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == 2488070.0
+
+
+@pytest.mark.parametrize('function', [cyice.jyear, spice.jyear], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["jyear"], indirect=True)
+def test_jyear(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == 31557600.0
+
+# K
+
+# L
+
+@pytest.mark.parametrize('function', [cyice.latcyl_s, cyice.latcyl, spice.latcyl], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["latcyl"], indirect=True)
+def test_latcyl(function, grouped_benchmark):
+    r   = 1.0
+    lon = 90.0 * spice.rpd()
+    lat = 0.0
+    res = grouped_benchmark(function, r, lon, lat)
+    expected = np.array([r, lon, lat])
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.latcyl_v, cyice.latcyl], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["latcyl_v"], indirect=True)
+def test_latcyl_v(function, grouped_benchmark):
+    r   = np.ones(100, order='C')
+    lon = np.repeat(90.0, 100) * spice.rpd()
+    lat = np.zeros(100, order='C')
+    res = grouped_benchmark(function, r, lon, lat)
+    expected = np.vstack([r, lon, lat]).T
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.latrec_s, cyice.latrec, spice.latrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["latrec"], indirect=True)
+def test_latrec(function, grouped_benchmark):
+    r   = 1.0
+    lon = 90.0 * spice.rpd()
+    lat = 0.0
+    res = grouped_benchmark(function, r, lon, lat)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([0.0, 1.0, 0.0])
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.latrec_v, cyice.latrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["latrec_v"], indirect=True)
+def test_latrec_v(function, grouped_benchmark):
+    r   = np.ones(100, order='C')
+    lon = np.repeat(90.0, 100) * spice.rpd()
+    lat = np.zeros(100, order='C')
+    res = grouped_benchmark(function, r, lon, lat)
+    assert isinstance(res, np.ndarray)
+    expected = np.repeat([[0.0, 1.0, 0.0]], 100, axis=0)
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.latsph_s, cyice.latsph, spice.latsph], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["latsph"], indirect=True)
+def test_latsph(function, grouped_benchmark):
+    r   = 1.0
+    lon = 90.0 * spice.rpd()
+    lat = 0.0
+    res = grouped_benchmark(function, r, lon, lat)
+    expected = np.array([r, 90.0 * spice.rpd(), 90.0 * spice.rpd()])
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.limbpt_s, cyice.limbpt, spice.limbpt], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["limbpt"], indirect=True)
+def test_limbpt(function, grouped_benchmark, load_core_kernels):
+    spice.furnsh(ExtraKernels.marsSpk)
+    spice.furnsh(ExtraKernels.phobosDsk)
+    et = spice.str2et("1972 AUG 11 00:00:00")
+    args = (
+        "TANGENT/DSK/UNPRIORITIZED",
+        "Phobos",
+        et,
+        "IAU_PHOBOS",
+        "CN+S",
+        "CENTER",
+        "MARS",
+        np.array([0.0, 0.0, 1.0]),
+        spice.twopi() / 3.0,
+        3,
+        1.0e-4,
+        1.0e-7,
+        3,
+    )
+    npts, points, epochs, tangts = grouped_benchmark(function, *args)
+    assert npts.sum() == 3
+    assert len(points) == 3
+
+
+@pytest.mark.parametrize('function', [cyice.limbpt_v, cyice.limbpt], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["limbpt_v"], indirect=True)
+def test_limbpt_v(function, grouped_benchmark, load_core_kernels):
+    spice.furnsh(ExtraKernels.marsSpk)
+    spice.furnsh(ExtraKernels.phobosDsk)
+    et = spice.str2et("1972 AUG 11 00:00:00")
+    ets = np.linspace(et, et+1, 100)
+    args = (
+        "TANGENT/DSK/UNPRIORITIZED",
+        "Phobos",
+        ets,
+        "IAU_PHOBOS",
+        "CN+S",
+        "CENTER",
+        "MARS",
+        np.array([0.0, 0.0, 1.0]),
+        spice.twopi() / 3.0,
+        3,
+        1.0e-4,
+        1.0e-7,
+        3,
+    )
+    npts, points, epochs, tangts = grouped_benchmark(function, *args)
+    assert npts.shape == (100,3)
+    assert points.shape == (100, 3, 3)
+
 
 @pytest.mark.parametrize('function', [cyice.lspcn_s, cyice.lspcn, spice.lspcn], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["lspcn"], indirect=True)
@@ -369,15 +944,181 @@ def test_lspcn_v(function, grouped_benchmark, load_core_kernels):
     res = function("EARTH", ets, "NONE")
     assert isinstance(res, np.ndarray)
 
-# # M
+# M
 
-# # N
+# N
 
-# # O
+# O
 
-# # P
+@pytest.mark.parametrize('function', [cyice.occult_s, cyice.occult, spice.occult], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["occult"], indirect=True)
+def test_occult(function, grouped_benchmark, load_core_kernels, load_earth_kernels):
+    # Mercury is in front of the Sun as seen by observer (DSS-13) ()
+    et = spice.str2et("2006-11-08T22:00")
+    grouped_benchmark(
+        function,
+        "MERCURY",
+        "point",
+        " ",
+        "SUN",
+        "ellipsoid",
+        "IAU_SUN",
+        "CN",
+        "DSS-13",
+        et
+    )
+    res = function(
+        "MERCURY",
+        "point",
+        " ",
+        "SUN",
+        "ellipsoid",
+        "IAU_SUN",
+        "CN",
+        "DSS-13",
+        et
+    )
+    assert res == 2
+    assert isinstance(res, int)
 
-# # Q 
+
+@pytest.mark.parametrize('function', [cyice.occult_v, cyice.occult], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["occult_v"], indirect=True)
+def test_occult_v(function, grouped_benchmark, load_core_kernels, load_earth_kernels):
+    # Mercury is in front of the Sun as seen by observer (DSS-13) ()
+    et = spice.str2et("2006-11-08T22:00")
+    ets = np.repeat(et, 100)
+    grouped_benchmark(
+        function,
+        "MERCURY",
+        "point",
+        " ",
+        "SUN",
+        "ellipsoid",
+        "IAU_SUN",
+        "CN",
+        "DSS-13",
+        ets
+    )
+    res = function(
+        "MERCURY",
+        "point",
+        " ",
+        "SUN",
+        "ellipsoid",
+        "IAU_SUN",
+        "CN",
+        "DSS-13",
+        ets
+    )
+    expected = np.repeat(2, 100)
+    npt.assert_array_equal(res, expected)
+    assert isinstance(res, np.ndarray)
+
+
+
+@pytest.mark.parametrize('function', [cyice.oscelt_s, cyice.oscelt, spice.oscelt], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["oscelt"], indirect=True)
+def test_oscelt(function, grouped_benchmark, load_core_kernels):
+    et = spice.str2et("Dec 25, 2007")
+    state, _ = spice.spkezr("Moon", et, "J2000", "LT+S", "EARTH")
+    _, mass_earth = spice.bodvrd("EARTH", "GM", 1)
+    mu = mass_earth[0]
+    res = grouped_benchmark(function, state, et, mu)
+    expected = np.array([
+            3.60975119168868346605e+05,
+            7.81035176779166367966e-02,
+            4.87177926278510309288e-01,
+            6.18584206992959551030e+00,
+            1.28678805411666807856e+00,
+            5.53312778515375192079e-01,
+            2.51812865183709204197e+08,
+            3.98600435436095925979e+05
+    ])
+    assert isinstance(res, np.ndarray)
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.oscelt_v, cyice.oscelt], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["oscelt_v"], indirect=True)
+def test_oscelt_v(function, grouped_benchmark, load_core_kernels):
+    et = spice.str2et("Dec 25, 2007")
+    state, _ = spice.spkezr("Moon", et, "J2000", "LT+S", "EARTH")
+    _, mass_earth = spice.bodvrd("EARTH", "GM", 1)
+    mu = mass_earth[0]
+    state_v = np.repeat([state],100, axis=0)
+    et_v = np.repeat(et, 100)
+    res = grouped_benchmark(function, state_v, et_v, mu)
+    expected = np.array([[
+            3.60975119168868346605e+05,
+            7.81035176779166367966e-02,
+            4.87177926278510309288e-01,
+            6.18584206992959551030e+00,
+            1.28678805411666807856e+00,
+            5.53312778515375192079e-01,
+            2.51812865183709204197e+08,
+            3.98600435436095925979e+05
+    ]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    assert isinstance(res, np.ndarray)
+    npt.assert_array_almost_equal(res, expected_v)
+
+
+# P
+
+@pytest.mark.parametrize('function', [cyice.pgrrec_s, cyice.pgrrec, spice.pgrrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["pgrrec"], indirect=True)
+def test_pgrrec(function, grouped_benchmark, load_core_kernels):
+    num_vals, radii = spice.bodvrd("MARS", "RADII", 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    radius = radii[0]
+    res = grouped_benchmark(function, "MARS", np.radians(90), np.radians(45), 300.0, radius, flat)
+    expected = np.array([1.604650025e-13, -2.620678915e3, 2.592408909e3])
+    assert isinstance(res, np.ndarray)
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.pgrrec_v, cyice.pgrrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["pgrrec_v"], indirect=True)
+def test_pgrrec_v(function, grouped_benchmark, load_core_kernels):
+    num_vals, radii = spice.bodvrd("MARS", "RADII", 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    radius = radii[0]
+    lon = np.repeat(np.radians(90), 100)
+    lat = np.repeat(np.radians(45), 100)
+    alt = np.repeat(300.0, 100)
+    res = grouped_benchmark(function, "MARS", lon, lat, alt, radius, flat)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([[1.604650025e-13, -2.620678915e3, 2.592408909e3]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v)
+
+
+@pytest.mark.parametrize('function', [cyice.phaseq_s, cyice.phaseq, spice.phaseq], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["phaseq"], indirect=True)
+def test_phaseq(function, grouped_benchmark, load_core_kernels):
+    et = spice.str2et('2006 DEC 02 13:31:34.414')
+    res = grouped_benchmark(function, et, "moon", "sun", "earth", "lt+s")
+    expected = 0.575988450
+    npt.assert_almost_equal(res, expected)
+
+@pytest.mark.parametrize('function', [cyice.phaseq_v, cyice.phaseq], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["phaseq_v"], indirect=True)
+def test_phaseq_v(function, grouped_benchmark, load_core_kernels):
+    et = spice.str2et('2006 DEC 02 13:31:34.414')
+    ets = np.repeat(et, 100)
+    res = grouped_benchmark(function, ets, "moon", "sun", "earth", "lt+s")
+    assert isinstance(res, np.ndarray)
+    expected = np.repeat(0.575988450, 100)
+    npt.assert_array_almost_equal(res, expected)
+
+@pytest.mark.parametrize('function', [cyice.pi, spice.pi], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["pi"], indirect=True)
+def test_pi(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == np.pi
+
+# Q
 @pytest.mark.parametrize('function', [cyice.qcktrc, spice.qcktrc], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["qcktrc"], indirect=True)
 def test_qcktrc(function, grouped_benchmark):
@@ -392,13 +1133,201 @@ def test_qcktrc(function, grouped_benchmark):
     cyice.reset()
 
 # R
+@pytest.mark.parametrize('function', [cyice.radrec_s, cyice.radrec, spice.radrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["radrec"], indirect=True)
+def test_radrec(function, grouped_benchmark):
+    res = grouped_benchmark(function, 1.0, np.radians(90.0), 0.0)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([0.0, 1.0, 0.0])
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.radrec_v, cyice.radrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["radrec_v"], indirect=True)
+def test_radrec_v(function, grouped_benchmark):
+    inrange = np.ones(100, order='C')
+    ra      = np.repeat(np.radians(90.0), 100)
+    dec     = np.zeros(100, order='C')
+    res = grouped_benchmark(function, inrange, ra, dec)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([[0.0, 1.0, 0.0]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v)
+
+
+@pytest.mark.parametrize('function', [cyice.recazl_s, cyice.recazl, spice.recazl], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["recazl"], indirect=True)
+def test_recazl(function, grouped_benchmark):
+    rectan = np.array([0.0, 1.0, 0.0])
+    res = grouped_benchmark(function, rectan, True, True)
+    expected = np.array([1.0, np.radians(90.0), 0.0])
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.recazl_v, cyice.recazl], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["recazl_v"], indirect=True)
+def test_recazl_v(function, grouped_benchmark):
+    rectan = np.array([[0.0, 1.0, 0.0]])
+    rectan_v = np.repeat(rectan, 100, axis=0)
+    res = grouped_benchmark(function, rectan_v, True, True)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([[1.0, np.radians(90.0), 0.0]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v)
+
+
+@pytest.mark.parametrize('function', [cyice.reccyl_s, cyice.reccyl, spice.reccyl], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["reccyl"], indirect=True)
+def test_reccyl(function, grouped_benchmark):
+    rectan = np.array([0.0, 1.0, 0.0])
+    res = grouped_benchmark(function, rectan)
+    expected = np.array([1.0, np.radians(90.0), 0.0])
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.reccyl_v, cyice.reccyl], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["reccyl_v"], indirect=True)
+def test_reccyl_v(function, grouped_benchmark):
+    rectan = np.array([[0.0, 1.0, 0.0]])
+    rectan_v = np.repeat(rectan, 100, axis=0)
+    res = grouped_benchmark(function, rectan_v)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([[1.0, np.radians(90.0), 0.0]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v)
+
+
+@pytest.mark.parametrize('function', [cyice.recgeo_s, cyice.recgeo, spice.recgeo], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["recgeo"], indirect=True)
+def test_recgeo(function, grouped_benchmark, load_core_kernels):
+    num_vals, radii = spice.bodvrd("EARTH", "RADII", 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    radius = radii[0]
+    rectan = np.array([-2541.748162, 4780.333036, 3360.428190])
+    res = grouped_benchmark(function, rectan, radius, flat)
+    expected = np.array([np.radians(118.0), np.radians(32.0), 0.001915518])
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.recgeo_v, cyice.recgeo], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["recgeo_v"], indirect=True)
+def test_recgeo_v(function, grouped_benchmark, load_core_kernels):
+    num_vals, radii = spice.bodvrd("EARTH", "RADII", 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    radius = radii[0]
+    rectan = np.array([[-2541.748162, 4780.333036, 3360.428190]])
+    rectan_v = np.repeat(rectan, 100, axis=0)
+    res = grouped_benchmark(function, rectan_v, radius, flat)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([[np.radians(118.0), np.radians(32.0), 0.001915518]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v)
+
+
+@pytest.mark.parametrize('function', [cyice.reclat_s, cyice.reclat, spice.reclat], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["reclat"], indirect=True)
+def test_reclat(function, grouped_benchmark):
+    rectan = np.array([0.0, 1.0, 0.0])
+    res = grouped_benchmark(function, rectan)
+    expected = np.array([1.0, np.radians(90.0), 0.0])
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.reclat_v, cyice.reclat], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["reclat_v"], indirect=True)
+def test_reclat_v(function, grouped_benchmark):
+    rectan = np.array([[0.0, 1.0, 0.0]])
+    rectan_v = np.repeat(rectan, 100, axis=0)
+    res = grouped_benchmark(function, rectan_v)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([[1.0, np.radians(90.0), 0.0]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v)
+
+
+@pytest.mark.parametrize('function', [cyice.recpgr_s, cyice.recpgr, spice.recpgr], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["recpgr"], indirect=True)
+def test_recpgr(function, grouped_benchmark, load_core_kernels):
+    num_vals, radii = spice.bodvrd("MARS", "RADII", 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    radius = radii[0]
+    rectan = np.array([0.0, -2620.678914818178, 2592.408908856967])
+    res = grouped_benchmark(function, "MARS", rectan, radius, flat)
+    expected = np.array([np.radians(90.0), np.radians(45.0), 300.0])
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.recpgr_v, cyice.recpgr], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["recpgr_v"], indirect=True)
+def test_recpgr_v(function, grouped_benchmark, load_core_kernels):
+    num_vals, radii = spice.bodvrd("MARS", "RADII", 3)
+    flat = (radii[0] - radii[2]) / radii[0]
+    radius = radii[0]
+    rectan = np.array([[0.0, -2620.678914818178, 2592.408908856967]])
+    rectan_v = np.repeat(rectan, 100, axis=0)
+    res = grouped_benchmark(function, "MARS", rectan_v, radius, flat)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([[np.radians(90.0), np.radians(45.0), 300.0]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v)
+
+
+@pytest.mark.parametrize('function', [cyice.recrad_s, cyice.recrad, spice.recrad], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["recrad"], indirect=True)
+def test_recrad(function, grouped_benchmark):
+    rectan = np.array([0.0, 1.0, 0.0])
+    res = grouped_benchmark(function, rectan)
+    expected = np.array([1.0, np.radians(90.0), 0.0])
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.recrad_v, cyice.recrad], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["recrad_v"], indirect=True)
+def test_recrad_v(function, grouped_benchmark):
+    rectan = np.array([[0.0, 1.0, 0.0]])
+    rectan_v = np.repeat(rectan, 100, axis=0)
+    res = grouped_benchmark(function, rectan_v)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([[1.0, np.radians(90.0), 0.0]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v)
+
+
+@pytest.mark.parametrize('function', [cyice.recsph_s, cyice.recsph, spice.recsph], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["recsph"], indirect=True)
+def test_recsph(function, grouped_benchmark):
+    rectan = np.array([-1.0, 0.0, 0.0])
+    res = grouped_benchmark(function, rectan)
+    expected = np.array([1.0, np.pi / 2, np.pi])
+    npt.assert_array_almost_equal(res, expected)
+
+
+@pytest.mark.parametrize('function', [cyice.recsph_v, cyice.recsph], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["recsph_v"], indirect=True)
+def test_recsph_v(function, grouped_benchmark):
+    rectan = np.array([[-1.0, 0.0, 0.0]])
+    rectan_v = np.repeat(rectan, 100, axis=0)
+    res = grouped_benchmark(function, rectan_v)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([[1.0, np.pi / 2, np.pi]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v)
+
+
+
 @pytest.mark.parametrize('function', [cyice.reset, spice.reset], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["reset"], indirect=True)
 def test_reset(function, grouped_benchmark):
    grouped_benchmark(function)
 
 
-# # S
+@pytest.mark.parametrize('function', [cyice.rpd, spice.rpd], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["rpd"], indirect=True)
+def test_rpd(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == np.arccos(-1.0) / 180.0
+
+# S
 @pytest.mark.parametrize('function', [cyice.scdecd_s, cyice.scdecd, spice.scdecd], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["scdecd"], indirect=True)
 def test_scdecd(function, grouped_benchmark, load_voyager_kernels):
@@ -411,7 +1340,7 @@ def test_scdecd(function, grouped_benchmark, load_voyager_kernels):
 def test_scdecd_v(function, grouped_benchmark, load_voyager_kernels):
     timein = np.repeat(spice.scencd(-32, "2/20538:39:768"), 100)
     grouped_benchmark(function, -32, timein)
-    res = function(-32, timein) 
+    res = function(-32, timein)
     assert isinstance(res, np.ndarray)
 
 
@@ -494,6 +1423,77 @@ def test_sct2e_v(function, grouped_benchmark, load_voyager_kernels):
     grouped_benchmark(function, -32, sclkdps)
     res = function(-32, sclkdps)
     assert isinstance(res, np.ndarray)
+
+
+@pytest.mark.parametrize('function', [cyice.spd, spice.spd], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["spd"], indirect=True)
+def test_spd(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == 86400.0
+
+
+@pytest.mark.parametrize('function', [cyice.sphcyl_s, cyice.sphcyl, spice.sphcyl], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["sphcyl"], indirect=True)
+def test_sphcyl(function, grouped_benchmark):
+    res = grouped_benchmark(function, 1.4142, np.deg2rad(180.0), np.deg2rad(45.0))
+    expected = np.array([0.0, np.deg2rad(45.0), -np.sqrt(2)])
+    npt.assert_array_almost_equal(res, expected, decimal=4)
+
+
+@pytest.mark.parametrize('function', [cyice.sphcyl_v, cyice.sphcyl], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["sphcyl_v"], indirect=True)
+def test_sphcyl_v(function, grouped_benchmark):
+    radius = np.repeat(1.4142, 100)
+    colat  = np.repeat(np.deg2rad(180.0), 100)
+    slon   = np.repeat(np.deg2rad(45.0), 100)
+    res = grouped_benchmark(function, radius, colat, slon)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([[0.0, np.deg2rad(45.0), -np.sqrt(2)]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v, decimal=4)
+
+
+@pytest.mark.parametrize('function', [cyice.sphlat_s, cyice.sphlat, spice.sphlat], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["sphlat"], indirect=True)
+def test_sphlat(function, grouped_benchmark):
+    res = grouped_benchmark(function, 1.0, spice.pi(), spice.halfpi())
+    expected = np.array([1.0, spice.halfpi(), -spice.halfpi()])
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.sphlat_v, cyice.sphlat], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["sphlat_v"], indirect=True)
+def test_sphlat_v(function, grouped_benchmark):
+    r   = np.ones(100, order='C')
+    colat = np.repeat(spice.pi(), 100) 
+    slon = np.repeat(spice.halfpi(), 100)
+    res = grouped_benchmark(function, r, colat, slon)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([[1.0, spice.halfpi(), -spice.halfpi()]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.sphrec_s, cyice.sphrec, spice.sphrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["sphrec"], indirect=True)
+def test_sphrec(function, grouped_benchmark):
+    res = grouped_benchmark(function, 1.0, np.radians(90.0), 0.0)
+    expected = np.array([1.0, 0.0, 0.0])
+    assert isinstance(res, np.ndarray)
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.sphrec_v, cyice.sphrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["sphrec_v"], indirect=True)
+def test_sphrec_v(function, grouped_benchmark):
+    r     = np.ones(100, order='C')
+    colat = np.repeat(np.radians(90.0), 100)
+    slon  = np.zeros(100, order='C')
+    res = grouped_benchmark(function, r, colat, slon)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([[1.0, 0.0, 0.0]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v, decimal=7)
 
 
 @pytest.mark.parametrize('function', [cyice.spkapo_s, cyice.spkapo, spice.spkapo], ids=get_module_name)
@@ -1014,6 +2014,29 @@ def test_sincpt_v(function, grouped_benchmark, load_cassini_kernels):
     npt.assert_almost_equal(trgepc[0], 415065064.9055491)
 
 
+@pytest.mark.parametrize('function', [cyice.srfrec_s, cyice.srfrec, spice.srfrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["srfrec"], indirect=True)
+def test_srfrec(function, grouped_benchmark, load_core_kernels):
+    lon = np.radians(100.0)
+    lat = np.radians(35.0)
+    res = grouped_benchmark(function, 399, lon, lat)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([-906.24919474, 5139.59458217, 3654.29989637])
+    npt.assert_array_almost_equal(res, expected, decimal=7)
+
+
+@pytest.mark.parametrize('function', [cyice.srfrec_v, cyice.srfrec], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["srfrec_v"], indirect=True)
+def test_srfrec_v(function, grouped_benchmark, load_core_kernels):
+    lon = np.repeat(np.radians(100.0), 100)
+    lat = np.repeat(np.radians(35.0),  100)
+    res = grouped_benchmark(function, 399, lon, lat)
+    assert isinstance(res, np.ndarray)
+    expected = np.array([[-906.24919474, 5139.59458217, 3654.29989637]])
+    expected_v = np.repeat(expected, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_v, decimal=7)
+
+
 @pytest.mark.parametrize('function', [cyice.subpnt_s, cyice.subpnt, spice.subpnt], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["subpnt"], indirect=True)
 def test_subpnt(function, grouped_benchmark, load_core_kernels):
@@ -1161,6 +2184,61 @@ def test_tangpt_v(function, grouped_benchmark, load_core_kernels):
     grouped_benchmark(function, "ELLIPSOID", target, ets, fixref, "NONE", locus, obsrvr, rayfrm, raydir)
 
 
+@pytest.mark.parametrize('function', [cyice.termpt_s, cyice.termpt, spice.termpt], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["termpt"], indirect=True)
+def test_termpt(function, grouped_benchmark, load_core_kernels):
+    spice.furnsh(ExtraKernels.marsSpk)
+    spice.furnsh(ExtraKernels.phobosDsk)
+    et = spice.str2et("1972 AUG 11 00:00:00")
+    args = (
+        "UMBRAL/TANGENT/DSK/UNPRIORITIZED",
+        "SUN",
+        "Phobos",
+        et,
+        "IAU_PHOBOS",
+        "CN+S",
+        "CENTER",
+        "MARS",
+        np.array([0.0, 0.0, 1.0]),
+        spice.twopi() / 3.0,
+        3,
+        1.0e-4,
+        1.0e-7,
+        3,
+    )
+    npts, points, epochs, tangts = grouped_benchmark(function, *args)
+    assert npts.sum() == 3
+    assert len(points) == 3
+
+
+@pytest.mark.parametrize('function', [cyice.termpt_v, cyice.termpt], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["termpt_v"], indirect=True)
+def test_termpt_v(function, grouped_benchmark, load_core_kernels):
+    spice.furnsh(ExtraKernels.marsSpk)
+    spice.furnsh(ExtraKernels.phobosDsk)
+    et = spice.str2et("1972 AUG 11 00:00:00")
+    ets = np.linspace(et, et+1, 100)
+    args = (
+        "UMBRAL/TANGENT/DSK/UNPRIORITIZED",
+        "SUN",
+        "Phobos",
+        ets,
+        "IAU_PHOBOS",
+        "CN+S",
+        "CENTER",
+        "MARS",
+        np.array([0.0, 0.0, 1.0]),
+        spice.twopi() / 3.0,
+        3,
+        1.0e-4,
+        1.0e-7,
+        3,
+    )
+    npts, points, epochs, tangts = grouped_benchmark(function, *args)
+    assert npts.shape == (100,3)
+    assert points.shape == (100, 3, 3)
+
+
 @pytest.mark.parametrize('function', [cyice.timout_s, cyice.timout, spice.timout], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["timout"], indirect=True)
 def test_timout(function, grouped_benchmark, load_core_kernels):
@@ -1200,9 +2278,23 @@ def test_trgsep(function, grouped_benchmark, load_core_kernels):
 @pytest.mark.parametrize('grouped_benchmark', ["trgsep_v"], indirect=True)
 def test_trgsep_v(function, grouped_benchmark, load_core_kernels):
     ets = np.repeat(spice.str2et("2007-JAN-11 11:21:20.213872 (TDB)"),100)
-    grouped_benchmark(function, ets, "MOON", "POINT", "IAU_MOON", "EARTH", "POINT", "IAU_EARTH", "SUN", "LT+S")  
+    grouped_benchmark(function, ets, "MOON", "POINT", "IAU_MOON", "EARTH", "POINT", "IAU_EARTH", "SUN", "LT+S")
     res = function(ets, "MOON", "POINT", "IAU_MOON", "EARTH", "POINT", "IAU_EARTH", "SUN", "LT+S")
     assert isinstance(res, np.ndarray)
+
+
+@pytest.mark.parametrize('function', [cyice.twopi, spice.twopi], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["twopi"], indirect=True)
+def test_twopi(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == (np.pi * 2)
+
+
+@pytest.mark.parametrize('function', [cyice.tyear, spice.tyear], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["tyear"], indirect=True)
+def test_tyear(function, grouped_benchmark):
+    grouped_benchmark(function)
+    assert function() == 31556925.9747
 
 
 @pytest.mark.parametrize('function', [cyice.unitim_s, cyice.unitim, spice.unitim], ids=get_module_name)
@@ -1245,3 +2337,44 @@ def test_utc2et_v(function, grouped_benchmark, load_core_kernels):
     grouped_benchmark(function, dates)
     res = function(dates)
     assert isinstance(res, np.ndarray)
+
+
+# X 
+
+@pytest.mark.parametrize('function', [cyice.xfmsta_s, cyice.xfmsta, spice.xfmsta], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["xfmsta"], indirect=True)
+def test_xfmsta(function, grouped_benchmark, load_core_kernels):
+    et = spice.str2et("July 4, 2003 11:00 AM PST")
+    state, lt = spice.spkezr("Mars", et, "J2000", "LT+S", "Earth")
+    grouped_benchmark(function, state, "rectangular", "latitudinal", " ")
+    res = function(state, "rectangular", "latitudinal", " ")
+    expected_lat_state = np.array([
+        8.08509924324866235256e07,
+        -3.52158255331780634112e-01,
+        -2.33928262716770696272e-01,
+        -9.43348972618204761886e00,
+        5.98157681117165682860e-08,
+        1.03575559016377728336e-08,
+    ])
+    npt.assert_array_almost_equal(res, expected_lat_state)
+
+
+@pytest.mark.parametrize('function', [cyice.xfmsta_v, cyice.xfmsta], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["xfmsta_v"], indirect=True)
+def test_xfmsta_v(function, grouped_benchmark, load_core_kernels):
+    et = spice.str2et("July 4, 2003 11:00 AM PST")
+    state, lt = spice.spkezr("Mars", et, "J2000", "LT+S", "Earth")
+    state_v = np.repeat([state], 100, axis=0)
+    grouped_benchmark(function, state_v, "rectangular", "latitudinal", " ")
+    res = function(state_v, "rectangular", "latitudinal", " ")
+    expected_lat_state = np.array([[
+        8.08509924324866235256e07,
+        -3.52158255331780634112e-01,
+        -2.33928262716770696272e-01,
+        -9.43348972618204761886e00,
+        5.98157681117165682860e-08,
+        1.03575559016377728336e-08,
+    ]])
+    expected_lat_state_v = np.repeat(expected_lat_state, 100, axis=0)
+    npt.assert_array_almost_equal(res, expected_lat_state_v)
+
