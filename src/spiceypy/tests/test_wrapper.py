@@ -6306,16 +6306,16 @@ def test_pckcov():
     ids = spice.cell_int(1000)
 
     # Checks for defaults
-    cover = spice.pckcov(ExtraKernels.earthHighPerPck, ids)
+    cover = spice.pckcov(ExtraKernels.earthHighPerPck, ids[0])
     result = list(cover)
     expected = [94305664.18380372, 757080064.1838132]
     npt.assert_array_almost_equal(result, expected)
 
     # Checks for old way, where if cover is pre-set, it should remain set
     cover = spice.cell_double(2000)
-    spice.pckfrm(ExtraKernels.earthHighPerPck, ids)
     spice.scard(0, cover)
-    spice.pckcov(ExtraKernels.earthHighPerPck, temp_obj, cover)
+    spice.pckfrm(ExtraKernels.earthHighPerPck, ids)
+    spice.pckcov(ExtraKernels.earthHighPerPck, ids[0], cover)
     result = list(cover)
     expected = [94305664.18380372, 757080064.1838132]
     npt.assert_array_almost_equal(result, expected)
