@@ -8,18 +8,36 @@ dynamic = ["version"]
 license = "MIT"
 license-files = ["LICENSE"]
 description = "A Python Wrapper for the NAIF CSPICE Toolkit"
+requires-python = ">=3.10"
 readme = {file = "README.rst", content-type = "text/x-rst"}
 keywords = ["spiceypy", "spice", "cspice", "naif", "jpl", "space", "geometry", "ephemeris"]
-authors = [
-    {name = "Andrew M. Annex", email="ama6fy@virginia.edu"}
+classifiers = [
+     "Development Status :: 5 - Production/Stable",
+     "Natural Language :: English",
+     "License :: OSI Approved :: MIT License",
+     "Topic :: Scientific/Engineering",
+     "Topic :: Scientific/Engineering :: Astronomy",
+     "Programming Language :: Python :: 3 :: Only",
+     "Programming Language :: Python :: 3.10",
+     "Programming Language :: Python :: 3.11",
+     "Programming Language :: Python :: 3.12",
+     "Programming Language :: Python :: 3.13",
+     "Programming Language :: Cython",
+     "Operating System :: MacOS :: MacOS X",
+     "Operating System :: POSIX :: Linux",
+     "Operating System :: POSIX :: BSD :: FreeBSD",
+     "Operating System :: Microsoft :: Windows",
 ]
-maintainers = [
-    {name = "Andrew M. Annex", email="ama6fy@virginia.edu"}
-]
-requires-python = ">=3.10"
-dependencies = [
-    "numpy>=1.23.5",
-]
+dependencies = ["numpy>=1.23.5"]
+
+[[project.authors]]
+name = "Andrew M. annex"
+email = "ama6fy@virginia.edu"
+
+[[project.maintainers]]
+name = "Andrew M. annex"
+email = "ama6fy@virginia.edu"
+
 
 [dependency-groups]
 core = [
@@ -68,23 +86,6 @@ doc = [
     "recommonmark"
 ]
 
-
-classifiers = [
-     "Development Status :: 5 - Production/Stable",
-     "Natural Language :: English",
-     "Topic :: Scientific/Engineering",
-     "Topic :: Scientific/Engineering :: Astronomy",
-     "Programming Language :: Python :: 3.10",
-     "Programming Language :: Python :: 3.11",
-     "Programming Language :: Python :: 3.12",
-     "Programming Language :: Python :: 3.13",
-     "Operating System :: MacOS :: MacOS X",
-     "Operating System :: POSIX :: Linux",
-     "Operating System :: POSIX :: BSD :: FreeBSD",
-     "Operating System :: Microsoft :: Windows",
-]
-
-
 [project.urls]
 "Homepage"      = "https://github.com/AndrewAnnex/SpiceyPy"
 "Repository"    = "https://github.com/AndrewAnnex/SpiceyPy"
@@ -93,11 +94,6 @@ classifiers = [
 "Documentation" = "https://spiceypy.readthedocs.io"
 "Bug Tracker"   =  "https://github.com/AndrewAnnex/SpiceyPy/issues"
 "Changelog"     = "https://github.com/AndrewAnnex/SpiceyPy/blob/main/CHANGELOG.md"
-
-[tool.scikit-build.metadata.version]
-provider = "scikit_build_core.metadata.regex"
-input = "src/spiceypy/__init__.py"
-
 
 [tool.scikit-build]
 logging.level = "INFO"
@@ -122,6 +118,9 @@ sdist.exclude = [
 ]
 wheel.exclude = ["*.a"]
 
+[tool.scikit-build.metadata.version]
+provider = "scikit_build_core.metadata.regex"
+input = "src/spiceypy/__init__.py"
 
 
 # pytest things
@@ -153,9 +152,9 @@ source = [
 # Specify Python Versions to build
 build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
 # Skip 32-bit builds, pypy, and musllinux
-skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "pypy*", "pp*", "*-musllinux_aarch64", "*-musllinux_x86_64"]
+skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "*-musllinux_aarch64", "*-musllinux_x86_64"]
 # other options
-build-verbosity = 3
+build-verbosity = 2
 test-groups = ["devwheel"]
 test-command = [
     "coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable"
