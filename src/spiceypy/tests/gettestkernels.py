@@ -219,10 +219,12 @@ def attempt_download(
                 h,
                 ", trying again after a bit.",
             )
-        except urllib.error.URLError:
+        except urllib.error.URLError as u:
+            print(u, u.reason)
             print(
-                "Download of kernel: {} failed with URLError, trying again after a bit.".format(
-                    kernel_name
+                "Download of kernel: {} failed with URLError, trying again after a bit: {}".format(
+                    kernel_name,
+                    u
                 ),
                 flush=True,
             )

@@ -1,15 +1,12 @@
 import spiceypy as spice
 from spiceypy.tests.gettestkernels import (
-    get_standard_kernels,
-    write_test_meta_kernel,
-    cleanup_core_kernels,
+    download_kernels,
     CoreKernels,
 )
 import pytest
 
-get_standard_kernels()
-write_test_meta_kernel()
-# cleanup_core_kernels()
+def setup_module(module):
+    download_kernels()
 
 
 @pytest.mark.parametrize(

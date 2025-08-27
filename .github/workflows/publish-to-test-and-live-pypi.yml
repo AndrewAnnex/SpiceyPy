@@ -5,8 +5,6 @@ on:
   push:
     branches: [ main ]
     tags: [ 'v*' ]
-  release:
-    types: [ published ]
 
 jobs:
   build_sdist:
@@ -14,40 +12,15 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v4
-      - name: Set up Python 🐍 3.13
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
-      - name: Display Python 🐍 
-        run: python -c "import sys; print(sys.version)"
-      - name: Update pip
-        run: |
-          python -m pip install --upgrade pip
-      - name: Install CI dependencies
-        run: |
-          python -m pip install --user --group dev
+        uses: actions/checkout@v5
       - name: Build 🛠️ sdist source for 🌶️ 🥧 SpiceyPy
-        env:
-          CSPICE_NO_TEMP: "YES"
         run: |
-          echo "Get CSPICE"
-          python get_spice.py
-          ls ./src/
-          ls ./src/spiceypy/utils/
-          echo "Building Cython Extension"
-          python setup.py build_ext -j 2 --inplace
-          ls ./src/spiceypy/cyice/
-          echo "Running build for sdist"
-          python -m build --sdist
+          pipx run build --sdist
           echo "contents of dist folder: "
           ls dist/
-      - name: Check dists
-        run: |
-          python -m twine check dist/*
       - uses: actions/upload-artifact@v4
         with:
-          name: artifact-sdist-${{ hashFiles('get_spice.py') }}-${{ hashFiles('pyproject.toml') }}
+          name: artifact-sdist-${{ hashFiles('pyproject.toml') }}
           path: dist/*.tar.gz
   test_sdist:
     name: Test SpiceyPy 🌶️ 🥧 Python 🐍 source distribution
@@ -62,7 +35,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - uses: actions/download-artifact@v4
         with:
           merge-multiple: true
@@ -108,6 +81,7 @@ jobs:
           use_oidc: true
   build_wheels:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "x86_64"}
@@ -117,12 +91,15 @@ jobs:
           - config: {"name": "Windows", "os": "windows-latest", "arch": "AMD64"}  
     name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels for ${{ matrix.config.os }} ${{ matrix.config.arch }}
     env: 
-      CSPICE_CACHE: 2
+      CSPICE_CACHE: 0
       CIBW_ARCHS: ${{ matrix.config.arch }}
     runs-on: ${{ matrix.config.os }}
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+      - name: Update SSL Macos-Intel
+        if: matrix.config.os == 'macos-13'
+        run:  brew upgrade ca-certificates -f
       - name: Setup 🔬🍦🏗️
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1.13.0
@@ -136,6 +113,7 @@ jobs:
         run: |
           echo "CIBW_ARCHS_MACOS=x86_64" >> $GITHUB_ENV
           echo "ARCHFLAGS=-arch x86_64" >> $GITHUB_ENV
+          echo "CMAKE_TLS_VERIFY=0" >> $GITHUB_ENV
       - name: set additional environment variables for linux aarch64
         if: runner.os == 'Linux' && matrix.config.arch == 'aarch64'
         run: |
@@ -156,25 +134,24 @@ jobs:
           python -m pip install --user --group devwheel
       - name: Build wheels for SpiceyPy 🌶️ 🥧
         timeout-minutes: 120
+        env:
+          CIBW_PLATFORM: 'auto' 
+          SKBUILD_BUILD_VERBOSE: "true"
         run: |
-          env | grep CIBW
-          env | grep ARCH
-          python -m cibuildwheel --output-dir wheelhouse
-      - name: Check dists
-        run: |
-          python -m twine check wheelhouse/*
+          env | grep CIBW || true
+          env | grep ARCH || true
+          env | grep CMAKE || true
+          python -m cibuildwheel --output-dir wheelhouse      
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
         uses: actions/upload-artifact@v4
         with:
-          name: artifact-${{ env.CSPICE_CACHE }}-${{ matrix.config.os }}-${{ matrix.config.arch }}-${{ hashFiles('get_spice.py') }}-${{ hashFiles('pyproject.toml') }}
+          name: artifact-${{ matrix.config.os }}-${{ strategy.job-index }}-${{ hashFiles('pyproject.toml') }}
           path: ./wheelhouse/*.whl
-  publish_to_pypi:
-    name: Publish SpiceyPy 🌶️ 🥧 Python 🐍 distributions 📦 to PyPI and TestPyPI
+  
+  test_with_twine:
+    name: Twine 🧵 Sanity Check distributions
     needs: [build_wheels, test_sdist]
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -185,8 +162,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - name: Display Python 🐍
-        run: python -c "import sys; print(sys.version)"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -194,17 +169,54 @@ jobs:
       - name: Check dists
         run: |
           python -m twine check dist/*
-      - name: Publish distribution 📦 to Test PyPI
-        if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}
-        run: |
-          twine upload --non-interactive --skip-existing --repository testpypi dist/*
+  
+  publish_to_test_pypi:
+    name: Publish 🌶️ 🥧  📦 to TestPyPI
+    needs: [build_wheels, test_sdist, test_with_twine]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push'
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/spiceypy
+    permissions:
+      id-token: write
+    steps:
+      - name: Checkout 🌶️ 🥧
+        uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: artifact-*
+          merge-multiple: true
+          path: dist
+      - name: Publish distribution 📦 to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
+          print-hash: true
+          verbose: true
+          repository-url: https://test.pypi.org/legacy/
+  
+  
+  publish_to_pypi:
+    name: Publish 🌶️ 🥧  📦 to PyPI
+    needs: [build_wheels, test_sdist, test_with_twine, publish_to_test_pypi]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push'
+    environment:
+      name: pypi
+      url: https://pypi.org/p/spiceypy
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: artifact-*
+          merge-multiple: true
+          path: dist
       - name: Publish distribution 📦 to PyPI
-        if: startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push'
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: |
-          twine upload --non-interactive --skip-existing dist/*
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
+          print-hash: true
+          verbose: true
+  
