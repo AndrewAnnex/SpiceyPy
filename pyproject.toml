@@ -108,9 +108,11 @@ sdist.include = [
 ]
 sdist.exclude = [
     ".github",
+    "*.lib",
     "*.cmake",
     "**/*.cmake",
     "spiceypy/cyice/*.pyd",
+    "spiceypy/cyice/*.lib",
     "spiceypy/cyice/*.c",
     "spiceypy/utils/cmake/",
     "spiceypy/utils/cmake/cspice/",
@@ -118,9 +120,12 @@ sdist.exclude = [
 ]
 wheel.exclude = [
     "*.a",
+    "*.lib",
+    "**/*.lib",
     "*.cmake",
     "**/*.cmake",
     "spiceypy/cyice/*.c",
+    "spiceypy/cyice/*.lib",
     "spiceypy/utils/cmake/",
     "spiceypy/utils/cmake/cspice/",
     "spiceypy/utils/cmake/cspice/*.cmake"
