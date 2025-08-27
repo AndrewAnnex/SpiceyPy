@@ -159,11 +159,16 @@ jobs:
           merge-multiple: true
           path: dist
       - name: Set up Python 🐍 3.13
-        uses: astral-sh/setup-uv@v6
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --user twine
       - name: Check dists
         run: |
-          ls
-          uv run --frozen twine check dist/*
+          python -m twine check dist/*
   
   publish_to_test_pypi:
     name: Publish 🌶️ 🥧  📦 to TestPyPI
