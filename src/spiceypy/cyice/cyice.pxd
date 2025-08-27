@@ -9,7 +9,6 @@
 # cython: warn.maybe_uninitialized = True
 # cython: warn.multiple_declarators = True
 # cython: show_performance_hints = True
-# distutils: define_macros=NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
 
 """
 The MIT License (MIT)

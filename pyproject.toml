@@ -104,19 +104,33 @@ sdist.include = [
     "src/spiceypy/benchmarks/*.py",
     "src/spiceypy/test/*.py",
     "src/spiceypy/utils/*.py",
-    "src/spiceypy/cyice/*.c",
-    "src/spiceypy/cyice/*.pyd",
     "src/spiceypy/cyice/*.pyx",
 ]
 sdist.exclude = [
     ".github",
+    "*.lib",
     "*.cmake",
     "**/*.cmake",
-    "src/spiceypy/utils/cmake/",
-    "src/spiceypy/utils/cmake/cspice/",
-    "src/spiceypy/utils/cmake/cspice/*.cmake"
+    "spiceypy/cyice/*.pyd",
+    "spiceypy/cyice/*.lib",
+    "spiceypy/cyice/*.c",
+    "spiceypy/utils/cmake/",
+    "spiceypy/utils/cmake/cspice/",
+    "spiceypy/utils/cmake/cspice/*.cmake"
 ]
-wheel.exclude = ["*.a"]
+wheel.exclude = [
+    "*.a",
+    "*.lib",
+    "**/*.lib",
+    "*.cmake",
+    "**/*.cmake",
+    "spiceypy/cyice/*.c",
+    "spiceypy/cyice/*.lib",
+    "spiceypy/utils/cmake/",
+    "**/spiceypy/utils/cmake/",
+    "spiceypy/utils/cmake/cspice/",
+    "spiceypy/utils/cmake/cspice/*.cmake"
+]
 
 [tool.scikit-build.metadata.version]
 provider = "scikit_build_core.metadata.regex"
