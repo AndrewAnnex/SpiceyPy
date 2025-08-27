@@ -21,13 +21,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+
 __all__ = ["_tkversion", "libspice_path", "libspice"]
 from contextlib import contextmanager
 from ctypes import CDLL, POINTER, c_int, c_double, c_char, c_char_p, c_void_p
 from ctypes.util import find_library
 import os
 import sys
-import platform
 from pathlib import Path
 import logging
 
@@ -46,12 +46,14 @@ def set_ld_library_path():
     A context manager to temporarily set an environment variable.
     """
     # Store original value
-    original_value = os.environ.get("LD_LIBRARY_PATH")  
+    original_value = os.environ.get("LD_LIBRARY_PATH")
     try:
         # Set new value
-        os.environ["LD_LIBRARY_PATH"] = f"{f'{original_value}:' if original_value else ''}{os.getcwd()}"         
+        os.environ["LD_LIBRARY_PATH"] = (
+            f"{f'{original_value}:' if original_value else ''}{os.getcwd()}"
+        )
         # Execute code within the 'with' block
-        yield  
+        yield
     finally:
         # Restore original value or remove if it was not set initially
         if original_value is None:
@@ -67,7 +69,8 @@ def _try_load(path: str, desc: str):
         logger.debug(f"Failed to load CSPICE Shared Library via {desc} at {path}: {e}")
         return None
 
-def load_cspice()-> tuple[CDLL, str]:
+
+def load_cspice() -> tuple[CDLL, str]:
     """
     Load the CSPICE shared library with priority:
       1. Explicit environment override (CSPICE_SHARED_LIB).

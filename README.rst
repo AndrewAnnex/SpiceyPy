@@ -1,7 +1,7 @@
 SpiceyPy
 ========
 
-SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit (N66), written using ctypes.
+SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit, written using ctypes and Cython.
 
 +------------------------+-------------------+--------+------------+--------------+
 | Continuous Integration | Code Coverage     | Docs   |  Citation  |  Code Style  |
@@ -75,7 +75,9 @@ Anaconda users should use the conda-forge distribution of SpiceyPy by running:
 
 ``conda install spiceypy``
 
-If you wish to install spiceypy from source first download or clone the project. Then run ``python setup.py install``.
+or the same commands prefixed by `mamba` or `micromamba` or other conda-like system.
+
+If you wish to install spiceypy from source first download or clone the project. Then run ``python -m build`` and install the resulting wheel file in `dist`.
 To uninstall run ``pip uninstall spiceypy``.
 
 Documentation
@@ -95,7 +97,7 @@ How to Help
 
 Feedback is always welcomed, if you discover that a function is not working as expected,
 submit an issue detailing how to reproduce the problem. If you utilize SpiceyPy frequently 
-please consider contributing to the project by citing me using the zenodo DOI above.
+please consider contributing to the project by citing me using the Zenodo DOI above.
 
 Known Working Environments:
 ---------------------------
@@ -108,14 +110,16 @@ Please note that support for Python minor versions are generally phased out
 as newer versions are released. 
 
 - OS: OS X, Linux, Windows, FreeBSD
-- CPU: 64bit only!
-- Python 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 3.12
+- CPU: x64, arm
+- Python 3.10, 3.11, 3.12, 3.13
 - ARM support for Linux-aarch64 & osx-arm64
 
 * Support for Python 2.7 ended with version 2.3.2 January 2020 *
 
 Acknowledgements
 ----------------
+
+Supported in part through NASA PDART23 80NSSC25K7040 FY24-FY27. 
 
 `DaRasch <https://github.com/DaRasch>`__ wrote spiceminer, which I
 looked at to get SpiceCells working, thanks!

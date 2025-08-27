@@ -14,7 +14,6 @@
 # serve to show the default.
 
 import sys
-import os
 
 sys.setrecursionlimit(15000)
 

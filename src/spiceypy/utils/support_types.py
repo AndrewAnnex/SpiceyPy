@@ -174,7 +174,7 @@ def c_matrix_to_numpy(x):
     return numpc.as_array(x).copy()
 
 
-def string_to_char_p(inobject, inlen=None):
+def string_to_char_p(inobject, inlen: int | None = None):
     """
     convert a python string to a char_p
 

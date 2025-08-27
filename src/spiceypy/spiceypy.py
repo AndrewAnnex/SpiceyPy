@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+
 import warnings
 from contextlib import contextmanager
 from datetime import datetime, timezone
@@ -36,7 +37,13 @@ from numpy import ndarray, str_
 from .utils import support_types as stypes
 from .utils.libspicehelper import libspice
 from .utils.exceptions import *
-from .found_catcher import found_check_off, found_check_on, found_check, get_found_catch_state, spice_found_exception_thrower
+from .found_catcher import (
+    found_check_off,
+    found_check_on,
+    found_check,
+    get_found_catch_state,
+    spice_found_exception_thrower,
+)
 from . import config
 
 from .utils.callbacks import (
@@ -1961,12 +1968,7 @@ def cylsph(r: float, clon: float, z: float) -> Tuple[float, float, float]:
     colat = ctypes.c_double()
     slon = ctypes.c_double()
     libspice.cylsph_c(
-        r, 
-        clon, 
-        z, 
-        ctypes.byref(radius), 
-        ctypes.byref(colat), 
-        ctypes.byref(slon)
+        r, clon, z, ctypes.byref(radius), ctypes.byref(colat), ctypes.byref(slon)
     )
     return radius.value, colat.value, slon.value
 
@@ -2945,7 +2947,7 @@ def dgeodr(x: float, y: float, z: float, re: float, f: float) -> ndarray:
 
 @spice_error_check
 def diags2(
-    symmat: Union[ndarray, Iterable[Iterable[float]]]
+    symmat: Union[ndarray, Iterable[Iterable[float]]],
 ) -> Tuple[ndarray, ndarray]:
     """
     Diagonalize a symmetric 2x2 matrix.
@@ -7884,13 +7886,13 @@ def illumf(
     :param abcorr: Desired aberration correction.
     :param obsrvr: Name of observing body.
     :param spoint: Body-fixed coordinates of a target surface point.
-    :return: 
-        Target surface point epoch in seconds past J2000 TDB, 
+    :return:
+        Target surface point epoch in seconds past J2000 TDB,
         Vector from observer to target surface point in km,
-        Phase angle at the surface point in radians, 
+        Phase angle at the surface point in radians,
         Source incidence angle at the surface point in radians,
         Emission angle at the surface point in radians,
-        Visibility flag, 
+        Visibility flag,
         Illumination flag
     """
     method = stypes.string_to_char_p(method)
@@ -7967,11 +7969,11 @@ def illumg(
     :param abcorr: Desired aberration correction.
     :param obsrvr: Name of observing body.
     :param spoint: Body-fixed coordinates of a target surface point.
-    :return: 
-        Target surface point epoch in seconds past J2000 TDB, 
+    :return:
+        Target surface point epoch in seconds past J2000 TDB,
         Vector from observer to target surface point in km,
-        Phase angle at the surface point in radians, 
-        Source incidence angle at the surface point in radians, 
+        Phase angle at the surface point in radians,
+        Source incidence angle at the surface point in radians,
         Emission angle at the surface point in radians,
     """
     method = stypes.string_to_char_p(method)
@@ -9080,10 +9082,10 @@ def limbpt(
     :param schstp: Angular step size for searching.
     :param soltol: Solution convergence tolerance.
     :param maxn: Maximum number of entries in output arrays.
-    :return: 
+    :return:
         Counts of limb points corresponding to cuts
-        Limb points in km, 
-        Times associated with limb points in seconds, 
+        Limb points in km,
+        Times associated with limb points in seconds,
         Tangent vectors emanating from the observer in km
     """
     method = stypes.string_to_char_p(method)
@@ -12922,8 +12924,8 @@ def spkgeo(targ: int, et: float, ref: str, obs: int) -> Tuple[ndarray, float]:
     :param et: Target epoch.
     :param ref: Target reference frame.
     :param obs: Observing body.
-    :return: 
-        State of target in km and km/sec, 
+    :return:
+        State of target in km and km/sec,
         One way light time between observer and target in seconds.
     """
     targ = ctypes.c_int(targ)
@@ -14435,9 +14437,11 @@ def datetime2et(dt: Union[Iterable[datetime], datetime]) -> Union[ndarray, float
 
 
 if hasattr(datetime, "fromisoformat"):
+
     def fromisoformat(s):
         return datetime.fromisoformat(s + "+00:00")
 else:
+
     def fromisoformat(s):
         return datetime.strptime(s, "%Y-%m-%dT%H:%M:%S.%f").replace(tzinfo=timezone.utc)
 
@@ -14960,10 +14964,10 @@ def termpt(
     :param schstp: Angular step size for searching.
     :param soltol: Solution convergence tolerance.
     :param maxn: Maximum number of entries in output arrays.
-    :return: 
-        Counts of terminator points corresponding to cuts, 
-        Terminator points in km, 
-        Times associated with terminator points in seconds, 
+    :return:
+        Counts of terminator points corresponding to cuts,
+        Terminator points in km,
+        Times associated with terminator points in seconds,
         Terminator vectors emanating from the observer in km
     """
     method = stypes.string_to_char_p(method)
@@ -15128,9 +15132,7 @@ def tkfram(typid: int) -> Union[Tuple[ndarray, int, bool], Tuple[ndarray, int]]:
     matrix = stypes.empty_double_matrix(x=3, y=3)
     next_frame = ctypes.c_int()
     found = ctypes.c_int()
-    libspice.tkfram_c(
-        code, matrix, ctypes.byref(next_frame), ctypes.byref(found)
-    )
+    libspice.tkfram_c(code, matrix, ctypes.byref(next_frame), ctypes.byref(found))
     return stypes.c_matrix_to_numpy(matrix), next_frame.value, bool(found.value)
 
 
@@ -16970,10 +16972,10 @@ def zzdynrot(typid: int, center: int, et: float) -> Tuple[ndarray, int]:
     :return:  Rotation matrix from the input frame to the returned associated frame, id for the associated frame
     """
     warnings.warn(
-            f'zzdynrot is a "private routine" for spice. Users should avoid using it. It may disappear in future releases after v6.0.0',
-            DeprecationWarning,
-            stacklevel=2,
-        )
+        'zzdynrot is a "private routine" for spice. Users should avoid using it. It may disappear in future releases after v6.0.0',
+        DeprecationWarning,
+        stacklevel=2,
+    )
     typid = ctypes.c_int(typid)
     center = ctypes.c_int(center)
     et = ctypes.c_double(et)
