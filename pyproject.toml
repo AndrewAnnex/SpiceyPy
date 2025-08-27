@@ -97,6 +97,7 @@ doc = [
 [tool.scikit-build]
 logging.level = "INFO"
 cmake.build-type = "Release"
+#build.tool-args = ["-j8"]
 # TODO probably will want to consider excluding tests due to changing standards
 sdist.include = [
     "src/spiceypy/*.py",
@@ -152,8 +153,10 @@ source = [
 build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
 # Skip 32-bit builds, pypy, and musllinux
 skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "*-musllinux_aarch64", "*-musllinux_x86_64"]
-# other options
+# build options
 build-verbosity = 2
+# parallel builds passthrough for build
+environment-pass = ["CMAKE_BUILD_PARALLEL_LEVEL"]
 test-groups = ["devwheel"]
 test-command = [
     "coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable"

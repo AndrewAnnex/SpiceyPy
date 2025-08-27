@@ -93,13 +93,13 @@ jobs:
     env: 
       CSPICE_CACHE: 0
       CIBW_ARCHS: ${{ matrix.config.arch }}
+      CMAKE_BUILD_PARALLEL_LEVEL: 2
+      SKBUILD_BUILD_TOOL_ARGS: "-j2"
+      CIB_ENVIRONMENT: CMAKE_BUILD_PARALLEL_LEVEL="2" SKBUILD_BUILD_TOOL_ARGS="-j2"
     runs-on: ${{ matrix.config.os }}
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v5
-      - name: Update SSL Macos-Intel
-        if: matrix.config.os == 'macos-13'
-        run:  brew upgrade ca-certificates -f
       - name: Setup 🔬🍦🏗️
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1.13.0
