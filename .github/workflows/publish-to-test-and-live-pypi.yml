@@ -160,12 +160,10 @@ jobs:
           path: dist
       - name: Set up Python 🐍 3.13
         uses: astral-sh/setup-uv@v6
-        with:
-          python-version: '3.13'
-          activate-environment: true
       - name: Check dists
         run: |
-          uv run twine check dist/*
+          ls
+          uv run --frozen twine check dist/*
   
   publish_to_test_pypi:
     name: Publish 🌶️ 🥧  📦 to TestPyPI
