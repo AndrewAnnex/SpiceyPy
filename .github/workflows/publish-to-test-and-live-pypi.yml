@@ -176,6 +176,8 @@ jobs:
     permissions:
       id-token: write
     steps:
+      - name: Checkout 🌶️ 🥧
+        uses: actions/checkout@v5
       - uses: actions/download-artifact@v4
         with:
           pattern: artifact-*
