@@ -127,6 +127,7 @@ wheel.exclude = [
     "spiceypy/cyice/*.c",
     "spiceypy/cyice/*.lib",
     "spiceypy/utils/cmake/",
+    "**/spiceypy/utils/cmake/",
     "spiceypy/utils/cmake/cspice/",
     "spiceypy/utils/cmake/cspice/*.cmake"
 ]
