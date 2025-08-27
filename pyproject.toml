@@ -97,7 +97,7 @@ doc = [
 [tool.scikit-build]
 logging.level = "INFO"
 cmake.build-type = "Release"
-#build.tool-args = ["-j8"]
+
 # TODO probably will want to consider excluding tests due to changing standards
 sdist.include = [
     "src/spiceypy/*.py",

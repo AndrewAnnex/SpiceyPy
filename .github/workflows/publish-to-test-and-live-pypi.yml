@@ -94,8 +94,7 @@ jobs:
       CSPICE_CACHE: 0
       CIBW_ARCHS: ${{ matrix.config.arch }}
       CMAKE_BUILD_PARALLEL_LEVEL: 2
-      SKBUILD_BUILD_TOOL_ARGS: "-j2"
-      CIB_ENVIRONMENT: CMAKE_BUILD_PARALLEL_LEVEL="2" SKBUILD_BUILD_TOOL_ARGS="-j2"
+      CIB_ENVIRONMENT: CMAKE_BUILD_PARALLEL_LEVEL="2" 
     runs-on: ${{ matrix.config.os }}
     steps:
       - name: Checkout 🌶️ 🥧
