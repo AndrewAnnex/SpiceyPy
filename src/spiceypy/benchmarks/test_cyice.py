@@ -4,7 +4,7 @@ import timeit
 import itertools
 
 import pytest
-pytestmark = pytest.mark.optional
+
 
 from spiceypy.tests.gettestkernels import (
     download_kernels,
@@ -1016,7 +1016,6 @@ def test_occult_v(function, grouped_benchmark, load_core_kernels, load_earth_ker
     assert isinstance(res, np.ndarray)
 
 
-
 @pytest.mark.parametrize('function', [cyice.oscelt_s, cyice.oscelt, spice.oscelt], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["oscelt"], indirect=True)
 def test_oscelt(function, grouped_benchmark, load_core_kernels):
@@ -1102,6 +1101,7 @@ def test_phaseq(function, grouped_benchmark, load_core_kernels):
     expected = 0.575988450
     npt.assert_almost_equal(res, expected)
 
+
 @pytest.mark.parametrize('function', [cyice.phaseq_v, cyice.phaseq], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["phaseq_v"], indirect=True)
 def test_phaseq_v(function, grouped_benchmark, load_core_kernels):
@@ -1112,11 +1112,49 @@ def test_phaseq_v(function, grouped_benchmark, load_core_kernels):
     expected = np.repeat(0.575988450, 100)
     npt.assert_array_almost_equal(res, expected)
 
+
 @pytest.mark.parametrize('function', [cyice.pi, spice.pi], ids=get_module_name)
 @pytest.mark.parametrize('grouped_benchmark', ["pi"], indirect=True)
 def test_pi(function, grouped_benchmark):
     grouped_benchmark(function)
     assert function() == np.pi
+
+
+@pytest.mark.parametrize('function', [cyice.pxform_s, cyice.pxform, spice.pxform], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["pxform"], indirect=True)
+def test_pxform(function, grouped_benchmark, load_core_kernels):
+    et = spice.str2et("January 1, 2005")
+    grouped_benchmark(function, "IAU_EARTH", "J2000", et)
+    lon = 118.25 * spice.rpd()
+    lat = 34.05 * spice.rpd()
+    alt = 0.0
+    utc = "January 1, 2005"
+    et = spice.str2et(utc)
+    len, abc = spice.bodvrd("EARTH", "RADII", 3)
+    equatr = abc[0]
+    polar = abc[2]
+    f = (equatr - polar) / equatr
+    epos = spice.georec(lon, lat, alt, equatr, f)
+    rotate = function("IAU_EARTH", "J2000", et)
+    assert isinstance(rotate, np.ndarray)
+    jstate = np.dot(epos, rotate)
+    expected = np.array(
+        [
+            5042.1309421, 
+            1603.52962986, 
+            3549.82398086
+        ]
+    )
+    npt.assert_array_almost_equal(jstate, expected, decimal=4)
+
+
+@pytest.mark.parametrize('function', [cyice.pxform_v, cyice.pxform], ids=get_module_name)
+@pytest.mark.parametrize('grouped_benchmark', ["pxform_v"], indirect=True)
+def test_pxform_v(function, grouped_benchmark, load_core_kernels):
+    et = np.repeat(spice.str2et("January 1, 2005"), 1000)
+    grouped_benchmark(function, "IAU_EARTH", "J2000", et)
+    res = function("IAU_EARTH", "J2000", et)
+    assert isinstance(res, np.ndarray)
 
 # Q
 @pytest.mark.parametrize('function', [cyice.qcktrc, spice.qcktrc], ids=get_module_name)
@@ -1312,7 +1350,6 @@ def test_recsph_v(function, grouped_benchmark):
     expected = np.array([[1.0, np.pi / 2, np.pi]])
     expected_v = np.repeat(expected, 100, axis=0)
     npt.assert_array_almost_equal(res, expected_v)
-
 
 
 @pytest.mark.parametrize('function', [cyice.reset, spice.reset], ids=get_module_name)

@@ -4108,6 +4108,109 @@ def pi() -> float:
     """
     return pi_c()
 
+
+@boundscheck(False)
+@wraparound(False)
+def pxform_s(
+    str fromstring,
+    str tostring,
+    double et
+    ) -> Matrix_3:
+    """
+    Scalar version of :py:meth:`~spiceypy.cyice.cyice.pxform`
+
+    Return the matrix that transforms position vectors from one
+    specified frame to another at a specified epoch.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/pxform_c.html
+
+
+    :param instring: Name of the frame to transform from.
+    :param tostring: Name of the frame to transform to.
+    :param et: Epoch of the rotation matrix.
+    :return: A rotation matrix.
+    """
+    # initialize c variables
+    cdef double c_et = et
+    cdef const char* c_fromstring = fromstring
+    cdef const char* c_tostring = tostring
+    # initialize output
+    cdef np.ndarray[np.double_t, ndim=2, mode="c"] p_xrot = np.empty((3, 3), dtype=np.double, order='C')
+    cdef np.double_t[:, ::1] c_xrot = p_xrot
+    pxform_c(
+        c_fromstring,
+        c_tostring,
+        c_et,
+        <SpiceDouble (*)[3]> &c_xrot[0, 0]
+    )
+    check_for_spice_error()
+    return p_xrot
+
+
+@boundscheck(False)
+@wraparound(False)
+def pxform_v(
+    str fromstring,
+    str tostring,
+    double[::1] ets
+    ) -> Matrix_N_3:
+    """
+    Vectorized version of :py:meth:`~spiceypy.cyice.cyice.pxform`
+
+    Return the matrix that transforms position vectors from one
+    specified frame to another at a specified epoch.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/pxform_c.html
+
+
+    :param instring: Name of the frame to transform from.
+    :param tostring: Name of the frame to transform to.
+    :param ets: Epochs of the rotation matricies.
+    :return: rotation matricies.
+    """
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef Py_ssize_t i, n = c_ets.shape[0]
+    cdef const char* c_fromstring = fromstring
+    cdef const char* c_tostring = tostring
+    # initialize output
+    cdef np.ndarray[np.double_t, ndim=3, mode="c"] p_xrot = np.empty((n, 3, 3), dtype=np.double, order='C')
+    cdef np.double_t[:, :, ::1] c_xrot = p_xrot
+    # pointer to element
+    cdef SpiceDouble* base = &c_xrot[0, 0, 0]
+    with nogil:
+        for i in range(n):
+            pxform_c(
+                c_fromstring,
+                c_tostring,
+                c_ets[i],
+                <SpiceDouble (*)[3]> (base + i*9)
+            )
+    check_for_spice_error()
+    return p_xrot
+
+
+def pxform(
+    fromstring: str,
+    tostring:   str,
+    et: float | float[::1]
+    ) -> Matrix_3 | Matrix_N_3:
+    """
+    Return the matrix that transforms position vectors from one
+    specified frame to another at a specified epoch.
+
+    https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/pxform_c.html
+
+
+    :param instring: Name of the frame to transform from.
+    :param tostring: Name of the frame to transform to.
+    :param et: Epoch of the rotation matrix.
+    :return: A rotation matrix.
+    """
+    if PyFloat_Check(et):
+        return pxform_s(fromstring, tostring, et)
+    else:
+        return pxform_v(fromstring, tostring, et)
+
 # Q
 
 
@@ -8372,7 +8475,7 @@ def sxform(
     fromstring: str,
     tostring:   str,
     et: float | float[::1]
-    ) -> Matrix_6:
+    ) -> Matrix_6 | Matrix_N_6:
     """
     Return the state transformation matrix from one frame to
     another at a specified epoch.

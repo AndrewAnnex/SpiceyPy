@@ -376,6 +376,11 @@ cdef extern from "SpiceUsr.h" nogil:
 
     cdef SpiceDouble pi_c()
 
+    cdef void pxform_c(ConstSpiceChar *  fromstring,
+                       ConstSpiceChar *  tostring,
+                       SpiceDouble       et,
+                       SpiceDouble[3][3] xform)
+
     #Q
     cdef void qcktrc_c(SpiceInt    tracelen,
                        SpiceChar * trace)
