@@ -21,6 +21,7 @@ else()
   if(MSVC)
     # Force DLLs to install alongside LIBs instead of bin/
     set(CMAKE_INSTALL_BINDIR "spiceypy/utils/" CACHE INTERNAL "")
+    set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries by default")
   endif()
   
   # Put CSPICE headers somewhere harmless in our package
