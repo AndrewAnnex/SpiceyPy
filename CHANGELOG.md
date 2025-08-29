@@ -4,11 +4,68 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## [?.?.?] - 2025-??-??
+## [7.0.0] - 2025-??-??
+SpiceyPy with Cyice, Cython accelerated Spice
+
+### Added
+- Cython extension submodule Cyice for accelerated SpiceyPy
+- Cyice includes wrappers for over 90 CSPICE functions, vectorized for majority of functions, shares kernel pool with spiceypy so new functions are drop-in replacements
+- Cyice functions tested and benchmarked against spiceypy ctypes wrapper functions
+- new cyice docs
+- new required reading docs pages (#489)
+- python 3.13 builds (#488) and native aarch64 runners (#490)
+
+### Fixed
+- Various issues and typos in docs (#503) (#492) (#350) (#481) (#477)
+- Various CI improvements (#484) (#479)
+
+### Changed
+- Switched build system to scikit_build_core/cmake to simplify builds
+- Pckcov returns “cover” arg (#504)
+- URLs to naif are now versioned (#493)
+
+### Removed
+- Get_spice.py, setup.cfg, setup.py, and related old build system 
+
+
+## [6.0.3] - 2025-07-17
+Backport fix for spice cell functions
+
+### Added
+- Add assertions that passed-in SpiceCell is correct type for `bltfrm()`, `ckcov()`, `ckobj()`, `kplfrm()`, `spkobj()`
+
+### Fixed
+- Corrected bug where bool was used instead of is Null for specifying return SpiceCell in `bltfrm()`, `ckcov()`, `ckobj()`, `kplfrm()`, `spkobj()`
+- fixed sdist publishing issue in ci publish workflow
+
+
+## [6.0.2] - 2025-07-12
+Backport fix to avoid numpy version change before v7.0.0 release
+### Changed
+- changed numpy version pin to be 'numpy>=1.23.5'
+
+
+## [6.0.1] - 2025-06-24
+Backport release of various small fixes and typo corrections
+### Added
+- python 3.13 builds
+- missing exceptions from cspice #494
+- new required readings docs #489
+
+### Removed
+- cirrus ci was removed
+- gitter chat info
 
 ### Changed
 - Added units to many parameter descriptions in function docstrings to address #350
+- updated various aspects of ci builds
+- copyright date ranges updated to 2025
+- moved naif doc urls to versioned 
 
+### Fixed
+- various readthedocs and docs issues
+- cylsph was fixed as it was calling the wrong cspice function #496
+- various typos
 
 
 ## [6.0.0] - 2023-08-31
