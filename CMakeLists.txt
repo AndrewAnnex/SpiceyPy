@@ -74,6 +74,12 @@ else()
     target_link_libraries(cyice PRIVATE ${CSPICE_LIB})
 endif()
 
+# Set numpy options to ensure no deprecated apis older than 1.7
+target_compile_definitions(cyice
+    PRIVATE
+        NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
+)
+
 # Fix runtime search paths so extension finds libcspice in same dir
 if(APPLE)
   set_target_properties(cyice PROPERTIES
