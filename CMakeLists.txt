@@ -15,6 +15,8 @@ if(CSPICE_LIB)
   message(STATUS "Found system CSPICE: ${CSPICE_LIB}")
 else()
   message(STATUS "System CSPICE not found, falling back to FetchContent")
+  # we need to use this for the INSTALL_RPATH property
+  set(manual_patch_cspice_origin 'yes')  
   # Put CSPICE libs inside our package, not top-level lib/
   set(CMAKE_INSTALL_LIBDIR "spiceypy/utils/" CACHE INTERNAL "")
   
@@ -80,17 +82,19 @@ target_compile_definitions(cyice
         NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
 )
 
-# Fix runtime search paths so extension finds libcspice in same dir
-if(APPLE)
-  set_target_properties(cyice PROPERTIES
-    INSTALL_RPATH "@loader_path/../utils"
-    BUILD_WITH_INSTALL_RPATH ON
-  )
-elseif(UNIX)
-  set_target_properties(cyice PROPERTIES
-    INSTALL_RPATH "$ORIGIN/../utils"
-    BUILD_WITH_INSTALL_RPATH ON
-  )
+# Fix runtime search paths so extension finds libcspice in same dir if we manually install cspice
+if(DEFINED manual_patch_cspice_origin)
+  if(APPLE)
+    set_target_properties(cyice PROPERTIES
+      INSTALL_RPATH "@loader_path/../utils"
+      BUILD_WITH_INSTALL_RPATH ON
+    )
+  elseif(UNIX)
+    set_target_properties(cyice PROPERTIES
+      INSTALL_RPATH "$ORIGIN/../utils"
+      BUILD_WITH_INSTALL_RPATH ON
+    )
+  endif()
 endif()
 
 # install cyice
