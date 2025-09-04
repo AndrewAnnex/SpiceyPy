@@ -37,10 +37,10 @@ else()
   )
   FetchContent_MakeAvailable(cspice)
   
-  # disable versioned/
+  # disable versioned install
   set_target_properties(cspice PROPERTIES
-    VERSION ""      # no libmyclibrary.so.X.Y.Z
-    SOVERSION ""    # no libmyclibrary.so.X
+    VERSION ""      # no so.X.Y.Z
+    SOVERSION ""    # no so.X
     NO_SONAME ON    # don't encode a soname
   )
   # The target name depends on your cspice CMake setup
@@ -94,4 +94,9 @@ elseif(UNIX)
 endif()
 
 # install cyice
-install(TARGETS cyice DESTINATION spiceypy/cyice/)
+install(
+    TARGETS 
+        cyice 
+    DESTINATION 
+        spiceypy/cyice/
+)

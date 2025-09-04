@@ -32,7 +32,8 @@ from pathlib import Path
 import logging
 
 if os.environ.get("SPICEYPY_LOGLEVEL"):
-    logging.basicConfig(level=os.environ["SPICEYPY_LOGLEVEL"].upper())
+    print('Logging was set')
+    logging.basicConfig(level=logging.INFO)
 
 logger = logging.getLogger(__name__)
 
@@ -105,8 +106,10 @@ def load_cspice() -> tuple[CDLL, str]:
             shared_name = "libcspice.wasm"
         case _:
             shared_name = "libcspice.so"
-
-    relpath = Path(__file__).resolve().parent / shared_name
+    parent = Path(__file__).resolve().parent
+    logger.info(f'SpiceyPy parent: {parent}')
+    relpath =  parent / shared_name
+    logger.info(f'SpiceyPy relpath: {relpath}')
     if relpath.exists():
         libspice_path = str(relpath)
         logger.info(f"Using fallback library next to module: {libspice_path}")
