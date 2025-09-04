@@ -97,6 +97,10 @@ doc = [
 [tool.scikit-build]
 logging.level = "INFO"
 cmake.build-type = "Release"
+build-dir = "build"
+editable.mode = "redirect"
+editable.rebuild = false
+editable.verbose = true
 
 # TODO probably will want to consider excluding tests due to changing standards
 sdist.include = [
