@@ -15,6 +15,57 @@ env:
   CMAKE_BUILD_PARALLEL_LEVEL: 2
 
 jobs:
+  test-conda:
+    name: Test SpiceyPy Conda install
+    runs-on: 'ubuntu-latest'
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout 🌶️ 🥧
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-name: test-env
+          init-shell: >-
+            bash
+          cache-environment: true
+          create-args: >-
+            python=3.13
+            cspice
+            Cython
+            numpy
+            pip
+      - name: Install dependencies
+        shell: bash -el {0}
+        run: |
+          python -m pip install --user --group devwheel
+      - name: Build SpiceyPy 
+        shell: bash -el {0}
+        env:
+          SYSTEM_VERSION_COMPAT: 0
+        run: 
+          CMAKE_PREFIX_PATH=$CONDA_PREFIX python -m build
+      - name: Install SpiceyPy 🌶️ 🥧
+        shell: bash -el {0}
+        env:
+          SYSTEM_VERSION_COMPAT: 0
+        run: 
+          python -m pip install dist/*.whl
+      - name: Test 🧪 with coverage 📈
+        shell: bash -el {0}
+        run: |
+          python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
+          # look for .coverage file
+          ls -lahtr
+      - name: Upload 🆙 coverage 📈 report to codecov 
+        uses: codecov/codecov-action@v5
+        with:
+          fail_ci_if_error: false
+          verbose: true
+          use_oidc: true
   test:
     name: Test SpiceyPy 🌶️ 🥧
     runs-on: ${{ matrix.os }}
