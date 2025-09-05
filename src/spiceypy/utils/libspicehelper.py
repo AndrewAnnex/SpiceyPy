@@ -40,6 +40,17 @@ from . import support_types as stypes
 from . import callbacks
 
 
+def add_dll_directory(path: str | Path):
+    """
+    entirely for windows, calls os.add_dll_directory
+    on the path if it is provided
+    """
+    if hasattr(os, 'add_dll_directory'):
+        _path = Path(path).resolve()
+        if _path.is_file():
+            _path = _path.parent()
+        os.add_dll_directory(str(_path))
+
 @contextmanager
 def set_ld_library_path():
     """
@@ -82,11 +93,14 @@ def load_cspice() -> tuple[CDLL, str]:
     """
     # 1. User override
     if libspice_path := os.environ.get("CSPICE_SHARED_LIB"):
+        add_dll_directory(Path(libspice_path).parent)
         logger.info(f"Using override from CSPICE_SHARED_LIB: {libspice_path}")
         if lib := _try_load(libspice_path, "override"):
             return lib, libspice_path
 
     # 2. System/conda install
+    parent = Path(__file__).resolve().parent
+    add_dll_directory(parent)
     with set_ld_library_path():
         if libspice_path := find_library("cspice"):
             logger.info(f"Using system/conda library via find_library: {libspice_path}")
@@ -106,7 +120,7 @@ def load_cspice() -> tuple[CDLL, str]:
         case _:
             shared_name = "libcspice.so"
 
-    relpath = Path(__file__).resolve().parent / shared_name
+    relpath = parent / shared_name
     if relpath.exists():
         libspice_path = str(relpath)
         logger.info(f"Using fallback library next to module: {libspice_path}")
