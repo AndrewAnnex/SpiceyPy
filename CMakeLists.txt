@@ -45,7 +45,7 @@ else()
   FetchContent_Declare(
     cspice
     GIT_REPOSITORY https://github.com/AndrewAnnex/cspice-cmake-spiceypy.git
-    GIT_TAG        c326ce3563a3f059871c601f5ed1fca53bef17be # tag v0.0.2
+    GIT_TAG        8ef81e8eb5eb7e38e59b8ffb7bf5f4770ba291ea # tag v0.0.6
   )
   FetchContent_MakeAvailable(cspice)
   

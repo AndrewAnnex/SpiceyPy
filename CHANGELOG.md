@@ -4,14 +4,14 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## [7.0.0] - 2025-??-??
+## [7.0.0] - 2025-09-??
 SpiceyPy with Cyice, Cython accelerated Spice
 
 ### Added
 - Cython extension submodule Cyice for accelerated SpiceyPy
 - Cyice includes wrappers for over 90 CSPICE functions, vectorized for majority of functions, shares kernel pool with spiceypy so new functions are drop-in replacements
 - Cyice functions tested and benchmarked against spiceypy ctypes wrapper functions
-- new cyice docs
+- new Cyice docs
 - new required reading docs pages (#489)
 - python 3.13 builds (#488) and native aarch64 runners (#490)
 
