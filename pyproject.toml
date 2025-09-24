@@ -175,3 +175,11 @@ test-groups = ["devwheel"]
 test-command = [
     "coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable"
 ]
+
+[tool.cibuildwheel.pyodide]
+# https://github.com/jupyterlite/pyodide-kernel for version/kernel compatibility
+build = ["cp312-*"]
+skip  = ["cp313-*"]
+pyodide-version = "0.27.7" # emscripten 3.1.58
+# disable some errors for pyodide only
+environment = { CFLAGS="-Wno-error=implicit-function-declaration -Wno-error=incompatible-pointer-types -Wno-error=return-type" }
