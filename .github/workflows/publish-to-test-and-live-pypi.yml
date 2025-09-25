@@ -133,7 +133,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --user --group devwheel
       - name: Build wheels for SpiceyPy 🌶️ 🥧
-        uses: pypa/cibuildwheel@v3.1.3
+        uses: pypa/cibuildwheel@v3.1.4
         continue-on-error: true
         env:
           CIBW_PLATFORM: ${{ matrix.config.platform || 'auto' }}
