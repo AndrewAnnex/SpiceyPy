@@ -186,4 +186,5 @@ build-verbosity = 2
 #test-command = "pytest --pyargs spiceypy --benchmark-disable"
 pyodide-version = "0.27.7" # emscripten 3.1.58
 # disable some errors for pyodide only
+dependency-versions = { packages = ["pyodide-build==0.30.5"] }
 environment = { CFLAGS="-Wno-error=implicit-function-declaration -Wno-error=incompatible-pointer-types -Wno-error=return-type" }

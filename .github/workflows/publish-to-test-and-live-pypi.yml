@@ -133,10 +133,13 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --user --group devwheel
       - name: Build wheels for SpiceyPy 🌶️ 🥧
-        uses: pypa/cibuildwheel@v3.1.4
+        uses: pypa/cibuildwheel@v3.2.0
         continue-on-error: true
         env:
           CIBW_PLATFORM: ${{ matrix.config.platform || 'auto' }}
+          CIBW_ARCHS: ${{ matrix.config.arch }}
+          CMAKE_BUILD_PARALLEL_LEVEL: 2
+          CIB_ENVIRONMENT: CMAKE_BUILD_PARALLEL_LEVEL="2" 
           SKBUILD_BUILD_VERBOSE: "true"
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
         uses: actions/upload-artifact@v4
