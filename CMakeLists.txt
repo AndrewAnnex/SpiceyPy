@@ -8,18 +8,24 @@ find_package(
 
 include(FetchContent)
 
+if(DEFINED EMSCRIPTEN)
+  # might be needed for emscripten
+  set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
+endif()
+
+
 # Try system/conda first
 find_library(CSPICE_LIB NAMES cspice)
 
 if(CSPICE_LIB)
   message(STATUS "Found system CSPICE: ${CSPICE_LIB}")
-  add_library(CSPICE::cspice UNKNOWN IMPORTED)
-  set_target_properties(CSPICE::cspice PROPERTIES IMPORTED_LOCATION "${CSPICE_LIB}")
+  add_library(cspice UNKNOWN IMPORTED)
+  set_target_properties(cspice PROPERTIES IMPORTED_LOCATION "${CSPICE_LIB}")
   # look for the headers
   find_path(CSPICE_INCLUDE_DIR NAMES SpiceUsr.h PATH_SUFFIXES cspice)
   if (CSPICE_INCLUDE_DIR)
     message(STATUS "Found system CSPICE include: ${CSPICE_INCLUDE_DIR}")
-    set_target_properties(CSPICE::cspice PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CSPICE_INCLUDE_DIR}")
+    set_target_properties(cspice PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CSPICE_INCLUDE_DIR}")
   else()
     message(WARNING "CSPICE library found, but headers not found")
   endif()
@@ -77,9 +83,9 @@ target_include_directories(cyice PRIVATE ${Python_NumPy_INCLUDE_DIRS})
 
 # Link CSPICE + math lib (only on UNIX)
 if(UNIX AND NOT WIN32 AND NOT MINGW)
-    target_link_libraries(cyice PRIVATE CSPICE::cspice m)
+    target_link_libraries(cyice PRIVATE cspice m)
 else()
-    target_link_libraries(cyice PRIVATE CSPICE::cspice)
+    target_link_libraries(cyice PRIVATE cspice)
 endif()
 
 # Set numpy options to ensure no deprecated apis older than 1.7
