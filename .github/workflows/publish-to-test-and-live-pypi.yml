@@ -93,6 +93,7 @@ jobs:
     name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels for ${{ matrix.config.os }} ${{ matrix.config.arch }}
     env: 
       CSPICE_CACHE: 0
+      CIBW_PLATFORM: ${{ matrix.config.platform || 'auto' }}
       CIBW_ARCHS: ${{ matrix.config.arch }}
       CMAKE_BUILD_PARALLEL_LEVEL: 2
       CIB_ENVIRONMENT: CMAKE_BUILD_PARALLEL_LEVEL="2" 
