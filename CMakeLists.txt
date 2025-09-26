@@ -8,18 +8,26 @@ find_package(
 
 include(FetchContent)
 
+if(DEFINED EMSCRIPTEN)
+  set(CMAKE_VERBOSE_MAKEFILE ON)
+  set(CMAKE_RULE_MESSAGES ON)
+  # might be needed for emscripten
+  set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
+endif()
+
+
 # Try system/conda first
 find_library(CSPICE_LIB NAMES cspice)
 
 if(CSPICE_LIB)
   message(STATUS "Found system CSPICE: ${CSPICE_LIB}")
-  add_library(CSPICE::cspice UNKNOWN IMPORTED)
-  set_target_properties(CSPICE::cspice PROPERTIES IMPORTED_LOCATION "${CSPICE_LIB}")
+  add_library(cspice UNKNOWN IMPORTED)
+  set_target_properties(cspice PROPERTIES IMPORTED_LOCATION "${CSPICE_LIB}")
   # look for the headers
   find_path(CSPICE_INCLUDE_DIR NAMES SpiceUsr.h PATH_SUFFIXES cspice)
   if (CSPICE_INCLUDE_DIR)
     message(STATUS "Found system CSPICE include: ${CSPICE_INCLUDE_DIR}")
-    set_target_properties(CSPICE::cspice PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CSPICE_INCLUDE_DIR}")
+    set_target_properties(cspice PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CSPICE_INCLUDE_DIR}")
   else()
     message(WARNING "CSPICE library found, but headers not found")
   endif()
@@ -45,7 +53,7 @@ else()
   FetchContent_Declare(
     cspice
     GIT_REPOSITORY https://github.com/AndrewAnnex/cspice-cmake-spiceypy.git
-    GIT_TAG        8ef81e8eb5eb7e38e59b8ffb7bf5f4770ba291ea # tag v0.0.6
+    GIT_TAG        1975069e3a43391a664dadf7034c5f24d0142cf8 # unreleased version with emscripten builds better supported.
   )
   FetchContent_MakeAvailable(cspice)
   
@@ -55,6 +63,10 @@ else()
     SOVERSION ""    # no libmyclibrary.so.X
     NO_SONAME ON    # don't encode a soname
   )
+
+  if(DEFINED EMSCRIPTEN)
+    target_link_options(cspice PRIVATE -Wl,-soname,libcspice.wasm)
+  endif()
 endif()
 
 # Convert pyx to c
@@ -72,21 +84,39 @@ add_custom_command(
 # Make Python extension
 python_add_library(cyice MODULE ${C_FILE} WITH_SOABI)
 
+message(NOTICE "---- Toolchain / Globals ----")
+message(NOTICE "CMAKE_SYSTEM_NAME           = ${CMAKE_SYSTEM_NAME}")
+message(NOTICE "CMAKE_C_COMPILER_ID         = ${CMAKE_C_COMPILER_ID}")
+message(NOTICE "CMAKE_C_COMPILER            = ${CMAKE_C_COMPILER}")
+message(NOTICE "CMAKE_TOOLCHAIN_FILE        = ${CMAKE_TOOLCHAIN_FILE}")
+message(NOTICE "CMAKE_BUILD_TYPE            = ${CMAKE_BUILD_TYPE}")
+message(NOTICE "CMAKE_SHARED_LINKER_FLAGS   = ${CMAKE_SHARED_LINKER_FLAGS}")
+message(NOTICE "CMAKE_EXE_LINKER_FLAGS      = ${CMAKE_EXE_LINKER_FLAGS}")
+message(NOTICE "-----------------------------")
+get_property(SRCS  TARGET cspice PROPERTY SOURCES)
+get_property(OBJS  TARGET cspice PROPERTY OBJECTS)
+get_property(LIBS  TARGET cspice PROPERTY LINK_LIBRARIES)
+get_property(OPTS  TARGET cspice PROPERTY LINK_OPTIONS)
+message(NOTICE "cspice SOURCES: ${SRCS}")
+message(NOTICE "cspice OBJECTS: ${OBJS}")
+message(NOTICE "cspice LINK_LIBRARIES: ${LIBS}")
+message(NOTICE "cspice LINK_OPTIONS: ${OPTS}")
+
 # Link to the CSPICE target exposed by the subproject
 target_include_directories(cyice PRIVATE ${Python_NumPy_INCLUDE_DIRS})
-
-# Link CSPICE + math lib (only on UNIX)
-if(UNIX AND NOT WIN32 AND NOT MINGW)
-    target_link_libraries(cyice PRIVATE CSPICE::cspice m)
-else()
-    target_link_libraries(cyice PRIVATE CSPICE::cspice)
-endif()
 
 # Set numpy options to ensure no deprecated apis older than 1.7
 target_compile_definitions(cyice
     PRIVATE
         NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
 )
+
+# Link CSPICE + math lib (only on UNIX)
+if(UNIX AND NOT WIN32 AND NOT MINGW)
+    target_link_libraries(cyice PRIVATE cspice m)
+else()
+    target_link_libraries(cyice PRIVATE cspice)
+endif()
 
 # Fix runtime search paths so extension finds libcspice in same dir if we manually install cspice
 if(DEFINED manual_patch_cspice_origin)
@@ -102,6 +132,16 @@ if(DEFINED manual_patch_cspice_origin)
     )
   endif()
 endif()
+
+
+
+get_target_property(_type cyice TYPE)
+get_target_property(_opts cyice LINK_OPTIONS)
+message(NOTICE "cyice TYPE=${_type}")
+message(NOTICE "cyice LINK_OPTIONS=${_opts}")
+get_directory_property(_dir_link_opts LINK_OPTIONS)
+message(NOTICE "DIRECTORY LINK_OPTIONS=${_dir_link_opts}")
+
 
 # install cyice
 install(TARGETS cyice DESTINATION spiceypy/cyice/)
