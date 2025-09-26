@@ -168,7 +168,7 @@ build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
 # Skip 32-bit builds, pypy, and musllinux
 skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "*-musllinux_aarch64", "*-musllinux_x86_64"]
 # skip tests for pyodide for the moment
-test-skip = ["*pyodide*"]
+#test-skip = ["*pyodide*"]
 # build options
 build-verbosity = 2
 # parallel builds passthrough for build
@@ -183,7 +183,7 @@ test-command = [
 build = ["cp312-*"]
 skip  = ["cp313-*"]
 build-verbosity = 0
-#test-command = "pytest --pyargs spiceypy --benchmark-disable"
+test-command = "pytest --pyargs spiceypy --benchmark-disable"
 pyodide-version = "0.27.7" # emscripten 3.1.58
 # disable some errors for pyodide only
 dependency-versions = { packages = ["pyodide-build==0.30.5"] }

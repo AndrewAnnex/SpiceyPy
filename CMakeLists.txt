@@ -9,6 +9,8 @@ find_package(
 include(FetchContent)
 
 if(DEFINED EMSCRIPTEN)
+  set(CMAKE_VERBOSE_MAKEFILE ON)
+  set(CMAKE_RULE_MESSAGES ON)
   # might be needed for emscripten
   set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
 endif()
@@ -61,6 +63,10 @@ else()
     SOVERSION ""    # no libmyclibrary.so.X
     NO_SONAME ON    # don't encode a soname
   )
+
+  if(DEFINED EMSCRIPTEN)
+    target_link_options(cspice PRIVATE -Wl,-soname,libcspice.wasm)
+  endif()
 endif()
 
 # Convert pyx to c
@@ -78,8 +84,32 @@ add_custom_command(
 # Make Python extension
 python_add_library(cyice MODULE ${C_FILE} WITH_SOABI)
 
+message(NOTICE "---- Toolchain / Globals ----")
+message(NOTICE "CMAKE_SYSTEM_NAME           = ${CMAKE_SYSTEM_NAME}")
+message(NOTICE "CMAKE_C_COMPILER_ID         = ${CMAKE_C_COMPILER_ID}")
+message(NOTICE "CMAKE_C_COMPILER            = ${CMAKE_C_COMPILER}")
+message(NOTICE "CMAKE_TOOLCHAIN_FILE        = ${CMAKE_TOOLCHAIN_FILE}")
+message(NOTICE "CMAKE_BUILD_TYPE            = ${CMAKE_BUILD_TYPE}")
+message(NOTICE "CMAKE_SHARED_LINKER_FLAGS   = ${CMAKE_SHARED_LINKER_FLAGS}")
+message(NOTICE "CMAKE_EXE_LINKER_FLAGS      = ${CMAKE_EXE_LINKER_FLAGS}")
+message(NOTICE "-----------------------------")
+get_property(SRCS  TARGET cspice PROPERTY SOURCES)
+get_property(OBJS  TARGET cspice PROPERTY OBJECTS)
+get_property(LIBS  TARGET cspice PROPERTY LINK_LIBRARIES)
+get_property(OPTS  TARGET cspice PROPERTY LINK_OPTIONS)
+message(NOTICE "cspice SOURCES: ${SRCS}")
+message(NOTICE "cspice OBJECTS: ${OBJS}")
+message(NOTICE "cspice LINK_LIBRARIES: ${LIBS}")
+message(NOTICE "cspice LINK_OPTIONS: ${OPTS}")
+
 # Link to the CSPICE target exposed by the subproject
 target_include_directories(cyice PRIVATE ${Python_NumPy_INCLUDE_DIRS})
+
+# Set numpy options to ensure no deprecated apis older than 1.7
+target_compile_definitions(cyice
+    PRIVATE
+        NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
+)
 
 # Link CSPICE + math lib (only on UNIX)
 if(UNIX AND NOT WIN32 AND NOT MINGW)
@@ -87,12 +117,6 @@ if(UNIX AND NOT WIN32 AND NOT MINGW)
 else()
     target_link_libraries(cyice PRIVATE cspice)
 endif()
-
-# Set numpy options to ensure no deprecated apis older than 1.7
-target_compile_definitions(cyice
-    PRIVATE
-        NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
-)
 
 # Fix runtime search paths so extension finds libcspice in same dir if we manually install cspice
 if(DEFINED manual_patch_cspice_origin)
@@ -108,6 +132,16 @@ if(DEFINED manual_patch_cspice_origin)
     )
   endif()
 endif()
+
+
+
+get_target_property(_type cyice TYPE)
+get_target_property(_opts cyice LINK_OPTIONS)
+message(NOTICE "cyice TYPE=${_type}")
+message(NOTICE "cyice LINK_OPTIONS=${_opts}")
+get_directory_property(_dir_link_opts LINK_OPTIONS)
+message(NOTICE "DIRECTORY LINK_OPTIONS=${_dir_link_opts}")
+
 
 # install cyice
 install(TARGETS cyice DESTINATION spiceypy/cyice/)
