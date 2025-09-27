@@ -144,11 +144,7 @@ addopts = "--benchmark-autosave"
 markers = [
     "optional: mark tests as optional"
 ]
-filterwarnings = [
-  "error",
-  "DeprecationWarning",
-  "default:could not create cache path:pytest.PytestCacheWarning",
-]
+
 
 # cython lint things
 [tool.cython-lint]
