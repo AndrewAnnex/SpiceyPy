@@ -21,5 +21,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-
+try:
+    from ..utils.libspicehelper import libspice
+except ImportError:  # fallback if executed outside package context
+    from spiceypy.utils.libspicehelper import libspice
+    
 from .cyice import *
