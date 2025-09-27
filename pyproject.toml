@@ -146,6 +146,7 @@ markers = [
 ]
 filterwarnings = [
   "error",
+  "DeprecationWarning",
   "default:could not create cache path:pytest.PytestCacheWarning",
 ]
 
