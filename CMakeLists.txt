@@ -133,6 +133,12 @@ if(DEFINED manual_patch_cspice_origin)
   endif()
 endif()
 
+if(DEFINED EMSCRIPTEN)
+   target_link_options(cyice PRIVATE
+    -shared
+    -Wl,--export=PyInit_cyice
+  )
+endif()
 
 
 get_target_property(_type cyice TYPE)
