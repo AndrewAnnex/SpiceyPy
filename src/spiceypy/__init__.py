@@ -25,6 +25,7 @@ __author__ = "AndrewAnnex"
 __version__ = "7.0.0"
 
 from .spiceypy import *
+from .cyice import cyice
 from .utils import support_types
 from .utils import exceptions
 
