@@ -24,7 +24,7 @@ SOFTWARE.
 
 __all__ = ["_tkversion", "libspice_path", "libspice"]
 from contextlib import contextmanager
-from ctypes import CDLL, POINTER, c_int, c_double, c_char, c_char_p, c_void_p
+from ctypes import CDLL, POINTER, c_int, c_double, c_char, c_char_p, c_void_p, RTLD_GLOBAL
 from ctypes.util import find_library
 import os
 import sys
@@ -75,7 +75,7 @@ def set_ld_library_path():
 
 def _try_load(path: str, desc: str):
     try:
-        return CDLL(path)
+        return CDLL(path, mode=RTLD_GLOBAL)
     except OSError as e:
         logger.debug(f"Failed to load CSPICE Shared Library via {desc} at {path}: {e}")
         return None
