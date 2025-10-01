@@ -26,4 +26,4 @@ try:
 except ImportError:  # fallback if executed outside package context
     from spiceypy.utils.libspicehelper import libspice
 
-from . import *
+from .cyice import *

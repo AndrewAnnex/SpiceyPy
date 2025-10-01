@@ -73,6 +73,11 @@ devwheel = [
     {include-group = "dev"},
     "cibuildwheel",
 ]
+devwheelpyodide = [
+    {include-group = "devwheel"},
+    "pyodide-http",
+    "requests"
+]
 doc = [
     {include-group = "dev"},
     "myst-parser==2.0.0",
@@ -183,9 +188,11 @@ test-command = [
 # https://github.com/jupyterlite/pyodide-kernel for version/kernel compatibility
 build = ["cp312-*"]
 skip  = ["cp313-*"]
+test-groups = ["devwheelpyodide"]
 build-verbosity = 0
-test-command = "pytest -p no:cacheprovider --pyargs spiceypy --benchmark-disable "
+test-command = "pytest -p no:cacheprovider --pyargs spiceypy --benchmark-disable"
 pyodide-version = "0.27.7" # emscripten 3.1.58
 # disable some errors for pyodide only
 dependency-versions = { packages = ["pyodide-build==0.30.5"] }
 environment = { CFLAGS="-Wno-error=implicit-function-declaration -Wno-error=incompatible-pointer-types -Wno-error=return-type" }
+

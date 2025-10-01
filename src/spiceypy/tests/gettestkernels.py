@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+import random
 import os
 import time
 import platform
@@ -31,6 +32,26 @@ import urllib.error
 import urllib.request
 import sys
 import hashlib
+
+_IS_PYODIDE = (
+    sys.platform == "emscripten" \
+    or "pyodide" in sys.modules \
+    or "PYODIDE" in os.environ
+)
+
+if _IS_PYODIDE:
+    try: 
+        import pyodide_http  # type: ignore
+        pyodide_http.patch_all()
+    except ImportError as ie:
+        raise RuntimeWarning('In SpiceyPy gettestkernels.py on Pyodide and could not import pyodide_http', ie)
+
+try:
+    import requests  # type: ignore
+    _HAVE_REQUESTS = True
+except Exception:
+    _HAVE_REQUESTS = False
+
 
 cwd = "/tmp" if platform.system() == "Darwin" else tempfile.gettempdir()
 
@@ -179,6 +200,34 @@ def get_kernel(url: str, provided_hash: str = None):
     if not os.path.isfile(kernel_file):
         attempt_download(url, kernel_name, kernel_file, 5, provided_hash=provided_hash)
 
+def verify_hash(target_file_name, kernel_name, provided_hash):
+    with open(target_file_name, "rb") as kernel:
+        file_contents = kernel.read()
+        assert file_contents is not None
+        file_hash = hashlib.md5(file_contents).hexdigest()
+        if file_hash != provided_hash:
+            raise AssertionError(
+                "File {} appears corrupted. Expected md5: {} but got {} instead".format(
+                    kernel_name, provided_hash, file_hash
+                )
+            )
+
+
+def _download(kernel_name, target_file_name, url, timeout: float = 10.0, chunk_size: int = 1024 * 1024):
+    print("Attempting to Download kernel: {}".format(kernel_name), flush=True)
+    if _HAVE_REQUESTS:
+        with requests.get(url, stream=True, timeout=timeout) as r:  # type: ignore
+            r.raise_for_status()
+            with open(target_file_name, "wb") as out:
+                for chunk in r.iter_content(chunk_size=chunk_size):
+                    if chunk:  # filter keep-alive chunks
+                        out.write(chunk)
+    else:
+        current_kernel = urllib.request.urlopen(url, timeout=10)
+        with open(target_file_name, "wb") as kernel:
+            kernel.write(current_kernel.read())
+    print("Downloaded kernel: {}".format(kernel_name), flush=True)
+
 
 def attempt_download(
     url: str,
@@ -187,57 +236,26 @@ def attempt_download(
     num_attempts: int,
     provided_hash: str = None,
 ) -> None:
+    base = 1.0
     current_attempt = 0
     while current_attempt < num_attempts:
         try:
-            print("Attempting to Download kernel: {}".format(kernel_name), flush=True)
-            current_kernel = urllib.request.urlopen(url, timeout=10)
-            with open(target_file_name, "wb") as kernel:
-                kernel.write(current_kernel.read())
-            print("Downloaded kernel: {}".format(kernel_name), flush=True)
+            _download(kernel_name, target_file_name, url)
             # check file hash if provided, assumes md5
             if provided_hash is not None:
-                with open(target_file_name, "rb") as kernel:
-                    file_contents = kernel.read()
-                    assert file_contents is not None
-                    file_hash = hashlib.md5(file_contents).hexdigest()
-                    if file_hash != provided_hash:
-                        raise AssertionError(
-                            "File {} appears corrupted. Expected md5: {} but got {} instead".format(
-                                kernel_name, provided_hash, file_hash
-                            )
-                        )
-            break
-        # N.B. .HTTPError inherits from .URLError, so [except:....HTTPError]
-        #      must be listed before [except:....URLError], otherwise the
-        #      .HTTPError exception cannot be caught
-        except urllib.error.HTTPError as h:
+                verify_hash(target_file_name, kernel_name, provided_hash)
+            # should be done
+        except Exception as e:
+            err_msg = str(e)
             print(
-                "Some http error when downloading kernel {}, error: ".format(
-                    kernel_name
-                ),
-                h,
-                ", trying again after a bit.",
-            )
-        except urllib.error.URLError as u:
-            print(u, u.reason)
-            print(
-                "Download of kernel: {} failed with URLError, trying again after a bit: {}".format(
-                    kernel_name,
-                    u
-                ),
-                flush=True,
-            )
-        except AssertionError as ae:
-            print(
-                "Download of kernel: {} failed with AssertionError, ({}), trying again after a bit.".format(
-                    str(ae), kernel_name
-                ),
-                flush=True,
+                f"Download of kernel: {kernel_name} failed with Error ({err_msg}), trying again after a bit.",
+                flush=True
             )
         current_attempt += 1
+        jitter = random.uniform(0, 1)
+        delay = min(60.0, base * (2 ** (current_attempt - 1)) + jitter)
         print("\t Attempting to Download kernel again...", flush=True)
-        time.sleep(2 + current_attempt)
+        time.sleep(delay)
     if current_attempt >= num_attempts:
         raise BaseException(
             "Error Downloading kernel: {}, check if kernel exists at url: {}".format(
