@@ -245,6 +245,7 @@ def attempt_download(
             if provided_hash is not None:
                 verify_hash(target_file_name, kernel_name, provided_hash)
             # should be done
+            break
         except Exception as e:
             err_msg = str(e)
             print(
