@@ -91,25 +91,31 @@ def test_no_loaded_files_exception():
     with pytest.raises(spice.SpiceyError):
         spice.ckgp(0, 0, 0, "blah")
     spice.reset()
+    spice.kclear()
     with pytest.raises(spice.exceptions.SpiceNOLOADEDFILES):
         spice.ckgp(0, 0, 0, "blah")
     spice.reset()
+    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.v1jCk)
     with pytest.raises(spice.NotFoundError):
         spice.ckgp(0, 0, 0, "blah")
     spice.reset()
+    spice.kclear()
     with pytest.raises(spice.SpiceyError):
         cyice.ckgp(0, 0.0, 0, "blah")
     spice.reset()
+    spice.kclear()
     with pytest.raises(spice.exceptions.SpiceNOLOADEDFILES):
         cyice.ckgp(0, 0.0, 0, "blah")
     spice.reset()
+    spice.kclear()
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.v1jCk)
     with pytest.raises(spice.NotFoundError):
         cyice.ckgp(0, 0.0, 0, "blah")
     spice.reset()
+    spice.kclear()
     with spiceypy.no_found_check():
         with pytest.raises(spice.SpiceyPyIOError):
             spice.ckgp(0, 0, 0, "blah")
