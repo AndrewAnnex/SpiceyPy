@@ -481,6 +481,7 @@ def bodeul(body: int, et: float) -> Tuple[float, float, float, float]:
 
 
 @spice_found_exception_thrower
+@spice_error_check
 def bodc2n(code: int, lenout: int = _default_len_out) -> Union[Tuple[str, bool], str]:
     """
     Translate the SPICE integer code of a body into a common name
