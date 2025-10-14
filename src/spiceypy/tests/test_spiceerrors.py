@@ -94,13 +94,13 @@ def test_no_loaded_files_exception():
     with pytest.raises(spice.NotFoundError):
         spice.ckgp(0, 0, 0, "blah")
     spice.reset()
-    # with pytest.raises(spice.SpiceyError):
-    #     cyice.ckgp(0, 0.0, 0, "blah")
-    # spice.reset()
-    # with pytest.raises(spice.NotFoundError):
-    #     cyice.ckgp(0, 0.0, 0, "blah")
-    # spice.reset()
-    with spiceypy.found_catcher.no_found_check():
+    with pytest.raises(spice.SpiceyError):
+        cyice.ckgp(0, 0.0, 0, "blah")
+    spice.reset()
+    with pytest.raises(spice.NotFoundError):
+        cyice.ckgp(0, 0.0, 0, "blah")
+    spice.reset()
+    with spiceypy.no_found_check():
         with pytest.raises(spice.SpiceyPyIOError):
             spice.ckgp(0, 0, 0, "blah")
         spice.reset()
@@ -136,7 +136,7 @@ def test_error_to_str():
 
 def test_disable_found_catch():
     spice.kclear()
-    with spiceypy.found_catcher.no_found_check():
+    with spiceypy.no_found_check():
         name, found = spice.bodc2n(-9991)
         assert not found
     with pytest.raises(spice.SpiceyError):
@@ -157,7 +157,7 @@ def test_recursive_disable_found_catch():
         if i <= 0:
             return
         else:
-            with spiceypy.found_catcher.no_found_check():
+            with spiceypy.no_found_check():
                 name, found = spice.bodc2n(-9991)
                 assert not found
                 _recursive_call(i - 1)

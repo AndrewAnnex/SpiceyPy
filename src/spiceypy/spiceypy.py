@@ -41,6 +41,7 @@ from .found_catcher import (
     found_check_off,
     found_check_on,
     found_check,
+    no_found_check,
     get_found_catch_state,
     spice_found_exception_thrower,
 )
