@@ -480,7 +480,6 @@ def bodeul(body: int, et: float) -> Tuple[float, float, float, float]:
     return ra.value, dec.value, w.value, lam.value
 
 
-@spice_error_check
 @spice_found_exception_thrower
 def bodc2n(code: int, lenout: int = _default_len_out) -> Union[Tuple[str, bool], str]:
     """
@@ -554,8 +553,8 @@ def bodfnd(body: int, item: str) -> bool:
     return bool(libspice.bodfnd_c(body, item))
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def bodn2c(name: str) -> Union[Tuple[int, bool], int]:
     """
     Translate the name of a body or object to the corresponding SPICE
@@ -573,8 +572,8 @@ def bodn2c(name: str) -> Union[Tuple[int, bool], int]:
     return code.value, bool(found.value)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def bods2c(name: str) -> Union[Tuple[int, bool], int]:
     """
     Translate a string containing a body name or ID code to an integer code.
@@ -845,8 +844,8 @@ def card(cell: SpiceCell) -> int:
     return libspice.card_c(ctypes.byref(cell))
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def ccifrm(
     frclss: int, clssid: int, lenout: int = _default_len_out
 ) -> Union[Tuple[int, str, int, bool], Tuple[int, str, int]]:
@@ -1045,8 +1044,8 @@ def chkout(module: str) -> None:
     libspice.chkout_c(module)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def cidfrm(
     cent: int, lenout: int = _default_len_out
 ) -> Union[Tuple[int, str, bool], Tuple[int, str]]:
@@ -1124,8 +1123,8 @@ def ckcov(
     return cover
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def ckfrot(
     inst: int, et: float
 ) -> Union[Tuple[ndarray, int, bool], Tuple[ndarray, int]]:
@@ -1154,8 +1153,8 @@ def ckfrot(
     return stypes.c_matrix_to_numpy(rotate_m), ref.value, bool(found.value)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def ckfxfm(
     inst: int, et: float
 ) -> Union[Tuple[ndarray, int, bool], Tuple[ndarray, int]]:
@@ -1184,8 +1183,8 @@ def ckfxfm(
     )
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def ckgp(
     inst: int, sclkdp: Union[float, int], tol: int, ref: str
 ) -> Union[Tuple[ndarray, float, bool], Tuple[ndarray, float]]:
@@ -1215,8 +1214,8 @@ def ckgp(
     return stypes.c_matrix_to_numpy(cmat), clkout.value, bool(found.value)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def ckgpav(
     inst: int, sclkdp: Union[float, float], tol: Union[float, int], ref: str
 ) -> Union[Tuple[ndarray, ndarray, float, bool], Tuple[ndarray, ndarray, float]]:
@@ -1741,8 +1740,8 @@ def cmprss(delim: str, n: int, instr: str, lenout: int = _default_len_out) -> st
     return stypes.to_python_string(output)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def cnmfrm(
     cname: str, lenout: int = _default_len_out
 ) -> Union[Tuple[int, str, bool], Tuple[int, str]]:
@@ -2190,8 +2189,8 @@ def dafgs(n: int = 125) -> ndarray:
     return stypes.c_vector_to_python(retarray)[0:n]
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def dafgsr(
     handle: int, recno: int, begin: int, end: int
 ) -> Union[Tuple[ndarray, bool], ndarray]:
@@ -2994,8 +2993,8 @@ def diff(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     return c
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def dlabbs(handle: int) -> Union[Tuple[SpiceDLADescr, bool], SpiceDLADescr]:
     """
     Begin a backward segment search in a DLA file.
@@ -3012,8 +3011,8 @@ def dlabbs(handle: int) -> Union[Tuple[SpiceDLADescr, bool], SpiceDLADescr]:
     return descr, bool(found.value)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def dlabfs(handle: int) -> Union[Tuple[SpiceDLADescr, bool], SpiceDLADescr]:
     """
     Begin a forward segment search in a DLA file.
@@ -3078,8 +3077,8 @@ def dlaopn(fname: str, ftype: str, ifname: str, ncomch: int) -> int:
     return _handle.value
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def dlafns(
     handle: int, descr: SpiceDLADescr
 ) -> Union[Tuple[SpiceDLADescr, bool], SpiceDLADescr]:
@@ -3102,8 +3101,8 @@ def dlafns(
     return nxtdsc, bool(found.value)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def dlafps(
     handle: int, descr: SpiceDLADescr
 ) -> Union[Tuple[SpiceDLADescr, bool], SpiceDLADescr]:
@@ -3147,8 +3146,8 @@ def dlatdr(x: float, y: float, z: float) -> ndarray:
     return stypes.c_matrix_to_numpy(jacobi)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def dnearp(
     state: ndarray, a: float, b: float, c: float
 ) -> Union[Tuple[ndarray, ndarray, bool], Tuple[ndarray, ndarray]]:
@@ -3935,8 +3934,8 @@ def dskx02(
     return plid.value, stypes.c_vector_to_python(xpt), bool(found.value)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def dskxsi(
     pri: bool,
     target: str,
@@ -4097,8 +4096,8 @@ def dsphdr(x: float, y: float, z: float) -> ndarray:
     return stypes.c_matrix_to_numpy(jacobi)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def dtpool(name: str) -> Union[Tuple[int, str, bool], Tuple[int, str]]:
     """
     Return the data about a kernel pool variable.
@@ -4756,8 +4755,8 @@ def ekfind(query: str, lenout: int = _default_len_out) -> Tuple[int, int, str]:
     return nmrows.value, error.value, stypes.to_python_string(errmsg)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def ekgc(
     selidx: int, row: int, element: int, lenout: int = _default_len_out
 ) -> Union[Tuple[int, str, bool], Tuple[int, str]]:
@@ -4788,8 +4787,8 @@ def ekgc(
     return stypes.to_python_string(cdata), null.value, bool(found.value)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def ekgd(
     selidx: int, row: int, element: int
 ) -> Union[Tuple[float, int, bool], Tuple[float, int]]:
@@ -4823,8 +4822,8 @@ def ekgd(
     return ddata.value, null.value, bool(found.value)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def ekgi(
     selidx: int, row: int, element: int
 ) -> Union[Tuple[int, int, bool], Tuple[int, int]]:
@@ -6047,8 +6046,8 @@ def frame(x: Union[ndarray, Iterable[float]]) -> Tuple[ndarray, ndarray, ndarray
     )
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def frinfo(frcode: int) -> Union[Tuple[int, int, int, bool], Tuple[int, int, int]]:
     """
     Retrieve the minimal attributes associated with a frame
@@ -6126,8 +6125,8 @@ def furnsh(path: Union[str, Iterable[str]]) -> None:
 # G
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def gcpool(
     name: str, start: int, room: int, lenout: int = _default_len_out
 ) -> Union[Tuple[Iterable[str], bool], Iterable[str]]:
@@ -6164,8 +6163,8 @@ def gcpool(
     )
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def gdpool(name: str, start: int, room: int) -> Union[Tuple[ndarray, bool], ndarray]:
     """
     Return the d.p. value of a kernel variable from the kernel pool.
@@ -7647,8 +7646,8 @@ def gfuds(
     return result
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def gipool(name: str, start: int, room: int) -> Union[Tuple[ndarray, bool], ndarray]:
     """
     Return the integer value of a kernel variable from the kernel pool.
@@ -7670,8 +7669,8 @@ def gipool(name: str, start: int, room: int) -> Union[Tuple[ndarray, bool], ndar
     return stypes.c_vector_to_python(ivals)[0 : n.value], bool(found.value)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def gnpool(
     name: str, start: int, room: int, lenout: int = _default_len_out
 ) -> Union[Tuple[Iterable[str], bool], Iterable[str]]:
@@ -8078,8 +8077,8 @@ def ilumin(
     )
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def inedpl(
     a: float, b: float, c: float, plane: Plane
 ) -> Union[Tuple[Ellipse, bool], Ellipse]:
@@ -8598,8 +8597,8 @@ def kclear() -> None:
     libspice.kclear_c()
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def kdata(
     which: int,
     kind: str,
@@ -8673,8 +8672,8 @@ def kepleq(ml: float, h: float, k: float) -> float:
     return f
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def kinfo(
     file: str, typlen: int = _default_len_out, srclen: int = _default_len_out
 ) -> Union[Tuple[str, str, int, bool], Tuple[str, str, int]]:
@@ -8765,8 +8764,8 @@ def ktotal(kind: str) -> int:
     return count.value
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def kxtrct(
     keywd: str,
     terms: Sequence[str],
@@ -12147,8 +12146,8 @@ def sigerr(message: str) -> None:
     libspice.sigerr_c(message)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def sincpt(
     method: str,
     target: str,
@@ -13170,8 +13169,8 @@ def spkpvn(handle: int, descr: ndarray, et: float) -> Tuple[int, ndarray, int]:
     return ref.value, stypes.c_vector_to_python(state), center.value
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def spksfs(
     body: int, et: float, idlen: int
 ) -> Union[Tuple[int, ndarray, str, bool], Tuple[int, ndarray, str]]:
@@ -14019,8 +14018,8 @@ def spkw20(
     )
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def srfc2s(
     code: int, bodyid: int, srflen: int = _default_len_out
 ) -> Union[Tuple[str, bool], str]:
@@ -14048,8 +14047,8 @@ def srfc2s(
     return stypes.to_python_string(srfstr), bool(isname.value)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def srfcss(
     code: int, bodstr: str, srflen: int = _default_len_out
 ) -> Union[Tuple[str, bool], str]:
@@ -14127,8 +14126,8 @@ def srfrec(body: int, longitude: float, latitude: float) -> ndarray:
     return stypes.c_vector_to_python(rectan)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def srfs2c(srfstr: str, bodstr: str) -> Union[Tuple[int, bool], int]:
     """
     Translate a surface string, together with a body string, to the
@@ -14149,8 +14148,8 @@ def srfs2c(srfstr: str, bodstr: str) -> Union[Tuple[int, bool], int]:
     return code.value, bool(isname.value)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def srfscc(srfstr: str, bodyid: int) -> Union[Tuple[int, bool], int]:
     """
     Translate a surface string, together with a body ID code, to the
@@ -14171,8 +14170,8 @@ def srfscc(srfstr: str, bodyid: int) -> Union[Tuple[int, bool], int]:
     return code.value, bool(isname.value)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def srfxpt(
     method: str,
     target: str,
@@ -14343,8 +14342,8 @@ def stlabx(pobj: ndarray, vobs: ndarray) -> ndarray:
     return stypes.c_vector_to_python(_corpos)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def stpool(
     item: str, nth: int, contin: str, lenout: int = _default_len_out
 ) -> Union[Tuple[str, int, bool], Tuple[str, int]]:
@@ -14697,8 +14696,8 @@ def surfnm(
     return stypes.c_vector_to_python(normal)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def surfpt(
     positn: Union[ndarray, Iterable[float]],
     u: Union[ndarray, Iterable[float]],
@@ -14730,8 +14729,8 @@ def surfpt(
     return stypes.c_vector_to_python(point), bool(found.value)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def surfpv(
     stvrtx: Union[ndarray, Iterable[float]],
     stdir: Union[ndarray, Iterable[float]],
@@ -14813,8 +14812,8 @@ def sxform(instring: str, tostring: str, et: Union[float, ndarray]) -> ndarray:
         return stypes.c_matrix_to_numpy(xform)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def szpool(name: str) -> Union[Tuple[int, bool], int]:
     """
     Return the kernel pool size limitations.
@@ -15117,8 +15116,8 @@ def tisbod(ref: str, body: int, et: float) -> ndarray:
     return stypes.c_matrix_to_numpy(retmatrix)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def tkfram(typid: int) -> Union[Tuple[ndarray, int, bool], Tuple[ndarray, int]]:
     """
     This routine returns the rotation from the input frame
@@ -16118,8 +16117,8 @@ def vprjp(vin: Union[ndarray, Iterable[float]], plane: Plane) -> ndarray:
     return stypes.c_vector_to_python(vout)
 
 
-@spice_error_check
 @spice_found_exception_thrower
+@spice_error_check
 def vprjpi(
     vin: Union[ndarray, Iterable[float]], projpl: Plane, invpl: Plane
 ) -> Union[Tuple[ndarray, bool], ndarray]:
