@@ -26,7 +26,7 @@ import pytest
 import spiceypy as spice
 from spiceypy.cyice import cyice
 import spiceypy.found_catcher
-from spiceypy.tests.gettestkernels import cwd
+from spiceypy.tests.gettestkernels import cwd, CoreKernels
 import os
 
 
@@ -97,6 +97,7 @@ def test_no_loaded_files_exception():
     with pytest.raises(spice.SpiceyError):
         cyice.ckgp(0, 0.0, 0, "blah")
     spice.reset()
+    spice.furnsh(CoreKernels.testMetaKernel)
     with pytest.raises(spice.NotFoundError):
         cyice.ckgp(0, 0.0, 0, "blah")
     spice.reset()
