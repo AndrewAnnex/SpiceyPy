@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false 
       matrix:
-        os: [ubuntu-latest, macos-14, windows-latest]
+        os: [ubuntu-22.04-arm, ubuntu-latest, macos-15, macos-15-intel, windows-latest]
     permissions:
       id-token: write
       contents: read
@@ -86,7 +86,7 @@ jobs:
         include:
           - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "x86_64"}
           - config: {"name": "Linux", "os": "ubuntu-22.04-arm", "arch": "aarch64"}
-          - config: {"name": "macOS", "os": "", "arch": "x86_64"}
+          - config: {"name": "macOS", "os": "macos-15-intel", "arch": "x86_64"}
           - config: {"name": "macOS", "os": "macos-15", "arch": "arm64"}
           - config: {"name": "Windows", "os": "windows-latest", "arch": "AMD64"}  
     name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels for ${{ matrix.config.os }} ${{ matrix.config.arch }}
