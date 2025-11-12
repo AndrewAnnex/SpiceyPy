@@ -23,9 +23,19 @@ SOFTWARE.
 """
 __author__ = "AndrewAnnex"
 __version__ = "8.0.0"
+import importlib
+import sys
+
+def __getattr__(name):
+    if name == "cyice":
+        module = importlib.import_module(f"{__name__}.cyice")
+        sys.modules[f"{__name__}.cyice"] = module
+        return module
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 
 from . import spiceypy as _spiceypy
-from . import cyice
+
 
 from .spiceypy import (
     stypes,

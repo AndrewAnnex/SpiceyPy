@@ -29,7 +29,7 @@ except ImportError:  # fallback if executed outside package context
 # Import the compiled module from the parent package level
 # from spiceypy.cyice import cyice as _cyice
 
-from .cyice import (
+from spiceypy.cyice.cyice import (
     azlcpo,
     azlcpo_s,
     azlcpo_v,
