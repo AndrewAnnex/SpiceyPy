@@ -25,6 +25,7 @@ __author__ = "AndrewAnnex"
 __version__ = "8.0.0"
 
 from . import spiceypy as _spiceypy
+from . import cyice
 
 from .spiceypy import (
     stypes,
@@ -728,6 +729,7 @@ from .utils import support_types
 from .utils import exceptions
 
 __all__ = [
+    "cyice",
     "support_types",
     "exceptions"
     "stypes",
