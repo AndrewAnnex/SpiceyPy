@@ -4,6 +4,12 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [8.0.0] - 2025-10-27
+
+### Fixed
+ - Missing import for no_found_check in spiceypy.py
+ - Swapped order of spice error check and found flag check decorators to avoid spurious NotFound exceptions.
+
 ## [7.0.0] - 2025-09-22
 SpiceyPy with Cyice, Cython accelerated Spice
 

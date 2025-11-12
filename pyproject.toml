@@ -21,6 +21,7 @@ classifiers = [
      "Programming Language :: Python :: 3.11",
      "Programming Language :: Python :: 3.12",
      "Programming Language :: Python :: 3.13",
+     "Programming Language :: Python :: 3.14",
      "Programming Language :: Cython",
      "Operating System :: MacOS :: MacOS X",
      "Operating System :: POSIX :: Linux",
@@ -170,7 +171,7 @@ source = [
 # all CI build wheel stuff goes here
 [tool.cibuildwheel]
 # Specify Python Versions to build
-build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
+build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*", "cp314-*"]
 # Skip 32-bit builds, pypy, and musllinux
 skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "*-musllinux_aarch64", "*-musllinux_x86_64"]
 # skip tests for pyodide for the moment
