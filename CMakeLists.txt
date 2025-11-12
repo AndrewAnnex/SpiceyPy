@@ -81,8 +81,13 @@ add_custom_command(
   COMMENT "Cythonizing ${PYX_FILE} to ${C_FILE}"
   VERBATIM)
 
-# Make Python extension
-python_add_library(cyice MODULE ${C_FILE} WITH_SOABI)
+# Make Python extension using full dotted name for emscripten
+python_add_library(spiceypy.cyice.cyice MODULE ${C_FILE} WITH_SOABI)
+# Adjust properties using the same target name
+set_target_properties(spiceypy.cyice.cyice PROPERTIES
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/spiceypy/cyice"
+  OUTPUT_NAME "cyice"
+)
 
 message(NOTICE "---- Toolchain / Globals ----")
 message(NOTICE "CMAKE_SYSTEM_NAME           = ${CMAKE_SYSTEM_NAME}")
@@ -103,30 +108,30 @@ message(NOTICE "cspice LINK_LIBRARIES: ${LIBS}")
 message(NOTICE "cspice LINK_OPTIONS: ${OPTS}")
 
 # Link to the CSPICE target exposed by the subproject
-target_include_directories(cyice PRIVATE ${Python_NumPy_INCLUDE_DIRS})
+target_include_directories(spiceypy.cyice.cyice PRIVATE ${Python_NumPy_INCLUDE_DIRS})
 
 # Set numpy options to ensure no deprecated apis older than 1.7
-target_compile_definitions(cyice
+target_compile_definitions(spiceypy.cyice.cyice
     PRIVATE
         NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
 )
 
 # Link CSPICE + math lib (only on UNIX)
 if(UNIX AND NOT WIN32 AND NOT MINGW)
-    target_link_libraries(cyice PRIVATE cspice m)
+    target_link_libraries(spiceypy.cyice.cyice PRIVATE cspice m)
 else()
-    target_link_libraries(cyice PRIVATE cspice)
+    target_link_libraries(spiceypy.cyice.cyice PRIVATE cspice)
 endif()
 
 # Fix runtime search paths so extension finds libcspice in same dir if we manually install cspice
 if(DEFINED manual_patch_cspice_origin)
   if(APPLE)
-    set_target_properties(cyice PROPERTIES
+    set_target_properties(spiceypy.cyice.cyice PROPERTIES
       INSTALL_RPATH "@loader_path/../utils"
       BUILD_WITH_INSTALL_RPATH ON
     )
   elseif(UNIX)
-    set_target_properties(cyice PROPERTIES
+    set_target_properties(spiceypy.cyice.cyice PROPERTIES
       INSTALL_RPATH "$ORIGIN/../utils"
       BUILD_WITH_INSTALL_RPATH ON
     )
@@ -134,15 +139,15 @@ if(DEFINED manual_patch_cspice_origin)
 endif()
 
 if(DEFINED EMSCRIPTEN)
-   target_link_options(cyice PRIVATE
+   target_link_options(spiceypy.cyice.cyice PRIVATE
     -shared
-    -Wl,--export=PyInit_cyice
+    -Wl,--export=PyInit_spiceypy__cyice__cyice
   )
 endif()
 
 
-get_target_property(_type cyice TYPE)
-get_target_property(_opts cyice LINK_OPTIONS)
+get_target_property(_type spiceypy.cyice.cyice TYPE)
+get_target_property(_opts spiceypy.cyice.cyice LINK_OPTIONS)
 message(NOTICE "cyice TYPE=${_type}")
 message(NOTICE "cyice LINK_OPTIONS=${_opts}")
 get_directory_property(_dir_link_opts LINK_OPTIONS)
@@ -150,4 +155,4 @@ message(NOTICE "DIRECTORY LINK_OPTIONS=${_dir_link_opts}")
 
 
 # install cyice
-install(TARGETS cyice DESTINATION spiceypy/cyice/)
+install(TARGETS spiceypy.cyice.cyice DESTINATION spiceypy/cyice/)

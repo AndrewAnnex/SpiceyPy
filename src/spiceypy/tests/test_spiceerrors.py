@@ -25,7 +25,7 @@ SOFTWARE.
 import pytest
 import spiceypy as spice
 from spiceypy.utils.libspicehelper import libspice
-from spiceypy.cyice import cyice
+from spiceypy import cyice
 import spiceypy.found_catcher
 from spiceypy.tests.gettestkernels import cwd, CoreKernels, ExtraKernels
 import os

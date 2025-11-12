@@ -26,6 +26,9 @@ try:
 except ImportError:  # fallback if executed outside package context
     from spiceypy.utils.libspicehelper import libspice
 
+# Import the compiled module from the parent package level
+from spiceypy.cyice import cyice as _cyice
+
 from .cyice import (
     azlcpo,
     azlcpo_s,
@@ -73,6 +76,7 @@ from .cyice import (
     evsgp4,
     evsgp4_s,
     evsgp4_v,
+    failed,
     fovray,
     fovray_s,
     fovray_v,
@@ -80,6 +84,7 @@ from .cyice import (
     fovtrg_s,
     fovtrg_v,
     furnsh,
+    getmsg,
     georec,
     georec_s,
     georec_v,
@@ -119,6 +124,10 @@ from .cyice import (
     occult,
     occult_s,
     occult_v,
+    oscelt,
+    oscelt_s,
+    oscelt_v,
+    qcktrc,
     pgrrec,
     pgrrec_s,
     pgrrec_v,
@@ -153,6 +162,7 @@ from .cyice import (
     recsph,
     recsph_s,
     recsph_v,
+    reset,
     rpd,
     scdecd,
     scdecd_s,
@@ -312,6 +322,7 @@ __all__ = [
     "evsgp4",
     "evsgp4_s",
     "evsgp4_v",
+    "failed",
     "fovray",
     "fovray_s",
     "fovray_v",
@@ -319,6 +330,7 @@ __all__ = [
     "fovtrg_s",
     "fovtrg_v",
     "furnsh",
+    "getmsg",
     "georec",
     "georec_s",
     "georec_v",
@@ -358,6 +370,10 @@ __all__ = [
     "occult",
     "occult_s",
     "occult_v",
+    "oscelt",
+    "oscelt_s",
+    "oscelt_v",
+    "qcktrc",
     "pgrrec",
     "pgrrec_s",
     "pgrrec_v",
@@ -392,6 +408,7 @@ __all__ = [
     "recsph",
     "recsph_s",
     "recsph_v",
+    "reset"
     "rpd",
     "scdecd",
     "scdecd_s",
