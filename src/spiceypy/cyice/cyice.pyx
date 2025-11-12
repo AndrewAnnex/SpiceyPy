@@ -111,7 +111,7 @@ Matrix_N_6  = Annotated[DoubleArray, Literal["N", 6, 6]]
 
 from spiceypy import config
 from spiceypy.utils.exceptions import dynamically_instantiate_spiceyerror, NotFoundError, SpiceyError
-from .cyice cimport *
+from . cimport cyice
 
 # support functions
 
