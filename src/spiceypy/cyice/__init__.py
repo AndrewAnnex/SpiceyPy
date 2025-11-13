@@ -22,10 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 try:
-    from ..utils.libspicehelper import libspice
+    from ..utils.libspicehelper import libspice, load_cspice
 except ImportError:  # fallback if executed outside package context
-    from spiceypy.utils.libspicehelper import libspice
+    from spiceypy.utils.libspicehelper import libspice, load_cspice
 
+_ = load_cspice()
 # Import the compiled module from the parent package level
 # from spiceypy.cyice import cyice as _cyice
 
