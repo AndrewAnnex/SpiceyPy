@@ -43,11 +43,11 @@ cdef extern from "SpiceUsr.h" nogil:
     ctypedef const double ConstSpiceDouble
 
     # Bool
-    ctypedef enum SpiceBoolean:
-        SPICEFALSE = 0
-        SPICETRUE  = 1
-    # const SpiceBoolean
+    ctypedef int SpiceBoolean
     ctypedef const SpiceBoolean ConstSpiceBoolean
+
+    cdef const int SPICEFALSE = 0
+    cdef const int SPICETRUE = 1
 
     # Cells
     # TODO I was overriding stuff in here with this enum! rename each kind to a unique name
