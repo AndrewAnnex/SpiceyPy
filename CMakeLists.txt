@@ -137,4 +137,4 @@ if(DEFINED manual_patch_cspice_origin)
 endif()
 
 # install cyice
-install(TARGETS cyice DESTINATION spiceypy/cyice/)
+install(TARGETS cyice DESTINATION spiceypy/)
