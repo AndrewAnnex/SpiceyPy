@@ -126,12 +126,12 @@ if(DEFINED manual_patch_cspice_origin)
   elseif(DEFINED EMSCRIPTEN)
     message(NOTICE "SETTING RPATH for emscripten") 
     set_target_properties(cyice PROPERTIES
-      INSTALL_RPATH "$ORIGIN/../spiceypy.libs"
-      BUILD_RPATH "$ORIGIN/../spiceypy.libs"
+      INSTALL_RPATH "$ORIGIN/../../spiceypy.libs"
+      BUILD_RPATH "$ORIGIN/../../spiceypy.libs"
       BUILD_WITH_INSTALL_RPATH ON
     )
     target_link_options(cyice PRIVATE
-      -Wl,-rpath,$ORIGIN/../spiceypy.libs 
+      -Wl,-rpath,$ORIGIN/../../spiceypy.libs 
     )
   endif()
 endif()
