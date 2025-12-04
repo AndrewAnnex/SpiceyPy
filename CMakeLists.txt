@@ -35,8 +35,13 @@ else()
   message(STATUS "System CSPICE not found, falling back to FetchContent")
   # we need to use this for the INSTALL_RPATH property
   set(manual_patch_cspice_origin 'yes')  
-  # Put CSPICE libs inside our package, not top-level lib/
-  set(CMAKE_INSTALL_LIBDIR "spiceypy/utils/" CACHE INTERNAL "")
+
+  # Put CSPICE libs inside our package
+  if(DEFINED EMSCRIPTEN)
+    set(CMAKE_INSTALL_LIBDIR "spiceypy.libs/" CACHE INTERNAL "")
+  else()
+    set(CMAKE_INSTALL_LIBDIR "spiceypy/utils/" CACHE INTERNAL "")
+  endif()
   
   if(MSVC)
     # Force DLLs to install alongside LIBs instead of bin/
@@ -64,10 +69,11 @@ else()
     NO_SONAME ON    # don't encode a soname
   )
 
-  if(DEFINED EMSCRIPTEN)
-    target_link_options(cspice PRIVATE -Wl,-soname,libcspice.wasm)
-  endif()
 endif()
+
+##############################################################################
+# cyice specifics below
+
 
 # Convert pyx to c
 set(PYX_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/spiceypy/cyice.pyx)
@@ -89,24 +95,6 @@ set_target_properties(cyice PROPERTIES
   OUTPUT_NAME "cyice"
 )
 
-message(NOTICE "---- Toolchain / Globals ----")
-message(NOTICE "CMAKE_SYSTEM_NAME           = ${CMAKE_SYSTEM_NAME}")
-message(NOTICE "CMAKE_C_COMPILER_ID         = ${CMAKE_C_COMPILER_ID}")
-message(NOTICE "CMAKE_C_COMPILER            = ${CMAKE_C_COMPILER}")
-message(NOTICE "CMAKE_TOOLCHAIN_FILE        = ${CMAKE_TOOLCHAIN_FILE}")
-message(NOTICE "CMAKE_BUILD_TYPE            = ${CMAKE_BUILD_TYPE}")
-message(NOTICE "CMAKE_SHARED_LINKER_FLAGS   = ${CMAKE_SHARED_LINKER_FLAGS}")
-message(NOTICE "CMAKE_EXE_LINKER_FLAGS      = ${CMAKE_EXE_LINKER_FLAGS}")
-message(NOTICE "-----------------------------")
-get_property(SRCS  TARGET cspice PROPERTY SOURCES)
-get_property(OBJS  TARGET cspice PROPERTY OBJECTS)
-get_property(LIBS  TARGET cspice PROPERTY LINK_LIBRARIES)
-get_property(OPTS  TARGET cspice PROPERTY LINK_OPTIONS)
-message(NOTICE "cspice SOURCES: ${SRCS}")
-message(NOTICE "cspice OBJECTS: ${OBJS}")
-message(NOTICE "cspice LINK_LIBRARIES: ${LIBS}")
-message(NOTICE "cspice LINK_OPTIONS: ${OPTS}")
-
 # Link to the CSPICE target exposed by the subproject
 target_include_directories(cyice PRIVATE ${Python_NumPy_INCLUDE_DIRS})
 
@@ -125,12 +113,22 @@ endif()
 
 # Fix runtime search paths so extension finds libcspice in same dir if we manually install cspice
 if(DEFINED manual_patch_cspice_origin)
-  if(APPLE)
+  if(DEFINED EMSCRIPTEN)
+    message(NOTICE "SETTING RPATH for emscripten") 
+    set_target_properties(cyice PROPERTIES
+      INSTALL_RPATH "$ORIGIN/../spiceypy.libs"
+      BUILD_RPATH "$ORIGIN/../spiceypy.libs"
+      BUILD_WITH_INSTALL_RPATH ON
+    )
+    target_link_options(cyice PRIVATE
+      -Wl,-rpath,$ORIGIN/../spiceypy.libs 
+    )
+  elseif(APPLE)
     set_target_properties(cyice PROPERTIES
       INSTALL_RPATH "@loader_path/utils"
       BUILD_WITH_INSTALL_RPATH ON
     )
-  elseif(UNIX OR DEFINED EMSCRIPTEN)
+  elseif(UNIX AND NOT DEFINED EMSCRIPTEN)
     set_target_properties(cyice PROPERTIES
       INSTALL_RPATH "$ORIGIN/utils"
       BUILD_WITH_INSTALL_RPATH ON
@@ -138,14 +136,5 @@ if(DEFINED manual_patch_cspice_origin)
   endif()
 endif()
 
-
-get_target_property(_type cyice TYPE)
-get_target_property(_opts cyice LINK_OPTIONS)
-message(NOTICE "cyice TYPE=${_type}")
-message(NOTICE "cyice LINK_OPTIONS=${_opts}")
-get_directory_property(_dir_link_opts LINK_OPTIONS)
-message(NOTICE "DIRECTORY LINK_OPTIONS=${_dir_link_opts}")
-
-
 # install cyice
-install(TARGETS cyice DESTINATION spiceypy/)
+install(TARGETS cyice DESTINATION spiceypy/cyice/)

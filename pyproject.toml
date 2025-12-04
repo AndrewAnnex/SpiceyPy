@@ -175,7 +175,7 @@ build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*", "cp314-*"]
 # Skip 32-bit builds, pypy, and musllinux
 skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "*-musllinux_aarch64", "*-musllinux_x86_64"]
 # skip tests for pyodide for the moment
-test-skip = ["*pyodide*"]
+#test-skip = ["*pyodide*"]
 # build options
 build-verbosity = 2
 # parallel builds passthrough for build
@@ -187,13 +187,13 @@ test-command = [
 
 [tool.cibuildwheel.pyodide]
 # https://github.com/jupyterlite/pyodide-kernel for version/kernel compatibility
-build = ["cp312-*"]
-skip  = ["cp313-*"]
+build = ["cp313-*"]
+skip  = ["cp312-*"]
 test-groups = ["devwheelpyodide"]
 build-verbosity = 0
 test-command = "pytest -p no:cacheprovider --pyargs spiceypy --benchmark-disable"
-pyodide-version = "0.27.7" # emscripten 3.1.58
+pyodide-version = "0.28.3" 
 # disable some errors for pyodide only
-dependency-versions = { packages = ["pyodide-build==0.30.5"] }
+dependency-versions = { packages = ["pyodide-build==0.30.9"] }
 environment = { CFLAGS="-Wno-error=implicit-function-declaration -Wno-error=incompatible-pointer-types -Wno-error=return-type" }
 
