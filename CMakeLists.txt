@@ -38,7 +38,6 @@ else()
 
   # Put CSPICE libs inside our package
   if(DEFINED EMSCRIPTEN)
-    #https://pyodide.org/en/latest/development/abi.html#runtime-library-loading-path
     set(CMAKE_INSTALL_LIBDIR "spiceypy.libs/" CACHE INTERNAL "")
   else()
     set(CMAKE_INSTALL_LIBDIR "spiceypy/utils/" CACHE INTERNAL "")
@@ -119,7 +118,7 @@ if(DEFINED manual_patch_cspice_origin)
       INSTALL_RPATH "@loader_path/../utils"
       BUILD_WITH_INSTALL_RPATH ON
     )
-  elseif(UNIX AN NOT DEFINED EMSCRIPTEN)
+  elseif(UNIX AND NOT DEFINED EMSCRIPTEN)
     set_target_properties(cyice PROPERTIES
       INSTALL_RPATH "$ORIGIN/../utils"
       BUILD_WITH_INSTALL_RPATH ON
