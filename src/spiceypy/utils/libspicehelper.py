@@ -116,6 +116,8 @@ def load_cspice() -> tuple[CDLL, str]:
         case "darwin":
             shared_name = "libcspice.dylib"
         case "emscripten":
+            # need to go up two then down
+            parent = (parent.parent.parent / 'spiceypy.libs').resolve()
             shared_name = "libcspice.wasm"
         case _:
             shared_name = "libcspice.so"
