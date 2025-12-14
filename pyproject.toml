@@ -76,6 +76,7 @@ devwheel = [
 ]
 devwheelpyodide = [
     {include-group = "devwheel"},
+    "pytest-randomly",
     "pyodide-http",
     "requests"
 ]
@@ -191,7 +192,7 @@ build = ["cp313-*"]
 skip  = ["cp312-*"]
 test-groups = ["devwheelpyodide"]
 build-verbosity = 0
-test-command = "pytest -p no:cacheprovider --pyargs spiceypy --benchmark-disable"
+test-command = "pytest -p no:cacheprovider --pyargs spiceypy --benchmark-disable -vvv"
 pyodide-version = "0.28.3" 
 # disable some errors for pyodide only
 dependency-versions = { packages = ["pyodide-build==0.30.9"] }
