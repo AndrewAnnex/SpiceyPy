@@ -36,10 +36,11 @@ else()
   # we need to use this for the INSTALL_RPATH property
   set(manual_patch_cspice_origin 'yes')  
 
-  # Put CSPICE libs inside our package
   if(DEFINED EMSCRIPTEN)
+    #https://pyodide.org/en/latest/development/abi.html#runtime-library-loading-path
     set(CMAKE_INSTALL_LIBDIR "spiceypy.libs/" CACHE INTERNAL "")
   else()
+    # Put CSPICE libs inside our package, not top-level lib/
     set(CMAKE_INSTALL_LIBDIR "spiceypy/utils/" CACHE INTERNAL "")
   endif()
   
@@ -91,7 +92,7 @@ add_custom_command(
 python_add_library(cyice MODULE ${C_FILE} WITH_SOABI)
 # Adjust properties using the same target name
 set_target_properties(cyice PROPERTIES
-  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/spiceypy/cyice"
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/spiceypy"
   OUTPUT_NAME "cyice"
 )
 
@@ -112,18 +113,23 @@ else()
 endif()
 
 # Fix runtime search paths so extension finds libcspice in same dir if we manually install cspice
+if(DEFINED EMSCRIPTEN)
+  message(NOTICE "#####################################################################")
+  message(NOTICE "SETTING RPATH for emscripten") 
+  set_target_properties(cyice PROPERTIES
+    INSTALL_RPATH "$ORIGIN/../spiceypy.libs"
+    BUILD_RPATH "$ORIGIN/../spiceypy.libs"
+    BUILD_WITH_INSTALL_RPATH ON
+  )
+  target_link_options(cyice PRIVATE
+    -Wl,-rpath,$ORIGIN/../spiceypy.libs 
+  )
+  # set_property(TARGET cyice PROPERTY BUILD_RPATH "$ORIGIN/../spiceypy.libs")
+  # set_property(TARGET cyice PROPERTY INSTALL_RPATH "$ORIGIN/../spiceypy.libs")
+  message(NOTICE "#####################################################################")
+endif()
 if(DEFINED manual_patch_cspice_origin)
-  if(DEFINED EMSCRIPTEN)
-    message(NOTICE "SETTING RPATH for emscripten") 
-    set_target_properties(cyice PROPERTIES
-      INSTALL_RPATH "$ORIGIN/../spiceypy.libs"
-      BUILD_RPATH "$ORIGIN/../spiceypy.libs"
-      BUILD_WITH_INSTALL_RPATH ON
-    )
-    target_link_options(cyice PRIVATE
-      -Wl,-rpath,$ORIGIN/../spiceypy.libs 
-    )
-  elseif(APPLE)
+  if(APPLE)
     set_target_properties(cyice PROPERTIES
       INSTALL_RPATH "@loader_path/utils"
       BUILD_WITH_INSTALL_RPATH ON
