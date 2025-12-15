@@ -193,7 +193,7 @@ skip  = ["cp312-*"]
 test-groups = ["devwheelpyodide"]
 build-verbosity = 0
 test-command = "pytest -p no:cacheprovider --pyargs spiceypy --benchmark-disable -vvv"
-pyodide-version = "0.28.3" 
+pyodide-version = "0.29.0" 
 # disable some errors for pyodide only
 dependency-versions = { packages = ["pyodide-build==0.30.9"] }
 environment = { CFLAGS="-Wno-error=implicit-function-declaration -Wno-error=incompatible-pointer-types -Wno-error=return-type" }
