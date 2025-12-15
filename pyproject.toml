@@ -76,6 +76,7 @@ devwheel = [
 ]
 devwheelpyodide = [
     {include-group = "devwheel"},
+    "pytest-randomly",
     "pyodide-http",
     "requests"
 ]
@@ -191,8 +192,17 @@ build = ["cp313-*"]
 skip  = ["cp312-*"]
 test-groups = ["devwheelpyodide"]
 build-verbosity = 0
-test-command = "pytest -p no:cacheprovider --pyargs spiceypy --benchmark-disable"
-pyodide-version = "0.28.3" 
+before-test = [
+  "echo 'RUNNING PYODIDE AUDITWHEEL CHECKS'",
+  "echo 'auditwheel show results:'",
+  "pyodide auditwheel show -r {wheel}",
+  "echo 'auditwheel imports results:'",
+  "pyodide auditwheel imports --show-type {wheel}",
+  "echo 'auditwheel exports results:'",
+  "pyodide auditwheel exports --show-type {wheel}"
+]
+test-command = "python -m pytest -s -vvv --pyargs spiceypy --benchmark-disable --showlocals"
+pyodide-version = "0.29.0" 
 # disable some errors for pyodide only
 dependency-versions = { packages = ["pyodide-build==0.30.9"] }
 environment = { CFLAGS="-Wno-error=implicit-function-declaration -Wno-error=incompatible-pointer-types -Wno-error=return-type" }
