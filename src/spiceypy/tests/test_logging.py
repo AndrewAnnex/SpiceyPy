@@ -113,3 +113,19 @@ import spiceypy
         check=False,
     )
     assert "INFO:spiceypy" in (p.stderr or "")
+
+
+def test_import_with_invalid_setting_does_not_emit_info_w_preconfig():
+    code = r"""
+import spiceypy
+"""
+    env = _env({"SPICEYPY_LOGLEVEL": "TROGDOR"})
+    p = subprocess.run(
+        [sys.executable, "-c", code],
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert "Unknown logger level" in (p.stderr or "")
+    assert "INFO:spiceypy" not in (p.stderr or "")

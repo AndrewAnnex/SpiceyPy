@@ -31,23 +31,23 @@ import sys
 from pathlib import Path
 import logging
 
-logger = logging.getLogger(name=__name__)
+logger = logging.getLogger(__name__)
 
 if (_lvl := os.environ.get("SPICEYPY_LOGLEVEL")):
     try:
-        logging.getLogger(name="spiceypy").setLevel(level=_lvl.upper())
+        logger.setLevel(level=_lvl.upper())
     except ValueError as ve:
-        logger.warning(f'Unknown logger level specified for Spiceypy: {ve}')
+        logger.warning(f'Unknown logger level specified for SpiceyPy: {ve}')
+        # update _lvl just in case we need it to configure the root logger below
         _lvl = "WARNING"
     # only configure root if not done by anything else
     root = logging.getLogger()
     if not root.handlers:
         logging.basicConfig(level=_lvl.upper())
 
-spice_logger = logging.getLogger("spiceypy")
 # Add NullHandler once (avoid duplicates)
-if not any(isinstance(h, logging.NullHandler) for h in spice_logger.handlers):
-    spice_logger.addHandler(logging.NullHandler())
+if not any(isinstance(h, logging.NullHandler) for h in logger.handlers):
+    logger.addHandler(logging.NullHandler())
 
 
 from . import support_types as stypes
