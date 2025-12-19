@@ -31,10 +31,24 @@ import sys
 from pathlib import Path
 import logging
 
-if os.environ.get("SPICEYPY_LOGLEVEL"):
-    logging.basicConfig(level=os.environ["SPICEYPY_LOGLEVEL"].upper())
-
 logger = logging.getLogger(__name__)
+
+if (_lvl := os.environ.get("SPICEYPY_LOGLEVEL")):
+    try:
+        logger.setLevel(level=_lvl.upper())
+    except ValueError as ve:
+        logger.warning(f'Unknown logger level specified for SpiceyPy: {ve}')
+        # update _lvl just in case we need it to configure the root logger below
+        _lvl = "WARNING"
+    # only configure root if not done by anything else
+    root = logging.getLogger()
+    if not root.handlers:
+        logging.basicConfig(level=_lvl.upper())
+
+# Add NullHandler once (avoid duplicates)
+if not any(isinstance(h, logging.NullHandler) for h in logger.handlers):
+    logger.addHandler(logging.NullHandler())
+
 
 from . import support_types as stypes
 from . import callbacks
@@ -48,7 +62,7 @@ def add_dll_directory(path: str | Path):
     if hasattr(os, 'add_dll_directory'):
         _path = Path(path).resolve()
         if _path.is_file():
-            _path = _path.parent()
+            _path = _path.parent
         os.add_dll_directory(str(_path))
 
 @contextmanager
