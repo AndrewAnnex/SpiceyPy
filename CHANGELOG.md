@@ -4,6 +4,15 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [8.0.1] - 2026-01-07
+
+### Added 
+ - Adds tests specific to logging
+### Fixed
+ - fixes spiceypy logging initialization
+ - fixed how spicebools were defined in cyice
+
+
 ## [8.0.0] - 2025-10-27
 
 ### Fixed
