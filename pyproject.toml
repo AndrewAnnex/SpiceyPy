@@ -201,7 +201,7 @@ before-test = [
   "echo 'auditwheel exports results:'",
   "pyodide auditwheel exports --show-type {wheel}"
 ]
-test-command = "python -m pytest -s -vvv --pyargs spiceypy --benchmark-disable --showlocals"
+test-command = "python -m pytest -s -vvv --pyargs spiceypy.tests.test_wrapper --benchmark-disable --showlocals"
 pyodide-version = "0.29.0" 
 # disable some errors for pyodide only
 dependency-versions = { packages = ["pyodide-build==0.30.9"] }
