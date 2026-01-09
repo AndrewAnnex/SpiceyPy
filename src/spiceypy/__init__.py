@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 __author__ = "AndrewAnnex"
-__version__ = "8.0.0"
+__version__ = "8.0.1"
 import importlib
 import sys
 
@@ -35,7 +35,6 @@ def __getattr__(name):
 
 
 from . import spiceypy as _spiceypy
-
 
 from .spiceypy import (
     stypes,
