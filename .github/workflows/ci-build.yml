@@ -38,7 +38,6 @@ jobs:
           CIBW_PLATFORM: pyodide 
           CIBW_ARCHS: "wasm32"
           CMAKE_BUILD_PARALLEL_LEVEL: 2
-          CIBW_ENVIRONMENT_PYODIDE: PYODIDE_SOURCEMAPS="1"
           SKBUILD_BUILD_VERBOSE: "true"
   test-conda:
     name: Test SpiceyPy Conda install
