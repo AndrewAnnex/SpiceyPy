@@ -15,12 +15,38 @@ env:
   CMAKE_BUILD_PARALLEL_LEVEL: 2
 
 jobs:
+  test-pyodide:
+    name: Test SpiceyPy Pyodide build
+    runs-on: 'ubuntu-latest'
+    permissions:
+      id-token: write
+      contents: read
+    # run ONLY when this is a PR whose source branch is add_pyodide_build
+    if: ${{ github.event_name == 'pull_request' || github.head_ref == 'add_pyodide_build' }}
+    steps:
+      - name: Checkout 🌶️ 🥧
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Set up Python 🐍 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.13
+      - name: Build Pyodide wheel for SpiceyPy 🌶️ 🥧
+        uses: pypa/cibuildwheel@v3.3.1
+        env:
+          CIBW_PLATFORM: pyodide 
+          CIBW_ARCHS: "wasm32"
+          CMAKE_BUILD_PARALLEL_LEVEL: 2
+          SKBUILD_BUILD_VERBOSE: "true"
   test-conda:
     name: Test SpiceyPy Conda install
     runs-on: 'ubuntu-latest'
     permissions:
       id-token: write
       contents: read
+    # Skip ONLY when this is a PR whose source branch is add_pyodide_build
+    if: ${{ github.event_name != 'pull_request' || github.head_ref != 'add_pyodide_build' }}
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v5
@@ -77,6 +103,8 @@ jobs:
       matrix:
         os: [ubuntu-22.04-arm, ubuntu-latest, macos-15-intel, macos-15, windows-latest]
         python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
+    # Skip ONLY when this is a PR whose source branch is add_pyodide_build
+    if: ${{ github.event_name != 'pull_request' || github.head_ref != 'add_pyodide_build' }}
     steps:
       - name: Setup windows msvc
         if: ${{ matrix.os == 'windows-latest'}}
