@@ -201,9 +201,9 @@ before-test = [
   "echo 'auditwheel exports results:'",
   "pyodide auditwheel exports --show-type {wheel}"
 ]
-test-command = "python -m pytest -s -vvv --pyargs spiceypy.tests.test_wrapper --benchmark-disable --showlocals"
+test-command = "python -m pytest -s -vvv --pyargs spiceypy.tests.test_wrapper --benchmark-disable"
 pyodide-version = "0.29.0" 
-# disable some errors for pyodide only
 dependency-versions = { packages = ["pyodide-build==0.30.9"] }
-environment = { CFLAGS="-Wno-error=implicit-function-declaration -Wno-error=incompatible-pointer-types -Wno-error=return-type" }
+# disable some errors for pyodide only
+environment = { CFLAGS="-Werror=implicit-function-declaration -Werror=incompatible-pointer-types -Werror=return-type" }
 
