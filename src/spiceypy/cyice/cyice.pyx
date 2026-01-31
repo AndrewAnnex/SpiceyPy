@@ -1856,7 +1856,7 @@ def fovray_s(
     double[::1] raydir,
     str rframe,
     str abcorr,
-    str obsrvr,
+    str observer,
     double et
 ) -> bool:
     """
@@ -1869,7 +1869,7 @@ def fovray_s(
 
     :param inst: Name or ID code string of the instrument.
     :param raydir: Ray's direction vector.
-    :param rframe: Body-fixed, body-centered frame for target body.
+    :param rframe: Reference frame of ray's direction vector.
     :param abcorr: Aberration correction flag.
     :param observer: Name or ID code string of the observer.
     :param et: Time of the observation (seconds past J2000).
@@ -1882,7 +1882,7 @@ def fovray_s(
     cdef const char* c_inst     = inst
     cdef const char* c_rframe   = rframe
     cdef const char* c_abcorr   = abcorr
-    cdef const char* c_obsrvr   = obsrvr
+    cdef const char* c_obsrvr   = observer
     # perform the call
     fovray_c(
         c_inst,
@@ -1905,7 +1905,7 @@ def fovray_v(
     double[::1] raydir,
     str rframe,
     str abcorr,
-    str obsrvr,
+    str observer,
     double[::1] ets
 ) -> BoolArray:
     """
@@ -1918,7 +1918,7 @@ def fovray_v(
 
     :param inst: Name or ID code string of the instrument.
     :param raydir: Ray's direction vector.
-    :param rframe: Body-fixed, body-centered frame for target body.
+    :param rframe: Reference frame of ray's direction vector.
     :param abcorr: Aberration correction flag.
     :param observer: Name or ID code string of the observer.
     :param ets: Times of the observation (seconds past J2000).
@@ -1931,7 +1931,7 @@ def fovray_v(
     cdef const char* c_inst     = inst
     cdef const char* c_rframe   = rframe
     cdef const char* c_abcorr   = abcorr
-    cdef const char* c_obsrvr   = obsrvr
+    cdef const char* c_obsrvr   = observer
     # initialize output arrays
     cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_visibl = np.empty(n, dtype=np.int32, order='C')
     cdef np.int32_t[::1] c_visibl = p_visibl
@@ -1957,7 +1957,7 @@ def fovray(
     raydir: float[::1],
     rframe: str,
     abcorr: str,
-    obsrvr: str,
+    observer: str,
     et: float | float[::1]
 ) -> bool | BoolArray:
     """
@@ -1968,16 +1968,16 @@ def fovray(
 
     :param inst: Name or ID code string of the instrument.
     :param raydir: Ray's direction vector.
-    :param rframe: Body-fixed, body-centered frame for target body.
+    :param rframe: Reference frame of ray's direction vector.
     :param abcorr: Aberration correction flag.
     :param observer: Name or ID code string of the observer.
     :param et: Time of the observation (seconds past J2000).
     :return: Visibility flag
     """
     if PyFloat_Check(et):
-        return fovray_s(inst, raydir, rframe, abcorr, obsrvr, et)
+        return fovray_s(inst, raydir, rframe, abcorr, observer, et)
     else:
-        return fovray_v(inst, raydir, rframe, abcorr, obsrvr, et)
+        return fovray_v(inst, raydir, rframe, abcorr, observer, et)
 
 
 def fovtrg_s(
@@ -6962,11 +6962,11 @@ def spkezp(
 @boundscheck(False)
 @wraparound(False)
 def spkezr_s(
-    str target,
-    double epoch,
-    str frame,
+    str targ,
+    double et,
+    str ref,
     str abcorr,
-    str observer
+    str obs
     )-> tuple[State, float]:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkezr`
@@ -6977,22 +6977,22 @@ def spkezr_s(
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkezr_c.html
 
-    :param target: Target body name.
-    :param epoch: Observer epoch in seconds past J2000 TDB.
-    :param frame: Reference frame of output state vector.
+    :param targ: Target body name.
+    :param et: Observer epoch in seconds past J2000 TDB.
+    :param ref: Reference frame of output state vector.
     :param abcorr: Aberration correction flag.
-    :param observer: Observing body name.
+    :param obs: Observing body name.
     :return:
             State of target in km and km/sec,
             One way light time between observer and target in seconds.
     """
-    cdef double c_epoch = epoch
+    cdef double c_epoch = et
     cdef double c_lt = 0.0
     # convert the strings to pointers once
-    cdef const char* c_target   = target
-    cdef const char* c_frame    = frame
+    cdef const char* c_target   = targ
+    cdef const char* c_frame    = ref
     cdef const char* c_abcorr   = abcorr
-    cdef const char* c_observer = observer
+    cdef const char* c_observer = obs
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
@@ -7012,11 +7012,11 @@ def spkezr_s(
 @boundscheck(False)
 @wraparound(False)
 def spkezr_v(
-    str target,
-    double[::1] epochs,
-    str frame,
+    str targ,
+    double[::1] et,
+    str ref,
     str abcorr,
-    str observer)-> tuple[State_N, Double_N]:
+    str obs)-> tuple[State_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkezr`
 
@@ -7026,23 +7026,23 @@ def spkezr_v(
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkezr_c.html
 
-    :param target: Target body name.
-    :param epochs: Observer epochs in seconds past J2000 TDB.
-    :param frame: Reference frame of output state vector.
+    :param targ: Target body name.
+    :param et: Observer epochs in seconds past J2000 TDB.
+    :param ref: Reference frame of output state vector.
     :param abcorr: Aberration correction flag.
-    :param observer: Observing body name.
+    :param obs: Observing body name.
     :return:
             State of target in km and km/sec,
             One way light time between observer and target in seconds.
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_epochs = np.ascontiguousarray(epochs, dtype=np.double)
+    cdef const np.double_t[::1] c_epochs = np.ascontiguousarray(et, dtype=np.double)
     cdef Py_ssize_t i, n = c_epochs.shape[0]
     # convert the strings to pointers once
-    cdef const char* c_target   = target
-    cdef const char* c_frame    = frame
+    cdef const char* c_target   = targ
+    cdef const char* c_frame    = ref
     cdef const char* c_abcorr   = abcorr
-    cdef const char* c_observer = observer
+    cdef const char* c_observer = obs
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n, 6), dtype=np.double, order='C')
     cdef np.double_t[:, ::1] c_states = p_states
@@ -7066,11 +7066,11 @@ def spkezr_v(
 
 
 def spkezr(
-    target:   str,
-    epoch: float | float[::1],
-    frame:    str,
+    targ:     str,
+    et:       float | float[::1],
+    ref:      str,
     abcorr:   str,
-    observer: str,
+    obs:      str,
     )-> tuple[State, float]:
     """
     Return the state (position and velocity) of a target body
@@ -7079,19 +7079,19 @@ def spkezr(
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkezr_c.html
 
-    :param target: Target body name.
-    :param epoch: Observer epoch in seconds past J2000 TDB.
-    :param frame: Reference frame of output state vector.
+    :param targ: Target body name.
+    :param et: Observer epoch in seconds past J2000 TDB.
+    :param ref: Reference frame of output state vector.
     :param abcorr: Aberration correction flag.
-    :param observer: Observing body name.
+    :param obs: Observing body name.
     :return:
             State of target in km and km/sec,
             One way light time between observer and target in seconds.
     """
-    if PyFloat_Check(epoch):
-        return spkezr_s(target, epoch, frame, abcorr, observer)
+    if PyFloat_Check(et):
+        return spkezr_s(targ, et, ref, abcorr, obs)
     else:
-        return spkezr_v(target, epoch, frame, abcorr, observer)
+        return spkezr_v(targ, et, ref, abcorr, obs)
 
 
 @boundscheck(False)
@@ -7343,7 +7343,7 @@ def spkgps(
 @boundscheck(False)
 @wraparound(False)
 def spkpos_s(
-    str target,
+    str targ,
     double et,
     str ref,
     str abcorr,
@@ -7371,7 +7371,7 @@ def spkpos_s(
     cdef double c_et = et
     cdef double c_lt = 0.0
     # convert the strings to pointers once
-    cdef const char* c_targ   = target
+    cdef const char* c_targ   = targ
     cdef const char* c_ref    = ref
     cdef const char* c_abcorr = abcorr
     cdef const char* c_obs    = obs
@@ -7449,7 +7449,7 @@ def spkpos_v(
 
 
 def spkpos(
-    target: str,
+    targ: str,
     et: float | float[::1],
     ref:    str,
     abcorr: str,
@@ -7472,9 +7472,9 @@ def spkpos(
             One way light time between observer and target in seconds.
     """
     if PyFloat_Check(et):
-        return spkpos_s(target, et, ref, abcorr, obs)
+        return spkpos_s(targ, et, ref, abcorr, obs)
     else:
-        return spkpos_v(target, et, ref, abcorr, obs)
+        return spkpos_v(targ, et, ref, abcorr, obs)
 
 
 @boundscheck(False)
