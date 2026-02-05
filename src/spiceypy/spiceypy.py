@@ -345,21 +345,21 @@ def azlcpo(
 
 
 @spice_error_check
-def azlrec(range: float, az: float, el: float, azccw: bool, elplsz: bool) -> ndarray:
+def azlrec(inrange: float, az: float, el: float, azccw: bool, elplsz: bool) -> ndarray:
     """
     Convert from range, azimuth and elevation of a point to
     rectangular coordinates.
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/azlrec_c.html
 
-    :param range: Distance of the point from the origin.
+    :param inrange: Distance of the point from the origin.
     :param az: Azimuth in radians.
     :param el: Elevation in radians.
     :param azccw: Flag indicating how azimuth is measured.
     :param elplsz: Flag indicating how elevation is measured.
     :return: Rectangular coordinates of a point.
     """
-    _range = ctypes.c_double(range)
+    _range = ctypes.c_double(inrange)
     _az = ctypes.c_double(az)
     _el = ctypes.c_double(el)
     _azccw = ctypes.c_int(azccw)
@@ -3270,21 +3270,21 @@ def dpr() -> float:
 
 
 @spice_error_check
-def drdazl(range: float, az: float, el: float, azccw: bool, elplsz: bool) -> ndarray:
+def drdazl(inrange: float, az: float, el: float, azccw: bool, elplsz: bool) -> ndarray:
     """
     Compute the Jacobian matrix of the transformation from
     azimuth/elevation to rectangular coordinates.
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/drdazl_c.html
 
-    :param range: Distance of a point from the origin.
+    :param inrange: Distance of a point from the origin.
     :param az: Azimuth of input point in radians.
     :param el: Elevation of input point in radians.
     :param azccw: Flag indicating how azimuth is measured.
     :param elplsz: Flag indicating how elevation is measured.
     :return: Matrix of partial derivatives.
     """
-    _range = ctypes.c_double(range)
+    _range = ctypes.c_double(inrange)
     _az = ctypes.c_double(az)
     _el = ctypes.c_double(el)
     _azccw = ctypes.c_int(azccw)
