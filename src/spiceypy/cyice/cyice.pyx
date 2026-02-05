@@ -3135,7 +3135,7 @@ def latcyl(
 cpdef np.ndarray[np.double_t, ndim=1, mode='c'] latrec_s(
     radius: float, 
     longitude: float, 
-    lat: float
+    latitude: float
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.latrec`
@@ -6817,7 +6817,7 @@ def spkez(
             State of target in km and km/sec,
             One way light time between observer and target in seconds.
     """
-    if PyFloat_Check(epoch):
+    if PyFloat_Check(et):
         return spkez_s(targ, et, ref, abcorr, obs)
     else:
         return spkez_v(targ, et, ref, abcorr, obs)
@@ -6953,10 +6953,10 @@ def spkezp(
             Position of target in km,
             One way light time between observer and target in seconds.
     """
-    if PyFloat_Check(epoch):
-        return spkezp_s(target, epoch, ref, abcorr, observer)
+    if PyFloat_Check(et):
+        return spkezp_s(targ, et, ref, abcorr, obs)
     else:
-        return spkezp_v(target, epoch, ref, abcorr, observer)
+        return spkezp_v(targ, et, ref, abcorr, obs)
 
 
 @boundscheck(False)
@@ -8066,7 +8066,7 @@ def srfrec(
     if PyFloat_Check(longitude):
         return srfrec_s(body, longitude, latitude)
     else:
-        return srfrec_v(body, lon, latitude)
+        return srfrec_v(body, longitude, latitude)
 
 
 @boundscheck(False)
