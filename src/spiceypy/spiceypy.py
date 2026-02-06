@@ -345,21 +345,21 @@ def azlcpo(
 
 
 @spice_error_check
-def azlrec(range: float, az: float, el: float, azccw: bool, elplsz: bool) -> ndarray:
+def azlrec(inrange: float, az: float, el: float, azccw: bool, elplsz: bool) -> ndarray:
     """
     Convert from range, azimuth and elevation of a point to
     rectangular coordinates.
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/azlrec_c.html
 
-    :param range: Distance of the point from the origin.
+    :param inrange: Distance of the point from the origin.
     :param az: Azimuth in radians.
     :param el: Elevation in radians.
     :param azccw: Flag indicating how azimuth is measured.
     :param elplsz: Flag indicating how elevation is measured.
     :return: Rectangular coordinates of a point.
     """
-    _range = ctypes.c_double(range)
+    _range = ctypes.c_double(inrange)
     _az = ctypes.c_double(az)
     _el = ctypes.c_double(el)
     _azccw = ctypes.c_int(azccw)
@@ -3270,21 +3270,21 @@ def dpr() -> float:
 
 
 @spice_error_check
-def drdazl(range: float, az: float, el: float, azccw: bool, elplsz: bool) -> ndarray:
+def drdazl(inrange: float, az: float, el: float, azccw: bool, elplsz: bool) -> ndarray:
     """
     Compute the Jacobian matrix of the transformation from
     azimuth/elevation to rectangular coordinates.
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/drdazl_c.html
 
-    :param range: Distance of a point from the origin.
+    :param inrange: Distance of a point from the origin.
     :param az: Azimuth of input point in radians.
     :param el: Elevation of input point in radians.
     :param azccw: Flag indicating how azimuth is measured.
     :param elplsz: Flag indicating how elevation is measured.
     :return: Matrix of partial derivatives.
     """
-    _range = ctypes.c_double(range)
+    _range = ctypes.c_double(inrange)
     _az = ctypes.c_double(az)
     _el = ctypes.c_double(el)
     _azccw = ctypes.c_int(azccw)
@@ -5963,7 +5963,7 @@ def fovray(
 
     :param inst: Name or ID code string of the instrument.
     :param raydir: Ray's direction vector.
-    :param rframe: Body-fixed, body-centered frame for target body.
+    :param rframe: Reference frame of ray's direction vector.
     :param abcorr: Aberration correction flag.
     :param observer: Name or ID code string of the observer.
     :param et: Time of the observation (seconds past J2000).
@@ -9627,9 +9627,9 @@ def mequg(m1: ndarray, nr: int, nc: int) -> ndarray:
     """
     m1 = stypes.to_double_matrix(m1)
     mout = stypes.empty_double_matrix(x=nc, y=nr)
-    nc = ctypes.c_int(nc)
     nr = ctypes.c_int(nr)
-    libspice.mequg_c(m1, nc, nr, mout)
+    nc = ctypes.c_int(nc)
+    libspice.mequg_c(m1, nr, nc, mout)
     return stypes.c_matrix_to_numpy(mout)
 
 
@@ -9969,7 +9969,7 @@ def npedln(
     :param a: Length of ellipsoid's semi-axis in the x direction
     :param b: Length of ellipsoid's semi-axis in the y direction
     :param c: Length of ellipsoid's semi-axis in the z direction
-    :param linept: Length of ellipsoid's semi-axis in the z direction
+    :param linept: Point on line
     :param linedr: Direction vector of line
     :return: Nearest point on ellipsoid to line, Distance of ellipsoid from line
     """
@@ -12809,7 +12809,11 @@ def spkcvt(
 
 @spice_error_check
 def spkez(
-    targ: int, et: float, ref: str, abcorr: str, obs: int
+    targ: int, 
+    et: float, 
+    ref: str, 
+    abcorr: str, 
+    obs: int
 ) -> Tuple[ndarray, float]:
     """
     Return the state (position and velocity) of a target body
@@ -12840,7 +12844,11 @@ def spkez(
 
 @spice_error_check
 def spkezp(
-    targ: int, et: float, ref: str, abcorr: str, obs: int
+    targ: int, 
+    et: float, 
+    ref: str, 
+    abcorr: str, 
+    obs: int
 ) -> Tuple[ndarray, float]:
     """
     Return the position of a target body relative to an observing
@@ -12871,7 +12879,11 @@ def spkezp(
 
 @spice_error_check
 def spkezr(
-    targ: str, et: Union[ndarray, float], ref: str, abcorr: str, obs: str
+    targ: str, 
+    et: Union[ndarray, float], 
+    ref: str, 
+    abcorr: str, 
+    obs: str
 ) -> Union[Tuple[ndarray, float], Tuple[Iterable[ndarray], Iterable[float]]]:
     """
     Return the state (position and velocity) of a target body
@@ -13105,7 +13117,11 @@ def spkpds(
 
 @spice_error_check
 def spkpos(
-    targ: str, et: Union[float, ndarray], ref: str, abcorr: str, obs: str
+    targ: str, 
+    et: Union[float, ndarray], 
+    ref: str, 
+    abcorr: str, 
+    obs: str
 ) -> Union[Tuple[ndarray, float], Tuple[ndarray, ndarray]]:
     """
     Return the position of a target body relative to an observing
@@ -16108,8 +16124,8 @@ def vprjp(vin: Union[ndarray, Iterable[float]], plane: Plane) -> ndarray:
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/vprjp_c.html
 
-    :param vin: The projected vector.
-    :param plane: Plane containing vin.
+    :param vin: Vector to be projected.
+    :param plane: A Plane onto which `vin' is projected.
     :return: Vector resulting from projection.
     """
     vin = stypes.to_double_vector(vin)
