@@ -82,6 +82,7 @@ from .spiceypy import (
     SpiceDSKDescr,
     SpiceEKAttDsc,
     SpiceEKSegSum,
+    cspice_flavor,
     appndc,
     appndd,
     appndi,
@@ -738,7 +739,7 @@ from .utils import support_types
 from .utils import exceptions
 
 __all__ = [
-    "cyice",
+    "cyice", # TODO exclude if emscripten?
     "support_types",
     "exceptions"
     "stypes",
@@ -762,6 +763,7 @@ __all__ = [
     "get_found_catch_state",
     "spice_found_exception_thrower",
     "config",
+    "cspice_flavor",
     "UDFUNC",
     "UDFUNS",
     "UDFUNB",

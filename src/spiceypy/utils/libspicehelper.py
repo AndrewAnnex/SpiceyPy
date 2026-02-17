@@ -24,7 +24,7 @@ SOFTWARE.
 
 __all__ = ["_tkversion", "libspice_path", "libspice"]
 from contextlib import contextmanager
-from ctypes import CDLL, POINTER, c_int, c_double, c_char, c_char_p, c_void_p, RTLD_GLOBAL
+from ctypes import CDLL, POINTER, c_int, c_double, c_char, c_char_p, c_void_p, cast, RTLD_GLOBAL
 from ctypes.util import find_library
 import os
 import sys
@@ -158,6 +158,7 @@ libspice, libspice_path = load_cspice()
 libspice.tkvrsn_c.restype = c_char_p
 _tkversion = libspice.tkvrsn_c(b"toolkit").decode("utf-8")
 
+
 s_cell_p = POINTER(stypes.SpiceCell)
 s_elip_p = POINTER(stypes.Ellipse)
 s_plan_p = POINTER(stypes.Plane)
@@ -169,6 +170,13 @@ c_double_p = POINTER(c_double)
 c_int_p = POINTER(c_int)
 
 __author__ = "AndrewAnnex"
+
+# get the cspice_flavor if present
+cspice_flavor = None
+if hasattr(libspice, 'cspice_flavor'):
+    ref = cast(libspice.cspice_flavor, c_int_p)
+    if ref is not None:
+        cspice_flavor = ref.contents.value
 
 # ######################################################################################################################
 # A

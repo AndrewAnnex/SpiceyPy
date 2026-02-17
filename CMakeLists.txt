@@ -21,13 +21,13 @@ find_library(CSPICE_LIB NAMES cspice)
 
 if(CSPICE_LIB)
   message(STATUS "Found system CSPICE: ${CSPICE_LIB}")
-  add_library(cspice UNKNOWN IMPORTED)
-  set_target_properties(cspice PROPERTIES IMPORTED_LOCATION "${CSPICE_LIB}")
+  add_library(CSPICE::cspice UNKNOWN IMPORTED)
+  set_target_properties(CSPICE::cspice PROPERTIES IMPORTED_LOCATION "${CSPICE_LIB}")
   # look for the headers
   find_path(CSPICE_INCLUDE_DIR NAMES SpiceUsr.h PATH_SUFFIXES cspice)
   if (CSPICE_INCLUDE_DIR)
     message(STATUS "Found system CSPICE include: ${CSPICE_INCLUDE_DIR}")
-    set_target_properties(cspice PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CSPICE_INCLUDE_DIR}")
+    set_target_properties(CSPICE::cspice PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CSPICE_INCLUDE_DIR}")
   else()
     message(WARNING "CSPICE library found, but headers not found")
   endif()
@@ -108,9 +108,9 @@ target_compile_definitions(cyice
 
 # Link CSPICE + math lib (only on UNIX)
 if(UNIX AND NOT WIN32 AND NOT MINGW)
-    target_link_libraries(cyice PRIVATE cspice m)
+    target_link_libraries(cyice PRIVATE CSPICE::cspice m)
 else()
-    target_link_libraries(cyice PRIVATE cspice)
+    target_link_libraries(cyice PRIVATE CSPICE::cspice)
 endif()
 
 # Fix runtime search paths so extension finds libcspice in same dir if we manually install cspice

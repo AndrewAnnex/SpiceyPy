@@ -35,7 +35,7 @@ from numpy import ndarray, str_
 
 
 from .utils import support_types as stypes
-from .utils.libspicehelper import libspice
+from .utils.libspicehelper import libspice, cspice_flavor
 from .utils.exceptions import (
     SpiceyError,
     SpiceyPyError,

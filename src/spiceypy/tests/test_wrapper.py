@@ -67,6 +67,10 @@ def cleanup_kernel(path):
 
 def setup_module(module):
     download_kernels()
+    
+@pytest.mark.skipif(not IS_PYODIDE, reason="writing to file system not supported on Pyodide")
+def test_cspice_flavor():
+    assert spice.cspice_flavor in {0, 1, 2}
 
 
 def test_appndc():
@@ -153,7 +157,7 @@ def test_axisar():
     expected = np.array([[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
     npt.assert_array_almost_equal(expected, outmatrix, decimal=6)
 
-#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
+
 def test_azlcpo():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.earthTopoTf)
@@ -2636,7 +2640,7 @@ def test_edpnt():
         ep, [0.85714285714286, 0.85714285714286, 0.85714285714286]
     )
 
-#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
+
 def test_edterm():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2007 FEB 3 00:00:00.000")
@@ -4001,7 +4005,7 @@ def test_gfclrh():
     assert not spice.gfbail()
 
 
-@pytest.mark.skipif(IS_PYODIDE, reason="bad aberration correction in pyodide")
+
 def test_gfdist():
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et("2007 JAN 01 00:00:00 TDB")
@@ -4037,7 +4041,7 @@ def test_gfdist():
     ]
     assert temp_results == expected
 
-@pytest.mark.skipif(IS_PYODIDE, reason="fatal error on Pyodide")
+
 def test_gfevnt():
     spice.furnsh(CoreKernels.testMetaKernel)
     #
@@ -4100,7 +4104,7 @@ def test_gfevnt():
     spice.gfsstp(0.5)
     spice.gfclrh()
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide")
+
 def test_gffove():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassCk)
@@ -4156,7 +4160,6 @@ def test_gffove():
     spice.gfsstp(0.5)
 
 
-@pytest.mark.skipif(IS_PYODIDE, reason="bad computation in pyodide")
 def test_gfilum():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.marsSpk)  # to get Phobos ephemeris
@@ -4229,7 +4232,7 @@ def test_gfinth():
     with pytest.raises(spice.stypes.SpiceyError):
         spice.gfinth(0)
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, fatal error in gfocce")
+
 def test_gfocce():
     spice.gfclrh()  # pragma: no cover
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -4272,7 +4275,7 @@ def test_gfocce():
     count = spice.wncard(result)
     assert count == 1
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad aberration correction")
+
 def test_gfoclt():
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et("2001 DEC 01 00:00:00 TDB")
@@ -4304,7 +4307,7 @@ def test_gfoclt():
     assert start_time == "2001-DEC-14 20:10:14.203347 (TDB)"
     assert end_time == "2001-DEC-14 21:35:50.328804 (TDB)"
 
-@pytest.mark.skipif(IS_PYODIDE, reason="bad aberration correction in pyodide")
+
 def test_gfpa():
     relate = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
     expected = {
@@ -4382,7 +4385,7 @@ def test_gfpa():
                 temp_results.append(timstr_right)
             assert temp_results == expected.get(relation)
 
-@pytest.mark.skipif(IS_PYODIDE, reason="bad coordinate operation in pyodide")
+
 def test_gfposc():
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et("2007 JAN 01")
@@ -4485,7 +4488,7 @@ def test_gfrepu():
     spice.gfrepu(0.0, 100.0, 100.0)
     spice.gfrepf()
 
-@pytest.mark.skipif(IS_PYODIDE, reason="bad aberration correction in pyodide")
+
 def test_gfrfov():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassCk)
@@ -4522,7 +4525,7 @@ def test_gfrfov():
     # Cleanup
 
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad aberration correction")
+
 def test_gfrr():
     relate = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
     expected = {
@@ -4607,7 +4610,7 @@ def test_gfrr():
                 temp_results.append(timstr_right)
             assert temp_results == expected.get(relation)
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad aberration correction")
+
 def test_gfsep():
     spice.furnsh(CoreKernels.testMetaKernel)
     expected = [
@@ -4658,7 +4661,7 @@ def test_gfsep():
         )
     assert temp_results == expected
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad coordinate quantity")
+
 def test_gfsntc():
     kernel = os.path.join(cwd, "gfnstc_test.tf")
     cleanup_kernel(kernel)
@@ -4739,7 +4742,7 @@ def test_gfstol():
     spice.gfstol(1.0e-16)
     spice.gfstol(1.0e-6)
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad coordinate quantity")
+
 def test_gfsubc():
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et("2007 JAN 01")
@@ -4773,7 +4776,7 @@ def test_gfsubc():
     assert start_time == "2007-MAY-04 17:08:56.724320 (TDB)"
     assert end_time == "2007-AUG-09 01:51:29.307830 (TDB)"
 
-@pytest.mark.skipif(IS_PYODIDE, reason="spkinvalidoption error in pyodide")
+
 def test_gftfov():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassCk)
@@ -4814,7 +4817,7 @@ def test_gftfov():
     assert spice.timout(result[3], sTimout) == "2013-FEB-25 12:04:30 UTC"
     # Cleanup
 
-@pytest.mark.skipif(IS_PYODIDE, reason="fatal erorr on gfudb")
+
 def test_gfudb():
     # ensure no numpy bool conversion deprication warning is raised
     with warnings.catch_warnings():
@@ -4846,7 +4849,7 @@ def test_gfudb():
         assert len(result) > 20  # true value is 28
         spice.kclear()
 
-@pytest.mark.skipif(IS_PYODIDE, reason="fatal erorr on gfudb2")
+
 def test_gfudb2():
     # load kernels
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -4876,7 +4879,7 @@ def test_gfudb2():
     assert len(result) > 50  # true value is 56
 
 
-@pytest.mark.skipif(IS_PYODIDE, reason="fatal erorr on gfuds")
+
 def test_gfuds():
     relations = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
     # load kernels
@@ -4993,7 +4996,7 @@ def test_illum():
     npt.assert_almost_equal(spice.dpr() * solar, 90.26976568986987)
     npt.assert_almost_equal(spice.dpr() * emissn, 99.27359835825851)
 
-#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
+
 def test_ilumin():
     # Same as first half of test_edterm
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -5067,7 +5070,7 @@ def test_illumf():
     assert not lit  # Incidence angle is greater than 90deg
     assert visibl  # Emission angle is less than 90deg
 
-#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
+
 def test_illumg():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassSclk)
@@ -6378,7 +6381,7 @@ def test_pgrrec():
     expected = [1.604650025e-13, -2.620678915e3, 2.592408909e3]
     npt.assert_array_almost_equal(rectan, expected)
 
-#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad aberration correction")
+
 def test_phaseq():
     relate = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
     expected = {
@@ -7727,7 +7730,7 @@ def test_spkacs():
     npt.assert_almost_equal(expected_dlt, dlt)
     npt.assert_array_almost_equal(state, expected_state)
 
-#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad aberration correction in pyodide")
+
 def test_spkapo():
     MARS = 499
     MOON = 301
@@ -7873,7 +7876,7 @@ def test_spkcov():
     expected = [-94651137.81606464, 315662463.18395346]
     npt.assert_array_almost_equal(result, expected)
 
-#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
+
 def test_spkcpo():
     spice.furnsh(ExtraKernels.earthStnSpk)
     spice.furnsh(ExtraKernels.earthHighPerPck)
@@ -7897,7 +7900,7 @@ def test_spkcpo():
     npt.assert_array_almost_equal(state, expected_state, decimal=6)
 
 
-#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
+
 def test_spkcpt():
     spice.furnsh(ExtraKernels.earthStnSpk)
     spice.furnsh(ExtraKernels.earthHighPerPck)
@@ -7920,7 +7923,7 @@ def test_spkcpt():
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(state, expected_state, decimal=6)
 
-#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
+
 def test_spkcvo():
     spice.furnsh(ExtraKernels.earthStnSpk)
     spice.furnsh(ExtraKernels.earthHighPerPck)
@@ -7958,7 +7961,7 @@ def test_spkcvo():
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(state, expected_state, decimal=6)
 
-#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame in pyodide")
+
 def test_spkcvt():
     spice.furnsh(ExtraKernels.earthStnSpk)
     spice.furnsh(ExtraKernels.earthHighPerPck)
@@ -9332,7 +9335,7 @@ def test_subpt():
     assert 0.0 == (alts[1] - alt1)
     # Cleanup
 
-#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
+
 def test_subslr():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2008 aug 11 00:00:00")
