@@ -4,6 +4,19 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [8.0.2] - 2026-02-16
+
+### Removed
+ - ci pr builds for 3.10 and 3.11 as excessive (wheels will continue to be published for these versions)
+
+### Added 
+ - slightly better test for mequg
+
+### Fixed
+ - fixed api consistency in cyice to be consistent with spiceypy
+ - fixed parameter doc strings in spiceypy and cyice
+ - fixed typo in mequg function
+
 ## [8.0.1] - 2026-01-07
 
 ### Added 
