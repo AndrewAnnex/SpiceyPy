@@ -153,7 +153,7 @@ def test_axisar():
     expected = np.array([[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
     npt.assert_array_almost_equal(expected, outmatrix, decimal=6)
 
-@pytest.mark.skipif(IS_PYODIDE, reason="bad frame")
+#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
 def test_azlcpo():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(ExtraKernels.earthTopoTf)
@@ -7727,7 +7727,7 @@ def test_spkacs():
     npt.assert_almost_equal(expected_dlt, dlt)
     npt.assert_array_almost_equal(state, expected_state)
 
-@pytest.mark.skipif(IS_PYODIDE, reason="bad aberration correction in pyodide")
+#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad aberration correction in pyodide")
 def test_spkapo():
     MARS = 499
     MOON = 301
@@ -7873,7 +7873,7 @@ def test_spkcov():
     expected = [-94651137.81606464, 315662463.18395346]
     npt.assert_array_almost_equal(result, expected)
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
+#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
 def test_spkcpo():
     spice.furnsh(ExtraKernels.earthStnSpk)
     spice.furnsh(ExtraKernels.earthHighPerPck)
@@ -7897,7 +7897,7 @@ def test_spkcpo():
     npt.assert_array_almost_equal(state, expected_state, decimal=6)
 
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide bad frame")
+#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
 def test_spkcpt():
     spice.furnsh(ExtraKernels.earthStnSpk)
     spice.furnsh(ExtraKernels.earthHighPerPck)
@@ -7920,7 +7920,7 @@ def test_spkcpt():
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(state, expected_state, decimal=6)
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide bad frame")
+#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
 def test_spkcvo():
     spice.furnsh(ExtraKernels.earthStnSpk)
     spice.furnsh(ExtraKernels.earthHighPerPck)
@@ -7958,7 +7958,7 @@ def test_spkcvo():
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(state, expected_state, decimal=6)
 
-@pytest.mark.skipif(IS_PYODIDE, reason="bad frame in pyodide")
+#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame in pyodide")
 def test_spkcvt():
     spice.furnsh(ExtraKernels.earthStnSpk)
     spice.furnsh(ExtraKernels.earthHighPerPck)
@@ -9332,7 +9332,7 @@ def test_subpt():
     assert 0.0 == (alts[1] - alt1)
     # Cleanup
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
+#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
 def test_subslr():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2008 aug 11 00:00:00")
