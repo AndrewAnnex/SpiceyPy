@@ -72,7 +72,9 @@ else()
 endif()
 
 ##############################################################################
-# cyice specifics below
+# cyice specifics below if not on EMSCRIPTEN
+
+if(NOT DEFINED EMSCRIPTEN)
 
 
 # Convert pyx to c
@@ -138,3 +140,5 @@ endif()
 
 # install cyice
 install(TARGETS cyice DESTINATION spiceypy/cyice/)
+
+endif()

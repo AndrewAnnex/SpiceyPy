@@ -29,7 +29,9 @@ from spiceypy.utils.libspicehelper import libspice
 import spiceypy.found_catcher
 from spiceypy.tests.gettestkernels import cwd, CoreKernels, ExtraKernels
 import os
+import sys
 
+IS_PYODIDE = sys.platform == "emscripten" or "pyodide" in sys.modules
 
 def test_tkversion():
     assert spice.exceptions._tkversion == spice.tkvrsn("toolkit")
@@ -43,7 +45,7 @@ def test_geterror():
     assert spice.getmsg("LONG", 200) == "some error occured"
     spice.reset()
 
-
+@pytest.mark.skipif(IS_PYODIDE, reason="Cyice Not supported on Pyodide")
 def test_cyice_geterror():
     spice.setmsg("some error occured")
     spice.sigerr("error")
@@ -65,6 +67,7 @@ def test_get_spiceypy_exceptions():
     spice.reset()
 
 
+@pytest.mark.skipif(IS_PYODIDE, reason="Cyice Not supported on Pyodide")
 def test_get_cyice_exceptions():
     with pytest.raises(
         (
@@ -103,6 +106,16 @@ def test_no_loaded_files_exception():
         spice.ckgp(0, 0, 0, "blah")
     spice.reset()
     spice.kclear()
+    with spiceypy.no_found_check():
+        with pytest.raises(spice.SpiceyPyIOError):
+            spice.ckgp(0, 0, 0, "blah")
+        spice.reset()
+        with pytest.raises(spice.exceptions.SpiceNOLOADEDFILES):
+            spice.ckgp(0, 0, 0, "blah")
+        spice.reset()
+    
+@pytest.mark.skipif(IS_PYODIDE, reason="Cyice Not supported on Pyodide")
+def test_no_loaded_files_exception_cyice():
     with pytest.raises(spice.SpiceyError):
         spice.cyice.ckgp(0, 0.0, 0, "blah")
     spice.reset()
@@ -118,12 +131,6 @@ def test_no_loaded_files_exception():
     spice.reset()
     spice.kclear()
     with spiceypy.no_found_check():
-        with pytest.raises(spice.SpiceyPyIOError):
-            spice.ckgp(0, 0, 0, "blah")
-        spice.reset()
-        with pytest.raises(spice.exceptions.SpiceNOLOADEDFILES):
-            spice.ckgp(0, 0, 0, "blah")
-        spice.reset()
         with pytest.raises(spice.SpiceyPyIOError):
             spice.cyice.ckgp(0, 0.0, 0, "blah")
         spice.reset()

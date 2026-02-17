@@ -29,8 +29,8 @@ except ImportError:  # fallback if executed outside package context
 _ = load_cspice()
 # Import the compiled module from the parent package level
 # from spiceypy.cyice import cyice as _cyice
-
-from spiceypy.cyice.cyice import (
+try:
+    from spiceypy.cyice.cyice import (
     azlcpo,
     azlcpo_s,
     azlcpo_v,
@@ -274,9 +274,9 @@ from spiceypy.cyice.cyice import (
     xfmsta,
     xfmsta_s,
     xfmsta_v,
-)
+    )
 
-__all__ = [
+    __all__ = [
     "azlcpo",
     "azlcpo_s",
     "azlcpo_v"
@@ -520,4 +520,9 @@ __all__ = [
     "xfmsta",
     "xfmsta_s",
     "xfmsta_v",
-]
+    ]
+except ImportError as ie:
+    raise ImportError(
+        "spiceypy.cyice is not available on this platform. "
+        "Use the ctypes-based interface (spiceypy.spiceypy) instead."
+    ) from ie
