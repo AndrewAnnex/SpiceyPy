@@ -10,8 +10,6 @@ jobs:
   build_sdist:
     name: Make SpiceyPy 🌶️ 🥧 Python 🐍 source distribution
     runs-on: "ubuntu-latest"
-    # Skip ONLY when this is a PR whose source branch is add_pyodide_build
-    if: ${{ github.event_name != 'pull_request' && github.head_ref != 'add_pyodide_build_no_cyice' }}
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v5
@@ -42,8 +40,6 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    # Skip ONLY when this is a PR whose source branch is add_pyodide_build
-    if: ${{ github.event_name != 'pull_request' && github.head_ref != 'add_pyodide_build_no_cyice' }}
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v5
@@ -118,8 +114,6 @@ jobs:
       CMAKE_BUILD_PARALLEL_LEVEL: 2
       CIBW_ENVIRONMENT: CMAKE_BUILD_PARALLEL_LEVEL="2"
     runs-on: ${{ matrix.config.os }}
-    # Skip ONLY when this is a PR whose source branch is add_pyodide_build
-    if: ${{ github.event_name != 'pull_request' && github.head_ref != 'add_pyodide_build_no_cyice' }}
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v5

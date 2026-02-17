@@ -21,8 +21,6 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    # run ONLY when this is a PR whose source branch is add_pyodide_build
-    if: ${{ github.event_name == 'pull_request' && github.head_ref == 'add_pyodide_build_no_cyice' }}
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v5
@@ -45,8 +43,6 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    # Skip ONLY when this is a PR whose source branch is add_pyodide_build
-    if: ${{ github.event_name != 'pull_request' && github.head_ref != 'add_pyodide_build_no_cyice' }}
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@v5
@@ -103,8 +99,6 @@ jobs:
       matrix:
         os: [ubuntu-22.04-arm, ubuntu-latest, macos-15-intel, macos-15, windows-latest]
         python-version: ['3.12', '3.13', '3.14']
-    # Skip ONLY when this is a PR whose source branch is add_pyodide_build
-    if: ${{ github.event_name != 'pull_request' && github.head_ref != 'add_pyodide_build_no_cyice' }}
     steps:
       - name: Setup windows msvc
         if: ${{ matrix.os == 'windows-latest'}}
