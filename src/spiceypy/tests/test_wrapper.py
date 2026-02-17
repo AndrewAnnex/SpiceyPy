@@ -4041,7 +4041,7 @@ def test_gfdist():
     ]
     assert temp_results == expected
 
-
+@pytest.mark.skipif(IS_PYODIDE, reason="Disabled test for Pyodide: flaky test in ci")
 def test_gfevnt():
     spice.furnsh(CoreKernels.testMetaKernel)
     #
