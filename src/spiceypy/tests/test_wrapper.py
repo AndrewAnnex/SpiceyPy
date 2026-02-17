@@ -2636,7 +2636,7 @@ def test_edpnt():
         ep, [0.85714285714286, 0.85714285714286, 0.85714285714286]
     )
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
+#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
 def test_edterm():
     spice.furnsh(CoreKernels.testMetaKernel)
     et = spice.str2et("2007 FEB 3 00:00:00.000")
@@ -4522,7 +4522,7 @@ def test_gfrfov():
     # Cleanup
 
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide bad aberration correction")
+@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad aberration correction")
 def test_gfrr():
     relate = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
     expected = {
@@ -4607,7 +4607,7 @@ def test_gfrr():
                 temp_results.append(timstr_right)
             assert temp_results == expected.get(relation)
 
-@pytest.mark.skipif(IS_PYODIDE, reason="bad aberration correction in pyodide")
+@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad aberration correction")
 def test_gfsep():
     spice.furnsh(CoreKernels.testMetaKernel)
     expected = [
@@ -4658,7 +4658,7 @@ def test_gfsep():
         )
     assert temp_results == expected
 
-@pytest.mark.skipif(IS_PYODIDE, reason="bad coordinate quantity in pyodide")
+@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad coordinate quantity")
 def test_gfsntc():
     kernel = os.path.join(cwd, "gfnstc_test.tf")
     cleanup_kernel(kernel)
@@ -4739,7 +4739,7 @@ def test_gfstol():
     spice.gfstol(1.0e-16)
     spice.gfstol(1.0e-6)
 
-@pytest.mark.skipif(IS_PYODIDE, reason="bad coordinate quantity in pyodide")
+@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad coordinate quantity")
 def test_gfsubc():
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et("2007 JAN 01")
@@ -4993,7 +4993,7 @@ def test_illum():
     npt.assert_almost_equal(spice.dpr() * solar, 90.26976568986987)
     npt.assert_almost_equal(spice.dpr() * emissn, 99.27359835825851)
 
-@pytest.mark.skipif(IS_PYODIDE, reason="bad frame")
+#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
 def test_ilumin():
     # Same as first half of test_edterm
     spice.furnsh(CoreKernels.testMetaKernel)
@@ -5067,7 +5067,7 @@ def test_illumf():
     assert not lit  # Incidence angle is greater than 90deg
     assert visibl  # Emission angle is less than 90deg
 
-@pytest.mark.skipif(IS_PYODIDE, reason="bad frame")
+#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad frame")
 def test_illumg():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassSclk)
@@ -6378,7 +6378,7 @@ def test_pgrrec():
     expected = [1.604650025e-13, -2.620678915e3, 2.592408909e3]
     npt.assert_array_almost_equal(rectan, expected)
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad aberration correction")
+#@pytest.mark.skipif(IS_PYODIDE, reason="Not supported on Pyodide, bad aberration correction")
 def test_phaseq():
     relate = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
     expected = {
