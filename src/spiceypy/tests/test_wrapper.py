@@ -5939,6 +5939,9 @@ def test_mequg():
     m1 = np.identity(2)
     mout = spice.mequg(m1, 2, 2)
     assert np.array_equal(m1, mout)
+    m2 = np.array([[1.0, 2.0],[2.0, 4.0],[4.0, 6.0]])
+    mexp = m2.copy()
+    assert np.array_equal(mexp, spice.mequg(m2,3,2))
 
 
 def test_mtxm():

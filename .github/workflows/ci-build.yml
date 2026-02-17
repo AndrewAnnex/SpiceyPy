@@ -102,7 +102,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04-arm, ubuntu-latest, macos-15-intel, macos-15, windows-latest]
-        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.12', '3.13', '3.14']
     # Skip ONLY when this is a PR whose source branch is add_pyodide_build
     if: ${{ github.event_name != 'pull_request' || github.head_ref != 'add_pyodide_build' }}
     steps:

@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 __author__ = "AndrewAnnex"
-__version__ = "8.0.1"
+__version__ = "8.0.2"
 import importlib
 import sys
 

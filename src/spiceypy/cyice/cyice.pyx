@@ -1855,7 +1855,7 @@ def fovray_s(
     double[::1] raydir,
     str rframe,
     str abcorr,
-    str obsrvr,
+    str observer,
     double et
 ) -> bool:
     """
@@ -1868,7 +1868,7 @@ def fovray_s(
 
     :param inst: Name or ID code string of the instrument.
     :param raydir: Ray's direction vector.
-    :param rframe: Body-fixed, body-centered frame for target body.
+    :param rframe: Reference frame of ray's direction vector.
     :param abcorr: Aberration correction flag.
     :param observer: Name or ID code string of the observer.
     :param et: Time of the observation (seconds past J2000).
@@ -1881,14 +1881,14 @@ def fovray_s(
     cdef const char* c_inst     = inst
     cdef const char* c_rframe   = rframe
     cdef const char* c_abcorr   = abcorr
-    cdef const char* c_obsrvr   = obsrvr
+    cdef const char* c_observer = observer
     # perform the call
     fovray_c(
         c_inst,
         &raydir[0],
         c_rframe,
         c_abcorr,
-        c_obsrvr,
+        c_observer,
         &c_et,
         <SpiceBoolean *> &c_visibl
     )
@@ -1904,7 +1904,7 @@ def fovray_v(
     double[::1] raydir,
     str rframe,
     str abcorr,
-    str obsrvr,
+    str observer,
     double[::1] ets
 ) -> BoolArray:
     """
@@ -1917,7 +1917,7 @@ def fovray_v(
 
     :param inst: Name or ID code string of the instrument.
     :param raydir: Ray's direction vector.
-    :param rframe: Body-fixed, body-centered frame for target body.
+    :param rframe: Reference frame of ray's direction vector.
     :param abcorr: Aberration correction flag.
     :param observer: Name or ID code string of the observer.
     :param ets: Times of the observation (seconds past J2000).
@@ -1930,7 +1930,7 @@ def fovray_v(
     cdef const char* c_inst     = inst
     cdef const char* c_rframe   = rframe
     cdef const char* c_abcorr   = abcorr
-    cdef const char* c_obsrvr   = obsrvr
+    cdef const char* c_observer = observer
     # initialize output arrays
     cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_visibl = np.empty(n, dtype=np.int32, order='C')
     cdef np.int32_t[::1] c_visibl = p_visibl
@@ -1942,7 +1942,7 @@ def fovray_v(
                 &raydir[0],
                 c_rframe,
                 c_abcorr,
-                c_obsrvr,
+                c_observer,
                 <SpiceDouble *> &c_ets[i],  # I got a warning converting const double * to SpiceDouble related to discard qualifiers without the cast here
                 <SpiceBoolean *> &c_visibl[i]
             )
@@ -1956,7 +1956,7 @@ def fovray(
     raydir: float[::1],
     rframe: str,
     abcorr: str,
-    obsrvr: str,
+    observer: str,
     et: float | float[::1]
 ) -> bool | BoolArray:
     """
@@ -1967,16 +1967,16 @@ def fovray(
 
     :param inst: Name or ID code string of the instrument.
     :param raydir: Ray's direction vector.
-    :param rframe: Body-fixed, body-centered frame for target body.
+    :param rframe: Reference frame of ray's direction vector.
     :param abcorr: Aberration correction flag.
     :param observer: Name or ID code string of the observer.
     :param et: Time of the observation (seconds past J2000).
     :return: Visibility flag
     """
     if PyFloat_Check(et):
-        return fovray_s(inst, raydir, rframe, abcorr, obsrvr, et)
+        return fovray_s(inst, raydir, rframe, abcorr, observer, et)
     else:
-        return fovray_v(inst, raydir, rframe, abcorr, obsrvr, et)
+        return fovray_v(inst, raydir, rframe, abcorr, observer, et)
 
 
 def fovtrg_s(
@@ -1985,7 +1985,7 @@ def fovtrg_s(
     str tshape,
     str tframe,
     str abcorr,
-    str obsrvr,
+    str observer,
     double et
     ) -> bool:
     """
@@ -2014,7 +2014,7 @@ def fovtrg_s(
     cdef const char* c_tshape   = tshape
     cdef const char* c_tframe   = tframe
     cdef const char* c_abcorr   = abcorr
-    cdef const char* c_obsrvr   = obsrvr
+    cdef const char* c_observer = observer
     # perform the call
     fovtrg_c(
         c_inst,
@@ -2022,7 +2022,7 @@ def fovtrg_s(
         c_tshape,
         c_tframe,
         c_abcorr,
-        c_obsrvr,
+        c_observer,
         &c_et,
         <SpiceBoolean *> &c_visibl
     )
@@ -2039,7 +2039,7 @@ def fovtrg_v(
     str tshape,
     str tframe,
     str abcorr,
-    str obsrvr,
+    str observer,
     np.double_t[::1] ets
     ) -> BoolArray:
     """
@@ -2068,7 +2068,7 @@ def fovtrg_v(
     cdef const char* c_tshape   = tshape
     cdef const char* c_tframe   = tframe
     cdef const char* c_abcorr   = abcorr
-    cdef const char* c_obsrvr   = obsrvr
+    cdef const char* c_observer = observer
     # initialize output arrays
     cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_visibl = np.empty(n, dtype=np.int32, order='C')
     cdef np.int32_t[::1] c_visibl = p_visibl
@@ -2081,7 +2081,7 @@ def fovtrg_v(
                 c_tshape,
                 c_tframe,
                 c_abcorr,
-                c_obsrvr,
+                c_observer,
                 <SpiceDouble *> &c_ets[i],  # I got a warning converting const double * to SpiceDouble related to discard qualifiers without the cast here
                 <SpiceBoolean *> &c_visibl[i]
             )
@@ -2096,7 +2096,7 @@ def fovtrg(
     tshape: str,
     tframe: str,
     abcorr: str,
-    obsrvr: str,
+    observer: str,
     et: float | float[::1]
     ) -> bool | BoolArray:
     """
@@ -2115,13 +2115,13 @@ def fovtrg(
     :return: Visibility flag
     """
     if PyFloat_Check(et):
-        return fovtrg_s(inst, target, tshape, tframe, abcorr, obsrvr, et)
+        return fovtrg_s(inst, target, tshape, tframe, abcorr, observer, et)
     else:
-        return fovtrg_v(inst, target, tshape, tframe, abcorr, obsrvr, et)
+        return fovtrg_v(inst, target, tshape, tframe, abcorr, observer, et)
 
 
 def furnsh(
-    str file
+    str path
     ) -> None:
     """
     Load one or more SPICE kernels into a program.
@@ -2130,10 +2130,10 @@ def furnsh(
 
     :param path: one or more paths to kernels
     """
-    cdef const char* c_file = file
-    if c_file == NULL:
+    cdef const char* c_path = path
+    if c_path == NULL:
         raise UnicodeError("Failed to encode file path in furnsh")
-    furnsh_c(c_file)
+    furnsh_c(c_path)
     check_for_spice_error()
 
 
@@ -2352,7 +2352,7 @@ def getelm(
 
 cpdef str getmsg(
     str option,
-    int msglen
+    int lenout
     ):
     """
     Retrieve the current short error message,
@@ -2367,16 +2367,16 @@ cpdef str getmsg(
     """
     cdef Py_ssize_t length = _default_len_out
     cdef const char* c_option = option
-    cdef int c_msglen = msglen
-    if c_msglen <= 0:
-        raise ValueError("msglen must be positive")
-    cdef char* c_msgstr = <char*> malloc((msglen) * sizeof(char))
+    cdef int c_lenout = lenout
+    if c_lenout <= 0:
+        raise ValueError("lenout must be positive")
+    cdef char* c_msgstr = <char*> malloc((lenout) * sizeof(char))
     if c_msgstr == NULL:
         raise MemoryError("Unable to allocate memory for traceback string in getmsg.")
     try:
         getmsg_c(
             c_option,
-            c_msglen,
+            c_lenout,
             c_msgstr
         )
         length = strlen(c_msgstr)
@@ -3133,8 +3133,8 @@ def latcyl(
 
 cpdef np.ndarray[np.double_t, ndim=1, mode='c'] latrec_s(
     radius: float, 
-    lon: float, 
-    lat: float
+    longitude: float, 
+    latitude: float
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.latrec`
@@ -3153,8 +3153,8 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] latrec_s(
     cdef np.double_t[::1] c_rec = p_rec
     latrec_c(
         radius, 
-        lon, 
-        lat, 
+        longitude, 
+        latitude, 
         &c_rec[0],
     )
     return p_rec
@@ -3164,8 +3164,8 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] latrec_s(
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latrec_v(
     const double[::1] radius, 
-    const double[::1] lon, 
-    const double[::1] lat
+    const double[::1] longitude, 
+    const double[::1] latitude
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.latrec`
@@ -3175,14 +3175,14 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latrec_v(
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/latrec_c.html
 
     :param radius: Distance of a point from the origin.
-    :param lon: Angle of the point from the XZ plane in radians.
-    :param lat: Angle of the point from the XY plane in radians.
+    :param longitude: Angle of the point from the XZ plane in radians.
+    :param latitude: Angle of the point from the XY plane in radians.
     :return: (r, lonc, z)
     """
     cdef const np.double_t[::1] c_radius = np.ascontiguousarray(radius, dtype=np.double)
     cdef Py_ssize_t i, n = c_radius.shape[0]
-    cdef const np.double_t[::1] c_lon = np.ascontiguousarray(lon, dtype=np.double)
-    cdef const np.double_t[::1] c_lat = np.ascontiguousarray(lat, dtype=np.double)
+    cdef const np.double_t[::1] c_longitude = np.ascontiguousarray(longitude, dtype=np.double)
+    cdef const np.double_t[::1] c_latitude = np.ascontiguousarray(latitude, dtype=np.double)
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
@@ -3191,8 +3191,8 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latrec_v(
         for i in range(n):
             latrec_c(
                 c_radius[i], 
-                c_lon[i], 
-                c_lat[i], 
+                c_longitude[i], 
+                c_latitude[i], 
                 &c_rec[i, 0]
             )
     return p_rec
@@ -3200,8 +3200,8 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latrec_v(
 
 def latrec(
     radius: float | double[::1], 
-    lon: float | double[::1], 
-    lat: float | double[::1]
+    longitude: float | double[::1], 
+    latitude: float | double[::1]
     ) -> Vector | Vector_N:
     """
     Convert from latitudinal coordinates to cylindrical coordinates.
@@ -3209,14 +3209,14 @@ def latrec(
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/latrec_c.html
 
     :param radius: Distance of a point from the origin.
-    :param lon: Angle of the point from the XZ plane in radians.
-    :param lat: Angle of the point from the XY plane in radians.
+    :param longitude: Angle of the point from the XZ plane in radians.
+    :param latitude: Angle of the point from the XY plane in radians.
     :return: (r, lonc, z)
     """
     if PyFloat_Check(radius):
-        return latrec_s(radius, lon, lat)
+        return latrec_s(radius, longitude, latitude)
     else:
-        return latrec_v(radius, lon, lat)
+        return latrec_v(radius, longitude, latitude)
 
 
 cpdef tuple[float, float, float] latsph_s(
@@ -4110,8 +4110,8 @@ def pi() -> float:
 @boundscheck(False)
 @wraparound(False)
 def pxform_s(
-    str fromstring,
-    str tostring,
+    str fromstr,
+    str tostr,
     double et
     ) -> Matrix_3:
     """
@@ -4123,21 +4123,21 @@ def pxform_s(
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/pxform_c.html
 
 
-    :param instring: Name of the frame to transform from.
-    :param tostring: Name of the frame to transform to.
+    :param fromstr Name of the frame to transform from.
+    :param tostr: Name of the frame to transform to.
     :param et: Epoch of the rotation matrix.
     :return: A rotation matrix.
     """
     # initialize c variables
     cdef double c_et = et
-    cdef const char* c_fromstring = fromstring
-    cdef const char* c_tostring = tostring
+    cdef const char* c_fromstr = fromstr
+    cdef const char* c_tostr = tostr
     # initialize output
     cdef np.ndarray[np.double_t, ndim=2, mode="c"] p_xrot = np.empty((3, 3), dtype=np.double, order='C')
     cdef np.double_t[:, ::1] c_xrot = p_xrot
     pxform_c(
-        c_fromstring,
-        c_tostring,
+        c_fromstr,
+        c_tostr,
         c_et,
         <SpiceDouble (*)[3]> &c_xrot[0, 0]
     )
@@ -4148,8 +4148,8 @@ def pxform_s(
 @boundscheck(False)
 @wraparound(False)
 def pxform_v(
-    str fromstring,
-    str tostring,
+    str fromstr,
+    str tostr,
     double[::1] ets
     ) -> Matrix_N_3:
     """
@@ -4161,15 +4161,15 @@ def pxform_v(
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/pxform_c.html
 
 
-    :param instring: Name of the frame to transform from.
-    :param tostring: Name of the frame to transform to.
+    :param fromstr: Name of the frame to transform from.
+    :param tostr: Name of the frame to transform to.
     :param ets: Epochs of the rotation matricies.
     :return: rotation matricies.
     """
     cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
-    cdef const char* c_fromstring = fromstring
-    cdef const char* c_tostring = tostring
+    cdef const char* c_fromstr = fromstr
+    cdef const char* c_tostr = tostr
     # initialize output
     cdef np.ndarray[np.double_t, ndim=3, mode="c"] p_xrot = np.empty((n, 3, 3), dtype=np.double, order='C')
     cdef np.double_t[:, :, ::1] c_xrot = p_xrot
@@ -4178,8 +4178,8 @@ def pxform_v(
     with nogil:
         for i in range(n):
             pxform_c(
-                c_fromstring,
-                c_tostring,
+                c_fromstr,
+                c_tostr,
                 c_ets[i],
                 <SpiceDouble (*)[3]> (base + i*9)
             )
@@ -4188,8 +4188,8 @@ def pxform_v(
 
 
 def pxform(
-    fromstring: str,
-    tostring:   str,
+    fromstr: str,
+    tostr:   str,
     et: float | float[::1]
     ) -> Matrix_3 | Matrix_N_3:
     """
@@ -4199,15 +4199,15 @@ def pxform(
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/pxform_c.html
 
 
-    :param instring: Name of the frame to transform from.
-    :param tostring: Name of the frame to transform to.
+    :param fromstr: Name of the frame to transform from.
+    :param tostr: Name of the frame to transform to.
     :param et: Epoch of the rotation matrix.
     :return: A rotation matrix.
     """
     if PyFloat_Check(et):
-        return pxform_s(fromstring, tostring, et)
+        return pxform_s(fromstr, tostr, et)
     else:
-        return pxform_v(fromstring, tostring, et)
+        return pxform_v(fromstr, tostr, et)
 
 # Q
 
@@ -5659,7 +5659,7 @@ def sphcyl(
 cpdef tuple[float, float, float] sphlat_s(
     r: float, 
     colat: float, 
-    slon: float
+    lons: float
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.sphlat`
@@ -5670,7 +5670,7 @@ cpdef tuple[float, float, float] sphlat_s(
 
     :param r: Distance of the point from the origin.
     :param colat: Angle of the point from positive z axis (radians).
-    :param slon: Angle of the point from the XZ plane (radians).
+    :param lons: Angle of the point from the XZ plane (radians).
     :return:
             Distance of a point from the origin,
             Angle of the point from the XZ plane in radians,
@@ -5682,7 +5682,7 @@ cpdef tuple[float, float, float] sphlat_s(
     sphlat_c(
         r, 
         colat,
-        slon,
+        lons,
         &radius, 
         &lon, 
         &lat, 
@@ -5695,7 +5695,7 @@ cpdef tuple[float, float, float] sphlat_s(
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphlat_v(
     const double[::1] r, 
     const double[::1] colat, 
-    const double[::1] slon
+    const double[::1] lons
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sphlat`
@@ -5706,7 +5706,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphlat_v(
 
     :param r: Distance of the point from the origin.
     :param colat: Angle of the point from positive z axis (radians).
-    :param slon: Angle of the point from the XZ plane (radians).
+    :param lons: Angle of the point from the XZ plane (radians).
     :return:
             Distance of a point from the origin,
             Angle of the point from the XZ plane in radians,
@@ -5715,7 +5715,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphlat_v(
     cdef const np.double_t[::1] c_r = np.ascontiguousarray(r, dtype=np.double)
     cdef Py_ssize_t i, n = c_r.shape[0]
     cdef const np.double_t[::1] c_colat = np.ascontiguousarray(colat, dtype=np.double)
-    cdef const np.double_t[::1] c_slon = np.ascontiguousarray(slon, dtype=np.double)
+    cdef const np.double_t[::1] c_lons = np.ascontiguousarray(lons, dtype=np.double)
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_lat = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_lat = p_lat
@@ -5725,7 +5725,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphlat_v(
             sphlat_c(
                 c_r[i], 
                 c_colat[i], 
-                c_slon[i], 
+                c_lons[i], 
                 <SpiceDouble *> &c_lat[i,0], 
                 <SpiceDouble *> &c_lat[i,1],
                 <SpiceDouble *> &c_lat[i,2]
@@ -5736,7 +5736,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphlat_v(
 def sphlat(
     r: float | double[::1], 
     colat: float | double[::1], 
-    slon: float | double[::1]
+    lons: float | double[::1]
     ) -> tuple[float, float, float] | Vector_N:
     """
     Convert from spherical coordinates to latitudinal coordinates.
@@ -5745,22 +5745,22 @@ def sphlat(
 
     :param r: Distance of the point from the origin.
     :param colat: Angle of the point from positive z axis (radians).
-    :param slon: Angle of the point from the XZ plane (radians).
+    :param lons: Angle of the point from the XZ plane (radians).
     :return:
             Distance of a point from the origin,
             Angle of the point from the XZ plane in radians,
             Angle of the point from the XY plane in radians.
     """
     if PyFloat_Check(r):
-        return sphlat_s(r, colat, slon)
+        return sphlat_s(r, colat, lons)
     else:
-        return sphlat_v(r, colat, slon)
+        return sphlat_v(r, colat, lons)
 
 
 cpdef np.ndarray[np.double_t, ndim=1, mode='c'] sphrec_s(
     r: float, 
     colat: float, 
-    slon: float
+    lons: float
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.sphrec`
@@ -5771,7 +5771,7 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] sphrec_s(
 
     :param r: Distance of a point from the origin.
     :param colat: Angle of the point from the positive Z-axis.
-    :param slon: Angle of the point from the XZ plane in radians.
+    :param lons: Angle of the point from the XZ plane in radians.
     :return: Rectangular coordinates of the point.
     """
     # allocate output array
@@ -5780,7 +5780,7 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] sphrec_s(
     sphrec_c(
         r, 
         colat, 
-        slon, 
+        lons, 
         &c_rec[0],
     )
     return p_rec
@@ -5791,7 +5791,7 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] sphrec_s(
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphrec_v(
     const double[::1] r, 
     const double[::1] colat, 
-    const double[::1] slon
+    const double[::1] lons
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sphrec`
@@ -5808,7 +5808,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphrec_v(
     cdef const np.double_t[::1] c_r = np.ascontiguousarray(r, dtype=np.double)
     cdef Py_ssize_t i, n = c_r.shape[0]
     cdef const np.double_t[::1] c_colat = np.ascontiguousarray(colat, dtype=np.double)
-    cdef const np.double_t[::1] c_slon = np.ascontiguousarray(slon, dtype=np.double)
+    cdef const np.double_t[::1] c_lons = np.ascontiguousarray(lons, dtype=np.double)
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
@@ -5818,7 +5818,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphrec_v(
             sphrec_c(
                 c_r[i], 
                 c_colat[i], 
-                c_slon[i], 
+                c_lons[i], 
                 &c_rec[i, 0]
             )
     return p_rec
@@ -5827,7 +5827,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphrec_v(
 def sphrec(
     r: float | double[::1], 
     colat: float | double[::1], 
-    slon: float | double[::1]
+    lons: float | double[::1]
     ) -> Vector | Vector_N:
     """
     Convert from spherical coordinates to rectangular coordinates.
@@ -5836,13 +5836,13 @@ def sphrec(
 
     :param r: Distance of a point from the origin.
     :param colat: Angle of the point from the positive Z-axis.
-    :param slon: Angle of the point from the XZ plane in radians.
+    :param lons: Angle of the point from the XZ plane in radians.
     :return: Rectangular coordinates of the point.
     """
     if PyFloat_Check(r):
-        return sphrec_s(r, colat, slon)
+        return sphrec_s(r, colat, lons)
     else:
-        return sphrec_v(r, colat, slon)
+        return sphrec_v(r, colat, lons)
 
 
 @boundscheck(False)
@@ -6689,11 +6689,11 @@ def spkcvt(
 @boundscheck(False)
 @wraparound(False)
 def spkez_s(
-    int target,
-    double epoch,
+    int targ,
+    double et,
     str ref,
     str abcorr,
-    int observer
+    int obs
     )-> tuple[State, float]:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkez`
@@ -6704,19 +6704,19 @@ def spkez_s(
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkez_c.html
 
-    :param target: Target body.
+    :param targ: Target body.
     :param et: Observer epoch in seconds past J2000 TDB.
     :param ref: Reference frame of output state vector.
     :param abcorr: Aberration correction flag.
-    :param observer: Observing body.
+    :param obs: Observing body.
     :return:
             State of target in km and km/sec,
             One way light time between observer and target in seconds.
     """
     # initialize c variables
-    cdef int c_target = target
-    cdef double c_epoch = epoch
-    cdef int c_observer = observer
+    cdef int c_targ  = targ
+    cdef double c_et = et
+    cdef int c_obs   = obs
     # convert the strings to pointers once
     cdef const char* c_ref    = ref
     cdef const char* c_abcorr = abcorr
@@ -6725,11 +6725,11 @@ def spkez_s(
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
     spkez_c(
-        c_target,
-        c_epoch,
+        c_targ,
+        c_et,
         c_ref,
         c_abcorr,
-        c_observer,
+        c_obs,
         &c_state[0],
         &c_lt
     )
@@ -6740,11 +6740,11 @@ def spkez_s(
 @boundscheck(False)
 @wraparound(False)
 def spkez_v(
-    int target,
-    double[::1] epochs,
+    int targ,
+    double[::1] et,
     str ref,
     str abcorr,
-    int observer)-> tuple[State_N, Double_N]:
+    int obs)-> tuple[State_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkez`
 
@@ -6754,23 +6754,23 @@ def spkez_v(
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkez_c.html
 
-    :param target: Target body.
-    :param epochs: Observer epoch in seconds past J2000 TDB.
+    :param targ: Target body.
+    :param et: Observer epoch in seconds past J2000 TDB.
     :param ref: Reference frame of output state vector.
     :param abcorr: Aberration correction flag.
-    :param observer: Observing body.
+    :param obs: Observing body.
     :return:
             State of target in km and km/sec,
             One way light time between observer and target in seconds.
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_epochs = np.ascontiguousarray(epochs, dtype=np.double)
-    cdef Py_ssize_t i, n = c_epochs.shape[0]
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(et, dtype=np.double)
+    cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
-    cdef int c_target   = target
+    cdef int c_targ        = targ
     cdef const char* c_ref    = ref
     cdef const char* c_abcorr = abcorr
-    cdef int c_observer = observer
+    cdef int c_obs = obs
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n, 6), dtype=np.double, order='C')
     cdef np.double_t[:, ::1] c_states = p_states
@@ -6780,11 +6780,11 @@ def spkez_v(
     with nogil:
         for i in range(n):
             spkez_c(
-                c_target,
-                c_epochs[i],
+                c_targ,
+                c_ets[i],
                 c_ref,
                 c_abcorr,
-                c_observer,
+                c_obs,
                 &c_states[i, 0],
                 &c_lts[i]
             )
@@ -6794,11 +6794,11 @@ def spkez_v(
 
 
 def spkez(
-    target: int,
-    epoch: float | float[::1],
+    targ: int,
+    et: float | float[::1],
     ref:      str,
     abcorr:   str,
-    observer: int,
+    obs: int,
     )-> tuple[State, float] | tuple[State_N, Double_N]:
     """
     Return the state (position and velocity) of a target body
@@ -6807,19 +6807,19 @@ def spkez(
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkez_c.html
 
-    :param target: Target body.
+    :param targ: Target body.
     :param et: Observer epoch in seconds past J2000 TDB.
     :param ref: Reference frame of output state vector.
     :param abcorr: Aberration correction flag.
-    :param observer: Observing body.
+    :param obs: Observing body.
     :return:
             State of target in km and km/sec,
             One way light time between observer and target in seconds.
     """
-    if PyFloat_Check(epoch):
-        return spkez_s(target, epoch, ref, abcorr, observer)
+    if PyFloat_Check(et):
+        return spkez_s(targ, et, ref, abcorr, obs)
     else:
-        return spkez_v(target, epoch, ref, abcorr, observer)
+        return spkez_v(targ, et, ref, abcorr, obs)
 
 
 @boundscheck(False)
@@ -6877,7 +6877,7 @@ def spkezp_s(
 @wraparound(False)
 def spkezp_v(
     int targ,
-    double[::1] ets,
+    double[::1] et,
     str ref,
     str abcorr,
     int obs
@@ -6892,7 +6892,7 @@ def spkezp_v(
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkezp_c.html
 
     :param targ: Target body NAIF ID code.
-    :param ets: Observer epochs in seconds past J2000 TDB.
+    :param et: Observer epochs in seconds past J2000 TDB.
     :param ref: Reference frame of output position vector.
     :param abcorr: Aberration correction flag.
     :param obs: Observing body NAIF ID code.
@@ -6900,7 +6900,7 @@ def spkezp_v(
             Position of target in km,
             One way light time between observer and target in seconds.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(et, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_ref    = ref
@@ -6930,11 +6930,11 @@ def spkezp_v(
 
 
 def spkezp(
-    target: int,
-    epoch: float | float[::1],
+    targ: int,
+    et: float | float[::1],
     ref:      str,
     abcorr:   str,
-    observer: int,
+    obs: int,
     )-> tuple[Vector, float] | tuple[Vector_N, Double_N]:
     """
     Return the position of a target body relative to an observing
@@ -6952,20 +6952,20 @@ def spkezp(
             Position of target in km,
             One way light time between observer and target in seconds.
     """
-    if PyFloat_Check(epoch):
-        return spkezp_s(target, epoch, ref, abcorr, observer)
+    if PyFloat_Check(et):
+        return spkezp_s(targ, et, ref, abcorr, obs)
     else:
-        return spkezp_v(target, epoch, ref, abcorr, observer)
+        return spkezp_v(targ, et, ref, abcorr, obs)
 
 
 @boundscheck(False)
 @wraparound(False)
 def spkezr_s(
-    str target,
-    double epoch,
-    str frame,
+    str targ,
+    double et,
+    str ref,
     str abcorr,
-    str observer
+    str obs
     )-> tuple[State, float]:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkezr`
@@ -6976,22 +6976,22 @@ def spkezr_s(
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkezr_c.html
 
-    :param target: Target body name.
-    :param epoch: Observer epoch in seconds past J2000 TDB.
-    :param frame: Reference frame of output state vector.
+    :param targ: Target body name.
+    :param et: Observer epoch in seconds past J2000 TDB.
+    :param ref: Reference frame of output state vector.
     :param abcorr: Aberration correction flag.
-    :param observer: Observing body name.
+    :param obs: Observing body name.
     :return:
             State of target in km and km/sec,
             One way light time between observer and target in seconds.
     """
-    cdef double c_epoch = epoch
+    cdef double c_epoch = et
     cdef double c_lt = 0.0
     # convert the strings to pointers once
-    cdef const char* c_target   = target
-    cdef const char* c_frame    = frame
+    cdef const char* c_target   = targ
+    cdef const char* c_frame    = ref
     cdef const char* c_abcorr   = abcorr
-    cdef const char* c_observer = observer
+    cdef const char* c_observer = obs
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
@@ -7011,11 +7011,11 @@ def spkezr_s(
 @boundscheck(False)
 @wraparound(False)
 def spkezr_v(
-    str target,
-    double[::1] epochs,
-    str frame,
+    str targ,
+    double[::1] et,
+    str ref,
     str abcorr,
-    str observer)-> tuple[State_N, Double_N]:
+    str obs)-> tuple[State_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkezr`
 
@@ -7025,23 +7025,23 @@ def spkezr_v(
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkezr_c.html
 
-    :param target: Target body name.
-    :param epochs: Observer epochs in seconds past J2000 TDB.
-    :param frame: Reference frame of output state vector.
+    :param targ: Target body name.
+    :param et: Observer epochs in seconds past J2000 TDB.
+    :param ref: Reference frame of output state vector.
     :param abcorr: Aberration correction flag.
-    :param observer: Observing body name.
+    :param obs: Observing body name.
     :return:
             State of target in km and km/sec,
             One way light time between observer and target in seconds.
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_epochs = np.ascontiguousarray(epochs, dtype=np.double)
+    cdef const np.double_t[::1] c_epochs = np.ascontiguousarray(et, dtype=np.double)
     cdef Py_ssize_t i, n = c_epochs.shape[0]
     # convert the strings to pointers once
-    cdef const char* c_target   = target
-    cdef const char* c_frame    = frame
+    cdef const char* c_target   = targ
+    cdef const char* c_frame    = ref
     cdef const char* c_abcorr   = abcorr
-    cdef const char* c_observer = observer
+    cdef const char* c_observer = obs
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n, 6), dtype=np.double, order='C')
     cdef np.double_t[:, ::1] c_states = p_states
@@ -7065,11 +7065,11 @@ def spkezr_v(
 
 
 def spkezr(
-    target:   str,
-    epoch: float | float[::1],
-    frame:    str,
+    targ:     str,
+    et:       float | float[::1],
+    ref:      str,
     abcorr:   str,
-    observer: str,
+    obs:      str,
     )-> tuple[State, float]:
     """
     Return the state (position and velocity) of a target body
@@ -7078,19 +7078,19 @@ def spkezr(
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkezr_c.html
 
-    :param target: Target body name.
-    :param epoch: Observer epoch in seconds past J2000 TDB.
-    :param frame: Reference frame of output state vector.
+    :param targ: Target body name.
+    :param et: Observer epoch in seconds past J2000 TDB.
+    :param ref: Reference frame of output state vector.
     :param abcorr: Aberration correction flag.
-    :param observer: Observing body name.
+    :param obs: Observing body name.
     :return:
             State of target in km and km/sec,
             One way light time between observer and target in seconds.
     """
-    if PyFloat_Check(epoch):
-        return spkezr_s(target, epoch, frame, abcorr, observer)
+    if PyFloat_Check(et):
+        return spkezr_s(targ, et, ref, abcorr, obs)
     else:
-        return spkezr_v(target, epoch, frame, abcorr, observer)
+        return spkezr_v(targ, et, ref, abcorr, obs)
 
 
 @boundscheck(False)
@@ -7342,7 +7342,7 @@ def spkgps(
 @boundscheck(False)
 @wraparound(False)
 def spkpos_s(
-    str target,
+    str targ,
     double et,
     str ref,
     str abcorr,
@@ -7370,7 +7370,7 @@ def spkpos_s(
     cdef double c_et = et
     cdef double c_lt = 0.0
     # convert the strings to pointers once
-    cdef const char* c_targ   = target
+    cdef const char* c_targ   = targ
     cdef const char* c_ref    = ref
     cdef const char* c_abcorr = abcorr
     cdef const char* c_obs    = obs
@@ -7448,7 +7448,7 @@ def spkpos_v(
 
 
 def spkpos(
-    target: str,
+    targ: str,
     et: float | float[::1],
     ref:    str,
     abcorr: str,
@@ -7471,9 +7471,9 @@ def spkpos(
             One way light time between observer and target in seconds.
     """
     if PyFloat_Check(et):
-        return spkpos_s(target, et, ref, abcorr, obs)
+        return spkpos_s(targ, et, ref, abcorr, obs)
     else:
-        return spkpos_v(target, et, ref, abcorr, obs)
+        return spkpos_v(targ, et, ref, abcorr, obs)
 
 
 @boundscheck(False)
@@ -7978,8 +7978,8 @@ def sincpt(
 
 cpdef np.ndarray[np.double_t, ndim=1, mode='c'] srfrec_s(
     body: int, 
-    lon: float, 
-    lat: float
+    longitude: float, 
+    latitude: float
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.srfrec`
@@ -7990,8 +7990,8 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] srfrec_s(
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/srfrec_c.html
 
     :param body: NAIF integer code of an extended body.
-    :param lon: Longitude of point in radians.
-    :param lat: Latitude of point in radians.
+    :param longitude: Longitude of point in radians.
+    :param latitude: Latitude of point in radians.
     :return: Rectangular coordinates of the point, same units as used in radii definition (typically km).
     """
     # allocate output array
@@ -7999,8 +7999,8 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] srfrec_s(
     cdef np.double_t[::1] c_rec = p_rec
     srfrec_c(
         body, 
-        lon, 
-        lat, 
+        longitude, 
+        latitude, 
         &c_rec[0],
     )
     return p_rec
@@ -8010,8 +8010,8 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] srfrec_s(
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] srfrec_v(
     int body, 
-    const double[::1] lon, 
-    const double[::1] lat
+    const double[::1] longitude, 
+    const double[::1] latitude
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.srfrec`
@@ -8022,14 +8022,14 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] srfrec_v(
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/srfrec_c.html
 
     :param body: NAIF integer code of an extended body.
-    :param lon: Longitude of point in radians.
-    :param lat: Latitude of point in radians.
+    :param longitude: Longitude of point in radians.
+    :param latitude: Latitude of point in radians.
     :return: Rectangular coordinates of the point, same units as used in radii definition (typically km).
     """
     cdef SpiceInt c_body = body
-    cdef const np.double_t[::1] c_lon = np.ascontiguousarray(lon, dtype=np.double)
+    cdef const np.double_t[::1] c_lon = np.ascontiguousarray(longitude, dtype=np.double)
     cdef Py_ssize_t i, n = c_lon.shape[0]
-    cdef const np.double_t[::1] c_lat   = np.ascontiguousarray(lat, dtype=np.double)
+    cdef const np.double_t[::1] c_lat = np.ascontiguousarray(latitude, dtype=np.double)
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
@@ -8047,11 +8047,11 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] srfrec_v(
 
 def srfrec(
     body: int, 
-    lon: float | double[::1], 
-    lat: float | double[::1]
+    longitude: float | double[::1], 
+    latitude: float | double[::1]
     ) -> Vector | Vector_N:
     """
-    Convert planetocentric latitude and longitude of a surface
+    Convert planetocentric latitude and longitudegitude of a surface
     point on a specified body to rectangular coordinates.
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/srfrec_c.html
@@ -8062,10 +8062,10 @@ def srfrec(
     :return: Rectangular coordinates of the point, same units as used in radii definition (typically km).
     :return: Rectangular coordinates of the point.
     """
-    if PyFloat_Check(lon):
-        return srfrec_s(body, lon, lat)
+    if PyFloat_Check(longitude):
+        return srfrec_s(body, longitude, latitude)
     else:
-        return srfrec_v(body, lon, lat)
+        return srfrec_v(body, longitude, latitude)
 
 
 @boundscheck(False)
@@ -8392,7 +8392,7 @@ def subslr(
 @boundscheck(False)
 @wraparound(False)
 def sxform_s(
-    str fromstring,
+    str instring,
     str tostring,
     double et
     ) -> Matrix_6:
@@ -8412,13 +8412,13 @@ def sxform_s(
     """
     # initialize c variables
     cdef double c_et = et
-    cdef const char* c_fromstring = fromstring
+    cdef const char* c_instring = instring
     cdef const char* c_tostring = tostring
     # initialize output
     cdef np.ndarray[np.double_t, ndim=2, mode="c"] p_xform = np.empty((6, 6), dtype=np.double, order='C')
     cdef np.double_t[:, ::1] c_xform = p_xform
     sxform_c(
-        c_fromstring,
+        c_instring,
         c_tostring,
         c_et,
         <SpiceDouble (*)[6]> &c_xform[0, 0]
@@ -8430,7 +8430,7 @@ def sxform_s(
 @boundscheck(False)
 @wraparound(False)
 def sxform_v(
-    str fromstring,
+    str instring,
     str tostring,
     double[::1] ets
     ) -> Matrix_N_6:
@@ -8450,7 +8450,7 @@ def sxform_v(
     """
     cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
     cdef Py_ssize_t i, n = c_ets.shape[0]
-    cdef const char* c_fromstring = fromstring
+    cdef const char* c_instring = instring
     cdef const char* c_tostring = tostring
     # initialize output
     cdef np.ndarray[np.double_t, ndim=3, mode="c"] p_xform = np.empty((n, 6, 6), dtype=np.double, order='C')
@@ -8460,7 +8460,7 @@ def sxform_v(
     with nogil:
         for i in range(n):
             sxform_c(
-                c_fromstring,
+                c_instring,
                 c_tostring,
                 c_ets[i],
                 <SpiceDouble (*)[6]> (base + i*36)
@@ -8470,7 +8470,7 @@ def sxform_v(
 
 
 def sxform(
-    fromstring: str,
+    instring: str,
     tostring:   str,
     et: float | float[::1]
     ) -> Matrix_6 | Matrix_N_6:
@@ -8487,9 +8487,9 @@ def sxform(
     :return: A state transformation matrix.
     """
     if PyFloat_Check(et):
-        return sxform_s(fromstring, tostring, et)
+        return sxform_s(instring, tostring, et)
     else:
-        return sxform_v(fromstring, tostring, et)
+        return sxform_v(instring, tostring, et)
 
 
 # T
@@ -9341,7 +9341,7 @@ def unitim(
         return unitim_v(epoch, insys, outsys)
 
 
-def unload(str file) -> None:
+def unload(str filename) -> None:
     """
     Unload a SPICE kernel.
 
@@ -9349,7 +9349,7 @@ def unload(str file) -> None:
 
     :param filename: The name of a kernel to unload.
     """
-    cdef const char* c_file = file
+    cdef const char* c_file = filename
     unload_c(c_file)
 
 
@@ -9430,9 +9430,9 @@ def utc2et(utcstr: str | String_N)-> float | Double_N:
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=1, mode='c'] xfmsta_s(
-    const double[::1] istate, 
-    const char* icosys,
-    const char* ocosys,
+    const double[::1] input_state, 
+    const char* input_coord_sys,
+    const char* output_coord_sys,
     const char* body,
     ):
     """
@@ -9442,25 +9442,25 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] xfmsta_s(
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/xfmsta_c.html
 
-    :param istate: Input state.
-    :param icosys: Current (input) coordinate system.
-    :param ocosys: Desired (output) coordinate system.
+    :param input_state: Input state.
+    :param input_coord_sys: Current (input) coordinate system.
+    :param output_coord_sys: Desired (output) coordinate system.
     :param body:
                 Name or NAIF ID of body with which coordinates
                 are associated (if applicable).
     :return: Converted output state
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_istate = np.ascontiguousarray(istate, dtype=np.double)
-    if c_istate.shape[0] != 6:
-        raise ValueError(f'in xfmsta_s, state vector had shape {c_istate.shape[0]}, not 6 as expected')
+    cdef const np.double_t[::1] c_input_state = np.ascontiguousarray(input_state, dtype=np.double)
+    if c_input_state.shape[0] != 6:
+        raise ValueError(f'in xfmsta_s, state vector had shape {c_input_state.shape[0]}, not 6 as expected')
     # initialize output
     cdef np.ndarray[np.double_t, ndim=1, mode="c"] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
     xfmsta_c(
-        &c_istate[0],
-        icosys,
-        ocosys,
+        &c_input_state[0],
+        input_coord_sys,
+        output_coord_sys,
         body,
         &c_state[0]    
     )
@@ -9471,9 +9471,9 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] xfmsta_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] xfmsta_v(
-    const double[:,::1] istate, 
-    const char* icosys,
-    const char* ocosys,
+    const double[:,::1] input_state, 
+    const char* input_coord_sys,
+    const char* output_coord_sys,
     const char* body,
     ):
     """
@@ -9483,19 +9483,19 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] xfmsta_v(
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/xfmsta_c.html
 
-    :param istate: Input states.
-    :param icosys: Current (input) coordinate system.
-    :param ocosys: Desired (output) coordinate system.
+    :param input_state: Input states.
+    :param input_coord_sys: Current (input) coordinate system.
+    :param output_coord_sys: Desired (output) coordinate system.
     :param body:
                 Name or NAIF ID of body with which coordinates
                 are associated (if applicable).
     :return: Converted output states
     """
     # initialize c variables
-    cdef np.double_t[:, ::1] c_istate = np.ascontiguousarray(istate, dtype=np.double)
-    if c_istate.shape[1] != 6:
-        raise ValueError(f'in xfmsta_v, state vector had shape {c_istate.shape[1]}, not 6 as expected')
-    cdef Py_ssize_t i, n = c_istate.shape[0]
+    cdef np.double_t[:, ::1] c_input_state = np.ascontiguousarray(input_state, dtype=np.double)
+    if c_input_state.shape[1] != 6:
+        raise ValueError(f'in xfmsta_v, state vector had shape {c_input_state.shape[1]}, not 6 as expected')
+    cdef Py_ssize_t i, n = c_input_state.shape[0]
     # initialize output
     cdef np.ndarray[np.double_t, ndim=2, mode="c"] p_states = np.empty((n,6), dtype=np.double, order='C')
     cdef np.double_t[:, ::1] c_states = p_states
@@ -9503,9 +9503,9 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] xfmsta_v(
     with nogil:
         for i in range(n):
             xfmsta_c(
-                &c_istate[i, 0],
-                icosys,
-                ocosys,
+                &c_input_state[i, 0],
+                input_coord_sys,
+                output_coord_sys,
                 body,
                 &c_states[i, 0]
             )
@@ -9514,9 +9514,9 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] xfmsta_v(
 
 
 def xfmsta(
-    istate: State | State_N,
-    icosys: str,
-    ocosys: str,
+    input_state: State | State_N,
+    input_coord_sys: str,
+    output_coord_sys: str,
     body:   str
     ) -> State | State_N:
     """
@@ -9524,19 +9524,19 @@ def xfmsta(
 
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/xfmsta_c.html
 
-    :param istate: Input state or states.
-    :param icosys: Current (input) coordinate system.
-    :param ocosys: Desired (output) coordinate system.
+    :param input_state: Input state or states.
+    :param input_coord_sys: Current (input) coordinate system.
+    :param output_coord_sys: Desired (output) coordinate system.
     :param body:
                 Name or NAIF ID of body with which coordinates
                 are associated (if applicable).
     :return: Converted output state
     """
-    cdef Py_ssize_t ndim = istate.ndim
+    cdef Py_ssize_t ndim = input_state.ndim
     if ndim == 1:
-        return xfmsta_s(istate, icosys, ocosys, body)
+        return xfmsta_s(input_state, input_coord_sys, output_coord_sys, body)
     elif ndim == 2:
-        return xfmsta_v(istate, icosys, ocosys, body)
+        return xfmsta_v(input_state, input_coord_sys, output_coord_sys, body)
     else:
         raise RuntimeError(f'xfmsta provided wrong shape for state: {ndim}')
 
