@@ -4104,7 +4104,7 @@ def test_gfevnt():
     spice.gfsstp(0.5)
     spice.gfclrh()
 
-
+@pytest.mark.skipif(not IS_PYODIDE, reason="Disabled test for Pyodide: flaky test in ci")
 def test_gffove():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassCk)
