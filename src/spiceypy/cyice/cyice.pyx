@@ -108,10 +108,10 @@ Matrix_N    = Annotated[DoubleArray, Literal["N", 3, 3]]
 Matrix_N_3  = Annotated[DoubleArray, Literal["N", 3, 3]]
 Matrix_N_6  = Annotated[DoubleArray, Literal["N", 6, 6]]
 
-
+from . cimport cyice
 from spiceypy import config
 from spiceypy.utils.exceptions import dynamically_instantiate_spiceyerror, NotFoundError, SpiceyError
-from . cimport cyice
+
 
 # support functions
 
