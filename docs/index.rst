@@ -51,6 +51,7 @@ Contents:
    citation
    installation
    cyice
+   pyodide
    changelog
    exampleone
    cells
