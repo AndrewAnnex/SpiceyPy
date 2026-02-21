@@ -92,20 +92,11 @@ jobs:
       matrix:
         include:
           - config: { "name": "Linux", "os": "ubuntu-latest", "arch": "x86_64" }
-          - config:
-              { "name": "Linux", "os": "ubuntu-22.04-arm", "arch": "aarch64" }
-          - config:
-              { "name": "macOS", "os": "macos-15-intel", "arch": "x86_64" }
+          - config: { "name": "Linux", "os": "ubuntu-22.04-arm", "arch": "aarch64" }
+          - config: { "name": "macOS", "os": "macos-15-intel", "arch": "x86_64" }
           - config: { "name": "macOS", "os": "macos-15", "arch": "arm64" }
-          - config:
-              { "name": "Windows", "os": "windows-latest", "arch": "AMD64" }
-          - config:
-              {
-                "name": "Pyodide",
-                "os": "ubuntu-latest",
-                "arch": "wasm32",
-                "platform": "pyodide",
-              }
+          - config: { "name": "Windows", "os": "windows-latest", "arch": "AMD64" }
+          - config: { "name": "Pyodide", "os": "ubuntu-latest", "arch": "wasm32", "platform": "pyodide" }
     name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels for ${{ matrix.config.os }} ${{ matrix.config.arch }}
     env:
       CSPICE_CACHE: 0
@@ -156,7 +147,7 @@ jobs:
           CIBW_PLATFORM: ${{ matrix.config.platform || 'auto' }}
           CIBW_ARCHS: ${{ matrix.config.arch }}
           CMAKE_BUILD_PARALLEL_LEVEL: 2
-          CIB_ENVIRONMENT: CMAKE_BUILD_PARALLEL_LEVEL="2"
+          CIBW_ENVIRONMENT: CMAKE_BUILD_PARALLEL_LEVEL="2"
           SKBUILD_BUILD_VERBOSE: "true"
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
         uses: actions/upload-artifact@v4
@@ -204,6 +195,8 @@ jobs:
           pattern: artifact-*
           merge-multiple: true
           path: dist
+      - name: Remove WASM wheels before TestPyPI publish
+        run: rm -f dist/*wasm*.whl
       - name: Publish distribution 📦 to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -228,9 +221,39 @@ jobs:
           pattern: artifact-*
           merge-multiple: true
           path: dist
+      - name: Remove WASM wheels before PyPI publish
+        run: rm -f dist/*wasm*.whl
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           skip-existing: true
           print-hash: true
           verbose: true
+
+  upload_wheels_to_release:
+    name: Upload wheels to GitHub Release
+    needs: [publish_to_test_pypi, publish_to_pypi]
+    runs-on: ubuntu-latest
+    if: |
+      always() &&
+      startsWith(github.ref, 'refs/tags/v') &&
+      github.event_name == 'push' &&
+      (needs.publish_to_test_pypi.result == 'success' || needs.publish_to_pypi.result == 'success')
+    permissions:
+      contents: write
+    steps:
+      - name: Check release exists
+        run: |
+          gh release view ${{ github.ref_name }} || \
+            (echo "::error::Release ${{ github.ref_name }} does not exist yet. Create the release in the GitHub UI and re-run this job." && exit 1)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: artifact-*
+          merge-multiple: true
+          path: dist
+      - name: Upload wheels to release
+        run: gh release upload ${{ github.ref_name }} dist/*.whl --clobber
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
