@@ -3,7 +3,7 @@ Pyodide (Browser-accessible) SpiceyPy
 =====================================
 
 .. DANGER::
-  This distribution of SpiceyPy is highly experimental! 
+  This distribution of SpiceyPy is highly experimental!
   Do not trust it for anything critical. Use at your own risk.
 
 A new Pyodide distribution of SpiceyPy is currently in development.
@@ -12,9 +12,9 @@ A new Pyodide distribution of SpiceyPy is currently in development.
 Many popular scientific libraries are already availble for Pyodide, including numpy, scipy, matplotlib, pandas, and many more!
 
 This version of SpiceyPy is essentially the same as the normal desktop Python distributions, as the CSPICE library is compiled to Wasm (web-assembly), allowing the pure python codebase for SpiceyPy to function essentially without modification.
-The existing test suite for SpiceyPy is used to validate the distribution releases. 
+The existing test suite for SpiceyPy is used to validate the distribution releases.
 
-It is however slightly limited:  
+It is however slightly limited:
 
 1. Currently, cyice is unsupported in this pyodide distribution and not included. That may eventually change.
 2. Some functions may not function as expected or return null results, seemingly due to memory limitations and compilation differences.
@@ -30,7 +30,7 @@ Despite these limitations and the danger warning at the top of this page, the Py
 
 As per the warning above, production use is not recommended.
 
-One of the best places to start using and learning about Pyodide is `Jupyter-lite <https://jupyter.org/try-jupyter/>`, a browser-native JupyterLab that includes many scientific python packages for use.
+One of the best places to start using and learning about Pyodide is `Jupyter-lite <https://jupyter.org/try-jupyter/>`_, a browser-native JupyterLab that includes many scientific python packages for use.
 
 Installation
 -------------
@@ -38,11 +38,47 @@ Installation
 TODO
 
 
-
 Usage Example
 --------------
 
-TODO 
+Cell 1 - Imports:
+
+.. raw:: html
+
+    <script src="mini-coi.js"></script>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2026.2.1/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2026.2.1/core.js"></script>
+    <script type="py-editor" env="shared" config="pyscript.json">
+        import numpy as np
+        import matplotlib
+        matplotlib.use("AGG")
+        import matplotlib.pyplot as plt
+        from pyscript import display
+        print('ready!')
+    </script>
+
+
+Cell 2 - Define the array:
+
+.. raw:: html
+
+    <script type="py-editor" env="shared">
+        x = np.linspace(0, 2 * np.pi, 200)
+        y = np.cos(x)
+        print(x.shape)
+    </script>
+
+Cell 3 - Plot it:
+
+.. raw:: html
+
+    <script type="py-editor" env="shared">
+        fig, ax = plt.subplots()
+        ax.plot(x, y, color="blue", linewidth=2)
+        display(fig, target="mpl", append=False)
+        plt.close('all')
+    </script>
+    <div id="mpl"></div>
 
 
 
@@ -50,4 +86,3 @@ Javascript Example
 -------------------
 
 TODO
-
