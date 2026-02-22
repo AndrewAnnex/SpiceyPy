@@ -1,3 +1,7 @@
 {
-    "packages": ["numpy", "matplotlib"]
+    "packages": [
+        "numpy",
+        "matplotlib",
+        "https://cdn.jsdelivr.net/gh/AndrewAnnex/spiceypy-wheels-dist@v8.0.2-dev.2/spiceypy-8.0.2-cp313-cp313-pyodide_2025_0_wasm32.whl"
+    ]
 }

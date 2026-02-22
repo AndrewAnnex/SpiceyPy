@@ -8,7 +8,7 @@ Pyodide (Browser-accessible) SpiceyPy
 
 A new Pyodide distribution of SpiceyPy is currently in development.
 
-`Pyodide <https://pyodide.org/en/stable/>` is a port of CPython to WebAssembly, meaning a Python distribution that can run entirely natively within common web browsers.
+`Pyodide <https://pyodide.org/en/stable/>`_ is a port of CPython to WebAssembly, meaning a Python distribution that can run entirely natively within common web browsers.
 Many popular scientific libraries are already availble for Pyodide, including numpy, scipy, matplotlib, pandas, and many more!
 
 This version of SpiceyPy is essentially the same as the normal desktop Python distributions, as the CSPICE library is compiled to Wasm (web-assembly), allowing the pure python codebase for SpiceyPy to function essentially without modification.
@@ -19,7 +19,7 @@ It is however slightly limited:
 1. Currently, cyice is unsupported in this pyodide distribution and not included. That may eventually change.
 2. Some functions may not function as expected or return null results, seemingly due to memory limitations and compilation differences.
 3. Pyodide is currently limited to 32bit architecture.
-4. Installation is not possible through PyPI yet, see section below.
+4. Installation is not possible through PyPI yet, see section below on installation.
 
 Despite these limitations and the danger warning at the top of this page, the Pyodide distribution of SpiceyPy is an incredible new capability with the following potential applications:
 
@@ -35,13 +35,31 @@ One of the best places to start using and learning about Pyodide is `Jupyter-lit
 Installation
 -------------
 
-TODO
+Currently, this distribution of SpiceyPy is not available through PyPI due to the CSPICE dependency.
 
+It is made available through a public GitHub repository `https://github.com/AndrewAnnex/spiceypy-wheels-dist <https://github.com/AndrewAnnex/spiceypy-wheels-dist>`_.
+
+To install the wheel in Jupyter-lite, access the wheel file using the jsDelivr url corresponding release that will look something like:
+
+.. code-block:: bash
+
+    https://cdn.jsdelivr.net/gh/AndrewAnnex/spiceypy-wheels-dist@<tag>/spiceypy-<version>-cp313-cp313-pyodide_2025_0_wasm32.whl 
+
+
+Then use piplite like so:
+
+.. code-block:: python
+
+    import piplite
+    await piplite.install("https://cdn.jsdelivr.net/gh/AndrewAnnex/spiceypy-wheels-dist@v8.0.2-dev.2/spiceypy-8.0.2-cp313-cp313-pyodide_2025_0_wasm32.whl") 
 
 Usage Example
 --------------
 
-Cell 1 - Imports:
+This page has Pyodide SpiceyPy pre-installed, so no need to run the piplite command above.
+
+Run the cell below by clicking the arrow on the right side when you hover over it with your mouse cursor.
+It may take a few moments to finish. This software is running on your web browser, no background services (besides CDNs) required.
 
 .. raw:: html
 
@@ -50,6 +68,7 @@ Cell 1 - Imports:
     <script type="module" src="https://pyscript.net/releases/2026.2.1/core.js"></script>
     <script type="py-editor" env="shared" config="pyscript.json">
         import numpy as np
+        import spiceypy
         import matplotlib
         matplotlib.use("AGG")
         import matplotlib.pyplot as plt
