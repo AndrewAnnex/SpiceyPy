@@ -35,8 +35,21 @@ from numpy import ndarray, str_
 
 
 from .utils import support_types as stypes
-from .utils.libspicehelper import libspice
-from .utils.exceptions import *
+from .utils.libspicehelper import libspice, cspice_flavor
+from .utils.exceptions import (
+    SpiceyError,
+    SpiceyPyError,
+    NotFoundError,
+    SpiceyPyIOError,
+    SpiceyPyMemoryError,
+    SpiceyPyTypeError,
+    SpiceyPyKeyError,
+    SpiceyPyIndexError,
+    SpiceyPyRuntimeError,
+    SpiceyPyZeroDivisionError,
+    SpiceyPyValueError,
+    dynamically_instantiate_spiceyerror
+)
 from .found_catcher import (
     found_check_off,
     found_check_on,

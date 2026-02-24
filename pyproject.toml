@@ -74,6 +74,12 @@ devwheel = [
     {include-group = "dev"},
     "cibuildwheel",
 ]
+devwheelpyodide = [
+    {include-group = "devwheel"},
+    "pytest-randomly",
+    "pyodide-http",
+    "requests"
+]
 doc = [
     {include-group = "dev"},
     "myst-parser==2.0.0",
@@ -146,6 +152,7 @@ markers = [
     "optional: mark tests as optional"
 ]
 
+
 # cython lint things
 [tool.cython-lint]
 max-line-length = 180
@@ -168,6 +175,7 @@ source = [
 build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*", "cp314-*"]
 # Skip 32-bit builds, pypy, and musllinux
 skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "*-musllinux_aarch64", "*-musllinux_x86_64"]
+
 # build options
 build-verbosity = 2
 # parallel builds passthrough for build
@@ -176,3 +184,25 @@ test-groups = ["devwheel"]
 test-command = [
     "coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable"
 ]
+
+[tool.cibuildwheel.pyodide]
+# https://github.com/jupyterlite/pyodide-kernel for version/kernel compatibility
+build = ["cp313-*"]
+skip  = ["cp312-*"]
+test-groups = ["devwheelpyodide"]
+build-verbosity = 0
+before-test = [
+  "echo 'RUNNING PYODIDE AUDITWHEEL CHECKS'",
+  "echo 'auditwheel show results:'",
+  "pyodide auditwheel show -r {wheel}",
+  "echo 'auditwheel imports results:'",
+  "pyodide auditwheel imports --show-type {wheel}",
+  "echo 'auditwheel exports results:'",
+  "pyodide auditwheel exports --show-type {wheel}"
+]
+test-command = "python -m pytest -s -vvv --pyargs spiceypy.tests.test_wrapper --benchmark-disable"
+pyodide-version = "0.29.0" 
+dependency-versions = { packages = ["pyodide-build==0.30.9"] }
+# disable some errors for pyodide only
+environment = { CFLAGS="-Werror=implicit-function-declaration -Werror=incompatible-pointer-types -Werror=return-type" }
+

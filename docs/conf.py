@@ -29,46 +29,46 @@ sys.setrecursionlimit(15000)
 nitpicky = True
 
 nitpick_ignore = [
-    ('py:data', 'typing.Tuple'),
-    ('py:data', 'typing.Union'),
-    ('py:data', 'typing.Optional'),
-    ('py:data', 'Ellipsis'),
-    ('py:data', 'typing.Callable'),
-    ('py:class', 'void'),
-    ('py:class', 'SpiceBoolean'),
-    ('py:class', 'BoolArray'),
-    ('py:class', 'Found_N'),
-    ('py:class', 'Int_N'),
-    ('py:class', 'Double_N'),
-    ('py:class', 'Vector'),
-    ('py:class', 'Vector_N'),
-    ('py:class', 'Matrix'),
-    ('py:class', 'Matrix_3'),
-    ('py:class', 'Matrix_6'),
-    ('py:class', 'Matrix_N'),
-    ('py:class', 'State'),
-    ('py:class', 'State_N'),
-    ('py:class', 'State_6'),
-    ('py:class', 'String_N'),
-    ('py:class', '::1'),
-    ('py:class', 'ctypes.c_int'),
-    ('py:class', 'ctypes.CFUNCTYPE.<locals>.CFunctionType'),
-    ('py:class', '_ctypes.Structure'),
-    ('py:class', 'numpy.str_'),
-    ('py:class', 'numpy.ndarray'),
-    ('py:class', 'numpy.dtype'),
-    ('py:class', 'numpy.uint8'),
-    ('py:class', 'numpy.int32'),
-    ('py:class', 'numpy.float64'),
-    ('py:class', 'unicode'),
-    ('py:meth', 'spiceypy.spiceypy.no_found_check'),
-    ('py:meth', 'spiceypy.spiceypy.found_check_off'),
-    ('py:meth', 'spiceypy.spiceypy.found_check_on'),
-    ('py:meth', 'spiceypy.spiceypy.get_found_catch_state'),
-    ('py:class', 'datetime.datetime'),
-    ('py:class', 'spiceypy.utils.support_types.LP_SpiceCell'),
-    ('py:exc', 'NotFoundError')
-    ]
+    ("py:data", "typing.Tuple"),
+    ("py:data", "typing.Union"),
+    ("py:data", "typing.Optional"),
+    ("py:data", "Ellipsis"),
+    ("py:data", "typing.Callable"),
+    ("py:class", "void"),
+    ("py:class", "SpiceBoolean"),
+    ("py:class", "BoolArray"),
+    ("py:class", "Found_N"),
+    ("py:class", "Int_N"),
+    ("py:class", "Double_N"),
+    ("py:class", "Vector"),
+    ("py:class", "Vector_N"),
+    ("py:class", "Matrix"),
+    ("py:class", "Matrix_3"),
+    ("py:class", "Matrix_6"),
+    ("py:class", "Matrix_N"),
+    ("py:class", "State"),
+    ("py:class", "State_N"),
+    ("py:class", "State_6"),
+    ("py:class", "String_N"),
+    ("py:class", "::1"),
+    ("py:class", "ctypes.c_int"),
+    ("py:class", "ctypes.CFUNCTYPE.<locals>.CFunctionType"),
+    ("py:class", "_ctypes.Structure"),
+    ("py:class", "numpy.str_"),
+    ("py:class", "numpy.ndarray"),
+    ("py:class", "numpy.dtype"),
+    ("py:class", "numpy.uint8"),
+    ("py:class", "numpy.int32"),
+    ("py:class", "numpy.float64"),
+    ("py:class", "unicode"),
+    ("py:meth", "spiceypy.spiceypy.no_found_check"),
+    ("py:meth", "spiceypy.spiceypy.found_check_off"),
+    ("py:meth", "spiceypy.spiceypy.found_check_on"),
+    ("py:meth", "spiceypy.spiceypy.get_found_catch_state"),
+    ("py:class", "datetime.datetime"),
+    ("py:class", "spiceypy.utils.support_types.LP_SpiceCell"),
+    ("py:exc", "NotFoundError"),
+]
 
 # If your documentation needs a minimal Sphinx version, state it here.
 # needs_sphinx = '1.0'
@@ -84,10 +84,10 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
     "sphinx_copybutton",
     "myst_parser",
-    'sphinx_rtd_theme',
+    "sphinx_rtd_theme",
 ]
 # conf for autodoc typehints
-autodoc_typehints = 'both'
+autodoc_typehints = "both"
 
 # conf for copybutton
 copybutton_prompt_text = ">>> "
@@ -106,7 +106,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "SpiceyPy"
-copyright = "2014-2025, Andrew Annex"
+copyright = "2014-2026, Andrew Annex"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -190,12 +190,18 @@ html_short_title = "SpiceyPy Docs"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 
-html_static_path = []
+# html_static_path = [
+#     "pyscript.json",
+#     "mini-coi.js",
+# ]
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
 # directly to the root of the documentation.
-# html_extra_path = []
+html_extra_path = [
+    "pyscript.json",
+    "mini-coi.js",
+]
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -203,7 +209,9 @@ html_static_path = []
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
-# html_use_smartypants = True
+html_use_smartypants = False
+smartquotes = False
+raw_enabled = True
 
 # Custom sidebar templates, maps document names to template names.
 # html_sidebars = {}
@@ -272,7 +280,7 @@ latex_documents = [
 # latex_show_pagerefs = False
 
 # If true, show URL addresses after external links.
-latex_show_urls = 'footnote'
+latex_show_urls = "footnote"
 
 # Documents to append as an appendix to all manuals.
 # latex_appendices = []

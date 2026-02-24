@@ -19,7 +19,7 @@ from spiceypy.tests.gettestkernels import (
 import numpy as np
 import numpy.testing as npt
 import spiceypy as spice
-from spiceypy.cyice import cyice
+from spiceypy import cyice
 
 
 def get_module_name(func):
