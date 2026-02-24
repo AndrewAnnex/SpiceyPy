@@ -43,7 +43,7 @@ To install the wheel in Jupyter-lite, access the wheel file using the jsDelivr u
 
 .. code-block:: bash
 
-    https://cdn.jsdelivr.net/gh/AndrewAnnex/spiceypy-wheels-dist@<tag>/spiceypy-<version>-cp313-cp313-pyodide_2025_0_wasm32.whl 
+    https://cdn.jsdelivr.net/gh/AndrewAnnex/spiceypy-wheels-dist@<tag>/spiceypy-<version>-cp313-cp313-pyodide_2025_0_wasm32.whl
 
 
 Then use piplite like so:
@@ -51,7 +51,7 @@ Then use piplite like so:
 .. code-block:: python
 
     import piplite
-    await piplite.install("https://cdn.jsdelivr.net/gh/AndrewAnnex/spiceypy-wheels-dist@v8.0.2-dev.2/spiceypy-8.0.2-cp313-cp313-pyodide_2025_0_wasm32.whl") 
+    await piplite.install("https://cdn.jsdelivr.net/gh/AndrewAnnex/spiceypy-wheels-dist@v8.0.2-dev.2/spiceypy-8.0.2-cp313-cp313-pyodide_2025_0_wasm32.whl")
 
 Usage Example
 --------------
@@ -61,6 +61,13 @@ This page has Pyodide SpiceyPy pre-installed, so no need to run the piplite comm
 Run the cell below by clicking the arrow on the right side when you hover over it with your mouse cursor.
 It may take a few moments to finish. This software is running on your web browser, no background services (besides CDNs) required.
 
+In the example below we will plot the Venus Rose (Venus's apparent position as seen from Earth
+over 8 years in the J2000 ecliptic plane.).
+Try updating the plot below to plot the barycenter of Mars or Mercury!
+
+Various imports and setup:
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 .. raw:: html
 
     <script src="mini-coi.js"></script>
@@ -68,32 +75,64 @@ It may take a few moments to finish. This software is running on your web browse
     <script type="module" src="https://pyscript.net/releases/2026.2.1/core.js"></script>
     <script type="py-editor" env="shared" config="pyscript.json">
         import numpy as np
-        import spiceypy
         import matplotlib
         matplotlib.use("AGG")
         import matplotlib.pyplot as plt
         from pyscript import display
-        print('ready!')
+        import spiceypy as spice
+        print(f'SpiceyPy for {spice.tkvrsn("TOOLKIT")} ready!')
     </script>
 
 
-Cell 2 - Define the array:
+Load kernels
+~~~~~~~~~~~~~~~~~~~~~
 
 .. raw:: html
 
     <script type="py-editor" env="shared">
-        x = np.linspace(0, 2 * np.pi, 200)
-        y = np.cos(x)
-        print(x.shape)
+        # Load kernels: leap seconds + planetary ephemeris
+        spice.furnsh("naif0012.tls")
+        spice.furnsh("de440s_2000_to_2020_simplified.bsp")
+        print(f'Loaded {spice.ktotal("ALL")} kernels.')
     </script>
 
-Cell 3 - Plot it:
+Specify the dates to sample:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. raw:: html
+
+    <script type="py-editor" env="shared">
+        # Grab 2000 dates over 8 years
+        et0 = spice.str2et("2000-01-01")
+        et1 = spice.str2et("2008-01-01")
+        ets = np.linspace(et0, et1, 2000)
+        print(f'ets array has len: {len(ets)}')
+    </script>
+
+Get the positions vector
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. raw:: html
+
+    <script type="py-editor" env="shared">
+        # Venus position relative to Earth in ecliptic J2000 (km)
+        positions, _ = spice.spkpos("VENUS BARYCENTER", ets, "ECLIPJ2000", "NONE", "EARTH")
+        print(f'Got {len(positions)} positions of the Venus Barycenter')
+    </script>
+
+
+Plot it on the ecliptic plane.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. raw:: html
 
     <script type="py-editor" env="shared">
         fig, ax = plt.subplots()
-        ax.plot(x, y, color="blue", linewidth=2)
+        ax.plot(positions[:, 0], positions[:, 1], color="black", linewidth=0.5)
+        ax.plot(0, 0, "o", color="blue", markersize=6, label="Earth")
+        ax.set_title("Geocentric Orbit of Venus (2000–2008)", fontsize=14)
+        ax.legend()
+        ax.set_aspect("equal")
         display(fig, target="mpl", append=False)
         plt.close('all')
     </script>
