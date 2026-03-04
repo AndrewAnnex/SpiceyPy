@@ -1,0 +1,11 @@
+{
+    "packages": [
+        "numpy",
+        "matplotlib",
+        "https://cdn.jsdelivr.net/gh/AndrewAnnex/spiceypy-wheels-dist@v8.0.2-dev.2/spiceypy-8.0.2-cp313-cp313-pyodide_2025_0_wasm32.whl"
+    ],
+    "files": {
+        "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/refs/heads/main/naif0012.tls": "./naif0012.tls",
+        "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/refs/heads/main/de440s_2000_to_2020_simplified.bsp": "./de440s_2000_to_2020_simplified.bsp"
+    }
+}

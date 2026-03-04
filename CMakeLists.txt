@@ -8,6 +8,14 @@ find_package(
 
 include(FetchContent)
 
+if(DEFINED EMSCRIPTEN)
+  set(CMAKE_VERBOSE_MAKEFILE ON)
+  set(CMAKE_RULE_MESSAGES ON)
+  # might be needed for emscripten
+  set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
+endif()
+
+
 # Try system/conda first
 find_library(CSPICE_LIB NAMES cspice)
 
@@ -27,8 +35,13 @@ else()
   message(STATUS "System CSPICE not found, falling back to FetchContent")
   # we need to use this for the INSTALL_RPATH property
   set(manual_patch_cspice_origin 'yes')  
-  # Put CSPICE libs inside our package, not top-level lib/
-  set(CMAKE_INSTALL_LIBDIR "spiceypy/utils/" CACHE INTERNAL "")
+
+  # Put CSPICE libs inside our package
+  if(DEFINED EMSCRIPTEN)
+    set(CMAKE_INSTALL_LIBDIR "spiceypy.libs/" CACHE INTERNAL "")
+  else()
+    set(CMAKE_INSTALL_LIBDIR "spiceypy/utils/" CACHE INTERNAL "")
+  endif()
   
   if(MSVC)
     # Force DLLs to install alongside LIBs instead of bin/
@@ -45,7 +58,7 @@ else()
   FetchContent_Declare(
     cspice
     GIT_REPOSITORY https://github.com/AndrewAnnex/cspice-cmake-spiceypy.git
-    GIT_TAG        8ef81e8eb5eb7e38e59b8ffb7bf5f4770ba291ea # tag v0.0.6
+    GIT_TAG        658aa8b0116dc5e33a084c0aeb6eb9f9fc8fc1b3
   )
   FetchContent_MakeAvailable(cspice)
   
@@ -55,7 +68,14 @@ else()
     SOVERSION ""    # no libmyclibrary.so.X
     NO_SONAME ON    # don't encode a soname
   )
+
 endif()
+
+##############################################################################
+# cyice specifics below if not on EMSCRIPTEN
+
+if(NOT DEFINED EMSCRIPTEN)
+
 
 # Convert pyx to c
 set(PYX_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/spiceypy/cyice/cyice.pyx)
@@ -69,11 +89,22 @@ add_custom_command(
   COMMENT "Cythonizing ${PYX_FILE} to ${C_FILE}"
   VERBATIM)
 
-# Make Python extension
+# Make Python extension using full dotted name for emscripten
 python_add_library(cyice MODULE ${C_FILE} WITH_SOABI)
+# Adjust properties using the same target name
+set_target_properties(cyice PROPERTIES
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/spiceypy/cyice"
+  OUTPUT_NAME "cyice"
+)
 
 # Link to the CSPICE target exposed by the subproject
 target_include_directories(cyice PRIVATE ${Python_NumPy_INCLUDE_DIRS})
+
+# Set numpy options to ensure no deprecated apis older than 1.7
+target_compile_definitions(cyice
+    PRIVATE
+        NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
+)
 
 # Link CSPICE + math lib (only on UNIX)
 if(UNIX AND NOT WIN32 AND NOT MINGW)
@@ -82,12 +113,6 @@ else()
     target_link_libraries(cyice PRIVATE CSPICE::cspice)
 endif()
 
-# Set numpy options to ensure no deprecated apis older than 1.7
-target_compile_definitions(cyice
-    PRIVATE
-        NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
-)
-
 # Fix runtime search paths so extension finds libcspice in same dir if we manually install cspice
 if(DEFINED manual_patch_cspice_origin)
   if(APPLE)
@@ -95,13 +120,25 @@ if(DEFINED manual_patch_cspice_origin)
       INSTALL_RPATH "@loader_path/../utils"
       BUILD_WITH_INSTALL_RPATH ON
     )
-  elseif(UNIX)
+  elseif(UNIX AND NOT DEFINED EMSCRIPTEN)
     set_target_properties(cyice PROPERTIES
       INSTALL_RPATH "$ORIGIN/../utils"
       BUILD_WITH_INSTALL_RPATH ON
+    )
+  elseif(DEFINED EMSCRIPTEN)
+    message(NOTICE "SETTING RPATH for emscripten") 
+    set_target_properties(cyice PROPERTIES
+      INSTALL_RPATH "$ORIGIN/../../spiceypy.libs"
+      BUILD_RPATH "$ORIGIN/../../spiceypy.libs"
+      BUILD_WITH_INSTALL_RPATH ON
+    )
+    target_link_options(cyice PRIVATE
+      -Wl,-rpath,$ORIGIN/../../spiceypy.libs 
     )
   endif()
 endif()
 
 # install cyice
 install(TARGETS cyice DESTINATION spiceypy/cyice/)
+
+endif()

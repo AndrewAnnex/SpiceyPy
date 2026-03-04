@@ -80,6 +80,11 @@ or the same commands prefixed by `mamba` or `micromamba` or other conda-like sys
 If you wish to install spiceypy from source first download or clone the project. Then run ``python -m build`` and install the resulting wheel file in `dist`.
 To uninstall run ``pip uninstall spiceypy``.
 
+Pyodide wheels can be built using cibuildwheel on a linux (only!) operating system or vm. 
+It helps if a pyoided virtual environment is also used.
+
+``uvx cibuildwheel --platform pyodide``
+
 Documentation
 -------------
 

@@ -1,10 +1,10 @@
 name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
- 
+
 on:
-  pull_request: 
+  pull_request:
   push:
-    branches: [ main ]
-    tags: [ 'v*' ]
+    branches: [main]
+    tags: ["v*"]
 
 jobs:
   build_sdist:
@@ -27,9 +27,16 @@ jobs:
     needs: [build_sdist]
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false 
+      fail-fast: false
       matrix:
-        os: [ubuntu-22.04-arm, ubuntu-latest, macos-15, macos-15-intel, windows-latest]
+        os:
+          [
+            ubuntu-22.04-arm,
+            ubuntu-latest,
+            macos-15,
+            macos-15-intel,
+            windows-latest,
+          ]
     permissions:
       id-token: write
       contents: read
@@ -41,15 +48,15 @@ jobs:
           merge-multiple: true
           path: dist
       - name: Display structure of downloaded files
-        run: ls dist/ 
+        run: ls dist/
       - name: Setup windows msvc
         if: ${{ matrix.os == 'windows-latest' }}
         uses: ilammy/msvc-dev-cmd@v1.13.0
       - name: Set up Python 🐍 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
-      - name: Display Python 🐍 
+          python-version: "3.13"
+      - name: Display Python 🐍
         run: python -c "import sys; print(sys.version)"
       - name: Update pip
         run: |
@@ -69,11 +76,11 @@ jobs:
         run: |
           for /f %%f in ('dir /b dist\*.tar.gz') do (
             python -m pip install dist\%%f --user --no-build-isolation -vvvv
-          ) 
+          )
       - name: Test 🧪 with coverage 📈
         run: |
           python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
-      - name: Upload 🆙 coverage 📈 report to codecov 
+      - name: Upload 🆙 coverage 📈 report to codecov
         uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: false
@@ -84,17 +91,19 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - config: {"name": "Linux", "os": "ubuntu-latest", "arch": "x86_64"}
-          - config: {"name": "Linux", "os": "ubuntu-22.04-arm", "arch": "aarch64"}
-          - config: {"name": "macOS", "os": "macos-15-intel", "arch": "x86_64"}
-          - config: {"name": "macOS", "os": "macos-15", "arch": "arm64"}
-          - config: {"name": "Windows", "os": "windows-latest", "arch": "AMD64"}  
+          - config: { "name": "Linux", "os": "ubuntu-latest", "arch": "x86_64" }
+          - config: { "name": "Linux", "os": "ubuntu-22.04-arm", "arch": "aarch64" }
+          - config: { "name": "macOS", "os": "macos-15-intel", "arch": "x86_64" }
+          - config: { "name": "macOS", "os": "macos-15", "arch": "arm64" }
+          - config: { "name": "Windows", "os": "windows-latest", "arch": "AMD64" }
+          - config: { "name": "Pyodide", "os": "ubuntu-latest", "arch": "wasm32", "platform": "pyodide" }
     name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels for ${{ matrix.config.os }} ${{ matrix.config.arch }}
-    env: 
+    env:
       CSPICE_CACHE: 0
+      CIBW_PLATFORM: ${{ matrix.config.platform || 'auto' }}
       CIBW_ARCHS: ${{ matrix.config.arch }}
       CMAKE_BUILD_PARALLEL_LEVEL: 2
-      CIB_ENVIRONMENT: CMAKE_BUILD_PARALLEL_LEVEL="2" 
+      CIBW_ENVIRONMENT: CMAKE_BUILD_PARALLEL_LEVEL="2"
     runs-on: ${{ matrix.config.os }}
     steps:
       - name: Checkout 🌶️ 🥧
@@ -124,7 +133,7 @@ jobs:
       - name: Set up Python 🐍 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Display Python 🐍 Version
         run: python -c "import sys; print(sys.version)"
       - name: Install dependencies
@@ -132,21 +141,20 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --user --group devwheel
       - name: Build wheels for SpiceyPy 🌶️ 🥧
-        timeout-minutes: 120
+        uses: pypa/cibuildwheel@v3.3.1
+        continue-on-error: true
         env:
-          CIBW_PLATFORM: 'auto' 
+          CIBW_PLATFORM: ${{ matrix.config.platform || 'auto' }}
+          CIBW_ARCHS: ${{ matrix.config.arch }}
+          CMAKE_BUILD_PARALLEL_LEVEL: 2
+          CIBW_ENVIRONMENT: CMAKE_BUILD_PARALLEL_LEVEL="2"
           SKBUILD_BUILD_VERBOSE: "true"
-        run: |
-          env | grep CIBW || true
-          env | grep ARCH || true
-          env | grep CMAKE || true
-          python -m cibuildwheel --output-dir wheelhouse      
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
         uses: actions/upload-artifact@v4
         with:
           name: artifact-${{ matrix.config.os }}-${{ strategy.job-index }}-${{ hashFiles('pyproject.toml') }}
           path: ./wheelhouse/*.whl
-  
+
   test_with_twine:
     name: Twine 🧵 Sanity Check distributions
     needs: [build_wheels, test_sdist]
@@ -160,7 +168,7 @@ jobs:
       - name: Set up Python 🐍 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -168,7 +176,7 @@ jobs:
       - name: Check dists
         run: |
           python -m twine check dist/*
-  
+
   publish_to_test_pypi:
     name: Publish 🌶️ 🥧  📦 to TestPyPI
     needs: [build_wheels, test_sdist, test_with_twine]
@@ -187,6 +195,8 @@ jobs:
           pattern: artifact-*
           merge-multiple: true
           path: dist
+      - name: Remove WASM wheels before TestPyPI publish
+        run: rm -f dist/*wasm*.whl
       - name: Publish distribution 📦 to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -194,13 +204,12 @@ jobs:
           print-hash: true
           verbose: true
           repository-url: https://test.pypi.org/legacy/
-  
-  
+
   publish_to_pypi:
     name: Publish 🌶️ 🥧  📦 to PyPI
     needs: [build_wheels, test_sdist, test_with_twine, publish_to_test_pypi]
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push' && !contains(github.ref_name, '-') && !contains(github.ref_name, 'rc') && !contains(github.ref_name, 'alpha') && !contains(github.ref_name, 'beta') 
+    if: startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push' && !contains(github.ref_name, '-') && !contains(github.ref_name, 'rc') && !contains(github.ref_name, 'alpha') && !contains(github.ref_name, 'beta')
     environment:
       name: pypi
       url: https://pypi.org/p/spiceypy
@@ -212,10 +221,39 @@ jobs:
           pattern: artifact-*
           merge-multiple: true
           path: dist
+      - name: Remove WASM wheels before PyPI publish
+        run: rm -f dist/*wasm*.whl
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           skip-existing: true
           print-hash: true
           verbose: true
-  
+
+  upload_wheels_to_release:
+    name: Upload wheels to GitHub Release
+    needs: [publish_to_test_pypi, publish_to_pypi]
+    runs-on: ubuntu-latest
+    if: |
+      always() &&
+      startsWith(github.ref, 'refs/tags/v') &&
+      github.event_name == 'push' &&
+      (needs.publish_to_test_pypi.result == 'success' || needs.publish_to_pypi.result == 'success')
+    permissions:
+      contents: write
+    steps:
+      - name: Check release exists
+        run: |
+          gh release view ${{ github.ref_name }} || \
+            (echo "::error::Release ${{ github.ref_name }} does not exist yet. Create the release in the GitHub UI and re-run this job." && exit 1)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: artifact-*
+          merge-multiple: true
+          path: dist
+      - name: Upload wheels to release
+        run: gh release upload ${{ github.ref_name }} dist/*.whl --clobber
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
