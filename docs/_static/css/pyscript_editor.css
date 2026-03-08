@@ -1,0 +1,52 @@
+/*
+ * Make the PyScript py-editor shadow-DOM slot look like a Sphinx code block.
+ *
+ * The outer .highlight.highlight-python div is already styled by your theme.
+ * These rules target the web-component internals that PyScript exposes.
+ */
+
+/* Match the min-height to a reasonable number of visible lines */
+py-editor {
+    display: block;
+    min-height: 6em;
+}
+
+/*
+ * PyScript 2024+ exposes a --py-editor-* set of custom properties.
+ * Mirror the values your Sphinx theme uses for <pre> blocks.
+ */
+py-editor {
+    --py-editor-font-family: var(
+        --code-font-family,
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        Menlo,
+        monospace
+    );
+    --py-editor-font-size: var(--code-font-size, 0.875em);
+    --py-editor-background: var(
+        --code-background,
+        var(--color-code-background, #f8f8f8)
+    );
+    --py-editor-foreground: var(
+        --code-foreground,
+        var(--color-foreground, #333)
+    );
+}
+
+/*
+ * Remove PyScript's own border/shadow so the outer Sphinx .highlight
+ * border is the only one visible.
+ */
+py-editor::part(editor) {
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0.5em 1em;
+}
+
+/* Run button: nudge it to sit inside the highlight box */
+py-editor::part(run-button) {
+    border-radius: 0 0 4px 0;
+}
