@@ -784,7 +784,6 @@ Code Solution
     # Import the CSPICE-Python interface.
     #
     import spiceypy
-    from spiceypy.utils.support_types import SpiceyError
 
     def kervar():
 
@@ -832,24 +831,22 @@ Code Solution
             cvals = spiceypy.gnpool( tmplate, START, N_ITEMS )
             print( 'Number variables matching template: {0}'.\
             format( len(cvals)) )
-        except SpiceyError:
+        except spiceypy.SpiceyError:
             print( 'No kernel variables matched template.' )
             return
-
 
         #
         # Okay, now we know something about the kernel pool
         # variables of interest to us. Let's find out more...
         #
         for cval in cvals:
-
             #
             # Use spiceypy.dtpool to return the dimension and type,
             # C (character) or N (numeric), of each pool
             # variable name in the cvals array. We know the
             # kernel data exists.
             #
-            [dim, type] = spiceypy.dtpool( cval )
+            dim, type = spiceypy.dtpool( cval )
 
             print( '\n' + cval )
             print( ' Number items: {0}   Of type: {1}\n'.\
@@ -859,7 +856,6 @@ Code Solution
             # Test character equality, 'N' or 'C'.
             #
             if type == 'N':
-
                 #
                 # If 'type' equals 'N', we found a numeric array.
                 # In this case any numeric array will be an array
@@ -870,27 +866,20 @@ Code Solution
                 dvars = spiceypy.gdpool( cval, START, N_ITEMS )
                 for dvar in dvars:
                     print('  Numeric value: {0:20.6f}'.format(dvar))
-
             elif type == 'C':
-
                 #
                 # If 'type' equals 'C', we found a string array.
                 # spiceypy.gcpool retrieves string values from the
                 # kernel pool.
                 #
                 cvars = spiceypy.gcpool( cval, START, N_ITEMS )
-
                 for cvar in cvars:
                     print('  String value: {0}\n'.format(cvar))
-
             else:
-
                 #
                 # This block should never execute.
                 #
                 print('Unknown type. Code error.')
-
-
         #
         # Now look at the time variable EXAMPLE_TIMES. Extract this
         # value as an array of doubles.
@@ -1507,7 +1496,7 @@ Code Solution
     # Import the CSPICE-Python interface.
     #
     import spiceypy
-    
+
     # For simplicity, we request only one input.
     # The program calculates the state vector from
     # Earth to the user specified target 'targ' in the
@@ -1544,7 +1533,7 @@ Code Solution
             # Done. Unload the kernels.
             #
             spiceypy.kclear()
-    
+
     if __name__ == '__main__':
         aderr('Moon')
         aderr('Mars')
@@ -1626,7 +1615,7 @@ Try another look-up, this time for “Casper”
       =====================================================================
       ===========
 
-      Toolkit version: N0066
+      Toolkit version: N0067
 
       SPICE(IDCODENOTFOUND) --
 
@@ -1724,7 +1713,7 @@ Code Solution
 
 .. py-editor::
     :env: other
-    
+
     mk=r"""
     KPL/MK
     \begindata
@@ -1736,7 +1725,7 @@ Code Solution
         dst.write(mk)
     print('Wrote kernel file win.tm')
     print('')
-    
+
     #
     # Import the CSPICE-Python interface.
     #
@@ -1980,7 +1969,7 @@ Code Solution
     # Import the CSPICE-Python interface.
     #
     import spiceypy
-    
+
     aliases = {
         'meter': 'METER',
         'klicks': 'KM',
@@ -1989,38 +1978,38 @@ Code Solution
         'secs': 'SECONDS',
         'miles': 'STATUTE_MILES'
     }
-    
+
     def tostan(alias):
         return aliases.get(alias, alias)
-    
+
     def units(funits, fvalue, tunits):
         #
         # Display the Toolkit version string with a spiceypy.tkvrsn
         # call.
         #
         vers = spiceypy.tkvrsn( 'TOOLKIT' )
-        print('\nConvert demo program compiled against CSPICE Toolkit ' + vers)    
+        print('\nConvert demo program compiled against CSPICE Toolkit ' + vers)
         #
         # The user first inputs the name of a unit of measure.
         # Send the name through tostan for de-aliasing.
         #
         print(f'From Units : {funits}')
-        funits = tostan( funits )    
+        funits = tostan( funits )
         #
         # Input a double precision value to express in a new
         # unit format.
         #
-        print(f'From Value : {fvalue}')    
+        print(f'From Value : {fvalue}')
         #
         # Now the user inputs the name of the output units.
         # Again we send the units name through tostan for
         # de-aliasing.
         #
         print(f'To Units : {tunits}')
-        tunits = tostan( tunits )    
+        tunits = tostan( tunits )
         tvalue = spiceypy.convrt( fvalue, funits, tunits)
         print( '{0:12.5f} {1}'.format(tvalue, tunits) )
-    
+
     if __name__ == '__main__':
        units('klicks', 3, 'miles')
        units('miles', 26.2, 'km')
@@ -2034,7 +2023,7 @@ was linked:
 
 .. code-block:: text
 
-      Convert demo program compiled against CSPICE Toolkit CSPICE_N0066
+      Convert demo program compiled against CSPICE Toolkit CSPICE_N0067
       From Units : klicks
       From Value : 3
       To Units   : miles
@@ -2046,9 +2035,9 @@ Legend states Pheidippides ran from the Marathon Plain to Athens. The
 modern marathon race (inspired by this event) spans 26.2 miles. How far
 in kilometers?
 
-::
+.. code-block:: text
 
-      Convert demo program compiled against CSPICE Toolkit CSPICE_N0066
+      Convert demo program compiled against CSPICE Toolkit CSPICE_N0067
       From Units : miles
       From Value : 26.2
       To Units   : km
