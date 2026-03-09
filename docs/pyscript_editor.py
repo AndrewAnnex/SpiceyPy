@@ -5,16 +5,24 @@ Adds a ``.. py-editor::`` directive that renders a PyScript editor
 wrapped in the same ``div.highlight.highlight-python`` structure that
 Sphinx/Pygments produces, so it inherits your theme's code-block styling.
 
+The hidden ``<pre>`` inside each editor div is compatible with
+``sphinx_copybutton``: that extension's JS selector finds ``div.highlight pre``
+and wires a clipboard copy button automatically.
+
 Usage in conf.py
 ----------------
     extensions = [..., "pyscript_editor"]
 
     # Optional global defaults (all overridable per-directive):
-    pyscript_version  = "2026.2.1"          # PyScript release
-    pyscript_env      = "shared"            # py-editor env attribute
-    pyscript_config   = "pyscript.json"     # py-editor config attribute
-    pyscript_mini_coi = "mini-coi.js"       # path to mini-coi shim;
-                                            # set to "" to skip
+    pyscript_version      = "2026.2.1"   # PyScript release tag
+    pyscript_env          = "shared"     # default py-editor env name
+    pyscript_config       = "pyscript.json"  # default PyScript config file;
+                                             # set to "" to omit
+    pyscript_mini_coi     = "mini-coi.js"   # path to mini-coi shim;
+                                             # set to "" to skip
+    pyscript_hide_gutters  = True        # hide CodeMirror line-number gutters
+    pyscript_hide_env_label = True       # hide the "pyodide-<env>" label
+                                         # rendered above each editor box
 
 Usage in .rst files
 -------------------
@@ -28,17 +36,40 @@ Basic (uses global defaults from conf.py)::
 Override any option per block::
 
     .. py-editor::
-        :env: isolated
-        :config: other.json
+        :env: myenv
+        :config: my_pyscript.json
 
         print("hello")
 
-The ``mini-coi.js`` script and the PyScript stylesheet/module are injected
-only once per page, no matter how many ``.. py-editor::`` directives appear.
+Directive options
+-----------------
+:env:    PyScript environment name (``env=`` attribute on ``<script
+         type="py-editor">``).  All editors sharing the same ``env`` on a page
+         run in the same Python interpreter session.
+:config: Path to a PyScript JSON config file.  **Required when** ``:setup:``
+         **is used** — the setup block owns configuration for its env and must
+         declare it explicitly.  For non-setup editors, ``config=`` is emitted
+         only if no setup block has already claimed the env; otherwise it is
+         omitted entirely.  PyScript reads the config once per named environment.
+:target: If given, an empty ``<div id="<value>">`` is appended after the
+         editor, useful as a display target for PyScript output.
+:setup:  If present, adds the ``setup`` attribute to the ``<script>`` tag.
+         PyScript will run the code automatically when the environment
+         initialises, without requiring the user to click Run.  The block
+         is still rendered visually so readers can see and copy the code.
+
+Notes
+-----
+* The ``mini-coi.js`` shim, PyScript stylesheet, and ``core.js`` module are
+  injected once per page regardless of how many ``.. py-editor::`` directives
+  appear.
+* Each editor receives a unique ``pyscript-codecellN`` id (build-global counter,
+  consistent with Sphinx/Pygments ``codecell0``, ``codecell1``, … naming).
 """
 
 from __future__ import annotations
 
+import html as html_mod
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
 from sphinx.application import Sphinx
@@ -61,6 +92,13 @@ def _raw(html: str) -> nodes.raw:
 
 _HEAD_KEY = "pyscript_head_injected"
 _ENV_KEY = "pyscript_env_config_registered"
+_SETUP_ENV_KEY = "pyscript_setup_env_registered"
+_CELL_COUNTER_KEY = "pyscript_cell_counter"
+
+
+_HIDE_ENV_LABEL_CSS = """\
+<style>.py-editor-box::before { display: none !important; }</style>
+"""
 
 
 _HIDE_GUTTERS_JS = """
@@ -84,7 +122,7 @@ _HIDE_GUTTERS_JS = """
 """
 
 
-def _head_html(mini_coi: str, version: str, hide_gutters: bool) -> str:
+def _head_html(mini_coi: str, version: str, hide_gutters: bool, hide_env_label: bool) -> str:
     parts = []
     if mini_coi:
         parts.append(f'<script src="{mini_coi}"></script>')
@@ -96,6 +134,8 @@ def _head_html(mini_coi: str, version: str, hide_gutters: bool) -> str:
         f'<script type="module" '
         f'src="https://pyscript.net/releases/{version}/core.js"></script>'
     )
+    if hide_env_label:
+        parts.append(_HIDE_ENV_LABEL_CSS)
     if hide_gutters:
         parts.append(_HIDE_GUTTERS_JS)
     return "\n".join(parts) + "\n"
@@ -115,6 +155,7 @@ class PyEditorDirective(Directive):
         "env": directives.unchanged,
         "config": directives.unchanged,
         "target": directives.unchanged,
+        "setup": directives.flag,
     }
 
     def run(self) -> list[nodes.Node]:
@@ -125,25 +166,37 @@ class PyEditorDirective(Directive):
         version = cfg.pyscript_version
         mini_coi = cfg.pyscript_mini_coi
         hide_gutters = cfg.pyscript_hide_gutters
+        hide_env_label = cfg.pyscript_hide_env_label
         ed_env = self.options.get("env", cfg.pyscript_env)
         ed_cfg = self.options.get("config", cfg.pyscript_config)
         ed_target = self.options.get("target", None)
+        ed_setup = "setup" in self.options
 
         result: list[nodes.Node] = []
 
         # ---- inject <head> assets once per document ----
         injected = getattr(env, _HEAD_KEY, set())
         if env.docname not in injected:
-            result.append(_raw(_head_html(mini_coi, version, hide_gutters)))
+            result.append(_raw(_head_html(mini_coi, version, hide_gutters, hide_env_label)))
             injected.add(env.docname)
             setattr(env, _HEAD_KEY, injected)
 
-        # ---- emit config attr only on the first editor for each (page, env) ----
-        # PyScript reads the config once per named environment; repeating it is harmless
-        # but emitting it only on the first occurrence keeps the HTML clean.
+        # ---- emit config= exactly once per (page, env) pair ----
+        # Setup blocks own config for their env and must declare it explicitly.
+        # Regular blocks get config= only if no setup block has claimed the env.
+        if ed_setup and "config" not in self.options:
+            raise self.error(":setup: requires :config: to be explicitly specified")
+
+        setup_envs = getattr(env, _SETUP_ENV_KEY, set())
         env_configs = getattr(env, _ENV_KEY, set())
         env_key = (env.docname, ed_env)
-        if env_key not in env_configs:
+        if ed_setup:
+            config_part = f' config="{ed_cfg}"'
+            setup_envs.add(env_key)
+            env_configs.add(env_key)
+            setattr(env, _SETUP_ENV_KEY, setup_envs)
+            setattr(env, _ENV_KEY, env_configs)
+        elif env_key not in setup_envs and env_key not in env_configs:
             config_part = f' config="{ed_cfg}"' if ed_cfg else ""
             env_configs.add(env_key)
             setattr(env, _ENV_KEY, env_configs)
@@ -154,10 +207,23 @@ class PyEditorDirective(Directive):
         code = "\n".join(self.content)
         indented = "\n".join("    " + line for line in code.splitlines())
 
+        # Assign a unique ID so sphinx_copybutton can target the hidden <pre>.
+        # The counter is global across all documents in a build (matching how
+        # Sphinx/Pygments numbers codecell0, codecell1, …).
+        cell_num = getattr(env, _CELL_COUNTER_KEY, 0)
+        cell_id = f"pyscript-codecell{cell_num}"
+        setattr(env, _CELL_COUNTER_KEY, cell_num + 1)
+
+        # sphinx_copybutton looks for `div.highlight pre` and wires a copy
+        # button to it via data-clipboard-target.  The <pre> is hidden
+        # visually; clipboard.js reads textContent regardless of visibility.
+        escaped_code = html_mod.escape(code)
+
         editor_html = (
             '<div class="highlight highlight-python notranslate">\n'
             '<div class="highlight">\n'
-            f'<script type="py-editor" env="{ed_env}"{config_part}>\n'
+            f'<pre id="{cell_id}" style="display:none">{escaped_code}</pre>\n'
+            f'<script type="py-editor" env="{ed_env}"{config_part}{"  setup" if ed_setup else ""}>\n'
             f"{indented}\n"
             "</script>\n"
             "</div>\n"
@@ -181,6 +247,7 @@ def setup(app: Sphinx) -> dict:
     app.add_config_value("pyscript_config", "pyscript.json", "html")
     app.add_config_value("pyscript_mini_coi", "mini-coi.js", "html")
     app.add_config_value("pyscript_hide_gutters", True, "html")
+    app.add_config_value("pyscript_hide_env_label", True, "html")
 
     app.add_directive("py-editor", PyEditorDirective)
 

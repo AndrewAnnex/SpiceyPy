@@ -102,7 +102,9 @@ built-in Python help system.
 
 For example, the Python help function
 
-.. code-block:: python
+.. py-editor::
+    :env: tmp
+    :config: pyscript_min.json
 
      import spiceypy
      help(spiceypy.str2et)
@@ -2101,7 +2103,7 @@ A sample solution to the problem follows:
 
 .. code-block:: python
      :linenos:
-     
+
       #
       # Solution fovint.py
       #
