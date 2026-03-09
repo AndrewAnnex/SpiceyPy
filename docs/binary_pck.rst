@@ -78,7 +78,9 @@ built-in Python help system.
 
 For example, the Python help function
 
-.. code-block:: python
+.. py-editor::
+    :env: other
+    :config: pyscript_min.json
 
      import spiceypy
 
