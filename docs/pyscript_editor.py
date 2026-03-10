@@ -51,6 +51,10 @@ Directive options
          declare it explicitly.  For non-setup editors, ``config=`` is emitted
          only if no setup block has already claimed the env; otherwise it is
          omitted entirely.  PyScript reads the config once per named environment.
+:src:    Path (relative to the docs source directory) to an external ``.py``
+         file whose contents are read at build time and inlined into the
+         editor.  The directive body is ignored when ``:src:`` is given.
+         Sphinx will rebuild the page automatically when the file changes.
 :target: If given, an empty ``<div id="<value>">`` is appended after the
          editor, useful as a display target for PyScript output.
 :setup:  If present, adds the ``setup`` attribute to the ``<script>`` tag.
@@ -70,6 +74,7 @@ Notes
 from __future__ import annotations
 
 import html as html_mod
+import os
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
 from sphinx.application import Sphinx
@@ -154,6 +159,7 @@ class PyEditorDirective(Directive):
     option_spec = {
         "env": directives.unchanged,
         "config": directives.unchanged,
+        "src": directives.unchanged,
         "target": directives.unchanged,
         "setup": directives.flag,
     }
@@ -169,6 +175,7 @@ class PyEditorDirective(Directive):
         hide_env_label = cfg.pyscript_hide_env_label
         ed_env = self.options.get("env", cfg.pyscript_env)
         ed_cfg = self.options.get("config", cfg.pyscript_config)
+        ed_src = self.options.get("src", None)
         ed_target = self.options.get("target", None)
         ed_setup = "setup" in self.options
 
@@ -204,7 +211,16 @@ class PyEditorDirective(Directive):
             config_part = ""
 
         # ---- build the editor HTML ----
-        code = "\n".join(self.content)
+        if ed_src:
+            abs_src = os.path.join(env.srcdir, ed_src)
+            try:
+                with open(abs_src, encoding="utf-8") as fh:
+                    code = fh.read()
+            except OSError as exc:
+                raise self.error(f":src: could not read file {abs_src!r}: {exc}") from exc
+            env.note_dependency(abs_src)
+        else:
+            code = "\n".join(self.content)
         indented = "\n".join("    " + line for line in code.splitlines())
 
         # Assign a unique ID so sphinx_copybutton can target the hidden <pre>.
