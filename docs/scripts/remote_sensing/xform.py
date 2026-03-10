@@ -2,6 +2,7 @@
 # Solution xform.py
 #
 import spiceypy
+
 def xform(utctim='2004 jun 11 19:32:00'):
     METAKR = 'xform.tm'
     spiceypy.furnsh(METAKR)
@@ -68,4 +69,4 @@ def xform(utctim='2004 jun 11 19:32:00'):
 
     spiceypy.unload(METAKR)
 
-#xform()
+xform()
