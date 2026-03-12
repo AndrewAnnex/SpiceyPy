@@ -5,15 +5,12 @@
     ],
     "files": {
         "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/naif0008.tls": "kernels/lsk/naif0008.tls",
-        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/cas00084.tsc": "kernels/sclk/cas00084.tsc",
-        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/981005_PLTEPH-DE405S.bsp": "kernels/spk/981005_PLTEPH-DE405S.bsp",
-        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/020514_SE_SAT105.bsp": "kernels/spk/020514_SE_SAT105.bsp",
-        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/030201AP_SK_SM546_T45.bsp": "kernels/spk/030201AP_SK_SM546_T45.bsp",
-        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/cas_v37.tf": "kernels/fk/cas_v37.tf",
-        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/04135_04171pc_psiv2.bc": "kernels/ck/04135_04171pc_psiv2.bc",
-        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/cpck05Mar2004.tpc": "kernels/pck/cpck05Mar2004.tpc",
-        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/cas_iss_v09.ti": "kernels/ik/cas_iss_v09.ti",
-        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/phoebe_64q.bds": "kernels/dsk/phoebe_64q.bds",
-        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/jup310_2004.bsp": "kernels/spk/jup310_2004.bsp"
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/de405xs.bsp": "kernels/spk/de405xs.bsp",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/earthstns_itrf93_050714.bsp": "kernels/spk/earthstns_itrf93_050714.bsp",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/earth_topo_050714.tf": "kernels/fk/earth_topo_050714.tf",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/earth_000101_060525_060303.bpc": "kernels/pck/earth_000101_060525_060303.bpc",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/ORMM__040501000000_00076XS.BSP": "kernels/spk/ORMM__040501000000_00076XS.BSP",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/pck00008.tpc": "kernels/pck/pck00008.tpc",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/mars_lowres.bds": "kernels/dsk/mars_lowres.bds"
     }
 }

@@ -87,10 +87,19 @@ built-in Python help system.
 
 For example, the Python help function
 
-.. code-block:: python
+.. py-editor::
+    :env: isenv
+    :config: pyscript_insitu_sensing.json
+    :setup:
 
-     import spiceypy
-     help(spiceypy.str2et)
+    import spiceypy
+
+.. py-editor::
+    :env: isenv
+    :config: pyscript_insitu_sensing.json
+
+    import spiceypy
+    help(spiceypy.str2et)
 
 describes of the str2et function's parameters, while the document
 
@@ -305,47 +314,15 @@ output:
 
 Program "convrt.py":
 
-.. code-block:: python
-
-      from __future__ import print_function
-      import spiceypy
-
-      def convrt():
-
-          mkfile = 'convrt.tm'
-          spiceypy.furnsh(mkfile)
-
-          utc =  '2004-06-11T19:32:00'
-          et = spiceypy.str2et(utc)
-
-          print('UTC       = {:s}'.format(utc))
-          print('ET        = {:20.6f}'.format(et))
-
-          spiceypy.unload(mkfile)
-
-
-      if __name__ == '__main__':
-          convrt()
+.. py-editor::
+    :env: isenv
+    :src: scripts/insitu_sensing/convrt.py
 
 Meta-kernel file "convrt.tm":
 
-.. code-block:: text
-
-      KPL/MK
-
-         The names and contents of the kernels referenced by this
-         meta-kernel are as follows:
-
-
-         File Name                   Description
-         --------------------------  ----------------------------------
-         naif0008.tls                Generic LSK.
-
-      \begindata
-         KERNELS_TO_LOAD = (
-                           'kernels/lsk/naif0008.tls'
-                           )
-      \begintext
+.. py-editor::
+    :env: isenv
+    :src: scripts/insitu_sensing/convrt_make_mk.py
 
 Step-2: "SCLK to ET"
 ------------------------------
@@ -448,56 +425,15 @@ output:
 
 Program "sclket.py":
 
-.. code-block:: python
-
-      from __future__ import print_function
-      import spiceypy
-
-      def sclket():
-
-          mkfile = 'sclket.tm'
-          spiceypy.furnsh(mkfile)
-
-          utc =  '2004-06-11T19:32:00'
-          et = spiceypy.str2et(utc)
-
-          print('UTC       = {:s}'.format(utc))
-          print('ET        = {:20.6f}'.format(et))
-
-          scid = -82
-          sclk = '1465674964.105'
-          et = spiceypy.scs2e(scid, sclk)
-
-          print('SCLK      = {:s}'.format(sclk))
-          print('ET        = {:20.6f}'.format(et))
-
-          spiceypy.unload(mkfile)
-
-
-      if __name__ == '__main__':
-          sclket()
+.. py-editor::
+    :env: isenv
+    :src: scripts/insitu_sensing/sclket.py
 
 Meta-kernel file "sclket.tm":
 
-.. code-block:: text
-
-      KPL/MK
-
-         The names and contents of the kernels referenced by this
-         meta-kernel are as follows:
-
-
-         File Name                   Description
-         --------------------------  ----------------------------------
-         naif0008.tls                Generic LSK.
-         cas00084.tsc                Cassini SCLK.
-
-      \begindata
-         KERNELS_TO_LOAD = (
-                           'kernels/lsk/naif0008.tls'
-                           'kernels/sclk/cas00084.tsc'
-                           )
-      \begintext
+.. py-editor::
+    :env: isenv
+    :src: scripts/insitu_sensing/sclket_make_mk.py
 
 Step-3: "Spacecraft State"
 ------------------------------
@@ -624,79 +560,15 @@ output:
 
 Program "getsta.py":
 
-.. code-block:: python
-
-      from __future__ import print_function
-      import spiceypy
-
-      def getsta():
-
-          mkfile = 'getsta.tm'
-          spiceypy.furnsh(mkfile)
-
-          utc =  '2004-06-11T19:32:00'
-          et = spiceypy.str2et(utc)
-
-          print('UTC       = {:s}'.format(utc))
-          print('ET        = {:20.6f}'.format(et))
-
-          scid = -82
-          sclk = '1465674964.105'
-          et = spiceypy.scs2e(scid, sclk)
-
-          print('SCLK      = {:s}'.format(sclk))
-          print('ET        = {:20.6f}'.format(et))
-
-          target = 'CASSINI'
-          frame  = 'ECLIPJ2000'
-          corrtn = 'NONE'
-          observ = 'SUN'
-
-          state, ltime = spiceypy.spkezr(target, et, frame,
-                                         corrtn, observ)
-
-          print(' X        = {:20.6f}'.format(state[0]))
-          print(' Y        = {:20.6f}'.format(state[1]))
-          print(' Z        = {:20.6f}'.format(state[2]))
-          print('VX        = {:20.6f}'.format(state[3]))
-          print('VY        = {:20.6f}'.format(state[4]))
-          print('VZ        = {:20.6f}'.format(state[5]))
-
-          spiceypy.unload(mkfile)
-
-
-      if __name__ == '__main__':
-          getsta()
+.. py-editor::
+    :env: isenv
+    :src: scripts/insitu_sensing/getsta.py
 
 Meta-kernel file "getsta.tm":
 
-.. code-block:: text
-
-      KPL/MK
-
-         The names and contents of the kernels referenced by this
-         meta-kernel are as follows:
-
-
-         File Name                   Description
-         --------------------------  ----------------------------------
-         naif0008.tls                Generic LSK.
-         cas00084.tsc                Cassini SCLK.
-         020514_SE_SAT105.bsp        Saturnian Satellite Ephemeris SPK.
-         030201AP_SK_SM546_T45.bsp   Cassini Spacecraft SPK.
-         981005_PLTEPH-DE405S.bsp    Planetary Ephemeris SPK.
-         sat128.bsp                  Saturnian Satellite Ephemeris SPK.
-
-      \begindata
-         KERNELS_TO_LOAD = (
-                           'kernels/lsk/naif0008.tls'
-                           'kernels/sclk/cas00084.tsc'
-                           'kernels/spk/020514_SE_SAT105.bsp'
-                           'kernels/spk/030201AP_SK_SM546_T45.bsp'
-                           'kernels/spk/981005_PLTEPH-DE405S.bsp'
-                           'kernels/spk/sat128.bsp'
-                           )
-      \begintext
+.. py-editor::
+    :env: isenv
+    :src: scripts/insitu_sensing/getsta_make_mk.py
 
 Step-4: "Sun Direction"
 ------------------------------
@@ -826,97 +698,15 @@ output:
 
 Program "soldir.py":
 
-.. code-block:: python
-
-      from __future__ import print_function
-      import spiceypy
-
-      def soldir():
-
-          mkfile = 'soldir.tm'
-          spiceypy.furnsh(mkfile)
-
-          utc =  '2004-06-11T19:32:00'
-          et = spiceypy.str2et(utc)
-
-          print('UTC       = {:s}'.format(utc))
-          print('ET        = {:20.6f}'.format(et))
-
-          scid = -82
-          sclk = '1465674964.105'
-          et = spiceypy.scs2e(scid, sclk)
-
-          print('SCLK      = {:s}'.format(sclk))
-          print('ET        = {:20.6f}'.format(et))
-
-          target = 'CASSINI'
-          frame  = 'ECLIPJ2000'
-          corrtn = 'NONE'
-          observ = 'SUN'
-
-          state, ltime = spiceypy.spkezr(target, et, frame,
-                                         corrtn, observ)
-
-          print(' X        = {:20.6f}'.format(state[0]))
-          print(' Y        = {:20.6f}'.format(state[1]))
-          print(' Z        = {:20.6f}'.format(state[2]))
-          print('VX        = {:20.6f}'.format(state[3]))
-          print('VY        = {:20.6f}'.format(state[4]))
-          print('VZ        = {:20.6f}'.format(state[5]))
-
-          target = 'SUN'
-          frame  = 'CASSINI_INMS'
-          corrtn = 'LT+S'
-          observ = 'CASSINI'
-
-          sundir, ltime = spiceypy.spkpos(target, et, frame,
-                                          corrtn, observ)
-          sundir = spiceypy.vhat(sundir)
-
-          print('SUNDIR(X) = {:20.6f}'.format(sundir[0]))
-          print('SUNDIR(Y) = {:20.6f}'.format(sundir[1]))
-          print('SUNDIR(Z) = {:20.6f}'.format(sundir[2]))
-
-          spiceypy.unload(mkfile)
-
-
-      if __name__ == '__main__':
-          soldir()
+.. py-editor::
+    :env: isenv
+    :src: scripts/insitu_sensing/soldir.py
 
 Meta-kernel file "soldir.tm":
 
-.. code-block:: text
-
-      KPL/MK
-
-         The names and contents of the kernels referenced by this
-         meta-kernel are as follows:
-
-
-         File Name                   Description
-         --------------------------  ----------------------------------
-         naif0008.tls                Generic LSK.
-         cas00084.tsc                Cassini SCLK.
-         020514_SE_SAT105.bsp        Saturnian Satellite Ephemeris SPK.
-         030201AP_SK_SM546_T45.bsp   Cassini Spacecraft SPK.
-         981005_PLTEPH-DE405S.bsp    Planetary Ephemeris SPK.
-         sat128.bsp                  Saturnian Satellite Ephemeris SPK.
-         04135_04171pc_psiv2.bc      Cassini Spacecraft CK.
-         cas_v37.tf                  Cassini FK.
-
-
-      \begindata
-         KERNELS_TO_LOAD = (
-                           'kernels/lsk/naif0008.tls'
-                           'kernels/sclk/cas00084.tsc'
-                           'kernels/spk/020514_SE_SAT105.bsp'
-                           'kernels/spk/030201AP_SK_SM546_T45.bsp'
-                           'kernels/spk/981005_PLTEPH-DE405S.bsp'
-                           'kernels/spk/sat128.bsp'
-                           'kernels/ck/04135_04171pc_psiv2.bc'
-                           'kernels/fk/cas_v37.tf'
-                           )
-      \begintext
+.. py-editor::
+    :env: isenv
+    :src: scripts/insitu_sensing/soldir_make_mk.py
 
 Step-5: "Sub-Spacecraft Point"
 ------------------------------
@@ -1092,126 +882,17 @@ output:
 "Sub-Spacecraft Point" Code
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Program
+Program "sscpnt.py":
 
-::
-
-      from __future__ import print_function
-      import spiceypy
-
-      def sscpnt():
-
-          mkfile = 'sscpnt.tm'
-          spiceypy.furnsh(mkfile)
-
-          utc =  '2004-06-11T19:32:00'
-          et = spiceypy.str2et(utc)
-
-          print('UTC       = {:s}'.format(utc))
-          print('ET        = {:20.6f}'.format(et))
-
-          scid = -82
-          sclk = '1465674964.105'
-          et = spiceypy.scs2e(scid, sclk)
-
-          print('SCLK      = {:s}'.format(sclk))
-          print('ET        = {:20.6f}'.format(et))
-
-          target = 'CASSINI'
-          frame  = 'ECLIPJ2000'
-          corrtn = 'NONE'
-          observ = 'SUN'
-
-          state, ltime = spiceypy.spkezr(target, et, frame,
-                                         corrtn, observ)
-
-          print(' X        = {:20.6f}'.format(state[0]))
-          print(' Y        = {:20.6f}'.format(state[1]))
-          print(' Z        = {:20.6f}'.format(state[2]))
-          print('VX        = {:20.6f}'.format(state[3]))
-          print('VY        = {:20.6f}'.format(state[4]))
-          print('VZ        = {:20.6f}'.format(state[5]))
-
-          target = 'SUN'
-          frame  = 'CASSINI_INMS'
-          corrtn = 'LT+S'
-          observ = 'CASSINI'
-
-          sundir, ltime = spiceypy.spkpos(target, et, frame,
-                                          corrtn, observ)
-          sundir = spiceypy.vhat(sundir)
-
-          print('SUNDIR(X) = {:20.6f}'.format(sundir[0]))
-          print('SUNDIR(Y) = {:20.6f}'.format(sundir[1]))
-          print('SUNDIR(Z) = {:20.6f}'.format(sundir[2]))
-
-          method = 'NEAR POINT: ELLIPSOID'
-          target = 'PHOEBE'
-          frame  = 'IAU_PHOEBE'
-          corrtn = 'NONE'
-          observ = 'CASSINI'
-
-          spoint, trgepc, srfvec = spiceypy.subpnt(method, target, et,
-                                                   frame, corrtn, observ)
-
-          srad, slon, slat = spiceypy.reclat(spoint)
-
-          fromfr = 'IAU_PHOEBE'
-          tofr   = 'CASSINI_INMS'
-
-          m2imat = spiceypy.pxform(fromfr, tofr, et)
-
-          sbpdir = spiceypy.mxv(m2imat, srfvec)
-          sbpdir = spiceypy.vhat(sbpdir)
-
-          print('LON       = {:20.6f}'.format(slon * spiceypy.dpr()))
-          print('LAT       = {:20.6f}'.format(slat * spiceypy.dpr()))
-          print('SBPDIR(X) = {:20.6f}'.format(sbpdir[0]))
-          print('SBPDIR(Y) = {:20.6f}'.format(sbpdir[1]))
-          print('SBPDIR(Z) = {:20.6f}'.format(sbpdir[2]))
-
-          spiceypy.unload(mkfile)
-
-
-      if __name__ == '__main__':
-          sscpnt()
+.. py-editor::
+    :env: isenv
+    :src: scripts/insitu_sensing/sscpnt.py
 
 Meta-kernel file "sscpnt.tm":
 
-::
-
-      KPL/MK
-
-         The names and contents of the kernels referenced by this
-         meta-kernel are as follows:
-
-
-         File Name                   Description
-         --------------------------  ----------------------------------
-         naif0008.tls                Generic LSK.
-         cas00084.tsc                Cassini SCLK.
-         020514_SE_SAT105.bsp        Saturnian Satellite Ephemeris SPK.
-         030201AP_SK_SM546_T45.bsp   Cassini Spacecraft SPK.
-         981005_PLTEPH-DE405S.bsp    Planetary Ephemeris SPK.
-         sat128.bsp                  Saturnian Satellite Ephemeris SPK.
-         04135_04171pc_psiv2.bc      Cassini Spacecraft CK.
-         cas_v37.tf                  Cassini FK.
-         cpck05Mar2004.tpc           Cassini project PCK.
-
-
-      \begindata
-         KERNELS_TO_LOAD = (
-                           'kernels/lsk/naif0008.tls'
-                           'kernels/sclk/cas00084.tsc'
-                           'kernels/spk/020514_SE_SAT105.bsp'
-                           'kernels/spk/030201AP_SK_SM546_T45.bsp'
-                           'kernels/spk/981005_PLTEPH-DE405S.bsp'
-                           'kernels/spk/sat128.bsp'
-                           'kernels/ck/04135_04171pc_psiv2.bc'
-                           'kernels/fk/cas_v37.tf'
-                           'kernels/pck/cpck05Mar2004.tpc'
-                           )
-      \begintext
+.. py-editor::
+    :env: isenv
+    :src: scripts/insitu_sensing/sscpnt_make_mk.py
 
 Step-6: "Spacecraft Velocity"
 ------------------------------
@@ -1317,141 +998,12 @@ should not be considered in this case.
 "Spacecraft Velocity" Code Program "scvel.py":
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-::
-
-      from __future__ import print_function
-      import spiceypy
-
-      def scvel():
-
-          mkfile = 'scvel.tm'
-          spiceypy.furnsh(mkfile)
-
-          utc =  '2004-06-11T19:32:00'
-          et = spiceypy.str2et(utc)
-
-          print('UTC       = {:s}'.format(utc))
-          print('ET        = {:20.6f}'.format(et))
-
-          scid = -82
-          sclk = '1465674964.105'
-          et = spiceypy.scs2e(scid, sclk)
-
-          print('SCLK      = {:s}'.format(sclk))
-          print('ET        = {:20.6f}'.format(et))
-
-          target = 'CASSINI'
-          frame  = 'ECLIPJ2000'
-          corrtn = 'NONE'
-          observ = 'SUN'
-
-          state, ltime = spiceypy.spkezr(target, et, frame,
-                                         corrtn, observ)
-
-          print(' X        = {:20.6f}'.format(state[0]))
-          print(' Y        = {:20.6f}'.format(state[1]))
-          print(' Z        = {:20.6f}'.format(state[2]))
-          print('VX        = {:20.6f}'.format(state[3]))
-          print('VY        = {:20.6f}'.format(state[4]))
-          print('VZ        = {:20.6f}'.format(state[5]))
-
-          target = 'SUN'
-          frame  = 'CASSINI_INMS'
-          corrtn = 'LT+S'
-          observ = 'CASSINI'
-
-          sundir, ltime = spiceypy.spkpos(target, et, frame,
-                                          corrtn, observ)
-          sundir = spiceypy.vhat(sundir)
-
-          print('SUNDIR(X) = {:20.6f}'.format(sundir[0]))
-          print('SUNDIR(Y) = {:20.6f}'.format(sundir[1]))
-          print('SUNDIR(Z) = {:20.6f}'.format(sundir[2]))
-
-          method = 'NEAR POINT: ELLIPSOID'
-          target = 'PHOEBE'
-          frame  = 'IAU_PHOEBE'
-          corrtn = 'NONE'
-          observ = 'CASSINI'
-
-          spoint, trgepc, srfvec = spiceypy.subpnt(method, target, et,
-                                                   frame, corrtn, observ)
-
-          srad, slon, slat = spiceypy.reclat(spoint)
-
-          fromfr = 'IAU_PHOEBE'
-          tofr   = 'CASSINI_INMS'
-
-          m2imat = spiceypy.pxform(fromfr, tofr, et)
-
-          sbpdir = spiceypy.mxv(m2imat, srfvec)
-          sbpdir = spiceypy.vhat(sbpdir)
-
-          print('LON       = {:20.6f}'.format(slon * spiceypy.dpr()))
-          print('LAT       = {:20.6f}'.format(slat * spiceypy.dpr()))
-          print('SBPDIR(X) = {:20.6f}'.format(sbpdir[0]))
-          print('SBPDIR(Y) = {:20.6f}'.format(sbpdir[1]))
-          print('SBPDIR(Z) = {:20.6f}'.format(sbpdir[2]))
-
-          target = 'CASSINI'
-          frame  = 'J2000'
-          corrtn = 'NONE'
-          observ = 'PHOEBE'
-
-          state, ltime = spiceypy.spkezr(target, et, frame,
-                                         corrtn, observ)
-          scvdir = state[3:6]
-
-          fromfr = 'J2000'
-          tofr   = 'CASSINI_INMS'
-          j2imat = spiceypy.pxform(fromfr, tofr, et)
-
-          scvdir = spiceypy.mxv(j2imat, scvdir)
-          scvdir = spiceypy.vhat(scvdir)
-
-          print('SCVDIR(X) = {:20.6f}'.format(scvdir[0]))
-          print('SCVDIR(Y) = {:20.6f}'.format(scvdir[1]))
-          print('SCVDIR(Z) = {:20.6f}'.format(scvdir[2]))
-
-          spiceypy.unload(mkfile)
-
-
-      if __name__ == '__main__':
-          scvel()
+.. py-editor::
+    :env: isenv
+    :src: scripts/insitu_sensing/scvel.py
 
 Meta-kernel file "scvel.tm":
 
-::
-
-      KPL/MK
-
-         The names and contents of the kernels referenced by this
-         meta-kernel are as follows:
-
-
-         File Name                   Description
-         --------------------------  ----------------------------------
-         naif0008.tls                Generic LSK.
-         cas00084.tsc                Cassini SCLK.
-         020514_SE_SAT105.bsp        Saturnian Satellite Ephemeris SPK.
-         030201AP_SK_SM546_T45.bsp   Cassini Spacecraft SPK.
-         981005_PLTEPH-DE405S.bsp    Planetary Ephemeris SPK.
-         sat128.bsp                  Saturnian Satellite Ephemeris SPK.
-         04135_04171pc_psiv2.bc      Cassini Spacecraft CK.
-         cas_v37.tf                  Cassini FK.
-         cpck05Mar2004.tpc           Cassini project PCK.
-
-
-      \begindata
-         KERNELS_TO_LOAD = (
-                           'kernels/lsk/naif0008.tls'
-                           'kernels/sclk/cas00084.tsc'
-                           'kernels/spk/020514_SE_SAT105.bsp'
-                           'kernels/spk/030201AP_SK_SM546_T45.bsp'
-                           'kernels/spk/981005_PLTEPH-DE405S.bsp'
-                           'kernels/spk/sat128.bsp'
-                           'kernels/ck/04135_04171pc_psiv2.bc'
-                           'kernels/fk/cas_v37.tf'
-                           'kernels/pck/cpck05Mar2004.tpc'
-                           )
-      \begintext
+.. py-editor::
+    :env: isenv
+    :src: scripts/insitu_sensing/scvel_make_mk.py

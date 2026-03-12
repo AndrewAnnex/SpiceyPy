@@ -218,7 +218,10 @@ html_short_title = "SpiceyPy Docs"
 # directly to the root of the documentation.
 html_extra_path = [
     "pyscript.json",
+    "pyscript_binary_pck.json",
     "pyscript_min.json",
+    "pyscript_event_finding.json",
+    "pyscript_insitu_sensing.json",
     "pyscript_remote_sensing.json",
     "pyscript_other_stuff.json",
     "mini-coi.js",

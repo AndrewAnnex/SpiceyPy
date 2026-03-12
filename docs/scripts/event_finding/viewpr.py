@@ -2,8 +2,6 @@
 # Solution viewpr
 #
 import spiceypy
-import spiceypy.utils.support_types as stypes
-
 
 def viewpr():
     #
@@ -69,13 +67,13 @@ def viewpr():
     #
     # Display a banner for the output report:
     #
-    print("\n{:s}\n".format("Inputs for target visibility search:"))
-    print("   Target                       = {:s}".format(target))
-    print("   Observation surface location = {:s}".format(srfpt))
-    print("   Observer's reference frame   = {:s}".format(obsfrm))
-    print("   Elevation limit (degrees)    = {:f}".format(elvlim))
-    print("   Aberration correction        = {:s}".format(abcorr))
-    print("   Step size (seconds)          = {:f}".format(stepsz))
+    print("\nInputs for target visibility search:\n")
+    print(f"   Target                       = {target}")
+    print(f"   Observation surface location = {srfpt}")
+    print(f"   Observer's reference frame   = {obsfrm}")
+    print(f"   Elevation limit (degrees)    = {elvlim}")
+    print(f"   Aberration correction        = {abcorr}")
+    print(f"   Step size (seconds)          = {stepsz}")
     #
     # Convert the start and stop times to ET.
     #
@@ -88,22 +86,22 @@ def viewpr():
     #    2004 MAY 06 20:15:00.000 (TDB)
     #
     timstr = spiceypy.timout(etbeg, TDBFMT)
-    print("   Start time                   = {:s}".format(timstr))
+    print(f"   Start time                   = {timstr}")
     timstr = spiceypy.timout(etend, TDBFMT)
-    print("   Stop time                    = {:s}".format(timstr))
+    print(f"   Stop time                    = {timstr}")
     print(" ")
     #
     # Initialize the "confinement" window with the interval
     # over which we'll conduct the search.
     #
-    cnfine = stypes.SPICEDOUBLE_CELL(2)
+    cnfine = spiceypy.spice_double(2)
     spiceypy.wninsd(etbeg, etend, cnfine)
     #
     # In the call below, the maximum number of window
     # intervals gfposc can store internally is set to MAXIVL.
     # We set the cell size to MAXWIN to achieve this.
     #
-    riswin = stypes.SPICEDOUBLE_CELL(MAXWIN)
+    riswin = spiceypy.spice_double(MAXWIN)
     #
     # Now search for the time period, within our confinement
     # window, during which the apparent target has elevation
@@ -135,7 +133,7 @@ def viewpr():
         #
         # Display the visibility time periods.
         #
-        print("Visibility times of {0:s} as seen from {1:s}:\n".format(target, srfpt))
+        print(f"Visibility times of {target} as seen from {srfpt}:\n")
         for i in range(winsiz):
             #
             # Fetch the start and stop times of
@@ -151,9 +149,9 @@ def viewpr():
             # Write the string to standard output.
             #
             if i == 0:
-                print("Visibility or window start time:  {:s}".format(timstr))
+                print(f"Visibility or window start time:  {timstr}")
             else:
-                print("Visibility start time:            {:s}".format(timstr))
+                print(f"Visibility start time:            {timstr}")
             #
             # Convert the set time to a TDB calendar string.
             #
@@ -162,10 +160,11 @@ def viewpr():
             # Write the string to standard output.
             #
             if i == (winsiz - 1):
-                print("Visibility or window stop time:   {:s}".format(timstr))
+                print(f"Visibility or window stop time:   {timstr}")
             else:
-                print("Visibility stop time:             {:s}".format(timstr))
+                print(f"Visibility stop time:             {timstr}")
             print(" ")
+    
     spiceypy.unload(METAKR)
 
 
