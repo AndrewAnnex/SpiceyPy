@@ -116,14 +116,14 @@ def visibl():
     # Initialize the "confinement" window with the interval
     # over which we'll conduct the search.
     #
-    cnfine = spiceypy.spice_double(2)
+    cnfine = spiceypy.cell_double(2)
     spiceypy.wninsd( etbeg, etend, cnfine )
     #
     # In the call below, the maximum number of window
     # intervals gfposc can store internally is set to MAXIVL.
     # We set the cell size to MAXWIN to achieve this.
     #
-    riswin = spiceypy.spice_double( MAXWIN )
+    riswin = spiceypy.cell_double( MAXWIN )
     #
     # Now search for the time period, within our confinement
     # window, during which the apparent target has elevation
@@ -148,7 +148,7 @@ def visibl():
     # Find occultations within the view period window.
     #
     print( ' Searching using ellipsoid target shape model...' )
-    eocwin = spiceypy.spice_double( MAXWIN )
+    eocwin = spiceypy.cell_double( MAXWIN )
     fshape = 'ELLIPSOID'
     spiceypy.gfoclt( occtyp, front,  fshape,  fframe,
                      back,   bshape, bframe,  abcorr,
@@ -165,7 +165,7 @@ def visibl():
     # for the front body.
     #
     print( ' Searching using DSK target shape model...' )
-    docwin = spiceypy.spice_double( MAXWIN )
+    docwin = spiceypy.cell_double( MAXWIN )
     fshape = 'DSK/UNPRIORITIZED'
     spiceypy.gfoclt( occtyp, front,  fshape,  fframe,
                      back,   bshape, bframe,  abcorr,

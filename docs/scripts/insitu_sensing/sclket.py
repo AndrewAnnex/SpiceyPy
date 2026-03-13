@@ -1,4 +1,3 @@
-from __future__ import print_function
 import spiceypy
 
 def sclket():
@@ -9,15 +8,15 @@ def sclket():
     utc =  '2004-06-11T19:32:00'
     et = spiceypy.str2et(utc)
 
-    print('UTC       = {:s}'.format(utc))
-    print('ET        = {:20.6f}'.format(et))
+    print(f'UTC       = {utc:s}')
+    print(f'ET        = {et:20.6f}')
 
     scid = -82
     sclk = '1465674964.105'
     et = spiceypy.scs2e(scid, sclk)
 
-    print('SCLK      = {:s}'.format(sclk))
-    print('ET        = {:20.6f}'.format(et))
+    print(f'SCLK      = {sclk:s}')
+    print(f'ET        = {et:20.6f}')
 
     spiceypy.unload(mkfile)
 

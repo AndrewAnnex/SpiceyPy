@@ -14,6 +14,7 @@
         "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/cpck05Mar2004.tpc": "kernels/pck/cpck05Mar2004.tpc",
         "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/cas_iss_v09.ti": "kernels/ik/cas_iss_v09.ti",
         "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/phoebe_64q.bds": "kernels/dsk/phoebe_64q.bds",
-        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/jup310_2004.bsp": "kernels/spk/jup310_2004.bsp"
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/jup310_2004.bsp": "kernels/spk/jup310_2004.bsp",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/sat128.bsp": "kernels/spk/sat128.bsp"
     }
 }

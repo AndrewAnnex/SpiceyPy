@@ -237,12 +237,12 @@ As any other SPICE kernel this file can be loaded by the spiceypy.furnsh
 function. For that, the name of the file can be provided as a sole
 argument of this routine:
 
-.. code-block:: python
+.. py-editor::
+    :env: isenv
+    
+    lskfile = 'kernels/lsk/naif0008.tls'
 
-      ...
-      lskfile = 'naif0008.tls'
-
-      spiceypy.furnsh(lskfile)
+    spiceypy.furnsh(lskfile)
 
 or it can be listed in a meta-kernel:
 
@@ -267,7 +267,8 @@ or it can be listed in a meta-kernel:
 the name of which, let's call it "convrt.tm", can be then provided as
 a sole argument of the :py:func:`spiceypy.spiceypy.furnsh` routine:
 
-.. code-block:: python
+.. py-editor::
+    :env: isenv
 
           mkfile = 'convrt.tm'
           spiceypy.furnsh(mkfile)
@@ -312,17 +313,19 @@ output:
 "UTC to ET" Code
 ^^^^^^^^^^^^^^^^^
 
+Meta-kernel file "convrt.tm":
+
+.. py-editor::
+    :env: isenv
+    :src: scripts/insitu_sensing/convrt_make_mk.py
+
+
 Program "convrt.py":
 
 .. py-editor::
     :env: isenv
     :src: scripts/insitu_sensing/convrt.py
 
-Meta-kernel file "convrt.tm":
-
-.. py-editor::
-    :env: isenv
-    :src: scripts/insitu_sensing/convrt_make_mk.py
 
 Step-2: "SCLK to ET"
 ------------------------------
@@ -423,17 +426,18 @@ output:
 "SCLK to ET" Code
 ^^^^^^^^^^^^^^^^^^^^
 
+Meta-kernel file "sclket.tm":
+
+.. py-editor::
+    :env: isenv
+    :src: scripts/insitu_sensing/sclket_make_mk.py
+
 Program "sclket.py":
 
 .. py-editor::
     :env: isenv
     :src: scripts/insitu_sensing/sclket.py
 
-Meta-kernel file "sclket.tm":
-
-.. py-editor::
-    :env: isenv
-    :src: scripts/insitu_sensing/sclket_make_mk.py
 
 Step-3: "Spacecraft State"
 ------------------------------
@@ -558,17 +562,20 @@ output:
 "Spacecraft State" Code
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Meta-kernel file "getsta.tm":
+
+.. py-editor::
+    :env: isenv
+    :src: scripts/insitu_sensing/getsta_make_mk.py
+    
+    
 Program "getsta.py":
 
 .. py-editor::
     :env: isenv
     :src: scripts/insitu_sensing/getsta.py
 
-Meta-kernel file "getsta.tm":
 
-.. py-editor::
-    :env: isenv
-    :src: scripts/insitu_sensing/getsta_make_mk.py
 
 Step-4: "Sun Direction"
 ------------------------------
@@ -696,17 +703,18 @@ output:
 "Sun Direction" Code
 ^^^^^^^^^^^^^^^^^^^^^^
 
+Meta-kernel file "soldir.tm":
+
+.. py-editor::
+    :env: isenv
+    :src: scripts/insitu_sensing/soldir_make_mk.py
+
 Program "soldir.py":
 
 .. py-editor::
     :env: isenv
     :src: scripts/insitu_sensing/soldir.py
 
-Meta-kernel file "soldir.tm":
-
-.. py-editor::
-    :env: isenv
-    :src: scripts/insitu_sensing/soldir_make_mk.py
 
 Step-5: "Sub-Spacecraft Point"
 ------------------------------
@@ -882,17 +890,19 @@ output:
 "Sub-Spacecraft Point" Code
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Meta-kernel file "sscpnt.tm":
+
+.. py-editor::
+    :env: isenv
+    :src: scripts/insitu_sensing/sscpnt_make_mk.py
+    
 Program "sscpnt.py":
 
 .. py-editor::
     :env: isenv
     :src: scripts/insitu_sensing/sscpnt.py
 
-Meta-kernel file "sscpnt.tm":
 
-.. py-editor::
-    :env: isenv
-    :src: scripts/insitu_sensing/sscpnt_make_mk.py
 
 Step-6: "Spacecraft Velocity"
 ------------------------------
@@ -998,12 +1008,15 @@ should not be considered in this case.
 "Spacecraft Velocity" Code Program "scvel.py":
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. py-editor::
-    :env: isenv
-    :src: scripts/insitu_sensing/scvel.py
-
 Meta-kernel file "scvel.tm":
 
 .. py-editor::
     :env: isenv
     :src: scripts/insitu_sensing/scvel_make_mk.py
+
+Program "scvel.py":
+
+.. py-editor::
+    :env: isenv
+    :src: scripts/insitu_sensing/scvel.py
+

@@ -94,14 +94,14 @@ def viewpr():
     # Initialize the "confinement" window with the interval
     # over which we'll conduct the search.
     #
-    cnfine = spiceypy.spice_double(2)
+    cnfine = spiceypy.cell_double(2)
     spiceypy.wninsd(etbeg, etend, cnfine)
     #
     # In the call below, the maximum number of window
     # intervals gfposc can store internally is set to MAXIVL.
     # We set the cell size to MAXWIN to achieve this.
     #
-    riswin = spiceypy.spice_double(MAXWIN)
+    riswin = spiceypy.cell_double(MAXWIN)
     #
     # Now search for the time period, within our confinement
     # window, during which the apparent target has elevation
