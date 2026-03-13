@@ -101,13 +101,21 @@ SpiceyPy API Documentation
 A SpiceyPy function's parameters specification is available using the
 built-in Python help system.
 
+.. py-editor::
+    :env: other
+    :config: pyscript_other_stuff.json
+    :setup:
+
+    import spiceypy
+
 For example, the Python help function
 
 
-.. code-block:: python
+.. py-editor::
+    :env: other
 
-      import spiceypy
-      help(spiceypy.str2et)
+    import spiceypy
+    help(spiceypy.str2et)
 
 describes of the str2et function's parameters, while the document
 
@@ -255,7 +263,7 @@ particular Spice subsystems:
       time.req
       windows.req
 
-NAIF Users Guides (\*.ug) describe the proper use of particular SpiceyPy
+NAIF Users Guides (\*.ug) describe the proper use of particular Spice command line
 tools:
 
 ::
@@ -361,22 +369,11 @@ This SpiceyPy API documentation (the same information as in the website
 but without hyperlinks) is also available from the Python built-in help
 system:
 
-::
+.. py-editor::
+    :env: other
 
-      >>> help ( spiceypy.str2et )
-      Help on function str2et in module spiceypy.spiceypy:
-
-      str2et(*args, **kwargs)
-          Convert a string representing an epoch to a double precision
-          value representing the number of TDB seconds past the J2000
-          epoch corresponding to the input epoch.
-
-             ...
-
-          :param time: A string representing an epoch.
-          :type time: str
-          :return: The equivalent value in seconds past J2000, TDB.
-          :rtype: float
+     import spiceypy
+     help(spiceypy.str2et) # hit run button to see help
 
 
 Text kernels
@@ -439,9 +436,7 @@ Things to know:
             signaling an error on any attempt to read non-native text
             kernels.
 
-Text kernel format
-
-Scalar assignments.
+Text kernel format scalar assignments.
 
 .. code-block:: text
 
@@ -513,131 +508,28 @@ First, create a meta text kernel:
 You can use two versions of a meta kernel with code examples (kpool.tm)
 in this lesson. Either a kernel with explicit path information:
 
-.. code-block:: text
+.. py-editor::
+    :env: other
+    :src: scripts/other_stuff/kpool_make_mk.py
 
-      KPL/MK
-
-      \begindata
-
-         KERNELS_TO_LOAD = ( 'kernels/spk/de405s.bsp',
-                             'kernels/pck/pck00008.tpc',
-                             'kernels/lsk/naif0008.tls' )
-
-      \begintext
 
 … or a more generic meta kernel using the PATH_VALUES/PATH_SYMBOLS
 functionality to declare path names as variables:
 
-.. code-block:: text
+.. py-editor::
+    :env: other
+    :src: scripts/other_stuff/kpool_generic_make_mk.py
 
-      KPL/MK
-
-         Define the paths to the kernel directory. Use the PATH_SYMBOLS
-         as aliases to the paths.
-
-         The names and contents of the kernels referenced by this
-         meta-kernel are as follows:
-
-            File Name        Description
-            ---------------  ------------------------------
-            naif0008.tls     Generic LSK.
-            de405s.bsp       Planet Ephemeris SPK.
-            pck00008.tpc     Generic PCK.
-
-
-      \begindata
-
-         PATH_VALUES     = ( 'kernels/lsk',
-                             'kernels/spk',
-                             'kernels/pck' )
-
-         PATH_SYMBOLS    = ( 'LSK', 'SPK', 'PCK' )
-
-         KERNELS_TO_LOAD = ( '$LSK/naif0008.tls',
-                             '$SPK/de405s.bsp',
-                             '$PCK/pck00008.tpc' )
-
-      \begintext
 
 Now the solution source code:
 
-.. code-block:: python
-
-      from __future__ import print_function
-
-      #
-      # Import the CSPICE-Python interface.
-      #
-      import spiceypy
-
-      def kpool():
-
-          #
-          # Assign the path name of the meta kernel to META.
-          #
-          META = 'kpool.tm'
+.. py-editor::
+    :env: other
+    :src: scripts/other_stuff/kpool.py
 
 
-          #
-          # Load the meta kernel then use KTOTAL to interrogate the SPICE
-          # kernel subsystem.
-          #
-          spiceypy.furnsh( META )
 
-
-          count = spiceypy.ktotal( 'ALL' )
-          print( 'Kernel count after load:        {0}\n'.format(count))
-
-
-          #
-          # Loop over the number of files; interrogate the SPICE system
-          # with spiceypy.kdata for the kernel names and the type.
-          # 'found' returns a boolean indicating whether any kernel files
-          # of the specified type were loaded by the kernel subsystem.
-          # This example ignores checking 'found' as kernels are known
-          # to be loaded.
-          #
-          for i in range(0, count):
-              [ file, type, source, handle] = spiceypy.kdata(i, 'ALL');
-              print( 'File   {0}'.format(file) )
-              print( 'Type   {0}'.format(type) )
-              print( 'Source {0}\n'.format(source) )
-
-
-          #
-          # Unload one kernel then check the count.
-          #
-          spiceypy.unload( 'kernels/spk/de405s.bsp')
-          count = spiceypy.ktotal( 'ALL' )
-
-          #
-          # The subsystem should report one less kernel.
-          #
-          print( 'Kernel count after one unload:  {0}'.format(count))
-
-          #
-          # Now unload the meta kernel. This action unloads all
-          # files listed in the meta kernel.
-          #
-          spiceypy.unload( META )
-
-
-          #
-          # Check the count; spiceypy should return a count of zero.
-          #
-          count = spiceypy.ktotal( 'ALL')
-          print( 'Kernel count after meta unload: {0}'.format(count))
-
-
-          #
-          # Done. Unload the kernels.
-          #
-          spiceypy.kclear
-
-      if __name__ == '__main__':
-         kpool()
-
-Run the code example
+Run the code example locally or by clicking the run button above.
 
 First we see the number of all loaded kernels returned from the
 spiceypy.ktotal call.
@@ -671,6 +563,8 @@ direct load of the kernel with a spiceypy.furnsh call.
       Kernel count after one unload:  3
       Kernel count after meta unload: 0
 
+this repeats for the kpool_generic.tm file.
+
 Lesson 2: The Kernel Pool
 ------------------------------
 
@@ -695,70 +589,10 @@ pool.
 For the code examples, use this generic text kernel (kervar.tm)
 containing PCK-type data, kernels to load, and example time strings:
 
-.. code-block:: text
+.. py-editor::
+    :env: other
+    :src: scripts/other_stuff/kervar_make_mk.py
 
-      KPL/MK
-
-         Name the kernels to load. Use path symbols.
-
-         The names and contents of the kernels referenced by this
-         meta-kernel are as follows:
-
-            File Name        Description
-            ---------------  ------------------------------
-            naif0008.tls     Generic LSK.
-            de405s.bsp       Planet Ephemeris SPK.
-            pck00008.tpc     Generic PCK.
-
-
-      \begindata
-
-         PATH_VALUES     = ('kernels/spk',
-                            'kernels/pck',
-                            'kernels/lsk')
-
-         PATH_SYMBOLS    = ('SPK' , 'PCK' , 'LSK' )
-
-         KERNELS_TO_LOAD = ( '$SPK/de405s.bsp',
-                             '$PCK/pck00008.tpc',
-                             '$LSK/naif0008.tls')
-
-      \begintext
-
-      Ring model data.
-
-      \begindata
-
-         BODY699_RING1_NAME     = 'A Ring'
-         BODY699_RING1          = (122170.0 136780.0 0.1 0.1 0.5)
-
-         BODY699_RING1_1_NAME   = 'Encke Gap'
-         BODY699_RING1_1        = (133405.0 133730.0 0.0 0.0 0.0)
-
-         BODY699_RING2_NAME     = 'Cassini Division'
-         BODY699_RING2          = (117580.0 122170.0 0.0 0.0 0.0)
-
-      \begintext
-
-      The kernel pool recognizes values preceded by '@' as time
-      values. When read, the kernel subsystem converts these
-      representations into double precision ephemeris time.
-
-      Caution: The kernel subsystem interprets the time strings
-      identified by '@' as TDB. The same string passed as input
-      to @STR2ET is processed as UTC.
-
-      The three expressions stored in the EXAMPLE_TIMES array represent
-      the same epoch.
-
-      \begindata
-
-         EXAMPLE_TIMES       = ( @APRIL-1-2004-12:34:56.789,
-                                 @4/1/2004-12:34:56.789,
-                                 @JD2453097.0242684
-                                )
-
-      \begintext
 
 The main references for pool routines are found in the help command, the
 CSPICE source files or the API documentation for the particular
@@ -769,139 +603,11 @@ routines.
 Code Solution
 ^^^^^^^^^^^^^
 
-.. code-block:: python
-
-      from __future__ import print_function
-
-      #
-      # Import the CSPICE-Python interface.
-      #
-      import spiceypy
-      from spiceypy.utils.support_types import SpiceyError
-
-      def kervar():
-
-          #
-          # Define the max number of kernel variables
-          # of concern for this examples.
-          #
-          N_ITEMS =  20
-
-          #
-          # Load the example kernel containing the kernel variables.
-          # The kernels defined in KERNELS_TO_LOAD load into the
-          # kernel pool with this call.
-          #
-          spiceypy.furnsh( 'kervar.tm' )
-
-          #
-          # Initialize the start value. This value indicates
-          # index of the first element to return if a kernel
-          # variable is an array. START = 0 indicates return everything.
-          # START = 1 indicates return everything but the first element.
-          #
-          START = 0
-
-          #
-          # Set the template for the variable names to find. Let's
-          # look for all variables containing  the string RING.
-          # Define this with the wildcard template '*RING*'. Note:
-          # the template '*RING' would match any variable name
-          # ending with the RING string.
-          #
-          tmplate = '*RING*'
-
-          #
-          # We're ready to interrogate the kernel pool for the
-          # variables matching the template. spiceypy.gnpool tells us:
-          #
-          #  1. Does the kernel pool contain any variables that
-          #     match the template (value of found).
-          #  2. If so, how many variables?
-          #  3. The variable names. (cvals, an array of strings)
-          #
-
-          try:
-              cvals = spiceypy.gnpool( tmplate, START, N_ITEMS )
-              print( 'Number variables matching template: {0}'.\
-              format( len(cvals)) )
-          except SpiceyError:
-              print( 'No kernel variables matched template.' )
-              return
+.. py-editor::
+    :env: other
+    :src: scripts/other_stuff/kervar.py
 
 
-          #
-          # Okay, now we know something about the kernel pool
-          # variables of interest to us. Let's find out more...
-          #
-          for cval in cvals:
-
-              #
-              # Use spiceypy.dtpool to return the dimension and type,
-              # C (character) or N (numeric), of each pool
-              # variable name in the cvals array. We know the
-              # kernel data exists.
-              #
-              [dim, type] = spiceypy.dtpool( cval )
-
-              print( '\n' + cval )
-              print( ' Number items: {0}   Of type: {1}\n'.\
-              format(dim, type) )
-
-              #
-              # Test character equality, 'N' or 'C'.
-              #
-              if type == 'N':
-
-                  #
-                  # If 'type' equals 'N', we found a numeric array.
-                  # In this case any numeric array will be an array
-                  # of double precision numbers ('doubles').
-                  # spiceypy.gdpool retrieves doubles from the
-                  # kernel pool.
-                  #
-                  dvars = spiceypy.gdpool( cval, START, N_ITEMS )
-                  for dvar in dvars:
-                      print('  Numeric value: {0:20.6f}'.format(dvar))
-
-              elif type == 'C':
-
-                  #
-                  # If 'type' equals 'C', we found a string array.
-                  # spiceypy.gcpool retrieves string values from the
-                  # kernel pool.
-                  #
-                  cvars = spiceypy.gcpool( cval, START, N_ITEMS )
-
-                  for cvar in cvars:
-                      print('  String value: {0}\n'.format(cvar))
-
-              else:
-
-                  #
-                  # This block should never execute.
-                  #
-                  print('Unknown type. Code error.')
-
-
-          #
-          # Now look at the time variable EXAMPLE_TIMES. Extract this
-          # value as an array of doubles.
-          #
-          dvars = spiceypy.gdpool( 'EXAMPLE_TIMES', START, N_ITEMS )
-
-          print( 'EXAMPLE_TIMES' )
-
-          for dvar in dvars:
-              print('  Time value:    {0:20.6f}'.format(dvar))
-
-          #
-          # Done. Unload the kernels.
-          #
-          spiceypy.kclear
-
-      if __name__ == '__main__':
-         kervar()
 
 Run the code example
 
@@ -1011,154 +717,19 @@ rectangular, cylindrical, and spherical systems.
 Code Solution
 ^^^^^^^^^^^^^
 
-.. code-block:: python
-
-      from __future__ import print_function
-      from builtins import input
-      import sys
-
-      #
-      # Import the CSPICE-Python interface.
-      #
-      import spiceypy
-
-      def coord():
-
-          #
-          # Define the inertial and non inertial frame names.
-          #
-          # Initialize variables or set type. All variables
-          # used in a PROMPT construct must be initialized
-          # as strings.
-          #
-          INRFRM = 'J2000'
-          NONFRM = 'IAU_EARTH'
-          r2d = spiceypy.dpr()
-
-          #
-          # Load the needed kernels using a spiceypy.furnsh call on the
-          # meta kernel.
-          #
-          spiceypy.furnsh( 'coord.tm' )
-
-          #
-          # Prompt the user for a time string. Convert the
-          # time string to ephemeris time J2000 (ET).
-          #
-          timstr = input( 'Time of interest: ')
-          et     = spiceypy.str2et( timstr )
-
-          #
-          # Access the kernel pool data for the triaxial radii of the
-          # Earth, rad[1][0] holds the equatorial radius, rad[1][2]
-          # the polar radius.
-          #
-          rad = spiceypy.bodvrd( 'EARTH', 'RADII', 3 )
-
-          #
-          # Calculate the flattening factor for the Earth.
-          #
-          #          equatorial_radius - polar_radius
-          # flat =   ________________________________
-          #
-          #                equatorial_radius
-          #
-          flat = (rad[1][0] - rad[1][2])/rad[1][0]
-
-          #
-          # Make the spiceypy.spkpos call to determine the apparent
-          # position of the Moon w.r.t. to the Earth at 'et' in the
-          # inertial frame.
-          #
-          [pos, ltime] = spiceypy.spkpos('MOON', et, INRFRM,
-                                         'LT+S','EARTH'    )
-
-          #
-          # Show the current frame and time.
-          #
-          print( ' Time : {0}'.format(timstr) )
-          print( ' Inertial Frame: {0}\n'.format(INRFRM) )
-
-          #
-          # First convert the position vector
-          # X = pos(1), Y = pos(2), Z = pos(3), to RA/DEC.
-          #
-          [ range, ra, dec ] = spiceypy.recrad( pos )
-
-          print('   Range/Ra/Dec' )
-          print('    Range: {0:20.6f}'.format(range) )
-          print('    RA   : {0:20.6f}'.format(ra * r2d) )
-          print('    DEC  : {0:20.6f}'.format(dec* r2d) )
-
-          #
-          # ...latitudinal coordinates...
-          #
-          [ range, lon, lat ] = spiceypy.reclat( pos )
-          print('   Latitudinal ' )
-          print('    Rad  : {0:20.6f}'.format(range) )
-          print('    Lon  : {0:20.6f}'.format(lon * r2d) )
-          print('    Lat  : {0:20.6f}'.format(lat * r2d) )
-
-          #
-          # ...spherical coordinates use the colatitude,
-          # the angle from the Z axis.
-          #
-          [ range, colat, lon ] = spiceypy.recsph( pos )
-          print( '   Spherical' )
-          print('    Rad  : {0:20.6f}'.format(range) )
-          print('    Lon  : {0:20.6f}'.format(lon   * r2d) )
-          print('    Colat: {0:20.6f}'.format(colat * r2d) )
-
-          #
-          # Make the spiceypy.spkpos call to determine the apparent
-          # position of the Moon w.r.t. to the Earth at 'et' in the
-          # non-inertial, body fixed, frame.
-          #
-          [pos, ltime] = spiceypy.spkpos('MOON', et, NONFRM,
-                                         'LT+S','EARTH')
-
-          print()
-          print( '  Non-inertial Frame: {0}'.format(NONFRM) )
-
-          #
-          # ...latitudinal coordinates...
-          #
-          [ range, lon, lat ] = spiceypy.reclat( pos )
-          print('   Latitudinal ' )
-          print('    Rad  : {0:20.6f}'.format(range) )
-          print('    Lon  : {0:20.6f}'.format(lon * r2d) )
-          print('    Lat  : {0:20.6f}'.format(lat * r2d) )
-
-          #
-          # ...spherical coordinates use the colatitude,
-          # the angle from the Z axis.
-          #
-          [ range, colat, lon ] = spiceypy.recsph( pos )
-          print( '   Spherical' )
-          print('    Rad  : {0:20.6f}'.format(range) )
-          print('    Lon  : {0:20.6f}'.format(lon   * r2d) )
-          print('    Colat: {0:20.6f}'.format(colat * r2d) )
-
-          #
-          # ...finally, convert the position to geodetic coordinates.
-          #
-          [ lon, lat, range ] = spiceypy.recgeo( pos, rad[1][0], flat )
-          print( '   Geodetic' )
-          print('    Rad  : {0:20.6f}'.format(range) )
-          print('    Lon  : {0:20.6f}'.format(lon * r2d) )
-          print('    Lat  : {0:20.6f}'.format(lat * r2d) )
-          print()
-
-          #
-          # Done. Unload the kernels.
-          #
-          spiceypy.kclear
+.. py-editor::
+    :env: other
+    :src: scripts/other_stuff/coord.py
 
 
-      if __name__ == '__main__':
-         coord()
 
-Run the code example
+Run the code example:
+
+.. py-editor::
+    :env: other
+
+    coord("Feb 3 2002 TDB")
+
 
 Input “Feb 3 2002 TDB” to calculate the Moon's position. (the 'TDB' tag
 indicates a Barycentric Dynamical Time value).
@@ -1302,119 +873,10 @@ Code Solution
 Caution: Be sure to assign sufficient string lengths for time
 formats/pictures.
 
-.. code-block:: python
+.. py-editor::
+    :env: other
+    :src: scripts/other_stuff/xtic.py
 
-      from __future__ import print_function
-
-      #
-      # Import the CSPICE-Python interface.
-      #
-      import spiceypy
-
-      def xtic():
-
-          #
-          # Assign the META variable to the name of the meta-kernel
-          # that contains the LSK kernel and create an arbitrary
-          # time string.
-          #
-          CALSTR    = 'Mar 15, 2003 12:34:56.789 AM PST'
-          META      = 'xtic.tm'
-          AMBIGSTR  = 'Mar 15, 79 12:34:56'
-          T_FORMAT1 = 'Wkd Mon DD HR:MN:SC PDT YYYY ::UTC-7'
-          T_FORMAT2 = 'Wkd Mon DD HR:MN ::UTC-7 YR (JULIAND.##### JDUTC)'
-
-          #
-          # Load the meta-kernel.
-          #
-          spiceypy.furnsh( META )
-          print( 'Original time string     : {0}'.format(CALSTR) )
-
-          #
-          # Convert the time string to the number of ephemeris
-          # seconds past the J2000 epoch. This is the most common
-          # internal time representation used by the CSPICE
-          # system; CSPICE refers to this as ephemeris time (ET).
-          #
-          et = spiceypy.str2et( CALSTR )
-          print( 'Corresponding ET         : {0:20.6f}\n'.format(et) )
-
-          #
-          # Make a picture of an output format. Describe a Unix-like
-          # time string then send the picture and the 'et' value through
-          # spiceypy.timout to format and convert the ET representation
-          # of the time string into the form described in
-          # spiceypy.timout. The '::UTC-7' token indicates the time
-          # zone for the `timstr' output - PDT. 'PDT' is part of the
-          # output, but not a time system token.
-          #
-          timstr = spiceypy.timout( et, T_FORMAT1)
-          print( 'Time in string format 1  : {0}'.format(timstr) )
-
-          timstr = spiceypy.timout( et, T_FORMAT2)
-          print( 'Time in string format 2  : {0}'.format(timstr) )
-
-          #
-          # Why create a picture by hand when spiceypy can do it for
-          # you? Input a string to spiceypy.tpictr with the format of
-          # interest. `ok' returns a boolean indicating whether an
-          # error occurred while parsing the picture string, if so,
-          # an error diagnostic message returns in 'xerror'. In this
-          # example the picture string is known as correct.
-          #
-          pic = '12:34:56.789 P.M. PDT January 1, 2006'
-          [ pictr, ok, xerror] = spiceypy.tpictr(pic)
-
-          if not bool(ok):
-              print( xerror )
-              exit
-
-
-          timstr = spiceypy.timout( et, pictr)
-          print( 'Time in string format 3  : {0}'.format( timstr ) )
-
-          #
-          # Two digit year representations often cause problems due to
-          # the ambiguity of the century. The routine spiceypy.tsetyr
-          # gives the user the ability to set a default range for 2
-          # digit year representation. SPICE uses 1969AD as the default
-          # start year so the numbers inclusive of 69 to 99 represent
-          # years 1969AD to 1999AD, the numbers inclusive of 00 to 68
-          # represent years 2000AD to 2068AD.
-          #
-          # The defined time string 'AMBIGSTR' contains a two-digit
-          # year. Since the SPICE base year is 1969, the time subsystem
-          # interprets the string as 1979.
-          #
-          et1 = spiceypy.str2et( AMBIGSTR )
-
-          #
-          # Set 1980 as the base year causes SPICE to interpret the
-          # time string's "79" as 2079.
-          #
-          spiceypy.tsetyr( 1980 )
-          et2 = spiceypy.str2et( AMBIGSTR )
-
-          #
-          # Calculate the number of years between the two ET
-          # representations, ~100.
-          #
-          print( 'Years between evaluations: {0:20.6f}'.\
-          format( (et2 - et1)/spiceypy.jyear()))
-
-          #
-          # Reset the default year to 1969.
-          #
-          spiceypy.tsetyr( 1969 )
-
-          #
-          # Done. Unload the kernels.
-          #
-          spiceypy.kclear
-
-
-      if __name__ == '__main__':
-         xtic()
 
 Run the code example
 
@@ -1460,98 +922,11 @@ respond in an appropriate manner.
 Code Solution
 ^^^^^^^^^^^^^
 
-.. code-block:: python
-
-      from __future__ import print_function
-      from builtins import input
-
-      #
-      # Import the CSPICE-Python interface.
-      #
-      import spiceypy
-      from spiceypy.utils.support_types import SpiceyError
-
-      def aderr():
-
-          #
-          # Set initial parameters.
-          #
-          SPICETRUE =  True
-          SPICEFALSE=  False
-          doloop    =  SPICETRUE
-
-          #
-          # Load the data we need for state evaluation.
-          #
-          spiceypy.furnsh( 'aderr.tm' )
-
-          #
-          # Start our input query loop to the user.
-          #
-          while (doloop):
-
-              #
-              # For simplicity, we request only one input.
-              # The program calculates the state vector from
-              # Earth to the user specified target 'targ' in the
-              # J2000 frame, at ephemeris time zero, using
-              # aberration correction LT+S (light time plus
-              # stellar aberration).
-              #
-              targ = input( 'Target: ' )
+.. py-editor::
+    :env: other
+    :src: scripts/other_stuff/aderr.py
 
 
-              if targ == 'NONE':
-                  #
-                  # An exit condition. If the user inputs NONE
-                  # for a target name, set the loop to stop...
-                  #
-                  doloop = SPICEFALSE
-
-              else:
-
-                #
-                # ...otherwise evaluate the state between the Earth
-                # and the target. Initialize an error handler.
-                #
-                try:
-
-                    #
-                    # Perform the state lookup.
-                    #
-                    [state, ltime] = spiceypy.spkezr(targ, 0., 'J2000',
-                                                     'LT+S',   'EARTH')
-
-                    #
-                    # No error, output the state.
-                    #
-                    print( 'R : {0:20.6f} {1:20.6f} '
-                           '{2:20.5f}'.format(*state[0:3]))
-                    print( 'V : {0:20.6f} {1:20.6f} '
-                           '{2:20.6f}'.format(*state[3:6]) )
-                    print( 'LT: {0:20.6f}\n'.format(float(ltime)))
-
-                except SpiceyError as err:
-
-                   #
-                   # What if spiceypy.spkezr signaled an error?
-                   # Then spiceypy signals an error to python.
-                   #
-                   # Examine the value of 'e' to retrieve the
-                   # error message.
-                   #
-                  print( err )
-                  print( )
-
-
-          #
-          # Done. Unload the kernels.
-          #
-          spiceypy.kclear
-
-
-      if __name__ == '__main__':
-         aderr()
 
 Run the code example
 
@@ -1563,6 +938,7 @@ per second, kilograms, and seconds. The 'R' marker identifies the
 the velocity of the body in kilometers per second, and the 'LT' marker
 identifies the one-way light time between the bodies at the requested
 evaluation time.
+
 
 .. code-block:: text
 
@@ -1586,7 +962,7 @@ evaluation time.
       =====================================================================
       ===========
 
-      Toolkit version: N0066
+      Toolkit version: N0067
 
       SPICE(SPKINSUFFDATA) --
 
@@ -1613,6 +989,12 @@ time 2000 JAN 01 12:00:00.000 (the requested time, ephemeris time zero).
 
 Try another look-up, this time for “Casper”
 
+.. py-editor::
+    :env: other
+
+    aderr('Casper')
+
+
 .. code-block:: text
 
       Target: Casper
@@ -1620,7 +1002,7 @@ Try another look-up, this time for “Casper”
       =====================================================================
       ===========
 
-      Toolkit version: N0066
+      Toolkit version: N0067
 
       SPICE(IDCODENOTFOUND) --
 
@@ -1640,6 +1022,12 @@ An easy to understand error. The SPICE system does not contain
 information on a body named 'Casper.'
 
 Another look-up, this time, “Venus”.
+
+.. py-editor::
+    :env: other
+
+    aderr('Venus')
+
 
 .. code-block:: text
 
@@ -1710,145 +1098,11 @@ set of a number of time intervals.
 Code Solution
 ^^^^^^^^^^^^^
 
-.. code-block:: python
-
-      from __future__ import print_function
-
-      #
-      # Import the CSPICE-Python interface.
-      #
-      import spiceypy
-
-      def win():
-
-          MAXSIZ = 8
-
-          #
-          # Define a set of time intervals. For the purposes of this
-          # tutorial program, define time intervals representing
-          # an unobscured line of sight between a ground station
-          # and some body.
-          #
-          los = [ 'Jan 1, 2003 22:15:02', 'Jan 2, 2003  4:43:29',
-                  'Jan 4, 2003  9:55:30', 'Jan 4, 2003 11:26:52',
-                  'Jan 5, 2003 11:09:17', 'Jan 5, 2003 13:00:41',
-                  'Jan 6, 2003 00:08:13', 'Jan 6, 2003  2:18:01' ]
-
-          #
-          # A second set of intervals representing the times for which
-          # an acceptable phase angle exists between the ground station,
-          # the body and the Sun.
-          #
-          phase = [ 'Jan 2, 2003 00:03:30', 'Jan 2, 2003 19:00:00',
-                    'Jan 3, 2003  8:00:00', 'Jan 3, 2003  9:50:00',
-                    'Jan 5, 2003 12:00:00', 'Jan 5, 2003 12:45:00',
-                    'Jan 6, 2003 00:30:00', 'Jan 6, 2003 23:00:00' ]
-
-          #
-          # Load our meta kernel for the leapseconds data.
-          #
-          spiceypy.furnsh( 'win.tm' )
-
-          #
-          # SPICE windows consist of double precision values; convert
-          # the string time tags defined in the 'los' and 'phase'
-          # arrays to double precision ET. Store the double values
-          # in the 'loswin' and 'phswin' windows.
-          #
-          los_et = spiceypy.str2et( los   )
-          phs_et = spiceypy.str2et( phase )
-
-          loswin = spiceypy.stypes.SPICEDOUBLE_CELL( MAXSIZ )
-          phswin = spiceypy.stypes.SPICEDOUBLE_CELL( MAXSIZ )
-
-          for i in range(0, int( MAXSIZ/2 ) ):
-              spiceypy.wninsd( los_et[2*i], los_et[2*i+1], loswin )
-              spiceypy.wninsd( phs_et[2*i], phs_et[2*i+1], phswin )
-
-          spiceypy.wnvald( MAXSIZ, MAXSIZ, loswin )
-          spiceypy.wnvald( MAXSIZ, MAXSIZ, phswin )
-
-          #
-          # The issue for consideration, at what times do line of
-          # sight events coincide with acceptable phase angles?
-          # Perform the set operation AND on loswin, phswin,
-          # (the intersection of the time intervals)
-          # place the results in the window 'sched'.
-          #
-          sched = spiceypy.wnintd( loswin, phswin )
-
-          print( 'Number data values in sched : '
-                 '{0:2d}'.format(spiceypy.card(sched)) )
-
-          #
-          # Output the results. The number of intervals in 'sched'
-          # is half the number of data points (the cardinality).
-          #
-          print( ' ' )
-          print( 'Time intervals meeting defined criterion.' )
-
-          for i in range( spiceypy.card(sched)//2):
-
-             #
-             # Extract from the derived 'sched' the values defining the
-             # time intervals.
-             #
-             [left, right ] = spiceypy.wnfetd( sched, i )
-
-             #
-             # Convert the ET values to UTC for human comprehension.
-             #
-             utcstr_l = spiceypy.et2utc( left , 'C', 3 )
-             utcstr_r = spiceypy.et2utc( right, 'C', 3 )
-
-             #
-             # Output the UTC string and the corresponding index
-             # for the interval.
-             #
-             print( '{0:2d}   {1}   {2}'.format(i, utcstr_l, utcstr_r))
+.. py-editor::
+    :env: other
+    :src: scripts/other_stuff/win.py
 
 
-          #
-          # Summarize the 'sched' window.
-          #
-          [meas, avg, stddev, small, large] = spiceypy.wnsumd( sched )
-
-          print( '\nSummary of sched window\n' )
-
-          print( 'o Total measure of sched    : {0:16.6f}'.format(meas))
-          print( 'o Average measure of sched  : {0:16.6f}'.format(avg))
-          print( 'o Standard deviation of ' )
-          print( '  the measures in sched     : '
-                 '{0:16.6f}'.format(stddev))
-
-          #
-          # The values for small and large refer to the indexes of the
-          # values in the window ('sched'). The shortest interval is
-          #
-          #      [ sched.base[ sched.data + small]
-          #        sched.base[ sched.data + small +1]  ];
-          #
-          # the longest is
-          #
-          #      [ sched.base[ sched.data + large]
-          #        sched.base[ sched.data + large +1]  ];
-          #
-          # Output the interval indexes for the shortest and longest
-          # intervals. As Python bases an array index on 0, the interval
-          # index is half the array index.
-          #
-          print( 'o Index of shortest interval: '
-                 '{0:2d}'.format(int(small/2)) )
-          print( 'o Index of longest interval : '
-                 '{0:2d}'.format(int(large/2)) )
-
-          #
-          # Done. Unload the kernels.
-          #
-          spiceypy.kclear
-
-      if __name__ == '__main__':
-         win()
 
 Run the code example
 
@@ -1950,106 +1204,10 @@ often used in astrodynamics, time calculations, and geometry.
 Code Solution
 ^^^^^^^^^^^^^
 
-.. code-block:: python
+.. py-editor::
+    :env: other
+    :src: scripts/other_stuff/units.py
 
-      from __future__ import print_function
-      from builtins import input
-
-      #
-      # Import the CSPICE-Python interface.
-      #
-      import spiceypy
-
-
-      def tostan(alias):
-
-          value = alias
-
-          #
-          # As a convenience, let's alias a few common terms
-          # to their appropriate counterpart.
-          #
-          if alias == 'meter':
-
-              #
-              # First, a 'meter' by any other name is a
-              # 'METER' and smells as sweet ...
-              #
-              value = 'METERS'
-
-          elif (alias == 'klicks')        \
-              or (alias == 'kilometers')  \
-              or (alias =='kilometer'):
-
-              #
-              # ... 'klicks' and 'KILOMETERS' and 'KILOMETER'
-              # identifies 'KM'....
-              #
-              value = 'KM'
-
-          elif alias == 'secs':
-
-              #
-              # ... 'secs' to 'SECONDS'.
-              #
-              value = 'SECONDS'
-
-          elif alias == 'miles':
-
-              #
-              # ... and finally 'miles' to 'STATUTE_MILES'.
-              # Normal people think in statute miles.
-              # Only sailors think in nautical miles - one
-              # minute of arc at the equator.
-              #
-              value = 'STATUTE_MILES'
-
-          else:
-              pass
-
-
-          #
-          # Much better. Now return. If the input matched
-          # none of the aliases, this function did nothing.
-          #
-          return value
-
-      def units():
-
-          #
-          # Display the Toolkit version string with a spiceypy.tkvrsn
-          # call.
-          #
-          vers = spiceypy.tkvrsn( 'TOOLKIT' )
-          print('\nConvert demo program compiled against CSPICE '
-                'Toolkit ' + vers)
-
-          #
-          # The user first inputs the name of a unit of measure.
-          # Send the name through tostan for de-aliasing.
-          #
-          funits = input( 'From Units : '  )
-          funits = tostan( funits )
-
-          #
-          # Input a double precision value to express in a new
-          # unit format.
-          #
-          fvalue = float(input( 'From Value : ' ))
-
-          #
-          # Now the user inputs the name of the output units.
-          # Again we send the units name through tostan for
-          # de-aliasing.
-          #
-          tunits = input( 'To Units   : ' )
-          tunits = tostan( tunits )
-
-          tvalue = spiceypy.convrt( fvalue, funits, tunits)
-          print( '{0:12.5f} {1}'.format(tvalue, tunits) )
-
-      if __name__ == '__main__':
-         units()
 
 Run the code example
 
@@ -2059,7 +1217,7 @@ was linked:
 
 .. code-block:: text
 
-      Convert demo program compiled against CSPICE Toolkit CSPICE_N0066
+      Convert demo program compiled against CSPICE Toolkit CSPICE_N0067
       From Units : klicks
       From Value : 3
       To Units   : miles
@@ -2071,9 +1229,9 @@ Legend states Pheidippides ran from the Marathon Plain to Athens. The
 modern marathon race (inspired by this event) spans 26.2 miles. How far
 in kilometers?
 
-::
+.. code-block:: text
 
-      Convert demo program compiled against CSPICE Toolkit CSPICE_N0066
+      Convert demo program compiled against CSPICE Toolkit CSPICE_N0067
       From Units : miles
       From Value : 26.2
       To Units   : km
@@ -2092,94 +1250,9 @@ calculate some rudimentary values.
 Code Solution
 ^^^^^^^^^^^^^
 
-.. code-block:: python
-
-      from __future__ import print_function
-
-      #
-      # Import the CSPICE-Python interface.
-      #
-      import spiceypy
-
-      def xconst():
-
-          #
-          # All the function have the same calling sequence:
-          #
-          #    VALUE = function_name()
-          #
-          #    some_procedure( function_name() )
-          #
-          # First a simple example using the seconds per day
-          # constant...
-          #
-          print( 'Number of (S)econds (P)er (D)ay         : '
-                 '{0:19.12f}'.format(spiceypy.spd() ))
-
-          #
-          # ...then show the value of degrees per radian, 180/Pi...
-          #
-          print( 'Number of (D)egrees (P)er (R)adian      : '
-                 '{0:19.16f}'.format(spiceypy.dpr() ))
-
-          #
-          # ...and the inverse, radians per degree, Pi/180.
-          # It is obvious spiceypy.dpr() equals 1.d/spiceypy.rpd(), or
-          # more simply spiceypy.dpr() * spiceypy.rpd() equals 1
-          #
-          print( 'Number of (R)adians (P)er (D)egree      : '
-                 '{0:19.16f}'.format(spiceypy.rpd() ))
-
-          #
-          # What's the value for the astrophysicist's favorite
-          # physical constant (in a vacuum)?
-          #
-          print( 'Speed of light in KM per second         : '
-                 '{0:19.12f}'.format(spiceypy.clight() ))
-
-          #
-          # How long (in Julian days) from the J2000 epoch to the
-          # J2100 epoch?
-          #
-          print( 'Number of days between epochs J2000')
-          print( '  and J2100                             : '
-                 '{0:19.12f}'.format(  spiceypy.j2100()
-                                     - spiceypy.j2000() ))
-
-          #
-          # Redo the calculation returning seconds...
-          #
-          print( 'Number of seconds between epochs' )
-          print( '  J2000 and J2100                       : '
-                 '{0:19.5f}'.format(spiceypy.spd() *          \
-                 (spiceypy.j2100() - spiceypy.j2000() ) ))
-
-
-          #
-          # ...then tropical years.
-          #
-          val =(spiceypy.spd()/spiceypy.tyear()    ) *        \
-               (spiceypy.j2100()- spiceypy.j2000() )
-          print( 'Number of tropical years between' )
-          print( '  epochs J2000 and J2100                : '
-                 '{0:19.12f}'.format(val))
-
-
-          #
-          # Finally, how can I convert a radian value to degrees.
-          #
-          print( 'Number of degrees in Pi/2 radians of arc: '
-                 '{0:19.16f}'.format(  spiceypy.halfpi()
-                                     * spiceypy.dpr()      ))
-
-          #
-          # and degrees to radians.
-          #
-          print( 'Number of radians in 250 degrees of arc : '
-                 '{0:19.16f}'.format(250. * spiceypy.rpd() ))
-
-      if __name__ == '__main__':
-         xconst()
+.. py-editor::
+    :env: other
+    :src: scripts/other_stuff/xconst.py
 
 Run the code example
 

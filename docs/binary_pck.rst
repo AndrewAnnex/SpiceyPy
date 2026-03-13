@@ -78,7 +78,15 @@ built-in Python help system.
 
 For example, the Python help function
 
-.. code-block:: python
+.. py-editor::
+    :env: bpenv
+    :config: pyscript_binary_pck.json
+    :setup:
+
+    import spiceypy
+
+.. py-editor::
+    :env: bpenv
 
      import spiceypy
 
@@ -238,195 +246,17 @@ Solution Meta-Kernel
 The meta-kernel we created for the solution to this exercise is named
 'mrotat.tm'. Its contents follow:
 
-.. code-block:: text
-
-      KPL/MK
-
-      Meta-kernel for the "Moon Rotation" task in the Binary PCK
-      Hands On Lesson.
-
-      The names and contents of the kernels referenced by this
-      meta-kernel are as follows:
-
-      File name                    Contents
-      ---------------------------  ------------------------------------
-      naif0008.tls                 Generic LSK
-      de414_2000_2020.bsp          Solar System Ephemeris
-      moon_060721.tf               Lunar FK
-      pck00008.tpc                 NAIF text PCK
-      moon_pa_de403_1950-2198.bpc  Moon binary PCK
-
-      \begindata
-
-         KERNELS_TO_LOAD = ( 'kernels/lsk/naif0008.tls'
-                             'kernels/spk/de414_2000_2020.bsp'
-                             'kernels/fk/moon_060721.tf'
-                             'kernels/pck/pck00008.tpc'
-                             'kernels/pck/moon_pa_de403_1950-2198.bpc' )
-      \begintext
+.. py-editor::
+    :env: bpenv
+    :src: scripts/binary_pck/mrotat_make_mk.py
 
 Solution Source Code
 
 A sample solution to the problem follows:
 
-.. code-block:: python
-
-      #
-      # Solution mrotat
-      #
-      from __future__ import print_function
-
-      #
-      # SpiceyPy package:
-      #
-      import spiceypy
-
-
-      def mrotat():
-          #
-          # Local parameters
-          #
-          METAKR = "mrotat.tm"
-
-          #
-          # Load the kernels that this program requires.
-          #
-          spiceypy.furnsh(METAKR)
-
-          #
-          # Convert our UTC string to seconds past J2000 TDB.
-          #
-          timstr = "2007 JAN 1 00:00:00"
-          et = spiceypy.str2et(timstr)
-
-          #
-          # Look up the apparent position of the Earth relative
-          # to the Moon's center in the IAU_MOON frame at ET.
-          #
-          [imoonv, ltime] = spiceypy.spkpos("earth", et, "iau_moon", "lt+s", "moon")
-
-          #
-          # Express the Earth direction in terms of longitude
-          # and latitude in the IAU_MOON frame.
-          #
-          [r, lon, lat] = spiceypy.reclat(imoonv)
-
-          print(
-              "\n"
-              "Moon-Earth direction using low accuracy\n"
-              "PCK and IAU_MOON frame:\n"
-              "Earth lon (deg):        {0:15.6f}\n"
-              "Earth lat (deg):        {1:15.6f}\n".format(
-                  lon * spiceypy.dpr(), lat * spiceypy.dpr()
-              )
-          )
-          #
-          # Look up the apparent position of the Earth relative
-          # to the Moon's center in the MOON_ME frame at ET.
-          #
-          [mmoonv, ltime] = spiceypy.spkpos("earth", et, "moon_me", "lt+s", "moon")
-          #
-          # Express the Earth direction in terms of longitude
-          # and latitude in the MOON_ME frame.
-          #
-          [r, lon, lat] = spiceypy.reclat(mmoonv)
-
-          print(
-              "Moon-Earth direction using high accuracy\n"
-              "PCK and MOON_ME frame:\n"
-              "Earth lon (deg):        {0:15.6f}\n"
-              "Earth lat (deg):        {1:15.6f}\n".format(
-                  lon * spiceypy.dpr(), lat * spiceypy.dpr()
-              )
-          )
-          #
-          # Find the angular separation of the Earth position
-          # vectors in degrees.
-          #
-          sep = spiceypy.dpr() * spiceypy.vsep(imoonv, mmoonv)
-
-          print("For IAU_MOON vs MOON_ME frames:")
-          print("Moon-Earth vector separation angle (deg):     " "{:15.6f}\n".format(sep))
-          #
-          # Look up the apparent position of the Earth relative
-          # to the Moon's center in the MOON_PA frame at ET.
-          #
-          [pmoonv, ltime] = spiceypy.spkpos("earth", et, "moon_pa", "lt+s", "moon")
-          #
-          # Express the Earth direction in terms of longitude
-          # and latitude in the MOON_PA frame.
-          #
-          [r, lon, lat] = spiceypy.reclat(pmoonv)
-
-          print(
-              "Moon-Earth direction using high accuracy\n"
-              "PCK and MOON_PA frame:\n"
-              "Earth lon (deg):        {0:15.6f}\n"
-              "Earth lat (deg):        {1:15.6f}\n".format(
-                  lon * spiceypy.dpr(), lat * spiceypy.dpr()
-              )
-          )
-          #
-          # Find the angular separation of the Earth position
-          # vectors in degrees.
-          #
-          sep = spiceypy.dpr() * spiceypy.vsep(pmoonv, mmoonv)
-
-          print("For MOON_PA vs MOON_ME frames:")
-          print("Moon-Earth vector separation angle (deg):     " "{:15.6f}\n".format(sep))
-          #
-          # Find the apparent sub-Earth point on the Moon at ET
-          # using the MOON_ME frame.
-          #
-          [msub, trgepc, srfvec] = spiceypy.subpnt(
-              "near point: ellipsoid", "moon", et, "moon_me", "lt+s", "earth"
-          )
-          #
-          # Display the sub-point in latitudinal coordinates.
-          #
-          [r, lon, lat] = spiceypy.reclat(msub)
-
-          print(
-              "Sub-Earth point on Moon using high accuracy\n"
-              "PCK and MOON_ME frame:\n"
-              "Sub-Earth lon (deg):   {0:15.6f}\n"
-              "Sub-Earth lat (deg):   {1:15.6f}\n".format(
-                  lon * spiceypy.dpr(), lat * spiceypy.dpr()
-              )
-          )
-          #
-          # Find the apparent sub-Earth point on the Moon at
-          # ET using the MOON_PA frame.
-          #
-          [psub, trgepc, srfvec] = spiceypy.subpnt(
-              "near point: ellipsoid", "moon", et, "moon_pa", "lt+s", "earth"
-          )
-          #
-          # Display the sub-point in latitudinal coordinates.
-          #
-          [r, lon, lat] = spiceypy.reclat(psub)
-
-          print(
-              "Sub-Earth point on Moon using high accuracy\n"
-              "PCK and MOON_PA frame:\n"
-              "Sub-Earth lon (deg):   {0:15.6f}\n"
-              "Sub-Earth lat (deg):   {1:15.6f}\n".format(
-                  lon * spiceypy.dpr(), lat * spiceypy.dpr()
-              )
-          )
-          #
-          # Find the distance between the sub-Earth points
-          # in km.
-          #
-          dist = spiceypy.vdist(msub, psub)
-
-          print("Distance between sub-Earth points (km): " "{:15.6f}\n".format(dist))
-
-          spiceypy.unload(METAKR)
-
-
-      if __name__ == "__main__":
-          mrotat()
+.. py-editor::
+    :env: bpenv
+    :src: scripts/binary_pck/mrotat.py
 
 Solution Sample Output
 
@@ -641,259 +471,17 @@ Solution Meta-Kernel
 The meta-kernel we created for the solution to this exercise is named
 'erotat.tm'. Its contents follow:
 
-.. code-block:: text
-
-      KPL/MK
-
-      Meta-kernel for the "Earth Rotation" task
-      in the Binary PCK Hands On Lesson.
-
-      The names and contents of the kernels referenced by this
-      meta-kernel are as follows:
-
-      File name                       Contents
-      ------------------------------  ---------------------------------
-      naif0008.tls                    Generic LSK
-      de414_2000_2020.bsp             Solar System Ephemeris
-      earthstns_itrf93_050714.bsp     DSN station Ephemeris
-      earth_topo_050714.tf            Earth topocentric FK
-      pck00008.tpc                    NAIF text PCK
-      earth_000101_070725_070503.bpc  Earth binary PCK
-
-
-      \begindata
-
-      KERNELS_TO_LOAD = ( 'kernels/lsk/naif0008.tls'
-                          'kernels/spk/de414_2000_2020.bsp'
-                          'kernels/spk/earthstns_itrf93_050714.bsp'
-                          'kernels/fk/earth_topo_050714.tf'
-                          'kernels/pck/pck00008.tpc'
-                          'kernels/pck/earth_000101_070725_070503.bpc' )
-
-      \begintext
+.. py-editor::
+    :env: bpenv
+    :src: scripts/binary_pck/erotat_make_mk.py
 
 Solution Source Code
 
 A sample solution to the problem follows:
 
-.. code-block:: python
-
-      #
-      # Solution mrotat
-      #
-      from __future__ import print_function
-
-      #
-      # SpiceyPy package:
-      #
-      import spiceypy
-
-
-      def erotat():
-          #
-          # Local parameters
-          #
-          METAKR = "erotat.tm"
-
-          x = [1.0, 0.0, 0.0]
-          z = [0.0, 0.0, 1.0]
-
-          #
-          # Load the kernels that this program requires.
-          #
-          spiceypy.furnsh(METAKR)
-
-          #
-          # Convert our UTC string to seconds past J2000 TDB.
-          #
-          timstr = "2007 JAN 1 00:00:00"
-          et = spiceypy.str2et(timstr)
-
-          #
-          # Look up the apparent position of the Moon relative
-          # to the Earth's center in the IAU_EARTH frame at ET.
-          #
-          [lmoonv, ltime] = spiceypy.spkpos("moon", et, "iau_earth", "lt+s", "earth")
-          #
-          # Express the Moon direction in terms of longitude
-          # and latitude in the IAU_EARTH frame.
-          #
-          [r, lon, lat] = spiceypy.reclat(lmoonv)
-
-          print(
-              "Earth-Moon direction using low accuracy\n"
-              "PCK and IAU_EARTH frame:\n"
-              "Moon lon (deg):        {0:15.6f}\n"
-              "Moon lat (deg):        {1:15.6f}\n".format(
-                  lon * spiceypy.dpr(), lat * spiceypy.dpr()
-              )
-          )
-          #
-          # Look up the apparent position of the Moon relative
-          # to the Earth's center in the ITRF93 frame at ET.
-          #
-          [hmoonv, ltime] = spiceypy.spkpos("moon", et, "ITRF93", "lt+s", "earth")
-          #
-          # Express the Moon direction in terms of longitude
-          # and latitude in the ITRF93 frame.
-          #
-          [r, lon, lat] = spiceypy.reclat(hmoonv)
-
-          print(
-              "Earth-Moon direction using high accuracy\n"
-              "PCK and ITRF93 frame:\n"
-              "Moon lon (deg):        {0:15.6f}\n"
-              "Moon lat (deg):        {1:15.6f}\n".format(
-                  lon * spiceypy.dpr(), lat * spiceypy.dpr()
-              )
-          )
-          #
-          # Find the angular separation of the Moon position
-          # vectors in degrees.
-          #
-          sep = spiceypy.dpr() * spiceypy.vsep(lmoonv, hmoonv)
-
-          print("Earth-Moon vector separation angle (deg):     " "{:15.6f}\n".format(sep))
-
-          #
-          # Next, express the +Z and +X axes of the ITRF93 frame in
-          # the IAU_EARTH frame. We'll do this for two times: et
-          # and et + 100 days.
-          #
-          for i in range(2):
-              #
-              # Set the time, expressing the time delta in
-              # seconds.
-              #
-              t = et + i * spiceypy.spd() * 100
-
-              #
-              # Convert the TDB time T to a string for output.
-              #
-              outstr = spiceypy.timout(t, "YYYY-MON-DD HR:MN:SC.### (UTC)")
-
-              print("Epoch: {:s}".format(outstr))
-
-              #
-              # Find the rotation matrix for conversion of
-              # position vectors from the IAU_EARTH to the
-              # ITRF93 frame.
-              #
-              rmat = spiceypy.pxform("iau_earth", "itrf93", t)
-              itrfx = rmat[0]
-              itrfz = rmat[2]
-
-              #
-              # Display the angular offsets of the ITRF93
-              # +X and +Z axes from their IAU_EARTH counterparts.
-              #
-              sep = spiceypy.vsep(itrfx, x)
-
-              print(
-                  "ITRF93 - IAU_EARTH +X axis separation "
-                  "angle (deg): {:13.6f}".format(sep * spiceypy.dpr())
-              )
-
-              sep = spiceypy.vsep(itrfz, z)
-
-              print(
-                  "ITRF93 - IAU_EARTH +Z axis separation "
-                  "angle (deg): {:13.6f}\n".format(sep * spiceypy.dpr())
-              )
-
-          #
-          # Find the azimuth and elevation of apparent
-          # position of the Moon in the local topocentric
-          # reference frame at the DSN station DSS-13.
-          # First look up the Moon's position relative to the
-          # station in that frame.
-          #
-          [topov, ltime] = spiceypy.spkpos("moon", et, "DSS-13_TOPO", "lt+s", "DSS-13")
-
-          #
-          # Express the station-moon direction in terms of longitude
-          # and latitude in the DSS-13_TOPO frame.
-          #
-          [r, lon, lat] = spiceypy.reclat(topov)
-
-          #
-          # Convert to azimuth-elevation.
-          #
-          az = -lon
-
-          if az < 0.0:
-              az += spiceypy.twopi()
-
-          el = lat
-
-          print(
-              "DSS-13-Moon az/el using high accuracy "
-              "PCK and DSS-13_TOPO frame:\n"
-              "Moon Az (deg):        {0:15.6f}\n"
-              "Moon El (deg):        {1:15.6f}\n".format(
-                  az * spiceypy.dpr(), el * spiceypy.dpr()
-              )
-          )
-
-          #
-          # Find the sub-solar point on the Earth at ET using the
-          # Earth body-fixed frame IAU_EARTH. Treat the Sun as
-          # the observer.
-          #
-          [lsub, trgepc, srfvec] = spiceypy.subslr(
-              "near point: ellipsoid", "earth", et, "IAU_EARTH", "lt+s", "sun"
-          )
-
-          #
-          # Display the sub-point in latitudinal coordinates.
-          #
-          [r, lon, lat] = spiceypy.reclat(lsub)
-
-          print(
-              "Sub-Solar point on Earth using low accuracy\n"
-              "PCK and IAU_EARTH frame:\n"
-              "Sub-Solar lon (deg):   {0:15.6f}\n"
-              "Sub-Solar lat (deg):   {1:15.6f}\n".format(
-                  lon * spiceypy.dpr(), lat * spiceypy.dpr()
-              )
-          )
-
-          #
-          # Find the sub-solar point on the Earth at ET using the
-          # Earth body-fixed frame ITRF93. Treat the Sun as
-          # the observer.
-          #
-          [hsub, trgepc, srfvec] = spiceypy.subslr(
-              "near point: ellipsoid", "earth", et, "ITRF93", "lt+s", "sun"
-          )
-
-          #
-          # Display the sub-point in latitudinal coordinates.
-          #
-          [r, lon, lat] = spiceypy.reclat(hsub)
-
-          print(
-              "Sub-Solar point on Earth using "
-              "high accuracy \nPCK and ITRF93 frame:\n"
-              "Sub-Solar lon (deg):   {0:15.6f}\n"
-              "Sub-Solar lat (deg):   {1:15.6f}\n".format(
-                  lon * spiceypy.dpr(), lat * spiceypy.dpr()
-              )
-          )
-
-          #
-          # Find the distance between the sub-solar point
-          # vectors in km.
-          #
-          dist = spiceypy.vdist(lsub, hsub)
-
-          print("Distance between sub-solar points (km): " "{:15.6f}".format(dist))
-
-          spiceypy.unload(METAKR)
-
-
-      if __name__ == "__main__":
-          erotat()
+.. py-editor::
+    :env: bpenv
+    :src: scripts/binary_pck/erotat.py
 
 Solution Sample Output
 

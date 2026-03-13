@@ -102,7 +102,16 @@ built-in Python help system.
 
 For example, the Python help function
 
-.. code-block:: python
+.. py-editor::
+    :env: rsenv
+    :config: pyscript_remote_sensing.json
+    :setup:
+
+    import spiceypy
+
+.. py-editor::
+    :env: rsenv
+    :config: pyscript_remote_sensing.json
 
      import spiceypy
      help(spiceypy.str2et)
@@ -291,93 +300,18 @@ Solution Meta-Kernel
 The meta-kernel we created for the solution to this exercise is named
 'convtm.tm'. Its contents follow:
 
-.. code-block:: text
-
-      KPL/MK
-
-         This is the meta-kernel used in the solution of the "Time
-         Conversion" task in the Remote Sensing Hands On Lesson.
-
-         The names and contents of the kernels referenced by this
-         meta-kernel are as follows:
-
-         File name                   Contents
-         --------------------------  -----------------------------
-         naif0008.tls                Generic LSK
-         cas00084.tsc                Cassini SCLK
-
-
-         \begindata
-         KERNELS_TO_LOAD = ( 'kernels/lsk/naif0008.tls',
-                             'kernels/sclk/cas00084.tsc' )
-         \begintext
+.. py-editor::
+    :env: rsenv
+    :config: pyscript_remote_sensing.json
+    :src: scripts/remote_sensing/convtm_make_mk.py
 
 Solution Source Code
 
 A sample solution to the problem follows:
 
-.. code-block:: python
-     :linenos:
-
-      #
-      # Solution convtm
-      #
-      from __future__ import print_function
-      from builtins import input
-
-      import spiceypy
-
-      def convtm():
-          #
-          # Local Parameters
-          #
-          METAKR = 'convtm.tm'
-          SCLKID = -82
-
-          spiceypy.furnsh( METAKR )
-
-          #
-          # Prompt the user for the input time string.
-          #
-          utctim = input( 'Input UTC Time: ' )
-
-          print( 'Converting UTC Time: {:s}'.format( utctim ) )
-
-          #
-          # Convert utctim to ET.
-          #
-          et = spiceypy.str2et( utctim )
-
-          print( '   ET Seconds Past J2000: {:16.3f}'.format( et ) )
-
-          #
-          # Now convert ET to a calendar time string.
-          # This can be accomplished in two ways.
-          #
-          calet = spiceypy.etcal( et )
-
-          print( '   Calendar ET (etcal):   {:s}'.format( calet ) )
-
-          #
-          # Or use timout for finer control over the
-          # output format. The picture below was built
-          # by examining the header of timout.
-          #
-          calet = spiceypy.timout( et, 'YYYY-MON-DDTHR:MN:SC ::TDB' )
-
-          print( '   Calendar ET (timout):  {:s}'.format( calet ) )
-
-          #
-          # Convert ET to spacecraft clock time.
-          #
-          sclkst = spiceypy.sce2s( SCLKID, et )
-
-          print( '   Spacecraft Clock Time: {:s}'.format( sclkst ) )
-
-          spiceypy.unload( METAKR )
-
-      if __name__ == '__main__':
-          convtm()
+.. py-editor::
+    :env: rsenv
+    :src: scripts/remote_sensing/convtm.py
 
 Solution Sample Output
 
@@ -671,163 +605,17 @@ Solution Meta-Kernel
 The meta-kernel we created for the solution to this exercise is named
 'getsta.tm'. Its contents follow:
 
-.. code-block:: text
-
-      KPL/MK
-
-         This is the meta-kernel used in the solution of the
-         "Obtaining Target States and Positions" task in the
-         Remote Sensing Hands On Lesson.
-
-         The names and contents of the kernels referenced by this
-         meta-kernel are as follows:
-
-         File name                   Contents
-         --------------------------  -----------------------------
-         naif0008.tls                Generic LSK
-         981005_PLTEPH-DE405S.bsp    Solar System Ephemeris
-         020514_SE_SAT105.bsp        Saturnian Satellite Ephemeris
-         030201AP_SK_SM546_T45.bsp   Cassini Spacecraft SPK
-
-
-         \begindata
-         KERNELS_TO_LOAD = ( 'kernels/lsk/naif0008.tls',
-                             'kernels/spk/981005_PLTEPH-DE405S.bsp',
-                             'kernels/spk/020514_SE_SAT105.bsp',
-                             'kernels/spk/030201AP_SK_SM546_T45.bsp' )
-         \begintext
+.. py-editor::
+    :env: rsenv
+    :src: scripts/remote_sensing/getsta_make_mk.py
 
 Solution Source Code
 
 A sample solution to the problem follows:
 
-.. code-block:: python
-     :linenos:
-
-      #
-      # Solution getsta.py
-      #
-      from __future__ import print_function
-      from builtins import input
-
-      import spiceypy
-
-      def getsta():
-          #
-          # Local parameters
-          #
-          METAKR = 'getsta.tm'
-
-          #
-          # Load the kernels that this program requires.  We
-          # will need a leapseconds kernel to convert input
-          # UTC time strings into ET.  We also will need the
-          # necessary SPK files with coverage for the bodies
-          # in which we are interested.
-          #
-          spiceypy.furnsh( METAKR )
-
-          #
-          #Prompt the user for the input time string.
-          #
-          utctim = input( 'Input UTC Time: ' )
-
-          print( 'Converting UTC Time: {:s}'.format(utctim)  )
-
-          #
-          #Convert utctim to ET.
-          #
-          et = spiceypy.str2et( utctim )
-
-          print( '   ET seconds past J2000: {:16.3f}'.format(et) )
-
-          #
-          # Compute the apparent state of Phoebe as seen from
-          # CASSINI in the J2000 frame.  All of the ephemeris
-          # readers return states in units of kilometers and
-          # kilometers per second.
-          #
-          [state, ltime] = spiceypy.spkezr( 'PHOEBE', et,      'J2000',
-                                            'LT+S',   'CASSINI'       )
-
-          print( '   Apparent state of Phoebe as seen '
-                 'from CASSINI in the J2000\n'
-                 '      frame (km, km/s):'              )
-
-          print( '      X = {:16.3f}'.format(state[0])       )
-          print( '      Y = {:16.3f}'.format(state[1])       )
-          print( '      Z = {:16.3f}'.format(state[2])       )
-          print( '     VX = {:16.3f}'.format(state[3])       )
-          print( '     VY = {:16.3f}'.format(state[4])       )
-          print( '     VZ = {:16.3f}'.format(state[5])       )
-
-          #
-          # Compute the apparent position of Earth as seen from
-          # CASSINI in the J2000 frame.  Note: We could have
-          # continued using spkezr and simply ignored the
-          # velocity components.
-          #
-          [pos, ltime] = spiceypy.spkpos( 'EARTH', et,        'J2000',
-                                          'LT+S',  'CASSINI',         )
-
-          print( '   Apparent position of Earth as '
-                 'seen from CASSINI in the J2000\n'
-                 '      frame (km):'                )
-          print( '      X = {:16.3f}'.format(pos[0])  )
-          print( '      Y = {:16.3f}'.format(pos[1])  )
-          print( '      Z = {:16.3f}'.format(pos[2])  )
-
-          #
-          # We need only display LTIME, as it is precisely the
-          # light time in which we are interested.
-          #
-          print( '   One way light time between CASSINI and '
-                 'the apparent position\n'
-                 '      of Earth (seconds):'
-                 ' {:16.3f}'.format(ltime) )
-
-          #
-          # Compute the apparent position of the Sun as seen from
-          # PHOEBE in the J2000 frame.
-          #
-          [pos, ltime] = spiceypy.spkpos( 'SUN',  et,       'J2000',
-                                          'LT+S', 'PHOEBE',         )
-
-          print( '   Apparent position of Sun as '
-                 'seen from Phoebe in the\n'
-                 '       J2000 frame (km):'           )
-          print( '      X = {:16.3f}'.format(pos[0])  )
-          print( '      Y = {:16.3f}'.format(pos[1])  )
-          print( '      Z = {:16.3f}'.format(pos[2])  )
-
-          #
-          # Now we need to compute the actual distance between
-          # the Sun and Phoebe.  The above spkpos call gives us
-          # the apparent distance, so we need to adjust our
-          # aberration correction appropriately.
-          #
-          [pos, ltime] = spiceypy.spkpos( 'SUN',  et,      'J2000',
-                                          'NONE', 'PHOEBE'         )
-
-          #
-          # Compute the distance between the body centers in
-          # kilometers.
-          #
-          dist = spiceypy.vnorm( pos )
-
-          #
-          # Convert this value to AU using convrt.
-          #
-          dist = spiceypy.convrt( dist, 'KM', 'AU' )
-
-          print( '   Actual distance between Sun and '
-                 'Phoebe body centers:\n'
-                 '      (AU): {:16.3f}'.format(dist) )
-
-          spiceypy.unload( METAKR )
-
-      if __name__ == '__main__':
-          getsta()
+.. py-editor::
+    :env: rsenv
+    :src: scripts/remote_sensing/getsta.py
 
 Solution Sample Output
 
@@ -1184,226 +972,17 @@ Solution Meta-Kernel
 The meta-kernel we created for the solution to this exercise is named
 'xform.tm'. Its contents follow:
 
-.. code-block:: text
-
-      KPL/MK
-
-         This is the meta-kernel used in the solution of the "Spacecraft
-         Orientation and Reference Frames" task in the Remote Sensing
-         Hands On Lesson.
-
-         The names and contents of the kernels referenced by this
-         meta-kernel are as follows:
-
-         File name                   Contents
-         --------------------------  -----------------------------
-         naif0008.tls                Generic LSK
-         cas00084.tsc                Cassini SCLK
-         981005_PLTEPH-DE405S.bsp    Solar System Ephemeris
-         020514_SE_SAT105.bsp        Saturnian Satellite Ephemeris
-         030201AP_SK_SM546_T45.bsp   Cassini Spacecraft SPK
-         cas_v37.tf                  Cassini FK
-         04135_04171pc_psiv2.bc      Cassini Spacecraft CK
-         cpck05Mar2004.tpc           Cassini Project PCK
-
-
-         \begindata
-         KERNELS_TO_LOAD = ( 'kernels/lsk/naif0008.tls',
-                             'kernels/sclk/cas00084.tsc',
-                             'kernels/spk/981005_PLTEPH-DE405S.bsp',
-                             'kernels/spk/020514_SE_SAT105.bsp',
-                             'kernels/spk/030201AP_SK_SM546_T45.bsp',
-                             'kernels/fk/cas_v37.tf',
-                             'kernels/ck/04135_04171pc_psiv2.bc',
-                             'kernels/pck/cpck05Mar2004.tpc' )
-         \begintext
+.. py-editor::
+    :env: rsenv
+    :src: scripts/remote_sensing/xform_make_mk.py
 
 Solution Source Code
 
 A sample solution to the problem follows:
 
-.. code-block:: python
-     :linenos:
-
-      #
-      # Solution xform.py
-      #
-      from __future__ import print_function
-      from builtins import input
-
-      import spiceypy
-
-      def xform():
-          #
-          # Local parameters
-          #
-          METAKR = 'xform.tm'
-
-          #
-          # Load the kernels that this program requires.  We
-          # will need:
-          #
-          #    A leapseconds kernel
-          #    A spacecraft clock kernel for CASSINI
-          #    The necessary ephemerides
-          #    A planetary constants file (PCK)
-          #    A spacecraft orientation kernel for CASSINI (CK)
-          #    A frame kernel (TF)
-          #
-          spiceypy.furnsh( METAKR )
-
-          #
-          #  Prompt the user for the input time string.
-          #
-          utctim = input( 'Input UTC Time: ' )
-
-          print( 'Converting UTC Time: {:s}'.format(utctim)  )
-
-          #
-          #Convert utctim to ET.
-          #
-          et = spiceypy.str2et( utctim )
-
-          print( '   ET seconds past J2000: {:16.3f}'.format(et) )
-
-          #
-          # Compute the apparent state of Phoebe as seen from
-          # CASSINI in the J2000 frame.
-          #
-          [state, ltime] = spiceypy.spkezr( 'PHOEBE', et,      'J2000',
-                                            'LT+S',   'CASSINI'       )
-          #
-          # Now obtain the transformation from the inertial
-          # J2000 frame to the non-inertial body-fixed IAU_PHOEBE
-          # frame.  Since we want the apparent position, we
-          # need to subtract ltime from et.
-          #
-          sform = spiceypy.sxform( 'J2000', 'IAU_PHOEBE', et-ltime )
-
-          #
-          # Now rotate the apparent J2000 state into IAU_PHOEBE
-          # with the following matrix multiplication:
-          #
-          bfixst = spiceypy.mxvg ( sform, state, 6, 6 )
-
-          #
-          # Display the results.
-          #
-          print( '   Apparent state of Phoebe as seen '
-                 'from CASSINI in the IAU_PHOEBE\n'
-                 '      body-fixed frame (km, km/s):'      )
-          print( '      X = {:19.6f}'.format(bfixst[0])    )
-          print( '      Y = {:19.6f}'.format(bfixst[1])    )
-          print( '      Z = {:19.6f}'.format(bfixst[2])    )
-          print( '     VX = {:19.6f}'.format(bfixst[3])    )
-          print( '     VY = {:19.6f}'.format(bfixst[4])    )
-          print( '     VZ = {:19.6f}'.format(bfixst[5])    )
-
-          #
-          # It is worth pointing out, all of the above could
-          #  have been done with a single use of spkezr:
-          #
-          [state, ltime] = spiceypy.spkezr(
-                              'PHOEBE', et,      'IAU_PHOEBE',
-                              'LT+S',   'CASSINI'              )
-          #
-          # Display the results.
-          #
-          print( '   Apparent state of Phoebe as seen '
-                 'from CASSINI in the IAU_PHOEBE\n'
-                 '      body-fixed frame (km, km/s) '
-                 'obtained using spkezr directly:'        )
-          print( '      X = {:19.6f}'.format(state[0])    )
-          print( '      Y = {:19.6f}'.format(state[1])    )
-          print( '      Z = {:19.6f}'.format(state[2])    )
-          print( '     VX = {:19.6f}'.format(state[3])    )
-          print( '     VY = {:19.6f}'.format(state[4])    )
-          print( '     VZ = {:19.6f}'.format(state[5])    )
-
-          #
-          # Note that the velocity found by using spkezr
-          # to compute the state in the IAU_PHOEBE frame differs
-          # at the few mm/second level from that found previously
-          # by calling spkezr and then sxform. Computing
-          # velocity via a single call to spkezr as we've
-          # done immediately above is slightly more accurate because
-          # it accounts for the effect of the rate of change of
-          # light time on the apparent angular velocity of the
-          # target's body-fixed reference frame.
-          #
-          # Now we are to compute the angular separation between
-          # the apparent position of the Earth as seen from the
-          # orbiter and the nominal boresight of the high gain
-          # antenna.  First, compute the apparent position of
-          # the Earth as seen from CASSINI in the J2000 frame.
-          #
-          [pos, ltime] = spiceypy.spkpos( 'EARTH', et,      'J2000',
-                                          'LT+S',  'CASSINI'        )
-
-          #
-          # Now compute the location of the antenna boresight
-          # at this same epoch.  From reading the frame kernel
-          # we know that the antenna boresight is nominally the
-          # +Z axis of the CASSINI_HGA frame defined there.
-          #
-          bsight = [ 0.0, 0.0, 1.0]
-
-          #
-          # Now compute the rotation matrix from CASSINI_HGA into
-          # J2000.
-          #
-          pform = spiceypy.pxform( 'CASSINI_HGA', 'J2000', et )
-
-          #
-          # And multiply the result to obtain the nominal
-          # antenna boresight in the J2000 reference frame.
-          #
-          bsight = spiceypy.mxv( pform, bsight )
-
-          #
-          # Lastly compute the angular separation.
-          #
-          sep =  spiceypy.convrt( spiceypy.vsep(bsight, pos),
-                                  'RADIANS', 'DEGREES'       )
-
-          print( '   Angular separation between the '
-                 'apparent position of\n'
-                 '      Earth and the CASSINI high '
-                 'gain antenna boresight (degrees):\n'
-                 '      {:16.3f}'.format(sep)        )
-
-          #
-          # Or alternatively we can work in the antenna
-          # frame directly.
-          #
-          [pos, ltime] = spiceypy.spkpos(
-                            'EARTH', et,      'CASSINI_HGA',
-                            'LT+S',  'CASSINI'               )
-
-          #
-          # The antenna boresight is the Z-axis in the
-          # CASSINI_HGA frame.
-          #
-          bsight = [ 0.0, 0.0, 1.0 ]
-
-          #
-          # Lastly compute the angular separation.
-          #
-          sep =  spiceypy.convrt( spiceypy.vsep(bsight, pos),
-                                  'RADIANS', 'DEGREES'       )
-
-          print( '   Angular separation between the '
-                 'apparent position of\n'
-                 '      Earth and the CASSINI high '
-                 'gain antenna boresight computed\n'
-                 '      using vectors in the CASSINI_HGA '
-                 'frame (degrees):\n'
-                 '      {:16.3f}'.format(sep)            )
-
-          spiceypy.unload( METAKR )
-
-      if __name__ == '__main__':
-          xform()
+.. py-editor::
+    :env: rsenv
+    :src: scripts/remote_sensing/xform.py
 
 Solution Sample Output
 
@@ -1642,145 +1221,17 @@ Solution Meta-Kernel
 The meta-kernel we created for the solution to this exercise is named
 'subpts.tm'. Its contents follow:
 
-.. code-block:: text
-
-      KPL/MK
-
-         This is the meta-kernel used in the solution of the
-         "Computing Sub-spacecraft and Sub-solar Points" task
-         in the Remote Sensing Hands On Lesson.
-
-         The names and contents of the kernels referenced by this
-         meta-kernel are as follows:
-
-         File name                   Contents
-         --------------------------  -----------------------------
-         naif0008.tls                Generic LSK
-         981005_PLTEPH-DE405S.bsp    Solar System Ephemeris
-         020514_SE_SAT105.bsp        Saturnian Satellite Ephemeris
-         030201AP_SK_SM546_T45.bsp   Cassini Spacecraft SPK
-         cpck05Mar2004.tpc           Cassini Project PCK
-         phoebe_64q.bds              Phoebe DSK
-
-
-         \begindata
-         KERNELS_TO_LOAD = ( 'kernels/lsk/naif0008.tls',
-                             'kernels/spk/981005_PLTEPH-DE405S.bsp',
-                             'kernels/spk/020514_SE_SAT105.bsp',
-                             'kernels/spk/030201AP_SK_SM546_T45.bsp',
-                             'kernels/pck/cpck05Mar2004.tpc'
-                             'kernels/dsk/phoebe_64q.bds' )
-
-         \begintext
+.. py-editor::
+    :env: rsenv
+    :src: scripts/remote_sensing/subpts_make_mk.py
 
 Solution Source Code
 
 A sample solution to the problem follows:
 
-.. code-block:: python
-     :linenos:
-
-      #
-      # Solution subpts.py
-      #
-      from __future__ import print_function
-      from builtins import input
-
-      #
-      # SpiceyPy package:
-      #
-      import spiceypy
-
-      def subpts():
-          #
-          # Local parameters
-          #
-          METAKR = 'subpts.tm'
-
-          #
-          # Load the kernels that this program requires.  We
-          # will need:
-          #
-          #    A leapseconds kernel
-          #    The necessary ephemerides
-          #    A planetary constants file (PCK)
-          #    A DSK file containing Phoebe shape data
-          #
-          spiceypy.furnsh( METAKR )
-
-          #
-          #Prompt the user for the input time string.
-          #
-          utctim = input( 'Input UTC Time: ' )
-
-          print( ' Converting UTC Time: {:s}'.format(utctim)  )
-
-          #
-          #Convert utctim to ET.
-          #
-          et = spiceypy.str2et( utctim )
-
-          print( '   ET seconds past J2000: {:16.3f}'.format(et) )
-
-          for  i  in range(2):
-
-              if  i  == 0:
-                  #
-                  # Use the "near point" sub-point definition
-                  # and an ellipsoidal model.
-                  #
-                  method = 'NEAR POINT/Ellipsoid'
-
-              else:
-                  #
-                  # Use the "nadir" sub-point definition
-                  # and a DSK model.
-                  #
-                  method = 'NADIR/DSK/Unprioritized'
-
-              print( '\n Sub-point/target shape model: {:s}\n'.format(
-                  method )  )
-
-              #
-              # Compute the apparent sub-observer point of CASSINI
-              # on Phoebe.
-              #
-              [spoint, trgepc, srfvec] = spiceypy.subpnt(
-                                      method,       'PHOEBE',  et,
-                                      'IAU_PHOEBE', 'LT+S', 'CASSINI' )
-
-              print( '   Apparent sub-observer point of CASSINI '
-                     'on Phoebe in the\n'
-                     '   IAU_PHOEBE frame (km):' )
-              print( '      X = {:16.3f}'.format(spoint[0])              )
-              print( '      Y = {:16.3f}'.format(spoint[1])              )
-              print( '      Z = {:16.3f}'.format(spoint[2])              )
-              print( '    ALT = {:16.3f}'.format(spiceypy.vnorm(srfvec)) )
-
-              #
-              # Compute the apparent sub-solar point on Phoebe
-              # as seen from CASSINI.
-              #
-              [spoint, trgepc, srfvec] = spiceypy.subslr(
-                              method,       'PHOEBE',  et,
-                              'IAU_PHOEBE', 'LT+S', 'CASSINI' )
-
-              print( '   Apparent sub-solar point on Phoebe '
-                     'as seen from CASSINI in\n'
-                     '   the IAU_PHOEBE frame (km):'  )
-              print( '      X = {:16.3f}'.format(spoint[0])   )
-              print( '      Y = {:16.3f}'.format(spoint[1])   )
-              print( '      Z = {:16.3f}'.format(spoint[2])   )
-
-          #
-          # End of computation block for "method"
-          #
-          print( " )
-
-          spiceypy.unload( METAKR )
-
-      if __name__ == '__main__':
-          subpts()
+.. py-editor::
+    :env: rsenv
+    :src: scripts/remote_sensing/subpts.py
 
 Solution Sample Output
 
@@ -2057,280 +1508,17 @@ Solution Meta-Kernel
 The meta-kernel we created for the solution to this exercise is named
 'fovint.tm'. Its contents follow:
 
-.. code-block:: text
-
-      KPL/MK
-
-         This is the meta-kernel used in the solution of the
-         "Intersecting Vectors with a Triaxial Ellipsoid" task
-         in the Remote Sensing Hands On Lesson.
-
-         The names and contents of the kernels referenced by this
-         meta-kernel are as follows:
-
-         File name                   Contents
-         --------------------------  -----------------------------
-         naif0008.tls                Generic LSK
-         cas00084.tsc                Cassini SCLK
-         981005_PLTEPH-DE405S.bsp    Solar System Ephemeris
-         020514_SE_SAT105.bsp        Saturnian Satellite Ephemeris
-         030201AP_SK_SM546_T45.bsp   Cassini Spacecraft SPK
-         cas_v37.tf                  Cassini FK
-         04135_04171pc_psiv2.bc      Cassini Spacecraft CK
-         cpck05Mar2004.tpc           Cassini Project PCK
-         cas_iss_v09.ti              ISS Instrument Kernel
-         phoebe_64q.bds              Phoebe DSK
-
-
-         \begindata
-         KERNELS_TO_LOAD = ( 'kernels/lsk/naif0008.tls',
-                             'kernels/sclk/cas00084.tsc',
-                             'kernels/spk/981005_PLTEPH-DE405S.bsp',
-                             'kernels/spk/020514_SE_SAT105.bsp',
-                             'kernels/spk/030201AP_SK_SM546_T45.bsp',
-                             'kernels/fk/cas_v37.tf',
-                             'kernels/ck/04135_04171pc_psiv2.bc',
-                             'kernels/pck/cpck05Mar2004.tpc',
-                             'kernels/ik/cas_iss_v09.ti'
-                             'kernels/dsk/phoebe_64q.bds' )
-         \begintext
+.. py-editor::
+    :env: rsenv
+    :src: scripts/remote_sensing/fovint_make_mk.py
 
 Solution Source Code
 
 A sample solution to the problem follows:
 
-.. code-block:: python
-     :linenos:
-     
-      #
-      # Solution fovint.py
-      #
-      from __future__ import print_function
-      from builtins import input
-
-      #
-      # SpiceyPy package:
-      #
-      import spiceypy
-      from spiceypy.utils.support_types import SpiceyError
-
-      def fovint():
-          #
-          # Local parameters
-          #
-          METAKR = 'fovint.tm'
-          ROOM   = 4
-
-          #
-          # Load the kernels that this program requires.  We
-          # will need:
-          #
-          #    A leapseconds kernel.
-          #    A SCLK kernel for CASSINI.
-          #    Any necessary ephemerides.
-          #    The CASSINI frame kernel.
-          #    A CASSINI C-kernel.
-          #    A PCK file with Phoebe constants.
-          #    The CASSINI ISS I-kernel.
-          #    A DSK file containing Phoebe shape data.
-          #
-          spiceypy.furnsh( METAKR )
-
-          #
-          #Prompt the user for the input time string.
-          #
-          utctim = input( 'Input UTC Time: ' )
-
-          print( 'Converting UTC Time: {:s}'.format(utctim)  )
-
-          #
-          #Convert utctim to ET.
-          #
-          et = spiceypy.str2et( utctim )
-
-          print( '  ET seconds past J2000: {:16.3f}\n'.format(et) )
-
-          #
-          # Now we need to obtain the FOV configuration of
-          # the ISS NAC camera.  To do this we will need the
-          # ID code for CASSINI_ISS_NAC.
-          #
-          try:
-              nacid = spiceypy.bodn2c( 'CASSINI_ISS_NAC' )
-
-          except SpiceyError:
-              #
-              # Stop the program if the code was not found.
-              #
-              print( 'Unable to locate the ID code for '
-                         'CASSINI_ISS_NAC'               )
-              raise
-
-          #
-          # Now retrieve the field of view parameters.
-          #
-          [ shape,  insfrm,
-            bsight, n,      bounds ] = spiceypy.getfov( nacid, ROOM )
-
-          #
-          # `bounds' is a numpy array. We'll convert it to a list.
-          #
-          # Rather than treat BSIGHT as a separate vector,
-          # copy it into the last slot of BOUNDS.
-          #
-          bounds = bounds.tolist()
-          bounds.append( bsight )
-
-          #
-          # Set vector names to be used for output.
-          #
-          vecnam = [ 'Boundary Corner 1',
-                     'Boundary Corner 2',
-                     'Boundary Corner 3',
-                     'Boundary Corner 4',
-                     'Cassini NAC Boresight' ]
-
-          #
-          # Set values of "method" string that specify use of
-          # ellipsoidal and DSK (topographic) shape models.
-          #
-          # In this case, we can use the same methods for calls to both
-          # spiceypy.sincpt and spiceypy.ilumin. Note that some SPICE
-          # routines require different "method" inputs from those
-          # shown here. See the API documentation of each routine
-          # for details.
-          #
-          method = [ 'Ellipsoid', 'DSK/Unprioritized']
-
-          #
-          # Get ID code of Phoebe. We'll use this ID code later, when we
-          # compute local solar time.
-          #
-          try:
-              phoeid = spiceypy.bodn2c( 'PHOEBE' )
-          except:
-              #
-              # The ID code for PHOEBE is built-in to the library.
-              # However, it is good programming practice to get
-              # in the habit of handling exceptions that may
-              # be thrown when a quantity is not found.
-              #
-              print( 'Unable to locate the body ID code '
-                     'for Phoebe.'                       )
-              raise
-
-          #
-          # Now perform the same set of calculations for each
-          # vector listed in the BOUNDS array. Use both
-          # ellipsoidal and detailed (DSK) shape models.
-          #
-          for i  in  range(5):
-              #
-              # Call sincpt to determine coordinates of the
-              # intersection of this vector with the surface
-              # of Phoebe.
-              #
-              print( 'Vector: {:s}\n'.format( vecnam[i] ) )
-
-              for  j  in range(2):
-
-                  print ( ' Target shape model: {:s}\n'.format(
-                                               method[j]      )  )
-                  try:
-
-                      [point, trgepc, srfvec ] = spiceypy.sincpt(
-                          method[j],    'PHOEBE',  et,
-                          'IAU_PHOEBE', 'LT+S',    'CASSINI',
-                          insfrm,       bounds[i]               )
-
-                      #
-                      # Now, we have discovered a point of intersection.
-                      # Start by displaying the position vector in the
-                      # IAU_PHOEBE frame of the intersection.
-                      #
-                      print( '  Position vector of surface intercept '
-                             'in the IAU_PHOEBE frame (km):'           )
-                      print( '     X   = {:16.3f}'.format( point[0] )  )
-                      print( '     Y   = {:16.3f}'.format( point[1] )  )
-                      print( '     Z   = {:16.3f}'.format( point[2] )  )
-
-                      #
-                      # Display the planetocentric latitude and longitude
-                      # of the intercept.
-                      #
-                      [radius, lon, lat] = spiceypy.reclat( point )
-
-                      print( '  Planetocentric coordinates of '
-                             'the intercept (degrees):'          )
-                      print( '     LAT = {:16.3f}'.format(
-                                         lat * spiceypy.dpr() )  )
-                      print( '     LON = {:16.3f}'.format(
-                                         lon * spiceypy.dpr() )  )
-                      #
-                      # Compute the illumination angles at this
-                      # point.
-                      #
-                      [ trgepc, srfvec, phase, solar,      \
-                        emissn, visibl, lit           ] =  \
-                           spiceypy.illumf(
-                               method[j],   'PHOEBE', 'SUN',     et,
-                              'IAU_PHOEBE', 'LT+S',   'CASSINI', point )
-
-                      print( '  Phase angle (degrees):           '
-                             '{:16.3f}'.format( phase*spiceypy.dpr() )  )
-                      print( '  Solar incidence angle (degrees): '
-                             '{:16.3f}'.format( solar*spiceypy.dpr() )  )
-                      print( '  Emission angle (degrees):        '
-                             '{:16.3f}'.format( emissn*spiceypy.dpr())  )
-                      print( '  Observer visible:  {:s}'.format(
-                          str(visibl) )  )
-                      print( '  Sun visible:       {:s}'.format(
-                          str(lit)    )  )
-
-                      if  i  ==  4:
-                          #
-                          # Compute local solar time corresponding
-                          # to the light time corrected TDB epoch
-                          # at the boresight intercept.
-                          #
-                          [hr, mn, sc, time, ampm] = spiceypy.et2lst(
-                              trgepc,
-                              phoeid,
-                              lon,
-                              'PLANETOCENTRIC' )
-
-                          print( '\n  Local Solar Time at boresight '
-                                 'intercept (24 Hour Clock):\n'
-                                 '     {:s}'.format( time )       )
-                      #
-                      # End of LST computation block.
-                      #
-
-                  except SpiceyError as exc:
-                      #
-                      # Display a message if an exception was thrown.
-                      # For simplicity, we treat this as an indication
-                      # that the point of intersection was not found,
-                      # although it could be due to other errors.
-                      # Otherwise, continue with the calculations.
-                      #
-                      print( 'Exception message is: {:s}'.format(
-                                exc.value ))
-                  #
-                  # End of SpiceyError try-catch block.
-                  #
-                  print( " )
-              #
-              # End of target shape model loop.
-              #
-          #
-          # End of vector loop.
-          #
-
-          spiceypy.unload( METAKR )
-
-      if __name__ == '__main__':
-           fovint()
+.. py-editor::
+    :env: rsenv
+    :src: scripts/remote_sensing/fovint.py
 
 Solution Sample Output
 

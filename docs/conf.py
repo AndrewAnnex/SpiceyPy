@@ -13,7 +13,10 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+import os
 import sys
+
+sys.path.insert(0, os.path.abspath("."))
 
 sys.setrecursionlimit(15000)
 
@@ -85,7 +88,22 @@ extensions = [
     "sphinx_copybutton",
     "myst_parser",
     "sphinx_rtd_theme",
+    "pyscript_editor",
 ]
+
+# Global defaults for pyscript (all optional)
+pyscript_version = "2026.2.1"
+pyscript_env = "shared"
+pyscript_config = "pyscript.json"
+pyscript_mini_coi = "mini-coi.js"  # "" to disable
+# Default is True — set to False to keep the line numbers
+pyscript_hide_gutters = True
+
+html_static_path = ["_static"]
+
+html_css_files = ["css/pyscript_editor.css"]
+
+
 # conf for autodoc typehints
 autodoc_typehints = "both"
 
@@ -200,6 +218,12 @@ html_short_title = "SpiceyPy Docs"
 # directly to the root of the documentation.
 html_extra_path = [
     "pyscript.json",
+    "pyscript_binary_pck.json",
+    "pyscript_min.json",
+    "pyscript_event_finding.json",
+    "pyscript_insitu_sensing.json",
+    "pyscript_remote_sensing.json",
+    "pyscript_other_stuff.json",
     "mini-coi.js",
 ]
 
