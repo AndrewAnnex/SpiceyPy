@@ -1,0 +1,16 @@
+{
+    "packages": [
+        "numpy",
+        "https://cdn.jsdelivr.net/gh/AndrewAnnex/spiceypy-wheels-dist@v8.0.2-dev.2/spiceypy-8.0.2-cp313-cp313-pyodide_2025_0_wasm32.whl"
+    ],
+    "files": {
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/naif0008.tls": "kernels/lsk/naif0008.tls",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/de414_2000_2020.bsp": "kernels/spk/de414_2000_2020.bsp",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/moon_060721.tf": "kernels/fk/moon_060721.tf",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/pck00008.tpc": "kernels/pck/pck00008.tpc",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/moon_pa_de403_1950-2198.bpc": "kernels/pck/moon_pa_de403_1950-2198.bpc",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/earthstns_itrf93_050714.bsp": "kernels/spk/earthstns_itrf93_050714.bsp",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/earth_topo_050714.tf": "kernels/fk/earth_topo_050714.tf",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/earth_000101_070725_070503.bpc": "kernels/pck/earth_000101_070725_070503.bpc"
+    }
+}

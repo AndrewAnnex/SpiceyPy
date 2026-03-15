@@ -47,14 +47,10 @@ this lesson:
       GF                The SPICE Geometry Finder (GF) subsystem
 
 These tutorials are available from the NAIF ftp server at JPL:
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: text
-
-      https://naif.jpl.nasa.gov/naif/tutorials.html
+https://naif.jpl.nasa.gov/naif/tutorials.html
 
 Required Readings
-^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
 .. tip::
    The `Required Readings <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/index.html>`_ are also available on the NAIF website at:
@@ -79,7 +75,7 @@ installation tree.
       windows.req      The SPICE window data type
 
 The Permuted Index
-^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 
 .. tip::
    The `Permuted Index <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/info/cspice_idx.html>`_ is also available on the NAIF website at:
@@ -94,24 +90,31 @@ discover which SpiceyPy functions perform functions of interest, as well
 as the names of the source files that contain these functions.
 
 SpiceyPy API Documentation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A SpiceyPy function's parameters specification is available using the
 built-in Python help system.
 
 For example, the Python help function
 
-.. code-block:: python
+.. py-editor::
+    :env: efenv
+    :config: pyscript_event_finding.json
+    :setup:
 
-      >>> import spiceypy
-      >>> help(spiceypy.str2et)
+    import spiceypy
 
-describes of the str2et function's parameters, while the document
+.. py-editor::
+    :env: efenv
+    :config: pyscript_event_finding.json
 
-.. code-block:: text
+    import spiceypy
 
-      https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/str2et_c.html
+    help(spiceypy.str2et)
 
+
+describes the str2et function's parameters, while the
+`str2et documentation <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/str2et_c.html>`_
 describes extensively the str2et functionality.
 
 Kernels Used
@@ -138,10 +141,7 @@ The following kernels are used in examples provided in this lesson:
 
 These SPICE kernels are included in the lesson package available from
 the NAIF server at JPL:
-
-.. code-block:: text
-
-      https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/Lessons/
+https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/Lessons/
 
 SpiceyPy Modules Used
 ---------------------
@@ -180,19 +180,13 @@ their corresponding CSPICE versions for detailed interface
 specifications.
 
 Find View Periods
-------------------------------
+-----------------
 
 Task Statement
 ^^^^^^^^^^^^^^
 
 Write a program that finds the set of time intervals, within the time
-range
-
-.. code-block:: text
-
-      2004 MAY 2 TDB
-      2004 MAY 6 TDB
-
+range ``2004 MAY 2 TDB`` to ``2004 MAY 6 TDB``,
 when the Mars Express Orbiter (MEX) is visible from the DSN station
 DSS-14. These time intervals are frequently called "view periods."
 
@@ -218,329 +212,84 @@ parsing and output formatting routines.
 Approach
 ^^^^^^^^
 
-Solution steps
+**Solution steps**
 
 A possible solution could consist of the following steps:
 
-Preparation:
+**Preparation:**
 
-.. code-block:: text
+#. Decide what SPICE kernels are necessary. Use the SPICE summary
+   tool BRIEF to examine the coverage of the binary kernels and
+   verify the availability of required data.
 
-       1.   Decide what SPICE kernels are necessary. Use the SPICE summary
-            tool BRIEF to examine the coverage of the binary kernels and
-            verify the availability of required data.
+#. Create a meta-kernel listing the SPICE kernels to be loaded.
+   (Hint: consult a programming example tutorial, or the
+   Introduction to Kernels tutorial, for a reminder of how to do
+   this.)
 
-       2.   Create a meta-kernel listing the SPICE kernels to be loaded.
-            (Hint: consult a programming example tutorial, or the
-            Introduction to Kernels tutorial, for a reminder of how to do
-            this.)
-
-            Name the meta-kernel 'viewpr.tm'.
+   Name the meta-kernel 'viewpr.tm'.
 
 Next, write a program that performs the following steps:
 
-.. code-block:: text
+#. Use :py:func:`spiceypy.furnsh <spiceypy.spiceypy.furnsh>` to load the meta-kernel.
 
-       1.   Use spiceypy.furnsh to load the meta-kernel.
+#. Create confinement and output SpiceyPy windows using
+   :py:func:`spiceypy.cell_double <spiceypy.spiceypy.cell_double>`.
 
-       2.   Create confinement and output SpiceyPy windows using
-            stypes.SPICEDOUBLE_CELL.
+#. Insert the given time bounds into the confinement window using
+   :py:func:`spiceypy.wninsd <spiceypy.spiceypy.wninsd>`.
 
-       3.   Insert the given time bounds into the confinement window using
-            spiceypy.wninsd.
+#. Select a step size for searching for visibility state
+   transitions: in this case, each target rise or set event is a
+   state transition.
 
-       4.   Select a step size for searching for visibility state
-            transitions: in this case, each target rise or set event is a
-            state transition.
+   The step size must be large enough so the search proceeds with
+   reasonable speed, but small enough so that no visibility
+   transition events---that is, target rise or set events---are
+   missed.
 
-            The step size must be large enough so the search proceeds with
-            reasonable speed, but small enough so that no visibility
-            transition events---that is, target rise or set events---are
-            missed.
+#. Use the GF routine :py:func:`spiceypy.gfposc <spiceypy.spiceypy.gfposc>` to find the window of times,
+   within the confinement window, during which the MEX spacecraft
+   is above the elevation limit as seen from DSN station DSS-14,
+   in the reference frame DSS-14_TOPO.
 
-       5.   Use the GF routine spiceypy.gfposc to find the window of times,
-            within the confinement window, during which the MEX spacecraft
-            is above the elevation limit as seen from DSN station DSS-14,
-            in the reference frame DSS-14_TOPO.
+   Use light time and stellar aberration corrections for the
+   apparent position of the spacecraft as seen from the station.
 
-            Use light time and stellar aberration corrections for the
-            apparent position of the spacecraft as seen from the station.
-
-       6.   Fetch and display the contents of the result window. Use
-            spiceypy.wnfetd to extract from the result window the start and
-            stop times of each time interval. Display each of the intervals
-            in the result window as a pair of start and stop times. Express
-            each time as a TDB calendar date using the routine
-            spiceypy.timout.
+#. Fetch and display the contents of the result window. Use
+   :py:func:`spiceypy.wnfetd <spiceypy.spiceypy.wnfetd>` to extract from the result window the start and
+   stop times of each time interval. Display each of the intervals
+   in the result window as a pair of start and stop times. Express
+   each time as a TDB calendar date using the routine
+   :py:func:`spiceypy.timout <spiceypy.spiceypy.timout>`.
 
 You may find it useful to consult the references listed above. In
-particular, the header of the SPICE GF function spiceypy.gfposc contains
+particular, the header of the SPICE GF function :py:func:`spiceypy.gfposc <spiceypy.spiceypy.gfposc>` contains
 pertinent documentation.
 
 Solution
 ^^^^^^^^
 
-Solution Meta-Kernel
+**Solution Meta-Kernel**
 
 The meta-kernel we created for the solution to this exercise is named
 'viewpr.tm'. Its contents follow:
 
-.. code-block:: text
-
-      KPL/MK
-
-         Example meta-kernel for geometric event finding hands-on
-         coding lesson.
-
-            Version 2.0.0 13-JUL-2017 (JDR)
-
-         The names and contents of the kernels referenced by this
-         meta-kernel are as follows:
-
-         File Name                       Description
-         ------------------------------  ------------------------------
-         de405xs.bsp                     Planetary ephemeris SPK,
-                                         subsetted to cover only
-                                         time range of interest.
-         earthstns_itrf93_050714.bsp     DSN station SPK.
-         earth_topo_050714.tf            DSN station frame definitions.
-         earth_000101_060525_060303.bpc  Binary PCK for Earth.
-         naif0008.tls                    Generic LSK.
-         ORMM__040501000000_00076XS.BSP  MEX Orbiter trajectory SPK,
-                                         subsetted to cover only
-                                         time range of interest.
-         pck00008.tpc                    Generic PCK.
+.. py-editor::
+    :env: efenv
+    :src: scripts/event_finding/viewpr_make_mk.py
 
 
-      \begindata
-
-         KERNELS_TO_LOAD = (
-
-                 'kernels/spk/de405xs.bsp'
-                 'kernels/spk/earthstns_itrf93_050714.bsp'
-                 'kernels/fk/earth_topo_050714.tf'
-                 'kernels/pck/earth_000101_060525_060303.bpc'
-                 'kernels/lsk/naif0008.tls'
-                 'kernels/spk/ORMM__040501000000_00076XS.BSP'
-                 'kernels/pck/pck00008.tpc'
-                           )
-
-      \begintext
-
-Solution Code
+**Solution Code**
 
 The example program below shows one possible solution.
 
-.. code-block:: python
+.. py-editor::
+    :env: efenv
+    :src: scripts/event_finding/viewpr.py
 
-      #
-      # Solution viewpr
-      #
-      from __future__ import print_function
-      import spiceypy.utils.support_types as stypes
-      import spiceypy
 
-      def viewpr():
-          #
-          # Local Parameters
-          #
-          METAKR = 'viewpr.tm'
-          TDBFMT = 'YYYY MON DD HR:MN:SC.### (TDB) ::TDB'
-          MAXIVL = 1000
-          MAXWIN = 2 * MAXIVL
-
-          #
-          # Load the meta-kernel.
-          #
-          spiceypy.furnsh( METAKR )
-
-          #
-          # Assign the inputs for our search.
-          #
-          # Since we're interested in the apparent location of the
-          # target, we use light time and stellar aberration
-          # corrections. We use the "converged Newtonian" form
-          # of the light time correction because this choice may
-          # increase the accuracy of the occultation times we'll
-          # compute using gfoclt.
-          #
-          srfpt  = 'DSS-14'
-          obsfrm = 'DSS-14_TOPO'
-          target = 'MEX'
-          abcorr = 'CN+S'
-          start  = '2004 MAY 2 TDB'
-          stop   = '2004 MAY 6 TDB'
-          elvlim =  6.0
-
-          #
-          # The elevation limit above has units of degrees; we convert
-          # this value to radians for computation using SPICE routines.
-          # We'll store the equivalent value in radians in revlim.
-          #
-          revlim = spiceypy.rpd() * elvlim
-
-          #
-          # Since SPICE doesn't directly support the AZ/EL coordinate
-          # system, we use the equivalent constraint
-          #
-          #    latitude > revlim
-          #
-          # in the latitudinal coordinate system, where the reference
-          # frame is topocentric and is centered at the viewing location.
-          #
-          crdsys = 'LATITUDINAL'
-          coord  = 'LATITUDE'
-          relate = '>'
-
-          #
-          # The adjustment value only applies to absolute extrema
-          # searches; simply give it an initial value of zero
-          # for this inequality search.
-          #
-          adjust = 0.0
-
-          #
-          # stepsz is the step size, measured in seconds, used to search
-          # for times bracketing a state transition. Since we don't expect
-          # any events of interest to be shorter than five minutes, and
-          # since the separation between events is well over 5 minutes,
-          # we'll use this value as our step size. Units are seconds.
-          #
-          stepsz = 300.0
-
-          #
-          # Display a banner for the output report:
-          #
-          print( '\n{:s}\n'.format(
-                 'Inputs for target visibility search:' )  )
-
-          print( '   Target                       = '
-                 '{:s}'.format( target )  )
-          print( '   Observation surface location = '
-                 '{:s}'.format( srfpt  )  )
-          print( '   Observer\'s reference frame   = '
-                 '{:s}'.format( obsfrm )  )
-          print( '   Elevation limit (degrees)    = '
-                 '{:f}'.format( elvlim )  )
-          print( '   Aberration correction        = '
-                 '{:s}'.format( abcorr )  )
-          print( '   Step size (seconds)          = '
-                 '{:f}'.format( stepsz )  )
-
-          #
-          # Convert the start and stop times to ET.
-          #
-          etbeg = spiceypy.str2et( start )
-          etend = spiceypy.str2et( stop  )
-
-          #
-          # Display the search interval start and stop times
-          # using the format shown below.
-          #
-          #    2004 MAY 06 20:15:00.000 (TDB)
-          #
-          timstr = spiceypy.timout( etbeg, TDBFMT )
-          print( '   Start time                   = '
-                 '{:s}'.format(timstr) )
-
-          timstr = spiceypy.timout( etend, TDBFMT )
-          print( '   Stop time                    = '
-                 '{:s}'.format(timstr) )
-
-          print( ' ' )
-
-          #
-          # Initialize the "confinement" window with the interval
-          # over which we'll conduct the search.
-          #
-          cnfine = stypes.SPICEDOUBLE_CELL(2)
-          spiceypy.wninsd( etbeg, etend, cnfine )
-
-          #
-          # In the call below, the maximum number of window
-          # intervals gfposc can store internally is set to MAXIVL.
-          # We set the cell size to MAXWIN to achieve this.
-          #
-          riswin = stypes.SPICEDOUBLE_CELL( MAXWIN )
-
-          #
-          # Now search for the time period, within our confinement
-          # window, during which the apparent target has elevation
-          # at least equal to the elevation limit.
-          #
-          spiceypy.gfposc( target, obsfrm, abcorr, srfpt,
-                           crdsys, coord,  relate, revlim,
-                           adjust, stepsz, MAXIVL, cnfine, riswin )
-
-          #
-          # The function wncard returns the number of intervals
-          # in a SPICE window.
-          #
-          winsiz = spiceypy.wncard( riswin )
-
-          if winsiz == 0:
-
-              print( 'No events were found.' )
-
-          else:
-
-              #
-              # Display the visibility time periods.
-              #
-              print( 'Visibility times of {0:s} '
-                     'as seen from {1:s}:\n'.format(
-                      target, srfpt )                )
-
-              for  i  in  range(winsiz):
-                  #
-                  # Fetch the start and stop times of
-                  # the ith interval from the search result
-                  # window riswin.
-                  #
-                  [intbeg, intend] = spiceypy.wnfetd( riswin, i )
-
-                  #
-                  # Convert the rise time to a TDB calendar string.
-                  #
-                  timstr = spiceypy.timout( intbeg, TDBFMT )
-
-                  #
-                  # Write the string to standard output.
-                  #
-                  if  i  ==  0:
-
-                      print( 'Visibility or window start time:'
-                             '  {:s}'.format( timstr )          )
-                  else:
-
-                      print( 'Visibility start time:          '
-                             '  {:s}'.format( timstr )          )
-
-                  #
-                  # Convert the set time to a TDB calendar string.
-                  #
-                  timstr = spiceypy.timout( intend, TDBFMT )
-
-                  #
-                  # Write the string to standard output.
-                  #
-                  if  i  ==  (winsiz-1):
-
-                      print( 'Visibility or window stop time: '
-                             '  {:s}'.format( timstr )          )
-                  else:
-
-                      print( 'Visibility stop time:           '
-                             '  {:s}'.format( timstr )          )
-
-                  print( ' ' )
-
-          spiceypy.unload( METAKR )
-
-      if __name__ == '__main__':
-          viewpr()
-
-Solution Sample Output
+**Solution Sample Output**
 
 Numerical results shown for this example may differ across platforms
 since the results depend on the SPICE kernels used as input and on the
@@ -579,7 +328,7 @@ Execute the program. The output is:
       Visibility or window stop time:   2004 MAY 06 00:00:00.000 (TDB)
 
 Find Times when Target is Visible
-----------------------------------
+---------------------------------
 
 .. _task-statement-ef-1:
 
@@ -589,12 +338,10 @@ Task Statement
 Extend the program of the previous chapter to find times when the MEX
 orbiter is:
 
-.. code-block:: text
+- Above the elevation limit in the DSS-14_TOPO topocentric
+  reference frame.
 
-       --   Above the elevation limit in the DSS-14_TOPO topocentric
-            reference frame.
-
-       --   and is not occulted by Mars
+- And not occulted by Mars.
 
 Finding time intervals that satisfy the second condition requires a
 search for occultations of the spacecraft by Mars. Perform this search
@@ -617,7 +364,7 @@ format as in the previous program.
 Learning Goals
 ^^^^^^^^^^^^^^
 
-Familiarity with the GF occultation finding routine spiceypy.gfoclt.
+Familiarity with the GF occultation finding routine :py:func:`spiceypy.gfoclt <spiceypy.spiceypy.gfoclt>`.
 Experience with Digital Shape Kernel (DSK) shape models. Further
 experience with the SpiceyPy window functions.
 
@@ -626,53 +373,51 @@ experience with the SpiceyPy window functions.
 Approach
 ^^^^^^^^
 
-Solution steps
+**Solution steps**
 
 A possible solution would consist of the following steps:
 
-.. code-block:: text
+#. Use the meta-kernel from the previous chapter as the starting
+   point. Add more kernels to it as needed.
 
-       1.   Use the meta-kernel from the previous chapter as the starting
-            point. Add more kernels to it as needed.
+   Name the meta-kernel 'visibl.tm'.
 
-            Name the meta-kernel 'visibl.tm'.
+#. Include the code from the program of the previous chapter in a
+   new source file; modify this code to create the new program.
 
-       2.   Include the code from the program of the previous chapter in a
-            new source file; modify this code to create the new program.
+#. Your program will need additional windows to capture the
+   results of occultation searches performed using both
+   ellipsoidal and DSK shape models. Additional windows will be
+   needed to compute the set differences of the elevation search
+   ("view period") window and each of the occultation search
+   windows. Further details are provided below.
 
-       3.   Your program will need additional windows to capture the
-            results of occultation searches performed using both
-            ellipsoidal and DSK shape models. Additional windows will be
-            needed to compute the set differences of the elevation search
-            ("view period") window and each of the occultation search
-            windows. Further details are provided below.
+   Create additional output SpiceyPy windows using
+   :py:func:`spiceypy.cell_double <spiceypy.spiceypy.cell_double>`.
 
-            Create additional output SpiceyPy windows using
-            stypes.SPICEDOUBLE_CELL.
+#. The remaining steps can be performed twice: once using an
+   ellipsoidal shape model for Mars, and once using a DSK Mars
+   shape model. Alternatively, two copies of the entire solution
+   program can be created: one for each shape model.
 
-       4.   The remaining steps can be performed twice: once using an
-            ellipsoidal shape model for Mars, and once using a DSK Mars
-            shape model. Alternatively, two copies of the entire solution
-            program can be created: one for each shape model.
+#. Search for occultations of the MEX orbiter as seen from DSS-14
+   using :py:func:`spiceypy.gfoclt <spiceypy.spiceypy.gfoclt>`. Use as the confinement window for this
+   search the result window from the elevation search performed by
+   :py:func:`spiceypy.gfposc <spiceypy.spiceypy.gfposc>`.
 
-       5.   Search for occultations of the MEX orbiter as seen from DSS-14
-            using spiceypy.gfoclt. Use as the confinement window for this
-            search the result window from the elevation search performed by
-            spiceypy.gfposc.
+   Since occultations occur when the apparent MEX spacecraft
+   position is behind the apparent figure of Mars, light time
+   correction must be performed for the occultation search. To
+   improve accuracy of the occultation state determination, use
+   "converged Newtonian" light time correction.
 
-            Since occultations occur when the apparent MEX spacecraft
-            position is behind the apparent figure of Mars, light time
-            correction must be performed for the occultation search. To
-            improve accuracy of the occultation state determination, use
-            "converged Newtonian" light time correction.
+#. Use the SpiceyPy window subtraction routine :py:func:`spiceypy.wndifd <spiceypy.spiceypy.wndifd>` to
+   subtract the window of times when the spacecraft is occulted
+   from the window of times when the spacecraft is above the
+   elevation limit. The difference window is the final result.
 
-       6.   Use the SpiceyPy window subtraction routine spiceypy.wndifd to
-            subtract the window of times when the spacecraft is occulted
-            from the window of times when the spacecraft is above the
-            elevation limit. The difference window is the final result.
-
-       7.   Modify the code to display the contents of the difference
-            window.
+#. Modify the code to display the contents of the difference
+   window.
 
 This completes the assignment.
 
@@ -681,339 +426,24 @@ This completes the assignment.
 Solution
 ^^^^^^^^
 
-Solution Meta-Kernel
+**Solution Meta-Kernel**
 
 The meta-kernel we created for the solution to this exercise is named
 'visibl.tm'. Its contents follow:
 
-.. code-block:: text
-
-      KPL/MK
-
-         Example meta-kernel for geometric event finding hands-on
-         coding lesson.
-
-            Version 3.0.0 26-OCT-2017 (BVS)
-
-         The names and contents of the kernels referenced by this
-         meta-kernel are as follows:
-
-         File Name                       Description
-         ------------------------------  ------------------------------
-         de405xs.bsp                     Planetary ephemeris SPK,
-                                         subsetted to cover only
-                                         time range of interest.
-         earthstns_itrf93_050714.bsp     DSN station SPK.
-         earth_topo_050714.tf            DSN station frame definitions.
-         earth_000101_060525_060303.bpc  Binary PCK for Earth.
-         naif0008.tls                    Generic LSK.
-         ORMM__040501000000_00076XS.BSP  MEX Orbiter trajectory SPK,
-                                         subsetted to cover only
-                                         time range of interest.
-         pck00008.tpc                    Generic PCK.
-         mars_lowres.bds                 Low-resolution Mars DSK.
+.. py-editor::
+    :env: efenv
+    :src: scripts/event_finding/visibl_make_mk.py
 
 
-      \begindata
+**Solution Code**
 
-         KERNELS_TO_LOAD = (
+.. py-editor::
+    :env: efenv
+    :src: scripts/event_finding/visibl.py
 
-                 'kernels/spk/de405xs.bsp'
-                 'kernels/spk/earthstns_itrf93_050714.bsp'
-                 'kernels/fk/earth_topo_050714.tf'
-                 'kernels/pck/earth_000101_060525_060303.bpc'
-                 'kernels/lsk/naif0008.tls'
-                 'kernels/spk/ORMM__040501000000_00076XS.BSP'
-                 'kernels/pck/pck00008.tpc'
-                 'kernels/dsk/mars_lowres.bds'
-                           )
 
-      \begintext
-
-Solution Code
-
-.. code-block:: python
-       
-      #
-      # Solution visibl
-      #
-      from __future__ import print_function
-
-      #
-      # SpiceyPy package:
-      #
-      import spiceypy.utils.support_types as stypes
-      import spiceypy
-
-      def visibl():
-          #
-          # Local Parameters
-          #
-          METAKR = 'visibl.tm'
-          SCLKID = -82
-          TDBFMT = 'YYYY MON DD HR:MN:SC.### TDB ::TDB'
-          MAXIVL = 1000
-          MAXWIN = 2 * MAXIVL
-
-          #
-          # Load the meta-kernel.
-          #
-          spiceypy.furnsh( METAKR )
-
-          #
-          # Assign the inputs for our search.
-          #
-          # Since we're interested in the apparent location of the
-          # target, we use light time and stellar aberration
-          # corrections. We use the "converged Newtonian" form
-          # of the light time correction because this choice may
-          # increase the accuracy of the occultation times we'll
-          # compute using gfoclt.
-          #
-          srfpt  = 'DSS-14'
-          obsfrm = 'DSS-14_TOPO'
-          target = 'MEX'
-          abcorr = 'CN+S'
-          start  = '2004 MAY 2 TDB'
-          stop   = '2004 MAY 6 TDB'
-          elvlim =  6.0
-
-          #
-          # The elevation limit above has units of degrees; we convert
-          # this value to radians for computation using SPICE routines.
-          # We'll store the equivalent value in radians in revlim.
-          #
-          revlim = spiceypy.rpd() * elvlim
-
-          #
-          # We model the target shape as a point. We either model the
-          # blocking body's shape as an ellipsoid, or we represent
-          # its shape using actual topographic data. No body-fixed
-          # reference frame is required for the target since its
-          # orientation is not used.
-          #
-          back   = target
-          bshape = 'POINT'
-          bframe = ' '
-          front  = 'MARS'
-          fshape = 'ELLIPSOID'
-          fframe = 'IAU_MARS'
-
-          #
-          # The occultation type should be set to 'ANY' for a point
-          # target.
-          #
-          occtyp = 'any'
-
-          #
-          # Since SPICE doesn't directly support the AZ/EL coordinate
-          # system, we use the equivalent constraint
-          #
-          #    latitude > revlim
-          #
-          # in the latitudinal coordinate system, where the reference
-          # frame is topocentric and is centered at the viewing location.
-          #
-          crdsys = 'LATITUDINAL'
-          coord  = 'LATITUDE'
-          relate = '>'
-
-          #
-          # The adjustment value only applies to absolute extrema
-          # searches; simply give it an initial value of zero
-          # for this inequality search.
-          #
-          adjust = 0.0
-
-          #
-          # stepsz is the step size, measured in seconds, used to search
-          # for times bracketing a state transition. Since we don't expect
-          # any events of interest to be shorter than five minutes, and
-          # since the separation between events is well over 5 minutes,
-          # we'll use this value as our step size. Units are seconds.
-          #
-          stepsz = 300.0
-
-          #
-          # Display a banner for the output report:
-          #
-          print( '\n{:s}\n'.format(
-                 'Inputs for target visibility search:' )  )
-
-          print( '   Target                       = '
-                 '{:s}'.format( target )  )
-          print( '   Observation surface location = '
-                 '{:s}'.format( srfpt  )  )
-          print( '   Observer\'s reference frame   = '
-                 '{:s}'.format( obsfrm )  )
-          print( '   Blocking body                = '
-                 '{:s}'.format( front  )  )
-          print( '   Blocker\'s reference frame    = '
-                 '{:s}'.format( fframe )  )
-          print( '   Elevation limit (degrees)    = '
-                 '{:f}'.format( elvlim )  )
-          print( '   Aberration correction        = '
-                 '{:s}'.format( abcorr )  )
-          print( '   Step size (seconds)          = '
-                 '{:f}'.format( stepsz )  )
-
-          #
-          # Convert the start and stop times to ET.
-          #
-          etbeg = spiceypy.str2et( start )
-          etend = spiceypy.str2et( stop  )
-
-          #
-          # Display the search interval start and stop times
-          # using the format shown below.
-          #
-          #    2004 MAY 06 20:15:00.000 (TDB)
-          #
-          btmstr = spiceypy.timout( etbeg, TDBFMT )
-          print( '   Start time                   = '
-                 '{:s}'.format(btmstr) )
-
-          etmstr = spiceypy.timout( etend, TDBFMT )
-          print( '   Stop time                    = '
-                 '{:s}'.format(etmstr) )
-
-          print( ' ' )
-
-          #
-          # Initialize the "confinement" window with the interval
-          # over which we'll conduct the search.
-          #
-          cnfine = stypes.SPICEDOUBLE_CELL(2)
-          spiceypy.wninsd( etbeg, etend, cnfine )
-
-          #
-          # In the call below, the maximum number of window
-          # intervals gfposc can store internally is set to MAXIVL.
-          # We set the cell size to MAXWIN to achieve this.
-          #
-          riswin = stypes.SPICEDOUBLE_CELL( MAXWIN )
-
-          #
-          # Now search for the time period, within our confinement
-          # window, during which the apparent target has elevation
-          # at least equal to the elevation limit.
-          #
-          spiceypy.gfposc( target, obsfrm, abcorr, srfpt,
-                           crdsys, coord,  relate, revlim,
-                           adjust, stepsz, MAXIVL, cnfine, riswin )
-
-          #
-          # Now find the times when the apparent target is above
-          # the elevation limit and is not occulted by the
-          # blocking body (Mars). We'll find the window of times when
-          # the target is above the elevation limit and *is* occulted,
-          # then subtract that window from the view period window
-          # riswin found above.
-          #
-          # For this occultation search, we can use riswin as
-          # the confinement window because we're not interested in
-          # occultations that occur when the target is below the
-          # elevation limit.
-          #
-          # Find occultations within the view period window.
-          #
-          print( ' Searching using ellipsoid target shape model...' )
-
-          eocwin = stypes.SPICEDOUBLE_CELL( MAXWIN )
-
-          fshape = 'ELLIPSOID'
-
-          spiceypy.gfoclt( occtyp, front,  fshape,  fframe,
-                           back,   bshape, bframe,  abcorr,
-                           srfpt,  stepsz, riswin,  eocwin )
-          print( ' Done.' )
-
-          #
-          # Subtract the occultation window from the view period
-          # window: this yields the time periods when the target
-          # is visible.
-          #
-          evswin = spiceypy.wndifd( riswin, eocwin )
-
-          #
-          #  Repeat the search using low-resolution DSK data
-          # for the front body.
-          #
-          print( ' Searching using DSK target shape model...' )
-
-          docwin = stypes.SPICEDOUBLE_CELL( MAXWIN )
-
-          fshape = 'DSK/UNPRIORITIZED'
-
-          spiceypy.gfoclt( occtyp, front,  fshape,  fframe,
-                           back,   bshape, bframe,  abcorr,
-                           srfpt,  stepsz, riswin,  docwin )
-          print( ' Done.\n' )
-
-          dvswin = spiceypy.wndifd( riswin, docwin )
-
-          #
-          # The function wncard returns the number of intervals
-          # in a SPICE window.
-          #
-          winsiz = spiceypy.wncard( evswin )
-
-          if winsiz == 0:
-
-              print( 'No events were found.' )
-
-          else:
-              #
-              # Display the visibility time periods.
-              #
-              print( 'Visibility start and stop times of '
-                     '{0:s} as seen from {1:s}\n'
-                     'using both ellipsoidal and DSK '
-                     'target shape models:\n'.format(
-                         target, srfpt )                 )
-
-              for  i  in  range(winsiz):
-                  #
-                  # Fetch the start and stop times of
-                  # the ith interval from the ellipsoid
-                  # search result window evswin.
-                  #
-                  [intbeg, intend] = spiceypy.wnfetd( evswin, i )
-
-                  #
-                  # Convert the rise time to TDB calendar strings.
-                  # Write the results.
-                  #
-                  btmstr = spiceypy.timout( intbeg, TDBFMT )
-                  etmstr = spiceypy.timout( intend, TDBFMT )
-
-                  print( ' Ell: {:s} : {:s}'.format( btmstr, etmstr ) )
-
-                  #
-                  # Fetch the start and stop times of
-                  # the ith interval from the DSK
-                  # search result window dvswin.
-                  #
-                  [dintbg, dinten] = spiceypy.wnfetd( dvswin, i )
-
-                  #
-                  # Convert the rise time to TDB calendar strings.
-                  # Write the results.
-                  #
-                  btmstr = spiceypy.timout( dintbg, TDBFMT )
-                  etmstr = spiceypy.timout( dinten, TDBFMT )
-
-                  print( ' DSK: {:s} : {:s}\n'.format( btmstr, etmstr ) )
-              #
-              # End of result display loop.
-              #
-
-          spiceypy.unload( METAKR )
-
-      if __name__ == '__main__':
-          visibl()
-
-Solution Sample Output
+**Solution Sample Output**
 
 Numerical results shown for this example may differ across platforms
 since the results depend on the SPICE kernels used as input and on the
@@ -1081,12 +511,12 @@ Execute the program. The output is:
        DSK: 2004 MAY 05 17:17:32.375 TDB : 2004 MAY 05 23:54:06.221 TDB
 
 Extra Credit
-------------------------------
+------------
 
 In this "extra credit" section you will be presented with more
 complex tasks, aimed at improving your understanding of the geometry
-event finding subsystem and particularly the spiceypy.gfposc and
-spiceypy.gfdist functions.
+event finding subsystem and particularly the :py:func:`spiceypy.gfposc <spiceypy.spiceypy.gfposc>` and
+:py:func:`spiceypy.gfdist <spiceypy.spiceypy.gfdist>` functions.
 
 These "extra credit" tasks are provided as task statements, and
 unlike the regular tasks, no approach or solution source code is
@@ -1096,41 +526,29 @@ the questions asked in these tasks.
 Task statements
 ^^^^^^^^^^^^^^^
 
-.. code-block:: text
+#. Write a program that finds the times, within the time range
+   ``2004 MAY 2 TDB`` to ``2004 MAY 6 TDB``,
+   when the MEX spacecraft crosses Mars' equator. Display the
+   results using TDB calendar dates and millisecond precision.
 
-       1.   Write a program that finds the times, within the time range
+#. Write a program that finds the times, within the time range
+   ``2004 MAY 2 TDB`` to ``2004 MAY 6 TDB``,
+   when the MEX spacecraft is at periapsis. Display the results
+   using TDB calendar dates and millisecond precision.
 
-            2004 MAY 2 TDB
-            2004 MAY 6 TDB
-
-            when the MEX spacecraft crosses Mars' equator. Display the
-            results using TDB calendar dates and millisecond precision.
-
-       2.   Write a program that finds the times, within the time range
-
-            2004 MAY 2 TDB
-            2004 MAY 6 TDB
-
-            when the MEX spacecraft is at periapsis. Display the results
-            using TDB calendar dates and millisecond precision.
-
-       3.   Write a program that finds the times, within the time range
-
-            2004 MAY 2 TDB
-            2004 MAY 6 TDB
-
-            when the MEX spacecraft is at apoapsis. Display the results
-            using TDB calendar dates and millisecond precision.
+#. Write a program that finds the times, within the time range
+   ``2004 MAY 2 TDB`` to ``2004 MAY 6 TDB``,
+   when the MEX spacecraft is at apoapsis. Display the results
+   using TDB calendar dates and millisecond precision.
 
 Solutions
 ^^^^^^^^^
 
-.. code-block:: text
+#. Solution for the equator crossing search, using :py:func:`spiceypy.gfposc <spiceypy.spiceypy.gfposc>`
+   for the MEX spacecraft latitude in the Mars body-fixed frame
+   equal to 0 degrees:
 
-       1.   Solution for the equator crossing search, using spiceypy.gfposc
-            for the MEX spacecraft latitude in the Mars body-fixed frame
-            equal to 0 degrees:
-
+   .. code-block:: text
 
       Inputs for equator crossing search:
 
@@ -1170,9 +588,10 @@ Solutions
        Equator crossing time:           2004 MAY 05 16:25:58.350 (TDB)
        Equator crossing or stop time:   2004 MAY 05 17:39:23.889 (TDB)
 
-       2.   Solution for the periapsis search, using spiceypy.gfdist for
-            the MEX spacecraft distance from Mars at a local minimum:
+#. Solution for the periapsis search, using :py:func:`spiceypy.gfdist <spiceypy.spiceypy.gfdist>` for
+   the MEX spacecraft distance from Mars at a local minimum:
 
+   .. code-block:: text
 
       Inputs for periapsis search:
 
@@ -1198,9 +617,10 @@ Solutions
        Periapsis time:                  2004 MAY 05 09:46:26.309 (TDB)
        Periapsis or end time:           2004 MAY 05 17:21:18.875 (TDB)
 
-       3.   Solution for the apoapsis search, using spiceypy.gfdist for the
-            MEX spacecraft distance from Mars at a local maximum:
+#. Solution for the apoapsis search, using :py:func:`spiceypy.gfdist <spiceypy.spiceypy.gfdist>` for the
+   MEX spacecraft distance from Mars at a local maximum:
 
+   .. code-block:: text
 
       Inputs for apoapsis search:
 

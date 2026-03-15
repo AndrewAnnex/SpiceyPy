@@ -16138,7 +16138,7 @@ def vprjp(vin: Union[ndarray, Iterable[float]], plane: Plane) -> ndarray:
     https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/vprjp_c.html
 
     :param vin: Vector to be projected.
-    :param plane: A Plane onto which `vin' is projected.
+    :param plane: A Plane onto which vin is projected.
     :return: Vector resulting from projection.
     """
     vin = stypes.to_double_vector(vin)

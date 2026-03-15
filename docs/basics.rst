@@ -38,10 +38,12 @@ explanatory error message.
 A simple example program
 ------------------------
 
-The following calls the SPICE function :py:meth:`spiceypy.spiceypy.tkvrsn` which outputs the version
+The following calls the SPICE function :py:func:`spiceypy.tkvrsn <spiceypy.spiceypy.tkvrsn>` which outputs the version
 of cspice that SpiceyPy is wrapping.
 
-.. code:: python
+.. py-editor::
+    :env: other
+    :config: pyscript_min.json
 
     import spiceypy as spice
 
@@ -51,5 +53,5 @@ This should output the following string:
 
 .. parsed-literal::
 
-    'CSPICE_N0066'
+    'CSPICE_N0067'
 

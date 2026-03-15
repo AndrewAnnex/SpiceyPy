@@ -68,75 +68,68 @@ Try updating the plot below to plot the barycenter of Mars or Mercury!
 Various imports and setup:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
+.. py-editor::
 
-    <script src="mini-coi.js"></script>
-    <link rel="stylesheet" href="https://pyscript.net/releases/2026.2.1/core.css" />
-    <script type="module" src="https://pyscript.net/releases/2026.2.1/core.js"></script>
-    <script type="py-editor" env="shared" config="pyscript.json">
-        import numpy as np
-        import matplotlib
-        matplotlib.use("AGG")
-        import matplotlib.pyplot as plt
-        from pyscript import display
-        import spiceypy as spice
-        print(f'SpiceyPy for {spice.tkvrsn("TOOLKIT")} ready!')
-    </script>
+    import numpy as np
+    import matplotlib
+    matplotlib.use("AGG")
+    import matplotlib.pyplot as plt
+    from pyscript import display
+    import spiceypy as spice
+    print(f'SpiceyPy for {spice.tkvrsn("TOOLKIT")} ready!')
+
 
 
 Load kernels
 ~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
+.. py-editor::
 
-    <script type="py-editor" env="shared">
-        # Load kernels: leap seconds + planetary ephemeris
-        spice.furnsh("naif0012.tls")
-        spice.furnsh("de440s_2000_to_2020_simplified.bsp")
-        print(f'Loaded {spice.ktotal("ALL")} kernels.')
-    </script>
+    # Load kernels: leap seconds + planetary ephemeris
+    spice.furnsh("naif0012.tls")
+    spice.furnsh("de440s_2000_to_2020_simplified.bsp")
+    print(f'Loaded {spice.ktotal("ALL")} kernels.')
+
+
 
 Specify the dates to sample:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
+.. py-editor::
 
-    <script type="py-editor" env="shared">
-        # Grab 2000 dates over 8 years
-        et0 = spice.str2et("2000-01-01")
-        et1 = spice.str2et("2008-01-01")
-        ets = np.linspace(et0, et1, 2000)
-        print(f'ets array has len: {len(ets)}')
-    </script>
+    # Grab 2000 dates over 8 years
+    et0 = spice.str2et("2000-01-01")
+    et1 = spice.str2et("2008-01-01")
+    ets = np.linspace(et0, et1, 2000)
+    print(f'ets array has len: {len(ets)}')
 
+
+    
 Get the positions vector
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
+.. py-editor::
 
-    <script type="py-editor" env="shared">
-        # Venus position relative to Earth in ecliptic J2000 (km)
-        positions, _ = spice.spkpos("VENUS BARYCENTER", ets, "ECLIPJ2000", "NONE", "EARTH")
-        print(f'Got {len(positions)} positions of the Venus Barycenter')
-    </script>
+    # Venus position relative to Earth in ecliptic J2000 (km)
+    positions, _ = spice.spkpos("VENUS BARYCENTER", ets, "ECLIPJ2000", "NONE", "EARTH")
+    print(f'Got {len(positions)} positions of the Venus Barycenter')
 
 
 Plot it on the ecliptic plane.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: html
+.. py-editor::
+    :target: mpl
 
-    <script type="py-editor" env="shared">
-        fig, ax = plt.subplots()
-        ax.plot(positions[:, 0], positions[:, 1], color="black", linewidth=0.5)
-        ax.plot(0, 0, "o", color="blue", markersize=6, label="Earth")
-        ax.set_title("Geocentric Orbit of Venus (2000–2008)", fontsize=14)
-        ax.legend()
-        ax.set_aspect("equal")
-        display(fig, target="mpl", append=False)
-        plt.close('all')
-    </script>
-    <div id="mpl"></div>
+    fig, ax = plt.subplots()
+    ax.plot(positions[:, 0], positions[:, 1], color="black", linewidth=0.5)
+    ax.plot(0, 0, "o", color="blue", markersize=6, label="Earth")
+    ax.set_title("Geocentric Orbit of Venus (2000–2008)", fontsize=14)
+    ax.legend()
+    ax.set_aspect("equal")
+    display(fig, target="mpl", append=False)
+    plt.close('all')
+
 
 
 
