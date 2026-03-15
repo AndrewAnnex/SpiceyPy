@@ -106,6 +106,7 @@ _HIDE_ENV_LABEL_CSS = """\
 """
 
 
+
 _HIDE_GUTTERS_JS = """
 <script>
 (function() {
@@ -115,7 +116,7 @@ _HIDE_GUTTERS_JS = """
                 if (child.shadowRoot && !child.shadowRoot.querySelector('style.gutter-hide')) {
                     var style = document.createElement('style');
                     style.className = 'gutter-hide';
-                    style.textContent = '.cm-gutters { display: none !important; }';
+                    style.textContent = '.cm-gutters { display: none !important; } .cm-content { min-height: 60px; }';
                     child.shadowRoot.appendChild(style);
                 }
             });

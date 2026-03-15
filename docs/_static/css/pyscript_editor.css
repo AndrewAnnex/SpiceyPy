@@ -46,7 +46,7 @@ py-editor::part(editor) {
     padding: 0.5em 1em;
 }
 
-/* Run button: nudge it to sit inside the highlight box */
+/* Run button: border-radius only; margin-top is injected into shadow DOM via JS */
 py-editor::part(run-button) {
     border-radius: 0 0 4px 0;
 }

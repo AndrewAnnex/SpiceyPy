@@ -26,11 +26,11 @@ often contain comprehensive descriptions of the frames, instrument FOVs,
 etc. Since both the FK and IK are text kernels, the information provided
 in them can be viewed using any text editor, while the meta information
 provided in binary kernels—SPKs and CKs—can be viewed using
-"commnt" or" spacit" utility programs located in "cspice/exe" of
+"commnt" or "spacit" utility programs located in "cspice/exe" of
 Toolkit installation tree.
 
 Tutorials
-^^^^^^^^^^
+^^^^^^^^^
 
 The following SPICE tutorials serve as references for the discussions in
 this lesson:
@@ -50,12 +50,10 @@ this lesson:
 
 These tutorials are available from the NAIF ftp server at JPL:
 
-.. code-block:: text
-
-      https://naif.jpl.nasa.gov/naif/tutorials.html
+https://naif.jpl.nasa.gov/naif/tutorials.html
 
 Required Readings
-^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
 .. tip::
    The `Required Readings <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/index.html>`_ are also available on the NAIF website at:
@@ -79,7 +77,7 @@ installation tree.
       time.req         Time conversion
 
 The Permuted Index
-^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 
 .. tip::
    The `Permuted Index <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/info/cspice_idx.html>`_ is also available on the NAIF website at:
@@ -95,7 +93,7 @@ discover which SpiceyPy functions perform functions of interest, as well
 as the names of the source files that contain these functions.
 
 SpiceyPy API Documentation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A SpiceyPy function's parameters specification is available using the
 built-in Python help system.
@@ -114,15 +112,14 @@ For example, the Python help function
     :config: pyscript_remote_sensing.json
 
      import spiceypy
+      
      help(spiceypy.str2et)
 
-describes of the str2et function's parameters, while the document
+describes the ``str2et`` function's parameters, while the document
 
-.. code-block:: text
+https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/str2et_c.html
 
-      https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/str2et_c.html
-
-describes extensively the str2et functionality.
+describes extensively the ``str2et`` functionality.
 
 Kernels Used
 ------------
@@ -147,9 +144,7 @@ The following kernels are used in examples provided in this lesson:
 These SPICE kernels are included in the lesson package available from
 the NAIF server at JPL:
 
-.. code-block:: text
-
-      ftp://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/Lessons/
+ftp://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/Lessons/
 
 In addition to these kernels, the extra credit exercises require the
 following kernels:
@@ -162,9 +157,7 @@ following kernels:
 
 These SPICE kernels are available from the NAIF server at JPL:
 
-.. code-block:: text
-
-      https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/
+https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/
 
 SpiceyPy Modules Used
 ---------------------
@@ -236,7 +229,7 @@ their corresponding CSPICE versions for detailed interface
 specifications.
 
 Time Conversion (convtm)
-------------------------------
+------------------------
 
 Task Statement
 ^^^^^^^^^^^^^^
@@ -244,13 +237,11 @@ Task Statement
 Write a program that prompts the user for an input UTC time string,
 converts it to the following time systems and output formats:
 
-.. code-block:: text
+#. Ephemeris Time (ET) in seconds past J2000
 
-       1.   Ephemeris Time (ET) in seconds past J2000
+#. Calendar Ephemeris Time
 
-       2.   Calendar Ephemeris Time
-
-       3.   Spacecraft Clock Time
+#. Spacecraft Clock Time
 
 and displays the results. Use the program to convert “2004 jun 11
 19:32:00” UTC into these alternate systems.
@@ -268,34 +259,32 @@ Approach
 The solution to the problem can be broken down into a series of simple
 steps:
 
-.. code-block:: text
+- Decide which SPICE kernels are necessary. Prepare a meta-kernel
+  listing the kernels and load it into the program.
 
-       --   Decide which SPICE kernels are necessary. Prepare a meta-kernel
-            listing the kernels and load it into the program.
+- Prompt the user for an input UTC time string.
 
-       --   Prompt the user for an input UTC time string.
+- Convert the input time string into ephemeris time expressed as
+  seconds past J2000 TDB. Display the result.
 
-       --   Convert the input time string into ephemeris time expressed as
-            seconds past J2000 TDB. Display the result.
+- Convert ephemeris time into a calendar format. Display the
+  result.
 
-       --   Convert ephemeris time into a calendar format. Display the
-            result.
-
-       --   Convert ephemeris time into a spacecraft clock string. Display
-            the result.
+- Convert ephemeris time into a spacecraft clock string. Display
+  the result.
 
 You may find it useful to consult the permuted index, the headers of
 various source modules, and the
-"Time Required Reading" (time.req) and" SCLK Required Reading"
+"Time Required Reading" (time.req) and "SCLK Required Reading"
 (sclk.req) documents.
 
 When completing the "calendar format" step above, consider using one
-of two possible methods: spiceypy.etcal or spiceypy.timout.
+of two possible methods: :py:func:`spiceypy.etcal <spiceypy.spiceypy.etcal>` or :py:func:`spiceypy.timout <spiceypy.spiceypy.timout>`.
 
 Solution
 ^^^^^^^^
 
-Solution Meta-Kernel
+**Solution Meta-Kernel**
 
 The meta-kernel we created for the solution to this exercise is named
 'convtm.tm'. Its contents follow:
@@ -305,7 +294,7 @@ The meta-kernel we created for the solution to this exercise is named
     :config: pyscript_remote_sensing.json
     :src: scripts/remote_sensing/convtm_make_mk.py
 
-Solution Source Code
+**Solution Source Code**
 
 A sample solution to the problem follows:
 
@@ -313,7 +302,7 @@ A sample solution to the problem follows:
     :env: rsenv
     :src: scripts/remote_sensing/convtm.py
 
-Solution Sample Output
+**Solution Sample Output**
 
 Execute the program:
 
@@ -327,7 +316,7 @@ Execute the program:
          Spacecraft Clock Time: 1/1465674964.105
 
 Extra Credit
-^^^^^^^^^^^^^
+^^^^^^^^^^^^
 
 In this "extra credit" section you will be presented with more
 complex tasks, aimed at improving your understanding of time
@@ -339,115 +328,86 @@ unlike the regular tasks, no approach or solution source code is
 provided. In the next section, you will find the numeric solutions (when
 applicable) and answers to the questions asked in these tasks.
 
-Task statements and questions
+**Task statements and questions**
 
-.. code-block:: text
+#. Extend your program to convert the input UTC time string to TDB
+   Julian Date. Convert "2004 jun 11 19:32:00" UTC.
 
-       1.   Extend your program to convert the input UTC time string to TDB
-            Julian Date. Convert "2004 jun 11 19:32:00" UTC.
+#. Remove the LSK from the original meta-kernel and run your
+   program again, using the same inputs as before. Has anything
+   changed? Why?
 
-       2.   Remove the LSK from the original meta-kernel and run your
-            program again, using the same inputs as before. Has anything
-            changed? Why?
+#. Remove the SCLK from the original meta-kernel and run your
+   program again, using the same inputs as before. Has anything
+   changed? Why?
 
-       3.   Remove the SCLK from the original meta-kernel and run your
-            program again, using the same inputs as before. Has anything
-            changed? Why?
+#. Modify your program to perform conversion of UTC or ephemeris
+   time, to a spacecraft clock string using the NAIF ID for the
+   CASSINI ISS NAC camera. Convert "2004 jun 11 19:32:00" UTC.
 
-       4.   Modify your program to perform conversion of UTC or ephemeris
-            time, to a spacecraft clock string using the NAIF ID for the
-            CASSINI ISS NAC camera. Convert "2004 jun 11 19:32:00" UTC.
+#. Find the earliest UTC time that can be converted to CASSINI
+   spacecraft clock.
 
-       5.   Find the earliest UTC time that can be converted to CASSINI
-            spacecraft clock.
+#. Extend your program to convert the spacecraft clock time
+   obtained in the regular task back to UTC Time and present it in
+   ISO calendar date format, with a resolution of milliseconds.
 
-       6.   Extend your program to convert the spacecraft clock time
-            obtained in the regular task back to UTC Time and present it in
-            ISO calendar date format, with a resolution of milliseconds.
+#. Examine the contents of the generic LSK and the CASSINI SCLK
+   kernels. Can you understand and explain what you see?
 
-       7.   Examine the contents of the generic LSK and the CASSINI SCLK
-            kernels. Can you understand and explain what you see?
+**Solutions and answers**
 
-Solutions and answers
+#. Two methods exist in order to convert ephemeris time to Julian
+   Date: :py:func:`spiceypy.unitim <spiceypy.spiceypy.unitim>` and :py:func:`spiceypy.timout <spiceypy.spiceypy.timout>`. The difference
+   between them is the type of output produced by each method.
+   :py:func:`spiceypy.unitim <spiceypy.spiceypy.unitim>` returns the double precision value of an input
+   epoch, while :py:func:`spiceypy.timout <spiceypy.spiceypy.timout>` returns the string representation
+   of the ephemeris time in Julian Date format (when picture input
+   is set to ``'JULIAND.######### ::TDB'``). Refer to the function
+   header for further details. The solution for the requested
+   input UTC string is: ``Julian Date TDB: 2453168.3146318``
 
-.. code-block:: text
+#. When running the original program without the LSK kernel, an
+   error is produced:
 
-       1.   Two methods exist in order to convert ephemeris time to Julian
-            Date: spiceypy.unitim and spiceypy.timout. The difference
-            between them is the type of output produced by each method.
-            spiceypy.unitim returns the double precision value of an input
-            epoch, while spiceypy.timout returns the string representation
-            of the ephemeris time in Julian Date format (when picture input
-            is set to 'JULIAND.######### ::TDB'). Refer to the function
-            header for further details. The solution for the requested
-            input UTC string is:
+   .. code-block:: text
 
-         Julian Date TDB:   2453168.3146318
-
-       2.   When running the original program without the LSK kernel, an
-            error is produced:
-
-      Traceback (most recent call last):
-        File "convtm.py", line 67, in <module>
-          convtm()
-        File "convtm.py", line 30, in convtm
-          et = spiceypy.str2et( utctim )
-        File "/home/bsemenov/local/lib/python3.5/site-packages/spiceypy/spi
-      ceypy.py", line 76, in with_errcheck
-          check_for_spice_error(f)
-        File "/home/bsemenov/local/lib/python3.5/site-packages/spiceypy/spi
-      ceypy.py", line 59, in check_for_spice_error
-          raise stypes.SpiceyError(msg)
       spiceypy.utils.support_types.SpiceyError:
-      =====================================================================
-      ===========
+      ================================================================================
 
-      Toolkit version: N0066
+      Toolkit version: N0067
 
       SPICE(NOLEAPSECONDS) --
 
-      The variable that points to the leapseconds (DELTET/DELTA_AT) could n
-      ot be located in the kernel pool.  It is likely that the leapseconds
-      kernel has not been loaded via the routine FURNSH.
+      The variable that points to the leapseconds (DELTET/DELTA_AT) could not be located in the kernel pool.  It is likely that the leapseconds kernel has not been loaded via the routine FURNSH.
 
       str2et_c --> STR2ET --> TTRANS
 
-      =====================================================================
-      ===========
+      ================================================================================
 
-            This error is triggered by spiceypy.str2et because the variable
-            that points to the leapseconds is not present in the kernel
-            pool and therefore the program lacks data required to perform
-            the requested UTC to ephemeris time conversion.
+   This error is triggered by :py:func:`spiceypy.str2et <spiceypy.spiceypy.str2et>` because the variable
+   that points to the leapseconds is not present in the kernel
+   pool and therefore the program lacks data required to perform
+   the requested UTC to ephemeris time conversion.
 
-            By default, SPICE will report, as a minimum, a short
-            descriptive message and a expanded form of this short message
-            where more details about the error are provided. If this error
-            message is not sufficient for you to understand what has
-            happened, you could go to the "Exceptions" section in the
-            SPICELIB or CSPICE headers of the function that has triggered
-            the error and find out more information about the possible
-            causes.
+   By default, SPICE will report, as a minimum, a short
+   descriptive message and an expanded form of this short message
+   where more details about the error are provided. If this error
+   message is not sufficient for you to understand what has
+   happened, you could go to the "Exceptions" section in the
+   SPICELIB or CSPICE headers of the function that has triggered
+   the error and find out more information about the possible
+   causes.
 
-       3.   When running the original program without the SCLK kernel, an
-            error is produced:
+#. When running the original program without the SCLK kernel, an
+   error is produced:
 
-      Traceback (most recent call last):
-        File "convtm.py", line 67, in <module>
-          convtm()
-        File "convtm.py", line 58, in convtm
-          sclkst = spiceypy.sce2s( SCLKID, et )
-        File "/home/bsemenov/local/lib/python3.5/site-packages/spiceypy/spi
-      ceypy.py", line 76, in with_errcheck
-          check_for_spice_error(f)
-        File "/home/bsemenov/local/lib/python3.5/site-packages/spiceypy/spi
-      ceypy.py", line 59, in check_for_spice_error
-          raise stypes.SpiceyError(msg)
+   .. code-block:: text
+
       spiceypy.utils.support_types.SpiceyError:
-      =====================================================================
-      ===========
+      ================================================================================
 
-      Toolkit version: N0066
+      Toolkit version: N0067
 
       SPICE(KERNELVARNOTFOUND) --
       The Variable Was not Found in the Kernel Pool.
@@ -455,54 +415,54 @@ Solutions and answers
 
       sce2s_c --> SCE2S --> SCE2T --> SCTYPE --> SCLI01
 
-      =====================================================================
-      ===========
+      ================================================================================
 
-            This error is triggered by spiceypy.sce2s. In this case the
-            error message may not give you enough information to understand
-            what has actually happened. Nevertheless, the expanded form of
-            this short message clearly indicates that the SCLK kernel for
-            the spacecraft ID -82 has not been loaded.
+   This error is triggered by :py:func:`spiceypy.sce2s <spiceypy.spiceypy.sce2s>`. In this case the
+   error message may not give you enough information to understand
+   what has actually happened. Nevertheless, the expanded form of
+   this short message clearly indicates that the SCLK kernel for
+   the spacecraft ID -82 has not been loaded.
 
-            The UTC string to ephemeris time conversion and the conversion
-            of ephemeris time into a calendar format worked normally as
-            these conversions only require the LSK kernel to be loaded.
+   The UTC string to ephemeris time conversion and the conversion
+   of ephemeris time into a calendar format worked normally as
+   these conversions only require the LSK kernel to be loaded.
 
-       4.   The first thing you need to do is to find out what the NAIF ID
-            is for the CASSINI ISS NAC camera. In order to do so, examine
-            the ISS instrument kernel listed above and look for the "NAIF
-            ID Code to Name Mapping" and there, for the NAIF ID given to
-            CASSINI_ISS_NAC (which is -82360). Then replace in your code
-            the SCLK ID -82 with -82360. After executing the program using
-            the original meta-kernel, you will be getting the same error as
-            in the previous task. Despite the error being exactly the same,
-            this case is different. Generally, spacecraft clocks are
-            associated with the spacecraft ID and not with its payload,
-            sensors or structures IDs. Therefore, in order to do
-            conversions from/to spacecraft clock for payload, sensors or
-            spacecraft structures, the spacecraft ID must be used.
+#. The first thing you need to do is to find out what the NAIF ID
+   is for the CASSINI ISS NAC camera. In order to do so, examine
+   the ISS instrument kernel listed above and look for the "NAIF
+   ID Code to Name Mapping" and there, for the NAIF ID given to
+   CASSINI_ISS_NAC (which is -82360). Then replace in your code
+   the SCLK ID -82 with -82360. After executing the program using
+   the original meta-kernel, you will be getting the same error as
+   in the previous task. Despite the error being exactly the same,
+   this case is different. Generally, spacecraft clocks are
+   associated with the spacecraft ID and not with its payload,
+   sensors or structures IDs. Therefore, in order to do
+   conversions from/to spacecraft clock for payload, sensors or
+   spacecraft structures, the spacecraft ID must be used.
 
-            Note that this does not need to be true for all missions or
-            payloads, as SPICE does not restrict the SCLKs to spacecraft
-            IDs only. Please refer to your mission's SCLK kernels for
-            particulars.
+   Note that this does not need to be true for all missions or
+   payloads, as SPICE does not restrict the SCLKs to spacecraft
+   IDs only. Please refer to your mission's SCLK kernels for
+   particulars.
 
-       5.   Use spiceypy.sct2e with the encoding of the Cassini spacecraft
-            clock time set to 0.0 ticks and convert the resulting ephemeris
-            time to UTC using either spiceypy.timout or spiceypy.et2utc.
-            The solution for the requested SCLK string is:
+#. Use :py:func:`spiceypy.sct2e <spiceypy.spiceypy.sct2e>` with the encoding of the Cassini spacecraft
+   clock time set to 0.0 ticks and convert the resulting ephemeris
+   time to UTC using either :py:func:`spiceypy.timout <spiceypy.spiceypy.timout>` or :py:func:`spiceypy.et2utc <spiceypy.spiceypy.et2utc>`.
+   The solution for the requested SCLK string is:
+   ``Earliest UTC convertible to SCLK: 1980-01-01T00:00:00.000``
 
-         Earliest UTC convertible to SCLK: 1980-01-01T00:00:00.000
+#. Use :py:func:`spiceypy.scs2e <spiceypy.spiceypy.scs2e>` with the SCLK string obtained in the
+   computations performed in the regular tasks and convert the
+   resulting ephemeris time to UTC using either :py:func:`spiceypy.et2utc <spiceypy.spiceypy.et2utc>`,
+   with ``'ISOC'`` format and 3 digits precision, or using
+   :py:func:`spiceypy.timout <spiceypy.spiceypy.timout>` using the time picture ``'YYYY-MM-DDTHR:MN:SC.### ::RND'``.
+   The solution of the requested conversion is:
 
-       6.   Use spiceypy.scs2e with the SCLK string obtained in the
-            computations performed in the regular tasks and convert the
-            resulting ephemeris time to UTC using either spiceypy.et2utc,
-            with 'ISOC' format and 3 digits precision, or using
-            spiceypy.timout using the time picture 'YYYY-MM-DDTHR:MN:SC.###
-            ::RND'. The solution of the requested conversion is:
+   .. code-block:: text
 
-         Spacecraft Clock Time:          1/1465674964.105
-         UTC time from spacecraft clock: 2004-06-11T19:31:59.999
+      Spacecraft Clock Time:          1/1465674964.105
+      UTC time from spacecraft clock: 2004-06-11T19:31:59.999
 
 Obtaining Target States and Positions (getsta)
 ----------------------------------------------
@@ -515,24 +475,22 @@ Task Statement
 Write a program that prompts the user for an input UTC time string,
 computes the following quantities at that epoch:
 
-.. code-block:: text
+#. The apparent state of Phoebe as seen from CASSINI in the J2000
+   frame, in kilometers and kilometers/second. This vector itself
+   is not of any particular interest, but it is a useful
+   intermediate quantity in some geometry calculations.
 
-       1.   The apparent state of Phoebe as seen from CASSINI in the J2000
-            frame, in kilometers and kilometers/second. This vector itself
-            is not of any particular interest, but it is a useful
-            intermediate quantity in some geometry calculations.
+#. The apparent position of the Earth as seen from CASSINI in the
+   J2000 frame, in kilometers.
 
-       2.   The apparent position of the Earth as seen from CASSINI in the
-            J2000 frame, in kilometers.
+#. The one-way light time between CASSINI and the apparent
+   position of Earth, in seconds.
 
-       3.   The one-way light time between CASSINI and the apparent
-            position of Earth, in seconds.
+#. The apparent position of the Sun as seen from Phoebe in the
+   J2000 frame (J2000), in kilometers.
 
-       4.   The apparent position of the Sun as seen from Phoebe in the
-            J2000 frame (J2000), in kilometers.
-
-       5.   The actual (geometric) distance between the Sun and Phoebe, in
-            astronomical units.
+#. The actual (geometric) distance between the Sun and Phoebe, in
+   astronomical units.
 
 and displays the results. Use the program to compute these quantities at
 “2004 jun 11 19:32:00” UTC.
@@ -542,8 +500,8 @@ and displays the results. Use the program to compute these quantities at
 Learning Goals
 ^^^^^^^^^^^^^^
 
-Understand the anatomy of an spiceypy.spkezr call. Discover the
-difference between spiceypy.spkezr and spiceypy.spkpos. Familiarity with
+Understand the anatomy of an :py:func:`spiceypy.spkezr <spiceypy.spiceypy.spkezr>` call. Discover the
+difference between :py:func:`spiceypy.spkezr <spiceypy.spiceypy.spkezr>` and :py:func:`spiceypy.spkpos <spiceypy.spiceypy.spkpos>`. Familiarity with
 the Toolkit utility "brief". Exposure to unit conversion with
 SpiceyPy.
 
@@ -555,34 +513,32 @@ Approach
 The solution to the problem can be broken down into a series of simple
 steps:
 
-.. code-block:: text
+- Decide which SPICE kernels are necessary. Prepare a meta-kernel
+  listing the kernels and load it into the program.
 
-       --   Decide which SPICE kernels are necessary. Prepare a meta-kernel
-            listing the kernels and load it into the program.
+- Prompt the user for an input time string.
 
-       --   Prompt the user for an input time string.
+- Convert the input time string into ephemeris time expressed as
+  seconds past J2000 TDB.
 
-       --   Convert the input time string into ephemeris time expressed as
-            seconds past J2000 TDB.
+- Compute the state of Phoebe relative to CASSINI in the J2000
+  reference frame, corrected for aberrations.
 
-       --   Compute the state of Phoebe relative to CASSINI in the J2000
-            reference frame, corrected for aberrations.
+- Compute the position of Earth relative to CASSINI in the J2000
+  reference frame, corrected for aberrations. (The function in
+  the library that computes this also returns the one-way light
+  time between CASSINI and Earth.)
 
-       --   Compute the position of Earth relative to CASSINI in the J2000
-            reference frame, corrected for aberrations. (The function in
-            the library that computes this also returns the one-way light
-            time between CASSINI and Earth.)
+- Compute the position of the Sun relative to Phoebe in the J2000
+  reference frame, corrected for aberrations.
 
-       --   Compute the position of the Sun relative to Phoebe in the J2000
-            reference frame, corrected for aberrations.
+- Compute the position of the Sun relative to Phoebe without
+  correcting for aberration.
 
-       --   Compute the position of the Sun relative to Phoebe without
-            correcting for aberration.
+  Compute the length of this vector. This provides the desired
+  distance in kilometers.
 
-            Compute the length of this vector. This provides the desired
-            distance in kilometers.
-
-       --   Convert the distance in kilometers into AU.
+- Convert the distance in kilometers into AU.
 
 You may find it useful to consult the permuted index, the headers of
 various source modules, and the "SPK Required Reading" (spk.req)
@@ -591,7 +547,7 @@ document.
 When deciding which SPK files to load, the Toolkit utility "brief"
 may be of some use.
 
-"brief" is located in the" cspice/exe"directory for C toolkits.
+"brief" is located in the "cspice/exe" directory for C toolkits.
 Consult its user's guide available in "cspice/doc/brief.ug" for
 details.
 
@@ -600,7 +556,7 @@ details.
 Solution
 ^^^^^^^^
 
-Solution Meta-Kernel
+**Solution Meta-Kernel**
 
 The meta-kernel we created for the solution to this exercise is named
 'getsta.tm'. Its contents follow:
@@ -609,7 +565,7 @@ The meta-kernel we created for the solution to this exercise is named
     :env: rsenv
     :src: scripts/remote_sensing/getsta_make_mk.py
 
-Solution Source Code
+**Solution Source Code**
 
 A sample solution to the problem follows:
 
@@ -617,7 +573,7 @@ A sample solution to the problem follows:
     :env: rsenv
     :src: scripts/remote_sensing/getsta.py
 
-Solution Sample Output
+**Solution Sample Output**
 
 Execute the program:
 
@@ -652,12 +608,12 @@ Execute the program:
 .. _extra-credit-rs-1:
 
 Extra Credit
-^^^^^^^^^^^^^
+^^^^^^^^^^^^
 
 In this "extra credit" section you will be presented with more
 complex tasks, aimed at improving your understanding of state
 computations, particularly the application of the different light time
-and stellar aberration corrections available in the spiceypy.spkezr
+and stellar aberration corrections available in the :py:func:`spiceypy.spkezr <spiceypy.spiceypy.spkezr>`
 function, and some common errors that may happen when computing these
 states.
 
@@ -666,79 +622,63 @@ unlike the regular tasks, no approach or solution source code is
 provided. In the next section, you will find the numeric solutions (when
 applicable) and answers to the questions asked in these tasks.
 
-Task statements and questions
+**Task statements and questions**
 
-.. code-block:: text
+#. Remove the Solar System ephemerides SPK from the original
+   meta-kernel and run your program again, using the same inputs
+   as before. Has anything changed? Why?
 
-       1.   Remove the Solar System ephemerides SPK from the original
-            meta-kernel and run your program again, using the same inputs
-            as before. Has anything changed? Why?
+#. Extend your program to compute the geometric position of
+   Jupiter as seen from Saturn in the J2000 frame (J2000), in
+   kilometers.
 
-       2.   Extend your program to compute the geometric position of
-            Jupiter as seen from Saturn in the J2000 frame (J2000), in
-            kilometers.
+#. Extend, or modify, your program to compute the position of the
+   Sun as seen from Saturn in the J2000 frame (J2000), in
+   kilometers, using the following light time and aberration
+   corrections: NONE, LT and LT+S. Explain the differences.
 
-       3.   Extend, or modify, your program to compute the position of the
-            Sun as seen from Saturn in the J2000 frame (J2000), in
-            kilometers, using the following light time and aberration
-            corrections: NONE, LT and LT+S. Explain the differences.
+#. Examine the CASSINI frames definition kernel and the ISS
+   instrument kernel to find the SPICE ID/name definitions.
 
-       4.   Examine the CASSINI frames definition kernel and the ISS
-            instrument kernel to find the SPICE ID/name definitions.
+**Solutions and answers**
 
-Solutions and answers
+#. When running the original program without the Solar System
+   ephemerides SPK, an error is produced by :py:func:`spiceypy.spkezr <spiceypy.spiceypy.spkezr>`:
 
-.. code-block:: text
+   .. code-block:: text
 
-       1.   When running the original program without the Solar System
-            ephemerides SPK, an error is produced by spiceypy.spkezr:
-
-      Traceback (most recent call last):
-        File "getsta.py", line 128, in <module>
-          getsta()
-        File "getsta.py", line 47, in getsta
-          'LT+S',   'CASSINI'       )
-        File "/home/bsemenov/local/lib/python3.5/site-packages/spiceypy/spi
-      ceypy.py", line 76, in with_errcheck
-          check_for_spice_error(f)
-        File "/home/bsemenov/local/lib/python3.5/site-packages/spiceypy/spi
-      ceypy.py", line 59, in check_for_spice_error
-          raise stypes.SpiceyError(msg)
       spiceypy.utils.support_types.SpiceyError:
-      =====================================================================
-      ===========
+      ================================================================================
 
-      Toolkit version: N0066
+      Toolkit version: N0067
 
       SPICE(SPKINSUFFDATA) --
 
-      Insufficient ephemeris data has been loaded to compute the state of -
-      82 (CASSINI) relative to 0 (SOLAR SYSTEM BARYCENTER) at the ephemeris
-       epoch 2004 JUN 11 19:33:04.184.
+      Insufficient ephemeris data has been loaded to compute the state of -82 (CASSINI) relative to 0 (SOLAR SYSTEM BARYCENTER) at the ephemeris epoch 2004 JUN 11 19:33:04.184.
 
       spkezr_c --> SPKEZR --> SPKEZ --> SPKACS --> SPKGEO
 
-      =====================================================================
-      ===========
+      ================================================================================
 
-            This error is generated when trying to compute the apparent
-            state of Phoebe as seen from CASSINI in the J2000 frame because
-            despite both Phoebe and CASSINI ephemeris data being relative
-            to the Saturn Barycenter, the state of the spacecraft with
-            respect to the solar system barycenter is required to compute
-            the light time and stellar aberrations. The loaded SPK data are
-            enough to compute geometric states of CASSINI with respect to
-            the Saturn Barycenter, and geometric states of Phoebe with
-            respect to the Saturn Barycenter, but insufficient to compute
-            the state of the spacecraft relative to the Solar System
-            Barycenter because the SPK data needed to compute geometric
-            states of Saturn Barycenter relative to the Solar System
-            barycenter are no longer loaded. Run "brief" on the SPKs used
-            in the original task to find out which ephemeris objects are
-            available from those kernels. If you want to find out what is
-            the 'center of motion' for the ephemeris object(s) included in
-            an SPK, use the -c option when running "brief":
+   This error is generated when trying to compute the apparent
+   state of Phoebe as seen from CASSINI in the J2000 frame because
+   despite both Phoebe and CASSINI ephemeris data being relative
+   to the Saturn Barycenter, the state of the spacecraft with
+   respect to the solar system barycenter is required to compute
+   the light time and stellar aberrations. The loaded SPK data are
+   enough to compute geometric states of CASSINI with respect to
+   the Saturn Barycenter, and geometric states of Phoebe with
+   respect to the Saturn Barycenter, but insufficient to compute
+   the state of the spacecraft relative to the Solar System
+   Barycenter because the SPK data needed to compute geometric
+   states of Saturn Barycenter relative to the Solar System
+   barycenter are no longer loaded. Run "brief" on the SPKs used
+   in the original task to find out which ephemeris objects are
+   available from those kernels. If you want to find out what is
+   the 'center of motion' for the ephemeris object(s) included in
+   an SPK, use the ``-c`` option when running "brief":
 
+   .. code-block:: text
 
       BRIEF -- Version 4.0.0, September 8, 2010 -- Toolkit Version N0066
 
@@ -761,8 +701,7 @@ Solutions and answers
               EARTH (399) w.r.t. EARTH BARYCENTER (3)
               MARS (499) w.r.t. MARS BARYCENTER (4)
               Start of Interval (UTC)             End of Interval (UTC)
-              -----------------------------       -------------------------
-      ----
+              -----------------------------       -----------------------------
               2004-JUN-11 05:00:00.000            2004-JUN-12 12:00:00.000
 
 
@@ -779,8 +718,7 @@ Solutions and answers
               PHOEBE (609) w.r.t. SATURN BARYCENTER (6)
               SATURN (699) w.r.t. SATURN BARYCENTER (6)
               Start of Interval (UTC)             End of Interval (UTC)
-              -----------------------------       -------------------------
-      ----
+              -----------------------------       -----------------------------
               2004-JUN-11 05:00:00.000            2004-JUN-12 12:00:00.000
 
 
@@ -788,71 +726,70 @@ Solutions and answers
 
       Body: CASSINI (-82) w.r.t. SATURN BARYCENTER (6)
             Start of Interval (UTC)             End of Interval (UTC)
-            -----------------------------       ---------------------------
-      --
+            -----------------------------       -----------------------------
             2004-JUN-11 05:00:00.000            2004-JUN-12 12:00:00.000
 
+#. If you run your extended program with the original meta-kernel,
+   the ``SPICE(SPKINSUFFDATA)`` error should be produced by the
+   :py:func:`spiceypy.spkpos <spiceypy.spiceypy.spkpos>` function because you have not loaded enough
+   ephemeris data to compute the position of Jupiter with respect
+   to Saturn. The loaded SPKs contain data for Saturn relative to
+   the Solar System Barycenter, and for the Jupiter System
+   Barycenter relative to the Solar System Barycenter, but the
+   data for Jupiter relative to the Jupiter System Barycenter are
+   missing:
 
+   .. code-block:: text
 
-       2.   If you run your extended program with the original meta-kernel,
-            the SPICE(SPKINSUFFDATA) error should be produced by the
-            spiceypy.spkpos function because you have not loaded enough
-            ephemeris data to compute the position of Jupiter with respect
-            to Saturn. The loaded SPKs contain data for Saturn relative to
-            the Solar System Barycenter, and for the Jupiter System
-            Barycenter relative to the Solar System Barycenter, but the
-            data for Jupiter relative to the Jupiter System Barycenter are
-            missing:
+      Additional kernels required for this task:
 
+      File name                Contents
+      -----------------------  ----------------------------------
+      jup310_2004.bsp          Generic Jovian Satellite Ephemeris
 
-         Additional kernels required for this task:
+   available in the NAIF server at:
 
-         File name                Contents
-         -----------------------  ----------------------------------
-         jup310_2004.bsp          Generic Jovian Satellite Ephemeris
+   https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/
 
+   Download the relevant SPK, add it to the meta-kernel and run
+   again your extended program. The solution for the input UTC
+   time "2004 jun 11 19:32:00" when using the downloaded Jovian
+   Satellite Ephemeris SPK:
 
-         available in the NAIF server at:
+   .. code-block:: text
 
-      https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/
+      Actual position of Jupiter as seen from Saturn in the
+         J2000 frame (km):
+         X =   -436016583.291
+         Y =  -1094176737.323
+         Z =   -446585337.431
 
+#. When using ``'NONE'`` aberration corrections, :py:func:`spiceypy.spkpos <spiceypy.spiceypy.spkpos>`
+   returns the geometric position of the target body relative to
+   the observer. If ``'LT'`` is used, the returned vector corresponds
+   to the position of the target at the moment it emitted photons
+   arriving at the observer at ``et``. If ``'LT+S'`` is used instead,
+   the returned vector takes into account the observer's velocity
+   relative to the solar system barycenter. The solution for the
+   input UTC time "2004 jun 11 19:32:00" is:
 
-            Download the relevant SPK, add it to the meta-kernel and run
-            again your extended program. The solution for the input UTC
-            time "2004 jun 11 19:32:00" when using the downloaded Jovian
-            Satellite Ephemeris SPK:
+   .. code-block:: text
 
-         Actual position of Jupiter as seen from Saturn in the
-            J2000 frame (km):
-            X =   -436016583.291
-            Y =  -1094176737.323
-            Z =   -446585337.431
-
-       3.   When using 'NONE' aberration corrections, spiceypy.spkpos
-            returns the geometric position of the target body relative to
-            the observer. If 'LT' is used, the returned vector corresponds
-            to the position of the target at the moment it emitted photons
-            arriving at the observer at `et'. If 'LT+S' is used instead,
-            the returned vector takes into account the observer's velocity
-            relative to the solar system barycenter. The solution for the
-            input UTC time "2004 jun 11 19:32:00" is:
-
-
-         Actual (geometric) position of Sun as seen from Saturn in the
-            J2000 frame (km):
-            X =    367770592.367
-            Y =  -1197330367.359
-            Z =   -510369088.677
-         Light-time corrected position of Sun as seen from Saturn in the
-            J2000 frame (km):
-            X =    367770572.921
-            Y =  -1197330417.733
-            Z =   -510369109.509
-         Apparent position of Sun as seen from Saturn in the
-            J2000 frame (km):
-            X =    367726456.168
-            Y =  -1197342627.879
-            Z =   -510372252.747
+      Actual (geometric) position of Sun as seen from Saturn in the
+         J2000 frame (km):
+         X =    367770592.367
+         Y =  -1197330367.359
+         Z =   -510369088.677
+      Light-time corrected position of Sun as seen from Saturn in the
+         J2000 frame (km):
+         X =    367770572.921
+         Y =  -1197330417.733
+         Z =   -510369109.509
+      Apparent position of Sun as seen from Saturn in the
+         J2000 frame (km):
+         X =    367726456.168
+         Y =  -1197342627.879
+         Z =   -510372252.747
 
 Spacecraft Orientation and Reference Frames (xform)
 ---------------------------------------------------
@@ -865,22 +802,20 @@ Task Statement
 Write a program that prompts the user for an input time string, computes
 and displays the following at the epoch of interest:
 
-.. code-block:: text
+#. The apparent state of Phoebe as seen from CASSINI in the
+   IAU_PHOEBE body-fixed frame. This vector itself is not of any
+   particular interest, but it is a useful intermediate quantity
+   in some geometry calculations.
 
-       1.   The apparent state of Phoebe as seen from CASSINI in the
-            IAU_PHOEBE body-fixed frame. This vector itself is not of any
-            particular interest, but it is a useful intermediate quantity
-            in some geometry calculations.
+#. The angular separation between the apparent position of Earth
+   as seen from CASSINI and the nominal boresight of the CASSINI
+   high gain antenna (HGA).
 
-       2.   The angular separation between the apparent position of Earth
-            as seen from CASSINI and the nominal boresight of the CASSINI
-            high gain antenna (HGA).
-
-            The HGA boresight direction is provided by the kernel variable
-            TKFRAME_-82101_BORESIGHT, which is defined in the Cassini frame
-            kernel cited above in the section "Kernels Used." In this
-            kernel, the HGA boresight vector is expressed relative to the
-            CASSINI_HGA reference frame.
+   The HGA boresight direction is provided by the kernel variable
+   TKFRAME\_-82101_BORESIGHT, which is defined in the Cassini frame
+   kernel cited above in the section “Kernels Used.” In this
+   kernel, the HGA boresight vector is expressed relative to the
+   CASSINI_HGA reference frame.
 
 Use the program to compute these quantities at the epoch “2004 jun 11
 19:32:00” UTC.
@@ -893,7 +828,7 @@ Learning Goals
 Familiarity with the different types of kernels involved in chaining
 reference frames together, both inertial and non-inertial. Discover some
 of the matrix and vector math functions. Understand the difference
-between spiceypy.pxform and spiceypy.sxform.
+between :py:func:`spiceypy.pxform <spiceypy.spiceypy.pxform>` and :py:func:`spiceypy.sxform <spiceypy.spiceypy.sxform>`.
 
 .. _approach-2:
 
@@ -903,60 +838,56 @@ Approach
 The solution to the problem can be broken down into a series of simple
 steps:
 
-.. code-block:: text
+- Decide which SPICE kernels are necessary. Prepare a meta-kernel
+  listing the kernels and load it into the program.
 
-       --   Decide which SPICE kernels are necessary. Prepare a meta-kernel
-            listing the kernels and load it into the program.
+- Prompt the user for an input time string.
 
-       --   Prompt the user for an input time string.
+- Convert the input time string into ephemeris time expressed as
+  seconds past J2000 TDB.
 
-       --   Convert the input time string into ephemeris time expressed as
-            seconds past J2000 TDB.
+- Compute the state of Phoebe relative to CASSINI in the J2000
+  reference frame, corrected for aberrations.
 
-       --   Compute the state of Phoebe relative to CASSINI in the J2000
-            reference frame, corrected for aberrations.
+- Compute the state transformation matrix from J2000 to
+  IAU_PHOEBE at the epoch, adjusted for light time.
 
-       --   Compute the state transformation matrix from J2000 to
-            IAU_PHOEBE at the epoch, adjusted for light time.
+- Multiply the state of Phoebe relative to CASSINI in the J2000
+  reference frame by the state transformation matrix computed in
+  the previous step.
 
-       --   Multiply the state of Phoebe relative to CASSINI in the J2000
-            reference frame by the state transformation matrix computed in
-            the previous step.
+- Compute the position of Earth relative to CASSINI in the J2000
+  reference frame, corrected for aberrations.
 
-       --   Compute the position of Earth relative to CASSINI in the J2000
-            reference frame, corrected for aberrations.
+- Determine what the nominal boresight of the CASSINI high gain
+  antenna is by examining the frame kernel's content.
 
-       --   Determine what the nominal boresight of the CASSINI high gain
-            antenna is by examining the frame kernel's content.
+- Compute the rotation matrix from the CASSINI high gain antenna
+  frame to J2000.
 
-       --   Compute the rotation matrix from the CASSINI high gain antenna
-            frame to J2000.
+- Multiply the nominal boresight expressed in the CASSINI high
+  gain antenna frame by the rotation matrix from the previous
+  step.
 
-       --   Multiply the nominal boresight expressed in the CASSINI high
-            gain antenna frame by the rotation matrix from the previous
-            step.
-
-       --   Compute the separation between the result of the previous step
-            and the apparent position of the Earth relative to CASSINI in
-            the J2000 frame.
+- Compute the separation between the result of the previous step
+  and the apparent position of the Earth relative to CASSINI in
+  the J2000 frame.
 
 HINT: Several of the steps above may be compressed into a single step
 using SpiceyPy functions with which you are already familiar. The
 "long way" presented above is intended to facilitate the introduction
-of the functions spiceypy.pxform and spiceypy.sxform.
+of the functions :py:func:`spiceypy.pxform <spiceypy.spiceypy.pxform>` and :py:func:`spiceypy.sxform <spiceypy.spiceypy.sxform>`.
 
 You may find it useful to consult the permuted index, the headers of
 various source modules, and the following toolkit documentation:
 
-.. code-block:: text
+#. Frames Required Reading (frames.req)
 
-       1.   Frames Required Reading (frames.req)
+#. PCK Required Reading (pck.req)
 
-       2.   PCK Required Reading (pck.req)
+#. SPK Required Reading (spk.req)
 
-       3.   SPK Required Reading (spk.req)
-
-       4.   CK Required Reading (ck.req)
+#. CK Required Reading (ck.req)
 
 This particular example makes use of many of the different types of
 SPICE kernels. You should spend a few moments thinking about which
@@ -967,7 +898,7 @@ kernels you will need and what data they provide.
 Solution
 ^^^^^^^^
 
-Solution Meta-Kernel
+**Solution Meta-Kernel**
 
 The meta-kernel we created for the solution to this exercise is named
 'xform.tm'. Its contents follow:
@@ -976,7 +907,7 @@ The meta-kernel we created for the solution to this exercise is named
     :env: rsenv
     :src: scripts/remote_sensing/xform_make_mk.py
 
-Solution Source Code
+**Solution Source Code**
 
 A sample solution to the problem follows:
 
@@ -984,7 +915,7 @@ A sample solution to the problem follows:
     :env: rsenv
     :src: scripts/remote_sensing/xform.py
 
-Solution Sample Output
+**Solution Sample Output**
 
 Execute the program:
 
@@ -1032,62 +963,44 @@ unlike the regular tasks, no approach or solution source code is
 provided. In the next section, you will find the numeric solutions (when
 applicable) and answers to the questions asked in these tasks.
 
-Task statements and questions
+**Task statements and questions**
 
-.. code-block:: text
+#. Run the original program using the input UTC time "2004 jun 11
+   18:25:00". Explain what happens.
 
-       1.   Run the original program using the input UTC time "2004 jun 11
-            18:25:00". Explain what happens.
+#. Compute the angular separation between the apparent position of
+   the Sun as seen from CASSINI and the nominal boresight of the
+   CASSINI high gain antenna (HGA). Is the HGA illuminated?
 
-       2.   Compute the angular separation between the apparent position of
-            the Sun as seen from CASSINI and the nominal boresight of the
-            CASSINI high gain antenna (HGA). Is the HGA illuminated?
+**Solutions and answers**
 
-Solutions and answers
+#. When running the original software using as input the UTC time
+   string "2004 jun 11 18:25:00":
 
-.. code-block:: text
+   .. code-block:: text
 
-       1.   When running the original software using as input the UTC time
-            string "2004 jun 11 18:25:00":
-
-      Traceback (most recent call last):
-        File "xform.py", line 183, in <module>
-          xform()
-        File "xform.py", line 130, in xform
-          pform = spiceypy.pxform( 'CASSINI_HGA', 'J2000', et )
-        File "/home/bsemenov/local/lib/python3.5/site-packages/spiceypy/spi
-      ceypy.py", line 76, in with_errcheck
-          check_for_spice_error(f)
-        File "/home/bsemenov/local/lib/python3.5/site-packages/spiceypy/spi
-      ceypy.py", line 59, in check_for_spice_error
-          raise stypes.SpiceyError(msg)
       spiceypy.utils.support_types.SpiceyError:
-      =====================================================================
-      ===========
+      ================================================================================
 
-      Toolkit version: N0066
+      Toolkit version: N0067
 
       SPICE(NOFRAMECONNECT) --
 
-      At epoch 1.4025036418463E+08 TDB (2004 JUN 11 18:26:04.184 TDB), ther
-      e is insufficient information available to transform from reference f
-      rame -82101 (CASSINI_HGA) to reference frame 1 (J2000). Frame CASSINI
-      _HGA could be transformed to frame -82000 (CASSINI_SC_COORD). The lat
-      ter is a CK frame; a CK file containing data
+      At epoch 1.4025036418463E+08 TDB (2004 JUN 11 18:26:04.184 TDB), there is insufficient information available to transform from reference frame -82101 (CASSINI_HGA) to reference frame 1 (J2000). Frame CASSINI_HGA could be transformed to frame -82000 (CASSINI_SC_COORD). The latter is a CK frame; a CK file containing data
 
       pxform_c --> PXFORM --> REFCHG
 
-      =====================================================================
-      ===========
+      ================================================================================
 
-            spiceypy.pxform returns the SPICE(NOFRAMECONNECT) error, which
-            indicates that there are not sufficient data to perform the
-            transformation from the CASSINI_HGA frame to J2000 at the
-            requested epoch. If you summarize the CASSINI spacecraft CK
-            using the "ckbrief" utility program with the -dump option
-            (display interpolation intervals boundaries) you will find that
-            the CK contains gaps within its segment:
+   :py:func:`spiceypy.pxform <spiceypy.spiceypy.pxform>` returns the ``SPICE(NOFRAMECONNECT)`` error, which
+   indicates that there are not sufficient data to perform the
+   transformation from the CASSINI_HGA frame to J2000 at the
+   requested epoch. If you summarize the CASSINI spacecraft CK
+   using the "ckbrief" utility program with the ``-dump`` option
+   (display interpolation intervals boundaries) you will find that
+   the CK contains gaps within its segment:
 
+   .. code-block:: text
 
       CKBRIEF -- Version 6.1.0, June 27, 2014 -- Toolkit Version N0066
 
@@ -1105,12 +1018,11 @@ Solutions and answers
         2004-JUN-12 05:54:56.012 2004-JUN-12 10:32:08.016 Y
         2004-JUN-12 10:33:26.016 2004-JUN-12 11:59:59.998 Y
 
+   whereas if you had used ckbrief without ``-dump`` you would have
+   gotten the following information (only CK segment begin/end
+   times):
 
-
-            whereas if you had used ckbrief without -dump you would have
-            gotten the following information (only CK segment begin/end
-            times):
-
+   .. code-block:: text
 
       CKBRIEF -- Version 6.1.0, June 27, 2014 -- Toolkit Version N0066
 
@@ -1122,16 +1034,16 @@ Solutions and answers
         ------------------------ ------------------------ ---
         2004-JUN-11 05:00:00.000 2004-JUN-12 11:59:59.998 Y
 
+   which has insufficient detail to reveal the problem.
 
+#. By computing the apparent position of the Sun as seen from
+   CASSINI in the CASSINI_HGA frame, and the angular separation
+   between this vector and the nominal boresight of the CASSINI
+   high gain antenna (+Z-axis of the CASSINI_HGA frame), you will
+   find whether the HGA is illuminated. The solution for the input
+   UTC time "2004 jun 11 19:32:00" is:
 
-            which has insufficient detail to reveal the problem.
-
-       2.   By computing the apparent position of the Sun as seen from
-            CASSINI in the CASSINI_HGA frame, and the angular separation
-            between this vector and the nominal boresight of the CASSINI
-            high gain antenna (+Z-axis of the CASSINI_HGA frame), you will
-            find whether the HGA is illuminated. The solution for the input
-            UTC time "2004 jun 11 19:32:00" is:
+   .. code-block:: text
 
       Angular separation between the apparent position of the Sun and the
       nominal boresight of the CASSINI high gain antenna (degrees):
@@ -1140,7 +1052,7 @@ Solutions and answers
       HGA illumination:
          CASSINI high gain antenna IS illuminated.
 
-            since the angular separation is smaller than 90 degrees.
+   since the angular separation is smaller than 90 degrees.
 
 Computing Sub-s/c and Sub-solar Points on an Ellipsoid and a DSK (subpts)
 -------------------------------------------------------------------------
@@ -1153,28 +1065,15 @@ Task Statement
 Write a program that prompts the user for an input UTC time string and
 computes the following quantities at that epoch:
 
-.. code-block:: text
+#. The apparent sub-observer point of CASSINI on Phoebe, in the
+   body fixed frame IAU_PHOEBE, in kilometers.
 
-       1.   The apparent sub-observer point of CASSINI on Phoebe, in the
-            body fixed frame IAU_PHOEBE, in kilometers.
-
-       2.   The apparent sub-solar point on Phoebe, as seen from CASSINI in
-            the body fixed frame IAU_PHOEBE, in kilometers.
+#. The apparent sub-solar point on Phoebe, as seen from CASSINI in
+   the body fixed frame IAU_PHOEBE, in kilometers.
 
 The program computes each point twice: once using an ellipsoidal shape
-model and the
-
-.. code-block:: text
-
-           near point/ellipsoid
-
-definition, and once using a DSK shape model and the
-
-.. code-block:: text
-
-           nadir/dsk/unprioritized
-
-definition.
+model and the ``near point/ellipsoid`` definition, and once using a DSK
+shape model and the ``nadir/dsk/unprioritized`` definition.
 
 The program displays the results. Use the program to compute these
 quantities at “2004 jun 11 19:32:00” UTC.
@@ -1198,17 +1097,7 @@ to understand how to call them.
 
 One point worth considering: how would the results change if the
 sub-solar and sub-observer points were computed using the
-
-.. code-block:: text
-
-           intercept/ellipsoid
-
-and
-
-.. code-block:: text
-
-           intercept/dsk/unprioritized
-
+``intercept/ellipsoid`` and ``intercept/dsk/unprioritized``
 definitions? Which definition is appropriate?
 
 .. _solution-3:
@@ -1216,7 +1105,7 @@ definitions? Which definition is appropriate?
 Solution
 ^^^^^^^^
 
-Solution Meta-Kernel
+**Solution Meta-Kernel**
 
 The meta-kernel we created for the solution to this exercise is named
 'subpts.tm'. Its contents follow:
@@ -1225,7 +1114,7 @@ The meta-kernel we created for the solution to this exercise is named
     :env: rsenv
     :src: scripts/remote_sensing/subpts_make_mk.py
 
-Solution Source Code
+**Solution Source Code**
 
 A sample solution to the problem follows:
 
@@ -1233,7 +1122,7 @@ A sample solution to the problem follows:
     :env: rsenv
     :src: scripts/remote_sensing/subpts.py
 
-Solution Sample Output
+**Solution Sample Output**
 
 Execute the program:
 
@@ -1274,114 +1163,116 @@ Execute the program:
 .. _extra-credit-3:
 
 Extra Credit
-^^^^^^^^^^^^^
+^^^^^^^^^^^^
 
 In this "extra credit" section you will be presented with more
-complex tasks, aimed at improving your understanding of spiceypy.subpnt
-and spiceypy.subslr functions.
+complex tasks, aimed at improving your understanding of :py:func:`spiceypy.subpnt <spiceypy.spiceypy.subpnt>`
+and :py:func:`spiceypy.subslr <spiceypy.spiceypy.subslr>` functions.
 
 These "extra credit" tasks are provided as task statements, and
 unlike the regular tasks, no approach or solution source code is
 provided. In the next section, you will find the numeric solutions (when
 applicable) and answers to the questions asked in these tasks.
 
-Task statements and questions
+**Task statements and questions**
 
-.. code-block:: text
+#. Recompute the apparent sub-solar point on Phoebe as seen from
+   CASSINI in the body fixed frame IAU_PHOEBE in kilometers using
+   the 'Intercept/ellipsoid' method at "2004 jun 11 19:32:00".
+   Explain the differences.
 
-       1.   Recompute the apparent sub-solar point on Phoebe as seen from
-            CASSINI in the body fixed frame IAU_PHOEBE in kilometers using
-            the 'Intercept/ellipsoid' method at "2004 jun 11 19:32:00".
-            Explain the differences.
+#. Compute the geometric sub-spacecraft point of CASSINI on Phoebe
+   in the body fixed frame IAU_PHOEBE in kilometers using the
+   'Near point/ellipsoid' method at "2004 jun 11 19:32:00".
 
-       2.   Compute the geometric sub-spacecraft point of CASSINI on Phoebe
-            in the body fixed frame IAU_PHOEBE in kilometers using the
-            'Near point/ellipsoid' method at "2004 jun 11 19:32:00".
+#. Transform the sub-spacecraft Cartesian coordinates obtained in
+   the previous task to planetocentric and planetographic
+   coordinates. When computing planetographic coordinates,
+   retrieve Phoebe's radii by calling :py:func:`spiceypy.bodvrd <spiceypy.spiceypy.bodvrd>` and use the
+   first element of the returned radii values as Phoebe's
+   equatorial radius. Explain why planetocentric and
+   planetographic latitudes and longitudes are different. Explain
+   why the planetographic altitude for a point on the surface of
+   Phoebe is not zero and whether this is correct or not.
 
-       3.   Transform the sub-spacecraft Cartesian coordinates obtained in
-            the previous task to planetocentric and planetographic
-            coordinates. When computing planetographic coordinates,
-            retrieve Phoebe's radii by calling spiceypy.bodvrd and use the
-            first element of the returned radii values as Phoebe's
-            equatorial radius. Explain why planetocentric and
-            planetographic latitudes and longitudes are different. Explain
-            why the planetographic altitude for a point on the surface of
-            Phoebe is not zero and whether this is correct or not.
+**Solutions and answers**
 
-Solutions and answers
+#. The differences observed are due to the computation method. The
+   "Intercept/ellipsoid" method defines the sub-solar point as
+   the target surface intercept of the line containing the Sun and
+   the target's center, while the "Near point/ellipsoid" method
+   defines the sub-solar point as the nearest point on the
+   target relative to the Sun. Since Phoebe is not spherical,
+   these two points are not the same:
 
-.. code-block:: text
+   .. code-block:: text
 
-       1.   The differences observed are due to the computation method. The
-            "Intercept/ellipsoid" method defines the sub-solar point as
-            the target surface intercept of the line containing the Sun and
-            the target's center, while the "Near point/ellipsoid" method
-            defines the sub-solar point as the the nearest point on the
-            target relative to the Sun. Since Phoebe is not spherical,
-            these two points are not the same:
+      Apparent sub-solar point on Phoebe as seen from CASSINI in
+      the IAU_PHOEBE frame using the 'Near Point: ellipsoid' method
+      (km):
+         X =           78.681
+         Y =           76.879
+         Z =          -21.885
 
-         Apparent sub-solar point on Phoebe as seen from CASSINI in
-         the IAU_PHOEBE frame using the 'Near Point: ellipsoid' method
-         (km):
-            X =           78.681
-            Y =           76.879
-            Z =          -21.885
+      Apparent sub-solar point on Phoebe as seen from CASSINI in
+      the IAU_PHOEBE frame using the 'Intercept: ellipsoid' method
+      (km):
+         X =           74.542
+         Y =           79.607
+         Z =          -24.871
 
-         Apparent sub-solar point on Phoebe as seen from CASSINI in
-         the IAU_PHOEBE frame using the 'Intercept: ellipsoid' method
-         (km):
-            X =           74.542
-            Y =           79.607
-            Z =          -24.871
+#. The geometric sub-spacecraft point of CASSINI on Phoebe in the
+   body fixed frame IAU_PHOEBE in kilometers at "2004 jun 11
+   19:32:00" UTC epoch is:
 
-       2.   The geometric sub-spacecraft point of CASSINI on Phoebe in the
-            body fixed frame IAU_PHOEBE in kilometers at "2004 jun 11
-            19:32:00" UTC epoch is:
+   .. code-block:: text
 
-         Geometric sub-spacecraft point of CASSINI on Phoebe in
-         the IAU_PHOEBE frame using the 'Near Point: ellipsoid' method
-         (km):
-            X =          104.497
-            Y =           45.270
-            Z =            7.384
+      Geometric sub-spacecraft point of CASSINI on Phoebe in
+      the IAU_PHOEBE frame using the 'Near Point: ellipsoid' method
+      (km):
+         X =          104.497
+         Y =           45.270
+         Z =            7.384
 
-       3.   The sub-spacecraft point of CASSINI on Phoebe in planetocentric
-            and planetographic coordinates at "2004 jun 11 19:32:00" UTC
-            epoch is:
+#. The sub-spacecraft point of CASSINI on Phoebe in planetocentric
+   and planetographic coordinates at "2004 jun 11 19:32:00" UTC
+   epoch is:
 
-         Planetocentric coordinates of the CASSINI
-         sub-spacecraft point on Phoebe (degrees, km):
-         LAT =            3.710
-         LON =           23.423
-         R   =          114.121
+   .. code-block:: text
 
-         Planetographic coordinates of the CASSINI
-         sub-spacecraft point on Phoebe (degrees, km):
-         LAT =            4.454
-         LON =          336.577
-         ALT =           -0.831
+      Planetocentric coordinates of the CASSINI
+      sub-spacecraft point on Phoebe (degrees, km):
+      LAT =            3.710
+      LON =           23.423
+      R   =          114.121
 
-            The planetocentric and planetographic longitudes are different
-            ("graphic" = 360 - "centric") because planetographic
-            longitudes on Phoebe are measured positive west as defined by
-            Phoebe's rotation direction.
+      Planetographic coordinates of the CASSINI
+      sub-spacecraft point on Phoebe (degrees, km):
+      LAT =            4.454
+      LON =          336.577
+      ALT =           -0.831
 
-            The planetocentric and planetographic latitudes are different
-            because the planetocentric latitude was computed as the angle
-            between the direction from the center of the body to the point
-            and the equatorial plane, while the planetographic latitude was
-            computed as the angle between the surface normal at the point
-            and the equatorial plane.
+   The planetocentric and planetographic longitudes are different
+   ("graphic" = 360 - "centric") because planetographic
+   longitudes on Phoebe are measured positive west as defined by
+   Phoebe's rotation direction.
 
-            The planetographic altitude is non zero because it was computed
-            using a different and incorrect Phoebe surface model: a
-            spheroid with equal equatorial radii. The surface point
-            returned by spiceypy.subpnt was computed by treating Phoebe as
-            a triaxial ellipsoid with different equatorial radii. The
-            planetographic latitude is also incorrect because it is based
-            on the normal to the surface of the spheroid rather than the
-            ellipsoid, In general planetographic coordinates cannot be used
-            for bodies with shapes modeled as triaxial ellipsoids.
+   The planetocentric and planetographic latitudes are different
+   because the planetocentric latitude was computed as the angle
+   between the direction from the center of the body to the point
+   and the equatorial plane, while the planetographic latitude was
+   computed as the angle between the surface normal at the point
+   and the equatorial plane.
+
+   The planetographic altitude is non zero because it was computed
+   using a different and incorrect Phoebe surface model: a
+   spheroid with equal equatorial radii. The surface point
+   returned by :py:func:`spiceypy.subpnt <spiceypy.spiceypy.subpnt>` was computed by treating Phoebe as
+   a triaxial ellipsoid with different equatorial radii. The
+   planetographic latitude is also incorrect because it is based
+   on the normal to the surface of the spheroid rather than the
+   ellipsoid. In general planetographic coordinates cannot be used
+   for bodies with shapes modeled as triaxial ellipsoids.
 
 Intersecting Vectors with an Ellipsoid and a DSK (fovint)
 ---------------------------------------------------------
@@ -1398,12 +1289,10 @@ Phoebe. Compute each intercept twice: once with Phoebe's shape modeled
 as an ellipsoid, and once with Phoebe's shape modeled by DSK data. The
 program presents each point of intersection as
 
-.. code-block:: text
+#. A Cartesian vector in the IAU_PHOEBE frame
 
-       1.   A Cartesian vector in the IAU_PHOEBE frame
-
-       2.   Planetocentric (latitudinal) coordinates in the IAU_PHOEBE
-            frame.
+#. Planetocentric (latitudinal) coordinates in the IAU_PHOEBE
+   frame.
 
 For each of the camera FOV boundary and boresight vectors, if an
 intersection is found, the program displays the results of the above
@@ -1411,13 +1300,11 @@ computations, otherwise it indicates no intersection exists.
 
 At each point of intersection compute the following:
 
-.. code-block:: text
+3. Phase angle
 
-       3.   Phase angle
+4. Solar incidence angle
 
-       4.   Solar incidence angle
-
-       5.   Emission angle
+5. Emission angle
 
 These angles should be computed using both ellipsoidal and DSK shape
 models.
@@ -1426,11 +1313,8 @@ Additionally compute the local solar time at the intercept of the camera
 boresight with the surface of Phoebe, using both ellipsoidal and DSK
 shape models.
 
-Use this program to compute values at the epoch:
-
-.. code-block:: text
-
-            "2004 jun 11 19:32:00" UTC
+Use this program to compute values at the epoch
+``"2004 jun 11 19:32:00"`` UTC.
 
 .. _learning-goals-4:
 
@@ -1451,47 +1335,41 @@ Approach
 
 This problem can be broken down into several simple, small steps:
 
-.. code-block:: text
+- Decide which SPICE kernels are necessary. Prepare a meta-kernel
+  listing the kernels and load it into the program. Remember, you
+  will need to find a kernel with information about the CASSINI
+  NAC camera.
 
-       --   Decide which SPICE kernels are necessary. Prepare a meta-kernel
-            listing the kernels and load it into the program. Remember, you
-            will need to find a kernel with information about the CASSINI
-            NAC camera.
+- Prompt the user for an input time string.
 
-       --   Prompt the user for an input time string.
+- Convert the input time string into ephemeris time expressed as
+  seconds past J2000 TDB.
 
-       --   Convert the input time string into ephemeris time expressed as
-            seconds past J2000 TDB.
-
-       --   Retrieve the FOV (field of view) configuration for the CASSINI
-            NAC camera.
+- Retrieve the FOV (field of view) configuration for the CASSINI
+  NAC camera.
 
 For each vector in the set of boundary corner vectors, and for the
 boresight vector, perform the following operations:
 
-.. code-block:: text
+- Compute the intercept of the vector with Phoebe modeled as an
+  ellipsoid or using DSK data
 
-       --   Compute the intercept of the vector with Phoebe modeled as an
-            ellipsoid or using DSK data
+- If this intercept is found, convert the position vector of the
+  intercept into planetocentric coordinates.
 
-       --   If this intercept is found, convert the position vector of the
-            intercept into planetocentric coordinates.
+  Then compute the phase, solar incidence, and emission angles at
+  the intercept. Otherwise indicate to the user no intercept was
+  found for this vector.
 
-            Then compute the phase, solar incidence, and emission angles at
-            the intercept. Otherwise indicate to the user no intercept was
-            found for this vector.
-
-       --   Compute the planetocentric longitude of the boresight
-            intercept.
+- Compute the planetocentric longitude of the boresight
+  intercept.
 
 Finally
 
-.. code-block:: text
-
-       --   Compute the local solar time at the boresight intercept
-            longitude on a 24-hour clock. The input time for this
-            computation should be the TDB observation epoch minus one-way
-            light time from the boresight intercept to the spacecraft.
+- Compute the local solar time at the boresight intercept
+  longitude on a 24-hour clock. The input time for this
+  computation should be the TDB observation epoch minus one-way
+  light time from the boresight intercept to the spacecraft.
 
 It may be useful to consult the CASSINI ISS instrument kernel to
 determine the name of the NAC camera as well as its configuration. This
@@ -1503,7 +1381,7 @@ the "Spacecraft Orientation and Reference Frames" task.
 Solution
 ^^^^^^^^
 
-Solution Meta-Kernel
+**Solution Meta-Kernel**
 
 The meta-kernel we created for the solution to this exercise is named
 'fovint.tm'. Its contents follow:
@@ -1512,7 +1390,7 @@ The meta-kernel we created for the solution to this exercise is named
     :env: rsenv
     :src: scripts/remote_sensing/fovint_make_mk.py
 
-Solution Source Code
+**Solution Source Code**
 
 A sample solution to the problem follows:
 
@@ -1520,7 +1398,7 @@ A sample solution to the problem follows:
     :env: rsenv
     :src: scripts/remote_sensing/fovint.py
 
-Solution Sample Output
+**Solution Sample Output**
 
 Execute the program:
 
@@ -1699,6 +1577,6 @@ Execute the program:
 .. _extra-credit-4:
 
 Extra Credit
-^^^^^^^^^^^^^
+^^^^^^^^^^^^
 
 There are no "extra credit" tasks for this step of the lesson.
