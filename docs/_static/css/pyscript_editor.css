@@ -50,3 +50,38 @@ py-editor::part(editor) {
 py-editor::part(run-button) {
     border-radius: 0 0 4px 0;
 }
+
+/*
+ * Differentiate PyScript output from the yellow-green (#eeffcc) code blocks.
+ * Uses a light blue-gray background, vertical spacing, and an "Output:" label.
+ */
+.py-editor-output {
+    margin-top: 0.75em;
+    background: #f0f4f8;
+    font-size: 0.875em;
+    padding: 0.75em 1em;
+    border-radius: 0 0 4px 4px;
+}
+
+.py-editor-output::before {
+    content: "Output:";
+    display: block;
+    font-size: 0.75em;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 0.35em;
+    font-family: sans-serif;
+}
+
+/* Cells with :target: render output into a separate div (e.g. plots),
+ * so suppress the "Output:" label and custom background on their
+ * default .py-editor-output area. */
+.has-target .py-editor-output::before {
+    display: none;
+}
+
+.has-target .py-editor-output {
+    background: transparent;
+    padding: 0;
+    margin-top: 0;
+}
