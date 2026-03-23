@@ -236,8 +236,12 @@ class PyEditorDirective(Directive):
         # visually; clipboard.js reads textContent regardless of visibility.
         escaped_code = html_mod.escape(code)
 
+        outer_classes = "highlight highlight-python notranslate"
+        if ed_target:
+            outer_classes += " has-target"
+
         editor_html = (
-            '<div class="highlight highlight-python notranslate">\n'
+            f'<div class="{outer_classes}">\n'
             '<div class="highlight">\n'
             f'<pre id="{cell_id}" style="display:none">{escaped_code}</pre>\n'
             f'<script type="py-editor" env="{ed_env}"{config_part}{"  setup" if ed_setup else ""}>\n'
