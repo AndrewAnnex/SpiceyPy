@@ -104,7 +104,7 @@ Specify the dates to sample:
     print(f'ets array has len: {len(ets)}')
 
 
-    
+
 Get the positions vector
 ~~~~~~~~~~~~~~~~~~~~~~~~
 

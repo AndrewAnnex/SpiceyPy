@@ -57,6 +57,10 @@ Directive options
          Sphinx will rebuild the page automatically when the file changes.
 :target: If given, an empty ``<div id="<value>">`` is appended after the
          editor, useful as a display target for PyScript output.
+:placeholder: Path (relative to the docs source directory) to an image file
+         shown inside the ``:target:`` div as a pre-rendered preview.
+         Replaced when ``display(..., append=False)`` writes to the target.
+         Requires ``:target:`` to also be set.
 :setup:  If present, adds the ``setup`` attribute to the ``<script>`` tag.
          PyScript will run the code automatically when the environment
          initialises, without requiring the user to click Run.  The block
@@ -75,6 +79,7 @@ from __future__ import annotations
 
 import html as html_mod
 import os
+import shutil
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
 from sphinx.application import Sphinx
@@ -99,13 +104,12 @@ _HEAD_KEY = "pyscript_head_injected"
 _ENV_KEY = "pyscript_env_config_registered"
 _SETUP_ENV_KEY = "pyscript_setup_env_registered"
 _CELL_COUNTER_KEY = "pyscript_cell_counter"
+_PLACEHOLDER_IMAGES_KEY = "pyscript_placeholder_images"
 
 
 _HIDE_ENV_LABEL_CSS = """\
 <style>.py-editor-box::before { display: none !important; }</style>
 """
-
-
 
 _HIDE_GUTTERS_JS = """
 <script>
@@ -162,6 +166,7 @@ class PyEditorDirective(Directive):
         "config": directives.unchanged,
         "src": directives.unchanged,
         "target": directives.unchanged,
+        "placeholder": directives.unchanged,
         "setup": directives.flag,
     }
 
@@ -178,7 +183,11 @@ class PyEditorDirective(Directive):
         ed_cfg = self.options.get("config", cfg.pyscript_config)
         ed_src = self.options.get("src", None)
         ed_target = self.options.get("target", None)
+        ed_placeholder = self.options.get("placeholder", None)
         ed_setup = "setup" in self.options
+
+        if ed_placeholder and not ed_target:
+            raise self.error(":placeholder: requires :target: to also be set")
 
         result: list[nodes.Node] = []
 
@@ -251,10 +260,47 @@ class PyEditorDirective(Directive):
             "</div>\n"
         )
         if ed_target:
-            editor_html += f'<div id="{ed_target}"></div>\n'
+            if ed_placeholder:
+                # Track the image so _copy_placeholder_images can copy it
+                placeholders = getattr(env, _PLACEHOLDER_IMAGES_KEY, set())
+                placeholders.add(ed_placeholder)
+                setattr(env, _PLACEHOLDER_IMAGES_KEY, placeholders)
+
+                depth = env.docname.count("/")
+                img_src = "../" * depth + "_images/" + os.path.basename(ed_placeholder)
+                escaped_src = html_mod.escape(img_src)
+                editor_html += (
+                    f'<div id="{ed_target}">'
+                    f'<img src="{escaped_src}" alt="Pre-rendered output" />'
+                    f'</div>\n'
+                )
+            else:
+                editor_html += f'<div id="{ed_target}"></div>\n'
 
         result.append(_raw(editor_html))
         return result
+
+
+# ---------------------------------------------------------------------------
+# Copy placeholder images into the build output
+# ---------------------------------------------------------------------------
+
+
+def _copy_placeholder_images(app: Sphinx, exception: Exception | None) -> None:
+    if exception:
+        return
+    placeholders = getattr(app.env, _PLACEHOLDER_IMAGES_KEY, set())
+    if not placeholders:
+        return
+    img_dir = os.path.join(app.outdir, "_images")
+    os.makedirs(img_dir, exist_ok=True)
+    for src_rel in placeholders:
+        src_abs = os.path.join(app.srcdir, src_rel)
+        dest = os.path.join(img_dir, os.path.basename(src_rel))
+        try:
+            shutil.copy2(src_abs, dest)
+        except OSError as exc:
+            logger.warning("pyscript_editor: cannot copy placeholder %r: %s", src_rel, exc)
 
 
 # ---------------------------------------------------------------------------
@@ -271,6 +317,7 @@ def setup(app: Sphinx) -> dict:
     app.add_config_value("pyscript_hide_env_label", True, "html")
 
     app.add_directive("py-editor", PyEditorDirective)
+    app.connect("build-finished", _copy_placeholder_images)
 
     return {
         "version": "0.1.0",

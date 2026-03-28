@@ -224,6 +224,7 @@ html_extra_path = [
     "pyscript_insitu_sensing.json",
     "pyscript_remote_sensing.json",
     "pyscript_other_stuff.json",
+    "pyscript_cassini_example.json",
     "mini-coi.js",
 ]
 

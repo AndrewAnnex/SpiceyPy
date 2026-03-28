@@ -5,27 +5,37 @@ Cassini Position Example
 Below is an example that uses spiceypy to plot the position of the
 Cassini spacecraft relative to the barycenter of Saturn.
 
-.. code:: python
+.. py-editor::
+    :env: cass
+    :config: pyscript_cassini_example.json
+    :setup:
+
+    from pyscript import display
+    import numpy as np
+    import matplotlib
+    matplotlib.use("AGG")
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+    import spiceypy as spice
+
+
+First import spiceypy and test it out.
+
+.. py-editor::
+    :env: cass
+    :config: pyscript_cassini_example.json
 
     import numpy as np
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
-
-First import spiceypy and test it out.
-
-.. code:: python
-
     import spiceypy as spice
-
-.. code:: python
-
     # Print out the toolkit version
-    spice.tkvrsn("TOOLKIT")
+    print(f'SpiceyPy for {spice.tkvrsn("TOOLKIT")} ready!')
 
 
 .. parsed-literal::
 
-    'CSPICE_N0066'
+    'CSPICE_N0067'
 
 
 We will need to load some kernels. You will need to download the following kernels
@@ -39,45 +49,41 @@ meta kernels in spice, please consult the `Kernel Required Reading <https://naif
 - `cas00084.tsc <https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/sclk/cas00084.tsc>`_
 - `cpck05Mar2004.tpc <https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/pck/cpck05Mar2004.tpc>`_
 - `cas_v37.tf <https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/fk/release.11/cas_v37.tf>`_
-- `04135_04171pc_psiv2.bc <https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/ck/04135_04171pc_psiv2.bc>`_
-- `030201AP_SK_SM546_T45.bsp <https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/030201AP_SK_SM546_T45.bsp>`_
 - `cas_iss_v09.ti <https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/ik/release.11/cas_iss_v09.ti>`_
+- `030201AP_SK_SM546_T45.bsp <https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/030201AP_SK_SM546_T45.bsp>`_
 - `020514_SE_SAT105.bsp <https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/020514_SE_SAT105.bsp>`_
 - `981005_PLTEPH-DE405S.bsp <https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/981005_PLTEPH-DE405S.bsp>`_
 
 
-.. code:: python
+.. py-editor::
+    :env: cass
 
-    # The meta kernel file contains entries pointing to the following SPICE kernels, which the user needs to download.
-    #   https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/a_old_versions/naif0009.tls
+    # The Following kernels can also be downloaded from the NAIF at these urls:
+    # the kernels with "_s" postfixes are subset from the NAIF hosted versions
+    #   https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/lsk/naif0008.tls
     #   https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/sclk/cas00084.tsc
     #   https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/pck/cpck05Mar2004.tpc
     #   https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/fk/release.11/cas_v37.tf
-    #   https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/ck/04135_04171pc_psiv2.bc
-    #   https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/030201AP_SK_SM546_T45.bsp
     #   https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/ik/release.11/cas_iss_v09.ti
+    #   https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/030201AP_SK_SM546_T45.bsp
     #   https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/020514_SE_SAT105.bsp
     #   https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/981005_PLTEPH-DE405S.bsp
-    #
-    #   The following is the contents of a metakernel that was saved with
-    #   the name 'cassMetaK.txt'.
-    #   \begindata
-    #   KERNELS_TO_LOAD=(
-    #   'naif0009.tls',
-    #   'cas00084.tsc',
-    #   'cpck05Mar2004.tpc',
-    #   '020514_SE_SAT105.bsp',
-    #   '981005_PLTEPH-DE405S.bsp',
-    #   '030201AP_SK_SM546_T45.bsp',
-    #   '04135_04171pc_psiv2.bc',
-    #   'cas_v37.tf',
-    #   'cas_iss_v09.ti')
-    #   \begintext
-    #
 
-    spice.furnsh("./cassMetaK.txt")
+    spice.furnsh([
+        'kernels/lsk/naif0008.tls',
+        'kernels/sclk/cas00084.tsc',
+        'kernels/pck/cpck05Mar2004.tpc',
+        'kernels/fk/cas_v37.tf',
+        'kernels/ik/cas_iss_v09.ti',
+        'kernels/spk/020514_SE_SAT105_s.bsp',
+        'kernels/spk/981005_PLTEPH-DE405S_s.bsp',
+        'kernels/spk/030201AP_SK_SM546_T45_s.bsp'
+    ])
+    print(f'Loaded {spice.ktotal("ALL")} kernels')
 
-.. code:: python
+
+.. py-editor::
+    :env: cass
 
     step = 4000
     # we are going to get positions between these two dates
@@ -86,7 +92,7 @@ meta kernels in spice, please consult the `Kernel Required Reading <https://naif
     # get et values one and two, we could vectorize str2et
     etOne = spice.str2et(utc[0])
     etTwo = spice.str2et(utc[1])
-    print("ET One: {}, ET Two: {}".format(etOne, etTwo))
+    print(f"ET One: {etOne}, ET Two: {etTwo}")
 
 
 .. parsed-literal::
@@ -94,7 +100,8 @@ meta kernels in spice, please consult the `Kernel Required Reading <https://naif
     ET One: 140961664.18440723, ET Two: 186667264.18308285
 
 
-.. code:: python
+.. py-editor::
+    :env: cass
 
     # get times
     times = [x * (etTwo - etOne) / step + etOne for x in range(step)]
@@ -108,7 +115,8 @@ meta kernels in spice, please consult the `Kernel Required Reading <https://naif
     [140961664.18440723, 140973090.5844069, 140984516.98440656]
 
 
-.. code:: python
+.. py-editor::
+    :env: cass
 
     # check the documentation on spkpos before continuing
     help(spice.spkpos)
@@ -137,7 +145,8 @@ meta kernels in spice, please consult the `Kernel Required Reading <https://naif
 
 
 
-.. code:: python
+.. py-editor::
+    :env: cass
 
     # Run spkpos as a vectorized function
     positions, lightTimes = spice.spkpos(
@@ -161,7 +170,8 @@ meta kernels in spice, please consult the `Kernel Required Reading <https://naif
     23.8062238783
 
 
-.. code:: python
+.. py-editor::
+    :env: cass
 
     # Clean up the kernels
     spice.kclear()
@@ -169,7 +179,10 @@ meta kernels in spice, please consult the `Kernel Required Reading <https://naif
 We will use matplotlib's 3D plotting to visualize Cassini's coordinates. We first convert the
 positions list to a 2D numpy array for easier indexing in the plot.
 
-.. code:: python
+.. py-editor::
+    :env: cass
+    :placeholder: images/exampleoneplot_min.png
+    :target: mpl
 
     positions = (
         positions.T
@@ -178,8 +191,4 @@ positions list to a 2D numpy array for easier indexing in the plot.
     ax = fig.add_subplot(111, projection="3d")
     ax.plot(positions[0], positions[1], positions[2])
     plt.title("SpiceyPy Cassini Position Example from Jun 20, 2004 to Dec 1, 2005")
-    plt.show()
-
-.. image:: images/exampleoneplot_min.png
-    :alt: plot of cassini positions over time using matplotlib
-
+    display(fig, target="mpl", append=False)
