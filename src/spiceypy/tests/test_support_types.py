@@ -81,7 +81,7 @@ def test_spicecell_false():
 
 def test_spicecell_len0():
     test_cell = stypes.SPICEINT_CELL(8)
-    assert len(test_cell)==0
+    assert len(test_cell) == 0
 
 
 def test_spicecell_true():

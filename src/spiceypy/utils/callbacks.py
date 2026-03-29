@@ -104,7 +104,7 @@ def SpiceUDSTEP(f: Callable[[float], float]) -> UDSTEP:
 
 
 def SpiceUDREFN(
-    f: Callable[[float, float, Union[bool, int], Union[bool, int]], float]
+    f: Callable[[float, float, Union[bool, int], Union[bool, int]], float],
 ) -> UDREFN:
     """
     Decorator for wrapping python functions in spice udrefn callback type
@@ -128,7 +128,7 @@ def SpiceUDREFN(
 
 
 def SpiceUDREPI(
-    f: Callable[[Union[SpiceCell, SpiceCellPointer], str, str], None]
+    f: Callable[[Union[SpiceCell, SpiceCellPointer], str, str], None],
 ) -> UDREPI:
     """
     Decorator for wrapping python functions in spice udfrepi callback type

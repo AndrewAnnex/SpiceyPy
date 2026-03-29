@@ -3,6 +3,7 @@
 #
 import spiceypy
 
+
 def viewpr():
     #
     # Local Parameters
@@ -164,7 +165,7 @@ def viewpr():
             else:
                 print(f"Visibility stop time:             {timstr}")
             print(" ")
-    
+
     spiceypy.unload(METAKR)
 
 

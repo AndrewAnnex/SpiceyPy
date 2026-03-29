@@ -34,20 +34,23 @@ import sys
 import hashlib
 
 _IS_PYODIDE = (
-    sys.platform == "emscripten" \
-    or "pyodide" in sys.modules \
-    or "PYODIDE" in os.environ
+    sys.platform == "emscripten" or "pyodide" in sys.modules or "PYODIDE" in os.environ
 )
 
 if _IS_PYODIDE:
-    try: 
+    try:
         import pyodide_http  # type: ignore
+
         pyodide_http.patch_all()
     except ImportError as ie:
-        raise RuntimeWarning('In SpiceyPy gettestkernels.py on Pyodide and could not import pyodide_http', ie)
+        raise RuntimeWarning(
+            "In SpiceyPy gettestkernels.py on Pyodide and could not import pyodide_http",
+            ie,
+        )
 
 try:
     import requests  # type: ignore
+
     _HAVE_REQUESTS = True
 except Exception:
     _HAVE_REQUESTS = False
@@ -200,6 +203,7 @@ def get_kernel(url: str, provided_hash: str = None):
     if not os.path.isfile(kernel_file):
         attempt_download(url, kernel_name, kernel_file, 5, provided_hash=provided_hash)
 
+
 def verify_hash(target_file_name, kernel_name, provided_hash):
     with open(target_file_name, "rb") as kernel:
         file_contents = kernel.read()
@@ -213,7 +217,13 @@ def verify_hash(target_file_name, kernel_name, provided_hash):
             )
 
 
-def _download(kernel_name, target_file_name, url, timeout: float = 10.0, chunk_size: int = 1024 * 1024):
+def _download(
+    kernel_name,
+    target_file_name,
+    url,
+    timeout: float = 10.0,
+    chunk_size: int = 1024 * 1024,
+):
     print("Attempting to Download kernel: {}".format(kernel_name), flush=True)
     if _HAVE_REQUESTS:
         with requests.get(url, stream=True, timeout=timeout) as r:  # type: ignore
@@ -250,7 +260,7 @@ def attempt_download(
             err_msg = str(e)
             print(
                 f"Download of kernel: {kernel_name} failed with Error ({err_msg}), trying again after a bit.",
-                flush=True
+                flush=True,
             )
         current_attempt += 1
         jitter = random.uniform(0, 1)
@@ -270,9 +280,11 @@ def get_standard_kernels() -> None:
     get_kernel(CoreKernels.pck_url, CoreKernels.pck_md5)
     get_kernel(
         CoreKernels.spk_url,
-        CoreKernels.spk_bigendian_md5
-        if sys.byteorder == "big"
-        else CoreKernels.spk_littleendian_md5,
+        (
+            CoreKernels.spk_bigendian_md5
+            if sys.byteorder == "big"
+            else CoreKernels.spk_littleendian_md5
+        ),
     )
     get_kernel(CoreKernels.gm_pck_url, CoreKernels.gm_pck_md5)
     get_kernel(CoreKernels.lsk_url, CoreKernels.lsk_md5)

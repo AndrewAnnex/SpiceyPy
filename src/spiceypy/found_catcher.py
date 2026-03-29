@@ -1,4 +1,10 @@
-__all__ = ['found_check_off', 'found_check_on', 'found_check', 'get_found_catch_state', 'spice_found_exception_thrower']
+__all__ = [
+    "found_check_off",
+    "found_check_on",
+    "found_check",
+    "get_found_catch_state",
+    "spice_found_exception_thrower",
+]
 from contextlib import contextmanager
 import functools
 from typing import Callable, Iterator
@@ -6,6 +12,7 @@ from typing import Callable, Iterator
 from . import config
 from .utils import support_types as stypes
 from .utils.exceptions import NotFoundError
+
 
 def spice_found_exception_thrower(f: Callable) -> Callable:
     """
@@ -40,6 +47,7 @@ def spice_found_exception_thrower(f: Callable) -> Callable:
 
     return wrapper
 
+
 @contextmanager
 def found_check() -> Iterator[None]:
     """
@@ -69,6 +77,7 @@ def found_check() -> Iterator[None]:
     config.catch_false_founds = True
     yield
     config.catch_false_founds = current_catch_state
+
 
 @contextmanager
 def no_found_check() -> Iterator[None]:

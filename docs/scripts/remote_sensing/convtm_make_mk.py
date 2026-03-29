@@ -18,6 +18,6 @@ KPL/MK
                        'kernels/sclk/cas00084.tsc' )
    \begintext
 """
-with open('convtm.tm', 'w') as dst:
+with open("convtm.tm", "w") as dst:
     dst.write(mk)
-print('Wrote kernel file convtm.tm')
+print("Wrote kernel file convtm.tm")
