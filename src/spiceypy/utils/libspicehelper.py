@@ -24,7 +24,17 @@ SOFTWARE.
 
 __all__ = ["_tkversion", "libspice_path", "libspice"]
 from contextlib import contextmanager
-from ctypes import CDLL, POINTER, c_int, c_double, c_char, c_char_p, c_void_p, cast, RTLD_GLOBAL
+from ctypes import (
+    CDLL,
+    POINTER,
+    c_int,
+    c_double,
+    c_char,
+    c_char_p,
+    c_void_p,
+    cast,
+    RTLD_GLOBAL,
+)
 from ctypes.util import find_library
 import os
 import sys
@@ -33,11 +43,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-if (_lvl := os.environ.get("SPICEYPY_LOGLEVEL")):
+if _lvl := os.environ.get("SPICEYPY_LOGLEVEL"):
     try:
         logger.setLevel(level=_lvl.upper())
     except ValueError as ve:
-        logger.warning(f'Unknown logger level specified for SpiceyPy: {ve}')
+        logger.warning(f"Unknown logger level specified for SpiceyPy: {ve}")
         # update _lvl just in case we need it to configure the root logger below
         _lvl = "WARNING"
     # only configure root if not done by anything else
@@ -59,11 +69,12 @@ def add_dll_directory(path: str | Path):
     entirely for windows, calls os.add_dll_directory
     on the path if it is provided
     """
-    if hasattr(os, 'add_dll_directory'):
+    if hasattr(os, "add_dll_directory"):
         _path = Path(path).resolve()
         if _path.is_file():
             _path = _path.parent
         os.add_dll_directory(str(_path))
+
 
 @contextmanager
 def set_ld_library_path():
@@ -131,7 +142,7 @@ def load_cspice() -> tuple[CDLL, str]:
             shared_name = "libcspice.dylib"
         case "emscripten":
             # need to go up two then down
-            parent = (parent.parent.parent / 'spiceypy.libs').resolve()
+            parent = (parent.parent.parent / "spiceypy.libs").resolve()
             shared_name = "libcspice.wasm"
         case _:
             shared_name = "libcspice.so"
@@ -173,7 +184,7 @@ __author__ = "AndrewAnnex"
 
 # get the cspice_flavor if present
 cspice_flavor = None
-if hasattr(libspice, 'cspice_flavor'):
+if hasattr(libspice, "cspice_flavor"):
     ref = cast(libspice.cspice_flavor, c_int_p)
     if ref is not None:
         cspice_flavor = ref.contents.value

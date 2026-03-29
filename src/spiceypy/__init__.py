@@ -21,10 +21,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+
 __author__ = "AndrewAnnex"
 __version__ = "8.0.2"
 import importlib
 import sys
+
 
 def __getattr__(name):
     if name == "cyice":
@@ -732,17 +734,16 @@ from .spiceypy import (
     xpose,
     xpose6,
     xposeg,
-    zzdynrot
+    zzdynrot,
 )
 
 from .utils import support_types
 from .utils import exceptions
 
 __all__ = [
-    "cyice", # TODO exclude if emscripten?
+    "cyice",  # TODO exclude if emscripten?
     "support_types",
-    "exceptions"
-    "stypes",
+    "exceptions" "stypes",
     "libspice",
     "SpiceyError",
     "SpiceyPyError",

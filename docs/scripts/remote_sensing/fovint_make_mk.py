@@ -35,6 +35,6 @@ KPL/MK
                        'kernels/dsk/phoebe_64q.bds' )
    \begintext
 """
-with open('fovint.tm', 'w') as dst:
+with open("fovint.tm", "w") as dst:
     dst.write(mk)
-print('Wrote kernel file fovint.tm')
+print("Wrote kernel file fovint.tm")

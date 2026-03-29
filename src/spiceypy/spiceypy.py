@@ -3514,7 +3514,7 @@ def dskd02(
     n = ctypes.c_int(0)
     values = stypes.empty_double_vector(room)
     libspice.dskd02_c(handle, dladsc, item, start, room, ctypes.byref(n), values)
-    return stypes.c_vector_to_python(values)[:n.value]
+    return stypes.c_vector_to_python(values)[: n.value]
 
 
 @spice_error_check
@@ -3574,7 +3574,7 @@ def dski02(
     n = ctypes.c_int()
     values = stypes.empty_int_vector(room)
     libspice.dski02_c(handle, dladsc, item, start, room, ctypes.byref(n), values)
-    return stypes.c_vector_to_python(values)[:n.value]
+    return stypes.c_vector_to_python(values)[: n.value]
 
 
 @spice_error_check
@@ -3718,7 +3718,7 @@ def dskp02(handle: int, dladsc: SpiceDLADescr, start: int, room: int) -> ndarray
     n = ctypes.c_int(0)
     plates = stypes.empty_int_matrix(3, room)
     libspice.dskp02_c(handle, dladsc, start, room, ctypes.byref(n), plates)
-    return stypes.c_matrix_to_numpy(plates)[:n.value]
+    return stypes.c_matrix_to_numpy(plates)[: n.value]
 
 
 @spice_error_check
@@ -14451,6 +14451,7 @@ if hasattr(datetime, "fromisoformat"):
 
     def fromisoformat(s):
         return datetime.fromisoformat(s + "+00:00")
+
 else:
 
     def fromisoformat(s):

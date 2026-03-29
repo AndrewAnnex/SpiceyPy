@@ -5,6 +5,7 @@ from spiceypy.tests.gettestkernels import (
 )
 import pytest
 
+
 def setup_module(module):
     download_kernels()
 

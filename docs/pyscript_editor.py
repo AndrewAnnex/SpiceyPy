@@ -132,7 +132,9 @@ _HIDE_GUTTERS_JS = """
 """
 
 
-def _head_html(mini_coi: str, version: str, hide_gutters: bool, hide_env_label: bool) -> str:
+def _head_html(
+    mini_coi: str, version: str, hide_gutters: bool, hide_env_label: bool
+) -> str:
     parts = []
     if mini_coi:
         parts.append(f'<script src="{mini_coi}"></script>')
@@ -194,7 +196,9 @@ class PyEditorDirective(Directive):
         # ---- inject <head> assets once per document ----
         injected = getattr(env, _HEAD_KEY, set())
         if env.docname not in injected:
-            result.append(_raw(_head_html(mini_coi, version, hide_gutters, hide_env_label)))
+            result.append(
+                _raw(_head_html(mini_coi, version, hide_gutters, hide_env_label))
+            )
             injected.add(env.docname)
             setattr(env, _HEAD_KEY, injected)
 
@@ -227,7 +231,9 @@ class PyEditorDirective(Directive):
                 with open(abs_src, encoding="utf-8") as fh:
                     code = fh.read()
             except OSError as exc:
-                raise self.error(f":src: could not read file {abs_src!r}: {exc}") from exc
+                raise self.error(
+                    f":src: could not read file {abs_src!r}: {exc}"
+                ) from exc
             env.note_dependency(abs_src)
         else:
             code = "\n".join(self.content)
@@ -272,7 +278,7 @@ class PyEditorDirective(Directive):
                 editor_html += (
                     f'<div id="{ed_target}">'
                     f'<img src="{escaped_src}" alt="Pre-rendered output" />'
-                    f'</div>\n'
+                    f"</div>\n"
                 )
             else:
                 editor_html += f'<div id="{ed_target}"></div>\n'
@@ -300,7 +306,9 @@ def _copy_placeholder_images(app: Sphinx, exception: Exception | None) -> None:
         try:
             shutil.copy2(src_abs, dest)
         except OSError as exc:
-            logger.warning("pyscript_editor: cannot copy placeholder %r: %s", src_rel, exc)
+            logger.warning(
+                "pyscript_editor: cannot copy placeholder %r: %s", src_rel, exc
+            )
 
 
 # ---------------------------------------------------------------------------

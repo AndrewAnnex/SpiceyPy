@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+
 import sys
 import pytest
 import spiceypy as spice
@@ -46,6 +47,7 @@ from spiceypy.utils.support_types import SPICEDOUBLE_CELL
 
 IS_PYODIDE = sys.platform == "emscripten" or "pyodide" in sys.modules
 
+
 @pytest.fixture(autouse=True)
 def clear_kernel_pool_and_reset():
     spice.kclear()
@@ -67,8 +69,11 @@ def cleanup_kernel(path):
 
 def setup_module(module):
     download_kernels()
-    
-@pytest.mark.skipif(not IS_PYODIDE, reason="writing to file system not supported on Pyodide")
+
+
+@pytest.mark.skipif(
+    not IS_PYODIDE, reason="writing to file system not supported on Pyodide"
+)
 def test_cspice_flavor():
     assert spice.cspice_flavor in {0, 1, 2}
 
@@ -553,8 +558,8 @@ def test_ckcov():
     assert [
         [cover[i * 2], cover[i * 2 + 1]] for i in range(spice.wncard(cover))
     ] == expected_intervals
-    
-    
+
+
 def test_ckcov2():
     ckid = spice.ckobj(ExtraKernels.v1jCk)[0]
     cover = SPICEDOUBLE_CELL(200000)
@@ -4077,7 +4082,6 @@ def test_gfclrh():
     assert not spice.gfbail()
 
 
-
 def test_gfdist():
     spice.furnsh(CoreKernels.testMetaKernel)
     et0 = spice.str2et("2007 JAN 01 00:00:00 TDB")
@@ -4112,6 +4116,7 @@ def test_gfdist():
         "2007-APR-01 00:00:00.000000 (TDB)",
     ]
     assert temp_results == expected
+
 
 @pytest.mark.skipif(IS_PYODIDE, reason="Disabled test for Pyodide: flaky test in ci")
 def test_gfevnt():
@@ -4175,6 +4180,7 @@ def test_gfevnt():
         spice.gfclrh()  # pragma: no cover
     spice.gfsstp(0.5)
     spice.gfclrh()
+
 
 @pytest.mark.skipif(IS_PYODIDE, reason="Disabled test for Pyodide: flaky test in ci")
 def test_gffove():
@@ -4597,7 +4603,6 @@ def test_gfrfov():
     # Cleanup
 
 
-
 def test_gfrr():
     relate = ["=", "<", ">", "LOCMIN", "ABSMIN", "LOCMAX", "ABSMAX"]
     expected = {
@@ -4795,8 +4800,14 @@ def test_gfsntc():
     begstr = spice.timout(beg, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 80)
     endstr = spice.timout(end, "YYYY-MON-DD HR:MN:SC.###### (TDB) ::TDB ::RND", 80)
     # uncertainty below is due to difference on arm vs x86 IEEE floating point issues
-    assert begstr == "2007-SEP-23 09:46:39.606982 (TDB)" or begstr == "2007-SEP-23 09:46:39.606981 (TDB)"
-    assert endstr == "2007-SEP-23 09:46:39.606982 (TDB)" or endstr == "2007-SEP-23 09:46:39.606981 (TDB)"
+    assert (
+        begstr == "2007-SEP-23 09:46:39.606982 (TDB)"
+        or begstr == "2007-SEP-23 09:46:39.606981 (TDB)"
+    )
+    assert (
+        endstr == "2007-SEP-23 09:46:39.606982 (TDB)"
+        or endstr == "2007-SEP-23 09:46:39.606981 (TDB)"
+    )
     cleanup_kernel(kernel)
 
 
@@ -4949,7 +4960,6 @@ def test_gfudb2():
     spice.gfudb(gfq, gfb, step, cnfine, result)
     # count
     assert len(result) > 50  # true value is 56
-
 
 
 def test_gfuds():
@@ -6014,9 +6024,9 @@ def test_mequg():
     m1 = np.identity(2)
     mout = spice.mequg(m1, 2, 2)
     assert np.array_equal(m1, mout)
-    m2 = np.array([[1.0, 2.0],[2.0, 4.0],[4.0, 6.0]])
+    m2 = np.array([[1.0, 2.0], [2.0, 4.0], [4.0, 6.0]])
     mexp = m2.copy()
-    assert np.array_equal(mexp, spice.mequg(m2,3,2))
+    assert np.array_equal(mexp, spice.mequg(m2, 3, 2))
 
 
 def test_mtxm():
@@ -6335,14 +6345,14 @@ def test_oscelt():
     _len, mass_earth = spice.bodvrd("EARTH", "GM", 1)
     elts = spice.oscelt(state, et, mass_earth[0])
     expected = [
-        3.60975119168868346605e+05,
+        3.60975119168868346605e05,
         7.81035176779166367966e-02,
         4.87177926278510309288e-01,
-        6.18584206992959551030e+00,
-        1.28678805411666807856e+00,
+        6.18584206992959551030e00,
+        1.28678805411666807856e00,
         5.53312778515375192079e-01,
-        2.51812865183709204197e+08,
-        3.98600435436095925979e+05
+        2.51812865183709204197e08,
+        3.98600435436095925979e05,
     ]
     npt.assert_array_almost_equal(elts, expected, decimal=4)
 
@@ -6361,17 +6371,17 @@ def test_oscltx():
     _len, mass_earth = spice.bodvrd("EARTH", "GM", 1)
     elts = spice.oscltx(state, et, mass_earth[0])
     expected = [
-        3.60975119168868346605e+05,
+        3.60975119168868346605e05,
         7.81035176779166367966e-02,
         4.87177926278510309288e-01,
-        6.18584206992959551030e+00,
-        1.28678805411666807856e+00,
+        6.18584206992959551030e00,
+        1.28678805411666807856e00,
         5.53312778515375192079e-01,
-        2.51812865183709204197e+08,
-        3.98600435436095925979e+05,
+        2.51812865183709204197e08,
+        3.98600435436095925979e05,
         6.42686658697182999767e-01,
-        3.91557106563244480640e+05,
-        2.43839270213373843580e+06
+        3.91557106563244480640e05,
+        2.43839270213373843580e06,
     ]
     npt.assert_array_almost_equal(elts, expected, decimal=4)
 
@@ -6852,9 +6862,13 @@ def test_raxisa():
     npt.assert_approx_equal(angout, 0.62831853, significant=7)
     npt.assert_array_almost_equal(axout, expected_angout)
 
-@pytest.mark.skipif(IS_PYODIDE, reason="writing to file system not supported on Pyodide")
+
+@pytest.mark.skipif(
+    IS_PYODIDE, reason="writing to file system not supported on Pyodide"
+)
 def test_rdtext():
     from datetime import datetime, timezone
+
     # Create ISO UTC datetime string using current time
     utcnow = datetime.now(timezone.utc).isoformat()
     spice.reset()
@@ -7436,7 +7450,9 @@ def test_sincpt():
     camid = spice.bodn2c("CASSINI_ISS_NAC")
     shape, frame, bsight, n, bounds = spice.getfov(camid, 4)
     # run sincpt on boresight vector
-    spoint, trgepc, obspos = spice.sincpt("Ellipsoid", "Enceladus", et, "IAU_ENCELADUS", "CN+S", "CASSINI", frame, bsight)
+    spoint, trgepc, obspos = spice.sincpt(
+        "Ellipsoid", "Enceladus", et, "IAU_ENCELADUS", "CN+S", "CASSINI", frame, bsight
+    )
     npt.assert_almost_equal(trgepc, 415065064.9055491)
     expected_spoint = [
         -143.56046004007180272311,
@@ -7970,7 +7986,6 @@ def test_spkcpo():
     ]
     npt.assert_almost_equal(lt, expected_lt)
     npt.assert_array_almost_equal(state, expected_state, decimal=6)
-
 
 
 def test_spkcpt():

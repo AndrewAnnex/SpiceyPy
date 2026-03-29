@@ -83,6 +83,7 @@ import spiceypy
     )
     assert "INFO:spiceypy" not in (p.stderr or "")
 
+
 def test_import_with_info_emits_info():
     code = r"""
 import logging
@@ -99,6 +100,7 @@ import spiceypy
         check=False,
     )
     assert "INFO:spiceypy" in (p.stderr or "")
+
 
 def test_import_with_info_emits_info_w_preconfig():
     code = r"""

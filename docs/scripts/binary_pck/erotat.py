@@ -81,11 +81,15 @@ def erotat():
         #
         sep = spiceypy.vsep(itrfx, x)
 
-        print(f"ITRF93 - IAU_EARTH +X axis separation angle (deg): {sep * spiceypy.dpr():13.6f}")
+        print(
+            f"ITRF93 - IAU_EARTH +X axis separation angle (deg): {sep * spiceypy.dpr():13.6f}"
+        )
 
         sep = spiceypy.vsep(itrfz, z)
 
-        print(f"ITRF93 - IAU_EARTH +Z axis separation angle (deg): {sep * spiceypy.dpr():13.6f}\n")
+        print(
+            f"ITRF93 - IAU_EARTH +Z axis separation angle (deg): {sep * spiceypy.dpr():13.6f}\n"
+        )
 
     #
     # Find the azimuth and elevation of apparent

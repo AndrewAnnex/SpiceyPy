@@ -23,6 +23,6 @@ KPL/MK
                        'kernels/spk/030201AP_SK_SM546_T45.bsp' )
    \begintext
 """
-with open('getsta.tm', 'w') as dst:
+with open("getsta.tm", "w") as dst:
     dst.write(mk)
-print('Wrote kernel file getsta.tm')
+print("Wrote kernel file getsta.tm")

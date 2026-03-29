@@ -31,6 +31,6 @@ KPL/MK
                          'kernels/pck/cpck05Mar2004.tpc' )
      \begintext
 """
-with open('xform.tm', 'w') as dst:
+with open("xform.tm", "w") as dst:
     dst.write(mk)
-print('Wrote kernel file xform.tm')
+print("Wrote kernel file xform.tm")

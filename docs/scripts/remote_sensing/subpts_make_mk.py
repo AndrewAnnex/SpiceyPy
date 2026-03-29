@@ -28,6 +28,6 @@ KPL/MK
 
    \begintext
 """
-with open('subpts.tm', 'w') as dst:
+with open("subpts.tm", "w") as dst:
     dst.write(mk)
-print('Wrote kernel file subpts.tm')
+print("Wrote kernel file subpts.tm")

@@ -32,6 +32,7 @@ import sys
 
 IS_PYODIDE = sys.platform == "emscripten" or "pyodide" in sys.modules
 
+
 def test_tkversion():
     assert spice.exceptions._tkversion == spice.tkvrsn("toolkit")
 
@@ -43,6 +44,7 @@ def test_geterror():
     assert spice.getmsg("SHORT", 40) == "error"
     assert spice.getmsg("LONG", 200) == "some error occured"
     spice.reset()
+
 
 @pytest.mark.skipif(IS_PYODIDE, reason="Cyice Not supported on Pyodide")
 def test_cyice_geterror():
@@ -85,7 +87,7 @@ def test_get_cyice_exceptions():
         )
     ):
         # make a very long name that's too long for the buffer
-        silly_long_name = 'a'*1842 
+        silly_long_name = "a" * 1842
         spice.cyice.furnsh(silly_long_name)
     spice.reset()
 
@@ -112,7 +114,8 @@ def test_no_loaded_files_exception():
         with pytest.raises(spice.exceptions.SpiceNOLOADEDFILES):
             spice.ckgp(0, 0, 0, "blah")
         spice.reset()
-    
+
+
 @pytest.mark.skipif(IS_PYODIDE, reason="Cyice Not supported on Pyodide")
 def test_no_loaded_files_exception_cyice():
     with pytest.raises(spice.SpiceyError):
@@ -216,6 +219,7 @@ def test_multiple_founds():
     assert all(success.found)
     failed = spice.NotFoundError(message="test", found=(True, False))
     assert not all(failed.found)
+
     # def test_fun
     @spiceypy.found_catcher.spice_found_exception_thrower
     def test_fun():
