@@ -2,7 +2,7 @@
 Cassini Position Example
 ========================
 
-Below is an example that uses spiceypy to plot the position of the
+Below is an interactive example that uses spiceypy to plot the position of the
 Cassini spacecraft relative to the barycenter of Saturn.
 
 .. py-editor::
@@ -38,12 +38,9 @@ First import spiceypy and test it out.
     'CSPICE_N0067'
 
 
-We will need to load some kernels. You will need to download the following kernels
-from the NAIF servers via the links provided. After the kernels have been downloaded
-to a common directory write a metakernel containing the file names for each downloaded
-kernel (provided after the links).
-I named the metakernel 'cassMetaK.txt' for this example. For more on defining
-meta kernels in spice, please consult the `Kernel Required Reading <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/kernel.html>`_.
+We will need to load some kernels. If you are running this example outside of this browser page, you will need to download the following kernels
+from the NAIF servers via the links provided. After the kernels have been downloaded, you can define a meta kernel file or simply provide the paths directly to the :py:func:`spiceypy.furnsh <spiceypy.spiceypy.furnsh>` method.
+For more on defining meta kernels in spice, please consult the `Kernel Required Reading <https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/req/kernel.html>`_.
 
 - `naif0009.tls <https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/a_old_versions/naif0009.tls>`_
 - `cas00084.tsc <https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/sclk/cas00084.tsc>`_
@@ -58,17 +55,7 @@ meta kernels in spice, please consult the `Kernel Required Reading <https://naif
 .. py-editor::
     :env: cass
 
-    # The Following kernels can also be downloaded from the NAIF at these urls:
-    # the kernels with "_s" postfixes are subset from the NAIF hosted versions
-    #   https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/lsk/naif0008.tls
-    #   https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/sclk/cas00084.tsc
-    #   https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/pck/cpck05Mar2004.tpc
-    #   https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/fk/release.11/cas_v37.tf
-    #   https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/ik/release.11/cas_iss_v09.ti
-    #   https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/030201AP_SK_SM546_T45.bsp
-    #   https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/020514_SE_SAT105.bsp
-    #   https://naif.jpl.nasa.gov/pub/naif/CASSINI/kernels/spk/981005_PLTEPH-DE405S.bsp
-
+    # the kernels with "_s" postfixes are subset from the NAIF hosted versions to make this page load faster
     spice.furnsh([
         'kernels/lsk/naif0008.tls',
         'kernels/sclk/cas00084.tsc',
@@ -173,7 +160,7 @@ meta kernels in spice, please consult the `Kernel Required Reading <https://naif
 .. py-editor::
     :env: cass
 
-    # Clean up the kernels
+    # Clean up the kernel pool, not important for this example, but good practice
     spice.kclear()
 
 We will use matplotlib's 3D plotting to visualize Cassini's coordinates. We first convert the
