@@ -3420,15 +3420,87 @@ def test_ektnam():
 
 
 def test_ekucec():
-    assert 1
+    ekpath = os.path.join(cwd, "example_ekucec.ek")
+    cleanup_kernel(ekpath)
+    # Create EK with a character column and add initial data
+    handle = spice.ekopn(ekpath, ekpath, 0)
+    segno = spice.ekbseg(
+        handle,
+        "test_table_ekucec",
+        ["c1"],
+        ["DATATYPE = CHARACTER*(10), NULLS_OK = TRUE, SIZE = VARIABLE"],
+    )
+    recno = spice.ekappr(handle, segno)
+    spice.ekacec(handle, segno, recno, "c1", 2, ["abc", "def"], False)
+    spice.ekcls(handle)
+    # Reopen for writing and update the record
+    handle = spice.ekopw(ekpath)
+    spice.ekucec(handle, segno, recno, "c1", 3, ["ghi", "jkl", "mno"], False)
+    spice.ekcls(handle)
+    # Reopen for reading and verify the updated values
+    handle = spice.ekopr(ekpath)
+    nvals, data, isnull = spice.ekrcec(handle, segno, recno, "c1", 11)
+    assert not isnull
+    assert nvals == 3
+    assert data == ["ghi", "jkl", "mno"]
+    spice.ekcls(handle)
+    cleanup_kernel(ekpath)
 
 
 def test_ekuced():
-    assert 1
+    ekpath = os.path.join(cwd, "example_ekuced.ek")
+    cleanup_kernel(ekpath)
+    # Create EK with a double precision column and add initial data
+    handle = spice.ekopn(ekpath, ekpath, 0)
+    segno = spice.ekbseg(
+        handle,
+        "test_table_ekuced",
+        ["d1"],
+        ["DATATYPE = DOUBLE PRECISION, NULLS_OK = TRUE, SIZE = VARIABLE"],
+    )
+    recno = spice.ekappr(handle, segno)
+    spice.ekaced(handle, segno, recno, "d1", 2, [1.0, 2.0], False)
+    spice.ekcls(handle)
+    # Reopen for writing and update the record
+    handle = spice.ekopw(ekpath)
+    spice.ekuced(handle, segno, recno, "d1", 3, [10.0, 20.0, 30.0], False)
+    spice.ekcls(handle)
+    # Reopen for reading and verify the updated values
+    handle = spice.ekopr(ekpath)
+    nvals, data, isnull = spice.ekrced(handle, segno, recno, "d1")
+    assert not isnull
+    assert nvals == 3
+    npt.assert_array_almost_equal(data, [10.0, 20.0, 30.0])
+    spice.ekcls(handle)
+    cleanup_kernel(ekpath)
 
 
 def test_ekucei():
-    assert 1
+    ekpath = os.path.join(cwd, "example_ekucei.ek")
+    cleanup_kernel(ekpath)
+    # Create EK with an integer column and add initial data
+    handle = spice.ekopn(ekpath, ekpath, 0)
+    segno = spice.ekbseg(
+        handle,
+        "test_table_ekucei",
+        ["i1"],
+        ["DATATYPE = INTEGER, NULLS_OK = TRUE, SIZE = VARIABLE"],
+    )
+    recno = spice.ekappr(handle, segno)
+    spice.ekacei(handle, segno, recno, "i1", 2, [1, 2], False)
+    spice.ekcls(handle)
+    # Reopen for writing and update the record
+    handle = spice.ekopw(ekpath)
+    spice.ekucei(handle, segno, recno, "i1", 3, [10, 20, 30], False)
+    spice.ekcls(handle)
+    # Reopen for reading and verify the updated values
+    handle = spice.ekopr(ekpath)
+    nvals, data, isnull = spice.ekrcei(handle, segno, recno, "i1")
+    assert not isnull
+    assert nvals == 3
+    npt.assert_array_equal(data, [10, 20, 30])
+    spice.ekcls(handle)
+    cleanup_kernel(ekpath)
 
 
 def test_ekuef():
@@ -3573,7 +3645,7 @@ def test_errint():
 
 
 def test_errprt():
-    assert spice.errprt("GET", 40, "ALL") == "NULL"
+    assert spice.errprt("GET", 41, "ALL") == "SHORT, LONG, EXPLAIN, TRACEBACK, DEFAULT"
 
 
 def test_esrchc():

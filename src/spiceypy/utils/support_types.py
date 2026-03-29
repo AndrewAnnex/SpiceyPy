@@ -151,7 +151,7 @@ def c_vector_to_python(x):
     :return: Iterable
     """
     if isinstance(x[0], bool):
-        return numpy.frombuffer(x, dtype=numpy.bool).copy()
+        return numpy.frombuffer(x, dtype=numpy.bool_).copy()
     elif isinstance(x[0], int):
         return numpy.frombuffer(x, dtype=numpy.int32).copy()
     elif isinstance(x[0], float):
