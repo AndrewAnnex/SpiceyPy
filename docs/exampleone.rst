@@ -72,13 +72,9 @@ For more on defining meta kernels in spice, please consult the `Kernel Required 
 .. py-editor::
     :env: cass
 
-    step = 4000
     # we are going to get positions between these two dates
-    utc = ["Jun 20, 2004", "Dec 1, 2005"]
-
-    # get et values one and two, we could vectorize str2et
-    etOne = spice.str2et(utc[0])
-    etTwo = spice.str2et(utc[1])
+    etOne = spice.str2et("Jun 20, 2004")
+    etTwo = spice.str2et("Dec 1, 2005")
     print(f"ET One: {etOne}, ET Two: {etTwo}")
 
 
@@ -90,8 +86,9 @@ For more on defining meta kernels in spice, please consult the `Kernel Required 
 .. py-editor::
     :env: cass
 
-    # get times
-    times = [x * (etTwo - etOne) / step + etOne for x in range(step)]
+    # get times for 4000 steps
+    steps = 4000
+    times = [x * (etTwo - etOne) / step + etOne for x in range(steps)]
 
     # check first few times:
     print(times[0:3])
@@ -109,11 +106,19 @@ For more on defining meta kernels in spice, please consult the `Kernel Required 
     help(spice.spkpos)
 
 
+the above command will return something like the following:    
+    
 .. parsed-literal::
 
     Help on function spkpos in module spiceypy.spiceypy:
 
-    spkpos(targ: str, et: Union[float, numpy.ndarray], ref: str, abcorr: str, obs: str) -> Union[Tuple[numpy.ndarray, float], Tuple[numpy.ndarray, numpy.ndarray]]
+    spkpos(
+        targ: str,
+        et: Union[float, numpy.ndarray],
+        ref: str,
+        abcorr: str,
+        obs: str
+    ) -> Union[Tuple[numpy.ndarray, float], Tuple[numpy.ndarray, numpy.ndarray]]
         Return the position of a target body relative to an observing
         body, optionally corrected for light time (planetary aberration)
         and stellar aberration.
@@ -121,13 +126,13 @@ For more on defining meta kernels in spice, please consult the `Kernel Required 
         https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/spkpos_c.html
 
         :param targ: Target body name.
-        :param et: Observer epoch.
+        :param et: Observer epoch in seconds past J2000 TDB.
         :param ref: Reference frame of output position vector.
         :param abcorr: Aberration correction flag.
         :param obs: Observing body name.
         :return:
-                Position of target,
-                One way light time between observer and target.
+                Position of target in km,
+                One way light time between observer and target in seconds.
 
 
 
