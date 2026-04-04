@@ -18,12 +18,15 @@ Then to install SpiceyPy, simply run::
 
     pip install spiceypy
 
-If you use anaconda/miniconda/conda run: 
+If you use anaconda/miniconda/conda/mamba/micromamba run:
 ----------------------------------------
 ::
 
     conda config --add channels conda-forge
     conda install spiceypy
+    
+
+Using the appropriate "conda" or "mamba" or "micromamba" command.
 
 If no error was returned you have successfully installed SpiceyPy.
 To verify this you can list the installed packages via this pip command::
@@ -33,7 +36,7 @@ To verify this you can list the installed packages via this pip command::
 You should see spicepy in the output of this command.
 Or you can start a python interpreter and try importing SpiceyPy like so:
 
-As of 04/10/2021, spiceypy has experimental support for 64bit ARM processors for linux and macos (linux-aarch64 & osx-arm64) via the conda-forge distribution. 
+As of 04/10/2021, spiceypy has experimental support for 64bit ARM processors for linux and macos (linux-aarch64 & osx-arm64) via the conda-forge distribution.
 
 .. code:: python
 
@@ -68,7 +71,7 @@ Or if you have a shared library of CSPICE located at /tmp/cspice.so, you can run
 Both examples above assume you have cloned the SpiceyPy repository and are running those commands within the project directory.
 
 .. note::
-    As of version 4.0.3 you can also add libcspice to you LD_LIBRARY_PATH or use the CSPICE_SHARED_LIB environment variable 
+    As of version 4.0.3 you can also add libcspice to you LD_LIBRARY_PATH or use the CSPICE_SHARED_LIB environment variable
     at runtime (prior to importing spiceypy) to override which cspice shared library is used.
 
 A simple example program
@@ -81,23 +84,23 @@ value.
 
               File tkvrsn.py
 
-                 from __future__ import print_function
                  import spiceypy
 
                  def print_ver():
-                         """Prints the TOOLKIT version
+                         """
+                         Prints the TOOLKIT version
                          """
                          print(spiceypy.tkvrsn('TOOLKIT'))
 
                  if __name__ == '__main__':
-                         print_ver()
+                        print_ver()
 
 From the command line, execute the function:
 
 ::
 
               $ python tkvrsn.py
-              CSPICE_N0066
+              CSPICE_N0067
 
 From Python, execute the function:
 
@@ -106,7 +109,7 @@ From Python, execute the function:
               $ python
               >>> import tkvrsn
               >>> tkvrsn.print_ver()
-              CSPICE_N0066
+              CSPICE_N0067
 
 SpiceyPy Documentation
 ----------------------
@@ -131,17 +134,14 @@ which produces
 
       Help on function tkvrsn in module spiceypy.spiceypy:
 
-      tkvrsn(item)
+      tkvrsn(item: str) -> str
           Given an item such as the Toolkit or an entry point name, return
           the latest version string.
 
-          https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/tkvrsn_c.
-      html
+          https://naif.jpl.nasa.gov/pub/naif/misc/toolkit_docs_N0067/C/cspice/tkvrsn_c.html
 
           :param item: Item for which a version string is desired.
-          :type item: str
           :return: the latest version string.
-          :rtype: str
 
 As indicated in the help on the function, the complete documentation is
 available on the CSPICE toolkit version. Therefore it is recommended to
@@ -177,7 +177,7 @@ can be installed to this new installation of python (IMHO this is the best optio
 
 If your python 3.6 distribution was installed from the packages available at python.org an included command
 "Install Certificates.command" should be run before attempting to install SpiceyPy again.
-That command installs the certifi package that can also be install using pip. 
+That command installs the certifi package that can also be install using pip.
 
 Alternatively, installing an anaconda or miniconda
 python distribution and installing SpiceyPy using the conda command above is another possible work around.

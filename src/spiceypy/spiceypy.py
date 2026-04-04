@@ -3213,7 +3213,7 @@ def dp2hx(number: float, lenout: int = _default_len_out) -> str:
 
 
 @spice_error_check
-def dpgrdr(body: str, x: float, y: float, z: int, re: float, f: float) -> ndarray:
+def dpgrdr(body: str, x: float, y: float, z: float, re: float, f: float) -> ndarray:
     """
     This routine computes the Jacobian matrix of the transformation
     from rectangular to planetographic coordinates.
@@ -3371,7 +3371,9 @@ def drdlat(r: float, lon: float, lat: float) -> ndarray:
 
 
 @spice_error_check
-def drdpgr(body: str, lon: float, lat: float, alt: int, re: float, f: float) -> ndarray:
+def drdpgr(
+    body: str, lon: float, lat: float, alt: float, re: float, f: float
+) -> ndarray:
     """
     This routine computes the Jacobian matrix of the transformation
     from planetographic to rectangular coordinates.
@@ -7196,7 +7198,7 @@ def gfrr(
     step: float,
     nintvls: int,
     cnfine: SpiceCell,
-    result: SpiceCell,
+    result: Optional[SpiceCell] = None,
 ) -> SpiceCell:
     """
     Determine time intervals for which a specified constraint
@@ -7470,7 +7472,7 @@ def gfsubc(
     step: float,
     nintvls: int,
     cnfine: SpiceCell,
-    result: SpiceCell,
+    result: Optional[SpiceCell] = None,
 ) -> SpiceCell:
     """
     Determine time intervals for which a coordinate of an
@@ -7753,7 +7755,7 @@ def hrmesp(first: float, step: float, yvals: ndarray, x: float) -> Tuple[float, 
 
 @spice_error_check
 def hrmint(
-    xvals: Sequence[float], yvals: Sequence[float], x: int
+    xvals: Sequence[float], yvals: Sequence[float], x: float
 ) -> Tuple[float, float]:
     """
     Evaluate a Hermite interpolating polynomial at a specified
@@ -10286,7 +10288,8 @@ def oscelt(state: ndarray, et: float, mu: Union[float, int]) -> ndarray:
     return stypes.c_vector_to_python(elts)
 
 
-def oscltx(state: ndarray, et: float, mu: int) -> ndarray:
+@spice_error_check
+def oscltx(state: ndarray, et: float, mu: float) -> ndarray:
     """
     Determine the set of osculating conic orbital elements that
     corresponds to the state (position, velocity) of a body at some
@@ -10503,7 +10506,9 @@ def pdpool(name: str, dvals: Union[ndarray, Iterable[float]]) -> None:
 
 
 @spice_error_check
-def pgrrec(body: str, lon: float, lat: float, alt: int, re: float, f: float) -> ndarray:
+def pgrrec(
+    body: str, lon: float, lat: float, alt: float, re: float, f: float
+) -> ndarray:
     """
     Convert planetographic coordinates to rectangular coordinates.
 
@@ -10775,7 +10780,7 @@ def pltvol(vrtces: Sequence[Iterable[float]], plates: Sequence[Iterable[int]]) -
 
 @spice_error_check
 def polyds(
-    coeffs: Union[ndarray, Iterable[float]], deg: int, nderiv: int, t: int
+    coeffs: Union[ndarray, Iterable[float]], deg: int, nderiv: int, t: float
 ) -> ndarray:
     """
     Compute the value of a polynomial and it's first
@@ -12042,12 +12047,13 @@ def sdiff(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     assert a.dtype == b.dtype
     # The next line was redundant with the [raise NotImplementedError] line below
     # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
+    s = a.size + b.size
     if a.dtype == 0:
-        c = stypes.SPICECHAR_CELL(a.size, a.length)
+        c = stypes.SPICECHAR_CELL(s, max(a.length, b.length))
     elif a.dtype == 1:
-        c = stypes.SPICEDOUBLE_CELL(a.size)
+        c = stypes.SPICEDOUBLE_CELL(s)
     elif a.dtype == 2:
-        c = stypes.SPICEINT_CELL(a.size)
+        c = stypes.SPICEINT_CELL(s)
     else:
         raise NotImplementedError
     libspice.sdiff_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
@@ -15594,13 +15600,13 @@ def union(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     assert a.dtype == b.dtype
     # Next line was redundant with [raise NotImpImplementedError] below
     # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
+    s = a.size + b.size
     if a.dtype == 0:
-        s = a.size + b.size
         c = stypes.SPICECHAR_CELL(s, s)
     elif a.dtype == 1:
-        c = stypes.SPICEDOUBLE_CELL(a.size + b.size)
+        c = stypes.SPICEDOUBLE_CELL(s)
     elif a.dtype == 2:
-        c = stypes.SPICEINT_CELL(a.size + b.size)
+        c = stypes.SPICEINT_CELL(s)
     else:
         raise NotImplementedError
     libspice.union_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
