@@ -4,6 +4,28 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [8.1.0] - 2026-04-04
+
+### Added
+ - Pyodide/WebAssembly build support for SpiceyPy (excluding cyice) (#527)
+ - `__all__` exports for spiceypy and cyice modules
+ - Interactive Pyodide/PyScript-based code examples in Sphinx documentation (#529)
+ - Custom Sphinx extension for PyScript editor integration
+ - Standalone Python scripts for all doc lesson examples (binary_pck, event_finding, insitu_sensing, other_stuff, remote_sensing)
+
+### Changed
+ - Updated documentation lessons to be interactive via wasm/pyodide (#529)
+ - Updated Cassini example to use Pyodide (#527)
+ - Modernized some code examples in docs to use f-strings and other modern Python conventions
+ - Updated CMakeLists.txt for Emscripten/wasm cross-compilation support
+
+### Fixed
+ - Missing spice error check for oscltx (#532)
+ - Fixed cell allocation sizes for union and sdiff (#532)
+ - Fixed various parameter type annotations from int to float (#532)
+ - Fixed errors in errprt and ekuced (#531)
+ - Various bug fixes and typo corrections (#531)
+
 ## [8.0.2] - 2026-02-16
 
 ### Removed

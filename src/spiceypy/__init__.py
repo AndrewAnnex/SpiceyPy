@@ -23,7 +23,7 @@ SOFTWARE.
 """
 
 __author__ = "AndrewAnnex"
-__version__ = "8.0.2"
+__version__ = "8.1.0"
 import importlib
 import sys
 
