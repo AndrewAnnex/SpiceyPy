@@ -75,8 +75,10 @@ def found_check() -> Iterator[None]:
     """
     current_catch_state = config.catch_false_founds
     config.catch_false_founds = True
-    yield
-    config.catch_false_founds = current_catch_state
+    try:
+        yield
+    finally:
+        config.catch_false_founds = current_catch_state
 
 
 @contextmanager
@@ -106,8 +108,10 @@ def no_found_check() -> Iterator[None]:
     """
     current_catch_state = config.catch_false_founds
     config.catch_false_founds = False
-    yield
-    config.catch_false_founds = current_catch_state
+    try:
+        yield
+    finally:
+        config.catch_false_founds = current_catch_state
 
 
 def found_check_off() -> None:
