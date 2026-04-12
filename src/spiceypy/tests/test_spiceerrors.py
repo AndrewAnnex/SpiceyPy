@@ -214,6 +214,35 @@ def test_found_check():
     spice.kclear()
 
 
+def test_found_check_restores_state_on_exception():
+    spice.kclear()
+    # start with found check off
+    spice.found_check_off()
+    assert not spice.get_found_catch_state()
+    with pytest.raises(RuntimeError):
+        with spice.found_check():
+            assert spice.get_found_catch_state()
+            raise RuntimeError("error inside context manager")
+    # state must be restored despite the exception
+    assert not spice.get_found_catch_state()
+    spice.found_check_on()
+    spice.kclear()
+
+
+def test_no_found_check_restores_state_on_exception():
+    spice.kclear()
+    # start with found check on (default)
+    spice.found_check_on()
+    assert spice.get_found_catch_state()
+    with pytest.raises(RuntimeError):
+        with spiceypy.no_found_check():
+            assert not spice.get_found_catch_state()
+            raise RuntimeError("error inside context manager")
+    # state must be restored despite the exception
+    assert spice.get_found_catch_state()
+    spice.kclear()
+
+
 def test_multiple_founds():
     success = spice.NotFoundError(message="test", found=(True, True))
     assert all(success.found)
