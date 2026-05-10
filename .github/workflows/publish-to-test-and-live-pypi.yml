@@ -81,7 +81,7 @@ jobs:
         run: |
           python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
       - name: Upload 🆙 coverage 📈 report to codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           fail_ci_if_error: false
           verbose: true
@@ -141,7 +141,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --user --group devwheel
       - name: Build wheels for SpiceyPy 🌶️ 🥧
-        uses: pypa/cibuildwheel@v3.3.1
+        uses: pypa/cibuildwheel@v3.4.1
         continue-on-error: true
         env:
           CIBW_PLATFORM: ${{ matrix.config.platform || 'auto' }}
@@ -150,7 +150,7 @@ jobs:
           CIBW_ENVIRONMENT: CMAKE_BUILD_PARALLEL_LEVEL="2"
           SKBUILD_BUILD_VERBOSE: "true"
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: artifact-${{ matrix.config.os }}-${{ strategy.job-index }}-${{ hashFiles('pyproject.toml') }}
           path: ./wheelhouse/*.whl
