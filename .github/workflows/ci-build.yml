@@ -57,7 +57,7 @@ jobs:
           create-args: >-
             python=3.13
             cspice
-            Cython
+            cython
             numpy
             pip
       - name: Install dependencies
