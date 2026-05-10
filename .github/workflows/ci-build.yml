@@ -23,11 +23,11 @@ jobs:
       contents: read
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up Python 🐍 3.13
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: 3.13
       - name: Build Pyodide wheel for SpiceyPy 🌶️ 🥧
@@ -45,7 +45,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - uses: mamba-org/setup-micromamba@v3
@@ -104,11 +104,11 @@ jobs:
         if: ${{ matrix.os == 'windows-latest'}}
         uses: ilammy/msvc-dev-cmd@v1.13.0
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up Python 🐍 ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           check-latest: true

@@ -11,6 +11,6 @@ jobs:
     name: Validate CITATION.cff
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: CFF Validator
         uses: dieghernan/cff-validator@main

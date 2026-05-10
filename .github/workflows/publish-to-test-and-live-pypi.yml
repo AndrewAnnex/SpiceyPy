@@ -12,13 +12,13 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Build 🛠️ sdist source for 🌶️ 🥧 SpiceyPy
         run: |
           pipx run build --sdist
           echo "contents of dist folder: "
           ls dist/
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: artifact-sdist-${{ hashFiles('pyproject.toml') }}
           path: dist/*.tar.gz
@@ -42,8 +42,8 @@ jobs:
       contents: read
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v5
-      - uses: actions/download-artifact@v4
+        uses: actions/checkout@v6
+      - uses: actions/download-artifact@v8
         with:
           merge-multiple: true
           path: dist
@@ -53,7 +53,7 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
         uses: ilammy/msvc-dev-cmd@v1.13.0
       - name: Set up Python 🐍 3.13
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.13"
       - name: Display Python 🐍
@@ -107,7 +107,7 @@ jobs:
     runs-on: ${{ matrix.config.os }}
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup 🔬🍦🏗️
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1.13.0
@@ -131,7 +131,7 @@ jobs:
         run: |
           echo "ARCHFLAGS is: $ARCHFLAGS"
       - name: Set up Python 🐍 3.13
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.13"
       - name: Display Python 🐍 Version
@@ -160,13 +160,13 @@ jobs:
     needs: [build_wheels, test_sdist]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: artifact-*
           merge-multiple: true
           path: dist
       - name: Set up Python 🐍 3.13
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.13"
       - name: Install dependencies
@@ -189,8 +189,8 @@ jobs:
       id-token: write
     steps:
       - name: Checkout 🌶️ 🥧
-        uses: actions/checkout@v5
-      - uses: actions/download-artifact@v4
+        uses: actions/checkout@v6
+      - uses: actions/download-artifact@v8
         with:
           pattern: artifact-*
           merge-multiple: true
@@ -216,7 +216,7 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: artifact-*
           merge-multiple: true
@@ -248,7 +248,7 @@ jobs:
             (echo "::error::Release ${{ github.ref_name }} does not exist yet. Create the release in the GitHub UI and re-run this job." && exit 1)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: artifact-*
           merge-multiple: true
