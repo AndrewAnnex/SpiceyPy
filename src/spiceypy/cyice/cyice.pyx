@@ -44,8 +44,6 @@ from cpython.unicode    cimport PyUnicode_DecodeUTF8, PyUnicode_Check, PyUnicode
 from cpython.bool       cimport PyBool_Check, PyBool_FromLong
 from cpython.tuple      cimport PyTuple_GET_SIZE
 
-from cython.parallel import prange
-
 import functools
 from typing import Annotated, Literal
 
@@ -158,7 +156,7 @@ cpdef void check_for_spice_error():
 @wraparound(False)
 cdef inline bint _all(np.uint8_t[::1] arr) nogil:
     cdef Py_ssize_t i
-    for i in prange(arr.shape[0], nogil=True):
+    for i in range(arr.shape[0]):
         if arr[i] == 0:
             return False
     return True
@@ -219,7 +217,7 @@ def cyice_found_exception_thrower(f):
             else:
                 # else assume we have a numpy array, so cast it to np.uint8_t
                 found_arr = found
-                # compute if all true using cython optimized version and prange
+                # compute if all true using cython optimized version
                 all_true = _all(found_arr)
                 # and perform the bool test
                 if all_true < 1:
@@ -357,7 +355,7 @@ cpdef tuple[np.ndarray, np.ndarray] azlcpo_v(
                     abcorr,
                     c_azccw, 
                     c_elplsz, 
-                    &obspos[j,0],
+                    &c_obspos[j,0],
                     obsctr,
                     obsref,
                     &c_states[i,j,0],
@@ -2197,7 +2195,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] georec_v(
     :return: Rectangular coordinates of point.
     """
     cdef const np.double_t[::1] c_lon = np.ascontiguousarray(lon, dtype=np.double)
-    cdef Py_ssize_t i, n = lon.shape[0]
+    cdef Py_ssize_t i, n = c_lon.shape[0]
     cdef const np.double_t[::1] c_lat = np.ascontiguousarray(lat, dtype=np.double)
     cdef const np.double_t[::1] c_alt = np.ascontiguousarray(alt, dtype=np.double)
     # allocate output array
@@ -3943,7 +3941,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] pgrrec_v(
     :return: Rectangular coordinates of the point.
     """
     cdef const np.double_t[::1] c_lon = np.ascontiguousarray(lon, dtype=np.double)
-    cdef Py_ssize_t i, n = lon.shape[0]
+    cdef Py_ssize_t i, n = c_lon.shape[0]
     cdef const np.double_t[::1] c_lat = np.ascontiguousarray(lat, dtype=np.double)
     cdef const np.double_t[::1] c_alt = np.ascontiguousarray(alt, dtype=np.double)
     # allocate output array
