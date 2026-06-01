@@ -72,10 +72,7 @@ else()
 endif()
 
 ##############################################################################
-# cyice specifics below if not on EMSCRIPTEN
-
-if(NOT DEFINED EMSCRIPTEN)
-
+# cyice specifics below
 
 # Convert pyx to c
 set(PYX_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/spiceypy/cyice/cyice.pyx)
@@ -140,5 +137,3 @@ endif()
 
 # install cyice
 install(TARGETS cyice DESTINATION spiceypy/cyice/)
-
-endif()
