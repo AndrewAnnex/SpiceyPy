@@ -1407,9 +1407,9 @@ def et2lst_s(
     cdef double c_et = et
     cdef int c_body = body
     cdef double c_lon = lon
-    cdef int c_hr = 0
-    cdef int c_mn = 0
-    cdef int c_sc = 0
+    cdef SpiceInt c_hr = 0
+    cdef SpiceInt c_mn = 0
+    cdef SpiceInt c_sc = 0
     cdef char[TIMELEN] time
     cdef char[TIMELEN] ampm
     cdef const char* c_typein = typein
@@ -1474,9 +1474,9 @@ def et2lst_v(
     cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_scs = np.empty(n, dtype=np.int32, order='C')
     cdef np.ndarray[np.uint8_t, ndim=2, mode='c'] p_times = np.zeros((n, TIMELEN), dtype=np.uint8, order='C')
     cdef np.ndarray[np.uint8_t, ndim=2, mode='c'] p_ampms = np.zeros((n, TIMELEN), dtype=np.uint8, order='C')
-    cdef SpiceInt[::1] c_hrs = p_hrs
-    cdef SpiceInt[::1] c_mns = p_mns
-    cdef SpiceInt[::1] c_scs = p_scs
+    cdef np.int32_t[::1] c_hrs = p_hrs
+    cdef np.int32_t[::1] c_mns = p_mns
+    cdef np.int32_t[::1] c_scs = p_scs
     cdef np.uint8_t[:, ::1] c_times = p_times
     cdef np.uint8_t[:, ::1] c_ampms = p_ampms
     cdef char* _c_times = <char*> &c_times[0, 0]
@@ -1491,9 +1491,9 @@ def et2lst_v(
                 c_typein,
                 TIMELEN,
                 TIMELEN,
-                &c_hrs[i],
-                &c_mns[i],
-                &c_scs[i],
+                <SpiceInt *> &c_hrs[i],
+                <SpiceInt *> &c_mns[i],
+                <SpiceInt *> &c_scs[i],
                 _c_times + i*TIMELEN,
                 _c_ampms + i*TIMELEN
             )
@@ -3386,7 +3386,7 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] limbpt_s(
             schstp,
             soltol,
             maxn,
-            &c_npts[0],
+            <SpiceInt *> &c_npts[0],
             <SpiceDouble (*)[3]> &c_points[0, 0],
             &c_epochs[0],
             <SpiceDouble (*)[3]> &c_tangts[0, 0]
@@ -3477,7 +3477,7 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] limbpt_v(
                 schstp,
                 soltol,
                 maxn,
-                &c_npts[i, 0],
+                <SpiceInt *> &c_npts[i, 0],
                 <SpiceDouble (*)[3]> &c_points[i, 0, 0],
                 &c_epochs[i, 0],
                 <SpiceDouble (*)[3]> &c_tangts[i, 0, 0]
@@ -3664,7 +3664,7 @@ cpdef int occult_s(
     :param et: Time of the observation (seconds past J2000).
     :return: Occultation identification code.
     """
-    cdef int c_ocltid = 0
+    cdef SpiceInt c_ocltid = 0
     occult_c(
         target1,
         shape1,
@@ -3718,7 +3718,7 @@ cpdef np.ndarray[np.int32_t, ndim=1, mode='c'] occult_v(
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # allocate output array
     cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_ocltids = np.empty(n, dtype=np.int32, order='C')
-    cdef SpiceInt[::1] c_ocltids = p_ocltids
+    cdef np.int32_t[::1] c_ocltids = p_ocltids
     with nogil:
         for i in range(n):
             occult_c(
@@ -3731,7 +3731,7 @@ cpdef np.ndarray[np.int32_t, ndim=1, mode='c'] occult_v(
                 abcorr,
                 observer,
                 c_ets[i],
-                &c_ocltids[i]
+                <SpiceInt *> &c_ocltids[i]
             )
     check_for_spice_error()
     return p_ocltids
@@ -7502,8 +7502,8 @@ def spkpvn_s(
     cdef int c_handle = handle
     cdef double c_et = et
     # inititalize output variables
-    cdef int c_ref = 0
-    cdef int c_center = 0
+    cdef SpiceInt c_ref = 0
+    cdef SpiceInt c_center = 0
     # convert input c arrays
     cdef const double* c_descr = &descr[0]
     # initialize output arrays
@@ -8801,7 +8801,7 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] termpt_s(
             schstp,
             soltol,
             maxn,
-            &c_npts[0],
+            <SpiceInt *> &c_npts[0],
             <SpiceDouble (*)[3]> &c_points[0, 0],
             &c_epochs[0],
             <SpiceDouble (*)[3]> &c_trmvcs[0, 0]
@@ -8901,7 +8901,7 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] termpt_v(
                 schstp,
                 soltol,
                 maxn,
-                &c_npts[i, 0],
+                <SpiceInt *> &c_npts[i, 0],
                 <SpiceDouble (*)[3]> &c_points[i, 0, 0],
                 &c_epochs[i, 0],
                 <SpiceDouble (*)[3]> &c_trmvcs[i, 0, 0]
