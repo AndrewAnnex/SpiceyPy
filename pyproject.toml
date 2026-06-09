@@ -72,7 +72,7 @@ dev = [
 ]
 devwheel = [
     {include-group = "dev"},
-    "cibuildwheel",
+    "cibuildwheel>=4.0.0",
 ]
 devwheelpyodide = [
     {include-group = "devwheel"},
@@ -201,7 +201,7 @@ before-test = [
   "pyodide auditwheel exports --show-type {wheel}"
 ]
 test-command = "python -m pytest -s -vvv --pyargs spiceypy.tests.test_wrapper --benchmark-disable"
-pyodide-version = "0.29.3" 
+pyodide-version = "0.29.4" 
 dependency-versions = { packages = ["pyodide-build==0.34.2"] }
 # disable some errors for pyodide only
 environment = { CFLAGS="-Werror=implicit-function-declaration -Werror=incompatible-pointer-types -Werror=return-type" }
