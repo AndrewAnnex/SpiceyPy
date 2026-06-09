@@ -195,8 +195,6 @@ jobs:
           pattern: artifact-*
           merge-multiple: true
           path: dist
-      - name: Remove WASM wheels before TestPyPI publish
-        run: rm -f dist/*wasm*.whl
       - name: Publish distribution 📦 to TestPyPI
         uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b
         with:
@@ -221,8 +219,6 @@ jobs:
           pattern: artifact-*
           merge-multiple: true
           path: dist
-      - name: Remove WASM wheels before PyPI publish
-        run: rm -f dist/*wasm*.whl
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b
         with:
