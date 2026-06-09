@@ -162,6 +162,15 @@ cdef inline bint _all(np.uint8_t[::1] arr) nogil:
     return True
 
 
+cdef inline int _check_same_len(Py_ssize_t a, Py_ssize_t b, str an, str bn) except -1:
+    # Validate that two paired input arrays have matching lengths before the
+    # nogil loops in the _v wrappers, which run with boundscheck disabled.
+    # Returns 0 on success; raises (propagated via the except -1 sentinel) otherwise.
+    if a != b:
+        raise ValueError(f"{an} has length {a} but {bn} has length {b}; lengths must match")
+    return 0
+
+
 @boundscheck(False)
 @wraparound(False)
 cdef inline char[:, ::1] make_char_array(np.ndarray input_array, int max_len):
@@ -467,13 +476,15 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] azlrec_v(
     cdef SpiceBoolean c_azccw  = <SpiceBoolean> azccw 
     cdef SpiceBoolean c_elplsz = <SpiceBoolean> elplsz
     cdef const np.double_t[::1] c_inrange = np.ascontiguousarray(inrange, dtype=np.double)
-    cdef Py_ssize_t i, n = inrange.shape[0]
+    cdef Py_ssize_t i, n = c_inrange.shape[0]
     cdef const np.double_t[::1] c_az = np.ascontiguousarray(az, dtype=np.double)
     cdef const np.double_t[::1] c_el = np.ascontiguousarray(el, dtype=np.double)
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
     # TODO fix strides lookups below
+    _check_same_len(n, c_az.shape[0], "inrange", "az")
+    _check_same_len(n, c_el.shape[0], "inrange", "el")
     with nogil:
         for i in range(n):
             azlrec_c(
@@ -868,6 +879,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] conics_v(
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_states = p_states
     # main loop
+    _check_same_len(n, c_ets.shape[0], "elts", "ets")
     with nogil:
         for i in range(n):
             conics_c(
@@ -1054,6 +1066,8 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] cyllat_v(
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_lat = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_lat = p_lat
     # TODO fix strides lookups below
+    _check_same_len(n, c_clon.shape[0], "r", "clon")
+    _check_same_len(n, c_z.shape[0], "r", "z")
     with nogil:
         for i in range(n):
             cyllat_c(
@@ -1144,6 +1158,8 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] cylrec_v(
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
     # TODO fix strides lookups below
+    _check_same_len(n, c_lon.shape[0], "r", "lon")
+    _check_same_len(n, c_z.shape[0], "r", "z")
     with nogil:
         for i in range(n):
             cylrec_c(
@@ -1240,6 +1256,8 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] cylsph_v(
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_sph = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_sph = p_sph
     # TODO fix strides lookups below
+    _check_same_len(n, c_clon.shape[0], "r", "clon")
+    _check_same_len(n, c_z.shape[0], "r", "z")
     with nogil:
         for i in range(n):
             cylsph_c(
@@ -1798,6 +1816,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] evsgp4_v(
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_states = p_states
     # call 
+    _check_same_len(n, c_elems.shape[0], "ets", "elems")
     with nogil:
         for i in range(n):
             evsgp4_c(
@@ -2202,6 +2221,8 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] georec_v(
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
     # TODO fix strides lookups below
+    _check_same_len(n, c_lat.shape[0], "lon", "lat")
+    _check_same_len(n, c_alt.shape[0], "lon", "alt")
     with nogil:
         for i in range(n):
             georec_c(
@@ -3095,6 +3116,8 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latcyl_v(
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_cyl = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_cyl = p_cyl
     # TODO fix strides lookups below
+    _check_same_len(n, c_lon.shape[0], "radius", "lon")
+    _check_same_len(n, c_lat.shape[0], "radius", "lat")
     with nogil:
         for i in range(n):
             latcyl_c(
@@ -3182,9 +3205,11 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latrec_v(
     cdef const np.double_t[::1] c_longitude = np.ascontiguousarray(longitude, dtype=np.double)
     cdef const np.double_t[::1] c_latitude = np.ascontiguousarray(latitude, dtype=np.double)
     # allocate output array
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
+    cdef np.ndarray p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
     # TODO fix strides lookups below
+    _check_same_len(n, c_longitude.shape[0], "radius", "longitude")
+    _check_same_len(n, c_latitude.shape[0], "radius", "latitude")
     with nogil:
         for i in range(n):
             latrec_c(
@@ -3275,6 +3300,8 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latsph_v(
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_sph = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_sph = p_sph
     # TODO fix strides lookups below
+    _check_same_len(n, c_lon.shape[0], "radius", "lon")
+    _check_same_len(n, c_lat.shape[0], "radius", "lat")
     with nogil:
         for i in range(n):
             latsph_c(
@@ -3948,6 +3975,8 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] pgrrec_v(
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
     # TODO fix strides lookups below
+    _check_same_len(n, c_lat.shape[0], "lon", "lat")
+    _check_same_len(n, c_alt.shape[0], "lon", "alt")
     with nogil:
         for i in range(n):
             pgrrec_c(
@@ -4299,6 +4328,8 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] radrec_v(
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
     # TODO fix strides lookups below
+    _check_same_len(n, c_ra.shape[0], "inrange", "ra")
+    _check_same_len(n, c_dec.shape[0], "inrange", "dec")
     with nogil:
         for i in range(n):
             radrec_c(
@@ -5617,6 +5648,8 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphcyl_v(
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_cyl = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_cyl = p_cyl
     # TODO fix strides lookups below
+    _check_same_len(n, c_colat.shape[0], "radius", "colat")
+    _check_same_len(n, c_slon.shape[0], "radius", "slon")
     with nogil:
         for i in range(n):
             sphcyl_c(
@@ -5718,6 +5751,8 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphlat_v(
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_lat = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_lat = p_lat
     # TODO fix strides lookups below
+    _check_same_len(n, c_colat.shape[0], "r", "colat")
+    _check_same_len(n, c_lons.shape[0], "r", "lons")
     with nogil:
         for i in range(n):
             sphlat_c(
@@ -5811,6 +5846,8 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphrec_v(
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
     # TODO fix strides lookups below
+    _check_same_len(n, c_colat.shape[0], "r", "colat")
+    _check_same_len(n, c_lons.shape[0], "r", "lons")
     with nogil:
         for i in range(n):
             sphrec_c(
@@ -8032,6 +8069,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] srfrec_v(
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
     # TODO fix strides lookups below
+    _check_same_len(n, c_lat.shape[0], "longitude", "latitude")
     with nogil:
         for i in range(n):
             srfrec_c(
