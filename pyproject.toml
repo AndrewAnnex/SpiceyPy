@@ -185,6 +185,9 @@ test-command = [
     "coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable"
 ]
 
+[tool.cibuildwheel.windows]
+repair-wheel-command = "delvewheel repair --ignore-in-wheel -w {dest_dir} {wheel}"
+
 [tool.cibuildwheel.pyodide]
 # https://github.com/jupyterlite/pyodide-kernel for version/kernel compatibility
 build = ["cp313-*"]
