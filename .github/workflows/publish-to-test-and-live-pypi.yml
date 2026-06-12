@@ -141,8 +141,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --user --group devwheel
       - name: Build wheels for SpiceyPy 🌶️ 🥧
-        uses: pypa/cibuildwheel@8d2b08b68458a16aeb24b64e68a09ab1c8e82084 # v3.4.1
-        continue-on-error: true
+        uses: pypa/cibuildwheel@f03ac7617d6cff873ccf24cc0d567ef5ba5a9e6d # v4.0.0
         env:
           CIBW_PLATFORM: ${{ matrix.config.platform || 'auto' }}
           CIBW_ARCHS: ${{ matrix.config.arch }}
@@ -195,8 +194,6 @@ jobs:
           pattern: artifact-*
           merge-multiple: true
           path: dist
-      - name: Remove WASM wheels before TestPyPI publish
-        run: rm -f dist/*wasm*.whl
       - name: Publish distribution 📦 to TestPyPI
         uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b
         with:
@@ -221,8 +218,6 @@ jobs:
           pattern: artifact-*
           merge-multiple: true
           path: dist
-      - name: Remove WASM wheels before PyPI publish
-        run: rm -f dist/*wasm*.whl
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b
         with:
