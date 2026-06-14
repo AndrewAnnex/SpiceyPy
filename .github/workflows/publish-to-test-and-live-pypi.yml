@@ -141,7 +141,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --user --group devwheel
       - name: Build wheels for SpiceyPy 🌶️ 🥧
-        uses: pypa/cibuildwheel@f03ac7617d6cff873ccf24cc0d567ef5ba5a9e6d # v4.0.0
+        uses: pypa/cibuildwheel@294735312765b09d24a2fbec22660ce817587d55 # v4.1.0
         env:
           CIBW_PLATFORM: ${{ matrix.config.platform || 'auto' }}
           CIBW_ARCHS: ${{ matrix.config.arch }}
