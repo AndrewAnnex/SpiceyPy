@@ -4,6 +4,21 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [8.1.1] - 2026-06-14
+
+### Added
+ - Length guard checks to 16 functions to validate buffer/string sizes (#542)
+
+### Changed
+ - Removed prange usage in cyice (#538)
+ - Bumped pyodide to 0.29.4 and pyodide-build to 0.34.2 
+ - Updated to cibuildwheel v4.1.0 (#543/#544)
+ - Various CI improvements and dependency/action pin updates (#536) (#537) (#540) (#541) (#544)
+ - Excluded cyice Cython sources (.pyx/.pxd) and benchmarks from pyodide/wasm wheels since cyice is not built for that platform currently
+
+### Fixed
+ - Context managers now reset error handling state on exit to avoid stale state (#533)
+
 ## [8.1.0] - 2026-04-04
 
 ### Added

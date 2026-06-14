@@ -139,6 +139,23 @@ wheel.exclude = [
     "spiceypy/utils/cmake/cspice/*.cmake"
 ]
 
+# The cyice extension is not compiled for Emscripten/Pyodide (see CMakeLists.txt
+# `if(NOT DEFINED EMSCRIPTEN)`), so exclude its Cython sources/annotations from the
+# pyodide wheel since there is no compiled module to accompany them. We can't use
+# `if.platform-system = "emscripten"` here: during cross-compilation scikit-build-core
+# sees the host's sys.platform (linux), not the wasm target. Instead we key off the
+# SPICEYPY_PYODIDE env var set in [tool.cibuildwheel.pyodide].environment below.
+[[tool.scikit-build.overrides]]
+if.env.SPICEYPY_PYODIDE = true
+inherit.wheel.exclude = "append"
+wheel.exclude = [
+    "spiceypy/cyice/*.pyx",
+    "spiceypy/cyice/*.pxd",
+    "spiceypy/cyice/*.html",
+    # the only benchmark targets cyice, which isn't built for pyodide
+    "spiceypy/benchmarks/*",
+]
+
 [tool.scikit-build.metadata.version]
 provider = "scikit_build_core.metadata.regex"
 input = "src/spiceypy/__init__.py"
@@ -206,6 +223,7 @@ before-test = [
 test-command = "python -m pytest -s -vvv --pyargs spiceypy.tests.test_wrapper --benchmark-disable"
 pyodide-version = "0.29.4" 
 dependency-versions = { packages = ["pyodide-build==0.34.2"] }
-# disable some errors for pyodide only
-environment = { CFLAGS="-Werror=implicit-function-declaration -Werror=incompatible-pointer-types -Werror=return-type" }
+# disable some errors for pyodide only; SPICEYPY_PYODIDE drives the cyice-source
+# exclusion override in [tool.scikit-build.overrides] above
+environment = { CFLAGS="-Werror=implicit-function-declaration -Werror=incompatible-pointer-types -Werror=return-type", SPICEYPY_PYODIDE="1" }
 
