@@ -4,6 +4,17 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [8.1.2] - 2026-06-14
+
+### Added
+ - Python 3.14 Pyodide/WebAssembly (wasm32) wheels
+
+### Changed
+ - Updated pyodide to 314.0.0 and pyodide-build to 0.35.1 for Python 3.14 / Emscripten wasm builds
+
+### Fixed
+ - Pass `--repo` to `gh` in the publish workflow so the upload-wheels-to-release step works without a checkout
+
 ## [8.1.1] - 2026-06-14
 
 ### Added

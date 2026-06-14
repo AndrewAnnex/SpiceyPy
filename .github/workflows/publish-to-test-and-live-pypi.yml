@@ -239,7 +239,7 @@ jobs:
     steps:
       - name: Check release exists
         run: |
-          gh release view ${{ github.ref_name }} || \
+          gh release view ${{ github.ref_name }} --repo ${{ github.repository }} || \
             (echo "::error::Release ${{ github.ref_name }} does not exist yet. Create the release in the GitHub UI and re-run this job." && exit 1)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -249,6 +249,6 @@ jobs:
           merge-multiple: true
           path: dist
       - name: Upload wheels to release
-        run: gh release upload ${{ github.ref_name }} dist/*.whl --clobber
+        run: gh release upload ${{ github.ref_name }} dist/*.whl --clobber --repo ${{ github.repository }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
