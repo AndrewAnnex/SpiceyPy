@@ -13,9 +13,13 @@ jobs:
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Set up uv 🐍 📦
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+        with:
+          enable-cache: true
       - name: Build 🛠️ sdist source for 🌶️ 🥧 SpiceyPy
         run: |
-          pipx run build --sdist
+          uv build --sdist
           echo "contents of dist folder: "
           ls dist/
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -52,34 +56,33 @@ jobs:
       - name: Setup windows msvc
         if: ${{ matrix.os == 'windows-latest' }}
         uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
-      - name: Set up Python 🐍 3.13
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - name: Set up uv 🐍 📦 with Python 3.13
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
         with:
           python-version: "3.13"
+          activate-environment: true
+          enable-cache: true
       - name: Display Python 🐍
-        run: python -c "import sys; print(sys.version)"
-      - name: Update pip
-        run: |
-          python -m pip install --upgrade pip
+        run: uv run python --version
       - name: Install CI dependencies
         run: |
-          python -m pip install --user --group dev
+          uv pip install --group dev
       - name: Install SpiceyPy 🌶️ 🥧 from sdist on Mac/Linux
         if: ${{ matrix.os != 'windows-latest' }}
         shell: bash
         run: |
-          echo "Running Pip install from sdist"
-          python -m pip install dist/*.tar.gz --user --no-build-isolation -vvvv
+          echo "Running uv pip install from sdist"
+          uv pip install dist/*.tar.gz --no-build-isolation -v
       - name: Install SpiceyPy 🌶️ 🥧 from sdist on Windows
         if: ${{ matrix.os == 'windows-latest' }}
         shell: cmd
         run: |
           for /f %%f in ('dir /b dist\*.tar.gz') do (
-            python -m pip install dist\%%f --user --no-build-isolation -vvvv
+            uv pip install dist\%%f --no-build-isolation -v
           )
       - name: Test 🧪 with coverage 📈
         run: |
-          python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
+          coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
       - name: Upload 🆙 coverage 📈 report to codecov
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
@@ -130,16 +133,17 @@ jobs:
       - name: Print ARCHFLAGS
         run: |
           echo "ARCHFLAGS is: $ARCHFLAGS"
-      - name: Set up Python 🐍 3.13
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - name: Set up uv 🐍 📦 with Python 3.14
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
         with:
-          python-version: "3.13"
+          python-version: "3.14"
+          activate-environment: true
+          enable-cache: true
       - name: Display Python 🐍 Version
-        run: python -c "import sys; print(sys.version)"
+        run: uv run python --version
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install --user --group devwheel
+          uv pip install --group devwheel
       - name: Build wheels for SpiceyPy 🌶️ 🥧
         uses: pypa/cibuildwheel@294735312765b09d24a2fbec22660ce817587d55 # v4.1.0
         env:
@@ -148,6 +152,8 @@ jobs:
           CMAKE_BUILD_PARALLEL_LEVEL: 2
           CIBW_ENVIRONMENT: CMAKE_BUILD_PARALLEL_LEVEL="2"
           SKBUILD_BUILD_VERBOSE: "true"
+        with:
+          extras: "uv"
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -164,17 +170,13 @@ jobs:
           pattern: artifact-*
           merge-multiple: true
           path: dist
-      - name: Set up Python 🐍 3.13
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - name: Set up uv 🐍 📦
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
         with:
-          python-version: "3.13"
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install --user twine
+          enable-cache: true
       - name: Check dists
         run: |
-          python -m twine check dist/*
+          uvx twine check dist/*
 
   publish_to_test_pypi:
     name: Publish 🌶️ 🥧  📦 to TestPyPI

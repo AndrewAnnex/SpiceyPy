@@ -26,10 +26,12 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Set up Python 🐍 3.13
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - name: Set up uv 🐍 📦 with Python 3.14
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
         with:
-          python-version: 3.13
+          python-version: "3.14"
+          activate-environment: true
+          enable-cache: true
       - name: Build Pyodide wheel for SpiceyPy 🌶️ 🥧
         uses: pypa/cibuildwheel@294735312765b09d24a2fbec22660ce817587d55 # v4.1.0
         env:
@@ -107,35 +109,33 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Set up Python 🐍 ${{ matrix.python-version }}
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - name: Set up uv 🐍 📦 with Python ${{ matrix.python-version }}
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
         with:
           python-version: ${{ matrix.python-version }}
-          check-latest: true
+          activate-environment: true
+          enable-cache: true
       - name: Display Python 🐍 version
-        run: python -c "import sys; print(sys.version)"
-      - name: Install pip
-        run: |
-          python -m pip install --upgrade pip
+        run: uv run python --version
       - name: Install dependencies
         run: |
-          python -m pip install --user --group devwheel
-      - name: Build SpiceyPy 
+          uv pip install --group devwheel
+      - name: Build SpiceyPy   
         shell: bash
         env:
           SYSTEM_VERSION_COMPAT: 0
         run: 
-          python -m build
+          uv build
       - name: Install SpiceyPy 🌶️ 🥧
         shell: bash
         env:
           SYSTEM_VERSION_COMPAT: 0
-        run: 
-          python -m pip install dist/*.whl
+        run:
+          uv pip install dist/*.whl
       - name: Test 🧪 with coverage 📈
         shell: bash
         run: |
-          python -m coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
+          coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable
           # look for .coverage file
           ls -lahtr
       - name: Upload 🆙 coverage 📈 report to codecov 
