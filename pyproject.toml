@@ -8,7 +8,7 @@ dynamic = ["version"]
 license = "MIT"
 license-files = ["LICENSE"]
 description = "A Python Wrapper for the NAIF CSPICE Toolkit"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 readme = {file = "README.rst", content-type = "text/x-rst"}
 keywords = ["spiceypy", "spice", "cspice", "naif", "jpl", "space", "geometry", "ephemeris"]
 classifiers = [
@@ -17,7 +17,6 @@ classifiers = [
      "Topic :: Scientific/Engineering",
      "Topic :: Scientific/Engineering :: Astronomy",
      "Programming Language :: Python :: 3 :: Only",
-     "Programming Language :: Python :: 3.10",
      "Programming Language :: Python :: 3.11",
      "Programming Language :: Python :: 3.12",
      "Programming Language :: Python :: 3.13",
@@ -188,6 +187,7 @@ source = [
 
 # all CI build wheel stuff goes here
 [tool.cibuildwheel]
+build-frontend = 'build[uv]'
 # Specify Python Versions to build
 build = ["cp311-*", "cp312-*", "cp313-*", "cp314-*"]
 # Skip 32-bit builds, pypy, and musllinux
@@ -203,9 +203,11 @@ test-command = [
 ]
 
 [tool.cibuildwheel.windows]
+build-frontend = 'build[uv]'
 repair-wheel-command = "delvewheel repair --ignore-in-wheel -w {dest_dir} {wheel}"
 
 [tool.cibuildwheel.pyodide]
+build-frontend = 'build'
 # https://github.com/jupyterlite/pyodide-kernel for version/kernel compatibility
 build = ["cp314-*"]
 skip  = ["cp312-*"]
