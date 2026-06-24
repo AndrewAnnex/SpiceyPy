@@ -92,7 +92,7 @@ extensions = [
 ]
 
 # Global defaults for pyscript (all optional)
-pyscript_version = "2026.2.1"
+pyscript_version = "2026.6.1"
 pyscript_env = "shared"
 pyscript_config = "pyscript.json"
 pyscript_mini_coi = "mini-coi.js"  # "" to disable
