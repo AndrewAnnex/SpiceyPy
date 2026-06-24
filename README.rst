@@ -15,7 +15,7 @@ SpiceyPy is a Python wrapper for the NAIF C SPICE Toolkit, written using ctypes 
 .. |Coverage Status| image:: https://img.shields.io/codecov/c/github/AndrewAnnex/SpiceyPy/main?logo=codecov
    :alt: Codecov - Test Coverage
    :target: https://codecov.io/gh/AndrewAnnex/SpiceyPy
-.. |Docs| image:: https://img.shields.io/readthedocs/spiceypy/main
+.. |Docs| image:: https://img.shields.io/readthedocs/spiceypy
    :alt: Readthedocs - Documentation
    :target: http://spiceypy.readthedocs.org/en/main/
 .. |JOSS| image:: https://joss.theoj.org/papers/98136d30bea9982ad160d251e2039fee/status.svg
