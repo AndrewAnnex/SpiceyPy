@@ -87,8 +87,8 @@ For more on defining meta kernels in spice, please consult the `Kernel Required 
     :env: cass
 
     # get times for 4000 steps
-    steps = 4000
-    times = [x * (etTwo - etOne) / step + etOne for x in range(steps)]
+    step = 4000
+    times = [x * (etTwo - etOne) / step + etOne for x in range(step)]
 
     # check first few times:
     print(times[0:3])
