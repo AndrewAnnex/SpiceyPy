@@ -116,7 +116,7 @@ jobs:
           activate-environment: true
           enable-cache: true
       - name: Display Python 🐍 version
-        run: uv run python --version
+        run: python --version
       - name: Install dependencies
         run: |
           uv pip install --group devwheel

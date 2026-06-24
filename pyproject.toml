@@ -8,7 +8,7 @@ dynamic = ["version"]
 license = "MIT"
 license-files = ["LICENSE"]
 description = "A Python Wrapper for the NAIF CSPICE Toolkit"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 readme = {file = "README.rst", content-type = "text/x-rst"}
 keywords = ["spiceypy", "spice", "cspice", "naif", "jpl", "space", "geometry", "ephemeris"]
 classifiers = [
