@@ -14,7 +14,7 @@ Usage in conf.py
     extensions = [..., "pyscript_editor"]
 
     # Optional global defaults (all overridable per-directive):
-    pyscript_version      = "2026.2.1"   # PyScript release tag
+    pyscript_version      = "2026.6.1"   # PyScript release tag
     pyscript_env          = "shared"     # default py-editor env name
     pyscript_config       = "pyscript.json"  # default PyScript config file;
                                              # set to "" to omit
@@ -317,7 +317,7 @@ def _copy_placeholder_images(app: Sphinx, exception: Exception | None) -> None:
 
 
 def setup(app: Sphinx) -> dict:
-    app.add_config_value("pyscript_version", "2026.2.1", "html")
+    app.add_config_value("pyscript_version", "2026.6.1", "html")
     app.add_config_value("pyscript_env", "shared", "html")
     app.add_config_value("pyscript_config", "pyscript.json", "html")
     app.add_config_value("pyscript_mini_coi", "mini-coi.js", "html")

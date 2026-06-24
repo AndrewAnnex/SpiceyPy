@@ -11,7 +11,7 @@ A new Pyodide distribution of SpiceyPy is currently in development.
 `Pyodide <https://pyodide.org/en/stable/>`_ is a port of CPython to WebAssembly, meaning a Python distribution that can run entirely natively within common web browsers.
 Many popular scientific libraries are already availble for Pyodide, including numpy, scipy, matplotlib, pandas, and many more!
 
-This version of SpiceyPy is essentially the same as the normal desktop Python distributions, as the CSPICE library is compiled to Wasm (web-assembly), allowing the pure python codebase for SpiceyPy to function essentially without modification.
+This distribution of SpiceyPy is essentially the same as the normal desktop Python distributions, as the CSPICE library is compiled to Wasm (web-assembly), allowing the pure python codebase for SpiceyPy to function essentially without modification.
 The existing test suite for SpiceyPy is used to validate the distribution releases.
 
 It is however slightly limited:
@@ -19,7 +19,6 @@ It is however slightly limited:
 1. Currently, cyice is unsupported in this pyodide distribution and not included. That may eventually change.
 2. Some functions may not function as expected or return null results, seemingly due to memory limitations and compilation differences.
 3. Pyodide is currently limited to 32bit architecture.
-4. Installation is not possible through PyPI yet, see section below on installation.
 
 Despite these limitations and the danger warning at the top of this page, the Pyodide distribution of SpiceyPy is an incredible new capability with the following potential applications:
 
@@ -35,23 +34,38 @@ One of the best places to start using and learning about Pyodide is `Jupyter-lit
 Installation
 -------------
 
-Currently, this distribution of SpiceyPy is not available through PyPI due to the CSPICE dependency.
+As of SpiceyPy 8.1.2 in mid June 2026, SpiceyPy can be installed into pyodide/pyscript/jupyterlite directly
+from PyPI using piplite or micropip. 
 
-It is made available through a public GitHub repository `https://github.com/AndrewAnnex/spiceypy-wheels-dist <https://github.com/AndrewAnnex/spiceypy-wheels-dist>`_.
-
-To install the wheel in Jupyter-lite, access the wheel file using the jsDelivr url corresponding release that will look something like:
-
-.. code-block:: bash
-
-    https://cdn.jsdelivr.net/gh/AndrewAnnex/spiceypy-wheels-dist@<tag>/spiceypy-<version>-cp313-cp313-pyodide_2025_0_wasm32.whl
-
-
-Then use piplite like so:
+for piplite:
 
 .. code-block:: python
 
     import piplite
-    await piplite.install("https://cdn.jsdelivr.net/gh/AndrewAnnex/spiceypy-wheels-dist@v8.0.2-dev.2/spiceypy-8.0.2-cp313-cp313-pyodide_2025_0_wasm32.whl")
+    await piplite.install("spiceypy")
+
+for micropip:
+
+.. code-block:: python
+
+    import micropip
+    await micropip.install("spiceypy")
+
+for pyscript's json config (plus a psuedo kernel pre-fetch included):
+
+.. code-block:: json
+
+    {
+      "packages": [
+        "numpy",
+        "matplotlib",
+        "spiceypy"
+      ],
+      "files": {
+        "https://some/kernel/file.txt": "./file.txt",
+      }
+    }
+
 
 Usage Example
 --------------
