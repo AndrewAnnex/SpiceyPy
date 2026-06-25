@@ -94,20 +94,25 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - config: { "name": "Linux", "os": "ubuntu-latest", "arch": "x86_64" }
-          - config: { "name": "Linux", "os": "ubuntu-22.04-arm", "arch": "aarch64" }
-          - config: { "name": "macOS", "os": "macos-15-intel", "arch": "x86_64" }
-          - config: { "name": "macOS", "os": "macos-15", "arch": "arm64" }
-          - config: { "name": "Windows", "os": "windows-latest", "arch": "AMD64" }
-          - config: { "name": "Pyodide", "os": "ubuntu-latest", "arch": "wasm32", "platform": "pyodide" }
-    name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels for ${{ matrix.config.os }} ${{ matrix.config.arch }}
+          # CSPICE C source is architecture-independent, so the aarch64 Linux job
+          # reuses the x86_64 Linux archive. Pyodide/emscripten uses the 32-bit
+          # Linux package (matches the PC_Linux_GCC_32bit toolkit it downloads).
+          - { name: Linux,   os: ubuntu-latest,    arch: x86_64,  archive: N67_lin_x64_cspice.tar.gz }
+          - { name: Linux,   os: ubuntu-22.04-arm, arch: aarch64, archive: N67_lin_x64_cspice.tar.gz }
+          - { name: macOS,   os: macos-15-intel,   arch: x86_64,  archive: N67_mac_x64_cspice.tar.gz }
+          - { name: macOS,   os: macos-15,         arch: arm64,   archive: N67_mac_arm_cspice.tar.gz }
+          - { name: Windows, os: windows-latest,   arch: AMD64,   archive: N67_win_x64_cspice.zip }
+          - { name: Pyodide, os: ubuntu-latest,    arch: wasm32,  archive: N67_lin_x86_cspice.tar.gz, platform: pyodide }
+    name: Build SpiceyPy 🌶️ 🥧 Python 🐍 wheels for ${{ matrix.os }} ${{ matrix.arch }}
     env:
+      # Base URL for the CSPICE release mirror (archived + hashed NAIF toolkits)
+      MIRROR_BASE: https://raw.githubusercontent.com/AndrewAnnex/cspice-release-mirror/refs/heads/main/artifacts
+      # bump to invalidate the cached CSPICE mirror archive
       CSPICE_CACHE: 0
-      CIBW_PLATFORM: ${{ matrix.config.platform || 'auto' }}
-      CIBW_ARCHS: ${{ matrix.config.arch }}
+      CIBW_PLATFORM: ${{ matrix.platform || 'auto' }}
+      CIBW_ARCHS: ${{ matrix.arch }}
       CMAKE_BUILD_PARALLEL_LEVEL: 2
-      CIBW_ENVIRONMENT: CMAKE_BUILD_PARALLEL_LEVEL="2"
-    runs-on: ${{ matrix.config.os }}
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -115,24 +120,78 @@ jobs:
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
       - name: set additional environment variables for macOS arm
-        if: runner.os == 'macOS' && matrix.config.arch == 'arm64'
+        if: runner.os == 'macOS' && matrix.arch == 'arm64'
         run: |
           echo "CIBW_ARCHS_MACOS=arm64" >> $GITHUB_ENV
           echo "ARCHFLAGS=-arch arm64" >> $GITHUB_ENV
       - name: set additional environment variables for macOS x86
-        if: runner.os == 'macOS' && matrix.config.arch == 'x86_64'
+        if: runner.os == 'macOS' && matrix.arch == 'x86_64'
         run: |
           echo "CIBW_ARCHS_MACOS=x86_64" >> $GITHUB_ENV
           echo "ARCHFLAGS=-arch x86_64" >> $GITHUB_ENV
           echo "CMAKE_TLS_VERIFY=0" >> $GITHUB_ENV
       - name: set additional environment variables for linux aarch64
-        if: runner.os == 'Linux' && matrix.config.arch == 'aarch64'
+        if: runner.os == 'Linux' && matrix.arch == 'aarch64'
         run: |
           echo "CIBW_ARCHS_LINUX=aarch64" >> $GITHUB_ENV
           echo "ARCHFLAGS=-arch aarch64" >> $GITHUB_ENV
       - name: Print ARCHFLAGS
         run: |
           echo "ARCHFLAGS is: $ARCHFLAGS"
+      # -----------------------------------------------------------------------
+      # Provide the CSPICE source once per job from the mirror, so cibuildwheel's
+      # wheels reuse a single hash-verified download instead of re-fetching from
+      # NAIF for every wheel (4x for native CPython, 1x for Pyodide). The
+      # cspice-cmake-spiceypy CMake copies and patches CSPICE_SRC into the build
+      # tree, so this tree is never mutated.
+      # -----------------------------------------------------------------------
+      - name: Cache CSPICE mirror archive
+        uses: actions/cache@v4
+        with:
+          path: cspice-src-cache/${{ matrix.archive }}
+          key: cspice-mirror-${{ matrix.archive }}-${{ env.CSPICE_CACHE }}
+      - name: Provision CSPICE source from mirror
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p cspice-src-cache
+          archive="cspice-src-cache/${{ matrix.archive }}"
+          if [ ! -f "$archive" ]; then
+            echo "Cache miss; downloading ${{ matrix.archive }} from mirror"
+            curl -fsSL "${MIRROR_BASE}/${{ matrix.archive }}" -o "$archive"
+          else
+            echo "Cache hit; using cached $archive"
+          fi
+          # Always verify against the mirror's sha256 sidecar (also checks cache integrity)
+          curl -fsSL "${MIRROR_BASE}/${{ matrix.archive }}.sha256" -o "$archive.sha256"
+          expected="$(tr -d '[:space:]' < "$archive.sha256")"
+          actual="$(cmake -E sha256sum "$archive" | awk '{print $1}')"
+          echo "expected sha256: $expected"
+          echo "actual   sha256: $actual"
+          if [ "$expected" != "$actual" ]; then
+            echo "::error::SHA256 mismatch for ${{ matrix.archive }}"
+            exit 1
+          fi
+          echo "Checksum OK"
+          # Fresh extraction every run (cmake -E tar autodetects .tar.gz and .zip)
+          rm -rf cspice-src-cache/cspice
+          ( cd cspice-src-cache && cmake -E tar xf "${{ matrix.archive }}" )
+          test -d cspice-src-cache/cspice/src/cspice
+          test -d cspice-src-cache/cspice/include
+          # Export CSPICE_SRC at a path valid inside the wheel build environment.
+          if [ "${{ matrix.platform }}" = "pyodide" ]; then
+            # Pyodide/emscripten builds run directly on the host (no container)
+            echo "CSPICE_SRC=$(pwd)/cspice-src-cache/cspice" >> "$GITHUB_ENV"
+          elif [ "${{ runner.os }}" = "Linux" ]; then
+            # native CPython Linux wheels build in the manylinux container, which
+            # cibuildwheel mounts the project into at /project
+            echo "CSPICE_SRC=/project/cspice-src-cache/cspice" >> "$GITHUB_ENV"
+          elif [ "${{ runner.os }}" = "Windows" ]; then
+            echo "CSPICE_SRC=$(cygpath -m "$(pwd)/cspice-src-cache/cspice")" >> "$GITHUB_ENV"
+          else
+            echo "CSPICE_SRC=$(pwd)/cspice-src-cache/cspice" >> "$GITHUB_ENV"
+          fi
+          echo "Provisioned CSPICE_SRC for ${{ matrix.name }} (${{ runner.os }})"
       - name: Set up uv 🐍 📦 with Python 3.14
         uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
         with:
@@ -147,17 +206,27 @@ jobs:
       - name: Build wheels for SpiceyPy 🌶️ 🥧
         uses: pypa/cibuildwheel@294735312765b09d24a2fbec22660ce817587d55 # v4.1.0
         env:
-          CIBW_PLATFORM: ${{ matrix.config.platform || 'auto' }}
-          CIBW_ARCHS: ${{ matrix.config.arch }}
+          CIBW_PLATFORM: ${{ matrix.platform || 'auto' }}
+          CIBW_ARCHS: ${{ matrix.arch }}
           CMAKE_BUILD_PARALLEL_LEVEL: 2
-          CIBW_ENVIRONMENT: CMAKE_BUILD_PARALLEL_LEVEL="2"
+          # Hand the prepared CSPICE source to the build via the env var that
+          # cspice-cmake-spiceypy reads. These are platform-specific on purpose:
+          #   * Linux native wheels build in a container, so the value must be the
+          #     in-container /project path (host env is not inherited there).
+          #   * macOS/Windows build on the host; this sets it explicitly.
+          # Pyodide is intentionally omitted here so it keeps pyproject's
+          # SPICEYPY_PYODIDE/CFLAGS environment; being a non-container build it
+          # inherits CSPICE_SRC (host path) from $GITHUB_ENV directly.
+          CIBW_ENVIRONMENT_LINUX: CMAKE_BUILD_PARALLEL_LEVEL="2" CSPICE_SRC="${{ env.CSPICE_SRC }}"
+          CIBW_ENVIRONMENT_MACOS: CMAKE_BUILD_PARALLEL_LEVEL="2" CSPICE_SRC="${{ env.CSPICE_SRC }}"
+          CIBW_ENVIRONMENT_WINDOWS: CMAKE_BUILD_PARALLEL_LEVEL="2" CSPICE_SRC="${{ env.CSPICE_SRC }}"
           SKBUILD_BUILD_VERBOSE: "true"
         with:
           extras: "uv"
       - name: Upload wheels for SpiceyPy 🌶️ 🥧
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: artifact-${{ matrix.config.os }}-${{ strategy.job-index }}-${{ hashFiles('pyproject.toml') }}
+          name: artifact-${{ matrix.os }}-${{ strategy.job-index }}-${{ hashFiles('pyproject.toml') }}
           path: ./wheelhouse/*.whl
 
   test_with_twine:

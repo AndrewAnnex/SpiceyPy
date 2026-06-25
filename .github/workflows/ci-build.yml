@@ -8,10 +8,10 @@ on:
   schedule:
     - cron: "0 4 * * 0"
 env:
-  # increment to rebuild cspice manually
-  CSPICE_VERSION: 67
-  CSPICE_CACHE_NUMBER: 9
-  PYPI_CACHE_NUMBER: 4
+  # Base URL for the CSPICE release mirror (archived + hashed NAIF toolkits)
+  MIRROR_BASE: https://raw.githubusercontent.com/AndrewAnnex/cspice-release-mirror/refs/heads/main/artifacts
+  # bump to invalidate the cached CSPICE mirror archive
+  CSPICE_CACHE: 0
   CMAKE_BUILD_PARALLEL_LEVEL: 2
 
 jobs:
@@ -32,10 +32,44 @@ jobs:
           python-version: "3.14"
           activate-environment: true
           enable-cache: true
+      # Pyodide/emscripten uses the 32-bit Linux package (matches the
+      # PC_Linux_GCC_32bit toolkit cspice-cmake-spiceypy downloads). The build
+      # runs directly on the host, so CSPICE_SRC is a host path and is inherited
+      # from $GITHUB_ENV by the (non-container) cibuildwheel build.
+      - name: Cache CSPICE mirror archive
+        uses: actions/cache@v4
+        with:
+          path: cspice-src-cache/N67_lin_x86_cspice.tar.gz
+          key: cspice-mirror-N67_lin_x86_cspice.tar.gz-${{ env.CSPICE_CACHE }}
+      - name: Provision CSPICE source from mirror
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p cspice-src-cache
+          archive="cspice-src-cache/N67_lin_x86_cspice.tar.gz"
+          if [ ! -f "$archive" ]; then
+            echo "Cache miss; downloading N67_lin_x86_cspice.tar.gz from mirror"
+            curl -fsSL "${MIRROR_BASE}/N67_lin_x86_cspice.tar.gz" -o "$archive"
+          else
+            echo "Cache hit; using cached $archive"
+          fi
+          curl -fsSL "${MIRROR_BASE}/N67_lin_x86_cspice.tar.gz.sha256" -o "$archive.sha256"
+          expected="$(tr -d '[:space:]' < "$archive.sha256")"
+          actual="$(cmake -E sha256sum "$archive" | awk '{print $1}')"
+          if [ "$expected" != "$actual" ]; then
+            echo "::error::SHA256 mismatch for N67_lin_x86_cspice.tar.gz"
+            exit 1
+          fi
+          echo "Checksum OK"
+          rm -rf cspice-src-cache/cspice
+          ( cd cspice-src-cache && cmake -E tar xf "N67_lin_x86_cspice.tar.gz" )
+          test -d cspice-src-cache/cspice/src/cspice
+          echo "CSPICE_SRC=$(pwd)/cspice-src-cache/cspice" >> "$GITHUB_ENV"
+          echo "Provisioned CSPICE_SRC for Pyodide"
       - name: Build Pyodide wheel for SpiceyPy 🌶️ 🥧
         uses: pypa/cibuildwheel@294735312765b09d24a2fbec22660ce817587d55 # v4.1.0
         env:
-          CIBW_PLATFORM: pyodide 
+          CIBW_PLATFORM: pyodide
           CIBW_ARCHS: "wasm32"
           CMAKE_BUILD_PARALLEL_LEVEL: 2
           SKBUILD_BUILD_VERBOSE: "true"
@@ -101,6 +135,14 @@ jobs:
       matrix:
         os: [ubuntu-22.04-arm, ubuntu-latest, macos-15-intel, macos-15, windows-latest]
         python-version: ['3.12', '3.13', '3.14']
+        # Attach the matching mirror archive per OS (CSPICE C source is
+        # architecture-independent, so aarch64 Linux reuses the x86_64 archive).
+        include:
+          - { os: ubuntu-22.04-arm, archive: N67_lin_x64_cspice.tar.gz }
+          - { os: ubuntu-latest,    archive: N67_lin_x64_cspice.tar.gz }
+          - { os: macos-15-intel,   archive: N67_mac_x64_cspice.tar.gz }
+          - { os: macos-15,         archive: N67_mac_arm_cspice.tar.gz }
+          - { os: windows-latest,   archive: N67_win_x64_cspice.zip }
     steps:
       - name: Setup windows msvc
         if: ${{ matrix.os == 'windows-latest'}}
@@ -120,11 +162,51 @@ jobs:
       - name: Install dependencies
         run: |
           uv pip install --group devwheel
-      - name: Build SpiceyPy   
+      # Provide CSPICE from the mirror so the build reuses a cached, hash-verified
+      # archive instead of downloading from NAIF. uv build runs directly on the
+      # runner (no container), so CSPICE_SRC is a host path on every OS. The
+      # cspice-cmake-spiceypy CMake copies + patches this tree, never mutating it.
+      - name: Cache CSPICE mirror archive
+        uses: actions/cache@v4
+        with:
+          path: cspice-src-cache/${{ matrix.archive }}
+          key: cspice-mirror-${{ matrix.archive }}-${{ env.CSPICE_CACHE }}
+      - name: Provision CSPICE source from mirror
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p cspice-src-cache
+          archive="cspice-src-cache/${{ matrix.archive }}"
+          if [ ! -f "$archive" ]; then
+            echo "Cache miss; downloading ${{ matrix.archive }} from mirror"
+            curl -fsSL "${MIRROR_BASE}/${{ matrix.archive }}" -o "$archive"
+          else
+            echo "Cache hit; using cached $archive"
+          fi
+          # Always verify against the mirror's sha256 sidecar (also checks cache integrity)
+          curl -fsSL "${MIRROR_BASE}/${{ matrix.archive }}.sha256" -o "$archive.sha256"
+          expected="$(tr -d '[:space:]' < "$archive.sha256")"
+          actual="$(cmake -E sha256sum "$archive" | awk '{print $1}')"
+          if [ "$expected" != "$actual" ]; then
+            echo "::error::SHA256 mismatch for ${{ matrix.archive }}"
+            exit 1
+          fi
+          echo "Checksum OK"
+          rm -rf cspice-src-cache/cspice
+          ( cd cspice-src-cache && cmake -E tar xf "${{ matrix.archive }}" )
+          test -d cspice-src-cache/cspice/src/cspice
+          test -d cspice-src-cache/cspice/include
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            echo "CSPICE_SRC=$(cygpath -m "$(pwd)/cspice-src-cache/cspice")" >> "$GITHUB_ENV"
+          else
+            echo "CSPICE_SRC=$(pwd)/cspice-src-cache/cspice" >> "$GITHUB_ENV"
+          fi
+          echo "Provisioned CSPICE_SRC for ${{ runner.os }}"
+      - name: Build SpiceyPy
         shell: bash
         env:
           SYSTEM_VERSION_COMPAT: 0
-        run: 
+        run:
           uv build
       - name: Install SpiceyPy 🌶️ 🥧
         shell: bash
