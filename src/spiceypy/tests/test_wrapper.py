@@ -6868,9 +6868,6 @@ def test_raxisa():
     npt.assert_array_almost_equal(axout, expected_angout)
 
 
-@pytest.mark.skipif(
-    IS_PYODIDE, reason="writing to file system not supported on Pyodide"
-)
 def test_rdtext():
     from datetime import datetime, timezone
 
