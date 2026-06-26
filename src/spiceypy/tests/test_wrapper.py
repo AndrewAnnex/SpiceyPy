@@ -4118,7 +4118,6 @@ def test_gfdist():
     assert temp_results == expected
 
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Disabled test for Pyodide: flaky test in ci")
 def test_gfevnt():
     spice.furnsh(CoreKernels.testMetaKernel)
     #
@@ -4182,7 +4181,6 @@ def test_gfevnt():
     spice.gfclrh()
 
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Disabled test for Pyodide: flaky test in ci")
 def test_gffove():
     spice.furnsh(CoreKernels.testMetaKernel)
     spice.furnsh(CassiniKernels.cassCk)
@@ -4309,6 +4307,13 @@ def test_gfinth():
     spice.gfinth(2)
     with pytest.raises(spice.stypes.SpiceyError):
         spice.gfinth(0)
+    # gfinth(2) sets the global GF interrupt ("bail") flag, and the gfinth(0)
+    # call above leaves a SPICE error signaled. Clear both so that later GF
+    # tests whose udbail callback reads gfbail() (e.g. test_gffove, test_gfevnt,
+    # test_gfocce) don't see a stale "interrupt received" state and bail out
+    # immediately with an empty result window under randomized test ordering.
+    spice.reset()
+    spice.gfclrh()
 
 
 def test_gfocce():
@@ -6863,9 +6868,6 @@ def test_raxisa():
     npt.assert_array_almost_equal(axout, expected_angout)
 
 
-@pytest.mark.skipif(
-    IS_PYODIDE, reason="writing to file system not supported on Pyodide"
-)
 def test_rdtext():
     from datetime import datetime, timezone
 
