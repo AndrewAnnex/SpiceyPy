@@ -22,6 +22,7 @@ classifiers = [
      "Programming Language :: Python :: 3.13",
      "Programming Language :: Python :: 3.14",
      "Programming Language :: Cython",
+     "Typing :: Typed",
      "Operating System :: MacOS :: MacOS X",
      "Operating System :: POSIX :: Linux",
      "Operating System :: POSIX :: BSD :: FreeBSD",
@@ -106,6 +107,7 @@ cmake.build-type = "Release"
 
 # TODO probably will want to consider excluding tests due to changing standards
 sdist.include = [
+    "src/spiceypy/py.typed",
     "src/spiceypy/*.py",
     "src/spiceypy/benchmarks/*.py",
     "src/spiceypy/test/*.py",
