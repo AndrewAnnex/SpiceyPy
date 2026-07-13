@@ -68,8 +68,10 @@ def get_path_from_url(url: str) -> str:
 
 
 def cleanup_file(path: str) -> None:
-    if os.path.exists(path):
+    try:
         os.remove(path)
+    except FileNotFoundError:
+        pass
 
 
 class CassiniKernels(object):
