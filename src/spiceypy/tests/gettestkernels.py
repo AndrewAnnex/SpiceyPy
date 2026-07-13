@@ -194,6 +194,7 @@ def cleanup_core_kernels() -> None:
     cleanup_file(CoreKernels.spk)
     cleanup_file(CoreKernels.gm_pck)
     cleanup_file(CoreKernels.lsk)
+    cleanup_file(CoreKernels.testMetaKernel)
 
 
 def get_kernel(url: str, provided_hash: str = None):
@@ -319,7 +320,7 @@ def get_cassini_test_kernels() -> None:
 
 def write_test_meta_kernel() -> None:
     # Update the paths!
-    with open(os.path.join(cwd, "exampleKernels.txt"), "w") as kernelFile:
+    with open(CoreKernels.testMetaKernel, "w") as kernelFile:
         kernelFile.write("\\begindata\n")
         kernelFile.write("KERNELS_TO_LOAD = (\n")
         for kernel in CoreKernels.standardKernelList:
