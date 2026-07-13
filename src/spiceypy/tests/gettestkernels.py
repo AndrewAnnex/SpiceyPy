@@ -56,7 +56,7 @@ except Exception:
     _HAVE_REQUESTS = False
 
 
-cwd = "/tmp" if platform.system() == "Darwin" else tempfile.gettempdir()
+cwd = tempfile.gettempdir()
 
 
 def get_kernel_name_from_url(url: str) -> str:
