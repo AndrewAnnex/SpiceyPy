@@ -64,6 +64,26 @@ from ctypes import (
 import numpy
 from numpy import ctypeslib as numpc
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    # spiceypy.py injects these exception classes into this module at import
+    # time for backwards compatibility (importing them here at runtime would
+    # be a circular import); declare them so static checkers know they exist.
+    from . import exceptions as _exceptions
+
+    SpiceyError: type[_exceptions.SpiceyError]
+    SpiceyPyError: type[_exceptions.SpiceyPyError]
+    NotFoundError: type[_exceptions.NotFoundError]
+    SpiceyPyIOError: type[_exceptions.SpiceyPyIOError]
+    SpiceyPyMemoryError: type[_exceptions.SpiceyPyMemoryError]
+    SpiceyPyTypeError: type[_exceptions.SpiceyPyTypeError]
+    SpiceyPyKeyError: type[_exceptions.SpiceyPyKeyError]
+    SpiceyPyIndexError: type[_exceptions.SpiceyPyIndexError]
+    SpiceyPyRuntimeError: type[_exceptions.SpiceyPyRuntimeError]
+    SpiceyPyZeroDivisionError: type[_exceptions.SpiceyPyZeroDivisionError]
+    SpiceyPyValueError: type[_exceptions.SpiceyPyValueError]
+
 # Collection of supporting functions for wrapper functions
 __author__ = "AndrewAnnex"
 
@@ -894,7 +914,15 @@ class SpiceCell(Structure):
         return True
 
 
-SpiceCellPointer = POINTER(SpiceCell)
+if TYPE_CHECKING:
+    from ctypes import _Pointer
+    from typing import TypeAlias
+
+    # POINTER() products are opaque to static checkers; typeshed's spelling
+    # for the same runtime class is the generic _Pointer[SpiceCell].
+    SpiceCellPointer: TypeAlias = _Pointer[SpiceCell]
+else:
+    SpiceCellPointer = POINTER(SpiceCell)
 
 
 def SPICEDOUBLE_CELL(size: int) -> SpiceCell:
