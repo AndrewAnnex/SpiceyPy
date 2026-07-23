@@ -1840,6 +1840,8 @@ def copy(cell: SpiceCell) -> SpiceCell:
     :return: New cell
     """
     assert isinstance(cell, stypes.SpiceCell)
+    assert cell.size is not None
+    assert cell.length is not None
     # Next line was redundant with [raise NotImpImplementedError] below
     # assert cell.dtype == 0 or cell.dtype == 1 or cell.dtype == 2
     if cell.dtype == 0:
@@ -2989,6 +2991,8 @@ def diff(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
+    assert a.size is not None and b.size is not None
+    assert a.length is not None and b.length is not None
     # The next line was redundant with the [raise NotImplementedError] line below
     # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     if a.dtype == 0:
@@ -8241,6 +8245,8 @@ def inter(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
+    assert a.size is not None and b.size is not None
+    assert a.length is not None and b.length is not None
     # Next line was redundant with [raise NotImplementedError] below
     # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     if a.dtype == 0:
@@ -10216,6 +10222,7 @@ def orderc(array: Sequence[str], ndim: Optional[int] = None) -> ndarray:
         ndim = ctypes.c_int(len(array))
     else:
         ndim = ctypes.c_int(ndim)
+    assert isinstance(ndim, ctypes.c_int)
     lenvals = ctypes.c_int(len(max(array, key=len)) + 1)
     iorder = stypes.empty_int_vector(ndim)
     array = stypes.list_to_char_array(array, lenvals, ndim)
@@ -10238,6 +10245,7 @@ def orderd(array: Sequence[float], ndim: Optional[int] = None) -> ndarray:
         ndim = ctypes.c_int(len(array))
     else:
         ndim = ctypes.c_int(ndim)
+    assert isinstance(ndim, ctypes.c_int)
     array = stypes.to_double_vector(array)
     iorder = stypes.empty_int_vector(ndim)
     libspice.orderd_c(array, ndim, iorder)
@@ -10259,6 +10267,7 @@ def orderi(array: Sequence[int], ndim: Optional[int] = None) -> ndarray:
         ndim = ctypes.c_int(len(array))
     else:
         ndim = ctypes.c_int(ndim)
+    assert isinstance(ndim, ctypes.c_int)
     array = stypes.to_int_vector(array)
     iorder = stypes.empty_int_vector(ndim)
     libspice.orderi_c(array, ndim, iorder)
@@ -12044,6 +12053,8 @@ def sdiff(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
+    assert a.size is not None and b.size is not None
+    assert a.length is not None and b.length is not None
     # The next line was redundant with the [raise NotImplementedError] line below
     # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     s = a.size + b.size
@@ -15597,6 +15608,7 @@ def union(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
+    assert a.size is not None and b.size is not None
     # Next line was redundant with [raise NotImpImplementedError] below
     # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     s = a.size + b.size
@@ -16499,6 +16511,7 @@ def wncomd(left: float, right: float, window: SpiceCell) -> SpiceCell:
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
+    assert window.size is not None
     left = ctypes.c_double(left)
     right = ctypes.c_double(right)
     result = stypes.SpiceCell.double(window.size)
@@ -16542,6 +16555,7 @@ def wndifd(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == 1
     assert b.dtype == 1
+    assert a.size is not None and b.size is not None
     c = stypes.SpiceCell.double(a.size + b.size)
     libspice.wndifd_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
     return c
@@ -16715,6 +16729,7 @@ def wnintd(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     assert b.dtype == 1
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == 1
+    assert a.size is not None and b.size is not None
     c = stypes.SpiceCell.double(b.size + a.size)
     libspice.wnintd_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
     return c
@@ -16788,6 +16803,7 @@ def wnunid(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     assert b.dtype == 1
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == 1
+    assert a.size is not None and b.size is not None
     c = stypes.SpiceCell.double(b.size + a.size)
     libspice.wnunid_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
     return c
