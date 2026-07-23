@@ -116,7 +116,7 @@ as newer versions are released.
 
 - OS: OS X, Linux, Windows, FreeBSD
 - CPU: x64, arm
-- Python 3.10, 3.11, 3.12, 3.13
+- Python 3.10, 3.11, 3.12, 3.13, 3.14
 - ARM support for Linux-aarch64 & osx-arm64
 
 * Support for Python 2.7 ended with version 2.3.2 January 2020 *
