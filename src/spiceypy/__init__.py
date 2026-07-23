@@ -743,7 +743,8 @@ from .utils import exceptions
 __all__ = [
     "cyice",  # TODO exclude if emscripten?
     "support_types",
-    "exceptions" "stypes",
+    "exceptions",
+    "stypes",
     "libspice",
     "SpiceyError",
     "SpiceyPyError",
