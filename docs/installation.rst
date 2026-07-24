@@ -19,7 +19,7 @@ Then to install SpiceyPy, simply run::
     pip install spiceypy
 
 If you use anaconda/miniconda/conda/mamba/micromamba run:
-----------------------------------------
+---------------------------------------------------------
 ::
 
     conda config --add channels conda-forge
@@ -36,8 +36,6 @@ To verify this you can list the installed packages via this pip command::
 You should see spiceypy in the output of this command.
 Or you can start a python interpreter and try importing SpiceyPy like so:
 
-As of 04/10/2021, spiceypy has experimental support for 64bit ARM processors for linux and macos (linux-aarch64 & osx-arm64) via the conda-forge distribution.
-
 .. code:: python
 
     import spiceypy
@@ -48,31 +46,90 @@ As of 04/10/2021, spiceypy has experimental support for 64bit ARM processors for
 This should print out the toolkit version without any errors. You have now
 verified that SpiceyPy is installed.
 
+Using a system or custom CSPICE (source builds)
+-----------------------------------------------
+
+Since version 7.0.0 SpiceyPy is built with CMake (scikit-build-core). When building
+from source (``pip install .`` in a clone of the repository), CSPICE is located in
+this order:
+
+1. ``SPICEYPY_CSPICE_PREFIX`` (environment variable or CMake define): an install
+   prefix containing a CSPICE built with
+   `cspice-cmake-spiceypy <https://github.com/AndrewAnnex/cspice-cmake-spiceypy>`_.
+   The shared library is bundled into the built package.
+2. A system or conda CSPICE found via ``find_library``, with headers (``SpiceUsr.h``)
+   findable on the default paths (e.g. ``include/cspice/``). Used as-is, not bundled.
+3. Otherwise CSPICE is downloaded and compiled from source automatically via the
+   cspice-cmake-spiceypy recipe, and the shared library is bundled into the package.
+
+To build a reusable CSPICE prefix (option 1) from a SpiceyPy clone:
+
+.. code-block:: bash
+
+    cmake -S . -B build-cspice -DSPICEYPY_CSPICE_ONLY=ON -DCMAKE_BUILD_TYPE=Release
+    cmake --build build-cspice
+    cmake --install build-cspice --prefix /tmp/cspice-prefix
+    SPICEYPY_CSPICE_PREFIX=/tmp/cspice-prefix pip install .
+
+CMake options can be passed through pip in several equivalent ways:
+
+.. code-block:: bash
+
+    # scikit-build-core config-setting
+    pip install . -C cmake.define.SPICEYPY_CSPICE_PREFIX=/tmp/cspice-prefix
+    # environment variable form of the same (";"-separated NAME=VALUE list)
+    SKBUILD_CMAKE_DEFINE="SPICEYPY_CSPICE_PREFIX=/tmp/cspice-prefix" pip install .
+    # raw CMake arguments (space-separated), also reaches recipe options
+    CMAKE_ARGS="-DCSPICE_PATCH_SOURCE=OFF" pip install .
+
+``CMAKE_PREFIX_PATH`` is honored as well: a CSPICE installed under a
+non-standard prefix (e.g. ``CMAKE_PREFIX_PATH=/tmp/mycspice``) is found by the
+system search (option 2 above) — and, unlike ``SPICEYPY_CSPICE_PREFIX``, used
+in place without being bundled into the package.
+
+The cspice-cmake-spiceypy recipe (used by options 1 and 3) exposes a few options of
+its own, which flow through a ``pip install .``:
+
+* ``CSPICE_SRC`` (environment variable): path to a local extracted CSPICE toolkit
+  source tree to use instead of downloading from NAIF. It is copied into the build
+  tree before patching; your copy is never modified.
+* ``CSPICE_PATCH_SOURCE`` (CMake option or environment variable, default ``ON``):
+  apply SpiceyPy-specific patches to the working copy. Set to ``OFF`` if supplying
+  an already-patched ``CSPICE_SRC``.
+* ``BUILD_EXECUTABLES`` / ``BUILD_TESTING`` (default ``OFF``): additionally build the
+  CSPICE utility executables / the recipe's C test.
+
 Offline installation
 --------------------
 
-If you need to install SpiceyPy without a network or if you have a prebuilt shared library at hand,
-you can override the default behavior of SpiceyPy by using the CSPICE_SRC_DIR and CSPICE_SHARED_LIB environment variables respectively.
-
-For example, if you have downloaded SpiceyPy and the CSPICE toolkit, and extracted CSPICE to /tmp/cspice you can run:
-
-.. code-block:: bash
-
-            export CSPICE_SRC_DIR="/tmp/cspice"
-            pip install .
-
-Or if you have a shared library of CSPICE located at /tmp/cspice.so, you can run:
+A from-source build normally downloads two things: the cspice-cmake-spiceypy recipe
+(via git) and the CSPICE toolkit archive (from NAIF). To install without a network,
+either use a system CSPICE or a prebuilt ``SPICEYPY_CSPICE_PREFIX`` prefix (see
+above), so that neither download occurs, or point the build at local copies of both:
 
 .. code-block:: bash
 
-            export CSPICE_SHARED_LIB="/tmp/libcspice.so"
-            pip install .
-
-Both examples above assume you have cloned the SpiceyPy repository and are running those commands within the project directory.
+    export CSPICE_SRC="/tmp/cspice"  # extracted CSPICE toolkit source tree
+    pip install . -C cmake.args=-DFETCHCONTENT_SOURCE_DIR_CSPICE=/path/to/cspice-cmake-spiceypy
 
 .. note::
-    As of version 4.0.3 you can also add libcspice to you LD_LIBRARY_PATH or use the CSPICE_SHARED_LIB environment variable
-    at runtime (prior to importing spiceypy) to override which cspice shared library is used.
+    The build-time ``CSPICE_SRC_DIR`` and ``CSPICE_SHARED_LIB`` environment variables
+    from the pre-7.0.0 build system are no longer used.
+
+Runtime library selection
+-------------------------
+
+At import time SpiceyPy loads the first CSPICE shared library found from:
+
+1. The ``CSPICE_SHARED_LIB`` environment variable (full path to the library).
+2. A system or conda library found by ``ctypes.util.find_library("cspice")`` —
+   note this takes precedence over the library bundled in the wheel. On Linux,
+   directories on ``LD_LIBRARY_PATH`` (set before launching Python) are searched
+   here too, though ``CSPICE_SHARED_LIB`` is the more reliable override.
+3. The bundled library next to the package (``spiceypy/utils/``).
+
+Set ``SPICEYPY_LOGLEVEL=INFO`` before importing spiceypy to log which library was
+loaded.
 
 A simple example program
 ------------------------
@@ -202,7 +259,7 @@ How to install from source (for bleeding edge updates)
     need to do any of the following commands. Installing from source is intended
     for advanced users. Users on machines running Windows should take note
     that attempting to install from source will require software
-    such as visual studio and additional environment configuration. Given
+    such as visual studio, CMake, and additional environment configuration. Given
     the complexity of this Windows users are highly encouraged to stick
     with the releases made available through PyPi/Conda-Forge.
 
@@ -221,9 +278,10 @@ directory of the project and then run::
 
     pip install .
 
-The installation script will download the appropriate
-version of the SPICE toolkit for your system, and will
-build a shared library from the included static library
-files. Then the installation script will install SpiceyPy
-along with the generated shared library into your
-site-packages directory.
+The build will locate or build CSPICE as described in
+`Using a system or custom CSPICE (source builds)`_ above
+(downloading and compiling it from source if none is found)
+and install SpiceyPy into your site-packages directory.
+Building from source requires CMake and a C compiler;
+Cython and NumPy are handled automatically by build
+isolation.
