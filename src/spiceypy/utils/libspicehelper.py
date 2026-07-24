@@ -32,7 +32,6 @@ from ctypes import (
     c_char,
     c_char_p,
     c_void_p,
-    cast,
     RTLD_GLOBAL,
 )
 from ctypes.util import find_library
@@ -185,9 +184,7 @@ __author__ = "AndrewAnnex"
 # get the cspice_flavor if present
 cspice_flavor = None
 if hasattr(libspice, "cspice_flavor"):
-    ref = cast(libspice.cspice_flavor, c_int_p)
-    if ref is not None:
-        cspice_flavor = ref.contents.value
+    cspice_flavor = c_int.in_dll(libspice, "cspice_flavor").value
 
 # ######################################################################################################################
 # A
@@ -623,7 +620,7 @@ libspice.dskb02_c.argtypes = [
     c_int_p,
     c_int_p,
     c_int_p,
-    ((c_double * 3) * 2),
+    ((c_double * 2) * 3),
     c_double_p,
     (c_double * 3),
     (c_int * 3),
@@ -1490,7 +1487,7 @@ libspice.latcyl_c.argtypes = [
     c_double_p,
     c_double_p,
 ]
-libspice.latrec_c.argtypes = [c_double, c_double, c_double, (c_double) * 3]
+libspice.latrec_c.argtypes = [c_double, c_double, c_double, (c_double * 3)]
 libspice.latsph_c.argtypes = [
     c_double,
     c_double,
@@ -1928,7 +1925,7 @@ libspice.spkaps_c.argtypes = [
     c_char_p,
     c_char_p,
     (c_double * 6),
-    (c_double * 6),
+    (c_double * 3),
     (c_double * 6),
     c_double_p,
     c_double_p,
