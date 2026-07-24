@@ -479,8 +479,8 @@ def bodeul(body: int, et: float) -> Tuple[float, float, float, float]:
     w = ctypes.c_double()
     lam = ctypes.c_double()
     libspice.bodeul_(
-        ctypes.byref(body),
-        ctypes.byref(et),
+        ctypes.byref(body),  # type: ignore[arg-type]
+        ctypes.byref(et),  # type: ignore[arg-type]
         ctypes.byref(ra),
         ctypes.byref(dec),
         ctypes.byref(w),
@@ -621,8 +621,8 @@ def bodvar(body: int, item: str, dim: int) -> ndarray:
     body = ctypes.c_int(body)
     dim = ctypes.c_int(dim)
     item = stypes.string_to_char_p(item)
-    values = stypes.empty_double_vector(dim.value)
-    libspice.bodvar_c(body, item, ctypes.byref(dim), values)
+    values = stypes.empty_double_vector(dim.value)  # type: ignore[attr-defined]
+    libspice.bodvar_c(body, item, ctypes.byref(dim), values)  # type: ignore[arg-type]
     return stypes.c_vector_to_python(values)
 
 
@@ -1840,6 +1840,8 @@ def copy(cell: SpiceCell) -> SpiceCell:
     :return: New cell
     """
     assert isinstance(cell, stypes.SpiceCell)
+    assert cell.size is not None
+    assert cell.length is not None
     # Next line was redundant with [raise NotImpImplementedError] below
     # assert cell.dtype == 0 or cell.dtype == 1 or cell.dtype == 2
     if cell.dtype == 0:
@@ -2220,7 +2222,7 @@ def dafgsr(
     begin = ctypes.c_int(begin)
     end = ctypes.c_int(end)
     # dafgsr_c will retrieve no more than 128 words
-    data = stypes.empty_double_vector(1 + min([128, end.value]) - max([begin.value, 1]))
+    data = stypes.empty_double_vector(1 + min([128, end.value]) - max([begin.value, 1]))  # type: ignore[attr-defined]
     found = ctypes.c_int()
     libspice.dafgsr_c(handle, recno, begin, end, data, ctypes.byref(found))
     return stypes.c_vector_to_python(data), bool(found.value)
@@ -2317,7 +2319,7 @@ def dafrda(handle: int, begin: int, end: int) -> ndarray:
     handle = ctypes.c_int(handle)
     begin = ctypes.c_int(begin)
     end = ctypes.c_int(end)
-    data = stypes.empty_double_vector(1 + end.value - begin.value)
+    data = stypes.empty_double_vector(1 + end.value - begin.value)  # type: ignore[attr-defined]
     libspice.dafrda_c(handle, begin, end, data)
     return stypes.c_vector_to_python(data)
 
@@ -2378,7 +2380,7 @@ def dafrs(insum: ndarray) -> None:
     :param insum: New summary for current array.
     """
     insum = stypes.to_double_vector(insum)
-    libspice.dafrs_c(ctypes.byref(insum))
+    libspice.dafrs_c(insum)
 
 
 @spice_error_check
@@ -2989,6 +2991,8 @@ def diff(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
+    assert a.size is not None and b.size is not None
+    assert a.length is not None and b.length is not None
     # The next line was redundant with the [raise NotImplementedError] line below
     # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     if a.dtype == 0:
@@ -4741,7 +4745,7 @@ def ekffld(handle: int, segno: int, rcptrs: ndarray) -> None:
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     rcptrs = stypes.to_int_vector(rcptrs)
-    libspice.ekffld_c(handle, segno, ctypes.cast(rcptrs, ctypes.POINTER(ctypes.c_int)))
+    libspice.ekffld_c(handle, segno, ctypes.cast(rcptrs, ctypes.POINTER(ctypes.c_int)))  # type: ignore[arg-type]
 
 
 @spice_error_check
@@ -4771,7 +4775,7 @@ def ekfind(query: str, lenout: int = _default_len_out) -> Tuple[int, int, str]:
 @spice_error_check
 def ekgc(
     selidx: int, row: int, element: int, lenout: int = _default_len_out
-) -> Union[Tuple[int, str, bool], Tuple[int, str]]:
+) -> Union[Tuple[str, int, bool], Tuple[str, int]]:
     """
     Return an element of an entry in a column of character type in a specified
     row.
@@ -5557,8 +5561,8 @@ def erract(op: str, lenout: int, action: Optional[str] = None) -> str:
         action = ""
     lenout = ctypes.c_int(lenout)
     op = stypes.string_to_char_p(op)
-    action = ctypes.create_string_buffer(str.encode(action), lenout.value)
-    actionptr = ctypes.c_char_p(ctypes.addressof(action))
+    action = ctypes.create_string_buffer(str.encode(action), lenout.value)  # type: ignore[attr-defined]
+    actionptr = ctypes.c_char_p(ctypes.addressof(action))  # type: ignore[arg-type]
     libspice.erract_c(op, lenout, actionptr)
     return stypes.to_python_string(actionptr)
 
@@ -5591,8 +5595,8 @@ def errdev(op: str, lenout: int, device: str) -> str:
     """
     lenout = ctypes.c_int(lenout)
     op = stypes.string_to_char_p(op)
-    device = ctypes.create_string_buffer(str.encode(device), lenout.value)
-    deviceptr = ctypes.c_char_p(ctypes.addressof(device))
+    device = ctypes.create_string_buffer(str.encode(device), lenout.value)  # type: ignore[attr-defined]
+    deviceptr = ctypes.c_char_p(ctypes.addressof(device))  # type: ignore[arg-type]
     libspice.errdev_c(op, lenout, deviceptr)
     return stypes.to_python_string(deviceptr)
 
@@ -5641,8 +5645,8 @@ def errprt(op: str, lislen: int, inlist: str) -> str:
     """
     lislen = ctypes.c_int(lislen)
     op = stypes.string_to_char_p(op)
-    inlist = ctypes.create_string_buffer(str.encode(inlist), lislen.value)
-    inlistptr = ctypes.c_char_p(ctypes.addressof(inlist))
+    inlist = ctypes.create_string_buffer(str.encode(inlist), lislen.value)  # type: ignore[attr-defined]
+    inlistptr = ctypes.c_char_p(ctypes.addressof(inlist))  # type: ignore[arg-type]
     libspice.errprt_c(op, lislen, inlistptr)
     return stypes.to_python_string(inlistptr)
 
@@ -5867,7 +5871,7 @@ def ev2lin(et: float, geophs: Sequence[float], elems: Sequence[float]) -> ndarra
     assert len(elems) == 10
     elems = stypes.to_double_vector(elems)
     state = stypes.empty_double_vector(6)
-    libspice.ev2lin_(ctypes.byref(et), geophs, elems, state)
+    libspice.ev2lin_(ctypes.byref(et), geophs, elems, state)  # type: ignore[arg-type]
     return stypes.c_vector_to_python(state)
 
 
@@ -5988,7 +5992,7 @@ def fovray(
     et = ctypes.c_double(et)
     visible = ctypes.c_int()
     libspice.fovray_c(
-        inst, raydir, rframe, abcorr, observer, ctypes.byref(et), ctypes.byref(visible)
+        inst, raydir, rframe, abcorr, observer, ctypes.byref(et), ctypes.byref(visible)  # type: ignore[arg-type]
     )
     return bool(visible.value)
 
@@ -6033,7 +6037,7 @@ def fovtrg(
         tframe,
         abcorr,
         observer,
-        ctypes.byref(et),
+        ctypes.byref(et),  # type: ignore[arg-type]
         ctypes.byref(visible),
     )
     return bool(visible.value)
@@ -7109,8 +7113,7 @@ def gfrepi(
     begmss = stypes.string_to_char_p(begmss)
     endmss = stypes.string_to_char_p(endmss)
     # don't do anything if we were given a pointer to a SpiceCell, like if we were in a callback
-    if not isinstance(window, SpiceCellPointer):
-        assert isinstance(window, stypes.SpiceCell)
+    if isinstance(window, stypes.SpiceCell):
         assert window.is_double()
         window = ctypes.byref(window)
     libspice.gfrepi_c(window, begmss, endmss)
@@ -8242,6 +8245,8 @@ def inter(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
+    assert a.size is not None and b.size is not None
+    assert a.length is not None and b.length is not None
     # Next line was redundant with [raise NotImplementedError] below
     # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     if a.dtype == 0:
@@ -8346,7 +8351,7 @@ def irfnam(index: int) -> str:
     index = ctypes.c_int(index)
     name = stypes.string_to_char_p(16)  # just give enough space
     name_len = ctypes.c_int(16)
-    libspice.irfnam_(ctypes.byref(index), name, name_len)
+    libspice.irfnam_(ctypes.byref(index), name, name_len)  # type: ignore[arg-type]
     return stypes.to_python_string(name)
 
 
@@ -8383,7 +8388,7 @@ def irfrot(refa: int, refb: int) -> ndarray:
     refa = ctypes.c_int(refa)
     refb = ctypes.c_int(refb)
     rotab = stypes.empty_double_matrix()
-    libspice.irfrot_(ctypes.byref(refa), ctypes.byref(refb), rotab)
+    libspice.irfrot_(ctypes.byref(refa), ctypes.byref(refb), rotab)  # type: ignore[arg-type]
     # make sure to transpose to get back into c order from fortran ordering
     return stypes.c_matrix_to_numpy(rotab).T
 
@@ -8681,7 +8686,7 @@ def kepleq(ml: float, h: float, k: float) -> float:
     ml = ctypes.c_double(ml)
     h = ctypes.c_double(h)
     k = ctypes.c_double(k)
-    f = libspice.kepleq_(ctypes.byref(ml), ctypes.byref(h), ctypes.byref(k))
+    f = libspice.kepleq_(ctypes.byref(ml), ctypes.byref(h), ctypes.byref(k))  # type: ignore[arg-type]
     return f
 
 
@@ -8706,8 +8711,8 @@ def kinfo(
     typlen = ctypes.c_int(typlen)
     srclen = ctypes.c_int(srclen)
     file = stypes.string_to_char_p(file)
-    filtyp = stypes.string_to_char_p(" " * typlen.value)
-    source = stypes.string_to_char_p(" " * srclen.value)
+    filtyp = stypes.string_to_char_p(" " * typlen.value)  # type: ignore[attr-defined]
+    source = stypes.string_to_char_p(" " * srclen.value)  # type: ignore[attr-defined]
     handle = ctypes.c_int()
     found = ctypes.c_int()
     libspice.kinfo_c(
@@ -9114,10 +9119,10 @@ def limbpt(
     schstp = ctypes.c_double(schstp)
     soltol = ctypes.c_double(soltol)
     maxn = ctypes.c_int(maxn)
-    npts = stypes.empty_int_vector(maxn.value)
-    points = stypes.empty_double_matrix(3, maxn.value)
+    npts = stypes.empty_int_vector(maxn.value)  # type: ignore[attr-defined]
+    points = stypes.empty_double_matrix(3, maxn.value)  # type: ignore[attr-defined]
     epochs = stypes.empty_double_vector(maxn)
-    tangts = stypes.empty_double_matrix(3, maxn.value)
+    tangts = stypes.empty_double_matrix(3, maxn.value)  # type: ignore[attr-defined]
     libspice.limbpt_c(
         method,
         target,
@@ -9146,7 +9151,7 @@ def limbpt(
 
 
 @spice_error_check
-def lmpool(cvals: Union[ndarray, Iterable[str]]) -> None:
+def lmpool(cvals: Union[ndarray, Sequence[str]]) -> None:
     """
     Load the variables contained in an internal buffer into the
     kernel pool.
@@ -9204,7 +9209,7 @@ def lparsm(
         lenout = ctypes.c_int(lenout)
     inlist = stypes.string_to_char_p(inlist)
     delims = stypes.string_to_char_p(delims)
-    items = stypes.empty_char_array(lenout.value, nmax)
+    items = stypes.empty_char_array(lenout.value, nmax)  # type: ignore[union-attr]
     nmax = ctypes.c_int(nmax)
     n = ctypes.c_int()
     libspice.lparsm_c(inlist, delims, nmax, lenout, ctypes.byref(n), items)
@@ -9735,7 +9740,7 @@ def mtxvg(m1: ndarray, v2: ndarray) -> ndarray:
     v2 = stypes.to_double_vector(v2)
     ncol1 = ctypes.c_int(ncol1)
     nr1r2 = ctypes.c_int(nr1r2)
-    vout = stypes.empty_double_vector(ncol1.value)
+    vout = stypes.empty_double_vector(ncol1.value)  # type: ignore[attr-defined]
     libspice.mtxvg_c(m1, v2, ncol1, nr1r2, vout)
     return stypes.c_vector_to_python(vout)
 
@@ -9763,8 +9768,8 @@ def mxm(
 
 @spice_error_check
 def mxmg(
-    m1: Union[ndarray, Iterable[Iterable[float]]],
-    m2: Union[ndarray, Iterable[Iterable[float]]],
+    m1: Union[ndarray, Sequence[Sequence[float]]],
+    m2: Union[ndarray, Sequence[Sequence[float]]],
 ) -> ndarray:
     """
     Multiply two double precision matrices of arbitrary size.
@@ -9809,8 +9814,8 @@ def mxmt(
 
 @spice_error_check
 def mxmtg(
-    m1: Union[ndarray, Iterable[Iterable[float]]],
-    m2: Union[ndarray, Iterable[Iterable[float]]],
+    m1: Union[ndarray, Sequence[Sequence[float]]],
+    m2: Union[ndarray, Sequence[Sequence[float]]],
 ) -> ndarray:
     """
     Multiply a matrix and the transpose of a matrix, both of arbitrary size.
@@ -9853,8 +9858,8 @@ def mxv(m1: ndarray, vin: ndarray) -> ndarray:
 
 @spice_error_check
 def mxvg(
-    m1: Union[ndarray, Iterable[Iterable[float]]],
-    v2: Union[ndarray, Iterable[Iterable[float]]],
+    m1: Union[ndarray, Sequence[Sequence[float]]],
+    v2: Union[ndarray, Iterable[float]],
 ) -> ndarray:
     """
     Multiply a matrix and a vector of arbitrary size.
@@ -9870,7 +9875,7 @@ def mxvg(
     v2 = stypes.to_double_vector(v2)
     nrow1 = ctypes.c_int(nrow1)
     nc1r2 = ctypes.c_int(nc1r2)
-    vout = stypes.empty_double_vector(nrow1.value)
+    vout = stypes.empty_double_vector(nrow1.value)  # type: ignore[attr-defined]
     libspice.mxvg_c(m1, v2, nrow1, nc1r2, vout)
     return stypes.c_vector_to_python(vout)
 
@@ -10217,6 +10222,7 @@ def orderc(array: Sequence[str], ndim: Optional[int] = None) -> ndarray:
         ndim = ctypes.c_int(len(array))
     else:
         ndim = ctypes.c_int(ndim)
+    assert isinstance(ndim, ctypes.c_int)
     lenvals = ctypes.c_int(len(max(array, key=len)) + 1)
     iorder = stypes.empty_int_vector(ndim)
     array = stypes.list_to_char_array(array, lenvals, ndim)
@@ -10239,6 +10245,7 @@ def orderd(array: Sequence[float], ndim: Optional[int] = None) -> ndarray:
         ndim = ctypes.c_int(len(array))
     else:
         ndim = ctypes.c_int(ndim)
+    assert isinstance(ndim, ctypes.c_int)
     array = stypes.to_double_vector(array)
     iorder = stypes.empty_int_vector(ndim)
     libspice.orderd_c(array, ndim, iorder)
@@ -10260,6 +10267,7 @@ def orderi(array: Sequence[int], ndim: Optional[int] = None) -> ndarray:
         ndim = ctypes.c_int(len(array))
     else:
         ndim = ctypes.c_int(ndim)
+    assert isinstance(ndim, ctypes.c_int)
     array = stypes.to_int_vector(array)
     iorder = stypes.empty_int_vector(ndim)
     libspice.orderi_c(array, ndim, iorder)
@@ -10488,7 +10496,7 @@ def pcpool(name: str, cvals: Sequence[str]) -> None:
 
 
 @spice_error_check
-def pdpool(name: str, dvals: Union[ndarray, Iterable[float]]) -> None:
+def pdpool(name: str, dvals: Union[ndarray, Sequence[float]]) -> None:
     """
     This entry point provides toolkit programmers a method for
     programmatically inserting double precision data into the
@@ -10799,7 +10807,7 @@ def polyds(
     p = stypes.empty_double_vector(nderiv + 1)
     nderiv = ctypes.c_int(nderiv)
     t = ctypes.c_double(t)
-    libspice.polyds_c(ctypes.byref(coeffs), deg, nderiv, t, p)
+    libspice.polyds_c(coeffs, deg, nderiv, t, p)
     return stypes.c_vector_to_python(p)
 
 
@@ -11410,7 +11418,7 @@ def reordc(
     lenvals = ctypes.c_int(lenvals + 1)
     array = stypes.list_to_char_array(array, x_len=lenvals, y_len=ndim)
     libspice.reordc_c(iorder, ndim, lenvals, array)
-    return [stypes.to_python_string(x.value) for x in array]
+    return [stypes.to_python_string(x.value) for x in array]  # type: ignore[attr-defined]
 
 
 @spice_error_check
@@ -12045,6 +12053,8 @@ def sdiff(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
+    assert a.size is not None and b.size is not None
+    assert a.length is not None and b.length is not None
     # The next line was redundant with the [raise NotImplementedError] line below
     # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     s = a.size + b.size
@@ -12110,7 +12120,7 @@ def shellc(ndim: int, lenvals: int, array: Iterable[str]) -> Iterable[str]:
     array = stypes.list_to_char_array(array, x_len=lenvals, y_len=ndim)
     ndim = ctypes.c_int(ndim)
     lenvals = ctypes.c_int(lenvals)
-    libspice.shellc_c(ndim, lenvals, ctypes.byref(array))
+    libspice.shellc_c(ndim, lenvals, ctypes.byref(array))  # type: ignore[arg-type]
     return stypes.c_vector_to_python(array)
 
 
@@ -12128,7 +12138,7 @@ def shelld(ndim: int, array: Union[ndarray, Iterable[float]]) -> ndarray:
     """
     array = stypes.to_double_vector(array)
     ndim = ctypes.c_int(ndim)
-    libspice.shelld_c(ndim, ctypes.cast(array, ctypes.POINTER(ctypes.c_double)))
+    libspice.shelld_c(ndim, ctypes.cast(array, ctypes.POINTER(ctypes.c_double)))  # type: ignore[arg-type]
     return stypes.c_vector_to_python(array)
 
 
@@ -12146,7 +12156,7 @@ def shelli(ndim: int, array: Union[ndarray, Iterable[int]]) -> ndarray:
     """
     array = stypes.to_int_vector(array)
     ndim = ctypes.c_int(ndim)
-    libspice.shelli_c(ndim, ctypes.cast(array, ctypes.POINTER(ctypes.c_int)))
+    libspice.shelli_c(ndim, ctypes.cast(array, ctypes.POINTER(ctypes.c_int)))  # type: ignore[arg-type]
     return stypes.c_vector_to_python(array)
 
 
@@ -15002,10 +15012,10 @@ def termpt(
     schstp = ctypes.c_double(schstp)
     soltol = ctypes.c_double(soltol)
     maxn = ctypes.c_int(maxn)
-    npts = stypes.empty_int_vector(maxn.value)
-    points = stypes.empty_double_matrix(3, maxn.value)
+    npts = stypes.empty_int_vector(maxn.value)  # type: ignore[attr-defined]
+    points = stypes.empty_double_matrix(3, maxn.value)  # type: ignore[attr-defined]
     epochs = stypes.empty_double_vector(maxn)
-    trmvcs = stypes.empty_double_matrix(3, maxn.value)
+    trmvcs = stypes.empty_double_matrix(3, maxn.value)  # type: ignore[attr-defined]
     libspice.termpt_c(
         method,
         ilusrc,
@@ -15598,6 +15608,7 @@ def union(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     assert isinstance(a, stypes.SpiceCell)
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == b.dtype
+    assert a.size is not None and b.size is not None
     # Next line was redundant with [raise NotImpImplementedError] below
     # assert a.dtype == 0 or a.dtype == 1 or a.dtype == 2
     s = a.size + b.size
@@ -15729,7 +15740,7 @@ def vadd(
 
 @spice_error_check
 def vaddg(
-    v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]]
+    v1: Union[ndarray, Sequence[float]], v2: Union[ndarray, Iterable[float]]
 ) -> ndarray:
     """
     Add two n-dimensional vectors
@@ -16221,7 +16232,7 @@ def vrel(
 
 @spice_error_check
 def vrelg(
-    v1: Union[ndarray, Iterable[float]], v2: Union[ndarray, Iterable[float]]
+    v1: Union[ndarray, Sequence[float]], v2: Union[ndarray, Iterable[float]]
 ) -> float:
     """
     Return the relative difference between two vectors of general dimension.
@@ -16500,6 +16511,7 @@ def wncomd(left: float, right: float, window: SpiceCell) -> SpiceCell:
     """
     assert isinstance(window, stypes.SpiceCell)
     assert window.dtype == 1
+    assert window.size is not None
     left = ctypes.c_double(left)
     right = ctypes.c_double(right)
     result = stypes.SpiceCell.double(window.size)
@@ -16543,6 +16555,7 @@ def wndifd(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == 1
     assert b.dtype == 1
+    assert a.size is not None and b.size is not None
     c = stypes.SpiceCell.double(a.size + b.size)
     libspice.wndifd_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
     return c
@@ -16716,6 +16729,7 @@ def wnintd(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     assert b.dtype == 1
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == 1
+    assert a.size is not None and b.size is not None
     c = stypes.SpiceCell.double(b.size + a.size)
     libspice.wnintd_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
     return c
@@ -16789,6 +16803,7 @@ def wnunid(a: SpiceCell, b: SpiceCell) -> SpiceCell:
     assert b.dtype == 1
     assert isinstance(b, stypes.SpiceCell)
     assert a.dtype == 1
+    assert a.size is not None and b.size is not None
     c = stypes.SpiceCell.double(b.size + a.size)
     libspice.wnunid_c(ctypes.byref(a), ctypes.byref(b), ctypes.byref(c))
     return c
@@ -16845,7 +16860,7 @@ def writln(line: str, unit: int) -> None:
     line_p = stypes.string_to_char_p(line)
     unit = ctypes.c_int(unit)
     line_len = ctypes.c_int(len(line))
-    libspice.writln_(line_p, ctypes.byref(unit), line_len)
+    libspice.writln_(line_p, ctypes.byref(unit), line_len)  # type: ignore[arg-type]
 
 
 ################################################################################
@@ -16961,7 +16976,7 @@ def xpose6(m: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
 
 
 @spice_error_check
-def xposeg(matrix: Union[ndarray, Iterable[Iterable[float]]]) -> ndarray:
+def xposeg(matrix: Union[ndarray, Sequence[Sequence[float]]]) -> ndarray:
     """
     Transpose a matrix of arbitrary size
     in place, the matrix need not be square.
@@ -17001,9 +17016,9 @@ def zzdynrot(typid: int, center: int, et: float) -> Tuple[ndarray, int]:
     matrix = stypes.empty_double_matrix(x=3, y=3)
     next_frame = ctypes.c_int()
     libspice.zzdynrot_(
-        ctypes.byref(typid),
-        ctypes.byref(center),
-        ctypes.byref(et),
+        ctypes.byref(typid),  # type: ignore[arg-type]
+        ctypes.byref(center),  # type: ignore[arg-type]
+        ctypes.byref(et),  # type: ignore[arg-type]
         matrix,
         ctypes.byref(next_frame),
     )

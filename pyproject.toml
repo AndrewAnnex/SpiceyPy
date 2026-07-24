@@ -230,3 +230,18 @@ dependency-versions = { packages = ["pyodide-build==0.35.1"] }
 # exclusion override in [tool.scikit-build.overrides] above
 environment = { CFLAGS="-Werror=implicit-function-declaration -Werror=incompatible-pointer-types -Werror=return-type", SPICEYPY_PYODIDE="1" }
 
+
+[tool.mypy]
+files = ["src"]
+
+[[tool.mypy.overrides]]
+# spiceypy.py pervasively rebinds Python-typed parameters to their ctypes
+# equivalents (e.g. `et = ctypes.c_double(et)`) before calling into CSPICE;
+# silence just that error code here rather than rewriting every wrapper.
+module = "spiceypy.spiceypy"
+disable_error_code = ["assignment"]
+
+[[tool.mypy.overrides]]
+# compiled Cython extension module with no stub file (yet)
+module = "spiceypy.cyice.cyice"
+ignore_missing_imports = true

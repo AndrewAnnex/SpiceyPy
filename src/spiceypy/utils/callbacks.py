@@ -22,20 +22,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+from __future__ import annotations
+
 import functools
 from ctypes import c_int, c_double, c_char_p, POINTER, CFUNCTYPE, byref
 from .support_types import SpiceCell, SpiceCellPointer, to_python_string
-from typing import Callable, Union
+from typing import Callable, Union, TYPE_CHECKING
 
-UDFUNC = CFUNCTYPE(None, c_double, POINTER(c_double))
-UDFUNS = CFUNCTYPE(None, c_double, POINTER(c_double))
-UDFUNB = CFUNCTYPE(None, UDFUNS, c_double, POINTER(c_int))
-UDSTEP = CFUNCTYPE(None, c_double, POINTER(c_double))
-UDREFN = CFUNCTYPE(None, c_double, c_double, c_int, c_int, POINTER(c_double))
-UDREPI = CFUNCTYPE(None, POINTER(SpiceCell), c_char_p, c_char_p)
-UDREPU = CFUNCTYPE(None, c_double, c_double, c_double)
-UDREPF = CFUNCTYPE(None)
-UDBAIL = CFUNCTYPE(c_int)
+if TYPE_CHECKING:
+    from _ctypes import CFuncPtr
+    from ctypes import _Pointer
+
+    # ctypes cannot express per-signature function pointer types statically:
+    # every CFUNCTYPE() product is an opaque subclass of CFuncPtr, so static
+    # checkers see these names as CFuncPtr while the runtime branch below
+    # keeps the real prototypes.
+    UDFUNC = CFuncPtr
+    UDFUNS = CFuncPtr
+    UDFUNB = CFuncPtr
+    UDSTEP = CFuncPtr
+    UDREFN = CFuncPtr
+    UDREPI = CFuncPtr
+    UDREPU = CFuncPtr
+    UDREPF = CFuncPtr
+    UDBAIL = CFuncPtr
+else:
+    UDFUNC = CFUNCTYPE(None, c_double, POINTER(c_double))
+    UDFUNS = CFUNCTYPE(None, c_double, POINTER(c_double))
+    UDFUNB = CFUNCTYPE(None, UDFUNS, c_double, POINTER(c_int))
+    UDSTEP = CFUNCTYPE(None, c_double, POINTER(c_double))
+    UDREFN = CFUNCTYPE(None, c_double, c_double, c_int, c_int, POINTER(c_double))
+    UDREPI = CFUNCTYPE(None, POINTER(SpiceCell), c_char_p, c_char_p)
+    UDREPU = CFUNCTYPE(None, c_double, c_double, c_double)
+    UDREPF = CFUNCTYPE(None)
+    UDBAIL = CFUNCTYPE(c_int)
 
 
 def SpiceUDFUNC(f: Callable[[float], float]) -> UDFUNC:
@@ -47,7 +67,7 @@ def SpiceUDFUNC(f: Callable[[float], float]) -> UDFUNC:
     """
 
     @functools.wraps(f)
-    def wrapping_udfunc(x: float, value: POINTER(c_double)) -> None:
+    def wrapping_udfunc(x: float, value: _Pointer[c_double]) -> None:
         result = f(x)
         value[0] = c_double(result)
 
@@ -63,7 +83,7 @@ def SpiceUDFUNS(f: Callable[[float], float]) -> UDFUNS:
     """
 
     @functools.wraps(f)
-    def wrapping_udfuns(x: float, value: POINTER(c_double)) -> None:
+    def wrapping_udfuns(x: float, value: _Pointer[c_double]) -> None:
         result = f(x)
         value[0] = c_double(result)
 
@@ -79,7 +99,7 @@ def SpiceUDFUNB(f: Callable[[UDFUNS, float], int]) -> UDFUNB:
     """
 
     @functools.wraps(f)
-    def wrapping_udfunb(udf: UDFUNS, et: float, xbool: POINTER(c_int)) -> None:
+    def wrapping_udfunb(udf: UDFUNS, et: float, xbool: _Pointer[c_int]) -> None:
         # casting to bool fixes https://github.com/numpy/numpy/issues/14397
         result = bool(f(udf, et))
         xbool[0] = c_int(result)
@@ -96,7 +116,7 @@ def SpiceUDSTEP(f: Callable[[float], float]) -> UDSTEP:
     """
 
     @functools.wraps(f)
-    def wrapping_udstep(x: float, value: POINTER(c_double)) -> None:
+    def wrapping_udstep(x: float, value: _Pointer[c_double]) -> None:
         result = f(x)
         value[0] = c_double(result)
 
@@ -119,7 +139,7 @@ def SpiceUDREFN(
         t2: float,
         s1: Union[bool, int],
         s2: Union[bool, int],
-        t: POINTER(c_double),
+        t: _Pointer[c_double],
     ) -> None:
         result = f(t1, t2, s1, s2)
         t[0] = c_double(result)
