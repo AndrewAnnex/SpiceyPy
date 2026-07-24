@@ -156,8 +156,13 @@ wheel.exclude = [
     "spiceypy/benchmarks/*",
 ]
 
-[tool.scikit-build.metadata.version]
+# Scrape __version__ out of the package to satisfy project.dynamic = ["version"].
+# This is the standard top-level dynamic-metadata table; the older
+# [tool.scikit-build.metadata.version] form named the target field with the table
+# key, whereas here the table is an array element so the field is named outright.
+[[tool.dynamic-metadata]]
 provider = "scikit_build_core.metadata.regex"
+field = "version"
 input = "src/spiceypy/__init__.py"
 
 
