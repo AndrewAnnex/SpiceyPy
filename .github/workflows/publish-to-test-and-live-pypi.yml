@@ -161,7 +161,7 @@ jobs:
     env:
       CIBW_PLATFORM: ${{ matrix.platform || 'auto' }}
       CIBW_ARCHS: ${{ matrix.arch }}
-      CMAKE_BUILD_PARALLEL_LEVEL: 2
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout 🌶️ 🥧
@@ -258,7 +258,7 @@ jobs:
         env:
           CIBW_PLATFORM: ${{ matrix.platform || 'auto' }}
           CIBW_ARCHS: ${{ matrix.arch }}
-          CMAKE_BUILD_PARALLEL_LEVEL: 2
+          CMAKE_BUILD_PARALLEL_LEVEL: 4
           # Hand the prepared CSPICE source to the build via the env var that
           # cspice-cmake-spiceypy reads. These are platform-specific on purpose:
           #   * Linux native wheels build in a container, so the value must be the
@@ -267,9 +267,19 @@ jobs:
           # Pyodide is intentionally omitted here so it keeps pyproject's
           # SPICEYPY_PYODIDE/CFLAGS environment; being a non-container build it
           # inherits CSPICE_SRC (host path) from $GITHUB_ENV directly.
-          CIBW_ENVIRONMENT_LINUX: CMAKE_BUILD_PARALLEL_LEVEL="2" CSPICE_SRC="${{ env.CSPICE_SRC }}"
-          CIBW_ENVIRONMENT_MACOS: CMAKE_BUILD_PARALLEL_LEVEL="2" CSPICE_SRC="${{ env.CSPICE_SRC }}"
-          CIBW_ENVIRONMENT_WINDOWS: CMAKE_BUILD_PARALLEL_LEVEL="2" CSPICE_SRC="${{ env.CSPICE_SRC }}"
+          #
+          # CMAKE_GENERATOR=Ninja on Windows: scikit-build-core defaults to the
+          # multi-config Visual Studio generator there, which costs ~20s of CMake
+          # configure per wheel and hands the 2200+ CSPICE files to MSBuild, which
+          # does not parallelize sources within a single project. Ninja gives real
+          # file-level parallelism at CMAKE_BUILD_PARALLEL_LEVEL. Ninja itself needs
+          # no setup step (VS ships one on PATH, and scikit-build-core will pull the
+          # PyPI ninja into the isolated build env otherwise), but unlike the VS
+          # generator it does NOT locate MSVC on its own -- that comes from the
+          # ilammy/msvc-dev-cmd step above, which this job already runs.
+          CIBW_ENVIRONMENT_LINUX: CMAKE_BUILD_PARALLEL_LEVEL="4" CSPICE_SRC="${{ env.CSPICE_SRC }}"
+          CIBW_ENVIRONMENT_MACOS: CMAKE_BUILD_PARALLEL_LEVEL="4" CSPICE_SRC="${{ env.CSPICE_SRC }}"
+          CIBW_ENVIRONMENT_WINDOWS: CMAKE_BUILD_PARALLEL_LEVEL="4" CSPICE_SRC="${{ env.CSPICE_SRC }}" CMAKE_GENERATOR="Ninja"
           SKBUILD_BUILD_VERBOSE: "true"
         with:
           extras: "uv"

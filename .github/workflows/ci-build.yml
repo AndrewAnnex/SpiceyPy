@@ -12,7 +12,7 @@ env:
   MIRROR_BASE: https://raw.githubusercontent.com/AndrewAnnex/cspice-release-mirror/refs/heads/main/artifacts
   # bump to invalidate the cached CSPICE mirror archive
   CSPICE_CACHE: 0
-  CMAKE_BUILD_PARALLEL_LEVEL: 2
+  CMAKE_BUILD_PARALLEL_LEVEL: 4
 
 jobs:
   test-pyodide:
@@ -71,7 +71,7 @@ jobs:
         env:
           CIBW_PLATFORM: pyodide
           CIBW_ARCHS: "wasm32"
-          CMAKE_BUILD_PARALLEL_LEVEL: 2
+          CMAKE_BUILD_PARALLEL_LEVEL: 4
           SKBUILD_BUILD_VERBOSE: "true"
   test-conda:
     name: Test SpiceyPy Conda install
