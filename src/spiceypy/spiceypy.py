@@ -2378,7 +2378,7 @@ def dafrs(insum: ndarray) -> None:
     :param insum: New summary for current array.
     """
     insum = stypes.to_double_vector(insum)
-    libspice.dafrs_c(ctypes.byref(insum))
+    libspice.dafrs_c(insum)
 
 
 @spice_error_check
@@ -10799,7 +10799,7 @@ def polyds(
     p = stypes.empty_double_vector(nderiv + 1)
     nderiv = ctypes.c_int(nderiv)
     t = ctypes.c_double(t)
-    libspice.polyds_c(ctypes.byref(coeffs), deg, nderiv, t, p)
+    libspice.polyds_c(coeffs, deg, nderiv, t, p)
     return stypes.c_vector_to_python(p)
 
 
