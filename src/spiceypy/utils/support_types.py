@@ -78,6 +78,11 @@ from typing import (
 from typing import cast as type_cast
 
 if TYPE_CHECKING:
+    # TypeIs (PEP 742) only exists in the typing module on Python 3.13+;
+    # guard the import and use a string annotation below so is_iterable
+    # stays importable on the project's minimum supported Python (3.11).
+    from typing import TypeIs
+
     # spiceypy.py injects these exception classes into this module at import
     # time for backwards compatibility (importing them here at runtime would
     # be a circular import); declare them so static checkers know they exist.
@@ -115,7 +120,7 @@ def to_int_matrix(x: Any) -> Array[Array[c_int]]:
     return IntMatrix.from_param(param=x)
 
 
-def is_iterable(i: Any) -> bool:
+def is_iterable(i: Any) -> "TypeIs[collections_abc.Iterable[Any]]":
     """
     From stackoverflow "how-to-tell-a-variable-is-iterable-but-not-a-string"
     :param i: input collection
@@ -236,6 +241,7 @@ def list_to_char_array(
     arg: Any, x_len: int | c_int | None = None, y_len: int | c_int | None = None
 ) -> Array[Array[c_char]]:
     assert is_iterable(arg)
+    assert isinstance(arg, collections_abc.Sized)
     if not y_len:
         y_len = len(arg)
     if not x_len:
