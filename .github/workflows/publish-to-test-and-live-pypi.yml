@@ -228,7 +228,12 @@ jobs:
           ( cd cspice-src-cache && cmake -E tar xf "${{ matrix.archive }}" )
           test -d cspice-src-cache/cspice/src/cspice
           test -d cspice-src-cache/cspice/include
-          # Export CSPICE_SRC at a path valid inside the wheel build environment.
+          # Export CSPICE_SRC at a path valid inside the wheel build environment,
+          # plus SPICEYPY_CSPICE_PREFIX pointing at where cibuildwheel's before-all
+          # will install the once-per-job CSPICE build (see [tool.cibuildwheel]
+          # before-all in pyproject.toml). The prefix does not exist yet; this only
+          # computes the path. Pyodide is deliberately left without a prefix so its
+          # CMake build falls through to the in-tree FetchContent path.
           if [ "${{ matrix.platform }}" = "pyodide" ]; then
             # Pyodide/emscripten builds run directly on the host (no container)
             echo "CSPICE_SRC=$(pwd)/cspice-src-cache/cspice" >> "$GITHUB_ENV"
@@ -236,10 +241,13 @@ jobs:
             # native CPython Linux wheels build in the manylinux container, which
             # cibuildwheel mounts the project into at /project
             echo "CSPICE_SRC=/project/cspice-src-cache/cspice" >> "$GITHUB_ENV"
+            echo "SPICEYPY_CSPICE_PREFIX=/project/cspice-prefix" >> "$GITHUB_ENV"
           elif [ "${{ runner.os }}" = "Windows" ]; then
             echo "CSPICE_SRC=$(cygpath -m "$(pwd)/cspice-src-cache/cspice")" >> "$GITHUB_ENV"
+            echo "SPICEYPY_CSPICE_PREFIX=$(cygpath -m "$(pwd)/cspice-prefix")" >> "$GITHUB_ENV"
           else
             echo "CSPICE_SRC=$(pwd)/cspice-src-cache/cspice" >> "$GITHUB_ENV"
+            echo "SPICEYPY_CSPICE_PREFIX=$(pwd)/cspice-prefix" >> "$GITHUB_ENV"
           fi
           echo "Provisioned CSPICE_SRC for ${{ matrix.name }} (${{ runner.os }})"
       - name: Set up uv 🐍 📦 with Python 3.14
@@ -259,6 +267,13 @@ jobs:
           CIBW_PLATFORM: ${{ matrix.platform || 'auto' }}
           CIBW_ARCHS: ${{ matrix.arch }}
           CMAKE_BUILD_PARALLEL_LEVEL: 4
+          # CMAKE_BUILD_PARALLEL_LEVEL is deliberately NOT repeated below. The job
+          # env above is the single source of its value; Linux containers receive it
+          # via pyproject's `environment-pass`, and macOS/Windows build on the host
+          # and inherit it directly. Re-stating it in CIBW_ENVIRONMENT_* duplicates
+          # the value into a place that only wins by assignment ordering, so a future
+          # mismatch would be silent.
+          #
           # Hand the prepared CSPICE source to the build via the env var that
           # cspice-cmake-spiceypy reads. These are platform-specific on purpose:
           #   * Linux native wheels build in a container, so the value must be the
@@ -277,9 +292,13 @@ jobs:
           # PyPI ninja into the isolated build env otherwise), but unlike the VS
           # generator it does NOT locate MSVC on its own -- that comes from the
           # ilammy/msvc-dev-cmd step above, which this job already runs.
-          CIBW_ENVIRONMENT_LINUX: CMAKE_BUILD_PARALLEL_LEVEL="4" CSPICE_SRC="${{ env.CSPICE_SRC }}"
-          CIBW_ENVIRONMENT_MACOS: CMAKE_BUILD_PARALLEL_LEVEL="4" CSPICE_SRC="${{ env.CSPICE_SRC }}"
-          CIBW_ENVIRONMENT_WINDOWS: CMAKE_BUILD_PARALLEL_LEVEL="4" CSPICE_SRC="${{ env.CSPICE_SRC }}" CMAKE_GENERATOR="Ninja"
+          # SPICEYPY_CSPICE_PREFIX is read by both halves of the split: before-all
+          # builds CSPICE into it, and each per-wheel CMake configure finds it there
+          # instead of rebuilding. cibuildwheel applies CIBW_ENVIRONMENT to before_all
+          # as well as to the builds, so one setting covers both.
+          CIBW_ENVIRONMENT_LINUX: CSPICE_SRC="${{ env.CSPICE_SRC }}" SPICEYPY_CSPICE_PREFIX="${{ env.SPICEYPY_CSPICE_PREFIX }}"
+          CIBW_ENVIRONMENT_MACOS: CSPICE_SRC="${{ env.CSPICE_SRC }}" SPICEYPY_CSPICE_PREFIX="${{ env.SPICEYPY_CSPICE_PREFIX }}"
+          CIBW_ENVIRONMENT_WINDOWS: CSPICE_SRC="${{ env.CSPICE_SRC }}" SPICEYPY_CSPICE_PREFIX="${{ env.SPICEYPY_CSPICE_PREFIX }}" CMAKE_GENERATOR="Ninja"
           SKBUILD_BUILD_VERBOSE: "true"
         with:
           extras: "uv"
