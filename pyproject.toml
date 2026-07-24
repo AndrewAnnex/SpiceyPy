@@ -156,8 +156,13 @@ wheel.exclude = [
     "spiceypy/benchmarks/*",
 ]
 
-[tool.scikit-build.metadata.version]
+# Scrape __version__ out of the package to satisfy project.dynamic = ["version"].
+# This is the standard top-level dynamic-metadata table; the older
+# [tool.scikit-build.metadata.version] form named the target field with the table
+# key, whereas here the table is an array element so the field is named outright.
+[[tool.dynamic-metadata]]
 provider = "scikit_build_core.metadata.regex"
+field = "version"
 input = "src/spiceypy/__init__.py"
 
 
@@ -203,12 +208,47 @@ test-command = [
     "coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable"
 ]
 
+# Build CSPICE once per cibuildwheel run instead of once per Python version.
+# CSPICE is ~2200 C files and has no Python dependency whatsoever, so rebuilding
+# it for every wheel was the single largest cost in the build_wheels jobs. This
+# installs it into {project}/cspice-prefix; the per-wheel builds then pick it up
+# via SPICEYPY_CSPICE_PREFIX (set in the workflow) and vendor the resulting
+# shared library into the wheel exactly as the in-tree build did.
+#
+# The install prefix is passed via `cmake --install --prefix` rather than
+# -DCMAKE_INSTALL_PREFIX so the value is never parsed as CMake language -- on
+# Windows {project} expands to a backslashed path.
+# `--config Release` is a no-op for single-config generators and correct for the
+# multi-config ones, so the same commands work everywhere.
+before-all = [
+    "cmake -S {project} -B {project}/build-cspice -DSPICEYPY_CSPICE_ONLY=ON -DCMAKE_BUILD_TYPE=Release",
+    "cmake --build {project}/build-cspice --config Release",
+    "cmake --install {project}/build-cspice --config Release --prefix {project}/cspice-prefix",
+]
+
+[tool.cibuildwheel.linux]
+# Same as the shared before-all above, but the manylinux images do not ship
+# cmake. cibuildwheel prepends /opt/python/cp39-cp39/bin to PATH for before_all,
+# so a pip is always available to bootstrap one (plus ninja, which CMake picks
+# over make automatically once present).
+before-all = [
+    "command -v cmake >/dev/null 2>&1 || pip install --quiet cmake ninja",
+    "cmake -S {project} -B {project}/build-cspice -DSPICEYPY_CSPICE_ONLY=ON -DCMAKE_BUILD_TYPE=Release",
+    "cmake --build {project}/build-cspice --config Release",
+    "cmake --install {project}/build-cspice --config Release --prefix {project}/cspice-prefix",
+]
+
 [tool.cibuildwheel.windows]
 build-frontend = 'build[uv]'
 repair-wheel-command = "delvewheel repair --ignore-in-wheel -w {dest_dir} {wheel}"
 
 [tool.cibuildwheel.pyodide]
 build-frontend = 'build'
+# Explicitly opt out of the shared before-all CSPICE prebuild. Pyodide builds a
+# single wheel, so there is nothing to amortise, and the prebuild would produce
+# a *host* library that an Emscripten cross-compile cannot link against anyway.
+# Pyodide keeps building CSPICE in-tree via FetchContent.
+before-all = ""
 # https://github.com/jupyterlite/pyodide-kernel for version/kernel compatibility
 build = ["cp314-*"]
 skip  = ["cp312-*"]
