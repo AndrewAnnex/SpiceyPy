@@ -5756,7 +5756,7 @@ def et2utc(
     lenout = ctypes.c_int(lenout)
     format_str = stypes.string_to_char_p(format_str)
     utcstr = stypes.string_to_char_p(lenout)
-    if hasattr(et, "__iter__"):
+    if stypes.is_iterable(et):
         results = []
         for t in et:
             libspice.et2utc_c(ctypes.c_double(t), format_str, prec, lenout, utcstr)
@@ -12007,7 +12007,7 @@ def sct2e(sc: int, sclkdp: Union[float, Iterable[float]]) -> Union[float, ndarra
     """
     sc = ctypes.c_int(sc)
     et = ctypes.c_double()
-    if hasattr(sclkdp, "__iter__"):
+    if stypes.is_iterable(sclkdp):
         results = []
         for sclk in sclkdp:
             libspice.sct2e_c(sc, ctypes.c_double(sclk), ctypes.byref(et))
