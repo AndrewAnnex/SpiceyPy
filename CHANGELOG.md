@@ -15,11 +15,11 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
  - Various CI action pin updates (#546) (#551) (#553) (#556)
  - Docs updated to pyodide 314.0.0 kernel via pyscript bump (#547)
  - minor doc typo fixes
- - cspice_flavor now read via c_int.in_dll rather than a function-pointer cast 
+ - cspice_flavor now read via c_int.in_dll rather than a function-pointer cast  (#564)
  
 ### Fixed
- - spkaps's accobs parameter corrected to be 3-vector, not 6-vector but backwards compatible via truncation
- - dskb02's vertex bounds corrected return shape correcting row/col swap.
+ - spkaps's accobs parameter corrected to be 3-vector, not 6-vector but backwards compatible via truncation (#564)
+ - dskb02's vertex bounds corrected return shape correcting row/col swap (#564)
  - ctypes argtypes misspellings on dafrs, gfilum, polyds, vnormg, and vnorm that silently disabled argument marshalling (#562)
  - fixes for erroneous double-byref calls (#562)
  - Missing comma in __all__ that merged "exceptions" and "stypes" breaking those imports (#558) (#560)
