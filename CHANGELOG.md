@@ -4,6 +4,28 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [8.2.0] - 2026-07-24
+
+### Added
+ - Restored Python 3.10 wheel builds and corrected PyPI classifier (#561)
+
+ ### Changed
+ - Faster wheel builds using more cores and building cspice once per cibuildwheel job (#563)
+ - CI caches cspice from mirror (#549) and more robust uv setup (#548)
+ - Various CI action pin updates (#546) (#551) (#553) (#556)
+ - Docs updated to pyodide 314.0.0 kernel via pyscript bump (#547)
+ - minor doc typo fixes
+ - cspice_flavor now read via c_int.in_dll rather than a function-pointer cast 
+ 
+### Fixed
+ - spkaps's accobs parameter corrected to be 3-vector, not 6-vector but backwards compatible via truncation
+ - dskb02's vertex bounds corrected return shape correcting row/col swap.
+ - ctypes argtypes misspellings on dafrs, gfilum, polyds, vnormg, and vnorm that silently disabled argument marshalling (#562)
+ - fixes for erroneous double-byref calls (#562)
+ - Missing comma in __all__ that merged "exceptions" and "stypes" breaking those imports (#558) (#560)
+ - Flaky gfevnt, gffove, and rdtext tests (#550)
+ - Test temporary directory management quirks (#554)
+
 ## [8.1.2] - 2026-06-14
 
 ### Added

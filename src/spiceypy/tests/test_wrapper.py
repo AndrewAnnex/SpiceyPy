@@ -2151,6 +2151,15 @@ def test_dskb02():
     assert voxnpt == 2744
     assert voxnpl == 3257
     assert voxsiz == pytest.approx(3.320691339664286)
+    assert vtxbds.shape == (3, 2)
+    npt.assert_array_almost_equal(
+        vtxbds,
+        [
+            [-13.08927680684, 12.76278950625],
+            [-11.39423937765, 11.8506],
+            [-9.489559964508, 9.826904163432],
+        ],
+    )
     # cleanup
     spice.dascls(handle)
 
@@ -7863,7 +7872,6 @@ def test_spkaps():
     state2 = np.array(spice.spkssb(399, et + 1, "J2000"))
     # qderiv proc
     acc = spice.vlcomg(3, 0.5 / 1.0, state0 + 3, -0.5 / 1.0, state2 + 3)
-    acc = [acc[0], acc[1], acc[2], 0.0, 0.0, 0.0]
     state, lt, dlt = spice.spkaps(301, et, "j2000", "lt+s", stobs, acc)
     expected_lt = 1.3423106103603615
     expected_dlt = 1.073169085424106e-07
