@@ -43,6 +43,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
+import builtins
 import collections.abc as collections_abc
 
 from array import array
@@ -64,27 +65,62 @@ from ctypes import (
 import numpy
 from numpy import ctypeslib as numpc
 
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Iterator,
+    List,
+    Optional,
+    Sequence,
+    Union,
+)
+from typing import cast as type_cast
+
+if TYPE_CHECKING:
+    # TypeIs (PEP 742) only exists in the typing module on Python 3.13+;
+    # guard the import and use a string annotation below so is_iterable
+    # stays importable on the project's minimum supported Python (3.11).
+    from typing import TypeIs
+
+    # spiceypy.py injects these exception classes into this module at import
+    # time for backwards compatibility (importing them here at runtime would
+    # be a circular import); declare them so static checkers know they exist.
+    from . import exceptions as _exceptions
+
+    SpiceyError: type[_exceptions.SpiceyError]
+    SpiceyPyError: type[_exceptions.SpiceyPyError]
+    NotFoundError: type[_exceptions.NotFoundError]
+    SpiceyPyIOError: type[_exceptions.SpiceyPyIOError]
+    SpiceyPyMemoryError: type[_exceptions.SpiceyPyMemoryError]
+    SpiceyPyTypeError: type[_exceptions.SpiceyPyTypeError]
+    SpiceyPyKeyError: type[_exceptions.SpiceyPyKeyError]
+    SpiceyPyIndexError: type[_exceptions.SpiceyPyIndexError]
+    SpiceyPyRuntimeError: type[_exceptions.SpiceyPyRuntimeError]
+    SpiceyPyZeroDivisionError: type[_exceptions.SpiceyPyZeroDivisionError]
+    SpiceyPyValueError: type[_exceptions.SpiceyPyValueError]
+
 # Collection of supporting functions for wrapper functions
 __author__ = "AndrewAnnex"
 
 
-def to_double_vector(x):
+def to_double_vector(x: Any) -> Array[c_double]:
     return DoubleArray.from_param(param=x)
 
 
-def to_double_matrix(x):
+def to_double_matrix(x: Any) -> Array[Array[c_double]]:
     return DoubleMatrix.from_param(param=x)
 
 
-def to_int_vector(x):
+def to_int_vector(x: Any) -> Array[c_int]:
     return IntArray.from_param(param=x)
 
 
-def to_int_matrix(x):
+def to_int_matrix(x: Any) -> Array[Array[c_int]]:
     return IntMatrix.from_param(param=x)
 
 
-def is_iterable(i) -> bool:
+def is_iterable(i: Any) -> "TypeIs[collections_abc.Iterable[Any]]":
     """
     From stackoverflow "how-to-tell-a-variable-is-iterable-but-not-a-string"
     :param i: input collection
@@ -93,14 +129,16 @@ def is_iterable(i) -> bool:
     return isinstance(i, collections_abc.Iterable) and not isinstance(i, str)
 
 
-def to_python_string(in_string):
+def to_python_string(in_string: Any) -> str:
     if isinstance(in_string, c_char_p):
         return to_python_string(in_string.value)
     else:
         return bytes.decode(string_at(in_string), errors="ignore").rstrip()
 
 
-def empty_char_array(x_len=None, y_len=None):
+def empty_char_array(
+    x_len: int | c_int | None = None, y_len: int | c_int | None = None
+) -> Array[Array[c_char]]:
     if not y_len:
         y_len = 1
     if not x_len:
@@ -109,10 +147,14 @@ def empty_char_array(x_len=None, y_len=None):
         x_len = x_len.value
     if isinstance(y_len, c_int):
         y_len = y_len.value
+    assert isinstance(x_len, int)
+    assert isinstance(y_len, int)
     return ((c_char * x_len) * y_len)()
 
 
-def empty_double_matrix(x=3, y=3):
+def empty_double_matrix(
+    x: int | c_int = 3, y: int | c_int = 3
+) -> Array[Array[c_double]]:
     if isinstance(x, c_int):
         x = x.value
     if isinstance(y, c_int):
@@ -120,14 +162,14 @@ def empty_double_matrix(x=3, y=3):
     return ((c_double * x) * y)()
 
 
-def empty_double_vector(n):
+def empty_double_vector(n: int | c_int) -> Array[c_double]:
     if isinstance(n, c_int):
         n = n.value
     assert isinstance(n, int)
     return (c_double * n)()
 
 
-def empty_int_matrix(x=3, y=3):
+def empty_int_matrix(x: int | c_int = 3, y: int | c_int = 3) -> Array[Array[c_int]]:
     if isinstance(x, c_int):
         x = x.value
     if isinstance(y, c_int):
@@ -135,14 +177,14 @@ def empty_int_matrix(x=3, y=3):
     return ((c_int * x) * y)()
 
 
-def empty_int_vector(n):
+def empty_int_vector(n: int | c_int) -> Array[c_int]:
     if isinstance(n, c_int):
         n = n.value
     assert isinstance(n, int)
     return (c_int * n)()
 
 
-def c_vector_to_python(x):
+def c_vector_to_python(x: Any) -> Any:
     """
     Convert the c vector data into the correct python data type
     (numpy arrays or strings)
@@ -160,11 +202,11 @@ def c_vector_to_python(x):
         return [to_python_string(y) for y in x]
 
 
-def c_int_vector_to_bool_python(x):
+def c_int_vector_to_bool_python(x: Any) -> Any:
     return numpc.as_array(x).copy().astype(bool)
 
 
-def c_matrix_to_numpy(x):
+def c_matrix_to_numpy(x: Any) -> Any:
     """
     Convert a ctypes 2d array (or matrix) into a numpy array for python use
 
@@ -174,7 +216,7 @@ def c_matrix_to_numpy(x):
     return numpc.as_array(x).copy()
 
 
-def string_to_char_p(inobject, inlen: int | None = None):
+def string_to_char_p(inobject: Any, inlen: int | None = None) -> Any:
     """
     convert a python string to a char_p
 
@@ -195,8 +237,11 @@ def string_to_char_p(inobject, inlen: int | None = None):
     return c_char_p(inobject.encode(encoding="UTF-8"))
 
 
-def list_to_char_array(arg, x_len=None, y_len=None):
+def list_to_char_array(
+    arg: Any, x_len: int | c_int | None = None, y_len: int | c_int | None = None
+) -> Array[Array[c_char]]:
     assert is_iterable(arg)
+    assert isinstance(arg, collections_abc.Sized)
     if not y_len:
         y_len = len(arg)
     if not x_len:
@@ -208,7 +253,9 @@ def list_to_char_array(arg, x_len=None, y_len=None):
     return ((c_char * x_len) * y_len)(*[string_to_char_p(l, inlen=x_len) for l in arg])
 
 
-def list_to_char_array_ptr(input, x_len=None, y_len=None):
+def list_to_char_array_ptr(
+    input: Any, x_len: int | c_int | None = None, y_len: int | c_int | None = None
+) -> Any:
     return cast(list_to_char_array(input, x_len=x_len, y_len=y_len), c_char_p)
 
 
@@ -218,7 +265,7 @@ class DoubleArrayType:
     inspiration from python cookbook 3rd edition
     """
 
-    def from_param(self, param):
+    def from_param(self, param: Any) -> Array[c_double]:
         if hasattr(param, "__array_interface__"):
             return self.from_ndarray(param)
         elif isinstance(param, Array):
@@ -233,17 +280,20 @@ class DoubleArrayType:
             raise TypeError(f"Can't convert {type(param)}")
 
     # Cast from lists/tuples
-    def from_list(self, param):
+    def from_list(self, param: Sequence[float]) -> Array[c_double]:
         val = ((c_double) * len(param))(*param)
         return val
 
     # Cast from a numpy array,
-    def from_ndarray(self, param):
+    def from_ndarray(self, param: Any) -> Array[c_double]:
         # return param.data_as(POINTER(c_double))
         # the above older method does not work with
         # functions which take vectors of known size
-        return numpc.as_ctypes(
-            param.astype(numpy.float64, casting="same_kind", copy=False)
+        return type_cast(
+            "Array[c_double]",
+            numpc.as_ctypes(
+                param.astype(numpy.float64, casting="same_kind", copy=False)
+            ),
         )
 
 
@@ -253,7 +303,7 @@ class DoubleMatrixType:
     inspiration from python cookbook 3rd edition
     """
 
-    def from_param(self, param):
+    def from_param(self, param: Any) -> Array[Array[c_double]]:
         if hasattr(param, "__array_interface__"):
             return self.from_ndarray(param)
         elif isinstance(param, Array):
@@ -264,16 +314,19 @@ class DoubleMatrixType:
             raise TypeError(f"Can't convert {type(param)}")
 
     # Cast from lists/tuples
-    def from_list(self, param):
+    def from_list(self, param: Sequence[Sequence[float]]) -> Array[Array[c_double]]:
         val = ((c_double * len(param[0])) * len(param))(
             *[DoubleArray.from_param(x) for x in param]
         )
         return val
 
     # Cast from a numpy array
-    def from_ndarray(self, param):
-        return numpc.as_ctypes(
-            param.astype(numpy.float64, casting="same_kind", copy=False)
+    def from_ndarray(self, param: Any) -> Array[Array[c_double]]:
+        return type_cast(
+            "Array[Array[c_double]]",
+            numpc.as_ctypes(
+                param.astype(numpy.float64, casting="same_kind", copy=False)
+            ),
         )
 
 
@@ -283,7 +336,7 @@ class IntArrayType:
     inspiration from python cookbook 3rd edition
     """
 
-    def from_param(self, param):
+    def from_param(self, param: Any) -> Array[c_int]:
         if hasattr(param, "__array_interface__"):
             return self.from_ndarray(param)
         elif isinstance(param, Array):
@@ -298,15 +351,16 @@ class IntArrayType:
             raise TypeError(f"Can't convert {type(param)}")
 
     # Cast from lists/tuples
-    def from_list(self, param):
+    def from_list(self, param: Sequence[int]) -> Array[c_int]:
         val = ((c_int) * len(param))(*param)
         return val
 
     # Cast from a numpy array
-    def from_ndarray(self, param):
+    def from_ndarray(self, param: Any) -> Array[c_int]:
         # cspice always uses a int size half as big as the float, ie int32 if a float64 system default
-        return numpc.as_ctypes(
-            param.astype(numpy.int32, casting="same_kind", copy=False)
+        return type_cast(
+            "Array[c_int]",
+            numpc.as_ctypes(param.astype(numpy.int32, casting="same_kind", copy=False)),
         )
 
 
@@ -316,7 +370,7 @@ class IntMatrixType:
     inspiration from python cookbook 3rd edition
     """
 
-    def from_param(self, param):
+    def from_param(self, param: Any) -> Array[Array[c_int]]:
         if hasattr(param, "__array_interface__"):
             return self.from_ndarray(param)
         elif isinstance(param, Array):
@@ -327,17 +381,18 @@ class IntMatrixType:
             raise TypeError(f"Can't convert {type(param)}")
 
     # Cast from lists/tuples
-    def from_list(self, param):
+    def from_list(self, param: Sequence[Sequence[int]]) -> Array[Array[c_int]]:
         val = ((c_int * len(param[0])) * len(param))(
             *[IntArray.from_param(x) for x in param]
         )
         return val
 
     # Cast from a numpy array
-    def from_ndarray(self, param):
+    def from_ndarray(self, param: Any) -> Array[Array[c_int]]:
         # cspice always uses a int size half as big as the float, ie int32 if a float64 system default
-        return numpc.as_ctypes(
-            param.astype(numpy.int32, casting="same_kind", copy=False)
+        return type_cast(
+            "Array[Array[c_int]]",
+            numpc.as_ctypes(param.astype(numpy.int32, casting="same_kind", copy=False)),
         )
 
 
@@ -351,14 +406,16 @@ IntMatrix = IntMatrixType()
 
 
 class Plane(Structure):
+    _normal: Array[c_double]
+    _constant: float
     _fields_ = [("_normal", c_double * 3), ("_constant", c_double)]
 
     @property
-    def normal(self):
+    def normal(self) -> Any:
         return c_vector_to_python(self._normal)
 
     @property
-    def constant(self):
+    def constant(self) -> float:
         return self._constant
 
     def __str__(self) -> str:
@@ -366,6 +423,9 @@ class Plane(Structure):
 
 
 class Ellipse(Structure):
+    _center: Array[c_double]
+    _semi_major: Array[c_double]
+    _semi_minor: Array[c_double]
     _fields_ = [
         ("_center", c_double * 3),
         ("_semi_major", c_double * 3),
@@ -373,15 +433,15 @@ class Ellipse(Structure):
     ]
 
     @property
-    def center(self):
+    def center(self) -> Any:
         return c_vector_to_python(self._center)
 
     @property
-    def semi_major(self):
+    def semi_major(self) -> Any:
         return c_vector_to_python(self._semi_major)
 
     @property
-    def semi_minor(self):
+    def semi_minor(self) -> Any:
         return c_vector_to_python(self._semi_minor)
 
     def __str__(self) -> str:
@@ -405,6 +465,21 @@ class DataType(object):
 
 
 class SpiceDSKDescr(Structure):
+    _surfce: int
+    _center: int
+    _dclass: int
+    _dtype: int
+    _frmcde: int
+    _corsys: int
+    _corpar: Array[c_double]
+    _co1min: float
+    _co1max: float
+    _co2min: float
+    _co2max: float
+    _co3min: float
+    _co3max: float
+    _start: float
+    _stop: float
     _fields_ = [
         ("_surfce", c_int),
         ("_center", c_int),
@@ -424,67 +499,75 @@ class SpiceDSKDescr(Structure):
     ]
 
     @property
-    def surfce(self):
+    def surfce(self) -> int:
         return self._surfce
 
     @property
-    def center(self):
+    def center(self) -> int:
         return self._center
 
     @property
-    def dclass(self):
+    def dclass(self) -> int:
         return self._dclass
 
     @property
-    def dtype(self):
+    def dtype(self) -> int:
         return self._dtype
 
     @property
-    def frmcde(self):
+    def frmcde(self) -> int:
         return self._frmcde
 
     @property
-    def corsys(self):
+    def corsys(self) -> int:
         return self._corsys
 
     @property
-    def corpar(self):
+    def corpar(self) -> Any:
         return c_vector_to_python(self._corpar)
 
     @property
-    def co1min(self):
+    def co1min(self) -> float:
         return self._co1min
 
     @property
-    def co1max(self):
+    def co1max(self) -> float:
         return self._co1max
 
     @property
-    def co2min(self):
+    def co2min(self) -> float:
         return self._co2min
 
     @property
-    def co2max(self):
+    def co2max(self) -> float:
         return self._co2max
 
     @property
-    def co3min(self):
+    def co3min(self) -> float:
         return self._co3min
 
     @property
-    def co3max(self):
+    def co3max(self) -> float:
         return self._co3max
 
     @property
-    def start(self):
+    def start(self) -> float:
         return self._start
 
     @property
-    def stop(self):
+    def stop(self) -> float:
         return self._stop
 
 
 class SpiceDLADescr(Structure):
+    _bwdptr: int
+    _fwdptr: int
+    _ibase: int
+    _isize: int
+    _dbase: int
+    _dsize: int
+    _cbase: int
+    _csize: int
     _fields_ = [
         ("_bwdptr", c_int),
         ("_fwdptr", c_int),
@@ -497,35 +580,35 @@ class SpiceDLADescr(Structure):
     ]
 
     @property
-    def bwdptr(self):
+    def bwdptr(self) -> int:
         return self._bwdptr
 
     @property
-    def fwdptr(self):
+    def fwdptr(self) -> int:
         return self._fwdptr
 
     @property
-    def ibase(self):
+    def ibase(self) -> int:
         return self._ibase
 
     @property
-    def isize(self):
+    def isize(self) -> int:
         return self._isize
 
     @property
-    def dbase(self):
+    def dbase(self) -> int:
         return self._dbase
 
     @property
-    def dsize(self):
+    def dsize(self) -> int:
         return self._dsize
 
     @property
-    def cbase(self):
+    def cbase(self) -> int:
         return self._cbase
 
     @property
-    def csize(self):
+    def csize(self) -> int:
         return self._csize
 
 
@@ -551,7 +634,7 @@ class SpiceEKDataType(c_int):
     SPICE_BOOL = _SPICE_BOOL.value
 
 
-def empty_spice_ek_data_type_vector(n):
+def empty_spice_ek_data_type_vector(n: int | c_int) -> Array[SpiceEKDataType]:
     if isinstance(n, c_int):
         n = n.value
     assert isinstance(n, int)
@@ -582,7 +665,7 @@ class SpiceSPK18Subtype(c_int):
     _fields_ = [("S18TP0", _S18TP0), ("S18TP1", _S18TP1)]
 
 
-def empty_spice_ek_expr_class_vector(n):
+def empty_spice_ek_expr_class_vector(n: int | c_int) -> Array[SpiceEKExprClass]:
     if isinstance(n, c_int):
         n = n.value
     assert isinstance(n, int)
@@ -590,6 +673,12 @@ def empty_spice_ek_expr_class_vector(n):
 
 
 class SpiceEKAttDsc(Structure):
+    _cclass: int
+    _dtype: SpiceEKDataType
+    _strlen: int
+    _size: int
+    _indexd: int
+    _nullok: int
     _fields_ = [
         ("_cclass", c_int),
         ("_dtype", SpiceEKDataType),
@@ -600,27 +689,27 @@ class SpiceEKAttDsc(Structure):
     ]
 
     @property
-    def cclass(self):
+    def cclass(self) -> int:
         return self._cclass
 
     @property
-    def dtype(self):
+    def dtype(self) -> int:
         return self._dtype.value
 
     @property
-    def strlen(self):
+    def strlen(self) -> int:
         return self._strlen
 
     @property
-    def size(self):
+    def size(self) -> int:
         return self._size
 
     @property
-    def indexd(self):
+    def indexd(self) -> bool:
         return bool(self._indexd)
 
     @property
-    def nullok(self):
+    def nullok(self) -> bool:
         return bool(self._nullok)
 
     def __str__(self) -> str:
@@ -631,6 +720,11 @@ class SpiceEKAttDsc(Structure):
 
 
 class SpiceEKSegSum(Structure):
+    _tabnam: Array[c_char]
+    _nrows: int
+    _ncols: int
+    _cnames: Array[Array[c_char]]
+    _cdescrs: Array[SpiceEKAttDsc]
     _fields_ = [
         ("_tabnam", c_char * 65),
         ("_nrows", c_int),
@@ -640,23 +734,23 @@ class SpiceEKSegSum(Structure):
     ]
 
     @property
-    def tabnam(self):
+    def tabnam(self) -> str:
         return to_python_string(self._tabnam)
 
     @property
-    def nrows(self):
+    def nrows(self) -> int:
         return self._nrows
 
     @property
-    def ncols(self):
+    def ncols(self) -> int:
         return self._ncols
 
     @property
-    def cnames(self):
+    def cnames(self) -> Any:
         return c_vector_to_python(self._cnames)[0 : self.ncols]
 
     @property
-    def cdescrs(self):
+    def cdescrs(self) -> Any:
         return self._cdescrs[0 : self.ncols]
 
     def __str__(self) -> str:
@@ -679,27 +773,40 @@ BITSIZE = {
 }
 
 
-def _char_getter(data_p, index, length):
+def _char_getter(data_p: int, index: int, length: int) -> str:
     return to_python_string(
         (c_char * length).from_address(data_p + index * length * BITSIZE["char"])
     )
 
 
-def _double_getter(data_p, index, length):
+def _double_getter(data_p: int, index: int, length: int) -> float:
     return c_double.from_address(data_p + index * BITSIZE["double"]).value
 
 
-def _int_getter(data_p, index, length):
+def _int_getter(data_p: int, index: int, length: int) -> int:
     return c_int.from_address(data_p + index * BITSIZE["int"]).value
 
 
 class SpiceCell(Structure):
     # Most written by DaRasch, see included MIT license at file header
     DATATYPES_ENUM = {"char": 0, "double": 1, "int": 2, "time": 3, "bool": 4}
-    DATATYPES_GET = [_char_getter, _double_getter] + [_int_getter] * 3
+    DATATYPES_GET: List[Callable[[int, int, int], Any]] = [
+        _char_getter,
+        _double_getter,
+        _int_getter,
+        _int_getter,
+        _int_getter,
+    ]
     baseSize = 6
     minCharLen = 6
     CTRLBLOCK = 6
+    dtype: Optional[int]
+    length: Optional[int]
+    size: Optional[int]
+    card: Optional[int]
+    isSet: Optional[int]
+    adjust: int
+    init: int
     _fields_ = [
         ("dtype", c_int),
         ("length", c_int),
@@ -714,14 +821,14 @@ class SpiceCell(Structure):
 
     def __init__(
         self,
-        dtype=None,
-        length=None,
-        size=None,
-        card=None,
-        isSet=None,
-        base=None,
-        data=None,
-    ):
+        dtype: Optional[int] = None,
+        length: Optional[int] = None,
+        size: Optional[int] = None,
+        card: Optional[int] = None,
+        isSet: Optional[int] = None,
+        base: Any = None,
+        data: Any = None,
+    ) -> None:
         super(SpiceCell, self).__init__()
         self.dtype = dtype
         self.length = length
@@ -739,26 +846,26 @@ class SpiceCell(Structure):
             f" is_set = {self.isSet}, adjust = {self.adjust}, init = {self.init}, base = {self.base}, data = {self.data}>"
         )
 
-    def is_int(self):
+    def is_int(self) -> bool:
         return self.dtype == 2
 
-    def is_double(self):
+    def is_double(self) -> bool:
         return self.dtype == 1
 
-    def is_char(self):
+    def is_char(self) -> bool:
         return self.dtype == 0
 
-    def is_time(self):
+    def is_time(self) -> bool:
         return self.dtype == 3
 
-    def is_bool(self):
+    def is_bool(self) -> bool:
         return self.dtype == 4
 
-    def is_set(self):
+    def is_set(self) -> bool:
         return self.isSet == 1
 
     @classmethod
-    def character(cls, size, length):
+    def character(cls, size: int, length: int) -> "SpiceCell":
         base = (c_char * ((cls.CTRLBLOCK + size) * length))()
         data = (c_char * (size * length)).from_buffer(
             base, cls.CTRLBLOCK * BITSIZE["char"] * length
@@ -775,7 +882,7 @@ class SpiceCell(Structure):
         return instance
 
     @classmethod
-    def integer(cls, size):
+    def integer(cls, size: int) -> "SpiceCell":
         base = (c_int * (cls.CTRLBLOCK + size))()
         data = (c_int * size).from_buffer(base, cls.CTRLBLOCK * BITSIZE["int"])
         instance = cls(
@@ -790,7 +897,7 @@ class SpiceCell(Structure):
         return instance
 
     @classmethod
-    def double(cls, size):
+    def double(cls, size: int) -> "SpiceCell":
         base = (c_double * (cls.CTRLBLOCK + size))()
         data = (c_double * size).from_buffer(base, cls.CTRLBLOCK * BITSIZE["double"])
         instance = cls(
@@ -805,7 +912,7 @@ class SpiceCell(Structure):
         return instance
 
     @classmethod
-    def bool(cls, size):
+    def bool(cls, size: int) -> "SpiceCell":
         base = (c_int * (cls.CTRLBLOCK + size))()
         data = (c_int * size).from_buffer(base, cls.CTRLBLOCK * BITSIZE["bool"])
         instance = cls(
@@ -820,7 +927,7 @@ class SpiceCell(Structure):
         return instance
 
     @classmethod
-    def time(cls, size):
+    def time(cls, size: int) -> "SpiceCell":
         base = (c_int * (cls.CTRLBLOCK + size))()
         data = (c_int * size).from_buffer(base, cls.CTRLBLOCK * BITSIZE["time"])
         instance = cls(
@@ -834,19 +941,26 @@ class SpiceCell(Structure):
         )
         return instance
 
-    def __len__(self):
+    def __len__(self) -> int:
+        assert self.card is not None
         return self.card
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Any]:
+        assert self.dtype is not None
+        assert self.length is not None
+        assert self.card is not None
         getter = SpiceCell.DATATYPES_GET[self.dtype]
         length, card, data = self.length, self.card, self.data
         for i in range(card):
             yield getter(data, i, length)
 
-    def __contains__(self, key):
+    def __contains__(self, key: Any) -> builtins.bool:
         return key in self.__iter__()
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: Union[int, slice]) -> Any:
+        assert self.dtype is not None
+        assert self.card is not None
+        assert self.length is not None
         getter = SpiceCell.DATATYPES_GET[self.dtype]
         if isinstance(key, slice):
             # TODO Typechecking
@@ -867,11 +981,11 @@ class SpiceCell(Structure):
         else:
             raise IndexError("SpiceCell index out of range")
 
-    def reset(self):
+    def reset(self) -> None:
         self.card = 0
         self.init = 0
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> builtins.bool:
         """
         element wise equality, other can be a list or cell
         I think sets should not equal a non set even if
@@ -894,7 +1008,15 @@ class SpiceCell(Structure):
         return True
 
 
-SpiceCellPointer = POINTER(SpiceCell)
+if TYPE_CHECKING:
+    from ctypes import _Pointer
+    from typing import TypeAlias
+
+    # POINTER() products are opaque to static checkers; typeshed's spelling
+    # for the same runtime class is the generic _Pointer[SpiceCell].
+    SpiceCellPointer: TypeAlias = _Pointer[SpiceCell]
+else:
+    SpiceCellPointer = POINTER(SpiceCell)
 
 
 def SPICEDOUBLE_CELL(size: int) -> SpiceCell:
@@ -934,7 +1056,7 @@ def SPICEBOOL_CELL(size: int) -> SpiceCell:
     return SpiceCell.bool(size)
 
 
-def SPICETIME_CELL(size: int):
+def SPICETIME_CELL(size: int) -> SpiceCell:
     """
     Returns a Time Spice Cell with a given size
     :param size: number of elements

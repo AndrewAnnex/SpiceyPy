@@ -32,6 +32,7 @@ import urllib.error
 import urllib.request
 import sys
 import hashlib
+from typing import Optional
 
 _IS_PYODIDE = (
     sys.platform == "emscripten" or "pyodide" in sys.modules or "PYODIDE" in os.environ
@@ -199,7 +200,7 @@ def cleanup_core_kernels() -> None:
     cleanup_file(CoreKernels.testMetaKernel)
 
 
-def get_kernel(url: str, provided_hash: str = None):
+def get_kernel(url: str, provided_hash: Optional[str] = None):
     kernel_name = get_kernel_name_from_url(url)
     kernel_file = os.path.join(cwd, kernel_name)
     # does not download if files are present, which allows us to potentially cache kernels
@@ -247,7 +248,7 @@ def attempt_download(
     kernel_name: str,
     target_file_name: str,
     num_attempts: int,
-    provided_hash: str = None,
+    provided_hash: Optional[str] = None,
 ) -> None:
     base = 1.0
     current_attempt = 0
