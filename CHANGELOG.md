@@ -4,6 +4,15 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [8.2.1] - 2026-??-??
+
+### Added
+ - Top-level cyice functions now accept NumPy scalars and 0-d arrays (numeric and string) and dispatch them to the scalar `_s` implementations
+
+### Fixed
+ - String-input cyice `_v` functions (str2et_v, utc2et_v, scencd_v, scs2e_v) segfaulted on 0-d or multi-dimensional arrays; they now raise ValueError
+ - cyice functions rejected `np.str_` and `bytes` for string arguments with a TypeError due to Cython 3 exact-type checks
+
 ## [8.2.0] - 2026-07-24
 
 ### Added

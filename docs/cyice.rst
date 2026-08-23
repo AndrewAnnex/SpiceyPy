@@ -110,6 +110,8 @@ with the normal function delegating to one or the other as needed.
 
 For example for `cyice.convrt`, the vectorized function equivalent is `cyice.convrt_v` while the normal single-input version is `cyice.convrt_s`, with the `cyice.convrt` being the default function for users to call.
 
+For dispatching, "scalar" inputs include Python scalars, NumPy scalars (for example `np.float64`), and 0-dimensional NumPy arrays, all of which route to the `_s` function; 1-dimensional arrays route to the `_v` function.
+
 In practice, the non-postfixed call should be within a few percent as fast as calling `_v` or `_s`, but if you know the expected cardinality ahead of time using the correct function may result in slight performance improvements.
 
 .. code-block:: python

@@ -113,6 +113,23 @@ from spiceypy.utils.exceptions import dynamically_instantiate_spiceyerror, NotFo
 
 # support functions
 
+cdef inline bint is_scalar(object o) noexcept:
+    if PyFloat_Check(o) or PyLong_Check(o):
+        return True
+    elif isinstance(o, np.number):
+        return True
+    elif np.PyArray_IsZeroDim(o):
+        return np.PyArray_ISNUMBER(<np.ndarray>o)
+    return False
+
+cdef inline object scalar_string(object o):
+    # returns the input unwrapped to a str (or bytes) if it is a
+    # string scalar or a 0-d array, else None to signal vectorized dispatch
+    if PyUnicode_Check(o):
+        return o
+    if np.PyArray_IsZeroDim(o):
+        return o.item()
+    return None
 
 cpdef void check_for_spice_error():
     """
@@ -375,15 +392,15 @@ cpdef tuple[np.ndarray, np.ndarray] azlcpo_v(
 
 
 def azlcpo(
-    method: str,
-    target: str,
+    method: str | np.str_,
+    target: str | np.str_,
     et: float | double[::1],
-    abcorr: str,
+    abcorr: str | np.str_,
     azccw: bool,
     elplsz: bool,
     obspos: double[::1] | double[:,::1],
-    obsctr: str,
-    obsref: str,
+    obsctr: str | np.str_,
+    obsref: str | np.str_,
     ) -> tuple[np.ndarray, float] | tuple[np.ndarray, np.ndarray]:
     """
     Return the azimuth/elevation coordinates of a specified target
@@ -405,7 +422,7 @@ def azlcpo(
     :param obsref: Body fixed body centered frame of observer's center.
     :return: States of target with respect to observer, in azimuth/elevation coordinates. and One way light times between target and observer.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return azlcpo_s(method, target, et, abcorr, azccw, elplsz, obspos, obsctr, obsref)
     else:
         return azlcpo_v(method, target, et, abcorr, azccw, elplsz, obspos, obsctr, obsref)
@@ -518,7 +535,7 @@ def azlrec(
     :param elplsz: Flag indicating how elevation is measured.
     :return: Rectangular coordinates of a point.
     """
-    if PyFloat_Check(inrange):
+    if is_scalar(inrange):
         return azlrec_s(inrange, az, el, azccw, elplsz)
     else:
         return azlrec_v(inrange, az, el, azccw, elplsz)
@@ -652,7 +669,7 @@ def ckgp(
     inst: int,
     sclkdp: float | float[::1],
     tol: float,
-    ref: str
+    ref: str | np.str_
     )-> tuple[Matrix_3, float, bool] | tuple[Matrix_3, float] | tuple[Matrix_N, Vector, Found_N] | tuple[Matrix_N, Vector_N]:
     """
     Get pointing (attitude) for specified spacecraft clock times.
@@ -668,7 +685,7 @@ def ckgp(
             Output encoded spacecraft clock time
             Found flag(s) (possibly)
     """
-    if PyFloat_Check(sclkdp):
+    if is_scalar(sclkdp):
         return ckgp_s(inst, sclkdp, tol, ref)
     else:
         return ckgp_v(inst, sclkdp, tol, ref)
@@ -789,7 +806,7 @@ def ckgpav(
     inst: int,
     sclkdp: float | float[::1],
     tol: float,
-    ref: str
+    ref: str | np.str_
     ) -> tuple[Matrix_3, Vector, float, bool] | tuple[Matrix_3, Vector, float] | tuple[Matrix_N, Vector_N, Double_N, Found_N] | tuple[Matrix_N, Vector_N, Double_N]:
     """
     Get pointing (attitude) and angular velocity
@@ -806,7 +823,7 @@ def ckgpav(
             Angular velocity vector,
             Output encoded spacecraft clock time.
     """
-    if PyFloat_Check(sclkdp):
+    if is_scalar(sclkdp):
         return ckgpav_s(inst, sclkdp, tol, ref)
     else:
         return ckgpav_v(inst, sclkdp, tol, ref)
@@ -906,7 +923,7 @@ def conics(
     :param et: Input time in ephemeris seconds J2000.
     :return: State of orbiting body at et (x, y, z, dx/dt, dy/dt, dz/dt).
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return conics_s(elts, et)
     else:
         return conics_v(elts, et)
@@ -914,8 +931,8 @@ def conics(
 
 def convrt_s(
     double x,
-    str inunit,
-    str outunit
+    const char* inunit,
+    const char* outunit
     )-> float:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.convrt`
@@ -949,8 +966,8 @@ def convrt_s(
 @wraparound(False)
 def convrt_v(
     double[::1] x,
-    str inunit,
-    str outunit
+    const char* inunit,
+    const char* outunit
     ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.convrt`
@@ -987,8 +1004,8 @@ def convrt_v(
 
 def convrt(
     x: float | float[::1],
-    inunit:  str,
-    outunit: str
+    inunit:  str | np.str_,
+    outunit: str | np.str_
     )-> float | Double_N:
     """
     Take a measurement X, the units associated with
@@ -1002,7 +1019,7 @@ def convrt(
     :param outunit: Desired units for the measurement.
     :return: The measurment in the desired units.
     """
-    if PyFloat_Check(x):
+    if is_scalar(x):
         return convrt_s(x, inunit, outunit)
     else:
         return convrt_v(x, inunit, outunit)
@@ -1096,7 +1113,7 @@ def cyllat(
     :param z: Height of point above XY plane.
     :return: Distance, Longitude (radians), and Latitude of point (radians).
     """
-    if PyFloat_Check(r):
+    if is_scalar(r):
         return cyllat_s(r, clon, z)
     else:
         return cyllat_v(r, clon, z)
@@ -1186,7 +1203,7 @@ def cylrec(
     :param z: Height of a point above xY plane.
     :return: Rectangular coordinates of the point.
     """
-    if PyFloat_Check(r):
+    if is_scalar(r):
         return cylrec_s(r, lon, z)
     else:
         return cylrec_v(r, lon, z)
@@ -1289,7 +1306,7 @@ def cylsph(
             Polar angle (co-latitude in radians) of point,
             Azimuthal angle (longitude) of point (radians).
     """
-    if PyFloat_Check(r):
+    if is_scalar(r):
         return cylsph_s(r, clon, z)
     else:
         return cylsph_v(r, clon, z)
@@ -1300,7 +1317,7 @@ def cylsph(
 
 def deltet_s(
     double epoch,
-    str eptype
+    const char* eptype
     )-> float:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.deltet`
@@ -1330,7 +1347,7 @@ def deltet_s(
 @wraparound(False)
 def deltet_v(
     double[::1] epochs,
-    str eptype
+    const char* eptype
     ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.deltet`
@@ -1364,7 +1381,7 @@ def deltet_v(
 
 def deltet(
     epoch: float | float[::1],
-    eptype: str
+    eptype: str | np.str_
     )-> float | Double_N:
     """
     Return the value of Delta ET (ET-UTC) for an input epoch.
@@ -1375,7 +1392,7 @@ def deltet(
     :param eptype: Type of input epoch ("UTC" or "ET").
     :return: Delta ET (ET-UTC) at input epoch.
     """
-    if PyFloat_Check(epoch):
+    if is_scalar(epoch):
         return deltet_s(epoch, eptype)
     else:
         return deltet_v(epoch, eptype)
@@ -1399,7 +1416,7 @@ def et2lst_s(
     double et,
     int body,
     double lon,
-    str typein
+    const char* typein
     ) -> tuple[int, int, int, str, str]:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.et2lst`
@@ -1456,7 +1473,7 @@ def et2lst_v(
     double[::1] ets,
     int body,
     double lon,
-    str typein
+    const char* typein
     ) -> tuple[Int_N, Int_N, Int_N, String_N, String_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.et2lst`
@@ -1528,7 +1545,7 @@ def et2lst(
     et: float | float[::1],
     body: int,
     lon: float,
-    typein: str
+    typein: str | np.str_
     ) -> tuple[int, int, int, str, str] | tuple[Int_N, Int_N, Int_N, String_N, String_N]:
     """
     Given an ephemeris epoch, compute the local solar time for
@@ -1549,7 +1566,7 @@ def et2lst(
             String giving local time on 24 hour clock,
             String giving time on A.M. / P.M. scale.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return et2lst_s(et, body, lon, typein)
     else:
         return et2lst_v(et, body, lon, typein)
@@ -1557,7 +1574,7 @@ def et2lst(
 
 def et2utc_s(
     double et,
-    str format_str,
+    const char* format_str,
     int prec
     ) -> str:
     """
@@ -1593,7 +1610,7 @@ def et2utc_s(
 @wraparound(False)
 def et2utc_v(
     double[::1] ets,
-    str format_str,
+    const char* format_str,
     int prec
     ) -> String_N:
     """
@@ -1640,7 +1657,7 @@ def et2utc_v(
 
 def et2utc(
     et: float | float[::1],
-    format_str: str,
+    format_str: str | np.str_,
     prec: int
     ) -> str | String_N:
     """
@@ -1655,7 +1672,7 @@ def et2utc(
     :param lenout: The length of the output string plus 1.
     :return: Output time string in UTC
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return et2utc_s(et, format_str, prec)
     else:
         return et2utc_v(et, format_str, prec)
@@ -1741,7 +1758,7 @@ def etcal(
     :param et: Ephemeris time measured in seconds past J2000 TDB.
     :return: A standard calendar representation of et.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return etcal_s(et)
     else:
         return etcal_v(et)
@@ -1846,7 +1863,7 @@ def evsgp4(
     :param elems: Two-line element data
     :return: Evaluated state
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return evsgp4_s(et, geophs, elems)
     else:
         return evsgp4_v(et, geophs, elems)
@@ -1868,11 +1885,11 @@ cpdef SpiceBoolean failed() noexcept:
 @boundscheck(False)
 @wraparound(False)
 def fovray_s(
-    str inst,
+    const char* inst,
     double[::1] raydir,
-    str rframe,
-    str abcorr,
-    str observer,
+    const char* rframe,
+    const char* abcorr,
+    const char* observer,
     double et
 ) -> bool:
     """
@@ -1917,11 +1934,11 @@ def fovray_s(
 @boundscheck(False)
 @wraparound(False)
 def fovray_v(
-    str inst,
+    const char* inst,
     double[::1] raydir,
-    str rframe,
-    str abcorr,
-    str observer,
+    const char* rframe,
+    const char* abcorr,
+    const char* observer,
     double[::1] ets
 ) -> BoolArray:
     """
@@ -1969,11 +1986,11 @@ def fovray_v(
 
 
 def fovray(
-    inst: str,
+    inst: str | np.str_,
     raydir: float[::1],
-    rframe: str,
-    abcorr: str,
-    observer: str,
+    rframe: str | np.str_,
+    abcorr: str | np.str_,
+    observer: str | np.str_,
     et: float | float[::1]
 ) -> bool | BoolArray:
     """
@@ -1990,19 +2007,19 @@ def fovray(
     :param et: Time of the observation (seconds past J2000).
     :return: Visibility flag
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return fovray_s(inst, raydir, rframe, abcorr, observer, et)
     else:
         return fovray_v(inst, raydir, rframe, abcorr, observer, et)
 
 
 def fovtrg_s(
-    str inst,
-    str target,
-    str tshape,
-    str tframe,
-    str abcorr,
-    str observer,
+    const char* inst,
+    const char* target,
+    const char* tshape,
+    const char* tframe,
+    const char* abcorr,
+    const char* observer,
     double et
     ) -> bool:
     """
@@ -2051,12 +2068,12 @@ def fovtrg_s(
 @boundscheck(False)
 @wraparound(False)
 def fovtrg_v(
-    str inst,
-    str target,
-    str tshape,
-    str tframe,
-    str abcorr,
-    str observer,
+    const char* inst,
+    const char* target,
+    const char* tshape,
+    const char* tframe,
+    const char* abcorr,
+    const char* observer,
     np.double_t[::1] ets
     ) -> BoolArray:
     """
@@ -2108,12 +2125,12 @@ def fovtrg_v(
 
 
 def fovtrg(
-    inst:   str,
-    target: str,
-    tshape: str,
-    tframe: str,
-    abcorr: str,
-    observer: str,
+    inst:   str | np.str_,
+    target: str | np.str_,
+    tshape: str | np.str_,
+    tframe: str | np.str_,
+    abcorr: str | np.str_,
+    observer: str | np.str_,
     et: float | float[::1]
     ) -> bool | BoolArray:
     """
@@ -2131,14 +2148,14 @@ def fovtrg(
     :param et: Time of the observation (seconds past J2000).
     :return: Visibility flag
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return fovtrg_s(inst, target, tshape, tframe, abcorr, observer, et)
     else:
         return fovtrg_v(inst, target, tshape, tframe, abcorr, observer, et)
 
 
 def furnsh(
-    str path
+    const char* path
     ) -> None:
     """
     Load one or more SPICE kernels into a program.
@@ -2255,7 +2272,7 @@ def georec(
     :param f: Flattening coefficient.
     :return: Rectangular coordinates of point.
     """
-    if PyFloat_Check(lon):
+    if is_scalar(lon):
         return georec_s(lon, lat, alt, re, f)
     else:
         return georec_v(lon, lat, alt, re, f)
@@ -2363,14 +2380,14 @@ def getelm(
             The epoch of the elements in seconds past J2000,
             The elements converted to SPICE units (see naif docs for units).
     """
-    if PyLong_Check(frstyr):
+    if is_scalar(frstyr):
         return getelm_s(frstyr, lines)
     else:
         return getelm_v(frstyr, lines)
 
 
 cpdef str getmsg(
-    str option,
+    const char* option,
     int lenout
     ):
     """
@@ -2589,13 +2606,13 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarr
 
 
 def illumf(
-    method: str,
-    target: str,
-    ilusrc: str,
+    method: str | np.str_,
+    target: str | np.str_,
+    ilusrc: str | np.str_,
     et: float | double[::1],
-    fixref: str,
-    abcorr: str,
-    obsrvr: str,
+    fixref: str | np.str_,
+    abcorr: str | np.str_,
+    obsrvr: str | np.str_,
     spoint: double[::1] | double[:,::1],
     ) -> tuple[float, np.ndarray, float, float, float, bool, bool] | tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
@@ -2629,7 +2646,7 @@ def illumf(
         Visibility flag, 
         Illumination flag
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return illumf_s(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint)
     else:
         return illumf_v(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint)
@@ -2788,13 +2805,13 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray] illumg_v
 
 
 def illumg(
-    method: str,
-    target: str,
-    ilusrc: str,
+    method: str | np.str_,
+    target: str | np.str_,
+    ilusrc: str | np.str_,
     et: float | double[::1],
-    fixref: str,
-    abcorr: str,
-    obsrvr: str,
+    fixref: str | np.str_,
+    abcorr: str | np.str_,
+    obsrvr: str | np.str_,
     spoint: double[::1] | double[:,::1],
     ) -> tuple[float, np.ndarray, float, float, float] | tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
@@ -2824,7 +2841,7 @@ def illumg(
         Source incidence angle at the surface point in radians, 
         Emission angle at the surface point in radians,
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return illumg_s(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint)
     else:
         return illumg_v(method, target, ilusrc, et, fixref, abcorr, obsrvr, spoint)
@@ -2962,12 +2979,12 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray] ilumin_v
 
 
 def ilumin(
-    method: str,
-    target: str,
+    method: str | np.str_,
+    target: str | np.str_,
     et: float | double[::1],
-    fixref: str,
-    abcorr: str,
-    obsrvr: str,
+    fixref: str | np.str_,
+    abcorr: str | np.str_,
+    obsrvr: str | np.str_,
     spoint: double[::1] | double[:,::1],
     ) -> tuple[float, np.ndarray, float, float, float] | tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
@@ -2989,7 +3006,7 @@ def ilumin(
      surface point, Phase angle, Solar incidence angle, and Emission
      angle 
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return ilumin_s(method, target, et, fixref, abcorr, obsrvr, spoint)
     else:
         return ilumin_v(method, target, et, fixref, abcorr, obsrvr, spoint)
@@ -3146,7 +3163,7 @@ def latcyl(
     :param lat: Angle of the point from the XY plane in radians.
     :return: (r, lonc, z)
     """
-    if PyFloat_Check(radius):
+    if is_scalar(radius):
         return latcyl_s(radius, lon, lat)
     else:
         return latcyl_v(radius, lon, lat)
@@ -3236,7 +3253,7 @@ def latrec(
     :param latitude: Angle of the point from the XY plane in radians.
     :return: (r, lonc, z)
     """
-    if PyFloat_Check(radius):
+    if is_scalar(radius):
         return latrec_s(radius, longitude, latitude)
     else:
         return latrec_v(radius, longitude, latitude)
@@ -3330,7 +3347,7 @@ def latsph(
     :param lat: Angle of the point from the XY plane in radians.
     :return: (rho colat, lons)
     """
-    if PyFloat_Check(radius):
+    if is_scalar(radius):
         return latsph_s(radius, lon, lat)
     else:
         return latsph_v(radius, lon, lat)
@@ -3515,13 +3532,13 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] limbpt_v(
 
 
 def limbpt(
-    method: str,
-    target: str,
+    method: str | np.str_,
+    target: str | np.str_,
     et: float | double[::1],
-    fixref: str,
-    abcorr: str,
-    corloc: str,
-    obsrvr: str,
+    fixref: str | np.str_,
+    abcorr: str | np.str_,
+    corloc: str | np.str_,
+    obsrvr: str | np.str_,
     refvec: np.ndarray,
     rolstp: float,
     ncuts: int,
@@ -3559,16 +3576,16 @@ def limbpt(
         Times associated with limb points in seconds, 
         Tangent vectors emanating from the observer in km
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return limbpt_s(method, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp, ncuts, schstp, soltol, maxn)
     else:
         return limbpt_v(method, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp, ncuts, schstp, soltol, maxn)
 
 
 def lspcn_s(
-    str body,
+    const char* body,
     double et,
-    str abcorr
+    const char* abcorr
     ) -> float:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.lspcn`
@@ -3599,9 +3616,9 @@ def lspcn_s(
 @boundscheck(False)
 @wraparound(False)
 def lspcn_v(
-    str body,
+    const char* body,
     double[::1] ets,
-    str abcorr
+    const char* abcorr
     ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.lspcn`
@@ -3634,9 +3651,9 @@ def lspcn_v(
 
 
 def lspcn(
-    body: str,
+    body: str | np.str_,
     et: float | float[::1],
-    abcorr: str
+    abcorr: str | np.str_
     ) -> float | Double_N:
     """
     Compute L_s, the planetocentric longitude of the sun, as seen
@@ -3649,7 +3666,7 @@ def lspcn(
     :param abcorr: Aberration correction.
     :return: planetocentric longitude of the sun in radians
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return lspcn_s(body, et, abcorr)
     else:
         return lspcn_v(body, et, abcorr)
@@ -3765,14 +3782,14 @@ cpdef np.ndarray[np.int32_t, ndim=1, mode='c'] occult_v(
 
 
 def occult(
-    target1: str,
-    shape1: str,
-    frame1: str,
-    target2: str,
-    shape2: str,
-    frame2: str,
-    abcorr: str,
-    observer: str,
+    target1: str | np.str_,
+    shape1: str | np.str_,
+    frame1: str | np.str_,
+    target2: str | np.str_,
+    shape2: str | np.str_,
+    frame2: str | np.str_,
+    abcorr: str | np.str_,
+    observer: str | np.str_,
     et: float | float[::1]
     ) -> int | Int_N:
     """
@@ -3793,7 +3810,7 @@ def occult(
     :param et: Time(s) of the observation (seconds past J2000).
     :return: Occultation identification code.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return occult_s(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer, et)
     else:
         return occult_v(target1, shape1, frame1, target2, shape2, frame2, abcorr, observer, et)
@@ -3992,7 +4009,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] pgrrec_v(
 
 
 def pgrrec(
-    body: str,
+    body: str | np.str_,
     lon: float | double[::1],
     lat: float | double[::1],
     alt: float | double[::1],
@@ -4013,7 +4030,7 @@ def pgrrec(
     :return: Rectangular coordinates of the point.
     """
     cdef const char* c_body = body
-    if PyFloat_Check(lon):
+    if is_scalar(lon):
         return pgrrec_s(c_body, lon, lat, alt, re, f)
     else:
         return pgrrec_v(c_body, lon, lat, alt, re, f)
@@ -4098,10 +4115,10 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] phaseq_v(
 
 def phaseq(
     et: float | double[::1] ,
-    target : str,
-    illmn  : str,
-    obsrvr : str,
-    abcorr : str
+    target : str | np.str_,
+    illmn  : str | np.str_,
+    obsrvr : str | np.str_,
+    abcorr : str | np.str_
     ) -> float | Double_N:
     """
     Compute the apparent phase angle for a target, observer,
@@ -4116,7 +4133,7 @@ def phaseq(
     :param abcorr: Aberration correction flag.
     :return: Value of phase angle in radians.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return phaseq_s(et, target, illmn, obsrvr, abcorr)
     else:
         return phaseq_v(et, target, illmn, obsrvr, abcorr)
@@ -4137,8 +4154,8 @@ def pi() -> float:
 @boundscheck(False)
 @wraparound(False)
 def pxform_s(
-    str fromstr,
-    str tostr,
+    const char* fromstr,
+    const char* tostr,
     double et
     ) -> Matrix_3:
     """
@@ -4175,8 +4192,8 @@ def pxform_s(
 @boundscheck(False)
 @wraparound(False)
 def pxform_v(
-    str fromstr,
-    str tostr,
+    const char* fromstr,
+    const char* tostr,
     double[::1] ets
     ) -> Matrix_N_3:
     """
@@ -4215,8 +4232,8 @@ def pxform_v(
 
 
 def pxform(
-    fromstr: str,
-    tostr:   str,
+    fromstr: str | np.str_,
+    tostr:   str | np.str_,
     et: float | float[::1]
     ) -> Matrix_3 | Matrix_N_3:
     """
@@ -4231,7 +4248,7 @@ def pxform(
     :param et: Epoch of the rotation matrix.
     :return: A rotation matrix.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return pxform_s(fromstr, tostr, et)
     else:
         return pxform_v(fromstr, tostr, et)
@@ -4357,7 +4374,7 @@ def radrec(
     :param dec: Declination of point in radians.
     :return: Rectangular coordinates of the point.
     """
-    if PyFloat_Check(inrange):
+    if is_scalar(inrange):
         return radrec_s(inrange, ra, dec)
     else:
         return radrec_v(inrange, ra, dec)
@@ -4822,7 +4839,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recpgr_v(
 
 
 def recpgr(
-    body: str,
+    body: str | np.str_,
     rectan: double[::1] | double[:,::1],
     re: float,
     f: float,
@@ -5134,7 +5151,7 @@ def scdecd(
     :param sclkdp: Encoded representation of a spacecraft clock count.
     :return: Character representation of a clock count.
     """
-    if PyFloat_Check(sclkdp):
+    if is_scalar(sclkdp):
         return scdecd_s(sc, sclkdp)
     else:
         return scdecd_v(sc, sclkdp)
@@ -5142,7 +5159,7 @@ def scdecd(
 
 def scencd_s(
     int sc,
-    str sclkch
+    const char* sclkch
     ) -> float:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.scencd`
@@ -5158,10 +5175,9 @@ def scencd_s(
     """
     cdef int c_sc = sc
     cdef double c_sclkdp = 0.0
-    cdef const char* c_sclkch = sclkch
     scencd_c(
         c_sc,
-        c_sclkch,
+        sclkch,
         &c_sclkdp
     )
     check_for_spice_error()
@@ -5186,6 +5202,8 @@ def scencd_v(
     :param sclkchs: Character representations of a spacecraft clock.
     :return: Encoded representations of the clock count.
     """
+    if sclkchs.ndim != 1:
+        raise ValueError(f'in scencd_v, sclkchs had ndim {sclkchs.ndim}, expected a 1-D array of strings')
     cdef int c_sc = sc
     cdef Py_ssize_t i, n = sclkchs.shape[0]
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_sclkdps = np.empty(n, dtype=np.double, order='C')
@@ -5219,8 +5237,9 @@ def scencd(
     :param sclkch: Character representation of a spacecraft clock.
     :return: Encoded representation of the clock count.
     """
-    if PyUnicode_Check(sclkch):
-        return scencd_s(sc, sclkch)
+    s = scalar_string(sclkch)
+    if s is not None:
+        return scencd_s(sc, s)
     else:
         return scencd_v(sc, sclkch)
 
@@ -5310,7 +5329,7 @@ def sce2c(
             SCLK, encoded as ticks since spacecraft clock start.
             sclkdp need not be integral.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return sce2c_s(sc, et)
     else:
         return sce2c_v(sc, et)
@@ -5403,7 +5422,7 @@ def sce2s(
     :param et: Ephemeris time, specified as seconds past J2000 TDB.
     :return: An SCLK string.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return sce2s_s(sc, et)
     else:
         return sce2s_v(sc, et)
@@ -5411,7 +5430,7 @@ def sce2s(
 
 def scs2e_s(
     int sc,
-    str sclkch
+    const char* sclkch
     ) -> float:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.scs2e`
@@ -5426,10 +5445,9 @@ def scs2e_s(
     """
     cdef int c_sc = sc
     cdef double c_et = 0.0
-    cdef const char* c_sclkch = sclkch
     scs2e_c(
         c_sc,
-        c_sclkch,
+        sclkch,
         &c_et
     )
     check_for_spice_error()
@@ -5453,6 +5471,8 @@ def scs2e_v(
     :param sclkchs: SCLK strings.
     :return: Ephemeris time, seconds past J2000.
     """
+    if sclkchs.ndim != 1:
+        raise ValueError(f'in scs2e_v, sclkchs had ndim {sclkchs.ndim}, expected a 1-D array of strings')
     cdef int c_sc = sc
     cdef Py_ssize_t i, n = sclkchs.shape[0]
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ets = np.empty(n, dtype=np.double, order='C')
@@ -5485,8 +5505,9 @@ def scs2e(
     :param sclkch: An SCLK string.
     :return: Ephemeris time, seconds past J2000.
     """
-    if PyUnicode_Check(sclkch):
-        return scs2e_s(sc, sclkch)
+    s = scalar_string(sclkch)
+    if s is not None:
+        return scs2e_s(sc, s)
     else:
         return scs2e_v(sc, sclkch)
 
@@ -5567,7 +5588,7 @@ def sct2e(
     :param sclkdp: SCLK, encoded as ticks since spacecraft clock start.
     :return: Ephemeris time, seconds past J2000.
     """
-    if PyFloat_Check(sclkdp):
+    if is_scalar(sclkdp):
         return sct2e_s(sc, sclkdp)
     else:
         return sct2e_v(sc, sclkdp)
@@ -5681,7 +5702,7 @@ def sphcyl(
             angle (radians) of point from XZ plane,
             Height of point above XY plane.
     """
-    if PyFloat_Check(radius):
+    if is_scalar(radius):
         return sphcyl_s(radius, colat, slon)
     else:
         return sphcyl_v(radius, colat, slon)
@@ -5784,7 +5805,7 @@ def sphlat(
             Angle of the point from the XZ plane in radians,
             Angle of the point from the XY plane in radians.
     """
-    if PyFloat_Check(r):
+    if is_scalar(r):
         return sphlat_s(r, colat, lons)
     else:
         return sphlat_v(r, colat, lons)
@@ -5874,7 +5895,7 @@ def sphrec(
     :param lons: Angle of the point from the XZ plane in radians.
     :return: Rectangular coordinates of the point.
     """
-    if PyFloat_Check(r):
+    if is_scalar(r):
         return sphrec_s(r, colat, lons)
     else:
         return sphrec_v(r, colat, lons)
@@ -5885,9 +5906,9 @@ def sphrec(
 def spkapo_s(
     int targ,
     double et,
-    str ref,
+    const char* ref,
     double[::1] sobs,
-    str abcorr
+    const char* abcorr
     ) -> tuple[Vector, float]:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkapo`
@@ -5935,9 +5956,9 @@ def spkapo_s(
 def spkapo_v(
     int targ,
     double[::1] ets,
-    str ref,
+    const char* ref,
     double[::1] sobs,
-    str abcorr
+    const char* abcorr
     ) -> tuple[Vector_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkapo`
@@ -5988,9 +6009,9 @@ def spkapo_v(
 def spkapo(
     targ: int,
     et: float | float[::1],
-    ref: str,
+    ref: str | np.str_,
     sobs: float[::1],
-    abcorr: str
+    abcorr: str | np.str_
     ) -> tuple[Vector, float] | tuple[Vector_N, Double_N]:
     """
     Return the position of a target body relative to an observer,
@@ -6007,7 +6028,7 @@ def spkapo(
             Position of target in km,
             One way light time between observer and target in seconds.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return spkapo_s(targ, et, ref, sobs, abcorr)
     else:
         return spkapo_v(targ, et, ref, sobs, abcorr)
@@ -6016,14 +6037,14 @@ def spkapo(
 @boundscheck(False)
 @wraparound(False)
 def spkcpo_s(
-    str target,
+    const char* target,
     double et,
-    str outref,
-    str refloc,
-    str abcorr,
+    const char* outref,
+    const char* refloc,
+    const char* abcorr,
     double[::1] obspos,
-    str obsctr,
-    str obsref
+    const char* obsctr,
+    const char* obsref
     ) -> tuple[State, float]:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkcpo`
@@ -6082,14 +6103,14 @@ def spkcpo_s(
 @boundscheck(False)
 @wraparound(False)
 def spkcpo_v(
-    str target,
+    const char* target,
     double[::1] ets,
-    str outref,
-    str refloc,
-    str abcorr,
+    const char* outref,
+    const char* refloc,
+    const char* abcorr,
     double[::1] obspos,
-    str obsctr,
-    str obsref) -> tuple[State_N, Double_N]:
+    const char* obsctr,
+    const char* obsref) -> tuple[State_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkcpo`
 
@@ -6148,14 +6169,14 @@ def spkcpo_v(
 
 
 def spkcpo(
-    target: str,
+    target: str | np.str_,
     et: float | float[::1],
-    outref: str,
-    refloc: str,
-    abcorr: str,
+    outref: str | np.str_,
+    refloc: str | np.str_,
+    abcorr: str | np.str_,
     obspos: float[::1],
-    obsctr: str,
-    obsref: str
+    obsctr: str | np.str_,
+    obsref: str | np.str_
     ) -> tuple[State, float] | tuple[State_N, Double_N]:
     """
     Return the state of a specified target relative to an "observer,"
@@ -6177,7 +6198,7 @@ def spkcpo(
             State of target with respect to observer in km and km/sec,
             One way light time between target and observer.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return spkcpo_s(target, et, outref, refloc, abcorr, obspos, obsctr, obsref)
     else:
         return spkcpo_v(target, et, outref, refloc, abcorr, obspos, obsctr, obsref)
@@ -6187,13 +6208,13 @@ def spkcpo(
 @wraparound(False)
 def spkcpt_s(
     double[::1] trgpos,
-    str trgctr,
-    str trgref,
+    const char* trgctr,
+    const char* trgref,
     double et,
-    str outref,
-    str refloc,
-    str abcorr,
-    str obsrvr
+    const char* outref,
+    const char* refloc,
+    const char* abcorr,
+    const char* obsrvr
     ) -> tuple[State, float]:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkcpt`
@@ -6254,13 +6275,13 @@ def spkcpt_s(
 @wraparound(False)
 def spkcpt_v(
     double[::1] trgpos,
-    str trgctr,
-    str trgref,
+    const char* trgctr,
+    const char* trgref,
     double[::1] ets,
-    str outref,
-    str refloc,
-    str abcorr,
-    str obsrvr
+    const char* outref,
+    const char* refloc,
+    const char* abcorr,
+    const char* obsrvr
     ) -> tuple[State_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkcpt`
@@ -6323,13 +6344,13 @@ def spkcpt_v(
 
 def spkcpt(
     trgpos: float[::1],
-    trgctr: str,
-    trgref: str,
+    trgctr: str | np.str_,
+    trgref: str | np.str_,
     et: float | float[::1],
-    outref: str,
-    refloc: str,
-    abcorr: str,
-    obsrvr: str
+    outref: str | np.str_,
+    refloc: str | np.str_,
+    abcorr: str | np.str_,
+    obsrvr: str | np.str_
     ) -> tuple[State, float] | tuple[State_N, Double_N]:
     """
     Return the state, relative to a specified observer, of a target
@@ -6351,7 +6372,7 @@ def spkcpt(
             State of target with respect to observer in km and km/sec,
             One way light time between target and observer.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return spkcpt_s(trgpos, trgctr, trgref, et, outref, refloc, abcorr, obsrvr)
     else:
         return spkcpt_v(trgpos, trgctr, trgref, et, outref, refloc, abcorr, obsrvr)
@@ -6360,15 +6381,15 @@ def spkcpt(
 @boundscheck(False)
 @wraparound(False)
 def spkcvo_s(
-    str target,
+    const char* target,
     double et,
-    str outref,
-    str refloc,
-    str abcorr,
+    const char* outref,
+    const char* refloc,
+    const char* abcorr,
     double[::1] obssta,
     double obsepc,
-    str obsctr,
-    str obsref)-> tuple[State, float]:
+    const char* obsctr,
+    const char* obsref)-> tuple[State, float]:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkcvo`
 
@@ -6430,15 +6451,15 @@ def spkcvo_s(
 @boundscheck(False)
 @wraparound(False)
 def spkcvo_v(
-    str target,
+    const char* target,
     double[::1] ets,
-    str outref,
-    str refloc,
-    str abcorr,
+    const char* outref,
+    const char* refloc,
+    const char* abcorr,
     double[::1] obssta,
     double obsepc,
-    str obsctr,
-    str obsref)-> tuple[State_N, Double_N]:
+    const char* obsctr,
+    const char* obsref)-> tuple[State_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkcvo`
 
@@ -6502,15 +6523,15 @@ def spkcvo_v(
 
 
 def spkcvo(
-    target: str,
+    target: str | np.str_,
     et: float | float[::1],
-    outref: str,
-    refloc: str,
-    abcorr: str,
+    outref: str | np.str_,
+    refloc: str | np.str_,
+    abcorr: str | np.str_,
     obssta: float[::1],
     obsepc: float,
-    obsctr: str,
-    obsref: str
+    obsctr: str | np.str_,
+    obsref: str | np.str_
     )-> tuple[State, float] | tuple[State_N, Double_N]:
     """
     Return the state of a specified target relative to an "observer,"
@@ -6533,7 +6554,7 @@ def spkcvo(
             State of target with respect to observer in km and km/sec,
             One way light time between target and observer.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return spkcvo_s(target, et, outref, refloc, abcorr, obssta, obsepc, obsctr, obsref)
     else:
         return spkcvo_v(target, et, outref, refloc, abcorr, obssta, obsepc, obsctr, obsref)
@@ -6544,13 +6565,13 @@ def spkcvo(
 def spkcvt_s(
     double[::1] trgsta,
     double trgepc,
-    str trgctr,
-    str trgref,
+    const char* trgctr,
+    const char* trgref,
     double et,
-    str outref,
-    str refloc,
-    str abcorr,
-    str obsrvr)-> tuple[State, float]:
+    const char* outref,
+    const char* refloc,
+    const char* abcorr,
+    const char* obsrvr)-> tuple[State, float]:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkcvt`
 
@@ -6614,13 +6635,13 @@ def spkcvt_s(
 def spkcvt_v(
     double[::1] trgsta,
     double trgepc,
-    str trgctr,
-    str trgref,
+    const char* trgctr,
+    const char* trgref,
     double[::1] ets,
-    str outref,
-    str refloc,
-    str abcorr,
-    str obsrvr)-> tuple[State_N, Double_N]:
+    const char* outref,
+    const char* refloc,
+    const char* abcorr,
+    const char* obsrvr)-> tuple[State_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkcvt`
 
@@ -6686,13 +6707,13 @@ def spkcvt_v(
 def spkcvt(
     trgsta: float[::1],
     trgepc: float,
-    trgctr: str,
-    trgref: str,
+    trgctr: str | np.str_,
+    trgref: str | np.str_,
     et: float | float[::1],
-    outref: str,
-    refloc: str,
-    abcorr: str,
-    obsrvr: str
+    outref: str | np.str_,
+    refloc: str | np.str_,
+    abcorr: str | np.str_,
+    obsrvr: str | np.str_
     )-> tuple[State, float] | tuple[State_N, Double_N]:
     """
     Return the state, relative to a specified observer, of a target
@@ -6715,7 +6736,7 @@ def spkcvt(
             State of target with respect to observer in km and km/sec,
             One way light time between target and observer.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return spkcvt_s(trgsta, trgepc, trgctr, trgref, et, outref, refloc, abcorr, obsrvr)
     else:
         return spkcvt_v(trgsta, trgepc, trgctr, trgref, et, outref, refloc, abcorr, obsrvr)
@@ -6726,8 +6747,8 @@ def spkcvt(
 def spkez_s(
     int targ,
     double et,
-    str ref,
-    str abcorr,
+    const char* ref,
+    const char* abcorr,
     int obs
     )-> tuple[State, float]:
     """
@@ -6777,8 +6798,8 @@ def spkez_s(
 def spkez_v(
     int targ,
     double[::1] et,
-    str ref,
-    str abcorr,
+    const char* ref,
+    const char* abcorr,
     int obs)-> tuple[State_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkez`
@@ -6831,8 +6852,8 @@ def spkez_v(
 def spkez(
     targ: int,
     et: float | float[::1],
-    ref:      str,
-    abcorr:   str,
+    ref:      str | np.str_,
+    abcorr:   str | np.str_,
     obs: int,
     )-> tuple[State, float] | tuple[State_N, Double_N]:
     """
@@ -6851,7 +6872,7 @@ def spkez(
             State of target in km and km/sec,
             One way light time between observer and target in seconds.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return spkez_s(targ, et, ref, abcorr, obs)
     else:
         return spkez_v(targ, et, ref, abcorr, obs)
@@ -6862,8 +6883,8 @@ def spkez(
 def spkezp_s(
     int targ,
     double et,
-    str ref,
-    str abcorr,
+    const char* ref,
+    const char* abcorr,
     int obs
     ) -> tuple[Vector, float]:
     """
@@ -6913,8 +6934,8 @@ def spkezp_s(
 def spkezp_v(
     int targ,
     double[::1] et,
-    str ref,
-    str abcorr,
+    const char* ref,
+    const char* abcorr,
     int obs
     )-> tuple[Vector_N, Double_N]:
     """
@@ -6967,8 +6988,8 @@ def spkezp_v(
 def spkezp(
     targ: int,
     et: float | float[::1],
-    ref:      str,
-    abcorr:   str,
+    ref:      str | np.str_,
+    abcorr:   str | np.str_,
     obs: int,
     )-> tuple[Vector, float] | tuple[Vector_N, Double_N]:
     """
@@ -6987,7 +7008,7 @@ def spkezp(
             Position of target in km,
             One way light time between observer and target in seconds.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return spkezp_s(targ, et, ref, abcorr, obs)
     else:
         return spkezp_v(targ, et, ref, abcorr, obs)
@@ -6996,11 +7017,11 @@ def spkezp(
 @boundscheck(False)
 @wraparound(False)
 def spkezr_s(
-    str targ,
+    const char* targ,
     double et,
-    str ref,
-    str abcorr,
-    str obs
+    const char* ref,
+    const char* abcorr,
+    const char* obs
     )-> tuple[State, float]:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkezr`
@@ -7046,11 +7067,11 @@ def spkezr_s(
 @boundscheck(False)
 @wraparound(False)
 def spkezr_v(
-    str targ,
+    const char* targ,
     double[::1] et,
-    str ref,
-    str abcorr,
-    str obs)-> tuple[State_N, Double_N]:
+    const char* ref,
+    const char* abcorr,
+    const char* obs)-> tuple[State_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkezr`
 
@@ -7100,11 +7121,11 @@ def spkezr_v(
 
 
 def spkezr(
-    targ:     str,
+    targ:     str | np.str_,
     et:       float | float[::1],
-    ref:      str,
-    abcorr:   str,
-    obs:      str,
+    ref:      str | np.str_,
+    abcorr:   str | np.str_,
+    obs:      str | np.str_,
     )-> tuple[State, float]:
     """
     Return the state (position and velocity) of a target body
@@ -7122,7 +7143,7 @@ def spkezr(
             State of target in km and km/sec,
             One way light time between observer and target in seconds.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return spkezr_s(targ, et, ref, abcorr, obs)
     else:
         return spkezr_v(targ, et, ref, abcorr, obs)
@@ -7133,7 +7154,7 @@ def spkezr(
 def spkgeo_s(
     int targ,
     double et,
-    str ref,
+    const char* ref,
     int obs
     )-> tuple[State, float]:
     """
@@ -7181,7 +7202,7 @@ def spkgeo_s(
 def spkgeo_v(
     int targ,
     double[::1] ets,
-    str ref,
+    const char* ref,
     int obs,
     )-> tuple[State_N, Double_N]:
     """
@@ -7231,7 +7252,7 @@ def spkgeo_v(
 def spkgeo(
     targ: int,
     et: float | float[::1],
-    ref: str,
+    ref: str | np.str_,
     obs: int
     )-> tuple[State, float] | tuple[State_N, Double_N]:
     """
@@ -7248,7 +7269,7 @@ def spkgeo(
         State of target in km and km/sec,
         One way light time between observer and target in seconds.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return spkgeo_s(targ, et, ref, obs)
     else:
         return spkgeo_v(targ, et, ref, obs)
@@ -7259,7 +7280,7 @@ def spkgeo(
 def spkgps_s(
     int targ,
     double et,
-    str ref,
+    const char* ref,
     int obs
     ) -> tuple[Vector, float]:
     """
@@ -7305,7 +7326,7 @@ def spkgps_s(
 def spkgps_v(
     int targ,
     double[::1] ets,
-    str ref,
+    const char* ref,
     int obs,
     ) -> tuple[Vector_N, Double_N]:
     """
@@ -7353,7 +7374,7 @@ def spkgps_v(
 def spkgps(
     targ: int,
     et: float | float[::1],
-    ref: str,
+    ref: str | np.str_,
     obs: int
     ) -> tuple[Vector, float] | tuple[Vector_N, Double_N]:
     """
@@ -7368,7 +7389,7 @@ def spkgps(
     :param obs: Observing body.
     :return: Position of target in km, Light time.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return spkgps_s(targ, et, ref, obs)
     else:
         return spkgps_v(targ, et, ref, obs)
@@ -7377,11 +7398,11 @@ def spkgps(
 @boundscheck(False)
 @wraparound(False)
 def spkpos_s(
-    str targ,
+    const char* targ,
     double et,
-    str ref,
-    str abcorr,
-    str obs
+    const char* ref,
+    const char* abcorr,
+    const char* obs
     ) -> tuple[Vector, float]:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkpos`
@@ -7428,11 +7449,11 @@ def spkpos_s(
 @boundscheck(False)
 @wraparound(False)
 def spkpos_v(
-    str targ,
+    const char* targ,
     double[::1] ets,
-    str ref,
-    str abcorr,
-    str obs
+    const char* ref,
+    const char* abcorr,
+    const char* obs
     )-> tuple[Vector_N, Double_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkpos`
@@ -7483,11 +7504,11 @@ def spkpos_v(
 
 
 def spkpos(
-    targ: str,
+    targ: str | np.str_,
     et: float | float[::1],
-    ref:    str,
-    abcorr: str,
-    obs:    str
+    ref:    str | np.str_,
+    abcorr: str | np.str_,
+    obs:    str | np.str_
     ) -> tuple[Vector, float] | tuple[Vector_N, Double_N]:
     """
     Return the position of a target body relative to an observing
@@ -7505,7 +7526,7 @@ def spkpos(
             Position of target in km,
             One way light time between observer and target in seconds.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return spkpos_s(targ, et, ref, abcorr, obs)
     else:
         return spkpos_v(targ, et, ref, abcorr, obs)
@@ -7633,7 +7654,7 @@ def spkpvn(
             Output state vector,
             Center of state.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return spkpvn_s(handle, descr, et)
     else:
         return spkpvn_v(handle, descr, et)
@@ -7644,7 +7665,7 @@ def spkpvn(
 def spkssb_s(
     int targ,
     double et,
-    str ref,
+    const char* ref,
     ) -> State:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.spkssb`
@@ -7684,7 +7705,7 @@ def spkssb_s(
 def spkssb_v(
     int targ,
     double[::1] ets,
-    str ref,
+    const char* ref,
     ) -> State_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkssb`
@@ -7725,7 +7746,7 @@ def spkssb_v(
 def spkssb(
     targ: int,
     et: float | float[::1],
-    ref: str,
+    ref: str | np.str_,
     ) -> State | State_N:
     """
     Return the state (position and velocity) of a target body
@@ -7738,7 +7759,7 @@ def spkssb(
     :param ref: Target reference frame.
     :return: State of target.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return spkssb_s(targ, et, ref)
     else:
         return spkssb_v(targ, et, ref)
@@ -7786,6 +7807,8 @@ def str2et_v(
     :param times: Strings representing an epoch.
     :return: The equivalent values in seconds past J2000, TDB.
     """
+    if times.ndim != 1:
+        raise ValueError(f'in str2et_v, times had ndim {times.ndim}, expected a 1-D array of strings')
     # initialize c variables
     cdef Py_ssize_t i, n = times.shape[0]
     # initialize output
@@ -7819,8 +7842,9 @@ def str2et(
     :param time: A string representing an epoch.
     :return: The equivalent value in seconds past J2000, TDB.
     """
-    if PyUnicode_Check(time):
-        return str2et_s(time)
+    s = scalar_string(time)
+    if s is not None:
+        return str2et_s(s)
     else:
         return str2et_v(time)
 
@@ -7829,13 +7853,13 @@ def str2et(
 @wraparound(False)
 @cyice_found_exception_thrower
 def sincpt_s(
-    str method,
-    str target,
+    const char* method,
+    const char* target,
     double et,
-    str fixref,
-    str abcorr,
-    str obsrvr,
-    str dref,
+    const char* fixref,
+    const char* abcorr,
+    const char* obsrvr,
+    const char* dref,
     double[::1] dvec
     ) -> tuple[Vector, float, Vector, bool]:
     """
@@ -7901,13 +7925,13 @@ def sincpt_s(
 @wraparound(False)
 @cyice_found_exception_thrower
 def sincpt_v(
-    str method,
-    str target,
+    const char* method,
+    const char* target,
     double[::1] ets,
-    str fixref,
-    str abcorr,
-    str obsrvr,
-    str dref,
+    const char* fixref,
+    const char* abcorr,
+    const char* obsrvr,
+    const char* dref,
     double[::1] dvec
     ) -> tuple[Vector_N, Double_N, Vector_N, Found_N]:
     """
@@ -7975,13 +7999,13 @@ def sincpt_v(
 
 
 def sincpt(
-    method: str,
-    target: str,
+    method: str | np.str_,
+    target: str | np.str_,
     et: float | float[::1],
-    fixref: str,
-    abcorr: str,
-    obsrvr: str,
-    dref: str,
+    fixref: str | np.str_,
+    abcorr: str | np.str_,
+    obsrvr: str | np.str_,
+    dref: str | np.str_,
     dvec: float[::1]
     ) -> tuple[Vector, float, Vector, bool] | tuple[Vector_N, Double_N, Vector_N, Found_N]:
     """
@@ -8005,7 +8029,7 @@ def sincpt(
             Intercept epoch,
             Vector from observer to intercept point in km.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return sincpt_s(method, target, et, fixref, abcorr, obsrvr, dref, dvec)
     else:
         return sincpt_v(method, target, et, fixref, abcorr, obsrvr, dref, dvec)
@@ -8098,7 +8122,7 @@ def srfrec(
     :return: Rectangular coordinates of the point, same units as used in radii definition (typically km).
     :return: Rectangular coordinates of the point.
     """
-    if PyFloat_Check(longitude):
+    if is_scalar(longitude):
         return srfrec_s(body, longitude, latitude)
     else:
         return srfrec_v(body, longitude, latitude)
@@ -8107,12 +8131,12 @@ def srfrec(
 @boundscheck(False)
 @wraparound(False)
 def subpnt_s(
-    str method,
-    str target,
+    const char* method,
+    const char* target,
     double et,
-    str fixref,
-    str abcorr,
-    str obsrvr
+    const char* fixref,
+    const char* abcorr,
+    const char* obsrvr
     ) -> tuple[Vector, float, Vector]:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.subpnt`
@@ -8167,12 +8191,12 @@ def subpnt_s(
 @boundscheck(False)
 @wraparound(False)
 def subpnt_v(
-    str method,
-    str target,
+    const char* method,
+    const char* target,
     double[::1] ets,
-    str fixref,
-    str abcorr,
-    str obsrvr
+    const char* fixref,
+    const char* abcorr,
+    const char* obsrvr
     ) -> tuple[Vector_N, Double_N, Vector_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.subpnt`
@@ -8230,12 +8254,12 @@ def subpnt_v(
 
 
 def subpnt(
-    method: str,
-    target: str,
+    method: str | np.str_,
+    target: str | np.str_,
     et: float | float[::1],
-    fixref: str,
-    abcorr: str,
-    obsrvr: str
+    fixref: str | np.str_,
+    abcorr: str | np.str_,
+    obsrvr: str | np.str_
     ) -> tuple[Vector, float, Vector] | tuple[Vector_N, Double_N, Vector_N]:
     """
     Compute the rectangular coordinates of the sub-observer point on
@@ -8255,7 +8279,7 @@ def subpnt(
             Sub-observer point epoch,
             Vector from observer to sub-observer point.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return subpnt_s(method, target, et, fixref, abcorr, obsrvr)
     else:
         return subpnt_v(method, target, et, fixref, abcorr, obsrvr)
@@ -8264,12 +8288,12 @@ def subpnt(
 @boundscheck(False)
 @wraparound(False)
 def subslr_s(
-    str method,
-    str target,
+    const char* method,
+    const char* target,
     double et,
-    str fixref,
-    str abcorr,
-    str obsrvr
+    const char* fixref,
+    const char* abcorr,
+    const char* obsrvr
     ) -> tuple[Vector, float, Vector]:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.subslr`
@@ -8327,12 +8351,12 @@ def subslr_s(
 @boundscheck(False)
 @wraparound(False)
 def subslr_v(
-    str method,
-    str target,
+    const char* method,
+    const char* target,
     double[::1] ets,
-    str fixref,
-    str abcorr,
-    str obsrvr
+    const char* fixref,
+    const char* abcorr,
+    const char* obsrvr
     ) -> tuple[Vector_N, Double_N, Vector_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.subslr`
@@ -8392,12 +8416,12 @@ def subslr_v(
 
 
 def subslr(
-    method: str,
-    target: str,
+    method: str | np.str_,
+    target: str | np.str_,
     et: float | float[::1],
-    fixref: str,
-    abcorr: str,
-    obsrvr: str
+    fixref: str | np.str_,
+    abcorr: str | np.str_,
+    obsrvr: str | np.str_
     ) -> tuple[Vector, float, Vector] | tuple[Vector_N, Double_N, Vector_N]:
     """
     Compute the rectangular coordinates of the sub-solar point on
@@ -8419,7 +8443,7 @@ def subslr(
             Sub-solar point epoch,
             Vector from observer to sub-solar point in km.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return subslr_s(method, target, et, fixref, abcorr, obsrvr)
     else:
         return subslr_v(method, target, et, fixref, abcorr, obsrvr)
@@ -8428,8 +8452,8 @@ def subslr(
 @boundscheck(False)
 @wraparound(False)
 def sxform_s(
-    str instring,
-    str tostring,
+    const char* instring,
+    const char* tostring,
     double et
     ) -> Matrix_6:
     """
@@ -8466,8 +8490,8 @@ def sxform_s(
 @boundscheck(False)
 @wraparound(False)
 def sxform_v(
-    str instring,
-    str tostring,
+    const char* instring,
+    const char* tostring,
     double[::1] ets
     ) -> Matrix_N_6:
     """
@@ -8506,8 +8530,8 @@ def sxform_v(
 
 
 def sxform(
-    instring: str,
-    tostring:   str,
+    instring: str | np.str_,
+    tostring:   str | np.str_,
     et: float | float[::1]
     ) -> Matrix_6 | Matrix_N_6:
     """
@@ -8522,7 +8546,7 @@ def sxform(
     :param et: Epoch of the state transformation matrix.
     :return: A state transformation matrix.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return sxform_s(instring, tostring, et)
     else:
         return sxform_v(instring, tostring, et)
@@ -8533,14 +8557,14 @@ def sxform(
 @boundscheck(False)
 @wraparound(False)
 def tangpt_s(
-    str method,
-    str target,
+    const char* method,
+    const char* target,
     double et,
-    str fixref,
-    str abcorr,
-    str corloc,
-    str obsrvr,
-    str dref,
+    const char* fixref,
+    const char* abcorr,
+    const char* corloc,
+    const char* obsrvr,
+    const char* dref,
     double[::1] dvec
     ):
     """
@@ -8619,14 +8643,14 @@ def tangpt_s(
 @boundscheck(False)
 @wraparound(False)
 def tangpt_v(
-    str method,
-    str target,
+    const char* method,
+    const char* target,
     double[::1] ets,
-    str fixref,
-    str abcorr,
-    str corloc,
-    str obsrvr,
-    str dref,
+    const char* fixref,
+    const char* abcorr,
+    const char* corloc,
+    const char* obsrvr,
+    const char* dref,
     double[::1] dvec
     ):
     """
@@ -8709,14 +8733,14 @@ def tangpt_v(
 
 
 def tangpt(
-    method: str,
-    target: str,
+    method: str | np.str_,
+    target: str | np.str_,
     et: float | float[::1],
-    fixref: str,
-    abcorr: str,
-    corloc: str,
-    obsrvr: str,
-    dref: str,
+    fixref: str | np.str_,
+    abcorr: str | np.str_,
+    corloc: str | np.str_,
+    obsrvr: str | np.str_,
+    dref: str | np.str_,
     dvec: float[::1]
     ):
     """
@@ -8747,7 +8771,7 @@ def tangpt(
      Point on surface nearest to tangent point, Epoch associated with
      correction locus, Vector from observer to surface point 'srfpt'.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return tangpt_s(method, target, et, fixref, abcorr, corloc, obsrvr, dref, dvec)
     else:
         return tangpt_v(method, target, et, fixref, abcorr, corloc, obsrvr, dref, dvec)
@@ -8950,14 +8974,14 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] termpt_v(
 
 
 def termpt(
-    method: str,
-    ilusrc: str,
-    target: str,
+    method: str | np.str_,
+    ilusrc: str | np.str_,
+    target: str | np.str_,
     et: float | double[::1],
-    fixref: str,
-    abcorr: str,
-    corloc: str,
-    obsrvr: str,
+    fixref: str | np.str_,
+    abcorr: str | np.str_,
+    corloc: str | np.str_,
+    obsrvr: str | np.str_,
     refvec: np.ndarray,
     rolstp: float,
     ncuts: int,
@@ -9002,7 +9026,7 @@ def termpt(
         Times associated with terminator points in seconds, 
         Terminator vectors emanating from the observer in km
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return termpt_s(method, ilusrc, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp, ncuts, schstp, soltol, maxn)
     else:
         return termpt_v(method, ilusrc, target, et, fixref, abcorr, corloc, obsrvr, refvec, rolstp, ncuts, schstp, soltol, maxn)
@@ -9010,7 +9034,7 @@ def termpt(
 
 def timout_s(
     double et,
-    str pictur
+    const char* pictur
     ) -> str:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.timout`
@@ -9043,7 +9067,7 @@ def timout_s(
 @wraparound(False)
 def timout_v(
     double[::1] ets,
-    str pictur
+    const char* pictur
     ) -> String_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.timout`
@@ -9084,7 +9108,7 @@ def timout_v(
 
 def timout(
     et: float | float[::1],
-    pictur: str
+    pictur: str | np.str_
     ) -> str | String_N:
     """
     This vectorized routine converts an input epoch represented in TDB seconds
@@ -9097,7 +9121,7 @@ def timout(
     :param pictur: A format specification for the output string.
     :return: A string representation of the input epoch.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return timout_s(et, pictur)
     else:
         return timout_v(et, pictur)
@@ -9105,14 +9129,14 @@ def timout(
 
 def trgsep_s(
     double et,
-    str targ1,
-    str shape1,
-    str frame1,
-    str targ2,
-    str shape2,
-    str frame2,
-    str obsrvr,
-    str abcorr
+    const char* targ1,
+    const char* shape1,
+    const char* frame1,
+    const char* targ2,
+    const char* shape2,
+    const char* frame2,
+    const char* obsrvr,
+    const char* abcorr
     ) -> float:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.trgsep`
@@ -9162,14 +9186,14 @@ def trgsep_s(
 @wraparound(False)
 def trgsep_v(
     double[::1] ets,
-    str targ1,
-    str shape1,
-    str frame1,
-    str targ2,
-    str shape2,
-    str frame2,
-    str obsrvr,
-    str abcorr
+    const char* targ1,
+    const char* shape1,
+    const char* frame1,
+    const char* targ2,
+    const char* shape2,
+    const char* frame2,
+    const char* obsrvr,
+    const char* abcorr
     ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.trgsep`
@@ -9222,14 +9246,14 @@ def trgsep_v(
 
 def trgsep(
     et: float | float[::1],
-    targ1:  str,
-    shape1: str,
-    frame1: str,
-    targ2:  str,
-    shape2: str,
-    frame2: str,
-    obsrvr: str,
-    abcorr: str
+    targ1:  str | np.str_,
+    shape1: str | np.str_,
+    frame1: str | np.str_,
+    targ2:  str | np.str_,
+    shape2: str | np.str_,
+    frame2: str | np.str_,
+    obsrvr: str | np.str_,
+    abcorr: str | np.str_
     ) -> float:
     """
     Compute the angular separation in radians between two spherical
@@ -9248,7 +9272,7 @@ def trgsep(
     :param abcorr: Aberration corrections flag.
     :return: angular separation in radians.
     """
-    if PyFloat_Check(et):
+    if is_scalar(et):
         return trgsep_s(et, targ1, shape1, frame1, targ2, shape2, frame2, obsrvr, abcorr)
     else:
         return trgsep_v(et, targ1, shape1, frame1, targ2, shape2, frame2, obsrvr, abcorr)
@@ -9281,8 +9305,8 @@ def tyear() -> float:
 
 def unitim_s(
         double epoch,
-        str insys,
-        str outsys,
+        const char* insys,
+        const char* outsys,
     ) -> float:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.unitim`
@@ -9316,8 +9340,8 @@ def unitim_s(
 @wraparound(False)
 def unitim_v(
         double[::1] epochs,
-        insys: str,
-        outsys: str,
+        insys: str | np.str_,
+        outsys: str | np.str_,
     ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.unitim`
@@ -9355,8 +9379,8 @@ def unitim_v(
 
 def unitim(
         epoch: float | float[::1],
-        insys: str,
-        outsys: str,
+        insys: str | np.str_,
+        outsys: str | np.str_,
     ) -> float | Double_N:
     """
     Transform time from one uniform scale to another.  The uniform
@@ -9371,7 +9395,7 @@ def unitim(
             The float in outsys that is equivalent
             to the epoch on the insys time scale.
     """
-    if PyFloat_Check(epoch):
+    if is_scalar(epoch):
         return unitim_s(epoch, insys, outsys)
     else:
         return unitim_v(epoch, insys, outsys)
@@ -9426,6 +9450,8 @@ def utc2et_v(
     :param utcstr: Input time strings, UTC.
     :return: Output epochs, ephemeris seconds past J2000.
     """
+    if utcstr.ndim != 1:
+        raise ValueError(f'in utc2et_v, utcstr had ndim {utcstr.ndim}, expected a 1-D array of strings')
     cdef Py_ssize_t i, n = utcstr.shape[0]
     # initialize output
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ets = np.empty(n, dtype=np.double, order='C')
@@ -9454,8 +9480,9 @@ def utc2et(utcstr: str | String_N)-> float | Double_N:
     :param utcstr: Input time string, UTC.
     :return: Output epoch, ephemeris seconds past J2000.
     """
-    if PyUnicode_Check(utcstr):
-        return utc2et_s(utcstr)
+    s = scalar_string(utcstr)
+    if s is not None:
+        return utc2et_s(s)
     else:
         return utc2et_v(utcstr)
 
@@ -9551,9 +9578,9 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] xfmsta_v(
 
 def xfmsta(
     input_state: State | State_N,
-    input_coord_sys: str,
-    output_coord_sys: str,
-    body:   str
+    input_coord_sys: str | np.str_,
+    output_coord_sys: str | np.str_,
+    body:   str | np.str_
     ) -> State | State_N:
     """
     Transform a state between coordinate systems.
