@@ -26,7 +26,13 @@ from __future__ import annotations
 
 import functools
 from ctypes import c_int, c_double, c_char_p, POINTER, CFUNCTYPE, byref
-from .support_types import SpiceCell, SpiceCellPointer, to_python_string
+from .support_types import (
+    SpiceCell,
+    SpiceCellPointer,
+    to_python_string,
+    c_double_p,
+    c_int_p,
+)
 from typing import Callable, Union, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -47,11 +53,11 @@ if TYPE_CHECKING:
     UDREPF = CFuncPtr
     UDBAIL = CFuncPtr
 else:
-    UDFUNC = CFUNCTYPE(None, c_double, POINTER(c_double))
-    UDFUNS = CFUNCTYPE(None, c_double, POINTER(c_double))
-    UDFUNB = CFUNCTYPE(None, UDFUNS, c_double, POINTER(c_int))
-    UDSTEP = CFUNCTYPE(None, c_double, POINTER(c_double))
-    UDREFN = CFUNCTYPE(None, c_double, c_double, c_int, c_int, POINTER(c_double))
+    UDFUNC = CFUNCTYPE(None, c_double, c_double_p)
+    UDFUNS = CFUNCTYPE(None, c_double, c_double_p)
+    UDFUNB = CFUNCTYPE(None, UDFUNS, c_double, c_int_p)
+    UDSTEP = CFUNCTYPE(None, c_double, c_double_p)
+    UDREFN = CFUNCTYPE(None, c_double, c_double, c_int, c_int, c_double_p)
     UDREPI = CFUNCTYPE(None, POINTER(SpiceCell), c_char_p, c_char_p)
     UDREPU = CFUNCTYPE(None, c_double, c_double, c_double)
     UDREPF = CFUNCTYPE(None)

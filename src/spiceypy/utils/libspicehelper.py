@@ -176,8 +176,9 @@ s_dla_p = POINTER(stypes.SpiceDLADescr)
 s_eks_p = POINTER(stypes.SpiceEKSegSum)
 s_eka_p = POINTER(stypes.SpiceEKAttDsc)
 s_dsk_p = POINTER(stypes.SpiceDSKDescr)
-c_double_p = POINTER(c_double)
-c_int_p = POINTER(c_int)
+# re-exported for spiceypy.py; defined in support_types to avoid circular imports
+c_double_p = stypes.c_double_p
+c_int_p = stypes.c_int_p
 
 __author__ = "AndrewAnnex"
 

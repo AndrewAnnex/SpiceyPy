@@ -103,6 +103,13 @@ if TYPE_CHECKING:
 # Collection of supporting functions for wrapper functions
 __author__ = "AndrewAnnex"
 
+# Shared ctypes pointer-type aliases. Defined here (rather than in
+# libspicehelper) because this module sits at the bottom of the intra-package
+# dependency graph, so both callbacks and libspicehelper can import them
+# without creating a circular import.
+c_double_p = POINTER(c_double)
+c_int_p = POINTER(c_int)
+
 
 def to_double_vector(x: Any) -> Array[c_double]:
     return DoubleArray.from_param(param=x)

@@ -69,7 +69,7 @@ from .utils.exceptions import (
     SpiceyPyZeroDivisionError,
     dynamically_instantiate_spiceyerror,
 )
-from .utils.libspicehelper import cspice_flavor, libspice
+from .utils.libspicehelper import cspice_flavor, libspice, c_double_p, c_int_p
 from .utils.support_types import (
     Cell_Bool,
     Cell_Char,
@@ -4745,7 +4745,7 @@ def ekffld(handle: int, segno: int, rcptrs: ndarray) -> None:
     handle = ctypes.c_int(handle)
     segno = ctypes.c_int(segno)
     rcptrs = stypes.to_int_vector(rcptrs)
-    libspice.ekffld_c(handle, segno, ctypes.cast(rcptrs, ctypes.POINTER(ctypes.c_int)))  # type: ignore[arg-type]
+    libspice.ekffld_c(handle, segno, ctypes.cast(rcptrs, c_int_p))  # type: ignore[arg-type]
 
 
 @spice_error_check
@@ -6203,7 +6203,7 @@ def gdpool(name: str, start: int, room: int) -> Union[Tuple[ndarray, bool], ndar
         start,
         room,
         ctypes.byref(n),
-        ctypes.cast(values, ctypes.POINTER(ctypes.c_double)),
+        ctypes.cast(values, c_double_p),
         ctypes.byref(found),
     )
     return stypes.c_vector_to_python(values)[0 : n.value], bool(found.value)
@@ -12138,7 +12138,7 @@ def shelld(ndim: int, array: Union[ndarray, Iterable[float]]) -> ndarray:
     """
     array = stypes.to_double_vector(array)
     ndim = ctypes.c_int(ndim)
-    libspice.shelld_c(ndim, ctypes.cast(array, ctypes.POINTER(ctypes.c_double)))  # type: ignore[arg-type]
+    libspice.shelld_c(ndim, ctypes.cast(array, c_double_p))  # type: ignore[arg-type]
     return stypes.c_vector_to_python(array)
 
 
@@ -12156,7 +12156,7 @@ def shelli(ndim: int, array: Union[ndarray, Iterable[int]]) -> ndarray:
     """
     array = stypes.to_int_vector(array)
     ndim = ctypes.c_int(ndim)
-    libspice.shelli_c(ndim, ctypes.cast(array, ctypes.POINTER(ctypes.c_int)))  # type: ignore[arg-type]
+    libspice.shelli_c(ndim, ctypes.cast(array, c_int_p))  # type: ignore[arg-type]
     return stypes.c_vector_to_python(array)
 
 

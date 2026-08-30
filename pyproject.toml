@@ -52,6 +52,14 @@ test = [
 publish = [
     "twine>=6.1.0"
 ]
+typecheck = [
+    # mypy scope is all of src (see [tool.mypy]), including tests/benchmarks,
+    # so their third-party imports (pytest, pandas) must be installed for
+    # mypy to resolve them.
+    {include-group = "test"},
+    "mypy>=2.3",
+    "pandas-stubs",
+]
 ci = [
     {include-group = "core"},
     {include-group = "publish"},
@@ -69,6 +77,7 @@ dev = [
     {include-group = "build"},
     {include-group = "test"},
     {include-group = "ci"},
+    {include-group = "typecheck"},
 ]
 devwheel = [
     {include-group = "dev"},
