@@ -6168,7 +6168,7 @@ def dynamically_instantiate_spiceyerror(
     explain: str = "",
     long: str = "",
     traceback: str = "",
-    found: str = "",
+    found: Union[bool, Iterable[bool], Iterable[int]] = False,
 ):
     """
     Dynamically creates a SpiceyPyException which is a subclass of SpiceyError and
