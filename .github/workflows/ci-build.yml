@@ -134,7 +134,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04-arm, ubuntu-latest, macos-15-intel, macos-15, windows-latest]
-        python-version: ['3.12', '3.13', '3.14']
+        python-version: ['3.12', '3.13', '3.14', '3.15.0-rc.2']
         # Attach the matching mirror archive per OS (CSPICE C source is
         # architecture-independent, so aarch64 Linux reuses the x86_64 archive).
         include:
