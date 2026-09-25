@@ -15,6 +15,30 @@ env:
   CMAKE_BUILD_PARALLEL_LEVEL: 4
 
 jobs:
+  typecheck:
+    name: Type check SpiceyPy with mypy 🌶️ 🥧
+    runs-on: 'ubuntu-latest'
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout 🌶️ 🥧
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Set up uv 🐍 📦 with Python 3.13
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          python-version: "3.13"
+          activate-environment: true
+          enable-cache: true
+      - name: Install dependencies
+        run: |
+          uv pip install --group typecheck
+      # mypy analyzes source without importing it, so no CSPICE build is
+      # needed; config lives in [tool.mypy] in pyproject.toml
+      - name: Run mypy 🔍
+        run: |
+          python -m mypy
   test-pyodide:
     name: Test SpiceyPy Pyodide build
     runs-on: 'ubuntu-latest'

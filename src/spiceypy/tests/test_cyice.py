@@ -8,7 +8,7 @@ scalars, numpy scalars, 0-d numpy arrays, and 1-d numpy arrays. They also
 cover the ndim guards on the string-input _v functions.
 
 Benchmark coverage for the same functions lives in
-spiceypy/benchmarks/test_cyice.py; this file is only for 
+spiceypy/benchmarks/test_cyice.py; this file is only for
 dispatch correctness.
 """
 
@@ -70,6 +70,7 @@ string_scalar_ctors = [
     pytest.param(lambda s: np.array(s.encode("ascii")), id="ndarray_0d_S"),
     pytest.param(lambda s: np.array(s, dtype=object), id="ndarray_0d_object"),
 ]
+
 
 @pytest.mark.parametrize("ctor", numeric_scalar_ctors)
 def test_etcal_scalar_dispatch(ctor):
@@ -219,6 +220,7 @@ def test_timout_pictur_accepts_np_str_and_bytes(load_core_kernels):
 def test_furnsh_accepts_np_str():
     cyice.furnsh(np.str_(CoreKernels.testMetaKernel))
     assert spice.ktotal("ALL") > 0
+
 
 def test_string_dispatch_rejects_0d_numeric():
     with pytest.raises(TypeError):
