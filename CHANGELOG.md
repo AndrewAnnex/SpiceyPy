@@ -4,14 +4,28 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## [8.2.1] - 2026-??-??
+## [8.3.0] - 2026-10-11
 
 ### Added
- - Top-level cyice functions now accept NumPy scalars and 0-d arrays (numeric and string) and dispatch them to the scalar `_s` implementations
+ - Python 3.15 support: cp315 wheel builds, CI test matrix, and PyPI classifier (#575)
+ - PEP 561 `py.typed` marker and `Typing :: Typed` classifier so type checkers use spiceypy's annotations (#552)
+ - mypy type checking CI job and `typecheck` dependency group (#555)
+ - Top-level cyice functions now accept NumPy scalars and 0-d arrays (numeric and string) and dispatch them to the scalar `_s` implementations (#569) (#571)
+
+### Changed
+ - Refined type hints throughout spiceypy, callbacks, and support types for smoother mypy usage (#555)
+ - Zero-argument ctypes functions now declare empty argtypes rather than None (#555)
+ - Updated to cibuildwheel v4.3.1 for the final CPython 3.15.0 release
+ - Pyodide/wasm builds now use cibuildwheel's default Pyodide 314.0.x and pyodide-build versions instead of pinning 314.0.0 and pyodide-build 0.35.1; removed the ignored `build-frontend` and redundant `skip` Pyodide options
+ - Docs updated to PyScript 2026.7.3 (Pyodide 314.0.3)
+ - Various CI action pin updates (#565) (#566) (#567) (#568) (#570) (#572) (#573) (#574) (#577)
 
 ### Fixed
- - String-input cyice `_v` functions (str2et_v, utc2et_v, scencd_v, scs2e_v) segfaulted on 0-d or multi-dimensional arrays; they now raise ValueError
- - cyice functions rejected `np.str_` and `bytes` for string arguments with a TypeError due to Cython 3 exact-type checks
+ - String-input cyice `_v` functions (str2et_v, utc2et_v, scencd_v, scs2e_v) segfaulted on 0-d or multi-dimensional arrays; they now raise ValueError (#571)
+ - cyice functions rejected `np.str_` and `bytes` for string arguments with a TypeError due to Cython 3 exact-type checks (#571)
+ - Missing commas in cyice `__all__` that merged "azlcpo_v"/"azlrec" and "reset"/"rpd" (#555)
+ - ekgc return type annotation had the tuple element order wrong (#555)
+ - Various typos in docstrings and docs (#555)
 
 ## [8.2.0] - 2026-07-24
 

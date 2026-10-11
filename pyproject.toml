@@ -22,6 +22,7 @@ classifiers = [
      "Programming Language :: Python :: 3.12",
      "Programming Language :: Python :: 3.13",
      "Programming Language :: Python :: 3.14",
+     "Programming Language :: Python :: 3.15",
      "Programming Language :: Cython",
      "Typing :: Typed",
      "Operating System :: MacOS :: MacOS X",
@@ -254,7 +255,6 @@ build-frontend = 'build[uv]'
 repair-wheel-command = "delvewheel repair --ignore-in-wheel -w {dest_dir} {wheel}"
 
 [tool.cibuildwheel.pyodide]
-build-frontend = 'build'
 # Explicitly opt out of the shared before-all CSPICE prebuild. Pyodide builds a
 # single wheel, so there is nothing to amortise, and the prebuild would produce
 # a *host* library that an Emscripten cross-compile cannot link against anyway.
@@ -262,7 +262,6 @@ build-frontend = 'build'
 before-all = ""
 # https://github.com/jupyterlite/pyodide-kernel for version/kernel compatibility
 build = ["cp314-*"]
-skip  = ["cp312-*"]
 test-groups = ["devwheelpyodide"]
 build-verbosity = 0
 before-test = [
@@ -275,8 +274,9 @@ before-test = [
   "pyodide auditwheel exports --show-type {wheel}"
 ]
 test-command = "python -m pytest -s -vvv --pyargs spiceypy.tests.test_wrapper --benchmark-disable"
-pyodide-version = "314.0.0" 
-dependency-versions = { packages = ["pyodide-build==0.35.1"] }
+# pyodide-version is left to cibuildwheel's default: every 314.0.x release shares
+# CPython 3.14.2 and Emscripten 5.0.3, so wheels stay loadable by the older 314.0.x
+# runtimes bundled with PyScript (docs) and jupyterlite's pyodide-kernel
 # disable some errors for pyodide only; SPICEYPY_PYODIDE drives the cyice-source
 # exclusion override in [tool.scikit-build.overrides] above
 environment = { CFLAGS="-Werror=implicit-function-declaration -Werror=incompatible-pointer-types -Werror=return-type", SPICEYPY_PYODIDE="1" }
