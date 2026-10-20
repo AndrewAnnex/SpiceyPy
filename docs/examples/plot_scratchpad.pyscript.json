@@ -1,0 +1,16 @@
+{
+    "packages": [
+        "numpy",
+        "scipy",
+        "sympy",
+        "astropy",
+        "matplotlib",
+        "spiceypy"
+    ],
+    "files": {
+        "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/refs/heads/main/naif0012.tls": "scratchpad/naif0012.tls",
+        "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/refs/heads/main/pck00010.tpc": "scratchpad/pck00010.tpc",
+        "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/refs/heads/main/gm_de431.tpc": "scratchpad/gm_de431.tpc",
+        "https://raw.githubusercontent.com/AndrewAnnex/SpiceyPyTestKernels/refs/heads/main/de440s_2000_to_2020_simplified.bsp": "scratchpad/de440s_2000_to_2020_simplified.bsp"
+    }
+}

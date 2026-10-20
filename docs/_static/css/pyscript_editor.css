@@ -85,3 +85,74 @@ py-editor::part(run-button) {
     padding: 0;
     margin-top: 0;
 }
+
+/*
+ * Gallery examples listed in pyscript_gallery_inline_output: one box holds the
+ * build-time output and, after a run, the live output.  It is styled after
+ * sphinx-gallery's "Out:" block in both states: the box itself is the pale
+ * output panel, with the label hung outside it on the left.
+ */
+.pyscript-inline-output,
+.pyscript-inline-output.py-editor-output {
+    position: relative;
+    margin: 0 0 24px calc(2.2em + 0.5em);
+    padding: 12px;
+    border-radius: 0;
+    background: var(--sg-script-pre, #fafae2);
+    color: #404040;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+        "Courier New", Courier, monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.pyscript-inline-output::before,
+.pyscript-inline-output.py-editor-output::before {
+    content: "Out:";
+    display: block;
+    position: absolute;
+    left: calc(-2.2em - 0.5em);
+    top: 0;
+    padding-top: 10px;
+    margin: 0;
+    color: var(--sg-script-out, #888);
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: normal;
+}
+
+.pyscript-inline-output:empty {
+    display: none;
+}
+
+/* the build-time markup inside the box: let the box do the styling */
+.pyscript-inline-output .sphx-glr-script-out {
+    display: block;
+    color: inherit;
+}
+
+.pyscript-inline-output .sphx-glr-script-out::before {
+    content: none;
+}
+
+/* the whitespace between the build-time tags must not render as blank lines */
+.pyscript-inline-output:has(.sphx-glr-script-out) {
+    white-space: normal;
+}
+
+/* .rst-content and the attribute selector outrank the theme's highlight rules */
+.rst-content .pyscript-inline-output div[class^="highlight"],
+.rst-content .pyscript-inline-output div[class^="highlight"] pre,
+.rst-content .pyscript-inline-output .highlight,
+.rst-content .pyscript-inline-output pre {
+    background: transparent;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    font: inherit;
+    color: inherit;
+    white-space: pre-wrap;
+}

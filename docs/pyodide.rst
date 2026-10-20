@@ -78,6 +78,7 @@ It may take a few moments to finish. This software is running on your web browse
 In the example below we will plot the Venus Rose (Venus's apparent position as seen from Earth
 over 8 years in the J2000 ecliptic plane.).
 Try updating the plot below to plot the barycenter of Mars or Mercury!
+For more complete worked examples, see the :ref:`gallery`.
 
 Various imports and setup:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
