@@ -81,10 +81,14 @@ files in the examples directory (``examples/`` here):
     one env, named after the example).  Its ``files`` map is also honoured
     natively: before sphinx-gallery runs, remote URLs are downloaded to their
     destination paths under the examples directory (gitignore them), so the
-    script finds the same files in both places.  Prefer relative URLs
-    (``"./data/x.bsp": "data/x.bsp"``) for files committed beside the example:
-    they are copied next to the built page and fetched same-origin, which
-    avoids CORS/COEP trouble entirely.
+    script finds the same files in both places.  Host kernels in the
+    AndrewAnnex/spiceypylessonkernels repo and list their
+    ``raw.githubusercontent.com`` URLs (GitHub sends the CORS headers the
+    browser needs).  Kernels committed to this repo would ship in every sdist,
+    and ``*.bsp``/``*.tpc``/``*.tls`` are gitignored here anyway.  Relative URLs
+    (``"./data/x.bsp": "data/x.bsp"``) still work for small files committed
+    beside the example: they are copied next to the built page and fetched
+    same-origin.
 
 Things that differ between the two runtimes:
 
@@ -123,6 +127,7 @@ import urllib.request
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
 from sphinx.application import Sphinx
+from sphinx.errors import ExtensionError
 from sphinx.util import logging
 
 logger = logging.getLogger(__name__)
@@ -468,7 +473,15 @@ def _prefetch_gallery_files(app: Sphinx) -> None:
                 logger.info("pyscript_editor: fetching %s", url)
                 urllib.request.urlretrieve(url, abs_dest)
             else:
-                shutil.copy2(os.path.join(abs_dir, url), abs_dest)
+                abs_src = os.path.normpath(os.path.join(abs_dir, url))
+                if not os.path.exists(abs_src):
+                    raise ExtensionError(
+                        f"pyscript_editor: {name} lists {url!r}, but "
+                        f"{abs_src} does not exist. Files with relative URLs "
+                        "must be committed beside the example; check that "
+                        ".gitignore does not exclude them (e.g. *.bsp)."
+                    )
+                shutil.copy2(abs_src, abs_dest)
 
 
 # Gallery pages show each cell's build-time output beneath its editor.  Running
