@@ -32,7 +32,7 @@ import urllib.error
 import urllib.request
 import sys
 import hashlib
-from typing import Optional
+from typing import Iterable, Optional
 
 _IS_PYODIDE = (
     sys.platform == "emscripten" or "pyodide" in sys.modules or "PYODIDE" in os.environ
@@ -321,13 +321,43 @@ def get_cassini_test_kernels() -> None:
     get_kernel(CassiniKernels.cassIk_url, CassiniKernels.cassIk_md5)
 
 
-def write_test_meta_kernel() -> None:
+def write_test_meta_kernel(metakernel_path: str, kernel_paths: Iterable[str]) -> None:
     # Update the paths!
-    with open(CoreKernels.testMetaKernel, "w") as kernelFile:
+    with open(metakernel_path, "w") as kernelFile:
         kernelFile.write("\\begindata\n")
         kernelFile.write("KERNELS_TO_LOAD = (\n")
-        for kernel in CoreKernels.standardKernelList:
-            kernelFile.write("'{0}'\n".format(os.path.join(cwd, kernel)))
+        for kernel_path in kernel_paths:
+            # Overcome the SPICE 80-character string length limitation for long
+            # paths by using string continuation with a + marker. See
+            # docs/kernel.rst at “Additional Meta-kernel Specifications”.
+            MAX_PIECE_LEN = 80
+            remain = kernel_path
+            while len(remain) > 0:
+                if len(remain) > MAX_PIECE_LEN:
+                    piece = remain[: MAX_PIECE_LEN - 1]
+                    remain = remain[MAX_PIECE_LEN - 1 :]
+                    continuation = "+"
+                else:
+                    piece = remain
+                    remain = ""
+                    continuation = ""
+                    if piece.endswith("+"):
+                        # The final piece ends with '+', which will be
+                        # interpreted as a continuation character. Double it up
+                        # if there’s room to do so. Otherwise, arrange for one
+                        # more pass through the loop.
+                        if len(piece) < MAX_PIECE_LEN:
+                            piece = piece + "+"
+                        else:
+                            remain = "+"
+                kernelFile.write("'{0}{1}'\n".format(piece, continuation))
+            if kernel_path.endswith("+"):
+                # The path ends with '+'. An extra '+' was added above to ensure
+                # that SPICE treats it as part of the path, and now this space
+                # character (which SPICE will ignore) needs to be added so that
+                # any path that follows won’t be treated as a continuation of
+                # this one.
+                kernelFile.write("' '\n")
         kernelFile.write(")\n")
         kernelFile.write("\\begintext")
     print("\nDone writing test meta kernel.", flush=True)
@@ -337,4 +367,7 @@ def download_kernels() -> None:
     get_standard_kernels()  # Download the kernels listed in kernelList and kernelURLlist
     get_cassini_test_kernels()  # Download Cassini kernels
     get_extra_test_kernels()  # Download any extra test kernels we need
-    write_test_meta_kernel()  # Create the meta kernel file for tests
+    write_test_meta_kernel(
+        CoreKernels.testMetaKernel,
+        (os.path.join(cwd, kernel) for kernel in CoreKernels.standardKernelList),
+    )  # Create the meta kernel file for tests
