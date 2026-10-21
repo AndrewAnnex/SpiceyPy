@@ -1,0 +1,29 @@
+{
+    "packages": [
+        "numpy",
+        "matplotlib",
+        "spiceypy"
+    ],
+    "files": {
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/m2020_v16_221216_230201.tm": "m20_three_forks_demo/m2020_v16_221216_230201.tm",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/ck/m2020_surf_ra_tlmenc_0539_0659_v1.bc": "m20_three_forks_demo/spice_kernels/ck/m2020_surf_ra_tlmenc_0539_0659_v1.bc",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/ck/m2020_surf_ra_tlmenc_0659_0779_v1.bc": "m20_three_forks_demo/spice_kernels/ck/m2020_surf_ra_tlmenc_0659_0779_v1.bc",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/ck/m2020_surf_ra_tlmres_0539_0659_v1.bc": "m20_three_forks_demo/spice_kernels/ck/m2020_surf_ra_tlmres_0539_0659_v1.bc",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/ck/m2020_surf_ra_tlmres_0659_0779_v1.bc": "m20_three_forks_demo/spice_kernels/ck/m2020_surf_ra_tlmres_0659_0779_v1.bc",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/ck/m2020_surf_rover_tlm_0539_0659_v1.bc": "m20_three_forks_demo/spice_kernels/ck/m2020_surf_rover_tlm_0539_0659_v1.bc",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/ck/m2020_surf_rover_tlm_0659_0779_v1.bc": "m20_three_forks_demo/spice_kernels/ck/m2020_surf_rover_tlm_0659_0779_v1.bc",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/ck/m2020_turret_tools_v1.bc": "m20_three_forks_demo/spice_kernels/ck/m2020_turret_tools_v1.bc",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/fk/m2020_v04.tf": "m20_three_forks_demo/spice_kernels/fk/m2020_v04.tf",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/ik/m2020_struct_v00.ti": "m20_three_forks_demo/spice_kernels/ik/m2020_struct_v00.ti",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/lsk/naif0012.tls": "m20_three_forks_demo/spice_kernels/lsk/naif0012.tls",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/pck/pck00010.tpc": "m20_three_forks_demo/spice_kernels/pck/pck00010.tpc",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/sclk/m2020_168_sclkscet_refit_v19.tsc": "m20_three_forks_demo/spice_kernels/sclk/m2020_168_sclkscet_refit_v19.tsc",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/sclk/m2020_lmst_ops210303_v1.tsc": "m20_three_forks_demo/spice_kernels/sclk/m2020_lmst_ops210303_v1.tsc",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/spk/de438s.bsp": "m20_three_forks_demo/spice_kernels/spk/de438s.bsp",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/spk/m2020_ls_ops210303_iau2000_v1.bsp": "m20_three_forks_demo/spice_kernels/spk/m2020_ls_ops210303_iau2000_v1.bsp",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/spk/m2020_struct_v01.bsp": "m20_three_forks_demo/spice_kernels/spk/m2020_struct_v01.bsp",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/spk/m2020_surf_rover_loc_0539_0659_v1.bsp": "m20_three_forks_demo/spice_kernels/spk/m2020_surf_rover_loc_0539_0659_v1.bsp",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/spk/m2020_surf_rover_loc_0659_0779_v1.bsp": "m20_three_forks_demo/spice_kernels/spk/m2020_surf_rover_loc_0659_0779_v1.bsp",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/m20_three_forks_demo/spice_kernels/spk/mar097.bsp": "m20_three_forks_demo/spice_kernels/spk/mar097.bsp"
+    }
+}

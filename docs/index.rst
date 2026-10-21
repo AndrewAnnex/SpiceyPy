@@ -52,6 +52,7 @@ Contents:
    installation
    cyice
    pyodide
+   gallery/index
    changelog
    exampleone
    cells

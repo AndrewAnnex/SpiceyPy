@@ -15,6 +15,13 @@ dependencies:
   - sphinx-copybutton
   - sphinx-autodoc-typehints
   - sphinx_rtd_theme
+  # the gallery examples run at build time
+  - sphinx-gallery>=0.17
+  - matplotlib-base
+  - pillow
+  - scipy
+  - sympy
+  - astropy
   - recommonmark
   - pip
 variables:

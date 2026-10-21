@@ -4,3 +4,9 @@ sphinx_autodoc_typehints
 sphinx>=3.1.2
 myst-parser
 sphinx-copybutton
+sphinx-gallery>=0.17
+matplotlib
+pillow
+scipy
+sympy
+astropy

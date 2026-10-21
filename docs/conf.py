@@ -88,8 +88,22 @@ extensions = [
     "sphinx_copybutton",
     "myst_parser",
     "sphinx_rtd_theme",
+    "sphinx_gallery.gen_gallery",
     "pyscript_editor",
 ]
+
+sphinx_gallery_conf = {
+    "examples_dirs": "examples",
+    "gallery_dirs": "gallery",
+    "filename_pattern": r"/plot_",
+    # cards in file name order: the demos, then the scratchpad
+    "within_subsection_order": "FileNameSortKey",
+    # folium maps are shown through their HTML repr; matplotlib figures are
+    # scraped, so never capture plain reprs (they would print e.g. "Figure(600x600)")
+    "capture_repr": ("_repr_html_",),
+    "remove_config_comments": True,
+    "show_signature": False,
+}
 
 # Global defaults for pyscript (all optional)
 pyscript_version = "2026.7.3"
@@ -98,6 +112,8 @@ pyscript_config = "pyscript.json"
 pyscript_mini_coi = "mini-coi.js"  # "" to disable
 # Default is True — set to False to keep the line numbers
 pyscript_hide_gutters = True
+# gallery examples whose live output replaces the build-time output in place
+pyscript_gallery_inline_output = ["plot_santa_monica_eclipse"]
 
 html_static_path = ["_static"]
 
@@ -147,7 +163,8 @@ release = "8.3.0"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ["_build"]
+# examples/ holds the sphinx-gallery sources; the pages are generated in gallery/
+exclude_patterns = ["_build", "examples"]
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.

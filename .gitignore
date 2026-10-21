@@ -48,6 +48,13 @@ badhashkernel.txt
 
 # Docs
 docs/_build
+# sphinx-gallery output, and files the examples fetch or write when run natively
+docs/gallery/
+docs/examples/m20_three_forks_demo/
+docs/examples/santa_monica_eclipse/
+docs/examples/scratchpad/
+docs/examples/santa_monica.bsp
+docs/sg_execution_times.rst
 
 # Pycharm specific things
 .idea/
