@@ -6,8 +6,8 @@
         "tzdata"
     ],
     "files": {
-        "./santa_monica_eclipse/lsk/naif0012.tls": "santa_monica_eclipse/lsk/naif0012.tls",
-        "./santa_monica_eclipse/pck/pck00010_sun_earth_moon.tpc": "santa_monica_eclipse/pck/pck00010_sun_earth_moon.tpc",
-        "./santa_monica_eclipse/spk/de438s_2026_2033.bsp": "santa_monica_eclipse/spk/de438s_2026_2033.bsp"
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/santa_monica_eclipse/lsk/naif0012.tls": "santa_monica_eclipse/lsk/naif0012.tls",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/santa_monica_eclipse/pck/pck00010_sun_earth_moon.tpc": "santa_monica_eclipse/pck/pck00010_sun_earth_moon.tpc",
+        "https://raw.githubusercontent.com/AndrewAnnex/spiceypylessonkernels/refs/heads/main/santa_monica_eclipse/spk/de438s_2026_2033.bsp": "santa_monica_eclipse/spk/de438s_2026_2033.bsp"
     }
 }
