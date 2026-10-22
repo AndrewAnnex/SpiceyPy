@@ -35,6 +35,7 @@ from ctypes import (
     RTLD_GLOBAL,
 )
 from ctypes.util import find_library
+from importlib.resources import files
 import os
 import sys
 from pathlib import Path
@@ -146,9 +147,17 @@ def load_cspice() -> tuple[CDLL, str]:
         case _:
             shared_name = "libcspice.so"
 
-    relpath = parent / shared_name
-    if relpath.exists():
+    if sys.platform == "emscripten":
+        relpath = parent / shared_name
+    else:
+        # use importlib.resources rather than __file__ so editable installs
+        # (scikit-build-core redirect mode) find the library in site-packages
+        # even though this module is imported from the source tree
+        relpath = files("spiceypy.utils") / shared_name
+    if relpath.is_file():
         libspice_path = str(relpath)
+        # windows: cyice's pyd also needs this directory to find cspice.dll
+        add_dll_directory(libspice_path)
         logger.info(f"Using fallback library next to module: {libspice_path}")
         if lib := _try_load(libspice_path, "relative path fallback"):
             return lib, libspice_path
