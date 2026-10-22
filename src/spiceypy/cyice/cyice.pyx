@@ -1025,7 +1025,7 @@ def convrt(
         return convrt_v(x, inunit, outunit)
 
 
-cpdef tuple[float, float, float] cyllat_s(
+cpdef tuple[double, double, double] cyllat_s(
     r: float, 
     clon: float, 
     z: float
@@ -1209,7 +1209,7 @@ def cylrec(
         return cylrec_v(r, lon, z)
 
 
-cpdef tuple[float, float, float] cylsph_s(
+cpdef tuple[double, double, double] cylsph_s(
     r: float, 
     clon: float, 
     z: float
@@ -2206,6 +2206,7 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] georec_s(
         f,
         &c_rec[0]
     )
+    check_for_spice_error()
     return p_rec
 
 
@@ -2252,6 +2253,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] georec_v(
                 f,  
                 &c_rec[i, 0]
             )
+    check_for_spice_error()
     return p_rec
 
 
@@ -2320,10 +2322,10 @@ cpdef tuple[float, np.ndarray] getelm_s(
 
 @boundscheck(False)
 @wraparound(False)
-cpdef tuple[np.ndarray, np.ndarray] getelm_v(
-    int[::1] frstyr,  
+def getelm_v(
+    frstyr,
     np.ndarray lines
-    ):
+    ) -> tuple[np.ndarray, np.ndarray]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.getelm`
 
@@ -2340,7 +2342,7 @@ cpdef tuple[np.ndarray, np.ndarray] getelm_v(
             The elements converted to SPICE units (see naif docs for units).
     """
     # allocate outputs
-    cdef const np.uint32_t[::1] c_frstyr = np.ascontiguousarray(frstyr, dtype=np.uint32)
+    cdef const SpiceInt[::1] c_frstyr = np.asarray(frstyr).astype(np.int32, order='C', casting='same_kind', copy=False)
     cdef Py_ssize_t i, n = c_frstyr.shape[0]
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_epochs = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_epochs = p_epochs
@@ -3077,7 +3079,7 @@ def jyear() -> float:
 
 # L
 
-cpdef tuple[float, float, float] latcyl_s(
+cpdef tuple[double, double, double] latcyl_s(
     radius: float, 
     lon: float, 
     lat: float
@@ -3261,7 +3263,7 @@ def latrec(
         return latrec_v(radius, longitude, latitude)
 
 
-cpdef tuple[float, float, float] latsph_s(
+cpdef tuple[double, double, double] latsph_s(
     radius: float, 
     lon: float, 
     lat: float
@@ -3958,6 +3960,7 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] pgrrec_s(
         f,
         &c_rec[0]
     )
+    check_for_spice_error()
     return p_rec
 
 
@@ -4007,6 +4010,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] pgrrec_v(
                 f,  
                 &c_rec[i, 0]
             )
+    check_for_spice_error()
     return p_rec
 
 
@@ -4383,7 +4387,7 @@ def radrec(
 
 
 @boundscheck(False)
-cpdef tuple[float, float, float] recazl_s(
+cpdef tuple[double, double, double] recazl_s(
     double[::1] rectan,
     SpiceBoolean azccw,
     SpiceBoolean elplsz
@@ -4491,7 +4495,7 @@ def recazl(
 
 
 @boundscheck(False)
-cpdef tuple[float, float, float] reccyl_s(
+cpdef tuple[double, double, double] reccyl_s(
     double[::1] rectan
     ):
     """
@@ -4578,7 +4582,7 @@ def reccyl(
 
 
 @boundscheck(False)
-cpdef tuple[float, float, float] recgeo_s(
+cpdef tuple[double, double, double] recgeo_s(
     double[::1] rectan,
     double re,
     double f,
@@ -4610,6 +4614,7 @@ cpdef tuple[float, float, float] recgeo_s(
         &lat,
         &alt
     )
+    check_for_spice_error()
     return lon, lat, alt
 
 
@@ -4650,6 +4655,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recgeo_v(
                 &c_geo[i, 1],
                 &c_geo[i, 2]
             )
+    check_for_spice_error()
     return p_geo
 
 
@@ -4681,7 +4687,7 @@ def recgeo(
 
 
 @boundscheck(False)
-cpdef tuple[float, float, float] reclat_s(
+cpdef tuple[double, double, double] reclat_s(
     double[::1] rectan
     ):
     """
@@ -4759,7 +4765,7 @@ def reclat(
 
 
 @boundscheck(False)
-cpdef tuple[float, float, float] recpgr_s(
+cpdef tuple[double, double, double] recpgr_s(
     const char* body,
     double[::1] rectan,
     double re,
@@ -4794,6 +4800,7 @@ cpdef tuple[float, float, float] recpgr_s(
         &lat,
         &alt
     )
+    check_for_spice_error()
     return lon, lat, alt
 
 
@@ -4837,6 +4844,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recpgr_v(
                 &c_pgr[i, 1],
                 &c_pgr[i, 2]
             )
+    check_for_spice_error()
     return p_pgr
 
 
@@ -4870,7 +4878,7 @@ def recpgr(
 
 
 @boundscheck(False)
-cpdef tuple[float, float, float] recrad_s(
+cpdef tuple[double, double, double] recrad_s(
     double[::1] rectan
     ):
     """
@@ -4957,7 +4965,7 @@ def recrad(
 
 
 @boundscheck(False)
-cpdef tuple[float, float, float] recsph_s(
+cpdef tuple[double, double, double] recsph_s(
     double[::1] rectan
     ):
     """
@@ -5607,7 +5615,7 @@ def spd() -> float:
     return spd_c()
 
 
-cpdef tuple[float, float, float] sphcyl_s(
+cpdef tuple[double, double, double] sphcyl_s(
     radius: float, 
     colat: float, 
     slon: float
@@ -5710,7 +5718,7 @@ def sphcyl(
         return sphcyl_v(radius, colat, slon)
 
 
-cpdef tuple[float, float, float] sphlat_s(
+cpdef tuple[double, double, double] sphlat_s(
     r: float, 
     colat: float, 
     lons: float
@@ -8064,6 +8072,7 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] srfrec_s(
         latitude, 
         &c_rec[0],
     )
+    check_for_spice_error()
     return p_rec
 
 
@@ -8104,6 +8113,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] srfrec_v(
                 c_lat[i], 
                 &c_rec[i, 0]
             )
+    check_for_spice_error()
     return p_rec
 
 
@@ -9413,6 +9423,7 @@ def unload(str filename) -> None:
     """
     cdef const char* c_file = filename
     unload_c(c_file)
+    check_for_spice_error()
 
 
 def utc2et_s(const char* utcstr)-> float:

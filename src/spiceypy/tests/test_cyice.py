@@ -17,7 +17,13 @@ import pytest
 
 import spiceypy as spice
 from spiceypy import cyice
-from spiceypy.utils.exceptions import SpiceORBITDECAY
+from spiceypy.utils.exceptions import (
+    SpiceEMPTYSTRING,
+    SpiceIDCODENOTFOUND,
+    SpiceKERNELVARNOTFOUND,
+    SpiceORBITDECAY,
+    SpiceVALUEOUTOFRANGE,
+)
 from spiceypy.tests.gettestkernels import (
     download_kernels,
     CoreKernels,
@@ -128,6 +134,23 @@ def test_getelm_scalar_dispatch(ctor, load_core_kernels):
     expected_epoch, expected_elems = cyice.getelm_s(2019, tle_lines)
     assert epoch == expected_epoch
     npt.assert_array_equal(elems, expected_elems)
+
+
+@pytest.mark.parametrize("function", [cyice.getelm_v, cyice.getelm])
+@pytest.mark.parametrize(
+    "frstyr",
+    [
+        pytest.param(np.full(3, 2019, dtype=np.int64), id="ndarray_i8"),
+        pytest.param(np.full(3, 2019, dtype=np.int32), id="ndarray_i4"),
+        pytest.param(np.full(6, 2019, dtype=np.int64)[::2], id="ndarray_i8_strided"),
+    ],
+)
+def test_getelm_vector_int_dtypes(function, frstyr, load_core_kernels):
+    lines = np.array([tle_lines] * 3)
+    epochs, elems = function(frstyr, lines)
+    expected_epoch, expected_elems = spice.getelm(2019, tle_lines)
+    npt.assert_array_equal(epochs, np.full(3, expected_epoch))
+    npt.assert_array_equal(elems, np.repeat(expected_elems[None, :], 3, axis=0))
 
 
 # string-dispatching functions: str2et, utc2et, scencd, scs2e
@@ -272,3 +295,116 @@ def test_evsgp4_vector_error_recovery(function, error_index, decaying_satellite)
     ets[error_index] = epoch
     expected = np.repeat(spice.evsgp4(epoch, geophs, elems)[None, :], 3, axis=0)
     npt.assert_array_equal(function(ets, geophs, elements), expected)
+
+
+rect = np.array([1000.0, 2000.0, 3000.0])
+rects = np.array([rect, rect * 2.0, rect * 3.0])
+lons = np.array([0.1, 0.2, 0.3])
+lats = np.array([0.4, 0.5, 0.6])
+alts = np.array([1.0, 2.0, 3.0])
+
+# (cyice function, bad args, good args, expected error, ctypes equivalent)
+error_cases = [
+    pytest.param(
+        cyice.georec_s,
+        (0.1, 0.4, 1.0, -1.0, 0.5),
+        (0.1, 0.4, 1.0, 6378.0, 0.003),
+        SpiceVALUEOUTOFRANGE,
+        spice.georec,
+        id="georec_s",
+    ),
+    pytest.param(
+        cyice.georec_v,
+        (lons, lats, alts, -1.0, 0.5),
+        (lons, lats, alts, 6378.0, 0.003),
+        SpiceVALUEOUTOFRANGE,
+        None,
+        id="georec_v",
+    ),
+    pytest.param(
+        cyice.recgeo_s,
+        (rect, 6378.0, 2.0),
+        (rect, 6378.0, 0.003),
+        SpiceVALUEOUTOFRANGE,
+        spice.recgeo,
+        id="recgeo_s",
+    ),
+    pytest.param(
+        cyice.recgeo_v,
+        (rects, 6378.0, 2.0),
+        (rects, 6378.0, 0.003),
+        SpiceVALUEOUTOFRANGE,
+        None,
+        id="recgeo_v",
+    ),
+    pytest.param(
+        cyice.pgrrec_s,
+        ("NOTABODY", 0.1, 0.4, 1.0, 3396.0, 0.006),
+        ("MARS", 0.1, 0.4, 1.0, 3396.0, 0.006),
+        SpiceIDCODENOTFOUND,
+        spice.pgrrec,
+        id="pgrrec_s",
+    ),
+    pytest.param(
+        cyice.pgrrec_v,
+        ("NOTABODY", lons, lats, alts, 3396.0, 0.006),
+        ("MARS", lons, lats, alts, 3396.0, 0.006),
+        SpiceIDCODENOTFOUND,
+        None,
+        id="pgrrec_v",
+    ),
+    pytest.param(
+        cyice.recpgr_s,
+        ("NOTABODY", rect, 3396.0, 0.006),
+        ("MARS", rect, 3396.0, 0.006),
+        SpiceIDCODENOTFOUND,
+        spice.recpgr,
+        id="recpgr_s",
+    ),
+    pytest.param(
+        cyice.recpgr_v,
+        ("NOTABODY", rects, 3396.0, 0.006),
+        ("MARS", rects, 3396.0, 0.006),
+        SpiceIDCODENOTFOUND,
+        None,
+        id="recpgr_v",
+    ),
+    pytest.param(
+        cyice.srfrec_s,
+        (-99999, 0.1, 0.4),
+        (399, 0.1, 0.4),
+        SpiceKERNELVARNOTFOUND,
+        spice.srfrec,
+        id="srfrec_s",
+    ),
+    pytest.param(
+        cyice.srfrec_v,
+        (-99999, lons, lats),
+        (399, lons, lats),
+        SpiceKERNELVARNOTFOUND,
+        None,
+        id="srfrec_v",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "function, bad_args, good_args, error, ctypes_function", error_cases
+)
+def test_error_recovery(
+    function, bad_args, good_args, error, ctypes_function, load_core_kernels
+):
+    with pytest.raises(error):
+        function(*bad_args)
+    assert not spice.failed()
+    result = function(*good_args)
+    if ctypes_function is not None:
+        npt.assert_allclose(result, ctypes_function(*good_args), rtol=1e-14)
+
+
+def test_unload_error_recovery(load_core_kernels):
+    with pytest.raises(SpiceEMPTYSTRING):
+        cyice.unload("")
+    assert not spice.failed()
+    cyice.unload(CoreKernels.testMetaKernel)
+    assert spice.ktotal("ALL") == 0
