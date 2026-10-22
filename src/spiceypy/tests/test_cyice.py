@@ -1,5 +1,5 @@
 """
-Unit tests for cyice top-level function dispatching.
+Unit tests for cyice top-level function dispatching and error handling.
 
 The top-level cyice functions (no _s/_v suffix) inspect their key argument
 and route to the scalar (_s) or vectorized (_v) implementation. These tests
@@ -8,8 +8,7 @@ scalars, numpy scalars, 0-d numpy arrays, and 1-d numpy arrays. They also
 cover the ndim guards on the string-input _v functions.
 
 Benchmark coverage for the same functions lives in
-spiceypy/benchmarks/test_cyice.py; this file is only for
-dispatch correctness.
+spiceypy/benchmarks/test_cyice.py.
 """
 
 import numpy as np
@@ -18,6 +17,7 @@ import pytest
 
 import spiceypy as spice
 from spiceypy import cyice
+from spiceypy.utils.exceptions import SpiceORBITDECAY
 from spiceypy.tests.gettestkernels import (
     download_kernels,
     CoreKernels,
@@ -42,11 +42,11 @@ def load_voyager_kernels():
 
 @pytest.fixture(autouse=True)
 def clear_kernel_pool_and_reset():
-    spice.kclear()
     spice.reset()
+    spice.kclear()
     yield
-    spice.kclear()
     spice.reset()
+    spice.kclear()
 
 
 # constructors producing every scalar-like numeric form a user might pass
@@ -61,6 +61,7 @@ numeric_scalar_ctors = [
     pytest.param(lambda x: np.int64(x), id="np_int64"),
     pytest.param(lambda x: np.array(int(x), dtype=np.int64), id="ndarray_0d_i8"),
 ]
+
 
 # constructors producing every scalar-like string form
 string_scalar_ctors = [
@@ -232,3 +233,42 @@ def test_numeric_dispatch_rejects_0d_string(load_core_kernels):
     # which rejects it via the buffer protocol
     with pytest.raises((ValueError, TypeError)):
         cyice.spkssb(499, np.array("not a time"), "J2000")
+
+
+@pytest.fixture
+def decaying_satellite(load_core_kernels):
+    spice.furnsh(ExtraKernels.geophKer)
+    # SL-14 debris from Vallado's SGP4 verification data.
+    line1 = "1 29141U 85108AA  06170.26783845  .99999999  00000-0  13519-0 0   718"
+    line2 = "2 29141  82.4288 273.4882 0015848 277.2124  83.9133 15.93343074  6828"
+    tle = [line1, line2]
+    names = ["J2", "J3", "J4", "KE", "QO", "SO", "ER", "AE"]
+    geophs = np.array([spice.bodvcd(399, name, 1)[1] for name in names]).ravel()
+    epoch, elems = spice.getelm(1957, tle)
+    return epoch, geophs, elems
+
+
+@pytest.mark.parametrize("function", [cyice.evsgp4_s, cyice.evsgp4])
+def test_evsgp4_scalar_error_recovery(function, decaying_satellite):
+    epoch, geophs, elems = decaying_satellite
+    with pytest.raises(SpiceORBITDECAY):
+        function(epoch + 440 * 60, geophs, elems)
+    assert not spice.failed()
+    npt.assert_array_equal(
+        function(epoch, geophs, elems), spice.evsgp4(epoch, geophs, elems)
+    )
+
+
+@pytest.mark.parametrize("function", [cyice.evsgp4_v, cyice.evsgp4])
+@pytest.mark.parametrize("error_index", [0, 1, 2])
+def test_evsgp4_vector_error_recovery(function, error_index, decaying_satellite):
+    epoch, geophs, elems = decaying_satellite
+    ets = np.full(3, epoch)
+    ets[error_index] += 440 * 60
+    elements = np.repeat(elems[None, :], 3, axis=0)
+    with pytest.raises(SpiceORBITDECAY):
+        function(ets, geophs, elements)
+    assert not spice.failed()
+    ets[error_index] = epoch
+    expected = np.repeat(spice.evsgp4(epoch, geophs, elems)[None, :], 3, axis=0)
+    npt.assert_array_equal(function(ets, geophs, elements), expected)

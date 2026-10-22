@@ -1797,6 +1797,7 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] evsgp4_s(
         &c_elems[0],
         &c_state[0]
     )
+    check_for_spice_error()
     # return state
     return p_state
 
@@ -1842,6 +1843,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] evsgp4_v(
                 &c_elems[i, 0],
                 &c_states[i, 0]
             )
+    check_for_spice_error()
     # return states
     return p_states
 
