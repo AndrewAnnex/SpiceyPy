@@ -2323,7 +2323,7 @@ cpdef tuple[float, np.ndarray] getelm_s(
 @boundscheck(False)
 @wraparound(False)
 def getelm_v(
-    int_arr_t frstyr,
+    frstyr,
     np.ndarray lines
     ) -> tuple[np.ndarray, np.ndarray]:
     """
@@ -2342,7 +2342,8 @@ def getelm_v(
             The elements converted to SPICE units (see naif docs for units).
     """
     # allocate outputs
-    cdef Py_ssize_t i, n = frstyr.shape[0]
+    cdef const SpiceInt[::1] c_frstyr = np.asarray(frstyr).astype(np.int32, order='C', casting='same_kind', copy=False)
+    cdef Py_ssize_t i, n = c_frstyr.shape[0]
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_epochs = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_epochs = p_epochs
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_elems = np.empty((n,10), dtype=np.double, order='C')
@@ -2355,7 +2356,7 @@ def getelm_v(
         c_lines = make_char_array(lines[i], TLELEN)
         c_lines_ptr = &c_lines[0, 0]
         getelm_c(
-            <SpiceInt> frstyr[i],
+            c_frstyr[i],
             TLELEN,
             c_lines_ptr,
             &c_epochs[i],
