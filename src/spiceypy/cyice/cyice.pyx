@@ -90,6 +90,11 @@ String_N    = Annotated[StringArray, Literal["N"]]
 Found_N     = Annotated[BoolArray, Literal["N"]]
 Int_N       = Annotated[IntArray, Literal["N"]]
 Double_N    = Annotated[DoubleArray, Literal["N"]]
+Double_5    = Annotated[DoubleArray, Literal[5]]
+Double_8    = Annotated[DoubleArray, Literal[8]]
+Double_10   = Annotated[DoubleArray, Literal[10]]
+Double_N_8  = Annotated[DoubleArray, Literal["N", 8]]
+Double_N_10 = Annotated[DoubleArray, Literal["N", 10]]
 Vector      = Annotated[DoubleArray, Literal[3]]
 Vector_N    = Annotated[DoubleArray, Literal["N", 3]]
 Cylindrical_N    = Annotated[DoubleArray, Literal["N", 3]]
@@ -312,7 +317,7 @@ cpdef tuple[np.ndarray, float] azlcpo_s(
     const char * abcorr,
     SpiceBoolean azccw,
     SpiceBoolean elplsz,
-    obspos,
+    obspos: Vector,
     const char * obsctr,
     const char * obsref
     ):
@@ -366,11 +371,11 @@ cpdef tuple[np.ndarray, float] azlcpo_s(
 cpdef tuple[np.ndarray, np.ndarray] azlcpo_v(
     const char* method,
     const char* target,
-    ets,
+    ets: Double_N,
     const char* abcorr,
     SpiceBoolean azccw,
     SpiceBoolean elplsz,
-    obspos,
+    obspos: Vector_N,
     const char* obsctr,
     const char* obsref
     ):
@@ -510,9 +515,9 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] azlrec_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] azlrec_v(
-    inrange, 
-    az, 
-    el,
+    inrange: Double_N, 
+    az: Double_N, 
+    el: Double_N,
     SpiceBoolean azccw,
     SpiceBoolean elplsz
     ):
@@ -659,7 +664,7 @@ def ckgp_s(
 @cyice_found_exception_thrower
 def ckgp_v(
     int inst,
-    sclkdps,
+    sclkdps: Double_N,
     double tol,
     const char* c_ref
     )-> tuple[Matrix_N, Double_N, Found_N] | tuple[Matrix_N, Double_N]:
@@ -791,7 +796,7 @@ def ckgpav_s(
 @cyice_found_exception_thrower
 def ckgpav_v(
     int    inst,
-    sclkdps,
+    sclkdps: Double_N,
     double tol,
     const char* c_ref
     ) -> tuple[Matrix_N, Vector_N, Double_N, Found_N] | tuple[Matrix_N, Vector_N, Double_N]:
@@ -886,7 +891,7 @@ def clight() -> float:
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=1, mode='c'] conics_s(
-    elts,
+    elts: Double_8,
     double et,
     ):
     """
@@ -918,8 +923,8 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] conics_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] conics_v(
-    elts,
-    ets,
+    elts: Double_N_8,
+    ets: Double_N,
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.conics`
@@ -1010,7 +1015,7 @@ def convrt_s(
 @boundscheck(False)
 @wraparound(False)
 def convrt_v(
-    x,
+    x: Double_N,
     const char* inunit,
     const char* outunit
     ) -> Double_N:
@@ -1104,9 +1109,9 @@ cpdef tuple[double, double, double] cyllat_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] cyllat_v(
-    r, 
-    clon, 
-    z
+    r: Double_N, 
+    clon: Double_N, 
+    z: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.cyllat`
@@ -1196,9 +1201,9 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] cylrec_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] cylrec_v(
-    r, 
-    lon, 
-    z
+    r: Double_N, 
+    lon: Double_N, 
+    z: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.cylrec`
@@ -1291,9 +1296,9 @@ cpdef tuple[double, double, double] cylsph_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] cylsph_v(
-    r, 
-    clon, 
-    z
+    r: Double_N, 
+    clon: Double_N, 
+    z: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.cylsph`
@@ -1391,7 +1396,7 @@ def deltet_s(
 @boundscheck(False)
 @wraparound(False)
 def deltet_v(
-    epochs,
+    epochs: Double_N,
     const char* eptype
     ) -> Double_N:
     """
@@ -1515,7 +1520,7 @@ def et2lst_s(
 @boundscheck(False)
 @wraparound(False)
 def et2lst_v(
-    ets,
+    ets: Double_N,
     int body,
     double lon,
     const char* typein
@@ -1654,7 +1659,7 @@ def et2utc_s(
 @boundscheck(False)
 @wraparound(False)
 def et2utc_v(
-    ets,
+    ets: Double_N,
     const char* format_str,
     int prec
     ) -> String_N:
@@ -1754,7 +1759,7 @@ def etcal_s(
 @boundscheck(False)
 @wraparound(False)
 def etcal_v(
-    ets
+    ets: Double_N
     ) -> String_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.etcal`
@@ -1814,8 +1819,8 @@ def etcal(
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=1, mode='c'] evsgp4_s(
     double et,
-    geophs,
-    elems
+    geophs: Double_8,
+    elems: Double_10
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.evsgp4`
@@ -1853,9 +1858,9 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] evsgp4_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] evsgp4_v(
-    ets,
-    geophs,
-    elems
+    ets: Double_N,
+    geophs: Double_8,
+    elems: Double_N_10
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.evsgp4`
@@ -1938,7 +1943,7 @@ cpdef SpiceBoolean failed() noexcept:
 @wraparound(False)
 def fovray_s(
     const char* inst,
-    raydir,
+    raydir: Vector,
     const char* rframe,
     const char* abcorr,
     const char* observer,
@@ -1989,11 +1994,11 @@ def fovray_s(
 @wraparound(False)
 def fovray_v(
     const char* inst,
-    raydir,
+    raydir: Vector,
     const char* rframe,
     const char* abcorr,
     const char* observer,
-    ets
+    ets: Double_N
 ) -> BoolArray:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.fovray`
@@ -2267,9 +2272,9 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] georec_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] georec_v(
-    lon,
-    lat,
-    alt,
+    lon: Double_N,
+    lat: Double_N,
+    alt: Double_N,
     double re,
     double f,
     ):
@@ -2504,7 +2509,7 @@ cpdef tuple[float, np.ndarray, float, float, float, bool, bool] illumf_s(
     const char * fixref,
     const char * abcorr,
     const char * obsrvr,
-    spoint,
+    spoint: Vector,
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.illumf`
@@ -2578,11 +2583,11 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarr
     const char* method,
     const char* target,
     const char* ilusrc,
-    ets,
+    ets: Double_N,
     const char* fixref,
     const char* abcorr,
     const char* obsrvr,
-    spoints,
+    spoints: Vector_N,
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.illumf`
@@ -2723,7 +2728,7 @@ cpdef tuple[float, np.ndarray, float, float, float] illumg_s(
     const char* fixref,
     const char* abcorr,
     const char* obsrvr,
-    spoint,
+    spoint: Vector,
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.illumg`
@@ -2789,11 +2794,11 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray] illumg_v
     const char* method,
     const char* target,
     const char* ilusrc,
-    ets,
+    ets: Double_N,
     const char* fixref,
     const char* abcorr,
     const char* obsrvr,
-    spoint,
+    spoint: Vector_N,
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.illumg`
@@ -2918,7 +2923,7 @@ cpdef tuple[float, np.ndarray, float, float, float] ilumin_s(
     const char* fixref,
     const char* abcorr,
     const char* obsrvr,
-    spoint,
+    spoint: Vector,
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.ilumin`
@@ -2974,11 +2979,11 @@ cpdef tuple[float, np.ndarray, float, float, float] ilumin_s(
 cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray] ilumin_v(
     const char* method,
     const char* target,
-    ets,
+    ets: Double_N,
     const char* fixref,
     const char* abcorr,
     const char* obsrvr,
-    spoint,
+    spoint: Vector_N,
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.ilumin`
@@ -3173,9 +3178,9 @@ cpdef tuple[double, double, double] latcyl_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latcyl_v(
-    radius, 
-    lon, 
-    lat
+    radius: Double_N, 
+    lon: Double_N, 
+    lat: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.latcyl`
@@ -3265,9 +3270,9 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] latrec_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latrec_v(
-    radius, 
-    longitude, 
-    latitude
+    radius: Double_N, 
+    longitude: Double_N, 
+    latitude: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.latrec`
@@ -3357,9 +3362,9 @@ cpdef tuple[double, double, double] latsph_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latsph_v(
-    radius, 
-    lon, 
-    lat
+    radius: Double_N, 
+    lon: Double_N, 
+    lat: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.latsph`
@@ -3427,7 +3432,7 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] limbpt_s(
     const char * abcorr,
     const char * corloc,
     const char * obsrvr,
-    refvec,
+    refvec: Vector,
     double rolstp,
     int ncuts,
     double schstp,
@@ -3510,12 +3515,12 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] limbpt_s(
 cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] limbpt_v(
     const char * method,
     const char * target,
-    ets,
+    ets: Double_N,
     const char * fixref,
     const char * abcorr,
     const char * corloc,
     const char * obsrvr,
-    refvec,
+    refvec: Vector,
     double rolstp,
     int ncuts,
     double schstp,
@@ -3683,7 +3688,7 @@ def lspcn_s(
 @wraparound(False)
 def lspcn_v(
     const char* body,
-    ets,
+    ets: Double_N,
     const char* abcorr
     ) -> Double_N:
     """
@@ -3802,7 +3807,7 @@ cpdef np.ndarray[np.int32_t, ndim=1, mode='c'] occult_v(
     const char* frame2,
     const char* abcorr,
     const char* observer,
-    ets,
+    ets: Double_N,
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.occult`
@@ -3885,7 +3890,7 @@ def occult(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=1, mode='c'] oscelt_s(
-    state,
+    state: State,
     double et,
     double mu,
     ):
@@ -3921,8 +3926,8 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] oscelt_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] oscelt_v(
-    state,
-    et,
+    state: State_N,
+    et: Double_N,
     double mu,
     ):
     """
@@ -4030,9 +4035,9 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] pgrrec_s(
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] pgrrec_v(
     const char* body,
-    lon,
-    lat,
-    alt,
+    lon: Double_N,
+    lat: Double_N,
+    alt: Double_N,
     double re,
     double f,
     ):
@@ -4141,7 +4146,7 @@ cpdef double phaseq_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=1, mode='c'] phaseq_v(
-    et,
+    et: Double_N,
     const char* target,
     const char* illmn,
     const char* obsrvr,
@@ -4262,7 +4267,7 @@ def pxform_s(
 def pxform_v(
     const char* fromstr,
     const char* tostr,
-    ets
+    ets: Double_N
     ) -> Matrix_N_3:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.pxform`
@@ -4388,9 +4393,9 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] radrec_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] radrec_v(
-    inrange, 
-    ra, 
-    dec
+    inrange: Double_N, 
+    ra: Double_N, 
+    dec: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.radrec`
@@ -4450,7 +4455,7 @@ def radrec(
 
 @boundscheck(False)
 cpdef tuple[double, double, double] recazl_s(
-    rectan,
+    rectan: Vector,
     SpiceBoolean azccw,
     SpiceBoolean elplsz
     ):
@@ -4490,7 +4495,7 @@ cpdef tuple[double, double, double] recazl_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recazl_v(
-    rectan, 
+    rectan: Rectangular_N, 
     const SpiceBoolean azccw, 
     const SpiceBoolean elplsz
     ):
@@ -4562,7 +4567,7 @@ def recazl(
 
 @boundscheck(False)
 cpdef tuple[double, double, double] reccyl_s(
-    rectan
+    rectan: Vector
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.reccyl`
@@ -4595,7 +4600,7 @@ cpdef tuple[double, double, double] reccyl_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] reccyl_v(
-    rectan
+    rectan: Rectangular_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.reccyl`
@@ -4653,7 +4658,7 @@ def reccyl(
 
 @boundscheck(False)
 cpdef tuple[double, double, double] recgeo_s(
-    rectan,
+    rectan: Vector,
     double re,
     double f,
     ):
@@ -4693,7 +4698,7 @@ cpdef tuple[double, double, double] recgeo_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recgeo_v(
-    rectan,
+    rectan: Rectangular_N,
     double re,
     double f,
     ):
@@ -4762,7 +4767,7 @@ def recgeo(
 
 @boundscheck(False)
 cpdef tuple[double, double, double] reclat_s(
-    rectan
+    rectan: Vector
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.reclat`
@@ -4792,7 +4797,7 @@ cpdef tuple[double, double, double] reclat_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] reclat_v(
-    rectan
+    rectan: Rectangular_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.reclat`
@@ -4845,7 +4850,7 @@ def reclat(
 @boundscheck(False)
 cpdef tuple[double, double, double] recpgr_s(
     const char* body,
-    rectan,
+    rectan: Vector,
     double re,
     double f,
     ):
@@ -4888,7 +4893,7 @@ cpdef tuple[double, double, double] recpgr_s(
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recpgr_v(
     const char* body,
-    rectan,
+    rectan: Rectangular_N,
     double re,
     double f,
     ):
@@ -4961,7 +4966,7 @@ def recpgr(
 
 @boundscheck(False)
 cpdef tuple[double, double, double] recrad_s(
-    rectan
+    rectan: Vector
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.recrad`
@@ -4994,7 +4999,7 @@ cpdef tuple[double, double, double] recrad_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recrad_v(
-    rectan
+    rectan: Rectangular_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.recrad`
@@ -5052,7 +5057,7 @@ def recrad(
 
 @boundscheck(False)
 cpdef tuple[double, double, double] recsph_s(
-    rectan
+    rectan: Vector
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.recsph`
@@ -5085,7 +5090,7 @@ cpdef tuple[double, double, double] recsph_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recsph_v(
-    rectan
+    rectan: Rectangular_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.recsph`
@@ -5199,7 +5204,7 @@ def scdecd_s(
 @wraparound(False)
 def scdecd_v(
     int sc,
-    sclkdps
+    sclkdps: Double_N
     ) -> String_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.scdecd`
@@ -5379,7 +5384,7 @@ def sce2c_s(
 @wraparound(False)
 def sce2c_v(
     int sc,
-    ets
+    ets: Double_N
 ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sce2c`
@@ -5469,7 +5474,7 @@ def sce2s_s(
 @wraparound(False)
 def sce2s_v(
     int sc,
-    ets
+    ets: Double_N
     ) -> String_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sce2s`
@@ -5644,7 +5649,7 @@ def sct2e_s(
 @wraparound(False)
 def sct2e_v(
     int sc,
-    sclkdps
+    sclkdps: Double_N
     ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sct2e`
@@ -5742,9 +5747,9 @@ cpdef tuple[double, double, double] sphcyl_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphcyl_v(
-    radius, 
-    colat, 
-    slon
+    radius: Double_N, 
+    colat: Double_N, 
+    slon: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sphcyl`
@@ -5845,9 +5850,9 @@ cpdef tuple[double, double, double] sphlat_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphlat_v(
-    r, 
-    colat, 
-    lons
+    r: Double_N, 
+    colat: Double_N, 
+    lons: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sphlat`
@@ -5943,9 +5948,9 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] sphrec_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphrec_v(
-    r, 
-    colat, 
-    lons
+    r: Double_N, 
+    colat: Double_N, 
+    lons: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sphrec`
@@ -6007,7 +6012,7 @@ def spkapo_s(
     int targ,
     double et,
     const char* ref,
-    sobs,
+    sobs: State,
     const char* abcorr
     ) -> tuple[Vector, float]:
     """
@@ -6057,9 +6062,9 @@ def spkapo_s(
 @wraparound(False)
 def spkapo_v(
     int targ,
-    ets,
+    ets: Double_N,
     const char* ref,
-    sobs,
+    sobs: State,
     const char* abcorr
     ) -> tuple[Vector_N, Double_N]:
     """
@@ -6145,7 +6150,7 @@ def spkcpo_s(
     const char* outref,
     const char* refloc,
     const char* abcorr,
-    obspos,
+    obspos: Vector,
     const char* obsctr,
     const char* obsref
     ) -> tuple[State, float]:
@@ -6209,11 +6214,11 @@ def spkcpo_s(
 @wraparound(False)
 def spkcpo_v(
     const char* target,
-    ets,
+    ets: Double_N,
     const char* outref,
     const char* refloc,
     const char* abcorr,
-    obspos,
+    obspos: Vector,
     const char* obsctr,
     const char* obsref) -> tuple[State_N, Double_N]:
     """
@@ -6313,7 +6318,7 @@ def spkcpo(
 @boundscheck(False)
 @wraparound(False)
 def spkcpt_s(
-    trgpos,
+    trgpos: Vector,
     const char* trgctr,
     const char* trgref,
     double et,
@@ -6382,10 +6387,10 @@ def spkcpt_s(
 @boundscheck(False)
 @wraparound(False)
 def spkcpt_v(
-    trgpos,
+    trgpos: Vector,
     const char* trgctr,
     const char* trgref,
-    ets,
+    ets: Double_N,
     const char* outref,
     const char* refloc,
     const char* abcorr,
@@ -6496,7 +6501,7 @@ def spkcvo_s(
     const char* outref,
     const char* refloc,
     const char* abcorr,
-    obssta,
+    obssta: State,
     double obsepc,
     const char* obsctr,
     const char* obsref)-> tuple[State, float]:
@@ -6564,11 +6569,11 @@ def spkcvo_s(
 @wraparound(False)
 def spkcvo_v(
     const char* target,
-    ets,
+    ets: Double_N,
     const char* outref,
     const char* refloc,
     const char* abcorr,
-    obssta,
+    obssta: State,
     double obsepc,
     const char* obsctr,
     const char* obsref)-> tuple[State_N, Double_N]:
@@ -6677,7 +6682,7 @@ def spkcvo(
 @boundscheck(False)
 @wraparound(False)
 def spkcvt_s(
-    trgsta,
+    trgsta: State,
     double trgepc,
     const char* trgctr,
     const char* trgref,
@@ -6749,11 +6754,11 @@ def spkcvt_s(
 @boundscheck(False)
 @wraparound(False)
 def spkcvt_v(
-    trgsta,
+    trgsta: State,
     double trgepc,
     const char* trgctr,
     const char* trgref,
-    ets,
+    ets: Double_N,
     const char* outref,
     const char* refloc,
     const char* abcorr,
@@ -6915,7 +6920,7 @@ def spkez_s(
 @wraparound(False)
 def spkez_v(
     int targ,
-    et,
+    et: Double_N,
     const char* ref,
     const char* abcorr,
     int obs)-> tuple[State_N, Double_N]:
@@ -7051,7 +7056,7 @@ def spkezp_s(
 @wraparound(False)
 def spkezp_v(
     int targ,
-    et,
+    et: Double_N,
     const char* ref,
     const char* abcorr,
     int obs
@@ -7186,7 +7191,7 @@ def spkezr_s(
 @wraparound(False)
 def spkezr_v(
     const char* targ,
-    et,
+    et: Double_N,
     const char* ref,
     const char* abcorr,
     const char* obs)-> tuple[State_N, Double_N]:
@@ -7319,7 +7324,7 @@ def spkgeo_s(
 @wraparound(False)
 def spkgeo_v(
     int targ,
-    ets,
+    ets: Double_N,
     const char* ref,
     int obs,
     )-> tuple[State_N, Double_N]:
@@ -7443,7 +7448,7 @@ def spkgps_s(
 @wraparound(False)
 def spkgps_v(
     int targ,
-    ets,
+    ets: Double_N,
     const char* ref,
     int obs,
     ) -> tuple[Vector_N, Double_N]:
@@ -7568,7 +7573,7 @@ def spkpos_s(
 @wraparound(False)
 def spkpos_v(
     const char* targ,
-    ets,
+    ets: Double_N,
     const char* ref,
     const char* abcorr,
     const char* obs
@@ -7654,7 +7659,7 @@ def spkpos(
 @wraparound(False)
 def spkpvn_s(
     int handle,
-    descr,
+    descr: Double_5,
     double et
     ) -> tuple[int, State, int]:
     """
@@ -7705,8 +7710,8 @@ def spkpvn_s(
 @wraparound(False)
 def spkpvn_v(
     int handle,
-    descr,
-    ets
+    descr: Double_5,
+    ets: Double_N
     ) -> tuple[Int_N, State_N, Int_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkpvn`
@@ -7826,7 +7831,7 @@ def spkssb_s(
 @wraparound(False)
 def spkssb_v(
     int targ,
-    ets,
+    ets: Double_N,
     const char* ref,
     ) -> State_N:
     """
@@ -7982,7 +7987,7 @@ def sincpt_s(
     const char* abcorr,
     const char* obsrvr,
     const char* dref,
-    dvec
+    dvec: Vector
     ) -> tuple[Vector, float, Vector, bool]:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.sincpt`
@@ -8051,12 +8056,12 @@ def sincpt_s(
 def sincpt_v(
     const char* method,
     const char* target,
-    ets,
+    ets: Double_N,
     const char* fixref,
     const char* abcorr,
     const char* obsrvr,
     const char* dref,
-    dvec
+    dvec: Vector
     ) -> tuple[Vector_N, Double_N, Vector_N, Found_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sincpt`
@@ -8196,8 +8201,8 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] srfrec_s(
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] srfrec_v(
     int body, 
-    longitude, 
-    latitude
+    longitude: Double_N, 
+    latitude: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.srfrec`
@@ -8321,7 +8326,7 @@ def subpnt_s(
 def subpnt_v(
     const char* method,
     const char* target,
-    ets,
+    ets: Double_N,
     const char* fixref,
     const char* abcorr,
     const char* obsrvr
@@ -8481,7 +8486,7 @@ def subslr_s(
 def subslr_v(
     const char* method,
     const char* target,
-    ets,
+    ets: Double_N,
     const char* fixref,
     const char* abcorr,
     const char* obsrvr
@@ -8620,7 +8625,7 @@ def sxform_s(
 def sxform_v(
     const char* instring,
     const char* tostring,
-    ets
+    ets: Double_N
     ) -> Matrix_N_6:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sxform`
@@ -8693,7 +8698,7 @@ def tangpt_s(
     const char* corloc,
     const char* obsrvr,
     const char* dref,
-    dvec
+    dvec: Vector
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.tangpt`
@@ -8775,13 +8780,13 @@ def tangpt_s(
 def tangpt_v(
     const char* method,
     const char* target,
-    ets,
+    ets: Double_N,
     const char* fixref,
     const char* abcorr,
     const char* corloc,
     const char* obsrvr,
     const char* dref,
-    dvec
+    dvec: Vector
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.tangpt`
@@ -8920,7 +8925,7 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] termpt_s(
     const char * abcorr,
     const char * corloc,
     const char * obsrvr,
-    refvec,
+    refvec: Vector,
     double rolstp,
     int ncuts,
     double schstp,
@@ -9012,12 +9017,12 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] termpt_v(
     const char * method,
     const char * ilusrc,
     const char * target,
-    ets,
+    ets: Double_N,
     const char * fixref,
     const char * abcorr,
     const char * corloc,
     const char * obsrvr,
-    refvec,
+    refvec: Vector,
     double rolstp,
     int ncuts,
     double schstp,
@@ -9200,7 +9205,7 @@ def timout_s(
 @boundscheck(False)
 @wraparound(False)
 def timout_v(
-    ets,
+    ets: Double_N,
     const char* pictur
     ) -> String_N:
     """
@@ -9319,7 +9324,7 @@ def trgsep_s(
 @boundscheck(False)
 @wraparound(False)
 def trgsep_v(
-    ets,
+    ets: Double_N,
     const char* targ1,
     const char* shape1,
     const char* frame1,
@@ -9473,7 +9478,7 @@ def unitim_s(
 @boundscheck(False)
 @wraparound(False)
 def unitim_v(
-        epochs,
+        epochs: Double_N,
         insys: str | np.str_,
         outsys: str | np.str_,
     ) -> Double_N:
@@ -9628,7 +9633,7 @@ def utc2et(utcstr: str | String_N)-> float | Double_N:
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=1, mode='c'] xfmsta_s(
-    input_state, 
+    input_state: State, 
     const char* input_coord_sys,
     const char* output_coord_sys,
     const char* body,
@@ -9669,7 +9674,7 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] xfmsta_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] xfmsta_v(
-    input_state, 
+    input_state: State_N, 
     const char* input_coord_sys,
     const char* output_coord_sys,
     const char* body,
