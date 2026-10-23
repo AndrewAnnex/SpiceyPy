@@ -525,3 +525,54 @@ def test_ckg_v_found_flags(function, load_core_kernels, monkeypatch):
     assert found.dtype == np.uint8
     npt.assert_array_equal(found, [1, 0, 1])
 
+
+
+# array-like inputs: double array params go through _as_double_array, so
+# lists of floats and strided or read-only float64 views are accepted, while
+# any other dtype raises TypeError instead of being converted to double
+
+array_like_ctors = [
+    pytest.param(lambda a: np.repeat(np.asarray(a, dtype=np.double)[..., None], 2, axis=-1)[..., 0], id="strided"),
+    pytest.param(lambda a: np.asarray(a, dtype=np.double).tolist(), id="float-list"),
+]
+
+non_float64_ctors = [
+    pytest.param(lambda a: np.asarray(a, dtype=np.int64), id="int64"),
+    pytest.param(lambda a: np.asarray(a, dtype=np.int64).tolist(), id="int-list"),
+    pytest.param(lambda a: np.asarray(a, dtype=np.bool_), id="bool"),
+    pytest.param(lambda a: np.asarray(a, dtype=np.float32), id="float32"),
+]
+
+array_like_calls = [
+    pytest.param(lambda ctor: cyice.convrt_v(ctor([1, 2]), "KM", "M"), id="convrt_v"),
+    pytest.param(lambda ctor: cyice.convrt(ctor([1, 2]), "KM", "M"), id="convrt"),
+    pytest.param(lambda ctor: cyice.reclat_s(ctor([1, 2, 3])), id="reclat_s"),
+    pytest.param(lambda ctor: cyice.reclat(ctor([1, 2, 3])), id="reclat-1d"),
+    pytest.param(lambda ctor: cyice.reclat(ctor([[1, 2, 3], [4, 5, 6]])), id="reclat-2d"),
+    pytest.param(lambda ctor: cyice.cyllat_v(ctor([1, 2]), ctor([0, 1]), ctor([3, 4])), id="cyllat_v"),
+    pytest.param(lambda ctor: cyice.etcal(ctor([0, 3600])), id="etcal"),
+    pytest.param(lambda ctor: cyice.spkpos_v("MOON", ctor([0, 3600]), "J2000", "NONE", "EARTH"), id="spkpos_v"),
+]
+
+
+@pytest.mark.parametrize("ctor", array_like_ctors)
+@pytest.mark.parametrize("call", array_like_calls)
+def test_accepts_array_like_inputs(call, ctor, load_core_kernels):
+    expected = call(lambda a: np.asarray(a, dtype=np.double))
+    actual = call(ctor)
+    if not isinstance(actual, tuple):
+        actual, expected = (actual,), (expected,)
+    for a, e in zip(actual, expected):
+        npt.assert_array_equal(a, e)
+
+
+@pytest.mark.parametrize("ctor", non_float64_ctors)
+@pytest.mark.parametrize("call", array_like_calls)
+def test_rejects_non_float64_array_inputs(call, ctor, load_core_kernels):
+    with pytest.raises(TypeError, match="expected a float64 array"):
+        call(ctor)
+
+
+def test_array_input_wrong_ndim():
+    with pytest.raises(ValueError, match="expected a 1-D array, got 2-D"):
+        cyice.reclat_s(np.ones((1, 3)))
