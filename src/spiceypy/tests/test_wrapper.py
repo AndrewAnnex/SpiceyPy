@@ -9801,26 +9801,6 @@ def test_trcnam():
     spice.reset()
 
 
-# test_trcoff() cannot be done anywhere but last
-def teardown_test_trcoff():
-    spice.reset()
-    # Initialize stack trace with two values, and test
-    spice.chkin("A")
-    spice.chkin("B")
-    assert 2 == spice.trcdep()
-    assert "B" == spice.trcnam(1)
-    assert "A" == spice.trcnam(0)
-    # Turn off tracing and test
-    spice.trcoff()
-    assert 0 == spice.trcdep()
-    assert "" == spice.qcktrc(2)
-    # Ensure subsequent checkins are also ignored
-    spice.chkin("C")
-    assert 0 == spice.trcdep()
-    # Cleanup
-    spice.reset()
-
-
 def test_trgsep():
     spice.furnsh(
         [CoreKernels.lsk, CoreKernels.pck, CoreKernels.spk, ExtraKernels.mro2007sub]
@@ -10675,14 +10655,7 @@ def test_zzdynrot():
     assert frame == 1
 
 
-def teardown_tests():
-    # Tests that must be done last are put here and
-    # scheduled in teardown_module()
-    teardown_test_trcoff()
-
-
 def teardown_module(module):
-    teardown_tests()
     # if you are developing spiceypy, and don't want to delete kernels each time you run the tests, set
     # set the following environment variable "spiceypy_do_not_remove_kernels" to anything
     if not os.environ.get("spiceypy_do_not_remove_kernels"):

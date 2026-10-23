@@ -27,6 +27,11 @@ import sys
 import subprocess
 import pytest
 
+# these tests launch a fresh interpreter, which emscripten cannot do
+pytestmark = pytest.mark.skipif(
+    sys.platform == "emscripten", reason="emscripten does not support processes"
+)
+
 
 def _env(env: dict[str, str]):
     full_env = os.environ.copy()

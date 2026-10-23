@@ -7,10 +7,12 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
+ - cyice is now built and shipped in the Pyodide/WebAssembly wheel
  - Start of a docs example gallery with live PyScript editor examples: Mars 2020 "three forks", Santa Monica eclipse, and a scratchpad (#581)
 
 ### Changed
  - Updated astral-sh/setup-uv action to v10.3.0 (#579)
+ - Pyodide wheel tests now run the full test suite in random order instead of only test_wrapper
 
 ### Fixed
  - Test meta-kernel generation now splits kernel paths longer than SPICE's 80-character string limit using `+` continuation, so tests run from deeply nested directories (#580)
@@ -19,6 +21,7 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
  - cyice scalar coordinate conversions returning 3-tuples (cyllat_s, cylsph_s, latcyl_s, latsph_s, recazl_s, reccyl_s, recgeo_s, reclat_s, recpgr_s, recrad_s, recsph_s, sphcyl_s, sphlat_s, and their top-level dispatchers) truncated results to single precision because `tuple[float, ...]` compiled to a C float ctuple
  - cyice getelm_v (and getelm with array input) rejected int64 arrays, NumPy's default integer type, with a buffer dtype mismatch; frstyr now accepts int32 or int64 arrays
  - Test fixtures now call reset before kclear, since kclear is a no-op while a SPICE error is pending (#582)
+ - cyice passed `int` storage to CSPICE `SpiceInt *` outputs (et2lst, limbpt, occult, spkpvn, termpt), which is wrong on 32-bit targets where SpiceInt is `long`
 
 ## [8.3.0] - 2026-10-11
 
