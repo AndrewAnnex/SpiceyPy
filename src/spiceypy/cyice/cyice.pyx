@@ -90,6 +90,11 @@ String_N    = Annotated[StringArray, Literal["N"]]
 Found_N     = Annotated[BoolArray, Literal["N"]]
 Int_N       = Annotated[IntArray, Literal["N"]]
 Double_N    = Annotated[DoubleArray, Literal["N"]]
+Double_5    = Annotated[DoubleArray, Literal[5]]
+Double_8    = Annotated[DoubleArray, Literal[8]]
+Double_10   = Annotated[DoubleArray, Literal[10]]
+Double_N_8  = Annotated[DoubleArray, Literal["N", 8]]
+Double_N_10 = Annotated[DoubleArray, Literal["N", 10]]
 Vector      = Annotated[DoubleArray, Literal[3]]
 Vector_N    = Annotated[DoubleArray, Literal["N", 3]]
 Cylindrical_N    = Annotated[DoubleArray, Literal["N", 3]]
@@ -189,6 +194,43 @@ cdef inline int _check_same_len(Py_ssize_t a, Py_ssize_t b, str an, str bn) exce
     return 0
 
 
+cdef inline object _as_double_array(object x, int ndim):
+    # Coerce an array input to an aligned, C-contiguous float64 ndarray of the
+    # given ndim. The common case (already such an ndarray) is returned as-is
+    # without calling into Python. Other float64 inputs (lists of floats,
+    # strided or read-only views) are made contiguous once through the NumPy
+    # C API. Any other dtype (integers, bools, float32, ...) raises TypeError
+    # rather than being silently converted to double.
+    if (np.PyArray_CheckExact(x)
+            and np.PyArray_TYPE(<np.ndarray>x) == np.NPY_DOUBLE
+            and np.PyArray_NDIM(<np.ndarray>x) == ndim
+            and np.PyArray_IS_C_CONTIGUOUS(<np.ndarray>x)
+            and np.PyArray_ISALIGNED(<np.ndarray>x)):
+        return x
+    cdef np.ndarray arr = np.PyArray_FROM_O(x)
+    if np.PyArray_NDIM(arr) != ndim:
+        raise ValueError(f"expected a {ndim}-D array, got {np.PyArray_NDIM(arr)}-D")
+    if np.PyArray_TYPE(arr) != np.NPY_DOUBLE:
+        raise TypeError(f"expected a float64 array, got dtype {arr.dtype}")
+    return np.PyArray_FROMANY(arr, np.NPY_DOUBLE, ndim, ndim, np.NPY_ARRAY_C_CONTIGUOUS | np.NPY_ARRAY_ALIGNED)
+
+
+cdef inline Py_ssize_t _ndim(object x) except -1:
+    # ndim of an array-like for the dispatchers, without a Python call for ndarrays
+    if np.PyArray_Check(x):
+        return np.PyArray_NDIM(<np.ndarray>x)
+    return np.ndim(x)
+
+
+cdef inline int _check_dim(Py_ssize_t got, Py_ssize_t expected, str name) except -1:
+    # Validate the fixed trailing dimension of an array input before a pointer
+    # into it is handed to CSPICE, which reads exactly `expected` doubles per
+    # vector; with boundscheck disabled a short array would be read out of bounds.
+    if got != expected:
+        raise ValueError(f"{name} must have {expected} elements along its last axis, got {got}")
+    return 0
+
+
 @boundscheck(False)
 @wraparound(False)
 cdef inline char[:, ::1] make_char_array(np.ndarray input_array, int max_len):
@@ -275,7 +317,7 @@ cpdef tuple[np.ndarray, float] azlcpo_s(
     const char * abcorr,
     SpiceBoolean azccw,
     SpiceBoolean elplsz,
-    const double[::1] obspos,
+    obspos: Vector,
     const char * obsctr,
     const char * obsref
     ):
@@ -301,6 +343,8 @@ cpdef tuple[np.ndarray, float] azlcpo_s(
     :param obsref: Body fixed body centered frame of observer's center.
     :return: State of target with respect to observer, in azimuth/elevation coordinates. and One way light time between target and observer.
     """
+    cdef const double[::1] c_obspos = _as_double_array(obspos, 1)
+    _check_dim(c_obspos.shape[0], 3, "obspos")
     # allocate outputs
     cdef double c_lt = 0.0
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
@@ -312,7 +356,7 @@ cpdef tuple[np.ndarray, float] azlcpo_s(
         abcorr,
         <SpiceBoolean> azccw, 
         <SpiceBoolean> elplsz, 
-        &obspos[0],
+        &c_obspos[0],
         obsctr,
         obsref,
         &c_state[0],
@@ -327,11 +371,11 @@ cpdef tuple[np.ndarray, float] azlcpo_s(
 cpdef tuple[np.ndarray, np.ndarray] azlcpo_v(
     const char* method,
     const char* target,
-    const double[::1] ets,
+    ets: Double_N,
     const char* abcorr,
     SpiceBoolean azccw,
     SpiceBoolean elplsz,
-    const double[:,::1] obspos,
+    obspos: Vector_N,
     const char* obsctr,
     const char* obsref
     ):
@@ -357,8 +401,9 @@ cpdef tuple[np.ndarray, np.ndarray] azlcpo_v(
     :param obsref: Body fixed body centered frame of observer's center.
     :return: States of target with respect to observer, in azimuth/elevation coordinates. and One way light times between target and observer.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
-    cdef const np.double_t[:,::1] c_obspos = np.ascontiguousarray(obspos, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
+    cdef const np.double_t[:,::1] c_obspos = _as_double_array(obspos, 2)
+    _check_dim(c_obspos.shape[1], 3, "obspos")
     cdef Py_ssize_t i, j, n, m = 0
     n = c_ets.shape[0]
     m = c_obspos.shape[0]
@@ -470,9 +515,9 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] azlrec_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] azlrec_v(
-    const double[::1] inrange, 
-    const double[::1] az, 
-    const double[::1] el,
+    inrange: Double_N, 
+    az: Double_N, 
+    el: Double_N,
     SpiceBoolean azccw,
     SpiceBoolean elplsz
     ):
@@ -493,10 +538,10 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] azlrec_v(
     """
     cdef SpiceBoolean c_azccw  = <SpiceBoolean> azccw 
     cdef SpiceBoolean c_elplsz = <SpiceBoolean> elplsz
-    cdef const np.double_t[::1] c_inrange = np.ascontiguousarray(inrange, dtype=np.double)
+    cdef const np.double_t[::1] c_inrange = _as_double_array(inrange, 1)
     cdef Py_ssize_t i, n = c_inrange.shape[0]
-    cdef const np.double_t[::1] c_az = np.ascontiguousarray(az, dtype=np.double)
-    cdef const np.double_t[::1] c_el = np.ascontiguousarray(el, dtype=np.double)
+    cdef const np.double_t[::1] c_az = _as_double_array(az, 1)
+    cdef const np.double_t[::1] c_el = _as_double_array(el, 1)
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
@@ -619,7 +664,7 @@ def ckgp_s(
 @cyice_found_exception_thrower
 def ckgp_v(
     int inst,
-    const double[::1] sclkdps,
+    sclkdps: Double_N,
     double tol,
     const char* c_ref
     )-> tuple[Matrix_N, Double_N, Found_N] | tuple[Matrix_N, Double_N]:
@@ -640,15 +685,16 @@ def ckgp_v(
             Found flags (possibly)
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_sclkdps = np.ascontiguousarray(sclkdps, dtype=np.double)
+    cdef const np.double_t[::1] c_sclkdps = _as_double_array(sclkdps, 1)
     cdef Py_ssize_t i, n = c_sclkdps.shape[0]
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_cmat   = np.empty((n, 3, 3), dtype=np.double, order='C')
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_clkout = np.empty(n, dtype=np.double, order='C')
-    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found   = np.empty(n, dtype=np.uint8, order='C')
+    # CSPICE writes a full SpiceBoolean per found flag, so the buffer must be int32
+    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_found   = np.empty(n, dtype=np.int32, order='C')
     cdef np.double_t[:, :, ::1] c_cmat = p_cmat
     cdef np.double_t[::1] c_clkout   = p_clkout
-    cdef np.uint8_t[::1] c_found     = p_found
+    cdef np.int32_t[::1] c_found     = p_found
     # perform the call
     with nogil:
         for i in range(n):
@@ -663,7 +709,7 @@ def ckgp_v(
             )
     check_for_spice_error()
 
-    return p_cmat, p_clkout, p_found
+    return p_cmat, p_clkout, p_found.astype(np.uint8)
 
 
 def ckgp(
@@ -750,7 +796,7 @@ def ckgpav_s(
 @cyice_found_exception_thrower
 def ckgpav_v(
     int    inst,
-    const double[::1] sclkdps,
+    sclkdps: Double_N,
     double tol,
     const char* c_ref
     ) -> tuple[Matrix_N, Vector_N, Double_N, Found_N] | tuple[Matrix_N, Vector_N, Double_N]:
@@ -774,7 +820,7 @@ def ckgpav_v(
     # initialize c variables
     cdef int c_inst = inst
     cdef double c_tol = tol
-    cdef const np.double_t[::1] c_sclkdps = np.ascontiguousarray(sclkdps, dtype=np.double)
+    cdef const np.double_t[::1] c_sclkdps = _as_double_array(sclkdps, 1)
     cdef Py_ssize_t i, n = c_sclkdps.shape[0]
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_cmat = np.empty((n, 3, 3), dtype=np.double, order='C')
@@ -783,8 +829,9 @@ def ckgpav_v(
     cdef np.double_t[:, ::1]   c_av = p_av
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_clkout = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_clkout = p_clkout
-    cdef np.ndarray[np.uint8_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.uint8, order='C')
-    cdef np.uint8_t[::1] c_found = p_found
+    # CSPICE writes a full SpiceBoolean per found flag, so the buffer must be int32
+    cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_found = np.empty(n, dtype=np.int32, order='C')
+    cdef np.int32_t[::1] c_found = p_found
     # perform the call
     with nogil:
         for i in range(n):
@@ -800,7 +847,7 @@ def ckgpav_v(
             )
     check_for_spice_error()
 
-    return p_cmat, p_av, p_clkout, p_found
+    return p_cmat, p_av, p_clkout, p_found.astype(np.uint8)
 
 
 def ckgpav(
@@ -844,7 +891,7 @@ def clight() -> float:
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=1, mode='c'] conics_s(
-    const double[::1] elts,
+    elts: Double_8,
     double et,
     ):
     """
@@ -860,7 +907,8 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] conics_s(
     :param et: Input time in ephemeris seconds J2000.
     :return: State of orbiting body at et (x, y, z, dx/dt, dy/dt, dz/dt).
     """
-    cdef const np.double_t[::1] c_elts = np.ascontiguousarray(elts, dtype=np.double)
+    cdef const np.double_t[::1] c_elts = _as_double_array(elts, 1)
+    _check_dim(c_elts.shape[0], 8, "elts")
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
     conics_c(
@@ -875,8 +923,8 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] conics_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] conics_v(
-    const double[:,::1] elts,
-    const double[::1] ets,
+    elts: Double_N_8,
+    ets: Double_N,
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.conics`
@@ -891,9 +939,10 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] conics_v(
     :param ets: Input times in ephemeris seconds J2000.
     :return: State of orbiting body at et (x, y, z, dx/dt, dy/dt, dz/dt).
     """
-    cdef const np.double_t[:,::1] c_elts = np.ascontiguousarray(elts, dtype=np.double)
+    cdef const np.double_t[:,::1] c_elts = _as_double_array(elts, 2)
+    _check_dim(c_elts.shape[1], 8, "elts")
     cdef Py_ssize_t i, n = c_elts.shape[0]
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_states = p_states
     # main loop
@@ -966,7 +1015,7 @@ def convrt_s(
 @boundscheck(False)
 @wraparound(False)
 def convrt_v(
-    const double[::1] x,
+    x: Double_N,
     const char* inunit,
     const char* outunit
     ) -> Double_N:
@@ -984,7 +1033,7 @@ def convrt_v(
     :param outunit: Desired units for the measurement.
     :return: The measurment in the desired units.
     """
-    cdef const np.double_t[::1] c_x = np.ascontiguousarray(x, dtype=np.double)
+    cdef const np.double_t[::1] c_x = _as_double_array(x, 1)
     cdef Py_ssize_t i, n = c_x.shape[0]
     cdef const char* c_inunit = inunit
     cdef const char* c_outunit = outunit
@@ -1060,9 +1109,9 @@ cpdef tuple[double, double, double] cyllat_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] cyllat_v(
-    const double[::1] r, 
-    const double[::1] clon, 
-    const double[::1] z
+    r: Double_N, 
+    clon: Double_N, 
+    z: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.cyllat`
@@ -1076,10 +1125,10 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] cyllat_v(
     :param z: Height of point above XY plane.
     :return: Distance, Longitude (radians), and Latitude of point (radians).
     """
-    cdef const np.double_t[::1] c_r = np.ascontiguousarray(r, dtype=np.double)
+    cdef const np.double_t[::1] c_r = _as_double_array(r, 1)
     cdef Py_ssize_t i, n = c_r.shape[0]
-    cdef const np.double_t[::1] c_clon = np.ascontiguousarray(clon, dtype=np.double)
-    cdef const np.double_t[::1] c_z = np.ascontiguousarray(z, dtype=np.double)
+    cdef const np.double_t[::1] c_clon = _as_double_array(clon, 1)
+    cdef const np.double_t[::1] c_z = _as_double_array(z, 1)
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_lat = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_lat = p_lat
@@ -1152,9 +1201,9 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] cylrec_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] cylrec_v(
-    const double[::1] r, 
-    const double[::1] lon, 
-    const double[::1] z
+    r: Double_N, 
+    lon: Double_N, 
+    z: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.cylrec`
@@ -1168,10 +1217,10 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] cylrec_v(
     :param z: Height of a point above xY plane.
     :return: Rectangular coordinates of the point.
     """
-    cdef const np.double_t[::1] c_r = np.ascontiguousarray(r, dtype=np.double)
+    cdef const np.double_t[::1] c_r = _as_double_array(r, 1)
     cdef Py_ssize_t i, n = c_r.shape[0]
-    cdef const np.double_t[::1] c_lon = np.ascontiguousarray(lon, dtype=np.double)
-    cdef const np.double_t[::1] c_z   = np.ascontiguousarray(z, dtype=np.double)
+    cdef const np.double_t[::1] c_lon = _as_double_array(lon, 1)
+    cdef const np.double_t[::1] c_z   = _as_double_array(z, 1)
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
@@ -1247,9 +1296,9 @@ cpdef tuple[double, double, double] cylsph_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] cylsph_v(
-    const double[::1] r, 
-    const double[::1] clon, 
-    const double[::1] z
+    r: Double_N, 
+    clon: Double_N, 
+    z: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.cylsph`
@@ -1266,10 +1315,10 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] cylsph_v(
             Polar angle (co-latitude in radians) of point,
             Azimuthal angle (longitude) of point (radians).
     """
-    cdef const np.double_t[::1] c_r = np.ascontiguousarray(r, dtype=np.double)
+    cdef const np.double_t[::1] c_r = _as_double_array(r, 1)
     cdef Py_ssize_t i, n = c_r.shape[0]
-    cdef const np.double_t[::1] c_clon = np.ascontiguousarray(clon, dtype=np.double)
-    cdef const np.double_t[::1] c_z = np.ascontiguousarray(z, dtype=np.double)
+    cdef const np.double_t[::1] c_clon = _as_double_array(clon, 1)
+    cdef const np.double_t[::1] c_z = _as_double_array(z, 1)
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_sph = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_sph = p_sph
@@ -1347,7 +1396,7 @@ def deltet_s(
 @boundscheck(False)
 @wraparound(False)
 def deltet_v(
-    const double[::1] epochs,
+    epochs: Double_N,
     const char* eptype
     ) -> Double_N:
     """
@@ -1361,7 +1410,7 @@ def deltet_v(
     :param eptype: Type of input epoch ("UTC" or "ET").
     :return: Delta ET (ET-UTC) at input epoch.
     """
-    cdef const np.double_t[::1] c_epochs = np.ascontiguousarray(epochs, dtype=np.double)
+    cdef const np.double_t[::1] c_epochs = _as_double_array(epochs, 1)
     cdef Py_ssize_t i, n = c_epochs.shape[0]
     cdef const char* c_eptype = eptype
     # allocate output array
@@ -1471,7 +1520,7 @@ def et2lst_s(
 @boundscheck(False)
 @wraparound(False)
 def et2lst_v(
-    const double[::1] ets,
+    ets: Double_N,
     int body,
     double lon,
     const char* typein
@@ -1497,7 +1546,7 @@ def et2lst_v(
             String giving local time on 24 hour clock,
             String giving time on A.M. / P.M. scale.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef const char* c_typein = typein
     cdef int c_body = body
@@ -1610,7 +1659,7 @@ def et2utc_s(
 @boundscheck(False)
 @wraparound(False)
 def et2utc_v(
-    const double[::1] ets,
+    ets: Double_N,
     const char* format_str,
     int prec
     ) -> String_N:
@@ -1629,7 +1678,7 @@ def et2utc_v(
     :return: Output time string in UTC
     """
     cdef int c_prec = prec
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_format_str = format_str
@@ -1710,7 +1759,7 @@ def etcal_s(
 @boundscheck(False)
 @wraparound(False)
 def etcal_v(
-    const double[::1] ets
+    ets: Double_N
     ) -> String_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.etcal`
@@ -1724,20 +1773,21 @@ def etcal_v(
     :param ets: Ephemeris times measured in seconds past J2000 TDB.
     :return: A standard calendar representation of et.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
-    # Allocate a 2D buffer of shape (n, 24) with dtype np.uint8
-    p_np_s_dtype = np.dtype(('S', 25))
-    p_np_u_dtype = np.dtype(('U', 25))
-    cdef np.ndarray[np.uint8_t, ndim=2, mode='c'] p_results = np.empty((n, 25), dtype=np.uint8, order='C')
+    # Allocate a 2D buffer of shape (n, TIMELEN) with dtype np.uint8; etcal_c
+    # silently truncates output that does not fit (e.g. B.C. or 5 digit years)
+    p_np_s_dtype = np.dtype(('S', TIMELEN))
+    p_np_u_dtype = np.dtype(('U', TIMELEN))
+    cdef np.ndarray[np.uint8_t, ndim=2, mode='c'] p_results = np.zeros((n, TIMELEN), dtype=np.uint8, order='C')
     cdef np.uint8_t[:, ::1] c_results = p_results
     cdef char* base = <char*> &c_results[0, 0]
     with nogil:
         for i in range(n):
             etcal_c(
                 c_ets[i],
-                25,
-                base + i*25
+                TIMELEN,
+                base + i*TIMELEN
             )
     check_for_spice_error()
     # return values
@@ -1769,8 +1819,8 @@ def etcal(
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=1, mode='c'] evsgp4_s(
     double et,
-    const double[::1] geophs,
-    const double[::1] elems
+    geophs: Double_8,
+    elems: Double_10
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.evsgp4`
@@ -1786,8 +1836,10 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] evsgp4_s(
     :param elems: Two-line element data
     :return: Evaluated state
     """
-    cdef const np.double_t[::1] c_geophs = np.ascontiguousarray(geophs, dtype=np.double)
-    cdef const np.double_t[::1] c_elems  = np.ascontiguousarray(elems, dtype=np.double)
+    cdef const np.double_t[::1] c_geophs = _as_double_array(geophs, 1)
+    _check_dim(c_geophs.shape[0], 8, "geophs")
+    cdef const np.double_t[::1] c_elems  = _as_double_array(elems, 1)
+    _check_dim(c_elems.shape[0], 10, "elems")
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
@@ -1806,9 +1858,9 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] evsgp4_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] evsgp4_v(
-    const double[::1] ets,
-    const double[::1] geophs,
-    const double[:,::1] elems
+    ets: Double_N,
+    geophs: Double_8,
+    elems: Double_N_10
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.evsgp4`
@@ -1826,11 +1878,13 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] evsgp4_v(
     :param elems: Two-line element data
     :return: Evaluated state
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
-    cdef const np.double_t[::1] c_geophs = np.ascontiguousarray(geophs, dtype=np.double)
+    cdef const np.double_t[::1] c_geophs = _as_double_array(geophs, 1)
+    _check_dim(c_geophs.shape[0], 8, "geophs")
     cdef const double* c_geophs_ptr = &c_geophs[0]
-    cdef const np.double_t[:,::1] c_elems  = np.ascontiguousarray(elems, dtype=np.double)
+    cdef const np.double_t[:,::1] c_elems  = _as_double_array(elems, 2)
+    _check_dim(c_elems.shape[1], 10, "elems")
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n,6), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_states = p_states
@@ -1889,7 +1943,7 @@ cpdef SpiceBoolean failed() noexcept:
 @wraparound(False)
 def fovray_s(
     const char* inst,
-    const double[::1] raydir,
+    raydir: Vector,
     const char* rframe,
     const char* abcorr,
     const char* observer,
@@ -1911,6 +1965,8 @@ def fovray_s(
     :param et: Time of the observation (seconds past J2000).
     :return: Visibility flag
     """
+    cdef const double[::1] c_raydir = _as_double_array(raydir, 1)
+    _check_dim(c_raydir.shape[0], 3, "raydir")
     # initialize c variables
     cdef double c_et = et
     cdef SpiceBoolean c_visibl = SPICEFALSE
@@ -1922,7 +1978,7 @@ def fovray_s(
     # perform the call
     fovray_c(
         c_inst,
-        &raydir[0],
+        &c_raydir[0],
         c_rframe,
         c_abcorr,
         c_observer,
@@ -1938,11 +1994,11 @@ def fovray_s(
 @wraparound(False)
 def fovray_v(
     const char* inst,
-    const double[::1] raydir,
+    raydir: Vector,
     const char* rframe,
     const char* abcorr,
     const char* observer,
-    const double[::1] ets
+    ets: Double_N
 ) -> BoolArray:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.fovray`
@@ -1960,8 +2016,10 @@ def fovray_v(
     :param ets: Times of the observation (seconds past J2000).
     :return: Visibility flags
     """
+    cdef const double[::1] c_raydir = _as_double_array(raydir, 1)
+    _check_dim(c_raydir.shape[0], 3, "raydir")
     # initialize c variables
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_inst     = inst
@@ -1976,7 +2034,7 @@ def fovray_v(
         for i in range(n):
             fovray_c(
                 c_inst,
-                &raydir[0],
+                &c_raydir[0],
                 c_rframe,
                 c_abcorr,
                 c_observer,
@@ -2097,7 +2155,7 @@ def fovtrg_v(
     :return: Visibility flags
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_inst     = inst
@@ -2214,9 +2272,9 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] georec_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] georec_v(
-    const double[::1] lon,
-    const double[::1] lat,
-    const double[::1] alt,
+    lon: Double_N,
+    lat: Double_N,
+    alt: Double_N,
     double re,
     double f,
     ):
@@ -2234,10 +2292,10 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] georec_v(
     :param f: Flattening coefficient.
     :return: Rectangular coordinates of point.
     """
-    cdef const np.double_t[::1] c_lon = np.ascontiguousarray(lon, dtype=np.double)
+    cdef const np.double_t[::1] c_lon = _as_double_array(lon, 1)
     cdef Py_ssize_t i, n = c_lon.shape[0]
-    cdef const np.double_t[::1] c_lat = np.ascontiguousarray(lat, dtype=np.double)
-    cdef const np.double_t[::1] c_alt = np.ascontiguousarray(alt, dtype=np.double)
+    cdef const np.double_t[::1] c_lat = _as_double_array(lat, 1)
+    cdef const np.double_t[::1] c_alt = _as_double_array(alt, 1)
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
@@ -2451,7 +2509,7 @@ cpdef tuple[float, np.ndarray, float, float, float, bool, bool] illumf_s(
     const char * fixref,
     const char * abcorr,
     const char * obsrvr,
-    const double[::1] spoint,
+    spoint: Vector,
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.illumf`
@@ -2486,7 +2544,8 @@ cpdef tuple[float, np.ndarray, float, float, float, bool, bool] illumf_s(
         Visibility flag, 
         Illumination flag
     """
-    cdef const np.double_t[::1] c_spoint = np.ascontiguousarray(spoint, dtype=np.double)
+    cdef const np.double_t[::1] c_spoint = _as_double_array(spoint, 1)
+    _check_dim(c_spoint.shape[0], 3, "spoint")
     #allocate outputs
     cdef SpiceBoolean c_visibl = SPICEFALSE
     cdef SpiceBoolean c_lit = SPICEFALSE
@@ -2524,11 +2583,11 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarr
     const char* method,
     const char* target,
     const char* ilusrc,
-    const double[::1] ets,
+    ets: Double_N,
     const char* fixref,
     const char* abcorr,
     const char* obsrvr,
-    const double[:,::1] spoints,
+    spoints: Vector_N,
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.illumf`
@@ -2563,8 +2622,9 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarr
         Visibility flag, 
         Illumination flag
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
-    cdef const np.double_t[:,::1] c_spoints = np.ascontiguousarray(spoints, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
+    cdef const np.double_t[:,::1] c_spoints = _as_double_array(spoints, 2)
+    _check_dim(c_spoints.shape[1], 3, "spoints")
     cdef Py_ssize_t i, j, n, m = 0
     n = c_ets.shape[0]
     m = c_spoints.shape[0]
@@ -2668,7 +2728,7 @@ cpdef tuple[float, np.ndarray, float, float, float] illumg_s(
     const char* fixref,
     const char* abcorr,
     const char* obsrvr,
-    const double[::1] spoint,
+    spoint: Vector,
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.illumg`
@@ -2699,7 +2759,8 @@ cpdef tuple[float, np.ndarray, float, float, float] illumg_s(
         Source incidence angle at the surface point in radians, 
         Emission angle at the surface point in radians,
     """
-    cdef const np.double_t[::1] c_spoint = np.ascontiguousarray(spoint, dtype=np.double)
+    cdef const np.double_t[::1] c_spoint = _as_double_array(spoint, 1)
+    _check_dim(c_spoint.shape[0], 3, "spoint")
     #allocate outputs
     cdef double trgepc = 0.0
     cdef double phase  = 0.0
@@ -2733,11 +2794,11 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray] illumg_v
     const char* method,
     const char* target,
     const char* ilusrc,
-    const double[::1] ets,
+    ets: Double_N,
     const char* fixref,
     const char* abcorr,
     const char* obsrvr,
-    const double[:,::1] spoint,
+    spoint: Vector_N,
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.illumg`
@@ -2768,8 +2829,9 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray] illumg_v
         Source incidence angle at the surface point in radians, 
         Emission angle at the surface point in radians,
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
-    cdef const np.double_t[:,::1] c_spoint = np.ascontiguousarray(spoint, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
+    cdef const np.double_t[:,::1] c_spoint = _as_double_array(spoint, 2)
+    _check_dim(c_spoint.shape[1], 3, "spoint")
     cdef Py_ssize_t i, j, n, m = 0
     n = c_ets.shape[0]
     m = c_spoint.shape[0]
@@ -2861,7 +2923,7 @@ cpdef tuple[float, np.ndarray, float, float, float] ilumin_s(
     const char* fixref,
     const char* abcorr,
     const char* obsrvr,
-    const double[::1] spoint,
+    spoint: Vector,
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.ilumin`
@@ -2884,7 +2946,8 @@ cpdef tuple[float, np.ndarray, float, float, float] ilumin_s(
      surface point, Phase angle, Solar incidence angle, and Emission
      angle at the surface point.
     """
-    cdef const np.double_t[::1] c_spoint = np.ascontiguousarray(spoint, dtype=np.double)
+    cdef const np.double_t[::1] c_spoint = _as_double_array(spoint, 1)
+    _check_dim(c_spoint.shape[0], 3, "spoint")
     #allocate outputs
     cdef double trgepc = 0.0
     cdef double phase  = 0.0
@@ -2916,11 +2979,11 @@ cpdef tuple[float, np.ndarray, float, float, float] ilumin_s(
 cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray] ilumin_v(
     const char* method,
     const char* target,
-    const double[::1] ets,
+    ets: Double_N,
     const char* fixref,
     const char* abcorr,
     const char* obsrvr,
-    const double[:,::1] spoint,
+    spoint: Vector_N,
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.ilumin`
@@ -2943,8 +3006,9 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray] ilumin_v
      surface point, Phase angle, Solar incidence angle, and Emission
      angle at the surface point.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
-    cdef const np.double_t[:,::1] c_spoint = np.ascontiguousarray(spoint, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
+    cdef const np.double_t[:,::1] c_spoint = _as_double_array(spoint, 2)
+    _check_dim(c_spoint.shape[1], 3, "spoint")
     cdef Py_ssize_t i, j, n, m = 0
     n = c_ets.shape[0]
     m = c_spoint.shape[0]
@@ -3114,9 +3178,9 @@ cpdef tuple[double, double, double] latcyl_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latcyl_v(
-    const double[::1] radius, 
-    const double[::1] lon, 
-    const double[::1] lat
+    radius: Double_N, 
+    lon: Double_N, 
+    lat: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.latcyl`
@@ -3130,10 +3194,10 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latcyl_v(
     :param lat: Angle of the point from the XY plane in radians.
     :return: (r, lonc, z)
     """
-    cdef const np.double_t[::1] c_radius = np.ascontiguousarray(radius, dtype=np.double)
+    cdef const np.double_t[::1] c_radius = _as_double_array(radius, 1)
     cdef Py_ssize_t i, n = c_radius.shape[0]
-    cdef const np.double_t[::1] c_lon = np.ascontiguousarray(lon, dtype=np.double)
-    cdef const np.double_t[::1] c_lat = np.ascontiguousarray(lat, dtype=np.double)
+    cdef const np.double_t[::1] c_lon = _as_double_array(lon, 1)
+    cdef const np.double_t[::1] c_lat = _as_double_array(lat, 1)
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_cyl = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_cyl = p_cyl
@@ -3206,9 +3270,9 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] latrec_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latrec_v(
-    const double[::1] radius, 
-    const double[::1] longitude, 
-    const double[::1] latitude
+    radius: Double_N, 
+    longitude: Double_N, 
+    latitude: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.latrec`
@@ -3222,10 +3286,10 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latrec_v(
     :param latitude: Angle of the point from the XY plane in radians.
     :return: (r, lonc, z)
     """
-    cdef const np.double_t[::1] c_radius = np.ascontiguousarray(radius, dtype=np.double)
+    cdef const np.double_t[::1] c_radius = _as_double_array(radius, 1)
     cdef Py_ssize_t i, n = c_radius.shape[0]
-    cdef const np.double_t[::1] c_longitude = np.ascontiguousarray(longitude, dtype=np.double)
-    cdef const np.double_t[::1] c_latitude = np.ascontiguousarray(latitude, dtype=np.double)
+    cdef const np.double_t[::1] c_longitude = _as_double_array(longitude, 1)
+    cdef const np.double_t[::1] c_latitude = _as_double_array(latitude, 1)
     # allocate output array
     cdef np.ndarray p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
@@ -3298,9 +3362,9 @@ cpdef tuple[double, double, double] latsph_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latsph_v(
-    const double[::1] radius, 
-    const double[::1] lon, 
-    const double[::1] lat
+    radius: Double_N, 
+    lon: Double_N, 
+    lat: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.latsph`
@@ -3314,10 +3378,10 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] latsph_v(
     :param lat: Angle of the point from the XY plane in radians.
     :return: (rho colat, lons)
     """
-    cdef const np.double_t[::1] c_radius = np.ascontiguousarray(radius, dtype=np.double)
+    cdef const np.double_t[::1] c_radius = _as_double_array(radius, 1)
     cdef Py_ssize_t i, n = c_radius.shape[0]
-    cdef const np.double_t[::1] c_lon = np.ascontiguousarray(lon, dtype=np.double)
-    cdef const np.double_t[::1] c_lat = np.ascontiguousarray(lat, dtype=np.double)
+    cdef const np.double_t[::1] c_lon = _as_double_array(lon, 1)
+    cdef const np.double_t[::1] c_lat = _as_double_array(lat, 1)
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_sph = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_sph = p_sph
@@ -3368,7 +3432,7 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] limbpt_s(
     const char * abcorr,
     const char * corloc,
     const char * obsrvr,
-    const double[::1] refvec,
+    refvec: Vector,
     double rolstp,
     int ncuts,
     double schstp,
@@ -3409,7 +3473,8 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] limbpt_s(
     """
     # process inputs
     cdef Py_ssize_t c_maxn = maxn
-    cdef const np.double_t[::1] c_refvec = np.ascontiguousarray(refvec, dtype=np.double)
+    cdef const np.double_t[::1] c_refvec = _as_double_array(refvec, 1)
+    _check_dim(c_refvec.shape[0], 3, "refvec")
     # allocate outputs
     cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_npts = np.empty(c_maxn, dtype=np.int32, order='C')
     cdef int[::1] c_npts = p_npts
@@ -3450,12 +3515,12 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] limbpt_s(
 cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] limbpt_v(
     const char * method,
     const char * target,
-    const double[::1] ets,
+    ets: Double_N,
     const char * fixref,
     const char * abcorr,
     const char * corloc,
     const char * obsrvr,
-    const double[::1] refvec,
+    refvec: Vector,
     double rolstp,
     int ncuts,
     double schstp,
@@ -3495,10 +3560,11 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] limbpt_v(
         Tangent vectors emanating from the observer in km
     """
     # process inputs
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef Py_ssize_t c_maxn = maxn
-    cdef const np.double_t[::1] c_refvec = np.ascontiguousarray(refvec, dtype=np.double)
+    cdef const np.double_t[::1] c_refvec = _as_double_array(refvec, 1)
+    _check_dim(c_refvec.shape[0], 3, "refvec")
     cdef const SpiceDouble* c_refvec_ptr = &c_refvec[0]
     # allocate outputs
     cdef np.ndarray[np.int32_t, ndim=2, mode='c'] p_npts = np.empty((n, c_maxn), dtype=np.int32, order='C')
@@ -3622,7 +3688,7 @@ def lspcn_s(
 @wraparound(False)
 def lspcn_v(
     const char* body,
-    const double[::1] ets,
+    ets: Double_N,
     const char* abcorr
     ) -> Double_N:
     """
@@ -3638,7 +3704,7 @@ def lspcn_v(
     :param abcorr: Aberration correction.
     :return: planetocentric longitudes of the sun in radians
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef const char* c_body   = body
     cdef const char* c_abcorr = abcorr
@@ -3741,7 +3807,7 @@ cpdef np.ndarray[np.int32_t, ndim=1, mode='c'] occult_v(
     const char* frame2,
     const char* abcorr,
     const char* observer,
-    const double[::1] ets,
+    ets: Double_N,
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.occult`
@@ -3763,7 +3829,7 @@ cpdef np.ndarray[np.int32_t, ndim=1, mode='c'] occult_v(
     :param ets: Time of the observation (seconds past J2000).
     :return: Occultation identification code.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # allocate output array
     cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_ocltids = np.empty(n, dtype=np.int32, order='C')
@@ -3824,7 +3890,7 @@ def occult(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=1, mode='c'] oscelt_s(
-    const double[::1] state,
+    state: State,
     double et,
     double mu,
     ):
@@ -3842,7 +3908,7 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] oscelt_s(
     :param mu: Gravitational parameter (GM) of primary body in km**3/sec**2 units.
     :return: Equivalent conic elements in  km, rad, rad/sec units.
     """
-    cdef const np.double_t[::1] c_state = np.ascontiguousarray(state, dtype=np.double)
+    cdef const np.double_t[::1] c_state = _as_double_array(state, 1)
     if c_state.shape[0] != 6:
         raise ValueError(f'in oscelt_s, state vector had shape {c_state.shape[0]}, not 6 as expected')
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_elts = np.empty(8, dtype=np.double, order='C')
@@ -3860,8 +3926,8 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] oscelt_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] oscelt_v(
-    const double[:,::1] state,
-    const double[::1] et,
+    state: State_N,
+    et: Double_N,
     double mu,
     ):
     """
@@ -3878,20 +3944,20 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] oscelt_v(
     :param mu: Gravitational parameter (GM) of primary body in km**3/sec**2 units.
     :return: Equivalent conic elements in  km, rad, rad/sec units.
     """
-    cdef const np.double_t[:,::1] c_state = np.ascontiguousarray(state, dtype=np.double)
-    cdef const np.double_t[::1] c_et = np.ascontiguousarray(et, dtype=np.double)
+    cdef const np.double_t[:,::1] c_state = _as_double_array(state, 2)
+    cdef const np.double_t[::1] c_et = _as_double_array(et, 1)
     if c_state.shape[1] != 6:
         raise ValueError(f'in oscelt_v, state vector had shape {c_state.shape}, not Nx6 as expected')
     cdef Py_ssize_t i, n = c_state.shape[0]
     if c_et.shape[0] != n:
-        raise ValueError(f'in oscelt_v, state and et vectors did not have the same length, state: {c_state.shape[0]} et: {c_et.shape[1]}')
+        raise ValueError(f'in oscelt_v, state and et vectors did not have the same length, state: {c_state.shape[0]} et: {c_et.shape[0]}')
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_elts = np.empty((n,8), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_elts = p_elts
     with nogil:
         for i in range(n):
             oscelt_c(
             &c_state[i, 0],
-            et[i],
+            c_et[i],
             mu,
             &c_elts[i, 0]
         )
@@ -3916,7 +3982,7 @@ cpdef oscelt(
     :param mu: Gravitational parameter (GM) of primary body in km**3/sec**2 units.
     :return: Equivalent conic elements in  km, rad, rad/sec units.
     """
-    cdef Py_ssize_t ndim = state.ndim
+    cdef Py_ssize_t ndim = _ndim(state)
     if ndim == 1:
         return oscelt_s(state, et, mu)
     elif ndim == 2:
@@ -3969,9 +4035,9 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] pgrrec_s(
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] pgrrec_v(
     const char* body,
-    const double[::1] lon,
-    const double[::1] lat,
-    const double[::1] alt,
+    lon: Double_N,
+    lat: Double_N,
+    alt: Double_N,
     double re,
     double f,
     ):
@@ -3990,10 +4056,10 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] pgrrec_v(
     :param f: Flattening coefficient.
     :return: Rectangular coordinates of the point.
     """
-    cdef const np.double_t[::1] c_lon = np.ascontiguousarray(lon, dtype=np.double)
+    cdef const np.double_t[::1] c_lon = _as_double_array(lon, 1)
     cdef Py_ssize_t i, n = c_lon.shape[0]
-    cdef const np.double_t[::1] c_lat = np.ascontiguousarray(lat, dtype=np.double)
-    cdef const np.double_t[::1] c_alt = np.ascontiguousarray(alt, dtype=np.double)
+    cdef const np.double_t[::1] c_lat = _as_double_array(lat, 1)
+    cdef const np.double_t[::1] c_alt = _as_double_array(alt, 1)
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
@@ -4080,7 +4146,7 @@ cpdef double phaseq_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=1, mode='c'] phaseq_v(
-    const double[::1] et,
+    et: Double_N,
     const char* target,
     const char* illmn,
     const char* obsrvr,
@@ -4101,7 +4167,7 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] phaseq_v(
     :param abcorr: Aberration correction flag.
     :return: Value of phase angle in radians.
     """
-    cdef const np.double_t[::1] c_et = np.ascontiguousarray(et, dtype=np.double)
+    cdef const np.double_t[::1] c_et = _as_double_array(et, 1)
     cdef Py_ssize_t i, n = c_et.shape[0]
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_phase = np.empty(n, dtype=np.double, order='C')
@@ -4201,7 +4267,7 @@ def pxform_s(
 def pxform_v(
     const char* fromstr,
     const char* tostr,
-    const double[::1] ets
+    ets: Double_N
     ) -> Matrix_N_3:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.pxform`
@@ -4217,7 +4283,7 @@ def pxform_v(
     :param ets: Epochs of the rotation matricies.
     :return: rotation matricies.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef const char* c_fromstr = fromstr
     cdef const char* c_tostr = tostr
@@ -4327,9 +4393,9 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] radrec_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] radrec_v(
-    const double[::1] inrange, 
-    const double[::1] ra, 
-    const double[::1] dec
+    inrange: Double_N, 
+    ra: Double_N, 
+    dec: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.radrec`
@@ -4344,10 +4410,10 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] radrec_v(
     :param dec: Declination of point in radians.
     :return: Rectangular coordinates of the point.
     """
-    cdef const np.double_t[::1] c_range = np.ascontiguousarray(inrange, dtype=np.double)
+    cdef const np.double_t[::1] c_range = _as_double_array(inrange, 1)
     cdef Py_ssize_t i, n = c_range.shape[0]
-    cdef const np.double_t[::1] c_ra = np.ascontiguousarray(ra, dtype=np.double)
-    cdef const np.double_t[::1] c_dec = np.ascontiguousarray(dec, dtype=np.double)
+    cdef const np.double_t[::1] c_ra = _as_double_array(ra, 1)
+    cdef const np.double_t[::1] c_dec = _as_double_array(dec, 1)
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
@@ -4389,7 +4455,7 @@ def radrec(
 
 @boundscheck(False)
 cpdef tuple[double, double, double] recazl_s(
-    const double[::1] rectan,
+    rectan: Vector,
     SpiceBoolean azccw,
     SpiceBoolean elplsz
     ):
@@ -4409,7 +4475,9 @@ cpdef tuple[double, double, double] recazl_s(
             Azimuth in radians,
             Elevation in radians.
     """
-    cdef const double* c_rectan = &rectan[0]
+    cdef const double[::1] rectan_arr = _as_double_array(rectan, 1)
+    _check_dim(rectan_arr.shape[0], 3, "rectan")
+    cdef const double* c_rectan = &rectan_arr[0]
     cdef double orange = 0.0
     cdef double az = 0.0
     cdef double el = 0.0
@@ -4427,7 +4495,7 @@ cpdef tuple[double, double, double] recazl_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recazl_v(
-    const double[:,::1] rectan, 
+    rectan: Rectangular_N, 
     const SpiceBoolean azccw, 
     const SpiceBoolean elplsz
     ):
@@ -4447,7 +4515,9 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recazl_v(
             Azimuth in radians,
             Elevation in radians.
     """
-    cdef Py_ssize_t i, n = rectan.shape[0]
+    cdef const double[:,::1] c_rectan = _as_double_array(rectan, 2)
+    _check_dim(c_rectan.shape[1], 3, "rectan")
+    cdef Py_ssize_t i, n = c_rectan.shape[0]
     cdef SpiceBoolean c_azccw  = <SpiceBoolean> azccw 
     cdef SpiceBoolean c_elplsz = <SpiceBoolean> elplsz
     # allocate output array
@@ -4457,7 +4527,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recazl_v(
     with nogil:
         for i in range(n):
             recazl_c(
-                &rectan[i, 0], 
+                &c_rectan[i, 0], 
                 c_azccw,
                 c_elplsz, 
                 &c_azl[i, 0],
@@ -4486,7 +4556,7 @@ def recazl(
             Azimuth in radians,
             Elevation in radians.
     """
-    cdef Py_ssize_t ndim = rectan.ndim
+    cdef Py_ssize_t ndim = _ndim(rectan)
     if ndim == 1:
         return recazl_s(rectan, azccw, elplsz)
     elif ndim == 2:
@@ -4497,7 +4567,7 @@ def recazl(
 
 @boundscheck(False)
 cpdef tuple[double, double, double] reccyl_s(
-    const double[::1] rectan
+    rectan: Vector
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.reccyl`
@@ -4512,7 +4582,9 @@ cpdef tuple[double, double, double] reccyl_s(
             Angle (radians) from xZ plane,
             Height above xY plane.
     """
-    cdef const double* c_rectan = &rectan[0]
+    cdef const double[::1] rectan_arr = _as_double_array(rectan, 1)
+    _check_dim(rectan_arr.shape[0], 3, "rectan")
+    cdef const double* c_rectan = &rectan_arr[0]
     cdef double r = 0.0
     cdef double clon = 0.0
     cdef double z = 0.0
@@ -4528,7 +4600,7 @@ cpdef tuple[double, double, double] reccyl_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] reccyl_v(
-    const double[:,::1] rectan
+    rectan: Rectangular_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.reccyl`
@@ -4543,7 +4615,9 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] reccyl_v(
             Angle (radians) from xZ plane,
             Height above xY plane.
     """
-    cdef Py_ssize_t i, n = rectan.shape[0]
+    cdef const double[:,::1] c_rectan = _as_double_array(rectan, 2)
+    _check_dim(c_rectan.shape[1], 3, "rectan")
+    cdef Py_ssize_t i, n = c_rectan.shape[0]
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_cyl = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_cyl = p_cyl
@@ -4551,7 +4625,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] reccyl_v(
     with nogil:
         for i in range(n):
             reccyl_c(
-                &rectan[i, 0],  
+                &c_rectan[i, 0],  
                 &c_cyl[i, 0],
                 &c_cyl[i, 1],
                 &c_cyl[i, 2]
@@ -4573,7 +4647,7 @@ def reccyl(
             Angle (radians) from xZ plane,
             Height above xY plane.
     """
-    cdef Py_ssize_t ndim = rectan.ndim
+    cdef Py_ssize_t ndim = _ndim(rectan)
     if ndim == 1:
         return reccyl_s(rectan)
     elif ndim == 2:
@@ -4584,7 +4658,7 @@ def reccyl(
 
 @boundscheck(False)
 cpdef tuple[double, double, double] recgeo_s(
-    const double[::1] rectan,
+    rectan: Vector,
     double re,
     double f,
     ):
@@ -4603,7 +4677,9 @@ cpdef tuple[double, double, double] recgeo_s(
             Geodetic latitude (radians),
             Altitude above reference spheroid
     """
-    cdef const double* c_rectan = &rectan[0]
+    cdef const double[::1] rectan_arr = _as_double_array(rectan, 1)
+    _check_dim(rectan_arr.shape[0], 3, "rectan")
+    cdef const double* c_rectan = &rectan_arr[0]
     cdef double lon = 0.0
     cdef double lat = 0.0
     cdef double alt = 0.0
@@ -4622,7 +4698,7 @@ cpdef tuple[double, double, double] recgeo_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recgeo_v(
-    const double[:,::1] rectan,
+    rectan: Rectangular_N,
     double re,
     double f,
     ):
@@ -4641,7 +4717,9 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recgeo_v(
             Geodetic latitude (radians),
             Altitude above reference spheroid
     """
-    cdef Py_ssize_t i, n = rectan.shape[0]
+    cdef const double[:,::1] c_rectan = _as_double_array(rectan, 2)
+    _check_dim(c_rectan.shape[1], 3, "rectan")
+    cdef Py_ssize_t i, n = c_rectan.shape[0]
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_geo = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_geo = p_geo
@@ -4649,7 +4727,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recgeo_v(
     with nogil:
         for i in range(n):
             recgeo_c(
-                &rectan[i, 0],
+                &c_rectan[i, 0],
                 re,
                 f,  
                 &c_geo[i, 0],
@@ -4678,7 +4756,7 @@ def recgeo(
             Geodetic latitude (radians),
             Altitude above reference spheroid
     """
-    cdef Py_ssize_t ndim = rectan.ndim
+    cdef Py_ssize_t ndim = _ndim(rectan)
     if ndim == 1:
         return recgeo_s(rectan, re, f)
     elif ndim == 2:
@@ -4689,7 +4767,7 @@ def recgeo(
 
 @boundscheck(False)
 cpdef tuple[double, double, double] reclat_s(
-    const double[::1] rectan
+    rectan: Vector
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.reclat`
@@ -4701,7 +4779,9 @@ cpdef tuple[double, double, double] reclat_s(
     :param rectan: Rectangular coordinates of a point.
     :return: Distance from the origin, Longitude in radians, Latitude in radians
     """
-    cdef const double* c_rectan = &rectan[0]
+    cdef const double[::1] rectan_arr = _as_double_array(rectan, 1)
+    _check_dim(rectan_arr.shape[0], 3, "rectan")
+    cdef const double* c_rectan = &rectan_arr[0]
     cdef double radius = 0.0
     cdef double lon = 0.0
     cdef double lat = 0.0
@@ -4717,7 +4797,7 @@ cpdef tuple[double, double, double] reclat_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] reclat_v(
-    const double[:,::1] rectan
+    rectan: Rectangular_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.reclat`
@@ -4729,7 +4809,9 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] reclat_v(
     :param rectan: Rectangular coordinates of a point.
     :return: Distance from the origin, Longitude in radians, Latitude in radians
     """
-    cdef Py_ssize_t i, n = rectan.shape[0]
+    cdef const double[:,::1] c_rectan = _as_double_array(rectan, 2)
+    _check_dim(c_rectan.shape[1], 3, "rectan")
+    cdef Py_ssize_t i, n = c_rectan.shape[0]
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_lat = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_lat = p_lat
@@ -4737,7 +4819,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] reclat_v(
     with nogil:
         for i in range(n):
             reclat_c(
-                &rectan[i, 0],  
+                &c_rectan[i, 0],  
                 &c_lat[i, 0],
                 &c_lat[i, 1],
                 &c_lat[i, 2]
@@ -4756,7 +4838,7 @@ def reclat(
     :param rectan: Rectangular coordinates of a point.
     :return: Distance from the origin, Longitude in radians, Latitude in radians
     """
-    cdef Py_ssize_t ndim = rectan.ndim
+    cdef Py_ssize_t ndim = _ndim(rectan)
     if ndim == 1:
         return reclat_s(rectan)
     elif ndim == 2:
@@ -4768,7 +4850,7 @@ def reclat(
 @boundscheck(False)
 cpdef tuple[double, double, double] recpgr_s(
     const char* body,
-    const double[::1] rectan,
+    rectan: Vector,
     double re,
     double f,
     ):
@@ -4788,7 +4870,9 @@ cpdef tuple[double, double, double] recpgr_s(
             Planetographic latitude (radians),
             Altitude above reference spheroid
     """
-    cdef double* c_rectan = &rectan[0]
+    cdef const double[::1] rectan_arr = _as_double_array(rectan, 1)
+    _check_dim(rectan_arr.shape[0], 3, "rectan")
+    cdef const double* c_rectan = &rectan_arr[0]
     cdef double lon = 0.0
     cdef double lat = 0.0
     cdef double alt = 0.0
@@ -4809,7 +4893,7 @@ cpdef tuple[double, double, double] recpgr_s(
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recpgr_v(
     const char* body,
-    const double[:,::1] rectan,
+    rectan: Rectangular_N,
     double re,
     double f,
     ):
@@ -4829,7 +4913,9 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recpgr_v(
             Planetographic latitude (radians),
             Altitude above reference spheroid
     """
-    cdef Py_ssize_t i, n = rectan.shape[0]
+    cdef const double[:,::1] c_rectan = _as_double_array(rectan, 2)
+    _check_dim(c_rectan.shape[1], 3, "rectan")
+    cdef Py_ssize_t i, n = c_rectan.shape[0]
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_pgr = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_pgr = p_pgr
@@ -4838,7 +4924,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recpgr_v(
         for i in range(n):
             recpgr_c(
                 body,
-                &rectan[i, 0],
+                &c_rectan[i, 0],
                 re,
                 f,  
                 &c_pgr[i, 0],
@@ -4869,7 +4955,7 @@ def recpgr(
             Planetographic latitude (radians),
             Altitude above reference spheroid
     """
-    cdef Py_ssize_t ndim = rectan.ndim
+    cdef Py_ssize_t ndim = _ndim(rectan)
     if ndim == 1:
         return recpgr_s(body, rectan, re, f)
     elif ndim == 2:
@@ -4880,7 +4966,7 @@ def recpgr(
 
 @boundscheck(False)
 cpdef tuple[double, double, double] recrad_s(
-    const double[::1] rectan
+    rectan: Vector
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.recrad`
@@ -4895,7 +4981,9 @@ cpdef tuple[double, double, double] recrad_s(
             Right ascension in radians,
             Declination in radians
     """
-    cdef const double* c_rectan = &rectan[0]
+    cdef const double[::1] rectan_arr = _as_double_array(rectan, 1)
+    _check_dim(rectan_arr.shape[0], 3, "rectan")
+    cdef const double* c_rectan = &rectan_arr[0]
     cdef double orange = 0.0
     cdef double ra = 0.0
     cdef double dec = 0.0
@@ -4911,7 +4999,7 @@ cpdef tuple[double, double, double] recrad_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recrad_v(
-    const double[:,::1] rectan
+    rectan: Rectangular_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.recrad`
@@ -4926,7 +5014,9 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recrad_v(
             Right ascension in radians,
             Declination in radians
     """
-    cdef Py_ssize_t i, n = rectan.shape[0]
+    cdef const double[:,::1] c_rectan = _as_double_array(rectan, 2)
+    _check_dim(c_rectan.shape[1], 3, "rectan")
+    cdef Py_ssize_t i, n = c_rectan.shape[0]
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rad = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rad = p_rad
@@ -4934,7 +5024,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recrad_v(
     with nogil:
         for i in range(n):
             recrad_c(
-                &rectan[i, 0],  
+                &c_rectan[i, 0],  
                 &c_rad[i, 0],
                 &c_rad[i, 1],
                 &c_rad[i, 2]
@@ -4956,7 +5046,7 @@ def recrad(
             Right ascension in radians,
             Declination in radians
     """
-    cdef Py_ssize_t ndim = rectan.ndim
+    cdef Py_ssize_t ndim = _ndim(rectan)
     if ndim == 1:
         return recrad_s(rectan)
     elif ndim == 2:
@@ -4967,7 +5057,7 @@ def recrad(
 
 @boundscheck(False)
 cpdef tuple[double, double, double] recsph_s(
-    const double[::1] rectan
+    rectan: Vector
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.recsph`
@@ -4982,7 +5072,9 @@ cpdef tuple[double, double, double] recsph_s(
             Angle from the positive Z-axis,
             Longitude in radians.
     """
-    cdef const double* c_rectan = &rectan[0]
+    cdef const double[::1] rectan_arr = _as_double_array(rectan, 1)
+    _check_dim(rectan_arr.shape[0], 3, "rectan")
+    cdef const double* c_rectan = &rectan_arr[0]
     cdef double r = 0.0
     cdef double colat = 0.0
     cdef double slon = 0.0
@@ -4998,7 +5090,7 @@ cpdef tuple[double, double, double] recsph_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recsph_v(
-    const double[:,::1] rectan
+    rectan: Rectangular_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.recsph`
@@ -5013,7 +5105,9 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recsph_v(
             Angle from the positive Z-axis,
             Longitude in radians.
     """
-    cdef Py_ssize_t i, n = rectan.shape[0]
+    cdef const double[:,::1] c_rectan = _as_double_array(rectan, 2)
+    _check_dim(c_rectan.shape[1], 3, "rectan")
+    cdef Py_ssize_t i, n = c_rectan.shape[0]
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_sph = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_sph = p_sph
@@ -5021,7 +5115,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recsph_v(
     with nogil:
         for i in range(n):
             recsph_c(
-                &rectan[i, 0],  
+                &c_rectan[i, 0],  
                 &c_sph[i, 0],
                 &c_sph[i, 1],
                 &c_sph[i, 2]
@@ -5043,7 +5137,7 @@ def recsph(
             Angle from the positive Z-axis,
             Longitude in radians.
     """
-    cdef Py_ssize_t ndim = rectan.ndim
+    cdef Py_ssize_t ndim = _ndim(rectan)
     if ndim == 1:
         return recsph_s(rectan)
     elif ndim == 2:
@@ -5110,7 +5204,7 @@ def scdecd_s(
 @wraparound(False)
 def scdecd_v(
     int sc,
-    const double[::1] sclkdps
+    sclkdps: Double_N
     ) -> String_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.scdecd`
@@ -5125,7 +5219,7 @@ def scdecd_v(
     :return: Character representation of a clock count.
     """
     cdef int c_sc = sc
-    cdef const np.double_t[::1] c_sclkdps = np.ascontiguousarray(sclkdps, dtype=np.double)
+    cdef const np.double_t[::1] c_sclkdps = _as_double_array(sclkdps, 1)
     cdef Py_ssize_t i, n = c_sclkdps.shape[0]
     # initialize output arrays
     p_np_s_dtype = np.dtype(('S', _default_len_out))
@@ -5290,7 +5384,7 @@ def sce2c_s(
 @wraparound(False)
 def sce2c_v(
     int sc,
-    const double[::1] ets
+    ets: Double_N
 ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sce2c`
@@ -5308,7 +5402,7 @@ def sce2c_v(
             sclkdp need not be integral.
     """
     cdef int c_sc = sc
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_sclkdps = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_sclkdps = p_sclkdps
@@ -5380,7 +5474,7 @@ def sce2s_s(
 @wraparound(False)
 def sce2s_v(
     int sc,
-    const double[::1] ets
+    ets: Double_N
     ) -> String_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sce2s`
@@ -5396,7 +5490,7 @@ def sce2s_v(
     :return: An SCLK string.
     """
     cdef int c_sc = sc
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # initialize output arrays
     p_np_s_dtype = np.dtype(('S', _default_len_out))
@@ -5555,7 +5649,7 @@ def sct2e_s(
 @wraparound(False)
 def sct2e_v(
     int sc,
-    const double[::1] sclkdps
+    sclkdps: Double_N
     ) -> Double_N:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sct2e`
@@ -5570,7 +5664,7 @@ def sct2e_v(
     :return: Ephemeris time, seconds past J2000.
     """
     cdef int c_sc = sc
-    cdef const np.double_t[::1] c_sclkdps = np.ascontiguousarray(sclkdps, dtype=np.double)
+    cdef const np.double_t[::1] c_sclkdps = _as_double_array(sclkdps, 1)
     cdef Py_ssize_t i, n = c_sclkdps.shape[0]
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_ets = np.empty(n, dtype=np.double, order='C')
     cdef np.double_t[::1] c_ets = p_ets
@@ -5653,9 +5747,9 @@ cpdef tuple[double, double, double] sphcyl_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphcyl_v(
-    const double[::1] radius, 
-    const double[::1] colat, 
-    const double[::1] slon
+    radius: Double_N, 
+    colat: Double_N, 
+    slon: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sphcyl`
@@ -5672,10 +5766,10 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphcyl_v(
             angle (radians) of point from XZ plane,
             Height of point above XY plane.
     """
-    cdef const np.double_t[::1] c_radius = np.ascontiguousarray(radius, dtype=np.double)
+    cdef const np.double_t[::1] c_radius = _as_double_array(radius, 1)
     cdef Py_ssize_t i, n = c_radius.shape[0]
-    cdef const np.double_t[::1] c_colat = np.ascontiguousarray(colat, dtype=np.double)
-    cdef const np.double_t[::1] c_slon = np.ascontiguousarray(slon, dtype=np.double)
+    cdef const np.double_t[::1] c_colat = _as_double_array(colat, 1)
+    cdef const np.double_t[::1] c_slon = _as_double_array(slon, 1)
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_cyl = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_cyl = p_cyl
@@ -5756,9 +5850,9 @@ cpdef tuple[double, double, double] sphlat_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphlat_v(
-    const double[::1] r, 
-    const double[::1] colat, 
-    const double[::1] lons
+    r: Double_N, 
+    colat: Double_N, 
+    lons: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sphlat`
@@ -5775,10 +5869,10 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphlat_v(
             Angle of the point from the XZ plane in radians,
             Angle of the point from the XY plane in radians.
     """
-    cdef const np.double_t[::1] c_r = np.ascontiguousarray(r, dtype=np.double)
+    cdef const np.double_t[::1] c_r = _as_double_array(r, 1)
     cdef Py_ssize_t i, n = c_r.shape[0]
-    cdef const np.double_t[::1] c_colat = np.ascontiguousarray(colat, dtype=np.double)
-    cdef const np.double_t[::1] c_lons = np.ascontiguousarray(lons, dtype=np.double)
+    cdef const np.double_t[::1] c_colat = _as_double_array(colat, 1)
+    cdef const np.double_t[::1] c_lons = _as_double_array(lons, 1)
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_lat = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_lat = p_lat
@@ -5854,9 +5948,9 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] sphrec_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphrec_v(
-    const double[::1] r, 
-    const double[::1] colat, 
-    const double[::1] lons
+    r: Double_N, 
+    colat: Double_N, 
+    lons: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sphrec`
@@ -5870,10 +5964,10 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] sphrec_v(
     :param slon: Angle of the point from the XZ plane in radians.
     :return: Rectangular coordinates of the point.
     """
-    cdef const np.double_t[::1] c_r = np.ascontiguousarray(r, dtype=np.double)
+    cdef const np.double_t[::1] c_r = _as_double_array(r, 1)
     cdef Py_ssize_t i, n = c_r.shape[0]
-    cdef const np.double_t[::1] c_colat = np.ascontiguousarray(colat, dtype=np.double)
-    cdef const np.double_t[::1] c_lons = np.ascontiguousarray(lons, dtype=np.double)
+    cdef const np.double_t[::1] c_colat = _as_double_array(colat, 1)
+    cdef const np.double_t[::1] c_lons = _as_double_array(lons, 1)
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
@@ -5918,7 +6012,7 @@ def spkapo_s(
     int targ,
     double et,
     const char* ref,
-    const double[::1] sobs,
+    sobs: State,
     const char* abcorr
     ) -> tuple[Vector, float]:
     """
@@ -5938,11 +6032,13 @@ def spkapo_s(
             Position of target in km,
             One way light time between observer and target in seconds.
     """
+    cdef const double[::1] sobs_arr = _as_double_array(sobs, 1)
+    _check_dim(sobs_arr.shape[0], 6, "sobs")
     # initialize c variables
     cdef int c_targ = targ
     cdef double c_et = et
     cdef double c_lt = 0.0
-    cdef const double* c_sobs = &sobs[0]
+    cdef const double* c_sobs = &sobs_arr[0]
     # convert the strings to pointers once
     cdef const char* c_ref    = ref
     cdef const char* c_abcorr = abcorr
@@ -5966,9 +6062,9 @@ def spkapo_s(
 @wraparound(False)
 def spkapo_v(
     int targ,
-    const double[::1] ets,
+    ets: Double_N,
     const char* ref,
-    const double[::1] sobs,
+    sobs: State,
     const char* abcorr
     ) -> tuple[Vector_N, Double_N]:
     """
@@ -5990,9 +6086,10 @@ def spkapo_v(
     """
     # initialize c variables
     cdef int c_targ = targ
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
-    cdef const np.double_t[::1] c_sobs = np.ascontiguousarray(sobs, dtype=np.double)
+    cdef const np.double_t[::1] c_sobs = _as_double_array(sobs, 1)
+    _check_dim(c_sobs.shape[0], 6, "sobs")
     # convert the strings to pointers once
     cdef const char* c_ref    = ref
     cdef const char* c_abcorr = abcorr
@@ -6053,7 +6150,7 @@ def spkcpo_s(
     const char* outref,
     const char* refloc,
     const char* abcorr,
-    const double[::1] obspos,
+    obspos: Vector,
     const char* obsctr,
     const char* obsref
     ) -> tuple[State, float]:
@@ -6079,6 +6176,8 @@ def spkcpo_s(
             State of target with respect to observer in km and km/sec,
             One way light time between target and observer.
     """
+    cdef const double[::1] obspos_arr = _as_double_array(obspos, 1)
+    _check_dim(obspos_arr.shape[0], 3, "obspos")
     # convert the strings to pointers once
     cdef const char* c_target   = target
     cdef const char* c_outref   = outref
@@ -6087,7 +6186,7 @@ def spkcpo_s(
     cdef const char* c_obsctr   = obsctr
     cdef const char* c_obsref   = obsref
     # convert input c arrays
-    cdef const double* c_obspos = &obspos[0]
+    cdef const double* c_obspos = &obspos_arr[0]
     # initialize output arrays
     cdef double c_et = et
     cdef double c_lt = 0.0
@@ -6115,11 +6214,11 @@ def spkcpo_s(
 @wraparound(False)
 def spkcpo_v(
     const char* target,
-    const double[::1] ets,
+    ets: Double_N,
     const char* outref,
     const char* refloc,
     const char* abcorr,
-    const double[::1] obspos,
+    obspos: Vector,
     const char* obsctr,
     const char* obsref) -> tuple[State_N, Double_N]:
     """
@@ -6144,9 +6243,10 @@ def spkcpo_v(
             State of target with respect to observer in km and km/sec,
             One way light time between target and observer.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
-    cdef const np.double_t[::1] c_obspos = np.ascontiguousarray(obspos, dtype=np.double)
+    cdef const np.double_t[::1] c_obspos = _as_double_array(obspos, 1)
+    _check_dim(c_obspos.shape[0], 3, "obspos")
     # convert the strings to pointers once
     cdef const char* c_target   = target
     cdef const char* c_outref   = outref
@@ -6218,7 +6318,7 @@ def spkcpo(
 @boundscheck(False)
 @wraparound(False)
 def spkcpt_s(
-    const double[::1] trgpos,
+    trgpos: Vector,
     const char* trgctr,
     const char* trgref,
     double et,
@@ -6249,6 +6349,8 @@ def spkcpt_s(
             State of target with respect to observer in km and km/sec,
             One way light time between target and observer.
     """
+    cdef const double[::1] trgpos_arr = _as_double_array(trgpos, 1)
+    _check_dim(trgpos_arr.shape[0], 3, "trgpos")
     # initialize c variables
     cdef double c_lt = 0.0
     cdef double c_et = et
@@ -6260,7 +6362,7 @@ def spkcpt_s(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # convert input c arrays
-    cdef const double* c_trgpos = &trgpos[0]
+    cdef const double* c_trgpos = &trgpos_arr[0]
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
@@ -6285,10 +6387,10 @@ def spkcpt_s(
 @boundscheck(False)
 @wraparound(False)
 def spkcpt_v(
-    const double[::1] trgpos,
+    trgpos: Vector,
     const char* trgctr,
     const char* trgref,
-    const double[::1] ets,
+    ets: Double_N,
     const char* outref,
     const char* refloc,
     const char* abcorr,
@@ -6316,8 +6418,10 @@ def spkcpt_v(
             State of target with respect to observer in km and km/sec,
             One way light time between target and observer.
     """
+    cdef const double[::1] trgpos_arr = _as_double_array(trgpos, 1)
+    _check_dim(trgpos_arr.shape[0], 3, "trgpos")
     # initialize c variables
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_trgctr   = trgctr
@@ -6327,7 +6431,7 @@ def spkcpt_v(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # convert input c arrays
-    cdef const double* c_trgpos = &trgpos[0]
+    cdef const double* c_trgpos = &trgpos_arr[0]
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n, 6), dtype=np.double, order='C')
     cdef np.double_t[:, ::1] c_states = p_states
@@ -6397,7 +6501,7 @@ def spkcvo_s(
     const char* outref,
     const char* refloc,
     const char* abcorr,
-    const double[::1] obssta,
+    obssta: State,
     double obsepc,
     const char* obsctr,
     const char* obsref)-> tuple[State, float]:
@@ -6424,6 +6528,8 @@ def spkcvo_s(
             State of target with respect to observer in km and km/sec,
             One way light time between target and observer.
     """
+    cdef const double[::1] obssta_arr = _as_double_array(obssta, 1)
+    _check_dim(obssta_arr.shape[0], 6, "obssta")
     # initialize c variables
     cdef double c_et = et
     cdef double c_obsepc = obsepc
@@ -6436,7 +6542,7 @@ def spkcvo_s(
     cdef const char* c_obsctr   = obsctr
     cdef const char* c_obsref   = obsref
     # convert input c arrays
-    cdef const double* c_obssta = &obssta[0]
+    cdef const double* c_obssta = &obssta_arr[0]
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
@@ -6463,11 +6569,11 @@ def spkcvo_s(
 @wraparound(False)
 def spkcvo_v(
     const char* target,
-    const double[::1] ets,
+    ets: Double_N,
     const char* outref,
     const char* refloc,
     const char* abcorr,
-    const double[::1] obssta,
+    obssta: State,
     double obsepc,
     const char* obsctr,
     const char* obsref)-> tuple[State_N, Double_N]:
@@ -6494,9 +6600,11 @@ def spkcvo_v(
             State of target with respect to observer in km and km/sec,
             One way light time between target and observer.
     """
+    cdef const double[::1] obssta_arr = _as_double_array(obssta, 1)
+    _check_dim(obssta_arr.shape[0], 6, "obssta")
     # initialize c variables
     cdef double c_obsepc = obsepc
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_target   = target
@@ -6506,7 +6614,7 @@ def spkcvo_v(
     cdef const char* c_obsctr   = obsctr
     cdef const char* c_obsref   = obsref
     # convert input c arrays
-    cdef const double* c_obssta = &obssta[0]
+    cdef const double* c_obssta = &obssta_arr[0]
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n, 6), dtype=np.double, order='C')
     cdef np.double_t[:, ::1] c_states = p_states
@@ -6574,7 +6682,7 @@ def spkcvo(
 @boundscheck(False)
 @wraparound(False)
 def spkcvt_s(
-    const double[::1] trgsta,
+    trgsta: State,
     double trgepc,
     const char* trgctr,
     const char* trgref,
@@ -6606,6 +6714,8 @@ def spkcvt_s(
             State of target with respect to observer in km and km/sec,
             One way light time between target and observer.
     """
+    cdef const double[::1] trgsta_arr = _as_double_array(trgsta, 1)
+    _check_dim(trgsta_arr.shape[0], 6, "trgsta")
     # initialize c variables
     cdef double c_trgepc = trgepc
     cdef double c_et = et
@@ -6618,7 +6728,7 @@ def spkcvt_s(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # convert input c arrays
-    cdef const double* c_trgsta = &trgsta[0]
+    cdef const double* c_trgsta = &trgsta_arr[0]
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
@@ -6644,11 +6754,11 @@ def spkcvt_s(
 @boundscheck(False)
 @wraparound(False)
 def spkcvt_v(
-    const double[::1] trgsta,
+    trgsta: State,
     double trgepc,
     const char* trgctr,
     const char* trgref,
-    const double[::1] ets,
+    ets: Double_N,
     const char* outref,
     const char* refloc,
     const char* abcorr,
@@ -6676,9 +6786,11 @@ def spkcvt_v(
             State of target with respect to observer in km and km/sec,
             One way light time between target and observer.
     """
+    cdef const double[::1] trgsta_arr = _as_double_array(trgsta, 1)
+    _check_dim(trgsta_arr.shape[0], 6, "trgsta")
     # initialize c variables
     cdef double c_trgepc = trgepc
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_trgctr   = trgctr
@@ -6688,7 +6800,7 @@ def spkcvt_v(
     cdef const char* c_abcorr   = abcorr
     cdef const char* c_obsrvr   = obsrvr
     # convert input c arrays
-    cdef const double* c_trgsta = &trgsta[0]
+    cdef const double* c_trgsta = &trgsta_arr[0]
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n, 6), dtype=np.double, order='C')
     cdef np.double_t[:, ::1] c_states = p_states
@@ -6808,7 +6920,7 @@ def spkez_s(
 @wraparound(False)
 def spkez_v(
     int targ,
-    const double[::1] et,
+    et: Double_N,
     const char* ref,
     const char* abcorr,
     int obs)-> tuple[State_N, Double_N]:
@@ -6831,7 +6943,7 @@ def spkez_v(
             One way light time between observer and target in seconds.
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(et, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(et, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef int c_targ        = targ
@@ -6944,7 +7056,7 @@ def spkezp_s(
 @wraparound(False)
 def spkezp_v(
     int targ,
-    const double[::1] et,
+    et: Double_N,
     const char* ref,
     const char* abcorr,
     int obs
@@ -6967,7 +7079,7 @@ def spkezp_v(
             Position of target in km,
             One way light time between observer and target in seconds.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(et, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(et, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_ref    = ref
@@ -7079,7 +7191,7 @@ def spkezr_s(
 @wraparound(False)
 def spkezr_v(
     const char* targ,
-    const double[::1] et,
+    et: Double_N,
     const char* ref,
     const char* abcorr,
     const char* obs)-> tuple[State_N, Double_N]:
@@ -7102,7 +7214,7 @@ def spkezr_v(
             One way light time between observer and target in seconds.
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_epochs = np.ascontiguousarray(et, dtype=np.double)
+    cdef const np.double_t[::1] c_epochs = _as_double_array(et, 1)
     cdef Py_ssize_t i, n = c_epochs.shape[0]
     # convert the strings to pointers once
     cdef const char* c_target   = targ
@@ -7212,7 +7324,7 @@ def spkgeo_s(
 @wraparound(False)
 def spkgeo_v(
     int targ,
-    const double[::1] ets,
+    ets: Double_N,
     const char* ref,
     int obs,
     )-> tuple[State_N, Double_N]:
@@ -7234,7 +7346,7 @@ def spkgeo_v(
     """
     # initialize c variables
     cdef int c_targ = targ
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef int c_obs  = obs
     # convert the strings to pointers once
@@ -7336,7 +7448,7 @@ def spkgps_s(
 @wraparound(False)
 def spkgps_v(
     int targ,
-    const double[::1] ets,
+    ets: Double_N,
     const char* ref,
     int obs,
     ) -> tuple[Vector_N, Double_N]:
@@ -7356,7 +7468,7 @@ def spkgps_v(
     """
     # initialize c variables
     cdef int c_targ = targ
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef int c_obs  = obs
     # convert the strings to pointers once
@@ -7461,7 +7573,7 @@ def spkpos_s(
 @wraparound(False)
 def spkpos_v(
     const char* targ,
-    const double[::1] ets,
+    ets: Double_N,
     const char* ref,
     const char* abcorr,
     const char* obs
@@ -7485,7 +7597,7 @@ def spkpos_v(
             One way light time between observer and target in seconds.
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_targ   = targ
@@ -7547,7 +7659,7 @@ def spkpos(
 @wraparound(False)
 def spkpvn_s(
     int handle,
-    const double[::1] descr,
+    descr: Double_5,
     double et
     ) -> tuple[int, State, int]:
     """
@@ -7567,6 +7679,8 @@ def spkpvn_s(
             Output state vector,
             Center of state.
     """
+    cdef const double[::1] descr_arr = _as_double_array(descr, 1)
+    _check_dim(descr_arr.shape[0], 5, "descr")
     # initialize c variables
     cdef int c_handle = handle
     cdef double c_et = et
@@ -7574,7 +7688,7 @@ def spkpvn_s(
     cdef int c_ref = 0
     cdef int c_center = 0
     # convert input c arrays
-    cdef const double* c_descr = &descr[0]
+    cdef const double* c_descr = &descr_arr[0]
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_state = np.empty(6, dtype=np.double, order='C')
     cdef np.double_t[::1] c_state = p_state
@@ -7596,8 +7710,8 @@ def spkpvn_s(
 @wraparound(False)
 def spkpvn_v(
     int handle,
-    const double[::1] descr,
-    const double[::1] ets
+    descr: Double_5,
+    ets: Double_N
     ) -> tuple[Int_N, State_N, Int_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.spkpvn`
@@ -7616,12 +7730,14 @@ def spkpvn_v(
             Output state vector,
             Center of state.
     """
+    cdef const double[::1] descr_arr = _as_double_array(descr, 1)
+    _check_dim(descr_arr.shape[0], 5, "descr")
     # initialize c variables
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef int c_handle = handle
     # convert input c arrays
-    cdef const double* c_descr = &descr[0]
+    cdef const double* c_descr = &descr_arr[0]
     # initialize output arrays
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_states = np.empty((n, 6), dtype=np.double, order='C')
     cdef np.double_t[:, ::1] c_states = p_states
@@ -7715,7 +7831,7 @@ def spkssb_s(
 @wraparound(False)
 def spkssb_v(
     int targ,
-    const double[::1] ets,
+    ets: Double_N,
     const char* ref,
     ) -> State_N:
     """
@@ -7733,7 +7849,7 @@ def spkssb_v(
     """
     # initialize c variables
     cdef int c_targ = targ
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert the strings to pointers once
     cdef const char* c_ref   = ref
@@ -7871,7 +7987,7 @@ def sincpt_s(
     const char* abcorr,
     const char* obsrvr,
     const char* dref,
-    const double[::1] dvec
+    dvec: Vector
     ) -> tuple[Vector, float, Vector, bool]:
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.sincpt`
@@ -7896,6 +8012,8 @@ def sincpt_s(
             Intercept epoch,
             Vector from observer to intercept point in km.
     """
+    cdef const double[::1] c_dvec = _as_double_array(dvec, 1)
+    _check_dim(c_dvec.shape[0], 3, "dvec")
     # initialize c variables
     cdef double c_et = et
     # convert strings
@@ -7921,7 +8039,7 @@ def sincpt_s(
         c_abcorr,
         c_obsrvr,
         c_dref,
-        &dvec[0],
+        &c_dvec[0],
         &c_spoint[0],
         &c_trgepc,
         &c_srfvec[0],
@@ -7938,12 +8056,12 @@ def sincpt_s(
 def sincpt_v(
     const char* method,
     const char* target,
-    const double[::1] ets,
+    ets: Double_N,
     const char* fixref,
     const char* abcorr,
     const char* obsrvr,
     const char* dref,
-    const double[::1] dvec
+    dvec: Vector
     ) -> tuple[Vector_N, Double_N, Vector_N, Found_N]:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sincpt`
@@ -7968,8 +8086,10 @@ def sincpt_v(
             Intercept epoch,
             Vector from observer to intercept point in km.
     """
+    cdef const double[::1] c_dvec = _as_double_array(dvec, 1)
+    _check_dim(c_dvec.shape[0], 3, "dvec")
     # get size of input array
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert strings
     cdef const char* c_method = method
@@ -7998,7 +8118,7 @@ def sincpt_v(
                 c_abcorr,
                 c_obsrvr,
                 c_dref,
-                &dvec[0],
+                &c_dvec[0],
                 &c_spoint[i, 0],
                 &c_trgepc[i],
                 &c_srfvec[i, 0],
@@ -8081,8 +8201,8 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] srfrec_s(
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] srfrec_v(
     int body, 
-    const double[::1] longitude, 
-    const double[::1] latitude
+    longitude: Double_N, 
+    latitude: Double_N
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.srfrec`
@@ -8098,9 +8218,9 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] srfrec_v(
     :return: Rectangular coordinates of the point, same units as used in radii definition (typically km).
     """
     cdef SpiceInt c_body = body
-    cdef const np.double_t[::1] c_lon = np.ascontiguousarray(longitude, dtype=np.double)
+    cdef const np.double_t[::1] c_lon = _as_double_array(longitude, 1)
     cdef Py_ssize_t i, n = c_lon.shape[0]
-    cdef const np.double_t[::1] c_lat = np.ascontiguousarray(latitude, dtype=np.double)
+    cdef const np.double_t[::1] c_lat = _as_double_array(latitude, 1)
     # allocate output array
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_rec = np.empty((n,3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_rec = p_rec
@@ -8206,7 +8326,7 @@ def subpnt_s(
 def subpnt_v(
     const char* method,
     const char* target,
-    const double[::1] ets,
+    ets: Double_N,
     const char* fixref,
     const char* abcorr,
     const char* obsrvr
@@ -8232,7 +8352,7 @@ def subpnt_v(
             Vector from observer to sub-observer point.
     """
     # get size of input array
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert strings
     cdef const char* c_method = method
@@ -8366,7 +8486,7 @@ def subslr_s(
 def subslr_v(
     const char* method,
     const char* target,
-    const double[::1] ets,
+    ets: Double_N,
     const char* fixref,
     const char* abcorr,
     const char* obsrvr
@@ -8394,7 +8514,7 @@ def subslr_v(
             Vector from observer to sub-solar point in km.
     """
     # get size of input array
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert strings
     cdef const char* c_method = method
@@ -8505,7 +8625,7 @@ def sxform_s(
 def sxform_v(
     const char* instring,
     const char* tostring,
-    const double[::1] ets
+    ets: Double_N
     ) -> Matrix_N_6:
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.sxform`
@@ -8521,7 +8641,7 @@ def sxform_v(
     :param et: Epochs of the state transformation matrix.
     :return: A state transformation matrix.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef const char* c_instring = instring
     cdef const char* c_tostring = tostring
@@ -8578,7 +8698,7 @@ def tangpt_s(
     const char* corloc,
     const char* obsrvr,
     const char* dref,
-    const double[::1] dvec
+    dvec: Vector
     ):
     """
     Scalar version of :py:meth:`~spiceypy.cyice.cyice.tangpt`
@@ -8610,6 +8730,8 @@ def tangpt_s(
      Point on surface nearest to tangent point, Epoch associated with
      correction locus, Vector from observer to surface point 'srfpt'.
     """
+    cdef const double[::1] c_dvec = _as_double_array(dvec, 1)
+    _check_dim(c_dvec.shape[0], 3, "dvec")
     # initialize c variables
     cdef double c_et = et
     # convert strings
@@ -8640,7 +8762,7 @@ def tangpt_s(
         c_corloc,
         c_obsrvr,
         c_dref,
-        &dvec[0],
+        &c_dvec[0],
         &c_tanpt[0],
         &c_alt,
         &c_vrange,
@@ -8658,13 +8780,13 @@ def tangpt_s(
 def tangpt_v(
     const char* method,
     const char* target,
-    const double[::1] ets,
+    ets: Double_N,
     const char* fixref,
     const char* abcorr,
     const char* corloc,
     const char* obsrvr,
     const char* dref,
-    const double[::1] dvec
+    dvec: Vector
     ):
     """
     Vectorized version of :py:meth:`~spiceypy.cyice.cyice.tangpt`
@@ -8696,8 +8818,10 @@ def tangpt_v(
      Point on surface nearest to tangent point, Epoch associated with
      correction locus, Vector from observer to surface point 'srfpt'.
     """
+    cdef const double[::1] c_dvec = _as_double_array(dvec, 1)
+    _check_dim(c_dvec.shape[0], 3, "dvec")
     # allocate sizes
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     # convert strings to ascii
     cdef const char* c_method = method
@@ -8732,7 +8856,7 @@ def tangpt_v(
                 c_corloc,
                 c_obsrvr,
                 c_dref,
-                &dvec[0],
+                &c_dvec[0],
                 &c_tanpt[i, 0],
                 &c_alt[i],
                 &c_vrange[i],
@@ -8801,7 +8925,7 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] termpt_s(
     const char * abcorr,
     const char * corloc,
     const char * obsrvr,
-    const double[::1] refvec,
+    refvec: Vector,
     double rolstp,
     int ncuts,
     double schstp,
@@ -8849,7 +8973,8 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] termpt_s(
     """
     # process inputs
     cdef Py_ssize_t c_maxn = maxn
-    cdef const np.double_t[::1] c_refvec = np.ascontiguousarray(refvec, dtype=np.double)
+    cdef const np.double_t[::1] c_refvec = _as_double_array(refvec, 1)
+    _check_dim(c_refvec.shape[0], 3, "refvec")
     # allocate outputs
     cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_npts = np.empty(c_maxn, dtype=np.int32, order='C')
     cdef int[::1] c_npts = p_npts
@@ -8892,12 +9017,12 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] termpt_v(
     const char * method,
     const char * ilusrc,
     const char * target,
-    const double[::1] ets,
+    ets: Double_N,
     const char * fixref,
     const char * abcorr,
     const char * corloc,
     const char * obsrvr,
-    const double[::1] refvec,
+    refvec: Vector,
     double rolstp,
     int ncuts,
     double schstp,
@@ -8944,10 +9069,11 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] termpt_v(
         Terminator vectors emanating from the observer in km
     """
     # process inputs
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef Py_ssize_t c_maxn = maxn
-    cdef const np.double_t[::1] c_refvec = np.ascontiguousarray(refvec, dtype=np.double)
+    cdef const np.double_t[::1] c_refvec = _as_double_array(refvec, 1)
+    _check_dim(c_refvec.shape[0], 3, "refvec")
     cdef const SpiceDouble* c_refvec_ptr = &c_refvec[0]
     # allocate outputs
     cdef np.ndarray[np.int32_t, ndim=2, mode='c'] p_npts = np.empty((n, c_maxn), dtype=np.int32, order='C')
@@ -9079,7 +9205,7 @@ def timout_s(
 @boundscheck(False)
 @wraparound(False)
 def timout_v(
-    const double[::1] ets,
+    ets: Double_N,
     const char* pictur
     ) -> String_N:
     """
@@ -9095,7 +9221,7 @@ def timout_v(
     :param pictur: A format specification for the output string.
     :return: A string representation of the input epoch.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef const char* c_pictur = pictur
     # initialize output arrays
@@ -9198,7 +9324,7 @@ def trgsep_s(
 @boundscheck(False)
 @wraparound(False)
 def trgsep_v(
-    const double[::1] ets,
+    ets: Double_N,
     const char* targ1,
     const char* shape1,
     const char* frame1,
@@ -9227,7 +9353,7 @@ def trgsep_v(
     :param abcorr: Aberration corrections flag.
     :return: angular separation in radians.
     """
-    cdef const np.double_t[::1] c_ets = np.ascontiguousarray(ets, dtype=np.double)
+    cdef const np.double_t[::1] c_ets = _as_double_array(ets, 1)
     cdef Py_ssize_t i, n = c_ets.shape[0]
     cdef const char* c_targ1   = targ1
     cdef const char* c_shape1  = shape1
@@ -9352,7 +9478,7 @@ def unitim_s(
 @boundscheck(False)
 @wraparound(False)
 def unitim_v(
-        const double[::1] epochs,
+        epochs: Double_N,
         insys: str | np.str_,
         outsys: str | np.str_,
     ) -> Double_N:
@@ -9371,7 +9497,7 @@ def unitim_v(
             The float in outsys that is equivalent
             to the epoch on the insys time scale.
     """
-    cdef const np.double_t[::1] c_epochs = np.ascontiguousarray(epochs, dtype=np.double)
+    cdef const np.double_t[::1] c_epochs = _as_double_array(epochs, 1)
     cdef Py_ssize_t i, n = c_epochs.shape[0]
     cdef const char* c_insys = insys
     cdef const char* c_outsys = outsys
@@ -9507,7 +9633,7 @@ def utc2et(utcstr: str | String_N)-> float | Double_N:
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=1, mode='c'] xfmsta_s(
-    const double[::1] input_state, 
+    input_state: State, 
     const char* input_coord_sys,
     const char* output_coord_sys,
     const char* body,
@@ -9528,7 +9654,7 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] xfmsta_s(
     :return: Converted output state
     """
     # initialize c variables
-    cdef const np.double_t[::1] c_input_state = np.ascontiguousarray(input_state, dtype=np.double)
+    cdef const np.double_t[::1] c_input_state = _as_double_array(input_state, 1)
     if c_input_state.shape[0] != 6:
         raise ValueError(f'in xfmsta_s, state vector had shape {c_input_state.shape[0]}, not 6 as expected')
     # initialize output
@@ -9548,7 +9674,7 @@ cpdef np.ndarray[np.double_t, ndim=1, mode='c'] xfmsta_s(
 @boundscheck(False)
 @wraparound(False)
 cpdef np.ndarray[np.double_t, ndim=2, mode='c'] xfmsta_v(
-    const double[:,::1] input_state, 
+    input_state: State_N, 
     const char* input_coord_sys,
     const char* output_coord_sys,
     const char* body,
@@ -9569,7 +9695,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] xfmsta_v(
     :return: Converted output states
     """
     # initialize c variables
-    cdef const np.double_t[:, ::1] c_input_state = np.ascontiguousarray(input_state, dtype=np.double)
+    cdef const np.double_t[:, ::1] c_input_state = _as_double_array(input_state, 2)
     if c_input_state.shape[1] != 6:
         raise ValueError(f'in xfmsta_v, state vector had shape {c_input_state.shape[1]}, not 6 as expected')
     cdef Py_ssize_t i, n = c_input_state.shape[0]
@@ -9609,7 +9735,7 @@ def xfmsta(
                 are associated (if applicable).
     :return: Converted output state
     """
-    cdef Py_ssize_t ndim = input_state.ndim
+    cdef Py_ssize_t ndim = _ndim(input_state)
     if ndim == 1:
         return xfmsta_s(input_state, input_coord_sys, output_coord_sys, body)
     elif ndim == 2:

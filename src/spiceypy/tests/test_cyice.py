@@ -26,6 +26,7 @@ from spiceypy.utils.exceptions import (
 )
 from spiceypy.tests.gettestkernels import (
     download_kernels,
+    CassiniKernels,
     CoreKernels,
     ExtraKernels,
 )
@@ -467,3 +468,111 @@ def test_unload_error_recovery(load_core_kernels):
     assert not spice.failed()
     cyice.unload(CoreKernels.testMetaKernel)
     assert spice.ktotal("ALL") == 0
+
+
+# fixed-size array inputs: CSPICE reads exactly 3/5/6/8/10 doubles through the
+# pointer it is given, and boundscheck is disabled, so a wrong-length input
+# must be rejected up front rather than read out of bounds
+
+v3_short, v3_long, v6_short = np.ones(2), np.ones(4), np.ones(5)
+
+wrong_dim_calls = [
+    pytest.param(lambda: cyice.recgeo_s(v3_short, 6378.0, 0.003), id="recgeo_s-short"),
+    pytest.param(lambda: cyice.recgeo_s(np.empty(0), 6378.0, 0.003), id="recgeo_s-empty"),
+    pytest.param(lambda: cyice.reclat_s(v3_long), id="reclat_s-long"),
+    pytest.param(lambda: cyice.recgeo_v(np.ones((2, 2)), 6378.0, 0.003), id="recgeo_v"),
+    pytest.param(lambda: cyice.recsph_v(np.ones((2, 4))), id="recsph_v"),
+    pytest.param(lambda: cyice.conics_s(np.ones(7), 0.0), id="conics_s"),
+    pytest.param(lambda: cyice.conics_v(np.ones((1, 7)), np.zeros(1)), id="conics_v"),
+    pytest.param(lambda: cyice.evsgp4_s(0.0, np.ones(7), np.ones(10)), id="evsgp4_s-geophs"),
+    pytest.param(lambda: cyice.evsgp4_s(0.0, np.ones(8), np.ones(9)), id="evsgp4_s-elems"),
+    pytest.param(lambda: cyice.spkcpo_s("SUN", 0.0, "J2000", "OBSERVER", "NONE", v3_short, "EARTH", "J2000"), id="spkcpo_s"),
+    pytest.param(lambda: cyice.spkcvo_s("SUN", 0.0, "J2000", "OBSERVER", "NONE", v6_short, 0.0, "EARTH", "J2000"), id="spkcvo_s"),
+    pytest.param(lambda: cyice.spkpvn_s(1, np.ones(4), 0.0), id="spkpvn_s"),
+    pytest.param(lambda: cyice.sincpt_v("ELLIPSOID", "EARTH", np.zeros(1), "IAU_EARTH", "NONE", "SUN", "J2000", v3_short), id="sincpt_v"),
+    pytest.param(lambda: cyice.ilumin_v("ELLIPSOID", "EARTH", np.zeros(1), "IAU_EARTH", "NONE", "SUN", np.ones((1, 2))), id="ilumin_v"),
+]
+
+
+@pytest.mark.parametrize("call", wrong_dim_calls)
+def test_fixed_size_inputs_reject_wrong_dim(call):
+    with pytest.raises(ValueError, match="elements along its last axis"):
+        call()
+
+
+@pytest.mark.parametrize("et", [-1e11, 3e11])
+def test_etcal_v_not_truncated(et):
+    # B.C. dates and 5 digit years overflowed the old 25 byte etcal_v buffer
+    assert cyice.etcal_v(np.array([et]))[0] == cyice.etcal_s(et)
+
+
+@pytest.mark.parametrize("function", [cyice.ckgp_v, cyice.ckgpav_v])
+def test_ckg_v_found_flags(function, load_core_kernels, monkeypatch):
+    # found flags are written by CSPICE as 4 byte SpiceBooleans; the buffer
+    # must be sized for that and the result handed back as uint8
+    for kernel in (
+        CassiniKernels.cassSclk,
+        CassiniKernels.cassCk,
+        CassiniKernels.cassIk,
+        CassiniKernels.cassFk,
+        CassiniKernels.cassPck,
+    ):
+        spice.furnsh(kernel)
+    monkeypatch.setattr(spice.config, "catch_false_founds", False)
+    ckid = spice.ckobj(CassiniKernels.cassCk)[0]
+    cover = spice.ckcov(CassiniKernels.cassCk, ckid, False, "INTERVAL", 0.0, "SCLK")
+    found = function(ckid, np.array([cover[0], 0.0, cover[0]]), 256, "J2000")[-1]
+    assert found.dtype == np.uint8
+    npt.assert_array_equal(found, [1, 0, 1])
+
+
+
+# array-like inputs: double array params go through _as_double_array, so
+# lists of floats and strided or read-only float64 views are accepted, while
+# any other dtype raises TypeError instead of being converted to double
+
+array_like_ctors = [
+    pytest.param(lambda a: np.repeat(np.asarray(a, dtype=np.double)[..., None], 2, axis=-1)[..., 0], id="strided"),
+    pytest.param(lambda a: np.asarray(a, dtype=np.double).tolist(), id="float-list"),
+]
+
+non_float64_ctors = [
+    pytest.param(lambda a: np.asarray(a, dtype=np.int64), id="int64"),
+    pytest.param(lambda a: np.asarray(a, dtype=np.int64).tolist(), id="int-list"),
+    pytest.param(lambda a: np.asarray(a, dtype=np.bool_), id="bool"),
+    pytest.param(lambda a: np.asarray(a, dtype=np.float32), id="float32"),
+]
+
+array_like_calls = [
+    pytest.param(lambda ctor: cyice.convrt_v(ctor([1, 2]), "KM", "M"), id="convrt_v"),
+    pytest.param(lambda ctor: cyice.convrt(ctor([1, 2]), "KM", "M"), id="convrt"),
+    pytest.param(lambda ctor: cyice.reclat_s(ctor([1, 2, 3])), id="reclat_s"),
+    pytest.param(lambda ctor: cyice.reclat(ctor([1, 2, 3])), id="reclat-1d"),
+    pytest.param(lambda ctor: cyice.reclat(ctor([[1, 2, 3], [4, 5, 6]])), id="reclat-2d"),
+    pytest.param(lambda ctor: cyice.cyllat_v(ctor([1, 2]), ctor([0, 1]), ctor([3, 4])), id="cyllat_v"),
+    pytest.param(lambda ctor: cyice.etcal(ctor([0, 3600])), id="etcal"),
+    pytest.param(lambda ctor: cyice.spkpos_v("MOON", ctor([0, 3600]), "J2000", "NONE", "EARTH"), id="spkpos_v"),
+]
+
+
+@pytest.mark.parametrize("ctor", array_like_ctors)
+@pytest.mark.parametrize("call", array_like_calls)
+def test_accepts_array_like_inputs(call, ctor, load_core_kernels):
+    expected = call(lambda a: np.asarray(a, dtype=np.double))
+    actual = call(ctor)
+    if not isinstance(actual, tuple):
+        actual, expected = (actual,), (expected,)
+    for a, e in zip(actual, expected):
+        npt.assert_array_equal(a, e)
+
+
+@pytest.mark.parametrize("ctor", non_float64_ctors)
+@pytest.mark.parametrize("call", array_like_calls)
+def test_rejects_non_float64_array_inputs(call, ctor, load_core_kernels):
+    with pytest.raises(TypeError, match="expected a float64 array"):
+        call(ctor)
+
+
+def test_array_input_wrong_ndim():
+    with pytest.raises(ValueError, match="expected a 1-D array, got 2-D"):
+        cyice.reclat_s(np.ones((1, 3)))
