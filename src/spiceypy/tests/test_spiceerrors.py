@@ -26,8 +26,17 @@ import pytest
 import spiceypy as spice
 
 import spiceypy.found_catcher
-from spiceypy.tests.gettestkernels import cwd, CoreKernels, ExtraKernels
+from spiceypy.tests.gettestkernels import (
+    cwd,
+    download_kernels,
+    CoreKernels,
+    ExtraKernels,
+)
 import os
+
+
+def setup_module(module):
+    download_kernels()
 
 
 def test_tkversion():

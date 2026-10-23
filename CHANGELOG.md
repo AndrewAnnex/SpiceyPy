@@ -22,6 +22,8 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
  - cyice getelm_v (and getelm with array input) rejected int64 arrays, NumPy's default integer type, with a buffer dtype mismatch; frstyr now accepts int32 or int64 arrays
  - Test fixtures now call reset before kclear, since kclear is a no-op while a SPICE error is pending (#582)
  - cyice passed `int` storage to CSPICE `SpiceInt *` outputs (et2lst, limbpt, occult, spkpvn, termpt), which is wrong on 32-bit targets where SpiceInt is `long`
+ - cyice extension module is named from scikit-build-core's SKBUILD_SOABI, so cross-compiled builds get an ABI-tagged name (e.g. `cyice.cpython-314-wasm32-emscripten.so`) instead of a bare `cyice.so`
+ - test_metakernel_long_paths left 30 kernels loaded, and test_spiceerrors used test kernels without downloading them, so some random test orders failed
 
 ## [8.3.0] - 2026-10-11
 

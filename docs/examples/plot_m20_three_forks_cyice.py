@@ -101,7 +101,9 @@ else:
     cyice.spkpos("M2020", times, "IAU_MARS", "lt+s", "MARS")
     cyice_seconds = time.perf_counter() - start
     print(f"positions match: {np.allclose(positions, ctypes_positions)}")
-    print(f"spiceypy.spkpos: {ctypes_seconds:.3f} s, cyice.spkpos: {cyice_seconds:.3f} s")
+    print(
+        f"spiceypy.spkpos: {ctypes_seconds:.3f} s, cyice.spkpos: {cyice_seconds:.3f} s"
+    )
 
 # %%
 # Plot the rover's traverse
