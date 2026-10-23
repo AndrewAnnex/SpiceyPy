@@ -48,6 +48,7 @@ import functools
 from typing import Annotated, Literal
 
 import numpy as np
+import numpy.typing
 cimport numpy as np
 np.import_array()
 
@@ -9615,4 +9616,3 @@ def xfmsta(
         return xfmsta_v(input_state, input_coord_sys, output_coord_sys, body)
     else:
         raise RuntimeError(f'xfmsta provided wrong shape for state: {ndim}')
-
