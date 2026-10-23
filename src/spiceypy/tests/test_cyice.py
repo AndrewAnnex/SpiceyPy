@@ -153,6 +153,29 @@ def test_getelm_vector_int_dtypes(function, frstyr, load_core_kernels):
     npt.assert_array_equal(elems, np.repeat(expected_elems[None, :], 3, axis=0))
 
 
+@pytest.mark.parametrize("function", [cyice.xfmsta_v, cyice.xfmsta])
+@pytest.mark.parametrize("writable", [False, True])
+def test_xfmsta_batch_preserves_input_states(function, writable):
+    states = np.array(
+        [
+            [7000.0, 1200.0, 2000.0, 1.0, 7.0, 0.3],
+            [7100.0, 1300.0, 2100.0, 1.1, 7.1, 0.4],
+        ]
+    )
+    original = states.copy()
+    states.flags.writeable = writable
+    expected = np.array(
+        [
+            spice.xfmsta(state, "RECTANGULAR", "LATITUDINAL", "EARTH")
+            for state in original
+        ]
+    )
+    actual = function(states, "RECTANGULAR", "LATITUDINAL", "EARTH")
+    npt.assert_array_equal(actual, expected)
+    npt.assert_array_equal(states, original)
+    assert states.flags.writeable == writable
+
+
 # string-dispatching functions: str2et, utc2et, scencd, scs2e
 
 
