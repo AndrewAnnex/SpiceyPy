@@ -248,6 +248,42 @@ def test_numeric_v_rejects_0d():
         cyice.etcal_v(np.array(0.0))
 
 
+# read-only inputs: array params must be const memoryviews, otherwise Cython
+# rejects read-only buffers (np.broadcast_to views, flags.writeable=False)
+
+readonly_input_calls = [
+    pytest.param(lambda ro: cyice.convrt_v(ro([1.0, 2.0]), "KM", "M"), id="convrt_v"),
+    pytest.param(lambda ro: cyice.recgeo_s(ro([6378.0, 1.0, 2.0]), 6378.0, 0.003), id="recgeo_s"),
+    pytest.param(lambda ro: cyice.recpgr_v("EARTH", ro([[6378.0, 1.0, 2.0]]), 6378.0, 0.003), id="recpgr_v"),
+    pytest.param(lambda ro: cyice.azlrec_v(ro([1.0]), ro([0.5]), ro([0.25]), True, True), id="azlrec_v"),
+    pytest.param(lambda ro: cyice.conics_s(ro([7000.0, 0.1, 0.5, 0.2, 0.3, 0.4, 0.0, 398600.0]), 100.0), id="conics_s"),
+    pytest.param(lambda ro: cyice.conics_v(ro([[7000.0, 0.1, 0.5, 0.2, 0.3, 0.4, 0.0, 398600.0]]), ro([100.0])), id="conics_v"),
+    pytest.param(lambda ro: cyice.reclat_s(ro([1.0, 2.0, 3.0])), id="reclat_s"),
+    pytest.param(lambda ro: cyice.etcal_v(ro([0.0, 1.0])), id="etcal_v"),
+    pytest.param(lambda ro: cyice.pxform_v("J2000", "IAU_EARTH", ro([0.0, 1.0])), id="pxform_v"),
+    pytest.param(lambda ro: cyice.unitim_v(ro([0.0, 1.0]), "TDB", "TDT"), id="unitim_v"),
+    pytest.param(lambda ro: cyice.et2utc_v(ro([0.0, 1.0]), "C", 3), id="et2utc_v"),
+    pytest.param(lambda ro: cyice.spkezr_v("MOON", ro([0.0, 1.0]), "J2000", "NONE", "EARTH"), id="spkezr_v"),
+    pytest.param(lambda ro: cyice.spkpos_v("MOON", ro([0.0, 1.0]), "J2000", "NONE", "EARTH"), id="spkpos_v"),
+    pytest.param(lambda ro: cyice.spkcpo_s("SUN", 0.0, "J2000", "OBSERVER", "NONE", ro([6378.0, 0.0, 0.0]), "EARTH", "J2000"), id="spkcpo_s"),
+]
+
+
+@pytest.mark.parametrize("call", readonly_input_calls)
+def test_accepts_readonly_inputs(call, load_core_kernels):
+    def readonly(values):
+        arr = np.array(values, dtype=np.double)
+        arr.flags.writeable = False
+        return arr
+
+    expected = call(lambda values: np.array(values, dtype=np.double))
+    actual = call(readonly)
+    if not isinstance(actual, tuple):
+        actual, expected = (actual,), (expected,)
+    for a, e in zip(actual, expected):
+        npt.assert_array_equal(a, e)
+
+
 def test_aux_string_params_accept_np_str(load_core_kernels):
     et = cyice.str2et("July 4, 2003 11:00 AM PST")
     state, lt = cyice.spkezr(
