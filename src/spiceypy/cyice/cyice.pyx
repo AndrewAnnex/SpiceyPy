@@ -9568,7 +9568,7 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] xfmsta_v(
     :return: Converted output states
     """
     # initialize c variables
-    cdef np.double_t[:, ::1] c_input_state = np.ascontiguousarray(input_state, dtype=np.double)
+    cdef const np.double_t[:, ::1] c_input_state = np.ascontiguousarray(input_state, dtype=np.double)
     if c_input_state.shape[1] != 6:
         raise ValueError(f'in xfmsta_v, state vector had shape {c_input_state.shape[1]}, not 6 as expected')
     cdef Py_ssize_t i, n = c_input_state.shape[0]
@@ -9615,4 +9615,3 @@ def xfmsta(
         return xfmsta_v(input_state, input_coord_sys, output_coord_sys, body)
     else:
         raise RuntimeError(f'xfmsta provided wrong shape for state: {ndim}')
-
