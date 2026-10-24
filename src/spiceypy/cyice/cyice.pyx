@@ -1492,9 +1492,9 @@ def et2lst_s(
     cdef double c_et = et
     cdef int c_body = body
     cdef double c_lon = lon
-    cdef int c_hr = 0
-    cdef int c_mn = 0
-    cdef int c_sc = 0
+    cdef SpiceInt c_hr = 0
+    cdef SpiceInt c_mn = 0
+    cdef SpiceInt c_sc = 0
     cdef char[TIMELEN] time
     cdef char[TIMELEN] ampm
     cdef const char* c_typein = typein
@@ -3477,7 +3477,7 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] limbpt_s(
     _check_dim(c_refvec.shape[0], 3, "refvec")
     # allocate outputs
     cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_npts = np.empty(c_maxn, dtype=np.int32, order='C')
-    cdef int[::1] c_npts = p_npts
+    cdef SpiceInt[::1] c_npts = p_npts
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_points = np.empty((c_maxn, 3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_points = p_points
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_epochs = np.empty(c_maxn, dtype=np.double, order='C')
@@ -3568,7 +3568,7 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] limbpt_v(
     cdef const SpiceDouble* c_refvec_ptr = &c_refvec[0]
     # allocate outputs
     cdef np.ndarray[np.int32_t, ndim=2, mode='c'] p_npts = np.empty((n, c_maxn), dtype=np.int32, order='C')
-    cdef int[:,::1] c_npts = p_npts
+    cdef SpiceInt[:,::1] c_npts = p_npts
     cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_points = np.empty((n, c_maxn, 3), dtype=np.double, order='C')
     cdef np.double_t[:,:,::1] c_points = p_points
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_epochs = np.empty((n, c_maxn), dtype=np.double, order='C')
@@ -3779,7 +3779,7 @@ cpdef int occult_s(
     :param et: Time of the observation (seconds past J2000).
     :return: Occultation identification code.
     """
-    cdef int c_ocltid = 0
+    cdef SpiceInt c_ocltid = 0
     occult_c(
         target1,
         shape1,
@@ -4876,9 +4876,10 @@ cpdef tuple[double, double, double] recpgr_s(
     cdef double lon = 0.0
     cdef double lat = 0.0
     cdef double alt = 0.0
+    # recpgr_c declares rectan non-const although it only reads it
     recpgr_c(
         body,
-        c_rectan, 
+        <SpiceDouble *> c_rectan, 
         re,
         f,
         &lon,
@@ -4922,9 +4923,10 @@ cpdef np.ndarray[np.double_t, ndim=2, mode='c'] recpgr_v(
     # TODO fix strides lookups below
     with nogil:
         for i in range(n):
+            # recpgr_c declares rectan non-const although it only reads it
             recpgr_c(
                 body,
-                &c_rectan[i, 0],
+                <SpiceDouble *> &c_rectan[i, 0],
                 re,
                 f,  
                 &c_pgr[i, 0],
@@ -7685,8 +7687,8 @@ def spkpvn_s(
     cdef int c_handle = handle
     cdef double c_et = et
     # inititalize output variables
-    cdef int c_ref = 0
-    cdef int c_center = 0
+    cdef SpiceInt c_ref = 0
+    cdef SpiceInt c_center = 0
     # convert input c arrays
     cdef const double* c_descr = &descr_arr[0]
     # initialize output arrays
@@ -8977,7 +8979,7 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] termpt_s(
     _check_dim(c_refvec.shape[0], 3, "refvec")
     # allocate outputs
     cdef np.ndarray[np.int32_t, ndim=1, mode='c'] p_npts = np.empty(c_maxn, dtype=np.int32, order='C')
-    cdef int[::1] c_npts = p_npts
+    cdef SpiceInt[::1] c_npts = p_npts
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_points = np.empty((c_maxn, 3), dtype=np.double, order='C')
     cdef np.double_t[:,::1] c_points = p_points
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] p_epochs = np.empty(c_maxn, dtype=np.double, order='C')
@@ -9077,7 +9079,7 @@ cpdef tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] termpt_v(
     cdef const SpiceDouble* c_refvec_ptr = &c_refvec[0]
     # allocate outputs
     cdef np.ndarray[np.int32_t, ndim=2, mode='c'] p_npts = np.empty((n, c_maxn), dtype=np.int32, order='C')
-    cdef int[:,::1] c_npts = p_npts
+    cdef SpiceInt[:,::1] c_npts = p_npts
     cdef np.ndarray[np.double_t, ndim=3, mode='c'] p_points = np.empty((n, c_maxn, 3), dtype=np.double, order='C')
     cdef np.double_t[:,:,::1] c_points = p_points
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] p_epochs = np.empty((n, c_maxn), dtype=np.double, order='C')

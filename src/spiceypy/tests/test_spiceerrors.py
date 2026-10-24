@@ -26,11 +26,17 @@ import pytest
 import spiceypy as spice
 
 import spiceypy.found_catcher
-from spiceypy.tests.gettestkernels import cwd, CoreKernels, ExtraKernels
+from spiceypy.tests.gettestkernels import (
+    cwd,
+    download_kernels,
+    CoreKernels,
+    ExtraKernels,
+)
 import os
-import sys
 
-IS_PYODIDE = sys.platform == "emscripten" or "pyodide" in sys.modules
+
+def setup_module(module):
+    download_kernels()
 
 
 def test_tkversion():
@@ -46,7 +52,6 @@ def test_geterror():
     spice.reset()
 
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Cyice Not supported on Pyodide")
 def test_cyice_geterror():
     spice.setmsg("some error occured")
     spice.sigerr("error")
@@ -68,7 +73,6 @@ def test_get_spiceypy_exceptions():
     spice.reset()
 
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Cyice Not supported on Pyodide")
 def test_get_cyice_exceptions():
     with pytest.raises(
         (
@@ -116,7 +120,6 @@ def test_no_loaded_files_exception():
         spice.reset()
 
 
-@pytest.mark.skipif(IS_PYODIDE, reason="Cyice Not supported on Pyodide")
 def test_no_loaded_files_exception_cyice():
     with pytest.raises(spice.SpiceyError):
         spice.cyice.ckgp(0, 0.0, 0, "blah")

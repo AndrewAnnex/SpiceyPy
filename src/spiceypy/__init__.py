@@ -741,7 +741,7 @@ from .utils import support_types
 from .utils import exceptions
 
 __all__ = [
-    "cyice",  # TODO exclude if emscripten?
+    "cyice",
     "support_types",
     "exceptions",
     "stypes",

@@ -158,9 +158,7 @@ endif()
 endif()
 
 ##############################################################################
-# cyice specifics below if not on EMSCRIPTEN
-
-if(NOT DEFINED EMSCRIPTEN)
+# cyice specifics below
 
 
 # Convert pyx to c
@@ -182,6 +180,18 @@ set_target_properties(cyice PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/spiceypy/cyice"
   OUTPUT_NAME "cyice"
 )
+# WITH_SOABI takes the suffix from FindPython's Python_SOABI, which is wrong
+# when cross-compiling (pyodide-build's cmake wrapper leaves it empty, giving a
+# bare cyice.so). scikit-build-core's SKBUILD_SOABI is always correct, so name
+# the module from it, e.g. cyice.cpython-314-wasm32-emscripten.so.
+if(SKBUILD_SOABI)
+  if(WIN32)
+    set(_cyice_ext ".pyd")
+  else()
+    set(_cyice_ext "${CMAKE_SHARED_MODULE_SUFFIX}")
+  endif()
+  set_property(TARGET cyice PROPERTY SUFFIX ".${SKBUILD_SOABI}${_cyice_ext}")
+endif()
 
 # Link to the CSPICE target exposed by the subproject
 target_include_directories(cyice PRIVATE ${Python_NumPy_INCLUDE_DIRS})
@@ -226,5 +236,3 @@ endif()
 
 # install cyice
 install(TARGETS cyice DESTINATION spiceypy/cyice/)
-
-endif()

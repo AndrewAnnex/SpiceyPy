@@ -280,7 +280,7 @@ jobs:
           #     in-container /project path (host env is not inherited there).
           #   * macOS/Windows build on the host; this sets it explicitly.
           # Pyodide is intentionally omitted here so it keeps pyproject's
-          # SPICEYPY_PYODIDE/CFLAGS environment; being a non-container build it
+          # CFLAGS environment; being a non-container build it
           # inherits CSPICE_SRC (host path) from $GITHUB_ENV directly.
           #
           # CMAKE_GENERATOR=Ninja on Windows: scikit-build-core defaults to the

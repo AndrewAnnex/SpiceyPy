@@ -73,6 +73,9 @@ def _test_metakernel_long_path(
     _write_empty_kernel(tpc_path)
     write_test_meta_kernel(metakernel_path, (tpc_path, fixed_tpc_path))
     spiceypy.furnsh(metakernel_path)
+    # unloading the metakernel also unloads the kernels it listed, so nothing
+    # stays loaded for later tests or after the temporary directory is removed
+    spiceypy.unload(metakernel_path)
 
 
 def test_metakernel_long_paths():

@@ -14,11 +14,12 @@ Many popular scientific libraries are already availble for Pyodide, including nu
 This distribution of SpiceyPy is essentially the same as the normal desktop Python distributions, as the CSPICE library is compiled to Wasm (web-assembly), allowing the pure python codebase for SpiceyPy to function essentially without modification.
 The existing test suite for SpiceyPy is used to validate the distribution releases.
 
+The cyice submodule is also compiled to Wasm and included, so ``from spiceypy import cyice`` works the same way as on desktop Python.
+
 It is however slightly limited:
 
-1. Currently, cyice is unsupported in this pyodide distribution and not included. That may eventually change.
-2. Some functions may not function as expected or return null results, seemingly due to memory limitations and compilation differences.
-3. Pyodide is currently limited to 32bit architecture.
+1. Some functions may not function as expected or return null results, seemingly due to memory limitations and compilation differences.
+2. Pyodide is currently limited to 32bit architecture.
 
 Despite these limitations and the danger warning at the top of this page, the Pyodide distribution of SpiceyPy is an incredible new capability with the following potential applications:
 

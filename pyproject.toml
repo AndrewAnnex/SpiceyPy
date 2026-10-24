@@ -151,23 +151,6 @@ wheel.exclude = [
     "spiceypy/utils/cmake/cspice/*.cmake"
 ]
 
-# The cyice extension is not compiled for Emscripten/Pyodide (see CMakeLists.txt
-# `if(NOT DEFINED EMSCRIPTEN)`), so exclude its Cython sources/annotations from the
-# pyodide wheel since there is no compiled module to accompany them. We can't use
-# `if.platform-system = "emscripten"` here: during cross-compilation scikit-build-core
-# sees the host's sys.platform (linux), not the wasm target. Instead we key off the
-# SPICEYPY_PYODIDE env var set in [tool.cibuildwheel.pyodide].environment below.
-[[tool.scikit-build.overrides]]
-if.env.SPICEYPY_PYODIDE = true
-inherit.wheel.exclude = "append"
-wheel.exclude = [
-    "spiceypy/cyice/*.pyx",
-    "spiceypy/cyice/*.pxd",
-    "spiceypy/cyice/*.html",
-    # the only benchmark targets cyice, which isn't built for pyodide
-    "spiceypy/benchmarks/*",
-]
-
 # Scrape __version__ out of the package to satisfy project.dynamic = ["version"].
 # This is the standard top-level dynamic-metadata table; the older
 # [tool.scikit-build.metadata.version] form named the target field with the table
@@ -273,13 +256,12 @@ before-test = [
   "echo 'auditwheel exports results:'",
   "pyodide auditwheel exports --show-type {wheel}"
 ]
-test-command = "python -m pytest -s -vvv --pyargs spiceypy.tests.test_wrapper --benchmark-disable"
+test-command = "python -m pytest -s -vvv --pyargs spiceypy --benchmark-disable"
 # pyodide-version is left to cibuildwheel's default: every 314.0.x release shares
 # CPython 3.14.2 and Emscripten 5.0.3, so wheels stay loadable by the older 314.0.x
 # runtimes bundled with PyScript (docs) and jupyterlite's pyodide-kernel
-# disable some errors for pyodide only; SPICEYPY_PYODIDE drives the cyice-source
-# exclusion override in [tool.scikit-build.overrides] above
-environment = { CFLAGS="-Werror=implicit-function-declaration -Werror=incompatible-pointer-types -Werror=return-type", SPICEYPY_PYODIDE="1" }
+# disable some errors for pyodide only
+environment = { CFLAGS="-Werror=implicit-function-declaration -Werror=incompatible-pointer-types -Werror=return-type" }
 
 
 [tool.mypy]
