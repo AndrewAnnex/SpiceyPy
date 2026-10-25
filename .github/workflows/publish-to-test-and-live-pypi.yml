@@ -20,7 +20,7 @@ jobs:
       - name: Checkout 🌶️ 🥧
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set up uv 🐍 📦
-        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
         with:
           enable-cache: true
       - name: Build 🛠️ sdist source for 🌶️ 🥧 SpiceyPy
@@ -71,7 +71,7 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
         uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
       - name: Set up uv 🐍 📦 with Python 3.13
-        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
         with:
           python-version: "3.13"
           activate-environment: true
@@ -251,7 +251,7 @@ jobs:
           fi
           echo "Provisioned CSPICE_SRC for ${{ matrix.name }} (${{ runner.os }})"
       - name: Set up uv 🐍 📦 with Python 3.14
-        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
         with:
           python-version: "3.14"
           activate-environment: true
@@ -262,7 +262,7 @@ jobs:
         run: |
           uv pip install --group devwheel
       - name: Build wheels for SpiceyPy 🌶️ 🥧
-        uses: pypa/cibuildwheel@b3395e271a35f73dad77f21802abe9b986dfe299 # v4.3.1
+        uses: pypa/cibuildwheel@b9e566a2b284570af229f6c2a33673410d0389a3 # v4.3.4
         env:
           CIBW_PLATFORM: ${{ matrix.platform || 'auto' }}
           CIBW_ARCHS: ${{ matrix.arch }}
@@ -319,7 +319,7 @@ jobs:
           merge-multiple: true
           path: dist
       - name: Set up uv 🐍 📦
-        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
       - name: Check dists
         run: |
           uvx twine check dist/*
@@ -343,7 +343,7 @@ jobs:
           merge-multiple: true
           path: dist
       - name: Publish distribution 📦 to TestPyPI
-        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086
         with:
           skip-existing: true
           print-hash: true
@@ -367,7 +367,7 @@ jobs:
           merge-multiple: true
           path: dist
       - name: Publish distribution 📦 to PyPI
-        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086
         with:
           skip-existing: true
           print-hash: true
