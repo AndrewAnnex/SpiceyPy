@@ -90,6 +90,7 @@ extensions = [
     "sphinx_rtd_theme",
     "sphinx_gallery.gen_gallery",
     "pyscript_editor",
+    "jupyterlite_sphinx",
 ]
 
 sphinx_gallery_conf = {
@@ -103,6 +104,9 @@ sphinx_gallery_conf = {
     "capture_repr": ("_repr_html_",),
     "remove_config_comments": True,
     "show_signature": False,
+    # sphinx-gallery turns on its JupyterLite buttons whenever jupyterlite_sphinx
+    # is loaded; JupyterLite is only for the scratchpad page (jupyterlite.rst)
+    "jupyterlite": None,
 }
 
 # Global defaults for pyscript (all optional)
@@ -114,6 +118,15 @@ pyscript_mini_coi = "mini-coi.js"  # "" to disable
 pyscript_hide_gutters = True
 # gallery examples whose live output replaces the build-time output in place
 pyscript_gallery_inline_output = ["plot_santa_monica_eclipse"]
+
+# JupyterLite site (built into lite/) for the jupyterlite.rst scratchpad. The
+# notebook is listed as well as given to its directive, which only copies it in
+# when jupyterlite.rst is re-read, so incremental builds would otherwise drop it.
+# The kernels are the gallery scratchpad's, downloaded by pyscript_editor before
+# the build and copied in as scratchpad/
+jupyterlite_contents = ["scratchpad.ipynb", "examples/scratchpad"]
+# don't build .ipynb files (e.g. the gallery's notebook downloads) as pages
+jupyterlite_bind_ipynb_suffix = False
 
 html_static_path = ["_static"]
 
@@ -164,7 +177,8 @@ release = "8.3.0"
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # examples/ holds the sphinx-gallery sources; the pages are generated in gallery/
-exclude_patterns = ["_build", "examples"]
+# _contents is jupyterlite_sphinx's staging area for the JupyterLite files
+exclude_patterns = ["_build", "examples", "_contents"]
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.

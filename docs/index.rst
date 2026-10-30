@@ -52,6 +52,7 @@ Contents:
    installation
    cyice
    pyodide
+   jupyterlite
    gallery/index
    changelog
    exampleone

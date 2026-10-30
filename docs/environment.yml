@@ -22,6 +22,10 @@ dependencies:
   - scipy
   - sympy
   - astropy
+  # the JupyterLite scratchpad page; the kernel version sets the Pyodide
+  # version (0.8.x: Pyodide 314), which must match spiceypy's Pyodide wheel
+  - jupyterlite-sphinx
+  - jupyterlite-pyodide-kernel=0.8
   - recommonmark
   - pip
 variables:
