@@ -31,6 +31,7 @@ Despite these limitations and the danger warning at the top of this page, the Py
 As per the warning above, production use is not recommended.
 
 One of the best places to start using and learning about Pyodide is `Jupyter-lite <https://jupyter.org/try-jupyter/>`_, a browser-native JupyterLab that includes many scientific python packages for use.
+The :doc:`jupyterlite` page has a JupyterLite JupyterLab with SpiceyPy and a scratchpad notebook ready to use.
 
 Installation
 -------------

@@ -10,3 +10,5 @@ pillow
 scipy
 sympy
 astropy
+jupyterlite-sphinx
+jupyterlite-pyodide-kernel==0.8.*

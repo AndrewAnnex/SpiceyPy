@@ -9,6 +9,7 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 ### Added
  - cyice is now built and shipped in the Pyodide/WebAssembly wheel
  - Start of a docs example gallery with live PyScript editor examples: Mars 2020 "three forks", Santa Monica eclipse, and a scratchpad (#581)
+ - JupyterLab scratchpad docs page: a JupyterLite site built with jupyterlite-sphinx, with a SpiceyPy scratchpad notebook and the gallery scratchpad's kernels
 
 ### Changed
  - Updated astral-sh/setup-uv action to v10.3.0 (#579)

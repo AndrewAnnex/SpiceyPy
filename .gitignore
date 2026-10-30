@@ -55,6 +55,11 @@ docs/examples/santa_monica_eclipse/
 docs/examples/scratchpad/
 docs/examples/santa_monica.bsp
 docs/sg_execution_times.rst
+# jupyterlite-sphinx staging area and build database
+docs/_contents/
+docs/.jupyterlite.doit.db
+# the JupyterLite scratchpad notebook (jupyterlite.rst)
+!docs/scratchpad.ipynb
 
 # Pycharm specific things
 .idea/
