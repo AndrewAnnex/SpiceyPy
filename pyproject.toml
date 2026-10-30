@@ -64,10 +64,13 @@ typecheck = [
     "mypy>=2.3",
     "pandas-stubs",
 ]
+coverage = [
+    "coverage>=7.0.0",
+]
 ci = [
     {include-group = "core"},
     {include-group = "publish"},
-    "coverage>=7.0.0",
+    {include-group = "coverage"},
     "certifi", 
     "black"
 ]
@@ -87,8 +90,11 @@ devwheel = [
     {include-group = "dev"},
     "cibuildwheel>=4.1.0",
 ]
+# installed into the Pyodide test venv only (cibuildwheel test-groups); keep it to
+# runtime test deps, since host tooling (cibuildwheel, black, mypy...) is useless
+# there and can drag in packages that don't import under Emscripten
 devwheelpyodide = [
-    {include-group = "devwheel"},
+    {include-group = "test"},
     "pytest-randomly",
     "pyodide-http",
     "requests"
@@ -200,7 +206,9 @@ skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "*-musllinux_aarch64"
 build-verbosity = 2
 # parallel builds passthrough for build
 environment-pass = ["CMAKE_BUILD_PARALLEL_LEVEL"]
-test-groups = ["dev"]
+# only what test-command needs; host tooling (cibuildwheel, black, mypy, twine...)
+# has no business in the per-wheel test venvs
+test-groups = ["test", "coverage"]
 test-command = [
     "coverage run --source spiceypy -m pytest --pyargs spiceypy --benchmark-disable"
 ]
