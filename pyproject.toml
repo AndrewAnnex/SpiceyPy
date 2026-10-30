@@ -47,7 +47,9 @@ core = [
 ]
 test = [
     {include-group = "core"},
-    "pytest>=7.0.0", 
+    # <9.2: pytest 9.2 removed Node._nodeid, which pytest-benchmark<=5.3.0 still uses
+    # (ionelmc/pytest-benchmark#321); drop once a fixed pytest-benchmark is released
+    "pytest>=7.0.0,<9.2",
     "pandas>=2.2.2",
     "pytest-benchmark"
 ]
