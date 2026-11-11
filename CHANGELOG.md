@@ -4,7 +4,7 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## [8.4.0] - 2026-11-??
+## [8.4.0] - 2026-11-11
 
 ### Added
  - cyice is now built and shipped in the Pyodide/WebAssembly wheel
