@@ -4,7 +4,7 @@ All notable changes to SpiceyPy will be documented here
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [8.4.0] - 2026-11-??
 
 ### Added
  - cyice is now built and shipped in the Pyodide/WebAssembly wheel
@@ -12,15 +12,26 @@ and this project tries to adhere to [Semantic Versioning](http://semver.org/).
  - JupyterLab scratchpad docs page: a JupyterLite site built with jupyterlite-sphinx, with a SpiceyPy scratchpad notebook and the gallery scratchpad's kernels
 
 ### Changed
+ - cyice double array inputs now accept any float64 array-like (lists, strided or read-only views), coerced once via the NumPy C API; wrong ndim raises ValueError (#588)
+ - cyice double array inputs given a non-float64 dtype (ints, bools, float32, complex, strings) now raise TypeError rather than the ValueError buffer dtype mismatch previously raised by Cython (#588)
+ - Removed redundant np.ascontiguousarray calls in cyice `_v` functions, cutting ~0.7us overhead per small call (#588)
+ - cyice array parameters annotated with NDArray aliases so Sphinx signatures show array shapes (#588)
  - Updated astral-sh/setup-uv action to v10.3.0 (#579)
  - Pyodide wheel tests now run the full test suite in random order instead of only test_wrapper
 
 ### Fixed
- - Test meta-kernel generation now splits kernel paths longer than SPICE's 80-character string limit using `+` continuation, so tests run from deeply nested directories (#580)
+ - Editable installs now find the bundled cspice library via importlib.resources; on Windows the library directory is also added for cyice, fixes #512 (#584)
  - cyice evsgp4 now raises CSPICE propagation errors instead of returning garbage (#582)
- - cyice georec, pgrrec, recgeo, recpgr, srfrec (scalar and vectorized) and unload did not check the SPICE error state, returning uninitialized values and leaving the error pending for a later unrelated call
- - cyice scalar coordinate conversions returning 3-tuples (cyllat_s, cylsph_s, latcyl_s, latsph_s, recazl_s, reccyl_s, recgeo_s, reclat_s, recpgr_s, recrad_s, recsph_s, sphcyl_s, sphlat_s, and their top-level dispatchers) truncated results to single precision because `tuple[float, ...]` compiled to a C float ctuple
- - cyice getelm_v (and getelm with array input) rejected int64 arrays, NumPy's default integer type, with a buffer dtype mismatch; frstyr now accepts int32 or int64 arrays
+ - cyice georec, pgrrec, recgeo, recpgr, srfrec (scalar and vectorized) and unload did not check the SPICE error state, returning uninitialized values and leaving the error pending for a later unrelated call (#583)
+ - cyice scalar coordinate conversions returning 3-tuples (cyllat_s, cylsph_s, latcyl_s, latsph_s, recazl_s, reccyl_s, recgeo_s, reclat_s, recpgr_s, recrad_s, recsph_s, sphcyl_s, sphlat_s, and their top-level dispatchers) truncated results to single precision because `tuple[float, ...]` compiled to a C float ctuple (#583)
+ - cyice getelm_v (and getelm with array input) rejected int64 arrays, NumPy's default integer type, with a buffer dtype mismatch; frstyr now accepts int32 or int64 arrays (#583)
+ - cyice import failed on supported NumPy versions that do not expose `numpy.typing` on initial import (#585)
+ - cyice array inputs rejected read-only arrays (flags.writeable=False, np.broadcast_to views) with "buffer source array is read-only" (#586) (#587)
+ - cyice fixed-size array inputs (3-vectors, states, SPK descriptors, conic and SGP4 elements) are now length-checked; short or empty arrays were read out of bounds and silently returned garbage (#588)
+ - cyice ckgp_v and ckgpav_v wrote 4-byte found flags into a uint8 buffer, overrunning it (#588)
+ - cyice etcal_v truncated B.C. and 5-digit-year output that etcal_s returns in full (#588)
+ - cyice oscelt_v length-mismatch error message (#588)
+ - Test meta-kernel generation now splits kernel paths longer than SPICE's 80-character string limit using `+` continuation, so tests run from deeply nested directories (#580)
  - Test fixtures now call reset before kclear, since kclear is a no-op while a SPICE error is pending (#582)
  - cyice passed `int` storage to CSPICE `SpiceInt *` outputs (et2lst, limbpt, occult, spkpvn, termpt), which is wrong on 32-bit targets where SpiceInt is `long`
  - cyice extension module is named from scikit-build-core's SKBUILD_SOABI, so cross-compiled builds get an ABI-tagged name (e.g. `cyice.cpython-314-wasm32-emscripten.so`) instead of a bare `cyice.so`
